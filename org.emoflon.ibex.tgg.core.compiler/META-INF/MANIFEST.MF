@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Compiler
+Bundle-SymbolicName: org.emoflon.ibex.tgg.core.compiler
+Bundle-Version: 1.0.0.qualifier
