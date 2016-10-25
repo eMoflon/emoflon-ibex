@@ -55,14 +55,14 @@ public abstract class Protocol {
 	}
 	
 	private void addMatchToTable(HashMap<EObject, TIntHashSet> table, EObject e, TGGRuleApplication m){
-		TIntHashSet creatorsOfE = null;
+		TIntHashSet matchesOfE = null;
 		if(table.containsKey(e))
-			creatorsOfE = table.get(e);
+			matchesOfE = table.get(e);
 		else{
-			creatorsOfE = new TIntHashSet();
-			table.put(e, creatorsOfE);
+			matchesOfE = new TIntHashSet();
+			table.put(e, matchesOfE);
 		}
-		creatorsOfE.add(matchToInt(m));
+		matchesOfE.add(matchToInt(m));
 	}
 	
 	protected TIntHashSet getCreatorsOf(EObject e) {
