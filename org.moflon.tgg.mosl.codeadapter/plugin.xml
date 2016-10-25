@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?><plugin>
+  <extension id="mosltggbuilder" name="MOSL TGG Builder" point="org.eclipse.core.resources.builders">
+    <builder hasNature="true">
+      <run class="org.moflon.tgg.mosl.builder.MoslTGGBuilder"/>
+    </builder>
+  </extension>
+  <extension id="moslTGGNature" name="MOSL TGG Nature" point="org.eclipse.core.resources.natures">
+    <runtime>
+       <run
+             class="org.moflon.tgg.mosl.builder.MOSLTGGNature">
+       </run>
+    </runtime>
+    <builder
+          id="org.moflon.tgg.mosl.codeadapter.mosltggbuilder">
+    </builder>
+    <requires-nature
+          id="org.eclipse.xtext.ui.shared.xtextNature">
+    </requires-nature>
+    <requires-nature
+          id="org.moflon.ide.core.runtime.natures.IntegrationNature">
+    </requires-nature>
+  </extension>
+  <extension point="org.eclipse.ui.commands">
+    <category id="org.moflon.tgg.mosl.moslTGGNature.category" name="MOSL TGG Nature commands"/>
+    <command categoryId="org.moflon.tgg.mosl.moslTGGNature.category" defaultHandler="org.moflon.tgg.mosl.builder.AddRemoveMOSLTGGNatureHandler" id="org.moflon.tgg.mosl.addRemoveMOSLTGGNature" name="Add/RemoveMOSL TGG Nature"/>
+    <command categoryId="org.moflon.ide.ui.commands.MainCategory" defaultHandler="org.moflon.tgg.mosl.builder.MOSLTGGConversionHelper" id="org.moflon.tgg.mosl.convertToMOSLTGG" name="Convert to MOSL TGG"/>
+  </extension>
+  <extension point="org.eclipse.ui.menus">
+    <menuContribution locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
+      <command commandId="org.moflon.tgg.mosl.addRemoveMOSLTGGNature" label="Disable MOSL TGG Builder" style="push">
+        <visibleWhen checkEnabled="false">
+          <with variable="selection">
+            <count value="1"/>
+            <iterate>
+              <adapt type="org.eclipse.core.resources.IProject">
+                <test property="org.eclipse.core.resources.projectNature" value="org.moflon.tgg.mosl.codeadapter.moslTGGNature"/>
+              </adapt>
+            </iterate>
+          </with>
+        </visibleWhen>
+      </command>
+      <command commandId="org.moflon.tgg.mosl.addRemoveMOSLTGGNature" label="Enable MOSL TGG Builder" style="push">
+        <visibleWhen checkEnabled="false">
+          <with variable="selection">
+            <count value="1"/>
+            <iterate>
+              <adapt type="org.eclipse.core.resources.IProject">
+                <not>
+                  <test property="org.eclipse.core.resources.projectNature" value="org.moflon.tgg.mosl.codeadapter.moslTGGNature"/>
+                </not>
+              </adapt>
+            </iterate>
+          </with>
+        </visibleWhen>
+      </command>
+    </menuContribution>
+    <menuContribution locationURI="popup:org.moflon.ide.ui.moflon?after=moflonGroupTie">
+      <command commandId="org.moflon.tgg.mosl.convertToMOSLTGG" label="Convert to MOSL TGG" style="push">
+        <visibleWhen checkEnabled="false">
+          <and>
+            <count value="1"/>
+            <iterate ifEmpty="false">
+              <test property="org.eclipse.core.resources.name" value="*.tgg.xmi"/>
+              <instanceof value="org.eclipse.core.resources.IFile"/>
+            </iterate>
+          </and>
+        </visibleWhen>
+      </command>
+    </menuContribution>
+  </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="org.moflon.tgg.mosl.codeadapter.CodeadapterPackage" genModel="model/Codeadapter.genmodel" uri="platform:/plugin/org.moflon.tgg.mosl.codeadapter/model/Codeadapter.ecore"/>
+  </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="org.moflon.tgg.mosl.codeadapter.Rules.RulesPackage" genModel="model/Codeadapter.genmodel" uri="platform:/plugin/org.moflon.tgg.mosl.codeadapter/model/Codeadapter.ecore#//Rules"/>
+  </extension>
+</plugin>
