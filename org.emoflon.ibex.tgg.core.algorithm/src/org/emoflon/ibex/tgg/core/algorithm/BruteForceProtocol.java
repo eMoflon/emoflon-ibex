@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EObject;
 import gnu.trove.set.hash.TIntHashSet;
 import net.sf.javailp.Constraint;
 import net.sf.javailp.Linear;
+import net.sf.javailp.OptType;
 import net.sf.javailp.Problem;
 import net.sf.javailp.Result;
 import net.sf.javailp.Solver;
@@ -103,7 +104,7 @@ public abstract class BruteForceProtocol extends Protocol {
 			objective.add(weight, v);
 			return true;
 		});
-		ilpProblem.setObjective(objective);
+		ilpProblem.setObjective(objective, OptType.MAX);
 	}
 
 	protected abstract int getWeight(TGGRuleApplication m);
