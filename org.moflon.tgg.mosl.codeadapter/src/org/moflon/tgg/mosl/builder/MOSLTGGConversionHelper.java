@@ -184,14 +184,14 @@ public class MOSLTGGConversionHelper
 
       final IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(saveTargetName);
       CodeGeneratorPlugin.createPluginToResourceMapping(resourceSet, project);
-      URI relativePreEcoreXmiURI = URI.createURI(MoflonUtil.getDefaultPathToFileInProject(file, ".pre.ecore"));
+      URI relativePreEcoreXmiURI = URI.createURI(MoflonUtil.getDefaultPathToFileInProject(file, ".ecore"));
       URI projectURI = CodeGeneratorPlugin.lookupProjectURI(project);
       URI preEcoreXmiURI = relativePreEcoreXmiURI.resolve(projectURI);
       Resource preEcoreResource = resourceSet.createResource(preEcoreXmiURI);
       preEcoreResource.getContents().add(corrPackage);
       preEcoreResource.save(options);
 
-      URI pretggXmiURI = URI.createPlatformResourceURI(saveTargetName + "/" + MoflonUtil.getDefaultPathToFileInProject(file, ".pre.tgg.xmi"), false);
+      URI pretggXmiURI = URI.createPlatformResourceURI(saveTargetName + "/" + MoflonUtil.getDefaultPathToFileInProject(file, ".tgg.xmi"), false);
       Resource pretggXmiResource = resourceSet.createResource(pretggXmiURI);
       pretggXmiResource.getContents().add(tgg);
       pretggXmiResource.save(options);

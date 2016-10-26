@@ -24,6 +24,7 @@
         eType="#//TGGRuleEdge" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConditions" upperBound="-1"
         eType="#//TGGAttributeConstraint" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRuleElement" abstract="true" eSuperTypes="#//TGGNamedElement">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="domainType" eType="#//DomainType"/>
@@ -34,12 +35,18 @@
         eType="#//TGGRuleEdge" eOpposite="#//TGGRuleEdge/trgNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
         eType="#//TGGRuleEdge" eOpposite="#//TGGRuleEdge/srcNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGRuleCorr" eSuperTypes="#//TGGRuleNode">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="#//TGGRuleNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="#//TGGRuleNode"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRuleEdge" eSuperTypes="#//TGGRuleElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="srcNode" eType="#//TGGRuleNode"
         eOpposite="#//TGGRuleNode/outgoingEdges"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="trgNode" eType="#//TGGRuleNode"
         eOpposite="#//TGGRuleNode/incomingEdges"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinition" eSuperTypes="#//TGGNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinitions" upperBound="-1"
