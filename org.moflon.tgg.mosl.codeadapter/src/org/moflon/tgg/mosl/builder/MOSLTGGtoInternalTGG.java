@@ -145,6 +145,13 @@ public class MOSLTGGtoInternalTGG {
 			corrModel.getEClassifiers().add(createEClass(ct));
 		}
 		
+		for(CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()){
+
+			if(ct.getSuper() != null){
+				((EClass) xtextToTGG.get(ct)).getESuperTypes().add((EClass) xtextToTGG.get(ct.getSuper()));
+			}
+		}
+		
 		return corrModel;
 	}
 
