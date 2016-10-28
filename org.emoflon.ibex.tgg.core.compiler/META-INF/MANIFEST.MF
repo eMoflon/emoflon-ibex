@@ -1,5 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Compiler
-Bundle-SymbolicName: org.emoflon.ibex.tgg.core.compiler
+Bundle-SymbolicName: org.emoflon.ibex.tgg.core.compiler;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.emoflon.ibex.tgg.core.language;bundle-version="1.0.0",
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro,
+ org.eclipse.emf.common,
+ org.eclipse.emf;bundle-version="2.6.0"
+Export-Package: org.emoflon.ibex.tgg.core.compiler
+

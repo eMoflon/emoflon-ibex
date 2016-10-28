@@ -78,6 +78,7 @@ public class MOSLTGGtoInternalTGG {
 					tggEdge.setTrgNode((TGGRuleNode) xtextToTGG.get(lv.getTarget()));
 					tggEdge.setBindingType(getBindingType(lv.getOp()));
 					tggEdge.setDomainType(node.getDomainType());
+					tggEdge.setName("__" + tggEdge.getSrcNode().getName() + "_" + tggEdge.getType().getName() + "_" + tggEdge.getTrgNode().getName());
 					map(lv, tggEdge);
 					result.add(tggEdge);
 				}
