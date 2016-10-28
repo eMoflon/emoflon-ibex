@@ -1,21 +1,20 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern;
 
-import java.util.*;
-import java.util.stream.Collector;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.xml.transform.stream.StreamSource;
+import org.eclipse.emf.ecore.EClass;
 
-import language.BindingType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import runtime.RuntimePackage;
 
 public abstract class Pattern {
 
-	
 	protected String name;
 	
 	/**
@@ -120,7 +119,10 @@ public abstract class Pattern {
 		return negativeInvocations;
 	}
 
-
-	
-	
+	public EClass typeOf(TGGRuleElement element){
+		if(element instanceof TGGRuleEdge)
+			return RuntimePackage.eINSTANCE.getEdge();
+		else
+			return ((TGGRuleNode)element).getType();
+	}
 }
