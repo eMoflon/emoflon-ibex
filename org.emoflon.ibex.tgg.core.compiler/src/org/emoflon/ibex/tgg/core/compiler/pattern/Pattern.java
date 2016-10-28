@@ -30,8 +30,8 @@ public abstract class Pattern {
 	/**
 	 * each body node n corresponds to the following text:
 	 * if n is a TGGRuleCorr:
-	 *      <<Type of n>>.source(n, foo);
-	 *      <<Type of n>>.target(n, bar);
+	 *      <<Type of n>>.source(n, <<src of n>>);
+	 *      <<Type of n>>.target(n, <<trg of n>>);
 	 *      
 	 * if n is not a TGGRuleCorr:
 	 *      <<Type of n>>(n)     
@@ -43,21 +43,21 @@ public abstract class Pattern {
 	/**
 	 * each body edge e corresponds to the following text:
 	 * 
-	 *  Edge.src(e, foo);
-	 *  Edge.trg(e, bar);
-	 *  Edge.name(<<type name of e>>);
+	 *  Edge.src(e, <<src of n>>);
+	 *  Edge.trg(e, <<trg of n>>);
+	 *  Edge.name(e, <<type name of e>>);
 	 */
 	protected Collection<TGGRuleEdge> bodyEdges = new ArrayList<>();
 	
 	
 	/**
-	 * each positive pattern invocation for a pattern pat correspons to the following thext
+	 * each positive pattern invocation for a pattern pat corresponds to the following text
 	 * find pat(<<signature elements of pat separated with ",">>);
 	 */
 	protected Collection<Pattern> positiveInvocations = new ArrayList<>();
 	
 	/**
-	 * each negative pattern invocation for a pattern pat correspons to the following thext
+	 * each negative pattern invocation for a pattern pat corresponds to the following text
 	 * neg find pat(<<signature elements of pat separated with ",">>);
 	 */
 	protected Collection<Pattern> negativeInvocations = new ArrayList<>();
