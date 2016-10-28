@@ -78,6 +78,7 @@ public class MOSLTGGtoInternalTGG {
 					tggEdge.setTrgNode((TGGRuleNode) xtextToTGG.get(lv.getTarget()));
 					tggEdge.setBindingType(getBindingType(lv.getOp()));
 					tggEdge.setDomainType(node.getDomainType());
+					tggEdge.setName("__" + tggEdge.getSrcNode().getName() + "_" + tggEdge.getType().getName() + "_" + tggEdge.getTrgNode().getName());
 					map(lv, tggEdge);
 					result.add(tggEdge);
 				}
@@ -143,6 +144,13 @@ public class MOSLTGGtoInternalTGG {
 		
 		for(CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()){	
 			corrModel.getEClassifiers().add(createEClass(ct));
+		}
+		
+		for(CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()){
+
+			if(ct.getSuper() != null){
+				((EClass) xtextToTGG.get(ct)).getESuperTypes().add((EClass) xtextToTGG.get(ct.getSuper()));
+			}
 		}
 		
 		return corrModel;
