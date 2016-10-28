@@ -9,6 +9,8 @@ Require-Bundle: org.emoflon.ibex.tgg.core.language;bundle-version="1.0.0",
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
  org.eclipse.emf.common,
- org.eclipse.emf;bundle-version="2.6.0"
+ org.eclipse.emf;bundle-version="2.6.0",
+ org.eclipse.emf.ecore,
+ org.emoflon.ibex.tgg.core.runtime
 Export-Package: org.emoflon.ibex.tgg.core.compiler
 

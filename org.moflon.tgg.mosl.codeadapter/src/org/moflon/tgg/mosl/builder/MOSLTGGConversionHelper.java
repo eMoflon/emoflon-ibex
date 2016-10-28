@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -34,6 +35,7 @@ import org.emoflon.ibex.tgg.core.compiler.TGGCompiler;
 import org.moflon.codegen.eclipse.CodeGeneratorPlugin;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
+import org.moflon.core.utilities.WorkspaceHelper;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
@@ -64,12 +66,10 @@ public class MOSLTGGConversionHelper {
 				TGGProject tggProject = converter.convertXtextTGG(xtextParsedTGG);
 
 				if (tggProject != null) {
-
-					IFile file = project.getFile(tggProject.getTggModel().getName() + ".vql");
 					String contents = TGGCompiler.getViatraPatterns(tggProject.getTggModel());
-					InputStream source = new ByteArrayInputStream(contents.getBytes());
-					file.create(source, true, null);
-
+					IFile file = project.getFile(tggProject.getTggModel().getName() + ".vql");
+					if(file.exists()) file.delete(true, new NullProgressMonitor());
+					WorkspaceHelper.addFile(project, file.getProjectRelativePath().toString(), contents, new NullProgressMonitor());
 					Map<Object, Object> options = new HashMap<Object, Object>();
 					return saveInternalTGGModelToXMI(tggProject, resourceSet, options, project.getName());
 				}
