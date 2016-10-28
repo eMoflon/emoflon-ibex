@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern;
 
-import java.util.ArrayList;
-
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
