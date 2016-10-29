@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="org/moflon/tgg/mosl/ui/wizards/NewRepositoryProjectHandler.java|org/moflon/tgg/mosl/ui/wizards/NewRepositoryProjectInfoPage.java|org/moflon/tgg/mosl/ui/wizards/NewRepositoryWizard.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="src-gen">
 		<attributes>
 			<attribute name="ignore_optional_problems" value="true"/>

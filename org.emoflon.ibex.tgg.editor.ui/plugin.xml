@@ -443,14 +443,6 @@
         point="org.eclipse.ui.newWizards">
      <wizard
            category="org.moflon.ide.ui.category"
-           class="org.moflon.tgg.mosl.ui.wizards.NewRepositoryWizard"
-           icon="resources/icons/repositoryProject.gif"
-           id="org.moflon.tgg.mosl.newRepositoryProject"
-           name="New Repository Wizard"
-           project="true">
-     </wizard>
-     <wizard
-           category="org.moflon.ide.ui.category"
            class="org.moflon.tgg.mosl.ui.wizards.NewIntegrationWizard"
            icon="resources/icons/integrationProject.gif"
            id="org.moflon.tgg.mosl.newIntegrationProject"
@@ -460,17 +452,13 @@
      <wizard
            category="org.moflon.ide.ui.category"
            class="org.moflon.tgg.mosl.ui.wizards.NewTGGRuleWizard"
-           icon="resources/icons/task_obj.gif"
+           icon="resources/icons/newTGGRule.gif"
            id="org.moflon.tgg.mosl.newTGGRule"
            name="New TGG Rule">
      </wizard>
   </extension>
   <extension
         point="org.eclipse.ui.handlers">
-     <handler
-           class="org.moflon.tgg.mosl.ui.wizards.NewRepositoryProjectHandler"
-           commandId="org.moflon.tgg.mosl.createNewRepositoryProject">
-     </handler>
      <handler
            class="org.moflon.tgg.mosl.ui.wizards.NewIntegrationProjectHandler"
            commandId="org.moflon.tgg.mosl.createNewIntegrationProject">
@@ -486,12 +474,6 @@
            allPopups="false"
            locationURI="toolbar:org.moflon.ide.ui.toolbar">
         <command
-              commandId="org.moflon.tgg.mosl.createNewRepositoryProject"
-              icon="resources/icons/repositoryProject.gif"
-              label="Create new repository project"
-              style="push">
-        </command>
-        <command
               commandId="org.moflon.tgg.mosl.createNewIntegrationProject"
               icon="resources/icons/integrationProject.gif"
               label="Create new integration project"
@@ -499,17 +481,10 @@
         </command>
         <command
               commandId="org.moflon.tgg.mosl.createNewTGGRule"
-              icon="resources/icons/task_obj.gif"
+              icon="resources/icons/newTGGRule.gif"
               label="Create new TGG rule"
               style="push">
         </command>
      </menuContribution>
   </extension>
-  <extension
-        point="net.sourceforge.plantuml.eclipse.diagramTextProvider">
-     <diagramTextProvider
-           providerClass="org.moflon.tgg.mosl.ui.visualisation.MOSLTGGDiagramTextProvider">
-     </diagramTextProvider>
-  </extension>
-	
 </plugin>
