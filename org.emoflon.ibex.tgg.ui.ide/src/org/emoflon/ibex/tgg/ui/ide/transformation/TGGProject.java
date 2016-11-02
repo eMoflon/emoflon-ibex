@@ -7,7 +7,6 @@ import language.TGG;
 public class TGGProject {
 
 	private EPackage corrPackage;
-
 	private TGG tggModel;
 	
 	public TGGProject(EPackage corrPackage, TGG tggModel){

@@ -17,7 +17,6 @@ import org.moflon.util.plugins.manifest.PluginManifestConstants;
 
 public class IbexTGGNature implements IProjectNature {
 	public static final String IBEX_TGG_NATURE_ID = "org.emoflon.ibex.tgg.ui.ide.nature";
-	public static final String XTEXT_BUILDER_ID = "org.eclipse.xtext.ui.shared.xtextBuilder";
 	public static final String XTEXT_NATURE_ID = "org.eclipse.xtext.ui.shared.xtextNature";
 	public static final String VIATRA_NATURE_ID = "org.eclipse.viatra.query.projectnature";
 	
@@ -27,22 +26,25 @@ public class IbexTGGNature implements IProjectNature {
 	
 	@Override
 	public void configure() throws CoreException {
-		WorkspaceHelper.setUpAsJavaProject(project, new NullProgressMonitor());
-
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					setUpAsPluginProject();
-					setUpAsXtextProject();
-					setUpAsViatraProject();
-				} catch (CoreException e) {
+					performSetUpRoutines();
+				} catch (CoreException | IOException e) {
 					LogUtils.error(logger, e);
 				}
 			}
 		});
 	}
 
+	private void performSetUpRoutines() throws CoreException, IOException {
+		WorkspaceHelper.setUpAsJavaProject(project, new NullProgressMonitor());
+		setUpAsPluginProject();
+		setUpAsXtextProject();
+		setUpAsViatraProject();
+	}
+	
 	private void setUpAsXtextProject() throws CoreException {
 		WorkspaceHelper.addNature(project, XTEXT_NATURE_ID, new NullProgressMonitor());
 	}
@@ -51,7 +53,7 @@ public class IbexTGGNature implements IProjectNature {
 		WorkspaceHelper.addNature(project, VIATRA_NATURE_ID, new NullProgressMonitor());
 	}
 
-	private void setUpAsPluginProject() throws CoreException {
+	private void setUpAsPluginProject() throws CoreException, IOException {
         setUpBuildProperties();
         setUpManifestFile();
 	}
@@ -61,26 +63,20 @@ public class IbexTGGNature implements IProjectNature {
         new BuildPropertiesFileBuilder().createBuildProperties(project, new NullProgressMonitor());
 	}
 
-	private void setUpManifestFile() throws CoreException {
-		try
-        {
-           logger.debug("Adding MANIFEST.MF");
-           new ManifestFileUpdater().processManifest(project, manifest -> {
-              boolean changed = false;
-              changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.MANIFEST_VERSION, "1.0", AttributeUpdatePolicy.KEEP);
-              changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_MANIFEST_VERSION, "2", AttributeUpdatePolicy.KEEP);
-              changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_NAME, project.getName(), AttributeUpdatePolicy.KEEP);
-              changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_SYMBOLIC_NAME, project.getName() + ";singleton:=true", AttributeUpdatePolicy.KEEP);
-              changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_VERSION, "1.0", AttributeUpdatePolicy.KEEP);
-              changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_VENDOR, "eMoflon IBeX", AttributeUpdatePolicy.KEEP);
-              changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_ACTIVATION_POLICY, "lazy", AttributeUpdatePolicy.KEEP);
-              changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_EXECUTION_ENVIRONMENT, "JavaSE-1.8", AttributeUpdatePolicy.KEEP);
-              return changed;
-           });
-        } catch (IOException e)
-        {
-           LogUtils.error(logger, e);
-        }
+	private void setUpManifestFile() throws CoreException, IOException {
+		logger.debug("Adding MANIFEST.MF");
+		new ManifestFileUpdater().processManifest(project, manifest -> {
+			boolean changed = false;
+			changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.MANIFEST_VERSION, "1.0", AttributeUpdatePolicy.KEEP);
+			changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_MANIFEST_VERSION, "2", AttributeUpdatePolicy.KEEP);
+			changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_NAME, project.getName(), AttributeUpdatePolicy.KEEP);
+			changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_SYMBOLIC_NAME, project.getName() + ";singleton:=true", AttributeUpdatePolicy.KEEP);
+			changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_VERSION, "1.0", AttributeUpdatePolicy.KEEP);
+			changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_VENDOR, "eMoflon IBeX", AttributeUpdatePolicy.KEEP);
+			changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_ACTIVATION_POLICY, "lazy", AttributeUpdatePolicy.KEEP);
+			changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_EXECUTION_ENVIRONMENT, "JavaSE-1.8", AttributeUpdatePolicy.KEEP);
+			return changed;
+		});
 	}
 
 	@Override
