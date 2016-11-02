@@ -19,6 +19,7 @@ public class IbexTGGNature implements IProjectNature {
 	public static final String IBEX_TGG_NATURE_ID = "org.emoflon.ibex.tgg.ui.ide.nature";
 	public static final String XTEXT_BUILDER_ID = "org.eclipse.xtext.ui.shared.xtextBuilder";
 	public static final String XTEXT_NATURE_ID = "org.eclipse.xtext.ui.shared.xtextNature";
+	public static final String VIATRA_NATURE_ID = "org.eclipse.viatra.query.projectnature";
 	
 	private IProject project;
 
@@ -32,8 +33,9 @@ public class IbexTGGNature implements IProjectNature {
 			@Override
 			public void run() {
 				try {
-					setUpAsXtextProject();
 					setUpAsPluginProject();
+					setUpAsXtextProject();
+					setUpAsViatraProject();
 				} catch (CoreException e) {
 					LogUtils.error(logger, e);
 				}
@@ -43,6 +45,10 @@ public class IbexTGGNature implements IProjectNature {
 
 	private void setUpAsXtextProject() throws CoreException {
 		WorkspaceHelper.addNature(project, XTEXT_NATURE_ID, new NullProgressMonitor());
+	}
+	
+	private void setUpAsViatraProject() throws CoreException {
+		WorkspaceHelper.addNature(project, VIATRA_NATURE_ID, new NullProgressMonitor());
 	}
 
 	private void setUpAsPluginProject() throws CoreException {
