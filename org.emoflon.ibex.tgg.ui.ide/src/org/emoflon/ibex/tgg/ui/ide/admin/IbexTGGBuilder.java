@@ -1,4 +1,4 @@
-package org.moflon.tgg.mosl.builder;
+package org.emoflon.ibex.tgg.ui.ide.admin;
 
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.tgg.ui.ide.transformation.MOSLTGGConversionHelper;
 import org.gervarro.eclipse.workspace.util.AntPatternCondition;
 import org.gervarro.eclipse.workspace.util.RelevantElementCollector;
 import org.moflon.core.utilities.LogUtils;
@@ -28,11 +29,11 @@ import org.moflon.ide.core.runtime.ProjectDependencyAnalyzer;
 import org.moflon.ide.core.runtime.builders.AbstractVisitorBuilder;
 import org.moflon.ide.core.runtime.builders.MetamodelBuilder;
 
-public class MoslTGGBuilder extends AbstractVisitorBuilder {
-	public static final Logger logger = Logger.getLogger(MoslTGGBuilder.class);
+public class IbexTGGBuilder extends AbstractVisitorBuilder {
+	public static final Logger logger = Logger.getLogger(IbexTGGBuilder.class);
 	public static final String BUILDER_ID = "org.moflon.tgg.mosl.codeadapter.mosltggbuilder";
 
-	public MoslTGGBuilder() {
+	public IbexTGGBuilder() {
 		super(new AntPatternCondition(new String[] { "src/org/moflon/tgg/mosl/*.tgg", "src/org/moflon/tgg/mosl/**/*.tgg" }));
 	}
 
@@ -102,7 +103,6 @@ public class MoslTGGBuilder extends AbstractVisitorBuilder {
 	protected void processResource(IResource resource, int kind, Map<String, String> args, IProgressMonitor monitor) {
 		try {
 			final Resource ecoreResource = new MOSLTGGConversionHelper().generateTGGModel(resource);
-			removeXtextMarkers();
 			if (ecoreResource != null && ecoreResource.getContents().get(0) instanceof EPackage) {
 				final ProjectDependencyAnalyzer projectDependencyAnalyzer =
 						new ProjectDependencyAnalyzer(this, getProject(), getProject(),
@@ -133,14 +133,5 @@ public class MoslTGGBuilder extends AbstractVisitorBuilder {
 			LogUtils.error(logger, e, "Unable to update created projects: " + e.getMessage());
 		}
 
-	}
-
-   // Hack related to Issue #781 (see https://github.com/eMoflon/emoflon-issues/issues/781) (rkluge)
-	private final void removeXtextMarkers() {
-		try {
-			getProject().deleteMarkers(org.eclipse.xtext.ui.MarkerTypes.FAST_VALIDATION, true, IResource.DEPTH_INFINITE);
-		} catch (final CoreException e) {
-         LogUtils.error(logger, e);
-		}
 	}
 }

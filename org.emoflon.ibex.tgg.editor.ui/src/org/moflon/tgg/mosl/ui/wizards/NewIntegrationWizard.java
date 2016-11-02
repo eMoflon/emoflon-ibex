@@ -14,13 +14,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
+import org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGNature;
 import org.gervarro.eclipse.workspace.util.WorkspaceTask;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.ide.core.runtime.MoflonProjectCreator;
 import org.moflon.ide.core.runtime.ProjectNatureAndBuilderConfiguratorTask;
 import org.moflon.ide.ui.admin.wizards.metamodel.AbstractMoflonProjectInfoPage;
 import org.moflon.ide.ui.admin.wizards.metamodel.AbstractMoflonWizard;
-import org.moflon.tgg.mosl.builder.MOSLTGGNature;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.defaults.DefaultFilesHelper;
 import org.moflon.util.plugins.MetamodelProperties;
@@ -48,7 +48,7 @@ public class NewIntegrationWizard extends AbstractMoflonWizard {
 
 		final ProjectNatureAndBuilderConfiguratorTask natureAndBuilderConfiguratorTask = new ProjectNatureAndBuilderConfiguratorTask(
 				project, false);
-		final MOSLTGGNature natureAndBuilderConfigurator = new MOSLTGGNature();
+		final IbexTGGNature natureAndBuilderConfigurator = new IbexTGGNature();
 		natureAndBuilderConfiguratorTask.updateNatureIDs(natureAndBuilderConfigurator, true);
 		natureAndBuilderConfiguratorTask.updateBuildSpecs(natureAndBuilderConfigurator, true);
 		WorkspaceTask.executeInCurrentThread(natureAndBuilderConfiguratorTask, IWorkspace.AVOID_UPDATE,

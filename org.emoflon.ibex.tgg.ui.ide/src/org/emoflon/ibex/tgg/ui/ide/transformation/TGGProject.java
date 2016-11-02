@@ -1,4 +1,4 @@
-package org.moflon.tgg.mosl.builder;
+package org.emoflon.ibex.tgg.ui.ide.transformation;
 
 import org.eclipse.emf.ecore.EPackage;
 

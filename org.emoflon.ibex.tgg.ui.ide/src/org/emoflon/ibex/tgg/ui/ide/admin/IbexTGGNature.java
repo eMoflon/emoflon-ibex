@@ -1,16 +1,18 @@
-package org.moflon.tgg.mosl.builder;
+package org.emoflon.ibex.tgg.ui.ide.admin;
 
 import java.util.Arrays;
 
 import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.gervarro.eclipse.workspace.util.ProjectUtil;
 import org.moflon.ide.core.CoreActivator;
 import org.moflon.ide.core.runtime.natures.ProjectConfiguratorNature;
 
-public class MOSLTGGNature extends ProjectConfiguratorNature {
-	public static final String NATURE_ID = "org.moflon.tgg.mosl.codeadapter.moslTGGNature";
+public class IbexTGGNature implements IProjectNature {
+	public static final String IBEX_TGG_NATURE_ID = "org.emoflon.ibex.tgg.nature";
 	public static final String XTEXT_BUILDER_ID = "org.eclipse.xtext.ui.shared.xtextBuilder";
 	public static final String XTEXT_NATURE_ID = "org.eclipse.xtext.ui.shared.xtextNature";
 
@@ -36,10 +38,10 @@ public class MOSLTGGNature extends ProjectConfiguratorNature {
 				buildSpecs[xtextBuilderPosition] = xtextBuilder;
 			}
 			// Insert or move MOSL-TGG builder before IntegrationBuilder and after Xtext builder
-			int moslTGGBuilderPosition = ProjectUtil.indexOf(buildSpecs, MoslTGGBuilder.BUILDER_ID);
+			int moslTGGBuilderPosition = ProjectUtil.indexOf(buildSpecs, IbexTGGBuilder.BUILDER_ID);
 			if (moslTGGBuilderPosition < 0) {
 				final ICommand moslTGGBuilder = description.newCommand();
-				moslTGGBuilder.setBuilderName(MoslTGGBuilder.BUILDER_ID);
+				moslTGGBuilder.setBuilderName(IbexTGGBuilder.BUILDER_ID);
 				buildSpecs = Arrays.copyOf(buildSpecs, buildSpecs.length + 1);
 				moslTGGBuilderPosition = buildSpecs.length - 1;
 				buildSpecs[moslTGGBuilderPosition] = moslTGGBuilder;
@@ -64,7 +66,7 @@ public class MOSLTGGNature extends ProjectConfiguratorNature {
 			if (xtextBuilderPosition >= 0) {
 				buildSpecs = ProjectUtil.remove(buildSpecs, xtextBuilderPosition);
 			}
-			int moslTGGBuilderPosition = ProjectUtil.indexOf(buildSpecs, MoslTGGBuilder.BUILDER_ID);
+			int moslTGGBuilderPosition = ProjectUtil.indexOf(buildSpecs, IbexTGGBuilder.BUILDER_ID);
 			if (moslTGGBuilderPosition >= 0) {
 				buildSpecs = ProjectUtil.remove(buildSpecs, moslTGGBuilderPosition);
 			}
@@ -79,20 +81,44 @@ public class MOSLTGGNature extends ProjectConfiguratorNature {
 				natureIDs = Arrays.copyOf(natureIDs, natureIDs.length + 1);
 				natureIDs[natureIDs.length - 1] = XTEXT_NATURE_ID;
 			}
-			if (ProjectUtil.indexOf(natureIDs, NATURE_ID) < 0) {
+			if (ProjectUtil.indexOf(natureIDs, IBEX_TGG_NATURE_ID) < 0) {
 				natureIDs = Arrays.copyOf(natureIDs, natureIDs.length + 1);
-				natureIDs[natureIDs.length - 1] = NATURE_ID;
+				natureIDs[natureIDs.length - 1] = IBEX_TGG_NATURE_ID;
 			}
 		} else {
 			int xtextNaturePosition = ProjectUtil.indexOf(natureIDs, XTEXT_NATURE_ID);
 			if (xtextNaturePosition >= 0) {
 				natureIDs = ProjectUtil.remove(natureIDs, xtextNaturePosition);
 			}
-			int moslTGGNaturePosition = ProjectUtil.indexOf(natureIDs, NATURE_ID);
+			int moslTGGNaturePosition = ProjectUtil.indexOf(natureIDs, IBEX_TGG_NATURE_ID);
 			if (xtextNaturePosition >= 0) {
 				natureIDs = ProjectUtil.remove(natureIDs, moslTGGNaturePosition);
 			}
 		}
 		return natureIDs;
+	}
+
+	@Override
+	public void configure() throws CoreException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deconfigure() throws CoreException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IProject getProject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setProject(IProject project) {
+		// TODO Auto-generated method stub
+		
 	}
 }

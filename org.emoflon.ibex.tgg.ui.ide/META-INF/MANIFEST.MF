@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.emoflon.ibex.tgg.ui.ide;singleton:=true
-Export-Package: org.moflon.tgg.mosl.builder
+Export-Package: org.emoflon.ibex.tgg.ui.ide.admin
 Bundle-Name: org.emoflon.ibex.tgg.ui.ide
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.emf.ecore,
@@ -26,6 +26,6 @@ Require-Bundle: org.eclipse.emf.ecore,
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Activator: org.moflon.tgg.mosl.builder.MOSLTGGPlugin
+Bundle-Activator: org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGPlugin
 Bundle-Vendor: TU Darmstadt
 Import-Package: org.moflon.tgg.language.compiler
