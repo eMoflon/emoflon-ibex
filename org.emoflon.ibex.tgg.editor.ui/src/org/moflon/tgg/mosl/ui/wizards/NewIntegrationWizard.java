@@ -46,15 +46,15 @@ public class NewIntegrationWizard extends AbstractMoflonWizard {
 	}
 
 	protected void generateDefaultFiles(final IProgressMonitor monitor, IProject project) throws CoreException {
-		final SubMonitor subMon = SubMonitor.convert(monitor, "Generating default files", 2);
-
-		String defaultSchema = DefaultFilesHelper.generateDefaultSchema(project.getName());
-		IPath pathToSchema = new Path("src/org/emoflon/ibex/tgg/Schema.tgg");
-		addAllFoldersAndFile(project, pathToSchema, defaultSchema, subMon.split(1));
-		addAllFolders(project, "src/org/emoflon/ibex/tgg/rules", subMon.split(1));
-
 		try {
-			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(project);
+			final SubMonitor subMon = SubMonitor.convert(monitor, "Generating default files", 3);
+			String defaultSchema = DefaultFilesHelper.generateDefaultSchema(project.getName());
+			IPath pathToSchema = new Path(IbexTGGNature.SCHEMA_FILE);
+			addAllFoldersAndFile(project, pathToSchema, defaultSchema, subMon.split(1));
+			addAllFolders(project, "src/org/emoflon/ibex/tgg/rules", subMon.split(1));
+			addAllFolders(project, "model", subMon.split(1));
+			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(project,
+					"src/org/emoflon/ibex/tgg/csp/lib/AttrCondDefLibrary.tgg");
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}

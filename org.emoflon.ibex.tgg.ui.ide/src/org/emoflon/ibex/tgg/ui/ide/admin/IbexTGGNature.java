@@ -1,9 +1,14 @@
 package org.emoflon.ibex.tgg.ui.ide.admin;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -16,9 +21,11 @@ import org.moflon.util.plugins.manifest.ManifestFileUpdater.AttributeUpdatePolic
 import org.moflon.util.plugins.manifest.PluginManifestConstants;
 
 public class IbexTGGNature implements IProjectNature {
-	public static final String IBEX_TGG_NATURE_ID = "org.emoflon.ibex.tgg.ui.ide.nature";
-	public static final String XTEXT_NATURE_ID = "org.eclipse.xtext.ui.shared.xtextNature";
-	public static final String VIATRA_NATURE_ID = "org.eclipse.viatra.query.projectnature";
+	public static final String IBEX_TGG_NATURE_ID  = "org.emoflon.ibex.tgg.ui.ide.nature";
+	public static final String IBEX_TGG_BUILDER_ID = "org.emoflon.ibex.tgg.ui.ide.builder";
+	public static final String XTEXT_NATURE_ID     = "org.eclipse.xtext.ui.shared.xtextNature";
+	public static final String VIATRA_NATURE_ID    = "org.eclipse.viatra.query.projectnature";
+	public static final String SCHEMA_FILE = "src/org/emoflon/ibex/tgg/Schema.tgg";
 	
 	private IProject project;
 
@@ -31,11 +38,24 @@ public class IbexTGGNature implements IProjectNature {
 			public void run() {
 				try {
 					performSetUpRoutines();
+					addIBexTGGBuilder();
 				} catch (CoreException | IOException e) {
 					LogUtils.error(logger, e);
 				}
 			}
+
 		});
+	}
+
+	private void addIBexTGGBuilder() throws CoreException {
+		IProjectDescription projectDescription = project.getDescription();
+		ICommand[] buildSpec = projectDescription.getBuildSpec();
+		ICommand command = projectDescription.newCommand();
+		command.setBuilderName(IBEX_TGG_BUILDER_ID);
+		Collection<ICommand> list = new ArrayList<>(Arrays.asList(buildSpec));
+		list.add(command);
+		projectDescription.setBuildSpec(list.toArray(new ICommand[list.size()]));
+		project.setDescription(projectDescription, new NullProgressMonitor());
 	}
 
 	private void performSetUpRoutines() throws CoreException, IOException {
@@ -49,14 +69,20 @@ public class IbexTGGNature implements IProjectNature {
 		WorkspaceHelper.addNature(project, XTEXT_NATURE_ID, new NullProgressMonitor());
 	}
 	
-	private void setUpAsViatraProject() throws CoreException {
+	private void setUpAsViatraProject() throws CoreException, IOException {
 		WorkspaceHelper.addNature(project, VIATRA_NATURE_ID, new NullProgressMonitor());
+		new ManifestFileUpdater().processManifest(project, manifest -> {
+			boolean changed = false;
+			changed |= ManifestFileUpdater.updateDependencies(manifest, Arrays.asList("org.eclipse.viatra.query.runtime"));
+			return changed;
+		});
 	}
 
 	private void setUpAsPluginProject() throws CoreException, IOException {
         setUpBuildProperties();
         setUpManifestFile();
-	}
+        WorkspaceHelper.addContainerToBuildPath(project, "org.eclipse.pde.core.requiredPlugins");	
+    }
 
 	private void setUpBuildProperties() throws CoreException {
 		logger.debug("Adding build.properties");

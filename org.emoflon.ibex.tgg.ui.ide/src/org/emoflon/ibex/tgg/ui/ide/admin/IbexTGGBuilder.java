@@ -24,6 +24,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
@@ -32,7 +33,6 @@ import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoInternalTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.TGGProject;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.WorkspaceHelper;
-import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.Rule;
@@ -40,7 +40,7 @@ import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResourceDeltaVisitor {
 	public static final Logger logger = Logger.getLogger(IbexTGGBuilder.class);
-
+	
 	@Override
 	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
 		switch (kind) {
@@ -72,9 +72,8 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	private Optional<TripleGraphGrammarFile> generateEditorModel() {
 		try {
-			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(getProject());
 			XtextResourceSet resourceSet = new XtextResourceSet();
-			IFile schemaFile = getProject().getFile("Schema.tgg");
+			IFile schemaFile = getProject().getFile(IbexTGGNature.SCHEMA_FILE);
 			if (schemaFile.exists()) {
 				XtextResource schemaResource = loadSchema(resourceSet, schemaFile);
 				if (schemaIsOfExpectedType(schemaResource)) {
@@ -82,6 +81,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 							.get(0);
 					loadAllRulesToTGGFile(xtextParsedTGG, resourceSet, getProject().getFolder("src"));
 					addAttrCondDefLibraryReferencesToSchema(xtextParsedTGG);
+					saveModelInProject("model", "tgg_editor.xmi", resourceSet, xtextParsedTGG);
 					return Optional.of(xtextParsedTGG);
 				}
 			}
@@ -168,19 +168,9 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		TGGProject tggProject = converter.convertXtextTGG(xtextParsedTGG);
 		
 		try {
-			IFile corrFile = getProject().getFolder("model").getFile("correspondenceModel.xmi");
-			URI preEcoreXmiURI = URI.createPlatformResourceURI(
-					getProject().getName() + "/" + corrFile.getProjectRelativePath().toString(), true);
-			Resource preEcoreResource = xtextParsedTGG.eResource().getResourceSet().createResource(preEcoreXmiURI);
-			preEcoreResource.getContents().add(tggProject.getCorrPackage());
-			preEcoreResource.save(null);
-
-			IFile tggFile = getProject().getFolder("model").getFile("tripleGraphGrammar.xmi");
-			URI pretggXmiURI = URI.createPlatformResourceURI(
-					getProject().getName() + "/" + tggFile.getProjectRelativePath().toString(), true);
-			Resource pretggXmiResource = xtextParsedTGG.eResource().getResourceSet().createResource(pretggXmiURI);
-			pretggXmiResource.getContents().add(tggProject.getTggModel());
-			pretggXmiResource.save(null);
+			ResourceSet rs = xtextParsedTGG.eResource().getResourceSet();
+			saveModelInProject("model", "correspondence_metamodel.xmi", rs, tggProject.getCorrPackage());
+			saveModelInProject("model", "tgg_internal.xmi", rs, tggProject.getTggModel());
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}
@@ -188,6 +178,14 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		return Optional.of(tggProject);
 	}
 
+	private void saveModelInProject(String folder, String fileName, ResourceSet rs, EObject model) throws IOException{
+		IFile file = getProject().getFolder(folder).getFile(fileName);
+		URI uri = URI.createPlatformResourceURI(
+				getProject().getName() + "/" + file.getProjectRelativePath().toString(), true);
+		Resource resource = rs.createResource(uri);
+		resource.getContents().add(model);
+		resource.save(null);
+	}
 
 	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {

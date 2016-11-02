@@ -15,9 +15,9 @@ import org.eclipse.core.runtime.Path;
 
 public class AttrCondDefLibraryProvider {
 
-	public static void syncAttrCondDefLibrary(IProject project) throws CoreException, IOException {
+	public static void syncAttrCondDefLibrary(IProject project, String path) throws CoreException, IOException {
 		String defaultLib = DefaultFilesHelper.generateDefaultAttrCondDefLibrary();
-		IPath pathToLib = new Path("src/org/moflon/tgg/mosl/csp/lib/AttrCondDefLibrary.tgg");
+		IPath pathToLib = new Path(path);
 		IFile attrLibFile = project.getFile(pathToLib);
 		if (attrLibFile.exists()) {
 			File file = new File(attrLibFile.getLocation().toString());
