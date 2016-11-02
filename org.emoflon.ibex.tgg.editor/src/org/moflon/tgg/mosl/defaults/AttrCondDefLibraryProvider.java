@@ -15,19 +15,18 @@ import org.eclipse.core.runtime.Path;
 
 public class AttrCondDefLibraryProvider {
 
-	public static void syncAttrCondDefLibrary(IProject project) throws CoreException, IOException {
+	public static void syncAttrCondDefLibrary(IProject project, String path) throws CoreException, IOException {
 		String defaultLib = DefaultFilesHelper.generateDefaultAttrCondDefLibrary();
-
-		IPath pathToLib = new Path("src/org/moflon/tgg/mosl/csp/lib/AttrCondDefLibrary.tgg");
+		IPath pathToLib = new Path(path);
 		IFile attrLibFile = project.getFile(pathToLib);
-		if(attrLibFile.exists()){
+		if (attrLibFile.exists()) {
 			File file = new File(attrLibFile.getLocation().toString());
 			String contents = FileUtils.readFileToString(file);
-			if(!contents.equals(defaultLib)){
-            addAllFoldersAndFile(project, pathToLib, defaultLib, new NullProgressMonitor());
+			if (!contents.equals(defaultLib)) {
+				addAllFoldersAndFile(project, pathToLib, defaultLib, new NullProgressMonitor());
 			}
 		} else {
-         addAllFoldersAndFile(project, pathToLib, defaultLib, new NullProgressMonitor());
+			addAllFoldersAndFile(project, pathToLib, defaultLib, new NullProgressMonitor());
 		}
 	}
 }

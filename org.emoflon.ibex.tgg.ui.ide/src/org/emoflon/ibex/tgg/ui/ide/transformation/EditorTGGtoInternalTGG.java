@@ -1,10 +1,9 @@
-package org.moflon.tgg.mosl.builder;
+package org.emoflon.ibex.tgg.ui.ide.transformation;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -18,22 +17,20 @@ import org.moflon.tgg.mosl.tgg.Operator;
 import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
+import language.BindingType;
+import language.DomainType;
+import language.LanguageFactory;
 import language.TGG;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.BindingType;
-import language.DomainType;
-import language.LanguageFactory;
 
 
-public class MOSLTGGtoInternalTGG {
+public class EditorTGGtoInternalTGG {
 	
 	private EcoreFactory ecoreFactory = EcoreFactory.eINSTANCE;
-	
 	private LanguageFactory tggFactory = LanguageFactory.eINSTANCE;
-	
 	private HashMap<EObject,EObject> xtextToTGG = new HashMap<>();
 	private HashMap<EObject,EObject> tggToXtext = new HashMap<>();
 	

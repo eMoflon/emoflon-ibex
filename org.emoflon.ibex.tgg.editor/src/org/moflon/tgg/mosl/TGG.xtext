@@ -33,7 +33,7 @@ Schema:
 	'}')? 
 
 	('#correspondence' '{'
-		correspondenceTypes += CorrType+
+		correspondenceTypes += CorrType*
 	'}')?	
 	
 	('#attributeConditions' '{'
