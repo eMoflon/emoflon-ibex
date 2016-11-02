@@ -24,9 +24,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGPlugin;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.ide.ui.UIActivator;
-import org.moflon.tgg.mosl.ui.internal.TGGActivator;
 
 public class NewTGGRuleProjectInfoPage extends WizardPage
 {
@@ -227,12 +227,12 @@ public class NewTGGRuleProjectInfoPage extends WizardPage
    private IStatus validate()
    {
       if (ruleName.isEmpty())
-         return new Status(IStatus.ERROR, TGGActivator.ORG_MOFLON_TGG_MOSL_TGG, "Rule name must not be empty!");
+         return new Status(IStatus.ERROR, IbexTGGPlugin.IBEX_TGG_ID, "Rule name must not be empty!");
 
       if (!schema.isPresent())
-         return new Status(IStatus.ERROR, TGGActivator.ORG_MOFLON_TGG_MOSL_TGG, "Schema name must not be empty!");
+         return new Status(IStatus.ERROR, IbexTGGPlugin.IBEX_TGG_ID, "Schema name must not be empty!");
 
-      return new Status(IStatus.OK, TGGActivator.ORG_MOFLON_TGG_MOSL_TGG, "Rule is valid");
+      return new Status(IStatus.OK, IbexTGGPlugin.IBEX_TGG_ID, "Rule is valid");
    }
 
 }

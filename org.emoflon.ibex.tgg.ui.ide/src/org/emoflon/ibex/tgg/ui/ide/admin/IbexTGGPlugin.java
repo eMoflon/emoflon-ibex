@@ -5,6 +5,8 @@ import org.osgi.framework.BundleContext;
 
 public class IbexTGGPlugin extends Plugin {
 
+	public static final String IBEX_TGG_ID = "org.emoflon.ibex.tgg.ui.ide";
+	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);

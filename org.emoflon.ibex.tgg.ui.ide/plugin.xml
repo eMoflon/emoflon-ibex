@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?><plugin>
-  <extension id="ibextggnature" name="IBeX TGG Nature" point="org.eclipse.core.resources.natures">
+  <extension id="nature" name="IBeX TGG Nature" point="org.eclipse.core.resources.natures">
     <runtime>
        <run
              class="org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGNature">
        </run>
     </runtime>
     <builder
-          id="org.emoflon.ibex.tgg.builder">
+          id="org.emoflon.ibex.tgg.ui.ide.builder">
     </builder>
-    <requires-nature
-          id="org.eclipse.xtext.ui.shared.xtextNature">
-    </requires-nature>
-    <requires-nature
-          id="org.emoflon.ibex.tgg.nature">
-    </requires-nature>
   </extension>
-  <extension id="ibextggbuilder" name="IBeX TGG Builder" point="org.eclipse.core.resources.builders">
+  <extension id="builder" name="IBeX TGG Builder" point="org.eclipse.core.resources.builders">
     <builder hasNature="true">
       <run class="org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGBuilder"/>
     </builder>
