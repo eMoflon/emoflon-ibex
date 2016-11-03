@@ -7,11 +7,13 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.PlatformUI;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.WorkspaceHelper;
@@ -70,10 +72,16 @@ public class IbexTGGNature implements IProjectNature {
 	}
 	
 	private void setUpAsViatraProject() throws CoreException, IOException {
+		WorkspaceHelper.addFolder(project, "src-gen", new NullProgressMonitor());
+		WorkspaceHelper.setAsSourceFolderInBuildpath(JavaCore.create(project), new IFolder[]{project.getFolder("src-gen")}, null, new NullProgressMonitor());
 		WorkspaceHelper.addNature(project, VIATRA_NATURE_ID, new NullProgressMonitor());
 		new ManifestFileUpdater().processManifest(project, manifest -> {
 			boolean changed = false;
-			changed |= ManifestFileUpdater.updateDependencies(manifest, Arrays.asList("org.eclipse.viatra.query.runtime"));
+			changed |= ManifestFileUpdater.updateDependencies(manifest, Arrays.asList(
+					"org.eclipse.viatra.query.runtime",
+					"org.apache.log4j",
+					"com.google.guava"
+					));
 			return changed;
 		});
 	}
