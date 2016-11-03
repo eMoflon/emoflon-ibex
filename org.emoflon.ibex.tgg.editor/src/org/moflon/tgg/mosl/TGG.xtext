@@ -58,13 +58,7 @@ AttrCondDef:
 ;
 
 Param:
-	// FIXME This should be: index = INT TypeSeparator type = [ecore::EDataType | QualifiedName]
-	index = INT ':' type = ParamType
-;
-
-// FIXME Get rid of this after fixing Param
-ParamType returns ecore::EString:
-	(ID ('.' ID)*)?
+	index = INT ':' (type = [ecore::EDataType | QualifiedName])?
 ;
 
 /* ------------- */
@@ -93,8 +87,6 @@ Rule:
 	'}')? 
 ;
 
-//FIXME:  This is ugly as it is important to order the paramvalues.  
-// 	      Would be much better to have a next edge between Paramvalues and handle this in the TGG.
 AttrCond:
 	name = [AttrCondDef] '(' (values += ParamValue (',' values += ParamValue)*)? ')'
 ;
@@ -107,18 +99,11 @@ AttrCondDefLibrary:
 ;
 
 Adornment:
-	//FIXME This should be: ('B' | 'F')+
-	value = ID
+	value += '[' ('B'|'F')+ ']'
 ;
 
 ParamValue:
-	//FIXME This should eventually be simply: (LocalVariable | Expression)  
-	(LocalVariable | LiteralExpression | AttributeVariable | EnumExpression)
-;
-
-//FIXME eventually remove when ParamValue is fixed
-AttributeVariable:
-	objectVar = [ObjectVariablePattern] '.' attribute = ID
+	(LocalVariable | Expression)
 ;
 
 LocalVariable:
@@ -203,7 +188,7 @@ QualifiedName returns ecore::EString:
 ;
 
 
-// some Head classes for better OOP aspects
+// some head classes for better OOP aspects
 
 MOSLIncluding:
 	Schema | Rule
