@@ -151,13 +151,12 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 
 	private void generatePatterns(TGGProject tggProject) {
-		String contents = TGGCompiler.getViatraPatterns(tggProject.getTggModel());
+		TGGCompiler compiler = new TGGCompiler(tggProject.getTggModel());
+		String contents = compiler.getViatraPatterns();
 		IFile file = getProject().getFolder("model").getFile(tggProject.getTggModel().getName() + ".vql");
 		try {
-			if (file.exists())
-				file.delete(true, new NullProgressMonitor());
-			WorkspaceHelper.addFile(getProject(), file.getProjectRelativePath().toString(), contents,
-					new NullProgressMonitor());
+			if (file.exists()) file.delete(true, new NullProgressMonitor());
+			WorkspaceHelper.addFile(getProject(), file.getProjectRelativePath().toString(), contents, new NullProgressMonitor());
 		} catch (CoreException e) {
 			LogUtils.error(logger, e);
 		}
