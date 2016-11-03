@@ -7,12 +7,10 @@ import java.util.ArrayList
 import java.util.List
 import org.eclipse.emf.common.util.BasicEList
 import org.eclipse.xtext.validation.Check
-import org.moflon.tgg.mosl.tgg.Adornment
 import org.moflon.tgg.mosl.tgg.AttributeExpression
 import org.moflon.tgg.mosl.tgg.ObjectVariablePattern
 import org.moflon.tgg.mosl.tgg.Rule
 import org.moflon.tgg.mosl.tgg.TggPackage
-import org.moflon.tgg.mosl.tgg.AttributeVariable
 import org.moflon.tgg.mosl.tgg.NamedElements
 import java.util.Map
 import org.eclipse.emf.ecore.EObject
@@ -35,16 +33,6 @@ class TGGValidator extends AbstractTGGValidator {
   public static val RULE_REFINEMENT_CREATES_A_CYCLE = 'RuleRefinementCreatesACycle'
   public static val LINK_VARIABLE_DOES_NOT_HAVE_SAME_OPERATOR_LIKE_OBJECT_VARIABLE_PATTERN = 'linkVariableDoesNotHaveSameOeratorLikeObjectVariablePattern'
   public static val LINK_VARIABLE_DOES_NOT_HAVE_SAME_OPERATOR_LIKE_TARGET_OBJECT_VARIABLE_PATTERN= 'linkVariableDoesNotHaveSameOeratorLikeTargetObjectVariablePattern'
-
-
-	@Check
-	def checkAdornmentValue(Adornment adornment){
-		for (character : adornment.value.toCharArray) {
-			if(character.compareTo('B')!=0 && character.compareTo('F')!=0){
-				error("Adornment value may only consist of the capital letters B or F", TggPackage.Literals.ADORNMENT__VALUE, TGGValidator.INVALID_ADORNMENT);
-			}
-		}
-	}
 	
 	@Check
 	def checkAttributeExpression(AttributeExpression attrVar){
@@ -54,17 +42,6 @@ class TGGValidator extends AbstractTGGValidator {
 		}
 		if (!attrNames.contains(attrVar.attribute)) {
 			error("EClass " + attrVar.objectVar.type.name + " does not contain EAttribute " + attrVar.attribute.name + ".", TggPackage.Literals.ATTRIBUTE_EXPRESSION__ATTRIBUTE, TGGValidator.INVALID_ATTRIBUTE_VARIABLE);
-		}
-	}
-	
-	@Check
-	def checkAttributeVariable(AttributeVariable attrVar){
-		var attrNames = new BasicEList()
-		for (attr : attrVar.objectVar.type.EAllAttributes) {
-			attrNames.add(attr.name)
-		}
-		if (!attrNames.contains(attrVar.attribute)) {
-			error("EClass " + attrVar.objectVar.type.name + " does not contain EAttribute " + attrVar.attribute + ".", TggPackage.Literals.ATTRIBUTE_VARIABLE__ATTRIBUTE, TGGValidator.INVALID_ATTRIBUTE_VARIABLE);
 		}
 	}
 	
