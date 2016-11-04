@@ -75,7 +75,7 @@ public class EditorTGGtoInternalTGG {
 					tggEdge.setTrgNode((TGGRuleNode) xtextToTGG.get(lv.getTarget()));
 					tggEdge.setBindingType(getBindingType(lv.getOp()));
 					tggEdge.setDomainType(node.getDomainType());
-					tggEdge.setName("__" + tggEdge.getSrcNode().getName() + "_" + tggEdge.getType().getName() + "_" + tggEdge.getTrgNode().getName());
+					tggEdge.setName(tggEdge.getSrcNode().getName() + "__" + tggEdge.getType().getName() + "__" + tggEdge.getTrgNode().getName() + "_eMoflonEdge");
 					map(lv, tggEdge);
 					result.add(tggEdge);
 				}

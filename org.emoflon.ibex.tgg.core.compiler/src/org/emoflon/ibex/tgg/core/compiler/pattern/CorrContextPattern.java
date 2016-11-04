@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.core.compiler.pattern;
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
+import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -15,7 +16,16 @@ public class CorrContextPattern extends Pattern {
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		return e instanceof TGGRuleNode && e.getBindingType() == BindingType.CONTEXT;
+		
+		if(e.getBindingType() == BindingType.CREATE)
+			return false;	
+		if(e instanceof TGGRuleCorr)
+			return true;
+		if(e instanceof TGGRuleNode){
+			TGGRuleNode n = (TGGRuleNode)e;
+			return (n.getIncomingCorrsSource().size() + n.getIncomingCorrsTarget().size() > 0);
+		}
+		return false;
 	}
 
 	@Override

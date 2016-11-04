@@ -152,6 +152,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	private void generatePatterns(TGGProject tggProject) {
 		TGGCompiler compiler = new TGGCompiler();
+		compiler.preparePatterns(tggProject.getTggModel());
 		tggProject.getTggModel().getRules().forEach(r -> {
 			String contents = compiler.getViatraPatterns(r);			
 			IFile file = getProject().getFolder("model/patterns").getFile(r.getName() + ".vql");

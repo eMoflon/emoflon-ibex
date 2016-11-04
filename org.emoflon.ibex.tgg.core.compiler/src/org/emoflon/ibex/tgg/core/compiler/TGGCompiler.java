@@ -1,48 +1,96 @@
 package org.emoflon.ibex.tgg.core.compiler;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.emoflon.ibex.tgg.core.compiler.pattern.BWDPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.CCPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.CorrContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.FWDPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.SrcContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.SrcPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.TrgContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.TrgPattern;
 
+import language.TGG;
 import language.TGGRule;
 
 public class TGGCompiler {
-	
-	public String getViatraPatterns(TGGRule rule){
+
+	HashMap<TGGRule, Collection<Pattern>> ruleToPatterns = new HashMap<>();
+
+	public void preparePatterns(TGG tggModel) {
+		
+		for(TGGRule rule : tggModel.getRules()){
+			
+			Collection<Pattern> patterns = new HashSet<>();
+			
+			SrcContextPattern srcContext = new SrcContextPattern(rule);
+			patterns.add(srcContext);
+			
+			SrcPattern src = new SrcPattern(rule);
+			patterns.add(src);
+			
+			TrgContextPattern trgContext= new TrgContextPattern(rule);
+			patterns.add(trgContext);
+			
+			TrgPattern trg = new TrgPattern(rule);
+			patterns.add(trg);
+			
+			CorrContextPattern corrContext = new CorrContextPattern(rule);
+			patterns.add(corrContext);
+			
+			FWDPattern fwd = new FWDPattern(rule);
+			patterns.add(fwd);
+			fwd.getPositiveInvocations().add(src);
+			fwd.getPositiveInvocations().add(corrContext);
+			fwd.getPositiveInvocations().add(trgContext);
+			
+			BWDPattern bwd = new BWDPattern(rule);
+			patterns.add(bwd);
+			bwd.getPositiveInvocations().add(trg);
+			bwd.getPositiveInvocations().add(corrContext);
+			bwd.getPositiveInvocations().add(srcContext);
+			
+			CCPattern cc = new CCPattern(rule);
+			patterns.add(cc);
+			cc.getPositiveInvocations().add(src);
+			cc.getPositiveInvocations().add(trg);
+			cc.getPositiveInvocations().add(corrContext);
+			
+			ruleToPatterns.put(rule, patterns);
+		}
+	}
+
+	public String getViatraPatterns(TGGRule rule) {
 		OperationalPatternTemplate template = new OperationalPatternTemplate();
-		return Arrays.asList(	
-					template.generateHeaderAndImports(determineImports(rule), rule.getName()),
-					template.generatePattern(new SrcContextPattern(rule)),
-					template.generatePattern(new SrcPattern(rule)),
-					template.generatePattern(new TrgContextPattern(rule)),
-					template.generatePattern(new TrgPattern(rule)),
-					template.generatePattern(new CorrContextPattern(rule)))
-				.stream().collect(Collectors.joining());
+		
+		String result = template.generateHeaderAndImports(determineImports(rule), rule.getName());
+		result += ruleToPatterns.get(rule).stream().map(template::generatePattern).collect(Collectors.joining());
+		
+		return result;
 	}
 
 	private Map<String, String> determineImports(TGGRule rule) {
 		Map<String, String> imports = new HashMap<>();
 
 		imports.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
-		
+
 		Set<EPackage> packs = rule.getNodes().stream().map(n -> n.getType().getEPackage()).collect(Collectors.toSet());
 		Iterator<EPackage> it = packs.iterator();
 		for (int i = 0; i < packs.size(); i++) {
 			imports.put("dep_" + i, it.next().getNsURI());
 		}
-		
-		
+
 		return imports;
 	}
-}
 
+}

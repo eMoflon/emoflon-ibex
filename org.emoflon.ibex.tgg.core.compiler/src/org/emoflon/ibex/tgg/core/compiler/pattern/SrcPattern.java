@@ -30,7 +30,7 @@ public class SrcPattern extends Pattern {
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return n.getBindingType() == BindingType.CREATE;
+		return isRelevantForSignature(n) && n.getBindingType() == BindingType.CREATE;
 	}
 
 }

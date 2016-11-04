@@ -36,10 +36,16 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
         eType="#//TGGRuleEdge" eOpposite="#//TGGRuleEdge/srcNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingCorrsSource" upperBound="-1"
+        eType="#//TGGRuleCorr" eOpposite="#//TGGRuleCorr/source"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingCorrsTarget" upperBound="-1"
+        eType="#//TGGRuleCorr" eOpposite="#//TGGRuleCorr/target"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRuleCorr" eSuperTypes="#//TGGRuleNode">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="#//TGGRuleNode"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="#//TGGRuleNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="#//TGGRuleNode"
+        eOpposite="#//TGGRuleNode/incomingCorrsSource"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="#//TGGRuleNode"
+        eOpposite="#//TGGRuleNode/incomingCorrsTarget"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRuleEdge" eSuperTypes="#//TGGRuleElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="srcNode" eType="#//TGGRuleNode"

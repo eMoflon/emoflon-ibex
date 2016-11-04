@@ -2,12 +2,15 @@ package org.emoflon.ibex.tgg.core.compiler.pattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EClass;
 
 import language.TGGRule;
+import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -105,6 +108,18 @@ public abstract class Pattern {
 
 	public Collection<TGGRuleNode> getBodyNodes() {
 		return bodyNodes;
+	}
+	
+	public Collection<TGGRuleCorr> getBodyCorrNodes(){
+		Collection<TGGRuleCorr> corrs = new HashSet<>();
+		bodyNodes.stream().filter(n -> n instanceof TGGRuleCorr).forEach(n -> corrs.add((TGGRuleCorr)n));
+		return corrs;
+	}
+	
+	public Collection<TGGRuleNode> getBodySrcTrgNodes(){
+		Collection<TGGRuleNode> srcTrgNodes = new HashSet<TGGRuleNode>(bodyNodes);
+		srcTrgNodes.removeAll(getBodyCorrNodes());
+		return srcTrgNodes;
 	}
 
 	public Collection<TGGRuleEdge> getBodyEdges() {

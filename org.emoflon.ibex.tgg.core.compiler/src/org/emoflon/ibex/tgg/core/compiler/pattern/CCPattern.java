@@ -7,30 +7,30 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class TrgPattern extends Pattern {
+public class CCPattern extends Pattern {
 
-	public TrgPattern(TGGRule rule) {
+	public CCPattern(TGGRule rule) {
 		super(rule);
 	}
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getDomainType() == DomainType.TRG;
+		return e.getBindingType() != BindingType.CREATE || e.getDomainType() == DomainType.SRC || e.getDomainType() == DomainType.TRG;
 	}
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return isRelevantForSignature(e) && e.getBindingType() == BindingType.CREATE;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return "_TRG";
+		return false;
 	}
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return isRelevantForSignature(n) && n.getBindingType() == BindingType.CREATE;
+		return false;
+	}
+
+	@Override
+	protected String getPatternNameSuffix() {
+		return "_CC";
 	}
 
 }
