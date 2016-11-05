@@ -11,7 +11,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
 import org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGNature;
@@ -54,8 +53,7 @@ public class NewIntegrationWizard extends AbstractMoflonWizard {
 			addAllFoldersAndFile(project, pathToSchema, defaultSchema, subMon.split(1));
 			addAllFolders(project, "src/org/emoflon/ibex/tgg/rules", subMon.split(1));
 			addAllFolders(project, "model", subMon.split(1));
-			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(project,
-					"src/org/emoflon/ibex/tgg/csp/lib/AttrCondDefLibrary.tgg");
+			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(project);
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}
