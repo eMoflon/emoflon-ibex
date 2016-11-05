@@ -54,8 +54,9 @@ public class IbexTGGNature implements IProjectNature {
 		ICommand[] buildSpec = projectDescription.getBuildSpec();
 		ICommand command = projectDescription.newCommand();
 		command.setBuilderName(IBEX_TGG_BUILDER_ID);
-		Collection<ICommand> list = new ArrayList<>(Arrays.asList(buildSpec));
+		Collection<ICommand> list = new ArrayList<>();
 		list.add(command);
+		list.addAll(Arrays.asList(buildSpec));
 		projectDescription.setBuildSpec(list.toArray(new ICommand[list.size()]));
 		project.setDescription(projectDescription, new NullProgressMonitor());
 	}
