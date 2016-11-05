@@ -33,6 +33,7 @@ import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoInternalTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.TGGProject;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.WorkspaceHelper;
+import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.Rule;
@@ -68,6 +69,15 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		generateEditorModel().ifPresent(editorModel -> 
 		generateInternalModels(editorModel).ifPresent(internalModel ->
 		generatePatterns(internalModel)));
+		generateAttrCondLib();
+	}
+
+	private void generateAttrCondLib() {
+		try {
+			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(getProject());
+		} catch (CoreException | IOException e) {
+			LogUtils.error(logger, e);
+		}
 	}
 
 	private Optional<TripleGraphGrammarFile> generateEditorModel() {
@@ -81,7 +91,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 							.get(0);
 					loadAllRulesToTGGFile(xtextParsedTGG, resourceSet, getProject().getFolder("src"));
 					addAttrCondDefLibraryReferencesToSchema(xtextParsedTGG);
-					saveModelInProject("model", "tgg_editor.xmi", resourceSet, xtextParsedTGG);
+					saveModelInProject("model", getProject().getName() + ".editor.xmi", resourceSet, xtextParsedTGG);
 					return Optional.of(xtextParsedTGG);
 				}
 			}
@@ -170,8 +180,8 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		
 		try {
 			ResourceSet rs = xtextParsedTGG.eResource().getResourceSet();
-			saveModelInProject("model", "correspondence_metamodel.xmi", rs, tggProject.getCorrPackage());
-			saveModelInProject("model", "tgg_internal.xmi", rs, tggProject.getTggModel());
+			saveModelInProject("model", getProject().getName() + ".ecore", rs, tggProject.getCorrPackage());
+			saveModelInProject("model", getProject().getName() + ".tgg.xmi", rs, tggProject.getTggModel());
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}
@@ -200,6 +210,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	
 	private void performClean() {
 		try {
+			WorkspaceHelper.clearFolder(getProject(), "model/patterns", new NullProgressMonitor());
 			WorkspaceHelper.clearFolder(getProject(), "model", new NullProgressMonitor());
 		} catch (CoreException | URISyntaxException | IOException e) {
 			LogUtils.error(logger, e);
