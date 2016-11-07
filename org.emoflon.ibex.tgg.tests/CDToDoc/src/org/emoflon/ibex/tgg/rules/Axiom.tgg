@@ -1,0 +1,23 @@
+#using CDToDoc.*
+#using AttrCondDefLibrary.*
+
+#rule Axiom #with CDToDoc
+
+#source { 
+	++ p:Package
+}
+
+#target {
+	++ f:Folder
+}
+
+#correspondence {
+	++ p2f:PackageToFolder{
+		#src->p
+		#trg->f
+	}
+}
+
+#attributeConditions {
+
+}

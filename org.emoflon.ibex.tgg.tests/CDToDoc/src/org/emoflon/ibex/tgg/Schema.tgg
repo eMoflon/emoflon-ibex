@@ -1,0 +1,33 @@
+// Add imports here
+#import "platform:/resource/CDToDoc/domains/CD.ecore"
+#import "platform:/resource/CDToDoc/domains/Doc.ecore"
+
+#schema CDToDoc
+	
+#source {
+	CD
+}
+
+#target {  
+	Doc 
+}
+
+#correspondence {
+	PackageToFolder{
+		#src->Package
+		#trg->Folder
+	}
+	
+	PackageToFile{
+		#src->Package
+		#trg->File
+	}
+	ClazzToFile{
+		#src->Clazz
+		#trg->File
+	}
+}
+
+#attributeConditions {
+	
+}
