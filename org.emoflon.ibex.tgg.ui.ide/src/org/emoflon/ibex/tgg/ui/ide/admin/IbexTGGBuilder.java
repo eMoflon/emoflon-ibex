@@ -40,6 +40,15 @@ import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResourceDeltaVisitor {
+	private static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
+	private static final String ECORE_FILE_EXTENSION = ".ecore";
+	private static final String VIATRA_QUERY_FILE_EXTENSION = ".vql";
+	private static final String TGG_FILE_EXTENSION = ".tgg";
+	private static final String EDITOR_MODEL_EXTENSION = ".editor.xmi";
+	private static final String SRC_FOLDER = "src";
+	private static final String MODEL_FOLDER = "model";
+	private static final String MODEL_PATTERNS_FOLDER = MODEL_FOLDER + "/patterns";
+
 	public static final Logger logger = Logger.getLogger(IbexTGGBuilder.class);
 	
 	@Override
@@ -90,9 +99,9 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 				if (schemaIsOfExpectedType(schemaResource)) {
 					TripleGraphGrammarFile xtextParsedTGG = (TripleGraphGrammarFile) schemaResource.getContents()
 							.get(0);
-					loadAllRulesToTGGFile(xtextParsedTGG, resourceSet, getProject().getFolder("src"));
+					loadAllRulesToTGGFile(xtextParsedTGG, resourceSet, getProject().getFolder(SRC_FOLDER));
 					addAttrCondDefLibraryReferencesToSchema(xtextParsedTGG);
-					saveModelInProject("model", getProject().getName() + ".editor.xmi", resourceSet, xtextParsedTGG);
+					saveModelInProject(MODEL_FOLDER, getProject().getName() + EDITOR_MODEL_EXTENSION, resourceSet, xtextParsedTGG);
 					return Optional.of(xtextParsedTGG);
 				}
 			}
@@ -132,7 +141,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	private Collection<Rule> loadRules(IResource iResource, XtextResourceSet resourceSet)
 			throws IOException {
 		IFile ruleFile = (IFile) iResource;
-		if (ruleFile.getFileExtension().equals("tgg")) {
+		if (ruleFile.getName().endsWith(TGG_FILE_EXTENSION)) {
 			XtextResource ruleRes = (XtextResource) resourceSet
 					.getResource(URI.createPlatformResourceURI(ruleFile.getFullPath().toString(), true), true);
 			EcoreUtil.resolveAll(resourceSet);
@@ -165,7 +174,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		TGGCompiler compiler = new TGGCompiler();
 		tggProject.getTggModel().getRules().forEach(r -> {
 			String contents = compiler.getViatraPatterns(r);			
-			IFile file = getProject().getFolder("model/patterns").getFile(r.getName() + ".vql");
+			IFile file = getProject().getFolder(MODEL_PATTERNS_FOLDER).getFile(r.getName() + VIATRA_QUERY_FILE_EXTENSION);
 			try {
 				if (file.exists()) file.delete(true, new NullProgressMonitor());
 				WorkspaceHelper.addAllFoldersAndFile(getProject(), file.getProjectRelativePath(), contents, new NullProgressMonitor());
@@ -181,8 +190,8 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		
 		try {
 			ResourceSet rs = xtextParsedTGG.eResource().getResourceSet();
-			saveModelInProject("model", getProject().getName() + ".ecore", rs, tggProject.getCorrPackage());
-			saveModelInProject("model", getProject().getName() + ".tgg.xmi", rs, tggProject.getTggModel());
+			saveModelInProject(MODEL_FOLDER, getProject().getName() + ECORE_FILE_EXTENSION, rs, tggProject.getCorrPackage());
+			saveModelInProject(MODEL_FOLDER, getProject().getName() + INTERNAL_TGG_MODEL_EXTENSION, rs, tggProject.getTggModel());
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}
@@ -201,7 +210,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
-		if (delta.getResource().getName().endsWith(".tgg")) {
+		if (delta.getResource().getName().endsWith(TGG_FILE_EXTENSION)) {
 			generateFiles();
 			return false;
 		}
@@ -211,8 +220,11 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	
 	private void performClean() {
 		try {
-			WorkspaceHelper.clearFolder(getProject(), "model/patterns", new NullProgressMonitor());
-			WorkspaceHelper.clearFolder(getProject(), "model", new NullProgressMonitor());
+			if(getProject().getFolder(MODEL_FOLDER).exists()){
+				WorkspaceHelper.clearFolder(getProject(), MODEL_FOLDER, new NullProgressMonitor());
+				if(getProject().getFolder(MODEL_PATTERNS_FOLDER).exists())
+					WorkspaceHelper.clearFolder(getProject(), MODEL_PATTERNS_FOLDER, new NullProgressMonitor());
+			}
 		} catch (CoreException | URISyntaxException | IOException e) {
 			LogUtils.error(logger, e);
 		}

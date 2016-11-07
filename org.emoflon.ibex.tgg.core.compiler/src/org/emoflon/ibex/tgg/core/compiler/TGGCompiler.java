@@ -38,7 +38,7 @@ public class TGGCompiler {
 		Set<EPackage> packs = rule.getNodes().stream().map(n -> n.getType().getEPackage()).collect(Collectors.toSet());
 		Iterator<EPackage> it = packs.iterator();
 		for (int i = 0; i < packs.size(); i++) {
-			imports.put("dep_" + i, it.next().getNsURI());
+			imports.put("dep_" + i, it.next().eResource().getURI().toString());
 		}
 		
 		

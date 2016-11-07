@@ -72,6 +72,7 @@ public class IbexTGGNature implements IProjectNature {
 		WorkspaceHelper.addNature(project, XTEXT_NATURE_ID, new NullProgressMonitor());
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void setUpAsViatraProject() throws CoreException, IOException {
 		WorkspaceHelper.addFolder(project, "src-gen", new NullProgressMonitor());
 		WorkspaceHelper.setAsSourceFolderInBuildpath(JavaCore.create(project), new IFolder[]{project.getFolder("src-gen")}, null, new NullProgressMonitor());
@@ -79,9 +80,11 @@ public class IbexTGGNature implements IProjectNature {
 		new ManifestFileUpdater().processManifest(project, manifest -> {
 			boolean changed = false;
 			changed |= ManifestFileUpdater.updateDependencies(manifest, Arrays.asList(
+					"org.eclipse.viatra.transformation.runtime.emf",
 					"org.eclipse.viatra.query.runtime",
 					"org.apache.log4j",
-					"com.google.guava"
+					"com.google.guava",
+					"org.eclipse.xtend.lib"
 					));
 			return changed;
 		});
