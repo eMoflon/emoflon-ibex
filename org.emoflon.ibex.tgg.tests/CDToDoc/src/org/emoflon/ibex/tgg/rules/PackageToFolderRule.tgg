@@ -1,0 +1,36 @@
+#using CDToDoc.*
+#using AttrCondDefLibrary.*
+
+#rule PackageToFolderRule #with CDToDoc
+
+#source { 
+	p1:Package{
+		++-packages->p2
+	}
+	
+	++p2:Package
+}
+
+#target {
+	
+	f1:Folder{
+		++-folders->f2
+	}
+	
+	++f2:Doc.Folder
+}
+
+#correspondence {
+	p1f1:PackageToFolder{
+		#src->p1
+		#trg->f1
+	}
+	++p2f2:PackageToFolder{
+		#src->p2
+		#trg->f2
+	}
+}
+
+#attributeConditions {
+	
+}
