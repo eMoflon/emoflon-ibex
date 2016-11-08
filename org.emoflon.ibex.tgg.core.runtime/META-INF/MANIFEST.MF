@@ -1,13 +1,15 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.emoflon.ibex.tgg.core.runtime;singleton:=true
-Export-Package: runtime.impl,
- runtime.util,
- runtime
+Export-Package: org.emoflon.ibex.tgg.operational,
+ runtime,
+ runtime.impl,
+ runtime.util
 Bundle-Name: org.emoflon.ibex.tgg.core.runtime
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
- org.moflon.core.utilities
+ org.moflon.core.utilities,
+ org.eclipse.viatra.transformation.runtime.emf;bundle-version="1.4.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

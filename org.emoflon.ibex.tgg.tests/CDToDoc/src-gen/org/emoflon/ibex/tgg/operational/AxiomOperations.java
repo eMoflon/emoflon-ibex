@@ -14,8 +14,8 @@ import org.emoflon.ibex.tgg.axiom.Axiom_TRG_CONTEXTMatch;
 
 public class AxiomOperations extends RuleOperations {
 	
-	public AxiomOperations(IModelManipulations manipulator, Resource src, Resource corr, Resource trg) throws IOException{
-		super(manipulator, src, corr, trg);
+	public AxiomOperations(IModelManipulations manipulator, Resource src, Resource corr, Resource trg, Resource edges) throws IOException{
+		super(manipulator, src, corr, trg, edges);
 		register("platform:/resource/CDToDoc/domains/CD.ecore", "dep_0");
 		register("platform:/resource/CDToDoc/model/CDToDoc.ecore", "dep_1");
 		register("platform:/resource/CDToDoc/domains/Doc.ecore", "dep_2");

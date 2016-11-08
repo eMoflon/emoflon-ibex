@@ -3,8 +3,10 @@ package org.emoflon.ibex.tgg.ui.ide.admin;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -220,13 +222,28 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 	
 	private void performClean() {
-		try {
-			if(getProject().getFolder(MODEL_FOLDER).exists()){
-				WorkspaceHelper.clearFolder(getProject(), MODEL_FOLDER, new NullProgressMonitor());
-				if(getProject().getFolder(MODEL_PATTERNS_FOLDER).exists())
-					WorkspaceHelper.clearFolder(getProject(), MODEL_PATTERNS_FOLDER, new NullProgressMonitor());
+		List<String> toDelete = Arrays.asList(
+				MODEL_FOLDER + getProject().getName() + ECORE_FILE_EXTENSION,
+				MODEL_FOLDER + getProject().getName() + EDITOR_MODEL_EXTENSION,
+				MODEL_FOLDER + getProject().getName() + INTERNAL_TGG_MODEL_EXTENSION);
+		toDelete.stream()
+		.map(f -> getProject().getFile(f))
+		.filter(IFile::exists)
+		.forEach(f -> {
+			try {
+				f.delete(true, new NullProgressMonitor());
+			} catch (CoreException e) {
+				LogUtils.error(logger, e);
 			}
-		} catch (CoreException | URISyntaxException | IOException e) {
+		});
+		
+		try {
+			IFolder patterns = getProject().getFolder(MODEL_PATTERNS_FOLDER);
+			if(patterns.exists())
+				for(IResource f : patterns.members())
+					if(f.getName().endsWith(VIATRA_QUERY_FILE_EXTENSION))
+						f.delete(true, new NullProgressMonitor());
+		} catch (CoreException e) {
 			LogUtils.error(logger, e);
 		}
 	}
