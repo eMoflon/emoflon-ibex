@@ -6,8 +6,12 @@ Require-Bundle: org.eclipse.viatra.transformation.runtime.emf,
  org.eclipse.viatra.query.runtime,
  org.apache.log4j,
  com.google.guava,
+<<<<<<< HEAD
  org.eclipse.xtend.lib,
  org.emoflon.ibex.tgg.core.runtime;bundle-version="1.0.0"
+=======
+ org.eclipse.xtend.lib
+>>>>>>> branch 'master' of https://github.com/eMoflon/emoflon-ibex.git
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

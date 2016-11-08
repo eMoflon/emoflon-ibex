@@ -20,6 +20,7 @@
 /Axiom_TRGMatcher.java
 /Axiom_TRG_CONTEXTMatch.java
 /Axiom_TRG_CONTEXTMatcher.java
+<<<<<<< HEAD
 /.Axiom_BWDMatch.java._trace
 /.Axiom_BWDMatcher.java._trace
 /.Axiom_CCMatch.java._trace
@@ -32,3 +33,5 @@
 /Axiom_CCMatcher.java
 /Axiom_FWDMatch.java
 /Axiom_FWDMatcher.java
+=======
+>>>>>>> branch 'master' of https://github.com/eMoflon/emoflon-ibex.git

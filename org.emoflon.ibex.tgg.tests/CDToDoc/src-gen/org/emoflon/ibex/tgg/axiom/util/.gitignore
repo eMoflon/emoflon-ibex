@@ -18,6 +18,7 @@
 /Axiom_TRGQuerySpecification.java
 /Axiom_TRG_CONTEXTProcessor.java
 /Axiom_TRG_CONTEXTQuerySpecification.java
+<<<<<<< HEAD
 /.Axiom_BWDProcessor.java._trace
 /.Axiom_BWDQuerySpecification.java._trace
 /.Axiom_CCProcessor.java._trace
@@ -30,3 +31,5 @@
 /Axiom_CCQuerySpecification.java
 /Axiom_FWDProcessor.java
 /Axiom_FWDQuerySpecification.java
+=======
+>>>>>>> branch 'master' of https://github.com/eMoflon/emoflon-ibex.git
