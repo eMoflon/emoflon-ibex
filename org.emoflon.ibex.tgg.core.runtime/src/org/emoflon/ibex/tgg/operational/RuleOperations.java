@@ -14,27 +14,44 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.IModelManipulations;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.ModelManipulationException;
 
+import runtime.Edge;
+import runtime.RuntimePackage;
+
 public abstract class RuleOperations {
 	protected IModelManipulations manipulator;
 	protected Map<String, EPackage> packages;
 	protected Resource rSrc; 
 	protected Resource rCorr;
 	protected Resource rTrg;
+	protected Resource rEdges;
 
-	public RuleOperations(IModelManipulations manipulator, Resource src, Resource corr, Resource trg){
+	public RuleOperations(IModelManipulations manipulator, Resource src, Resource corr, Resource trg, Resource edges){
 		this.manipulator = manipulator;
 		this.packages = new HashMap<>();
 		this.rSrc = src;
 		this.rCorr = corr;
 		this.rTrg = trg;
+		this.rEdges = edges;
 	}
 	
 	protected void register(String uri, String key) throws IOException{
 		packages.put(key, packageFor(uri));
 	}
 	
-	protected void link(EObject s, String featureName, Object t) {
-		s.eSet(s.eClass().getEStructuralFeature(featureName), t);
+	protected void link(EObject s, String featureName, Object t) throws ModelManipulationException {
+		manipulator.add(s, s.eClass().getEStructuralFeature(featureName), t);
+	}
+	
+	protected void linkWithEdge(Object s, String featureName, Object t) throws ModelManipulationException {
+		Edge e = createEdge(featureName);
+		link(e, "src", s);
+		link(e, "trg", t);
+	}
+
+	private Edge createEdge(String featureName) throws ModelManipulationException {
+		Edge e = (Edge) manipulator.create(rTrg, RuntimePackage.eINSTANCE.getEdge());
+		e.setName(featureName);
+		return e;
 	}
 	
 	protected EObject createSrc(String eClass, String key) throws ModelManipulationException{
