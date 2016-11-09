@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.core.compiler.pattern;
+package org.emoflon.ibex.tgg.core.compiler.pattern.operational;
 
 import language.BindingType;
 import language.DomainType;
@@ -7,15 +7,15 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class SrcPattern extends Pattern {
+public class TrgPattern extends OperationalPattern {
 
-	public SrcPattern(TGGRule rule) {
+	public TrgPattern(TGGRule rule) {
 		super(rule);
 	}
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getDomainType() == DomainType.SRC;
+		return e.getDomainType() == DomainType.TRG;
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class SrcPattern extends Pattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_SRC";
+		return "_TRG";
 	}
 
 	@Override

@@ -10,15 +10,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EPackage;
-import org.emoflon.ibex.tgg.core.compiler.pattern.BWDPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.CCPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.CorrContextPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.FWDPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.SrcContextPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.SrcPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.TrgContextPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.TrgPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.operational.BWDPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.operational.CCPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.operational.CorrContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.operational.FWDPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.operational.OperationalPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.operational.SrcContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.operational.SrcPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.operational.TrgContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.operational.TrgPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ProtocolPattern;
 
 import language.TGG;
 import language.TGGRule;
@@ -32,6 +34,9 @@ public class TGGCompiler {
 		for(TGGRule rule : tggModel.getRules()){
 			
 			Collection<Pattern> patterns = new HashSet<>();
+			
+			ProtocolPattern protocol = new ProtocolPattern(rule);
+			patterns.add(protocol);
 			
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
 			patterns.add(srcContext);
@@ -53,28 +58,35 @@ public class TGGCompiler {
 			fwd.getPositiveInvocations().add(src);
 			fwd.getPositiveInvocations().add(corrContext);
 			fwd.getPositiveInvocations().add(trgContext);
+			fwd.getNegativeInvocations().add(protocol);
 			
 			BWDPattern bwd = new BWDPattern(rule);
 			patterns.add(bwd);
 			bwd.getPositiveInvocations().add(trg);
 			bwd.getPositiveInvocations().add(corrContext);
 			bwd.getPositiveInvocations().add(srcContext);
+			bwd.getNegativeInvocations().add(protocol);
 			
 			CCPattern cc = new CCPattern(rule);
 			patterns.add(cc);
 			cc.getPositiveInvocations().add(src);
 			cc.getPositiveInvocations().add(trg);
 			cc.getPositiveInvocations().add(corrContext);
+			cc.getNegativeInvocations().add(protocol);
 			
 			ruleToPatterns.put(rule, patterns);
 		}
 	}
 
 	public String getViatraPatterns(TGGRule rule) {
-		OperationalPatternTemplate template = new OperationalPatternTemplate();
 		
-		String result = template.generateHeaderAndImports(determineImports(rule), rule.getName());
-		result += ruleToPatterns.get(rule).stream().map(template::generatePattern).collect(Collectors.joining());
+		PatternTemplate patternTemplate = new PatternTemplate();
+		
+		String result = patternTemplate.generateHeaderAndImports(determineImports(rule), rule.getName());
+		
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof OperationalPattern).map(p -> patternTemplate.generateOperationalPattern((OperationalPattern) p)).collect(Collectors.joining());
+		
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ProtocolPattern).map(p -> patternTemplate.generateProtocolPattern((ProtocolPattern) p)).collect(Collectors.joining());
 		
 		return result;
 	}

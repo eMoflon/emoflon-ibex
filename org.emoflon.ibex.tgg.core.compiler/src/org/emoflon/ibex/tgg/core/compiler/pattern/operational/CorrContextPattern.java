@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.core.compiler.pattern;
+package org.emoflon.ibex.tgg.core.compiler.pattern.operational;
 
 import language.BindingType;
 import language.DomainType;
@@ -8,7 +8,7 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class CorrContextPattern extends Pattern {
+public class CorrContextPattern extends OperationalPattern {
 
 	public CorrContextPattern(TGGRule rule) {
 		super(rule);
