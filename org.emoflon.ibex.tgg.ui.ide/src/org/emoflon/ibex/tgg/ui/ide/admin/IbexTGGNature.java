@@ -66,8 +66,19 @@ public class IbexTGGNature implements IProjectNature {
 		setUpAsPluginProject();
 		setUpAsXtextProject();
 		setUpAsViatraProject();
+		setUpAsIbexProject();
 	}
 	
+	private void setUpAsIbexProject() throws CoreException, IOException {
+		new ManifestFileUpdater().processManifest(project, manifest -> {
+			boolean changed = false;
+			changed |= ManifestFileUpdater.updateDependencies(manifest, Arrays.asList(
+					"org.emoflon.ibex.tgg.core.runtime"
+					));
+			return changed;
+		});
+	}
+
 	private void setUpAsXtextProject() throws CoreException {
 		WorkspaceHelper.addNature(project, XTEXT_NATURE_ID, new NullProgressMonitor());
 	}
