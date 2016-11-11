@@ -1,8 +1,9 @@
 package org.emoflon.ibex.tgg.core.compiler
 
 import java.util.Map
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.OperationalPattern
-import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ProtocolPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.PatternWithProtocolNACs
 
 class PatternTemplate {
 		
@@ -17,7 +18,7 @@ class PatternTemplate {
 		'''
 	}
 		
-	def generateOperationalPattern(OperationalPattern pattern) {
+	def generateOperationalPattern(RulePartPattern pattern) {
 		return '''
 		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
 			«FOR edge : pattern.getBodyEdges»
@@ -44,7 +45,20 @@ class PatternTemplate {
 		'''
 	}
 	
-	def generateProtocolPattern(ProtocolPattern pattern) {
+	def generateProtocolNACsPattern(PatternWithProtocolNACs pattern) {
+		return '''
+		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
+			«FOR pi : pattern.positiveInvocations»
+			find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
+			«ENDFOR»
+			«FOR e : pattern.NACrelevantElements»
+			neg find marked(«e.name»);
+			«ENDFOR»
+		}
+		'''
+	}
+	
+	def generateConsistencyPattern(ConsistencyPattern pattern) {
 		return '''
 		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
 			«FOR e : pattern.contextSrc»
