@@ -142,9 +142,9 @@ public class RuleInvocationUtil {
 	private Edge createEdge(TGGRuleEdge e, EObject src, EObject trg) {
 		try {
 			Edge edge = (Edge) manipulator.create(protocolR, runtimePackage.getEdge());
-			edge.setName(e.getType().getName());
-			edge.setSrc(src);
-			edge.setTrg(trg);
+			manipulator.set(edge, runtimePackage.getEdge_Name(), e.getType().getName());
+			manipulator.set(edge, runtimePackage.getEdge_Src(), src);
+			manipulator.set(edge, runtimePackage.getEdge_Trg(), trg);
 			return edge;
 		} catch (ModelManipulationException exception) {
 			exception.printStackTrace();
@@ -165,27 +165,26 @@ public class RuleInvocationUtil {
 			TGGRuleApplication protocol = (TGGRuleApplication) manipulator.create(protocolR,
 					runtimePackage.getTGGRuleApplication());
 
-			EClass tggRuleApplicationClass = runtimePackage.getTGGRuleApplication();
 
 			fillProtocolInfo(blackSrcElements.get(ruleName), protocol,
-					tggRuleApplicationClass.getEStructuralFeature("contextSrc"), createdElements, match);
+					runtimePackage.getTGGRuleApplication_ContextSrc(), createdElements, match);
 			fillProtocolInfo(blackTrgElements.get(ruleName), protocol,
-					tggRuleApplicationClass.getEStructuralFeature("contextTrg"), createdElements, match);
+					runtimePackage.getTGGRuleApplication_ContextTrg(), createdElements, match);
 			fillProtocolInfo(blackCorrElements.get(ruleName), protocol,
-					tggRuleApplicationClass.getEStructuralFeature("contextCorr"), createdElements, match);
+					runtimePackage.getTGGRuleApplication_ContextCorr(), createdElements, match);
 
 			fillProtocolInfo(greenSrcNodes.get(ruleName), protocol,
-					tggRuleApplicationClass.getEStructuralFeature("createdSrc"), createdElements, match);
+					runtimePackage.getTGGRuleApplication_CreatedSrc(), createdElements, match);
 			fillProtocolInfo(greenSrcEdges.get(ruleName), protocol,
-					tggRuleApplicationClass.getEStructuralFeature("createdSrc"), createdElements, match);
+					runtimePackage.getTGGRuleApplication_CreatedSrc(), createdElements, match);
 
 			fillProtocolInfo(greenTrgNodes.get(ruleName), protocol,
-					tggRuleApplicationClass.getEStructuralFeature("createdTrg"), createdElements, match);
+					runtimePackage.getTGGRuleApplication_CreatedTrg(), createdElements, match);
 			fillProtocolInfo(greenTrgEdges.get(ruleName), protocol,
-					tggRuleApplicationClass.getEStructuralFeature("createdTrg"), createdElements, match);
+					runtimePackage.getTGGRuleApplication_CreatedTrg(), createdElements, match);
 
 			fillProtocolInfo(greenCorrNodes.get(ruleName), protocol,
-					tggRuleApplicationClass.getEStructuralFeature("createdCorr"), createdElements, match);
+					runtimePackage.getTGGRuleApplication_CreatedCorr(), createdElements, match);
 			return protocol;
 		} catch (ModelManipulationException e) {
 			e.printStackTrace();
