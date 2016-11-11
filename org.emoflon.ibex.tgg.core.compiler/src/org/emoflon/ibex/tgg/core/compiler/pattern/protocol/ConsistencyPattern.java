@@ -16,11 +16,11 @@ import language.TGGRuleNode;
 import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
 
-public class ProtocolPattern extends Pattern {
+public class ConsistencyPattern extends Pattern {
 
 	
 	
-	public ProtocolPattern(TGGRule rule){
+	public ConsistencyPattern(TGGRule rule){
 		super(rule);
 	}
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.emf.ecore.EClass;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.OperationalPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
 
 import language.TGGRule;
 import language.TGGRuleEdge;

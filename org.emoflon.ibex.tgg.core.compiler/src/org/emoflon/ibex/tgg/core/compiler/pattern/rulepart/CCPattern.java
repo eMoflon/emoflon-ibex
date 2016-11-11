@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.core.compiler.pattern.operational;
+package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
 
 import language.BindingType;
 import language.DomainType;
@@ -7,15 +7,15 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class BWDPattern extends OperationalPattern {
+public class CCPattern extends RulePartPattern {
 
-	public BWDPattern(TGGRule rule) {
+	public CCPattern(TGGRule rule) {
 		super(rule);
 	}
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getBindingType() != BindingType.CREATE || e.getDomainType() == DomainType.TRG;
+		return e.getBindingType() != BindingType.CREATE || e.getDomainType() == DomainType.SRC || e.getDomainType() == DomainType.TRG;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class BWDPattern extends OperationalPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_BWD";
+		return "_CC";
 	}
 
 }

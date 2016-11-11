@@ -11,16 +11,19 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.BWDPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.CCPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.CorrContextPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.FWDPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.OperationalPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.SrcContextPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.SrcPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.TrgContextPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.operational.TrgPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ProtocolPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.BWDwithProtocolNACsPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.FWDwithProtocolNACsPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.PatternWithProtocolNACs;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.BWDPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CCPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CorrContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.FWDPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgPattern;
 
 import language.TGG;
 import language.TGGRule;
@@ -35,7 +38,7 @@ public class TGGCompiler {
 			
 			Collection<Pattern> patterns = new HashSet<>();
 			
-			ProtocolPattern protocol = new ProtocolPattern(rule);
+			ConsistencyPattern protocol = new ConsistencyPattern(rule);
 			patterns.add(protocol);
 			
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
@@ -58,21 +61,26 @@ public class TGGCompiler {
 			fwd.getPositiveInvocations().add(src);
 			fwd.getPositiveInvocations().add(corrContext);
 			fwd.getPositiveInvocations().add(trgContext);
-			fwd.getNegativeInvocations().add(protocol);
+			
+			FWDwithProtocolNACsPattern fwdWithProtocolNACs = new FWDwithProtocolNACsPattern(rule);
+			patterns.add(fwdWithProtocolNACs);
+			fwdWithProtocolNACs.getPositiveInvocations().add(fwd);
 			
 			BWDPattern bwd = new BWDPattern(rule);
 			patterns.add(bwd);
 			bwd.getPositiveInvocations().add(trg);
 			bwd.getPositiveInvocations().add(corrContext);
 			bwd.getPositiveInvocations().add(srcContext);
-			bwd.getNegativeInvocations().add(protocol);
+			
+			BWDwithProtocolNACsPattern bwdWithProtocolNACs = new BWDwithProtocolNACsPattern(rule);
+			patterns.add(bwdWithProtocolNACs);
+			bwdWithProtocolNACs.getPositiveInvocations().add(bwd);
 			
 			CCPattern cc = new CCPattern(rule);
 			patterns.add(cc);
 			cc.getPositiveInvocations().add(src);
 			cc.getPositiveInvocations().add(trg);
 			cc.getPositiveInvocations().add(corrContext);
-			cc.getNegativeInvocations().add(protocol);
 			
 			ruleToPatterns.put(rule, patterns);
 		}
@@ -84,9 +92,11 @@ public class TGGCompiler {
 		
 		String result = patternTemplate.generateHeaderAndImports(determineImports(rule), rule.getName());
 		
-		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof OperationalPattern).map(p -> patternTemplate.generateOperationalPattern((OperationalPattern) p)).collect(Collectors.joining());
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof RulePartPattern).map(p -> patternTemplate.generateOperationalPattern((RulePartPattern) p)).collect(Collectors.joining());
 		
-		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ProtocolPattern).map(p -> patternTemplate.generateProtocolPattern((ProtocolPattern) p)).collect(Collectors.joining());
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ConsistencyPattern).map(p -> patternTemplate.generateConsistencyPattern((ConsistencyPattern) p)).collect(Collectors.joining());
+		
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof PatternWithProtocolNACs).map(p -> patternTemplate.generateProtocolNACsPattern((PatternWithProtocolNACs) p)).collect(Collectors.joining());
 		
 		return result;
 	}

@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.core.compiler.pattern.operational;
+package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
-public abstract class OperationalPattern extends Pattern {
+public abstract class RulePartPattern extends Pattern {
 
 	
 	
@@ -44,7 +44,7 @@ public abstract class OperationalPattern extends Pattern {
 	protected Collection<TGGRuleEdge> bodyEdges = new ArrayList<>();
 	
 	
-	public OperationalPattern(TGGRule rule){
+	public RulePartPattern(TGGRule rule){
 		super(rule);
 		fillCollections(rule);		
 	}
