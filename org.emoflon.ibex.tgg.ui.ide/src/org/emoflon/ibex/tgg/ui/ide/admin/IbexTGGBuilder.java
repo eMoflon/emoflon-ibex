@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.ui.ide.admin;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,9 +24,9 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
@@ -43,8 +42,6 @@ import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
-
-import language.TGGRule;
 
 public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResourceDeltaVisitor {
 	private static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
@@ -215,14 +212,19 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		return Optional.of(tggProject);
 	}
 
-	private void saveModelInProject(String folder, String fileName, ResourceSet rs, EObject model) throws IOException{
+	private void saveModelInProject(String folder, String fileName, ResourceSet rs, EObject model) throws IOException {
 		IFile file = getProject().getFolder(folder).getFile(fileName);
 		URI uri = URI.createPlatformResourceURI(
 				getProject().getName() + "/" + file.getProjectRelativePath().toString(), true);
 		Resource resource = rs.createResource(uri);
 		resource.getContents().add(model);
-		Map options = ((XMLResource)resource).getDefaultSaveOptions();
-		options.put(XMLResource.OPTION_URI_HANDLER, new URIHandlerImpl.PlatformSchemeAware());
+		Map<Object, Object> options = ((XMLResource)resource).getDefaultSaveOptions();
+		options.put(XMLResource.OPTION_URI_HANDLER, new URIHandlerImpl() {
+			@Override
+			public URI deresolve(URI uri) {
+				return uri;
+			}
+		});
 		resource.save(options);
 	}
 
