@@ -2,18 +2,23 @@ package org.moflon.ibex.tgg.run;
 
 import java.io.IOException;
 
+import org.apache.log4j.BasicConfigurator;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.operational.RuleInvocationUtil;
-import org.emoflon.ibex.tgg.core.language.TGG;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
+import language.LanguagePackage;
 import language.TGG;
 
 public class Application {
 
 	public static void main(String[] args) throws IOException {
+		BasicConfigurator.configure();
+		
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
 		registerMetamodels(rs);
 		
@@ -38,18 +43,27 @@ public class Application {
 	}
 	
 	private static void registerMetamodels(ResourceSet rs){
+		// Register internals
+		LanguagePackage.eINSTANCE.getName();
+		
 		// Add mapping for correspondence metamodel
-		rs.getURIConverter().getURIMap().put(
-				URI.createURI("platform:/resource/CDToDoc/model/CDToDoc.ecore"), 
-				URI.createFileURI("model/CDToDoc.ecore"));
+		Resource corr = rs.getResource(URI.createFileURI("model/CDToDoc.ecore"), true);
+		EPackage pcorr = (EPackage) corr.getContents().get(0);
+		Registry.INSTANCE.put(corr.getURI().toString(), corr);
+		Registry.INSTANCE.put("platform:/resource/CDToDoc/model/CDToDoc.ecore", pcorr);
+		Registry.INSTANCE.put("platform:/plugin/CDToDoc/model/CDToDoc.ecore", pcorr);
 		
-		// TODO: Add mappings for all other required dependencies
-		rs.getURIConverter().getURIMap().put(
-				URI.createURI("platform:/resource/CDToDoc/domains/CD.ecore"), 
-				URI.createFileURI("domains/CD.ecore"));
+		// Add mappings for all other required dependencies
+		Resource cd = rs.getResource(URI.createFileURI("domains/CD.ecore"), true);
+		EPackage pcd = (EPackage) cd.getContents().get(0);
+		Registry.INSTANCE.put(cd.getURI().toString(), pcd);
+		Registry.INSTANCE.put("platform:/resource/CDToDoc/domains/CD.ecore", pcd);
+		Registry.INSTANCE.put("platform:/plugin/CD/model/CD.ecore", pcd);
 		
-		rs.getURIConverter().getURIMap().put(
-				URI.createURI("platform:/resource/CDToDoc/domains/Doc.ecore"), 
-				URI.createFileURI("domains/Doc.ecore"));	
+		Resource doc = rs.getResource(URI.createFileURI("domains/Doc.ecore"), true);
+		EPackage pdoc = (EPackage) doc.getContents().get(0);
+		Registry.INSTANCE.put(doc.getURI().toString(), pdoc);
+		Registry.INSTANCE.put("platform:/resource/CDToDoc/domains/Doc.ecore", pdoc);	
+		Registry.INSTANCE.put("platform:/plugin/Doc/model/Doc.ecore", pdoc);	
 	}
 }
