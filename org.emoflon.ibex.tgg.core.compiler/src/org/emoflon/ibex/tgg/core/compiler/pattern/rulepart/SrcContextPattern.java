@@ -30,7 +30,7 @@ public class SrcContextPattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
+		return isRelevantForSignature(n);
 	}
 
 

@@ -35,13 +35,19 @@ public class EditorTGGtoInternalTGG {
 	private HashMap<EObject,EObject> tggToXtext = new HashMap<>();
 	
 	public TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG){
-		return new TGGProject(createCorrModel(xtextTGG), createTGG(xtextTGG));
+		EPackage corrPackage = createCorrModel(xtextTGG);
+		TGG tgg = createTGG(xtextTGG);
+		tgg.setCorr(corrPackage);
+		return new TGGProject(corrPackage, tgg);
 	}
 	
 	private TGG createTGG(TripleGraphGrammarFile xtextTGG) {
 		
 		TGG tgg = tggFactory.createTGG();
 		tgg.setName(xtextTGG.getSchema().getName());
+		tgg.getSrc().addAll(xtextTGG.getSchema().getSourceTypes());
+		tgg.getTrg().addAll(xtextTGG.getSchema().getTargetTypes());
+		
 		map(xtextTGG, tgg);
 		
 		for(Rule xtextRule : xtextTGG.getRules()){

@@ -27,7 +27,10 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.tgg.core.compiler.TGGCompiler;
@@ -40,6 +43,8 @@ import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
+
+import language.TGGRule;
 
 public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResourceDeltaVisitor {
 	private static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
@@ -174,17 +179,25 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	private void generatePatterns(TGGProject tggProject) {
 		TGGCompiler compiler = new TGGCompiler();
+		
+		String commonPatternContents = compiler.getCommonViatraPatterns();
+		createFile(MODEL_PATTERNS_FOLDER, compiler.getCommonPatternFileName(), VIATRA_QUERY_FILE_EXTENSION, commonPatternContents);
+		
 		compiler.preparePatterns(tggProject.getTggModel());
 		tggProject.getTggModel().getRules().forEach(r -> {
 			String contents = compiler.getViatraPatterns(r);			
-			IFile file = getProject().getFolder(MODEL_PATTERNS_FOLDER).getFile(r.getName() + VIATRA_QUERY_FILE_EXTENSION);
-			try {
-				if (file.exists()) file.delete(true, new NullProgressMonitor());
-				WorkspaceHelper.addAllFoldersAndFile(getProject(), file.getProjectRelativePath(), contents, new NullProgressMonitor());
-			} catch (CoreException e) {
-				LogUtils.error(logger, e);
-			}
+			createFile(MODEL_PATTERNS_FOLDER, r.getName(), VIATRA_QUERY_FILE_EXTENSION, contents);
 		});		
+	}
+
+	private void createFile(String folder, String fileName, String extension, String contents) {
+		IFile file = getProject().getFolder(folder).getFile(fileName + extension);
+		try {
+			if (file.exists()) file.delete(true, new NullProgressMonitor());
+			WorkspaceHelper.addAllFoldersAndFile(getProject(), file.getProjectRelativePath(), contents, new NullProgressMonitor());
+		} catch (CoreException e) {
+			LogUtils.error(logger, e);
+		}
 	}
 
 	private Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG) {
@@ -208,7 +221,9 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 				getProject().getName() + "/" + file.getProjectRelativePath().toString(), true);
 		Resource resource = rs.createResource(uri);
 		resource.getContents().add(model);
-		resource.save(null);
+		Map options = ((XMLResource)resource).getDefaultSaveOptions();
+		options.put(XMLResource.OPTION_URI_HANDLER, new URIHandlerImpl.PlatformSchemeAware());
+		resource.save(options);
 	}
 
 	@Override

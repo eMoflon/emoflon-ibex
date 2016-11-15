@@ -4,15 +4,30 @@ import java.util.Map
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.PatternWithProtocolNACs
+import java.util.Collection
 
 class PatternTemplate {
-		
-	def generateHeaderAndImports(Map<String, String> imports, String ruleName){
+	
+	def generateCommonPatterns() {
 		return '''
-		package org.emoflon.ibex.tgg.«ruleName.toLowerCase»
+		pattern marked(o: EObject){
+			TGGRuleApplication.createdSrc(_,o);
+		} or {
+			TGGRuleApplication.createdTrg(_,o);
+		}
+		'''
+	}
 		
-		«FOR p : imports.keySet»
-			import "«imports.get(p)»" as «p»
+	def generateHeaderAndImports(Map<String, String> aliasedImports, Collection<String> nonAliasedImports, String packageName){
+		return '''
+		package org.emoflon.ibex.tgg.«packageName.toLowerCase»
+		
+		«FOR p : aliasedImports.keySet»
+			import "«aliasedImports.get(p)»" as «p»
+		«ENDFOR»
+		
+		«FOR i : nonAliasedImports»
+		    import «i»
 		«ENDFOR»
 		
 		'''

@@ -30,7 +30,8 @@ import language.TGGRule;
 
 public class TGGCompiler {
 
-	HashMap<TGGRule, Collection<Pattern>> ruleToPatterns = new HashMap<>();
+	private HashMap<TGGRule, Collection<Pattern>> ruleToPatterns = new HashMap<>();
+	private PatternTemplate patternTemplate = new PatternTemplate();
 
 	public void preparePatterns(TGG tggModel) {
 		
@@ -46,12 +47,14 @@ public class TGGCompiler {
 			
 			SrcPattern src = new SrcPattern(rule);
 			patterns.add(src);
+			src.getPositiveInvocations().add(srcContext);
 			
 			TrgContextPattern trgContext= new TrgContextPattern(rule);
 			patterns.add(trgContext);
 			
 			TrgPattern trg = new TrgPattern(rule);
 			patterns.add(trg);
+			trg.getPositiveInvocations().add(trgContext);
 			
 			CorrContextPattern corrContext = new CorrContextPattern(rule);
 			patterns.add(corrContext);
@@ -88,9 +91,8 @@ public class TGGCompiler {
 
 	public String getViatraPatterns(TGGRule rule) {
 		
-		PatternTemplate patternTemplate = new PatternTemplate();
 		
-		String result = patternTemplate.generateHeaderAndImports(determineImports(rule), rule.getName());
+		String result = patternTemplate.generateHeaderAndImports(determineAliasedImports(rule), determineNonAliasedImports(rule), rule.getName());
 		
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof RulePartPattern).map(p -> patternTemplate.generateOperationalPattern((RulePartPattern) p)).collect(Collectors.joining());
 		
@@ -101,7 +103,13 @@ public class TGGCompiler {
 		return result;
 	}
 
-	private Map<String, String> determineImports(TGGRule rule) {
+	private Collection<String> determineNonAliasedImports(TGGRule rule) {
+		Collection<String> result = new HashSet<>();
+		result.add("org.emoflon.ibex.tgg.common.marked");
+		return result;
+	}
+
+	private Map<String, String> determineAliasedImports(TGGRule rule) {
 		Map<String, String> imports = new HashMap<>();
 
 		imports.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
@@ -113,6 +121,27 @@ public class TGGCompiler {
 		}
 
 		return imports;
+	}
+
+	public String getCommonViatraPatterns() {
+		
+		String result = ""; 
+		
+		
+		Map<String, String> aliasedImports = new HashMap<>();
+		
+		Collection<String> nonAliasedImports = new HashSet<>();
+		aliasedImports.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
+		aliasedImports.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
+
+		result += patternTemplate.generateHeaderAndImports(aliasedImports, nonAliasedImports, "common");
+		result += patternTemplate.generateCommonPatterns();
+		
+		return result;
+	}
+
+	public String getCommonPatternFileName() {
+		return "_common_eMoflon";
 	}
 
 }

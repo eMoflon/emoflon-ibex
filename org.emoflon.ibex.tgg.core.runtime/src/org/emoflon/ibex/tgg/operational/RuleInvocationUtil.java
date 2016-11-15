@@ -49,14 +49,17 @@ public class RuleInvocationUtil {
 
 	private RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
-	public RuleInvocationUtil(TGG tgg, IModelManipulations manipulator, Resource srcR, Resource corrR, Resource trgR,
+	public RuleInvocationUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR,
 			Resource protocolR) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
-		this.manipulator = manipulator;
 		this.srcR = srcR;
 		this.corrR = corrR;
 		this.trgR = trgR;
 		this.protocolR = protocolR;
+	}
+	
+	public void setModelManipulation(IModelManipulations manipulator){
+		this.manipulator = manipulator;
 	}
 
 	public TGGRuleApplication applyFWD(String ruleName, IPatternMatch match) {
