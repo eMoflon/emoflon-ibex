@@ -1,7 +1,9 @@
 package org.emoflon.ibex.tgg.operational;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,6 +14,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.IModelManipulations;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.ModelManipulationException;
+import org.emoflon.ibex.tgg.operational.util.EdgeUtil;
+import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.BindingType;
 import language.DomainType;
@@ -22,15 +26,17 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 import runtime.Edge;
+import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 
-public class RuleInvocationUtil {
+public abstract class TGGRuntimeUtil {
 
 	private IModelManipulations manipulator;
 
 	/*
-	 * these hash maps serve as rule info to indicate what variables are black/green & src/corr/trg in a rule
+	 * these hash maps serve as rule info to indicate what variables are
+	 * black/green & src/corr/trg in a rule
 	 */
 	private HashMap<String, Collection<TGGRuleNode>> greenSrcNodes = new HashMap<>();
 	private HashMap<String, Collection<TGGRuleNode>> greenTrgNodes = new HashMap<>();
@@ -42,48 +48,44 @@ public class RuleInvocationUtil {
 	private HashMap<String, Collection<TGGRuleElement>> blackCorrElements = new HashMap<>();
 	private HashMap<String, Collection<TGGRuleElement>> blackTrgElements = new HashMap<>();
 
-	private Resource srcR;
-	private Resource trgR;
-	private Resource corrR;
-	private Resource protocolR;
+	protected Resource srcR;
+	protected Resource trgR;
+	protected Resource corrR;
+	protected Resource protocolR;
 
 	private RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
+	
+	private ArrayList<Edge> createdEdges = new ArrayList<>();
 
-	public RuleInvocationUtil(TGG tgg, IModelManipulations manipulator, Resource srcR, Resource corrR, Resource trgR,
-			Resource protocolR) {
+	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
-		this.manipulator = manipulator;
 		this.srcR = srcR;
 		this.corrR = corrR;
 		this.trgR = trgR;
 		this.protocolR = protocolR;
+		for (Resource resource : getResourcesForEdgeCreation()) {
+			EdgeUtil.createEdgeWrappers(resource, protocolR);
+		}
 	}
 
-	public TGGRuleApplication applyFWD(String ruleName, IPatternMatch match) {
-		return apply(ruleName, match, AppType.FWD);
+	protected abstract Resource[] getResourcesForEdgeCreation();
+
+	public void setModelManipulation(IModelManipulations manipulator) {
+		this.manipulator = manipulator;
 	}
 
-	public TGGRuleApplication applyBWD(String ruleName, IPatternMatch match) {
-		return apply(ruleName, match, AppType.BWD);
-	}
-
-	public TGGRuleApplication applyCC(String ruleName, IPatternMatch match) {
-		return apply(ruleName, match, AppType.CC);
-	}
-
-	public TGGRuleApplication applyModelgen(String ruleName, IPatternMatch match) {
-		return apply(ruleName, match, AppType.MODELGEN);
-	}
-
-	private TGGRuleApplication apply(String ruleName, IPatternMatch match, AppType appType) {
+	public TGGRuleApplication apply(String ruleName, IPatternMatch match) {
 
 		/*
-		 * this hash map complements the match to a comatch of an original triple rule application
+		 * this hash map complements the match to a comatch of an original
+		 * triple rule application
 		 */
 		HashMap<String, EObject> createdElements = new HashMap<>();
 
-		boolean createSrcElements = appType == AppType.BWD || appType == AppType.MODELGEN;
-		boolean createTrgElements = appType == AppType.FWD || appType == AppType.MODELGEN;
+		Direction direction = getDirection();
+
+		boolean createSrcElements = direction == Direction.BWD || direction == Direction.MODELGEN;
+		boolean createTrgElements = direction == Direction.FWD || direction == Direction.MODELGEN;
 
 		if (createSrcElements) {
 			createNonCorrs(match, createdElements, greenSrcNodes.get(ruleName), greenSrcEdges.get(ruleName), srcR);
@@ -96,6 +98,14 @@ public class RuleInvocationUtil {
 		createCorrs(ruleName, match, createdElements, greenCorrNodes.get(ruleName));
 
 		return prepareProtocol(ruleName, match, createdElements);
+	}
+
+	public abstract Direction getDirection();
+
+	public abstract Strategy getStrategy();
+	
+	public void applyCreatedEdges(){
+		EdgeUtil.applyEdges(createdEdges);
 	}
 
 	private void createCorrs(String ruleName, IPatternMatch match, HashMap<String, EObject> createdElements,
@@ -118,12 +128,12 @@ public class RuleInvocationUtil {
 							getVariableByName(e.getTrgNode().getName(), createdElements, match)));
 		}
 	}
-	
+
 	private EObject createCorr(TGGRuleCorr c, EObject src, EObject trg) {
 		EObject corr = createNode(c, corrR);
 		try {
-			manipulator.add(corr, corr.eClass().getEStructuralFeature("source"), src);
-			manipulator.add(corr, corr.eClass().getEStructuralFeature("target"), trg);
+			manipulator.set(corr, corr.eClass().getEStructuralFeature("source"), src);
+			manipulator.set(corr, corr.eClass().getEStructuralFeature("target"), trg);
 		} catch (ModelManipulationException e) {
 			e.printStackTrace();
 		}
@@ -138,13 +148,14 @@ public class RuleInvocationUtil {
 			return null;
 		}
 	}
-	
+
 	private Edge createEdge(TGGRuleEdge e, EObject src, EObject trg) {
 		try {
 			Edge edge = (Edge) manipulator.create(protocolR, runtimePackage.getEdge());
 			manipulator.set(edge, runtimePackage.getEdge_Name(), e.getType().getName());
 			manipulator.set(edge, runtimePackage.getEdge_Src(), src);
 			manipulator.set(edge, runtimePackage.getEdge_Trg(), trg);
+			createdEdges.add(edge);
 			return edge;
 		} catch (ModelManipulationException exception) {
 			exception.printStackTrace();
@@ -164,7 +175,8 @@ public class RuleInvocationUtil {
 		try {
 			TGGRuleApplication protocol = (TGGRuleApplication) manipulator.create(protocolR,
 					runtimePackage.getTGGRuleApplication());
-
+			
+			protocol.setName(ruleName);
 
 			fillProtocolInfo(blackSrcElements.get(ruleName), protocol,
 					runtimePackage.getTGGRuleApplication_ContextSrc(), createdElements, match);
@@ -173,18 +185,18 @@ public class RuleInvocationUtil {
 			fillProtocolInfo(blackCorrElements.get(ruleName), protocol,
 					runtimePackage.getTGGRuleApplication_ContextCorr(), createdElements, match);
 
-			fillProtocolInfo(greenSrcNodes.get(ruleName), protocol,
-					runtimePackage.getTGGRuleApplication_CreatedSrc(), createdElements, match);
-			fillProtocolInfo(greenSrcEdges.get(ruleName), protocol,
-					runtimePackage.getTGGRuleApplication_CreatedSrc(), createdElements, match);
+			fillProtocolInfo(greenSrcNodes.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedSrc(),
+					createdElements, match);
+			fillProtocolInfo(greenSrcEdges.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedSrc(),
+					createdElements, match);
 
-			fillProtocolInfo(greenTrgNodes.get(ruleName), protocol,
-					runtimePackage.getTGGRuleApplication_CreatedTrg(), createdElements, match);
-			fillProtocolInfo(greenTrgEdges.get(ruleName), protocol,
-					runtimePackage.getTGGRuleApplication_CreatedTrg(), createdElements, match);
+			fillProtocolInfo(greenTrgNodes.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedTrg(),
+					createdElements, match);
+			fillProtocolInfo(greenTrgEdges.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedTrg(),
+					createdElements, match);
 
-			fillProtocolInfo(greenCorrNodes.get(ruleName), protocol,
-					runtimePackage.getTGGRuleApplication_CreatedCorr(), createdElements, match);
+			fillProtocolInfo(greenCorrNodes.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedCorr(),
+					createdElements, match);
 			return protocol;
 		} catch (ModelManipulationException e) {
 			e.printStackTrace();
@@ -245,9 +257,7 @@ public class RuleInvocationUtil {
 						.collect(Collectors.toSet()));
 
 	}
+	
 
-	private enum AppType {
-		FWD, BWD, CC, MODELGEN
-	}
 
 }

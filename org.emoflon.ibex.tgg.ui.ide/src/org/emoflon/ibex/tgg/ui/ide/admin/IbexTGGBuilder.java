@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.ui.ide.admin;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,9 +24,12 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.tgg.core.compiler.TGGCompiler;
@@ -45,9 +47,12 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	private static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
 	private static final String ECORE_FILE_EXTENSION = ".ecore";
 	private static final String VIATRA_QUERY_FILE_EXTENSION = ".vql";
+	private static final String Transformation = "Transformation";
+	private static final String XTEND_EXTENSION = ".xtend";
 	private static final String TGG_FILE_EXTENSION = ".tgg";
 	private static final String EDITOR_MODEL_EXTENSION = ".editor.xmi";
 	private static final String SRC_FOLDER = "src";
+	private static final String RUN_FOLDER = SRC_FOLDER + "/org/emoflon/ibex/tgg/run";
 	private static final String MODEL_FOLDER = "model";
 	private static final String MODEL_PATTERNS_FOLDER = MODEL_FOLDER + "/patterns";
 
@@ -80,8 +85,19 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		performClean();
 		generateEditorModel().ifPresent(editorModel -> 
 		generateInternalModels(editorModel).ifPresent(internalModel ->
-		generatePatterns(internalModel)));
+		{
+			generatePatterns(internalModel);
+			generateXtendManipulationCode(internalModel);
+		}
+		));
 		generateAttrCondLib();
+	}
+
+	private void generateXtendManipulationCode(TGGProject tggProject) {
+		TGGCompiler compiler = new TGGCompiler();
+		
+		String manipulationCode = compiler.getXtendManipulationCode(tggProject.getTggModel());
+		createFile(RUN_FOLDER, Transformation, XTEND_EXTENSION, manipulationCode);
 	}
 
 	private void generateAttrCondLib() {
@@ -174,17 +190,25 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	private void generatePatterns(TGGProject tggProject) {
 		TGGCompiler compiler = new TGGCompiler();
+		
+		String commonPatternContents = compiler.getCommonViatraPatterns();
+		createFile(MODEL_PATTERNS_FOLDER, compiler.getCommonPatternFileName(), VIATRA_QUERY_FILE_EXTENSION, commonPatternContents);
+		
 		compiler.preparePatterns(tggProject.getTggModel());
 		tggProject.getTggModel().getRules().forEach(r -> {
 			String contents = compiler.getViatraPatterns(r);			
-			IFile file = getProject().getFolder(MODEL_PATTERNS_FOLDER).getFile(r.getName() + VIATRA_QUERY_FILE_EXTENSION);
-			try {
-				if (file.exists()) file.delete(true, new NullProgressMonitor());
-				WorkspaceHelper.addAllFoldersAndFile(getProject(), file.getProjectRelativePath(), contents, new NullProgressMonitor());
-			} catch (CoreException e) {
-				LogUtils.error(logger, e);
-			}
+			createFile(MODEL_PATTERNS_FOLDER, r.getName(), VIATRA_QUERY_FILE_EXTENSION, contents);
 		});		
+	}
+
+	private void createFile(String folder, String fileName, String extension, String contents) {
+		IFile file = getProject().getFolder(folder).getFile(fileName + extension);
+		try {
+			if (file.exists()) file.delete(true, new NullProgressMonitor());
+			WorkspaceHelper.addAllFoldersAndFile(getProject(), file.getProjectRelativePath(), contents, new NullProgressMonitor());
+		} catch (CoreException e) {
+			LogUtils.error(logger, e);
+		}
 	}
 
 	private Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG) {
@@ -202,13 +226,20 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		return Optional.of(tggProject);
 	}
 
-	private void saveModelInProject(String folder, String fileName, ResourceSet rs, EObject model) throws IOException{
+	private void saveModelInProject(String folder, String fileName, ResourceSet rs, EObject model) throws IOException {
 		IFile file = getProject().getFolder(folder).getFile(fileName);
 		URI uri = URI.createPlatformResourceURI(
 				getProject().getName() + "/" + file.getProjectRelativePath().toString(), true);
 		Resource resource = rs.createResource(uri);
 		resource.getContents().add(model);
-		resource.save(null);
+		Map<Object, Object> options = ((XMLResource)resource).getDefaultSaveOptions();
+		options.put(XMLResource.OPTION_URI_HANDLER, new URIHandlerImpl() {
+			@Override
+			public URI deresolve(URI uri) {
+				return uri;
+			}
+		});
+		resource.save(options);
 	}
 
 	@Override

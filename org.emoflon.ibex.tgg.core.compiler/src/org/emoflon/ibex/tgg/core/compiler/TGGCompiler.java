@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.core.compiler;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,22 +18,28 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.BWDPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CCPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CorrContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.FWDPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.MODELGENPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgPattern;
 
+import language.LanguageFactory;
 import language.TGG;
 import language.TGGRule;
+import language.TGGRuleEdge;
 
 public class TGGCompiler {
 
-	HashMap<TGGRule, Collection<Pattern>> ruleToPatterns = new HashMap<>();
+	private HashMap<TGGRule, Collection<Pattern>> ruleToPatterns = new HashMap<>();
+	private PatternTemplate patternTemplate = new PatternTemplate();
 
 	public void preparePatterns(TGG tggModel) {
 		
-		for(TGGRule rule : tggModel.getRules()){
+		TGG tggModelWithOppositeEdges = addOppositeEdges(tggModel);
+		
+		for(TGGRule rule : tggModelWithOppositeEdges.getRules()){
 			
 			Collection<Pattern> patterns = new HashSet<>();
 			
@@ -46,12 +51,14 @@ public class TGGCompiler {
 			
 			SrcPattern src = new SrcPattern(rule);
 			patterns.add(src);
+			src.getPositiveInvocations().add(srcContext);
 			
 			TrgContextPattern trgContext= new TrgContextPattern(rule);
 			patterns.add(trgContext);
 			
 			TrgPattern trg = new TrgPattern(rule);
 			patterns.add(trg);
+			trg.getPositiveInvocations().add(trgContext);
 			
 			CorrContextPattern corrContext = new CorrContextPattern(rule);
 			patterns.add(corrContext);
@@ -82,15 +89,36 @@ public class TGGCompiler {
 			cc.getPositiveInvocations().add(trg);
 			cc.getPositiveInvocations().add(corrContext);
 			
+			MODELGENPattern modelgen = new MODELGENPattern(rule);
+			patterns.add(modelgen);
+			modelgen.getPositiveInvocations().add(srcContext);
+			modelgen.getPositiveInvocations().add(trgContext);
+			modelgen.getPositiveInvocations().add(corrContext);
+			
 			ruleToPatterns.put(rule, patterns);
 		}
 	}
 
+	private TGG addOppositeEdges(TGG tggModel) {
+		tggModel.getRules().stream().flatMap(r -> r.getEdges().stream()).forEach(e -> {
+			if(e.getType().getEOpposite() != null){
+				TGGRuleEdge oppositeEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+				oppositeEdge.setBindingType(e.getBindingType());
+				oppositeEdge.setDomainType(e.getDomainType());
+				oppositeEdge.setType(e.getType().getEOpposite());
+				oppositeEdge.setSrcNode(e.getTrgNode());
+				oppositeEdge.setTrgNode(e.getSrcNode());
+				oppositeEdge.setName(oppositeEdge.getSrcNode().getName() + "__" + oppositeEdge.getType().getName() + "__" + oppositeEdge.getTrgNode().getName() + "_eMoflonEdge");
+				((TGGRule)e.eContainer()).getEdges().add(oppositeEdge);
+			}
+		});
+		return tggModel;
+	}
+
 	public String getViatraPatterns(TGGRule rule) {
 		
-		PatternTemplate patternTemplate = new PatternTemplate();
 		
-		String result = patternTemplate.generateHeaderAndImports(determineImports(rule), rule.getName());
+		String result = patternTemplate.generateHeaderAndImports(determineAliasedImports(rule), determineNonAliasedImports(rule), rule.getName());
 		
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof RulePartPattern).map(p -> patternTemplate.generateOperationalPattern((RulePartPattern) p)).collect(Collectors.joining());
 		
@@ -101,7 +129,13 @@ public class TGGCompiler {
 		return result;
 	}
 
-	private Map<String, String> determineImports(TGGRule rule) {
+	private Collection<String> determineNonAliasedImports(TGGRule rule) {
+		Collection<String> result = new HashSet<>();
+		result.add("org.emoflon.ibex.tgg.common.marked");
+		return result;
+	}
+
+	private Map<String, String> determineAliasedImports(TGGRule rule) {
 		Map<String, String> imports = new HashMap<>();
 
 		imports.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
@@ -113,6 +147,32 @@ public class TGGCompiler {
 		}
 
 		return imports;
+	}
+
+	public String getCommonViatraPatterns() {
+		
+		String result = ""; 
+		
+		
+		Map<String, String> aliasedImports = new HashMap<>();
+		
+		Collection<String> nonAliasedImports = new HashSet<>();
+		aliasedImports.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
+		aliasedImports.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
+
+		result += patternTemplate.generateHeaderAndImports(aliasedImports, nonAliasedImports, "common");
+		result += patternTemplate.generateCommonPatterns();
+		
+		return result;
+	}
+
+	public String getCommonPatternFileName() {
+		return "_common_eMoflon";
+	}
+	
+	public String getXtendManipulationCode(TGG tggModel){
+		ManipulationTemplate mTemplate = new ManipulationTemplate();
+		return mTemplate.getManipulationCode(tggModel);
 	}
 
 }
