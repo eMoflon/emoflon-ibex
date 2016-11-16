@@ -125,8 +125,8 @@ public class RuleInvocationUtil {
 	private EObject createCorr(TGGRuleCorr c, EObject src, EObject trg) {
 		EObject corr = createNode(c, corrR);
 		try {
-			manipulator.add(corr, corr.eClass().getEStructuralFeature("source"), src);
-			manipulator.add(corr, corr.eClass().getEStructuralFeature("target"), trg);
+			manipulator.set(corr, corr.eClass().getEStructuralFeature("source"), src);
+			manipulator.set(corr, corr.eClass().getEStructuralFeature("target"), trg);
 		} catch (ModelManipulationException e) {
 			e.printStackTrace();
 		}
