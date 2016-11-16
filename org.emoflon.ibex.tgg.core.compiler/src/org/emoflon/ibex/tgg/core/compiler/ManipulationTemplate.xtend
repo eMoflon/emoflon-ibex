@@ -69,6 +69,7 @@ class ManipulationTemplate {
 					transformation.dispose
 				}
 				transformation = null
+				tggRuntimeUtil.applyCreatedEdges
 				return
 			}
 			
