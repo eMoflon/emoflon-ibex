@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs;
 
+import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
+
 import language.DomainType;
 import language.TGGRule;
 
@@ -13,7 +15,7 @@ public class FWDwithProtocolNACsPattern extends PatternWithProtocolNACs {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_FWD_ProtocolNacs";
+		return PatternSuffixes.FWD_WITH_PROTOCOL_NACS;
 	}
 
 

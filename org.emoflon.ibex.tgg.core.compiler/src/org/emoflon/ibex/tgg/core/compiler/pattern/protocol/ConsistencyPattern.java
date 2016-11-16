@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
 
 import language.BindingType;
@@ -39,7 +40,7 @@ public class ConsistencyPattern extends Pattern {
 	
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_PROTOCOL";
+		return PatternSuffixes.PROTOCOL;
 	}
 	
 	public String getProtocolNodeName(){

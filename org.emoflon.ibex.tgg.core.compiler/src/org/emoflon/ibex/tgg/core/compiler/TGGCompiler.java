@@ -18,6 +18,7 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.BWDPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CCPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CorrContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.FWDPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.MODELGENPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcPattern;
@@ -87,6 +88,12 @@ public class TGGCompiler {
 			cc.getPositiveInvocations().add(src);
 			cc.getPositiveInvocations().add(trg);
 			cc.getPositiveInvocations().add(corrContext);
+			
+			MODELGENPattern modelgen = new MODELGENPattern(rule);
+			patterns.add(modelgen);
+			modelgen.getPositiveInvocations().add(srcContext);
+			modelgen.getPositiveInvocations().add(trgContext);
+			modelgen.getPositiveInvocations().add(corrContext);
 			
 			ruleToPatterns.put(rule, patterns);
 		}
@@ -161,6 +168,11 @@ public class TGGCompiler {
 
 	public String getCommonPatternFileName() {
 		return "_common_eMoflon";
+	}
+	
+	public String getXtendManipulationCode(TGG tggModel){
+		ManipulationTemplate mTemplate = new ManipulationTemplate();
+		return mTemplate.getManipulationCode(tggModel);
 	}
 
 }

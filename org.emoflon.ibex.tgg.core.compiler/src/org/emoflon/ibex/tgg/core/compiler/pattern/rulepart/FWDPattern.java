@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
 
+import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
+
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
@@ -30,7 +32,7 @@ public class FWDPattern extends RulePartPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_FWD";
+		return PatternSuffixes.FWD;
 	}
 
 }

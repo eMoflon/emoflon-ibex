@@ -47,9 +47,12 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	private static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
 	private static final String ECORE_FILE_EXTENSION = ".ecore";
 	private static final String VIATRA_QUERY_FILE_EXTENSION = ".vql";
+	private static final String Transformation = "Transformation";
+	private static final String XTEND_EXTENSION = ".xtend";
 	private static final String TGG_FILE_EXTENSION = ".tgg";
 	private static final String EDITOR_MODEL_EXTENSION = ".editor.xmi";
 	private static final String SRC_FOLDER = "src";
+	private static final String RUN_FOLDER = SRC_FOLDER + "/org/emoflon/ibex/tgg/run";
 	private static final String MODEL_FOLDER = "model";
 	private static final String MODEL_PATTERNS_FOLDER = MODEL_FOLDER + "/patterns";
 
@@ -82,8 +85,19 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		performClean();
 		generateEditorModel().ifPresent(editorModel -> 
 		generateInternalModels(editorModel).ifPresent(internalModel ->
-		generatePatterns(internalModel)));
+		{
+			generatePatterns(internalModel);
+			generateXtendManipulationCode(internalModel);
+		}
+		));
 		generateAttrCondLib();
+	}
+
+	private void generateXtendManipulationCode(TGGProject tggProject) {
+		TGGCompiler compiler = new TGGCompiler();
+		
+		String manipulationCode = compiler.getXtendManipulationCode(tggProject.getTggModel());
+		createFile(RUN_FOLDER, Transformation, XTEND_EXTENSION, manipulationCode);
 	}
 
 	private void generateAttrCondLib() {

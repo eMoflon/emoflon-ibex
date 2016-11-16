@@ -1,4 +1,4 @@
-package org.moflon.ibex.tgg.run;
+package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
 
@@ -8,7 +8,8 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.tgg.operational.RuleInvocationUtil;
+import org.emoflon.ibex.tgg.operational.FWDTGGRuntimeUtil;
+import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -32,8 +33,9 @@ public class Application {
 		Resource tggR = rs.getResource(URI.createFileURI("model/CDToDoc.tgg.xmi"), true);
 		TGG tgg = (TGG) tggR.getContents().get(0);
 
-		RuleInvocationUtil transformer = new RuleInvocationUtil(tgg, s, c, t, p);
-		FWD fwd = new FWD(rs, transformer);
+		TGGRuntimeUtil transformer = new FWDTGGRuntimeUtil(tgg, s, c, t, p);
+		Transformation fwd = new Transformation(rs, transformer);
+		fwd.execute();
 		fwd.dispose();
 
 		s.save(null);
