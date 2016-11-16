@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.core.compiler;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,8 +24,10 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgPattern;
 
+import language.LanguageFactory;
 import language.TGG;
 import language.TGGRule;
+import language.TGGRuleEdge;
 
 public class TGGCompiler {
 
@@ -35,7 +36,9 @@ public class TGGCompiler {
 
 	public void preparePatterns(TGG tggModel) {
 		
-		for(TGGRule rule : tggModel.getRules()){
+		TGG tggModelWithOppositeEdges = addOppositeEdges(tggModel);
+		
+		for(TGGRule rule : tggModelWithOppositeEdges.getRules()){
 			
 			Collection<Pattern> patterns = new HashSet<>();
 			
@@ -87,6 +90,22 @@ public class TGGCompiler {
 			
 			ruleToPatterns.put(rule, patterns);
 		}
+	}
+
+	private TGG addOppositeEdges(TGG tggModel) {
+		tggModel.getRules().stream().flatMap(r -> r.getEdges().stream()).forEach(e -> {
+			if(e.getType().getEOpposite() != null){
+				TGGRuleEdge oppositeEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+				oppositeEdge.setBindingType(e.getBindingType());
+				oppositeEdge.setDomainType(e.getDomainType());
+				oppositeEdge.setType(e.getType().getEOpposite());
+				oppositeEdge.setSrcNode(e.getTrgNode());
+				oppositeEdge.setTrgNode(e.getSrcNode());
+				oppositeEdge.setName(oppositeEdge.getSrcNode().getName() + "__" + oppositeEdge.getType().getName() + "__" + oppositeEdge.getTrgNode().getName() + "_eMoflonEdge");
+				((TGGRule)e.eContainer()).getEdges().add(oppositeEdge);
+			}
+		});
+		return tggModel;
 	}
 
 	public String getViatraPatterns(TGGRule rule) {
