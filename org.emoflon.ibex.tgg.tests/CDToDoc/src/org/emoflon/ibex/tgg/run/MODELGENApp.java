@@ -1,17 +1,23 @@
 package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.xml.Log4jEntityResolver;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.tgg.operational.FWD;
+import org.eclipse.viatra.query.runtime.util.ViatraQueryLoggingUtil;
+import org.eclipse.viatra.transformation.evm.api.Agenda;
 import org.emoflon.ibex.tgg.operational.MODELGEN;
 import org.emoflon.ibex.tgg.operational.MODELGENStopCriterion;
-import org.emoflon.ibex.tgg.operational.OperationMode;
 import org.emoflon.ibex.tgg.operational.OperationStrategy;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
@@ -22,8 +28,10 @@ import language.TGG;
 public class MODELGENApp {
 
 	public static void main(String[] args) throws IOException {
-		BasicConfigurator.configure();
+		//BasicConfigurator.configure();
 		
+		
+		//ViatraQueryLoggingUtil.getDefaultLogger().setLevel(Level.OFF);
 		OperationStrategy strategy = OperationStrategy.NORMAL;
 		
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
@@ -31,6 +39,7 @@ public class MODELGENApp {
 		
 		Resource tggR = rs.getResource(URI.createFileURI("model/CDToDoc.tgg.xmi"), true);
 		TGG tgg = (TGG) tggR.getContents().get(0);
+		
 		
 		// create your resources 
 		Resource s = rs.createResource(URI.createFileURI("src_gen.xmi"));
@@ -41,10 +50,17 @@ public class MODELGENApp {
 		// load the resources containing your input 
 
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
-		stop.setMaxSrcCount(1000);
+		stop.setMaxSrcCount(500000);
 		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, strategy, stop);
 		
 		Transformation trafo = new Transformation(rs, transformer);
+		
+		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
+		loggers.add(LogManager.getRootLogger());
+		for ( Logger logger : loggers ) {
+		    logger.setLevel(Level.OFF);
+		}
+		
 		trafo.execute();
 		trafo.dispose();
 

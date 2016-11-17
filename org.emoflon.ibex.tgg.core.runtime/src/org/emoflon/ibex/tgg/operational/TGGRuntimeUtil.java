@@ -135,9 +135,9 @@ public abstract class TGGRuntimeUtil {
 	private EObject createCorr(TGGRuleCorr c, EObject src, EObject trg) {
 		EObject corr = createNode(c, corrR);
 		try {
-			manipulator.set(corr, corr.eClass().getEStructuralFeature("source"), src);
-			manipulator.set(corr, corr.eClass().getEStructuralFeature("target"), trg);
-		} catch (ModelManipulationException e) {
+			corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
+			corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return corr;

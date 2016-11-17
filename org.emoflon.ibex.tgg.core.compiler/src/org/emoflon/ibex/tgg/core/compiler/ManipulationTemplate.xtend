@@ -64,11 +64,11 @@ class ManipulationTemplate {
 			}
 			
 			def dispose() {
-				tggRuntimeUtil.finalize
 				if (transformation != null) {
 					transformation.dispose
 				}
 				transformation = null
+				tggRuntimeUtil.finalize
 				return
 			}
 			
