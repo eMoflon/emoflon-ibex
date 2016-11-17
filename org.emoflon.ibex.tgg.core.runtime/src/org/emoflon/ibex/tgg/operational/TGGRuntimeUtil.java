@@ -3,11 +3,9 @@ package org.emoflon.ibex.tgg.operational;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -15,7 +13,7 @@ import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.IModelManipulations;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.ModelManipulationException;
 import org.emoflon.ibex.tgg.operational.util.EdgeUtil;
-import org.moflon.core.utilities.eMoflonEMFUtil;
+import org.emoflon.ibex.tgg.operational.util.ILPUtil;
 
 import language.BindingType;
 import language.DomainType;
@@ -26,7 +24,6 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 import runtime.Edge;
-import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 
@@ -54,10 +51,12 @@ public abstract class TGGRuntimeUtil {
 	protected Resource protocolR;
 
 	private RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
-	
+
 	private ArrayList<Edge> createdEdges = new ArrayList<>();
 
-	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
+	private OperationStrategy strategy;
+
+	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, OperationStrategy strategy) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
 		this.srcR = srcR;
 		this.corrR = corrR;
@@ -66,6 +65,13 @@ public abstract class TGGRuntimeUtil {
 		for (Resource resource : getResourcesForEdgeCreation()) {
 			EdgeUtil.createEdgeWrappers(resource, protocolR);
 		}
+		this.strategy = strategy;
+	}
+	
+	public abstract OperationMode getMode();
+
+	public OperationStrategy getStrategy(){
+		return strategy;
 	}
 
 	protected abstract Resource[] getResourcesForEdgeCreation();
@@ -82,16 +88,11 @@ public abstract class TGGRuntimeUtil {
 		 */
 		HashMap<String, EObject> createdElements = new HashMap<>();
 
-		Direction direction = getDirection();
-
-		boolean createSrcElements = direction == Direction.BWD || direction == Direction.MODELGEN;
-		boolean createTrgElements = direction == Direction.FWD || direction == Direction.MODELGEN;
-
-		if (createSrcElements) {
+		if (manipulateSrc()) {
 			createNonCorrs(match, createdElements, greenSrcNodes.get(ruleName), greenSrcEdges.get(ruleName), srcR);
 		}
 
-		if (createTrgElements) {
+		if (manipulateTrg()) {
 			createNonCorrs(match, createdElements, greenTrgNodes.get(ruleName), greenTrgEdges.get(ruleName), trgR);
 		}
 
@@ -100,11 +101,13 @@ public abstract class TGGRuntimeUtil {
 		return prepareProtocol(ruleName, match, createdElements);
 	}
 
-	public abstract Direction getDirection();
+	protected abstract boolean manipulateTrg();
 
-	public abstract Strategy getStrategy();
-	
-	public void applyCreatedEdges(){
+	protected abstract boolean manipulateSrc();
+
+	public void finalize() {
+		if(strategy == OperationStrategy.ILP)
+			ILPUtil.filter(protocolR, createdEdges);
 		EdgeUtil.applyEdges(createdEdges);
 	}
 
@@ -175,8 +178,9 @@ public abstract class TGGRuntimeUtil {
 		try {
 			TGGRuleApplication protocol = (TGGRuleApplication) manipulator.create(protocolR,
 					runtimePackage.getTGGRuleApplication());
-			
-			protocol.setName(ruleName);
+
+			manipulator.set(protocol, runtimePackage.getTGGRuleApplication_Name(), ruleName);
+			manipulator.set(protocol, runtimePackage.getTGGRuleApplication_Final(), strategy == OperationStrategy.NORMAL);
 
 			fillProtocolInfo(blackSrcElements.get(ruleName), protocol,
 					runtimePackage.getTGGRuleApplication_ContextSrc(), createdElements, match);
@@ -213,7 +217,6 @@ public abstract class TGGRuntimeUtil {
 				e1.printStackTrace();
 			}
 		});
-
 	}
 
 	private void prepareRuleInfo(TGGRule r) {
@@ -257,7 +260,6 @@ public abstract class TGGRuntimeUtil {
 						.collect(Collectors.toSet()));
 
 	}
-	
 
 
 }

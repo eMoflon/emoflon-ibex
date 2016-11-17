@@ -14,10 +14,8 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.BWDwithProtocolNACsPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.FWDwithProtocolNACsPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.PatternWithProtocolNACs;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.BWDPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CCPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CorrContextPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.FWDPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.MODELGENPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcContextPattern;
@@ -63,25 +61,17 @@ public class TGGCompiler {
 			CorrContextPattern corrContext = new CorrContextPattern(rule);
 			patterns.add(corrContext);
 			
-			FWDPattern fwd = new FWDPattern(rule);
+			FWDwithProtocolNACsPattern fwd = new FWDwithProtocolNACsPattern(rule);
 			patterns.add(fwd);
 			fwd.getPositiveInvocations().add(src);
 			fwd.getPositiveInvocations().add(corrContext);
 			fwd.getPositiveInvocations().add(trgContext);
 			
-			FWDwithProtocolNACsPattern fwdWithProtocolNACs = new FWDwithProtocolNACsPattern(rule);
-			patterns.add(fwdWithProtocolNACs);
-			fwdWithProtocolNACs.getPositiveInvocations().add(fwd);
-			
-			BWDPattern bwd = new BWDPattern(rule);
+			BWDwithProtocolNACsPattern bwd = new BWDwithProtocolNACsPattern(rule);
 			patterns.add(bwd);
 			bwd.getPositiveInvocations().add(trg);
 			bwd.getPositiveInvocations().add(corrContext);
 			bwd.getPositiveInvocations().add(srcContext);
-			
-			BWDwithProtocolNACsPattern bwdWithProtocolNACs = new BWDwithProtocolNACsPattern(rule);
-			patterns.add(bwdWithProtocolNACs);
-			bwdWithProtocolNACs.getPositiveInvocations().add(bwd);
 			
 			CCPattern cc = new CCPattern(rule);
 			patterns.add(cc);

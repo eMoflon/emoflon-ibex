@@ -1,5 +1,5 @@
 package org.emoflon.ibex.tgg.operational;
 
-public enum Strategy {
+public enum OperationStrategy {
 	ILP, NORMAL
 }

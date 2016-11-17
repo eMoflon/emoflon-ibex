@@ -36,3 +36,13 @@
 /.PackageToFileRule_FWD_WITH_PROTOCOL_NACSQuerySpecification.java._trace
 /.PackageToFileRule_MODELGENProcessor.java._trace
 /.PackageToFileRule_MODELGENQuerySpecification.java._trace
+/PackageToFileRule_CCProcessor.java
+/PackageToFileRule_CCQuerySpecification.java
+/PackageToFileRule_FWDProcessor.java
+/PackageToFileRule_FWDQuerySpecification.java
+/PackageToFileRule_MODELGENProcessor.java
+/PackageToFileRule_MODELGENQuerySpecification.java
+/PackageToFileRule_PROTOCOLProcessor.java
+/PackageToFileRule_PROTOCOLQuerySpecification.java
+/PackageToFileRule_BWDProcessor.java
+/PackageToFileRule_BWDQuerySpecification.java

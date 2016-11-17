@@ -36,3 +36,13 @@
 /.ClazzToFileRule_BWD_WITH_PROTOCOL_NACSProcessor.java._trace
 /.ClazzToFileRule_MODELGENProcessor.java._trace
 /.ClazzToFileRule_MODELGENQuerySpecification.java._trace
+/ClazzToFileRule_CCProcessor.java
+/ClazzToFileRule_CCQuerySpecification.java
+/ClazzToFileRule_MODELGENProcessor.java
+/ClazzToFileRule_MODELGENQuerySpecification.java
+/ClazzToFileRule_PROTOCOLProcessor.java
+/ClazzToFileRule_PROTOCOLQuerySpecification.java
+/ClazzToFileRule_BWDProcessor.java
+/ClazzToFileRule_BWDQuerySpecification.java
+/ClazzToFileRule_FWDProcessor.java
+/ClazzToFileRule_FWDQuerySpecification.java

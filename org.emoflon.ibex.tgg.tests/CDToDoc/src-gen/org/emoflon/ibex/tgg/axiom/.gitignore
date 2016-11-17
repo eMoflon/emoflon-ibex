@@ -38,3 +38,13 @@
 /.Axiom_FWD_WITH_PROTOCOL_NACSMatcher.java._trace
 /.Axiom_MODELGENMatch.java._trace
 /.Axiom_MODELGENMatcher.java._trace
+/Axiom_BWDMatch.java
+/Axiom_BWDMatcher.java
+/Axiom_CCMatch.java
+/Axiom_CCMatcher.java
+/Axiom_FWDMatch.java
+/Axiom_FWDMatcher.java
+/Axiom_MODELGENMatch.java
+/Axiom_MODELGENMatcher.java
+/Axiom_PROTOCOLMatch.java
+/Axiom_PROTOCOLMatcher.java

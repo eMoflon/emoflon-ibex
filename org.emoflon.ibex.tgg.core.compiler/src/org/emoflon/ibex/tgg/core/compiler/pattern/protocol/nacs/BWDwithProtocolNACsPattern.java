@@ -13,7 +13,7 @@ public class BWDwithProtocolNACsPattern extends PatternWithProtocolNACs {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.BWD_WITH_PROTOCOL_NACS;
+		return PatternSuffixes.BWD;
 	}
 
 	@Override

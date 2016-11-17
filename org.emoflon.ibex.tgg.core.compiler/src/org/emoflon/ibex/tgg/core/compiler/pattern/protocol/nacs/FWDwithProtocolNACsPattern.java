@@ -15,7 +15,7 @@ public class FWDwithProtocolNACsPattern extends PatternWithProtocolNACs {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.FWD_WITH_PROTOCOL_NACS;
+		return PatternSuffixes.FWD;
 	}
 
 

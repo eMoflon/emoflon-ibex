@@ -36,3 +36,13 @@
 /.PackageToFolderRule_FWD_WITH_PROTOCOL_NACSQuerySpecification.java._trace
 /.PackageToFolderRule_MODELGENProcessor.java._trace
 /.PackageToFolderRule_MODELGENQuerySpecification.java._trace
+/PackageToFolderRule_MODELGENProcessor.java
+/PackageToFolderRule_MODELGENQuerySpecification.java
+/PackageToFolderRule_BWDProcessor.java
+/PackageToFolderRule_BWDQuerySpecification.java
+/PackageToFolderRule_CCProcessor.java
+/PackageToFolderRule_CCQuerySpecification.java
+/PackageToFolderRule_FWDProcessor.java
+/PackageToFolderRule_FWDQuerySpecification.java
+/PackageToFolderRule_PROTOCOLProcessor.java
+/PackageToFolderRule_PROTOCOLQuerySpecification.java

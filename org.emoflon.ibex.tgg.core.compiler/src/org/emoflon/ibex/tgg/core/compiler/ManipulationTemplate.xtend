@@ -1,13 +1,12 @@
 package org.emoflon.ibex.tgg.core.compiler
 
 import language.TGG
-import java.util.regex.PatternSyntaxException
 
 class ManipulationTemplate {
 	
 	def getManipulationCode(TGG tgg){
 		
-		val suffixes = #{PatternSuffixes.FWD, PatternSuffixes.BWD, PatternSuffixes.CC, PatternSuffixes.MODELGEN, PatternSuffixes.FWD_WITH_PROTOCOL_NACS, PatternSuffixes.BWD_WITH_PROTOCOL_NACS}
+		val suffixes = #{PatternSuffixes.FWD, PatternSuffixes.BWD, PatternSuffixes.CC, PatternSuffixes.MODELGEN}
 		return '''
 	
 		package org.emoflon.ibex.tgg.run
@@ -24,8 +23,8 @@ class ManipulationTemplate {
 		import org.eclipse.emf.ecore.resource.Resource	
 		import org.eclipse.emf.ecore.resource.ResourceSet
 		import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil
-		import org.emoflon.ibex.tgg.operational.Direction
-		import org.emoflon.ibex.tgg.operational.Strategy
+		import org.emoflon.ibex.tgg.operational.OperationMode
+		import org.emoflon.ibex.tgg.operational.OperationStrategy
 		
 		«FOR rule : tgg.rules»
 		«FOR suffix : suffixes»
@@ -65,11 +64,11 @@ class ManipulationTemplate {
 			}
 			
 			def dispose() {
+				tggRuntimeUtil.finalize
 				if (transformation != null) {
 					transformation.dispose
 				}
 				transformation = null
-				tggRuntimeUtil.applyCreatedEdges
 				return
 			}
 			
@@ -82,17 +81,13 @@ class ManipulationTemplate {
 			}
 			
 			private def getTransformationRuleGroup() {
-				if (tggRuntimeUtil.getDirection() == Direction.FWD && tggRuntimeUtil.getStrategy() == Strategy.NORMAL)
-					return get«PatternSuffixes.FWD_WITH_PROTOCOL_NACS»
-				else if (tggRuntimeUtil.getDirection() == Direction.BWD && tggRuntimeUtil.getStrategy() == Strategy.NORMAL)
-					return get«PatternSuffixes.BWD_WITH_PROTOCOL_NACS»
-				else if (tggRuntimeUtil.direction == Direction.CC)
-					return get«PatternSuffixes.CC»
-				else if (tggRuntimeUtil.getDirection() == Direction.FWD && tggRuntimeUtil.getStrategy() == Strategy.ILP)
+				if (tggRuntimeUtil.mode == OperationMode.FWD)
 					return get«PatternSuffixes.FWD»
-				else if (tggRuntimeUtil.getDirection() == Direction.BWD && tggRuntimeUtil.getStrategy() == Strategy.ILP)
-					return get«PatternSuffixes.BWD»	
-				else if (tggRuntimeUtil.getDirection == Direction.MODELGEN)
+				else if (tggRuntimeUtil.mode == OperationMode.BWD)
+					return get«PatternSuffixes.BWD»
+				else if (tggRuntimeUtil.mode == OperationMode.CC)
+					return get«PatternSuffixes.CC»
+				else if (tggRuntimeUtil.mode == OperationMode.MODELGEN)
 					return get«PatternSuffixes.MODELGEN»
 			}
 			
