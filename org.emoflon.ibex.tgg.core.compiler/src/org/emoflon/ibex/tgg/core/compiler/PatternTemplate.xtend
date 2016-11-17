@@ -36,6 +36,9 @@ class PatternTemplate {
 	def generateOperationalPattern(RulePartPattern pattern) {
 		return '''
 		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
+			«IF pattern.ignored»
+			check(false);
+			«ENDIF»
 			«FOR edge : pattern.getBodyEdges»
 			Edge.src(«edge.name»,«edge.srcNode.name»);
 			Edge.trg(«edge.name»,«edge.trgNode.name»);

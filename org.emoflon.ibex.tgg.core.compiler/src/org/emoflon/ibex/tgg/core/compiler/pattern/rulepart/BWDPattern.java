@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
 
+import java.util.stream.Stream;
+
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
 
 import language.BindingType;
@@ -33,6 +35,11 @@ public class BWDPattern extends RulePartPattern {
 	@Override
 	protected String getPatternNameSuffix() {
 		return PatternSuffixes.BWD;
+	}
+	
+	@Override
+	public boolean ignored() {
+		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream()).noneMatch(e -> e.getDomainType() == DomainType.TRG && e.getBindingType()== BindingType.CREATE);
 	}
 
 }
