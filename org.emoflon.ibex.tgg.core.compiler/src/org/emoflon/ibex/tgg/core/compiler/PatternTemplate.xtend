@@ -11,9 +11,11 @@ class PatternTemplate {
 	def generateCommonPatterns() {
 		return '''
 		pattern marked(o: EObject){
-			TGGRuleApplication.createdSrc(_,o);
+			TGGRuleApplication.createdSrc(p,o);
+			TGGRuleApplication.final(p, true);
 		} or {
-			TGGRuleApplication.createdTrg(_,o);
+			TGGRuleApplication.createdTrg(p,o);
+			TGGRuleApplication.final(p, true);
 		}
 		'''
 	}
@@ -36,6 +38,9 @@ class PatternTemplate {
 	def generateOperationalPattern(RulePartPattern pattern) {
 		return '''
 		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
+			«IF pattern.ignored»
+			check(false);
+			«ENDIF»
 			«FOR edge : pattern.getBodyEdges»
 			Edge.src(«edge.name»,«edge.srcNode.name»);
 			Edge.trg(«edge.name»,«edge.trgNode.name»);
@@ -76,6 +81,7 @@ class PatternTemplate {
 	def generateConsistencyPattern(ConsistencyPattern pattern) {
 		return '''
 		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
+			TGGRuleApplication.final(«pattern.protocolNodeName», true);
 			«FOR e : pattern.contextSrc»
 			TGGRuleApplication.contextSrc(«pattern.protocolNodeName», «e.name»);
 			«ENDFOR»

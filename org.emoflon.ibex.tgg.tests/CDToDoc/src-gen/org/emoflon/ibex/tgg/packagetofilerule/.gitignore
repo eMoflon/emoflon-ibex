@@ -38,3 +38,13 @@
 /.PackageToFileRule_FWD_WITH_PROTOCOL_NACSMatcher.java._trace
 /.PackageToFileRule_MODELGENMatch.java._trace
 /.PackageToFileRule_MODELGENMatcher.java._trace
+/PackageToFileRule_CCMatch.java
+/PackageToFileRule_CCMatcher.java
+/PackageToFileRule_FWDMatch.java
+/PackageToFileRule_FWDMatcher.java
+/PackageToFileRule_MODELGENMatch.java
+/PackageToFileRule_MODELGENMatcher.java
+/PackageToFileRule_PROTOCOLMatch.java
+/PackageToFileRule_PROTOCOLMatcher.java
+/PackageToFileRule_BWDMatch.java
+/PackageToFileRule_BWDMatcher.java

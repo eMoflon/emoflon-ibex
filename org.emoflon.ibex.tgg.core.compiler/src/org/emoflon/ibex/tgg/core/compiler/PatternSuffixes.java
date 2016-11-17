@@ -21,8 +21,4 @@ public class PatternSuffixes {
 	public static final String CC = "_CC";
 	
 	public static final String MODELGEN = "_MODELGEN";
-	
-	public static final String FWD_WITH_PROTOCOL_NACS = "_FWD_WITH_PROTOCOL_NACS";
-	
-	public static final String BWD_WITH_PROTOCOL_NACS = "_BWD_WITH_PROTOCOL_NACS";
 }

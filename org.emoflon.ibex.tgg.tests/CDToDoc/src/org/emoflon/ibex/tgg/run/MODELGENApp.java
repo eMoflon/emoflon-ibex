@@ -8,35 +8,45 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.tgg.operational.FWDTGGRuntimeUtil;
+import org.emoflon.ibex.tgg.operational.FWD;
+import org.emoflon.ibex.tgg.operational.MODELGEN;
+import org.emoflon.ibex.tgg.operational.MODELGENStopCriterion;
+import org.emoflon.ibex.tgg.operational.OperationMode;
+import org.emoflon.ibex.tgg.operational.OperationStrategy;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
 import language.TGG;
 
-public class Application {
+public class MODELGENApp {
 
 	public static void main(String[] args) throws IOException {
 		BasicConfigurator.configure();
 		
+		OperationStrategy strategy = OperationStrategy.NORMAL;
+		
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
 		registerMetamodels(rs);
 		
-		Resource p = rs.createResource(URI.createFileURI("protocol.xmi"));
-		Resource t = rs.createResource(URI.createFileURI("trg.xmi"));
-		Resource c = rs.createResource(URI.createFileURI("corr.xmi"));
-		
-		Resource s = rs.createResource(URI.createFileURI("src.xmi"));
-		s.load(null);		
-
 		Resource tggR = rs.getResource(URI.createFileURI("model/CDToDoc.tgg.xmi"), true);
 		TGG tgg = (TGG) tggR.getContents().get(0);
+		
+		// create your resources 
+		Resource s = rs.createResource(URI.createFileURI("src_gen.xmi"));
+		Resource t = rs.createResource(URI.createFileURI("trg_gen.xmi"));
+		Resource c = rs.createResource(URI.createFileURI("corr_gen.xmi"));
+		Resource p = rs.createResource(URI.createFileURI("protocol_gen.xmi"));
+		
+		// load the resources containing your input 
 
-		TGGRuntimeUtil transformer = new FWDTGGRuntimeUtil(tgg, s, c, t, p);
-		Transformation fwd = new Transformation(rs, transformer);
-		fwd.execute();
-		fwd.dispose();
+		MODELGENStopCriterion stop = new MODELGENStopCriterion();
+		stop.setMaxSrcCount(1000);
+		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, strategy, stop);
+		
+		Transformation trafo = new Transformation(rs, transformer);
+		trafo.execute();
+		trafo.dispose();
 
 		s.save(null);
 		t.save(null);

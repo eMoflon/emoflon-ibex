@@ -71,6 +71,10 @@ public abstract class Pattern {
 			return ((TGGRuleNode)element).getType();
 	}
 	
+	public boolean ignored(){
+		return false;
+	}
+	
 
 	
 }
