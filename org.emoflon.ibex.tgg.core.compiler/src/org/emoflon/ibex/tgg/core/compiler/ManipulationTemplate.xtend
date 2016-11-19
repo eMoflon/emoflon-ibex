@@ -23,8 +23,8 @@ class ManipulationTemplate {
 		import org.eclipse.emf.ecore.resource.Resource	
 		import org.eclipse.emf.ecore.resource.ResourceSet
 		import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil
+		import org.emoflon.ibex.tgg.operational.MODELGEN
 		import org.emoflon.ibex.tgg.operational.OperationMode
-		import org.emoflon.ibex.tgg.operational.OperationStrategy
 		
 		«FOR rule : tgg.rules»
 		«FOR suffix : suffixes»
@@ -68,7 +68,6 @@ class ManipulationTemplate {
 					transformation.dispose
 				}
 				transformation = null
-				tggRuntimeUtil.finalize
 				return
 			}
 			
@@ -104,9 +103,16 @@ class ManipulationTemplate {
 			private def get«rule.name»«suffix»() {
 				createRule.name("«rule.name»«suffix»").precondition(«rule.name»«suffix»Matcher.querySpecification).action(
 					CRUDActivationStateEnum.CREATED) [
+					«IF suffix.equals(PatternSuffixes.MODELGEN)»
+					if((tggRuntimeUtil as MODELGEN).stop()){
+					  dispose
+					  return
+					}
+					«ENDIF»
 					tggRuntimeUtil.apply("«rule.name»", it)
-				].action(CRUDActivationStateEnum.UPDATED)[].action(CRUDActivationStateEnum.DELETED)[].addLifeCycle(
-					Lifecycles.getDefault(true, true)).build
+				].action(CRUDActivationStateEnum.UPDATED)[].action(CRUDActivationStateEnum.DELETED)[].addLifeCycle(				
+					Lifecycles.getDefault(true, true)
+					).build
 			}
 			«ENDFOR»
 			

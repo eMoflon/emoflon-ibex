@@ -6,8 +6,8 @@ import language.TGG;
 
 public class BWD extends TGGRuntimeUtil {
 
-	public BWD(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, OperationStrategy strategy) {
-		super(tgg, srcR, corrR, trgR, protocolR, strategy);
+	public BWD(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
+		super(tgg, srcR, corrR, trgR, protocolR);
 	}
 
 	@Override
@@ -18,16 +18,6 @@ public class BWD extends TGGRuntimeUtil {
 	@Override
 	protected Resource[] getResourcesForEdgeCreation() {
 		return new Resource[]{trgR};
-	}
-
-	@Override
-	protected boolean manipulateTrg() {
-		return false;
-	}
-
-	@Override
-	protected boolean manipulateSrc() {
-		return true;
 	}
 
 }

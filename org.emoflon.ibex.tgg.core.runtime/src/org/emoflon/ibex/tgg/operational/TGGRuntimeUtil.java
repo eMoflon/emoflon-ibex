@@ -52,11 +52,11 @@ public abstract class TGGRuntimeUtil {
 
 	private RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
-	private ArrayList<Edge> createdEdges = new ArrayList<>();
+	protected ArrayList<Edge> createdEdges = new ArrayList<>();
 
 	private OperationStrategy strategy;
 
-	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, OperationStrategy strategy) {
+	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
 		this.srcR = srcR;
 		this.corrR = corrR;
@@ -65,13 +65,13 @@ public abstract class TGGRuntimeUtil {
 		for (Resource resource : getResourcesForEdgeCreation()) {
 			EdgeUtil.createEdgeWrappers(resource, protocolR);
 		}
-		this.strategy = strategy;
+		this.strategy = getStrategy();
 	}
 	
 	public abstract OperationMode getMode();
 
 	public OperationStrategy getStrategy(){
-		return strategy;
+		return OperationStrategy.NORMAL;
 	}
 
 	protected abstract Resource[] getResourcesForEdgeCreation();
@@ -101,13 +101,15 @@ public abstract class TGGRuntimeUtil {
 		return prepareProtocol(ruleName, match, createdElements);
 	}
 
-	protected abstract boolean manipulateTrg();
+	protected boolean manipulateTrg(){
+		return getMode() == OperationMode.FWD || getMode() == OperationMode.MODELGEN;
+	}
 
-	protected abstract boolean manipulateSrc();
+	protected boolean manipulateSrc(){
+		return getMode() == OperationMode.BWD || getMode() == OperationMode.MODELGEN;
+	}
 
 	public void finalize() {
-		if(strategy == OperationStrategy.ILP)
-			ILPUtil.filter(protocolR, createdEdges);
 		EdgeUtil.applyEdges(createdEdges);
 	}
 

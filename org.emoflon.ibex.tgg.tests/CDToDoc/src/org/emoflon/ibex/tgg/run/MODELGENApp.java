@@ -4,21 +4,16 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.Log4jEntityResolver;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.viatra.query.runtime.util.ViatraQueryLoggingUtil;
-import org.eclipse.viatra.transformation.evm.api.Agenda;
 import org.emoflon.ibex.tgg.operational.MODELGEN;
 import org.emoflon.ibex.tgg.operational.MODELGENStopCriterion;
-import org.emoflon.ibex.tgg.operational.OperationStrategy;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
@@ -29,10 +24,6 @@ public class MODELGENApp {
 
 	public static void main(String[] args) throws IOException {
 		//BasicConfigurator.configure();
-		
-		
-		//ViatraQueryLoggingUtil.getDefaultLogger().setLevel(Level.OFF);
-		OperationStrategy strategy = OperationStrategy.NORMAL;
 		
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
 		registerMetamodels(rs);
@@ -50,8 +41,8 @@ public class MODELGENApp {
 		// load the resources containing your input 
 
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
-		stop.setMaxSrcCount(500000);
-		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, strategy, stop);
+		stop.setMaxSrcCount(100);
+		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop);
 		
 		Transformation trafo = new Transformation(rs, transformer);
 		
@@ -63,11 +54,12 @@ public class MODELGENApp {
 		
 		trafo.execute();
 		trafo.dispose();
+		transformer.finalize();
 
 		s.save(null);
-		t.save(null);
-		c.save(null);
-		p.save(null);
+//		t.save(null);
+//		c.save(null);
+//		p.save(null);
 	}
 	
 	private static void registerMetamodels(ResourceSet rs){
