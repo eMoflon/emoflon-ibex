@@ -3,7 +3,7 @@
 
 #rule Axiom #with CDToDoc
 
-#source { 
+#source {
 	++ p:Package
 }
 
