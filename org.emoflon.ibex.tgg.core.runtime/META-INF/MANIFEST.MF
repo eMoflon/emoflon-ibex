@@ -1,6 +1,8 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.emoflon.ibex.tgg.core.runtime;singleton:=true
-Export-Package: org.emoflon.ibex.tgg.operational,
+Export-Package: gurobi,
+ net.sf.javailp,
+ org.emoflon.ibex.tgg.operational,
  runtime,
  runtime.impl,
  runtime.util
@@ -12,7 +14,8 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.viatra.transformation.runtime.emf;bundle-version="1.4.0",
  org.moflon.tgg.language;bundle-version="2.1.0",
  org.eclipse.viatra.query.runtime;bundle-version="1.4.0",
- org.eclipse.emf.common
+ org.eclipse.emf.common,
+ org.eclipse.viatra.transformation.evm;bundle-version="1.4.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

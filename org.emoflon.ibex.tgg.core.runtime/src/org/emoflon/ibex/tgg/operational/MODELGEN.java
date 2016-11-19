@@ -10,9 +10,9 @@ public class MODELGEN extends TGGRuntimeUtil {
 
 	private MODELGENStopCriterion stopCriterion;
 	
-	public MODELGEN(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR,
-			OperationStrategy strategy, MODELGENStopCriterion stopCriterion) {
-		super(tgg, srcR, corrR, trgR, protocolR, strategy);
+
+	public MODELGEN(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, MODELGENStopCriterion stopCriterion) {
+		super(tgg, srcR, corrR, trgR, protocolR);
 		this.stopCriterion = stopCriterion;
 	}
 
@@ -25,16 +25,6 @@ public class MODELGEN extends TGGRuntimeUtil {
 	protected Resource[] getResourcesForEdgeCreation() {
 		return new Resource[]{};
 	}
-
-	@Override
-	protected boolean manipulateTrg() {
-		return true;
-	}
-
-	@Override
-	protected boolean manipulateSrc() {
-		return true;
-	}
 	
 	@Override
 	public TGGRuleApplication apply(String ruleName, IPatternMatch match) {
@@ -46,5 +36,14 @@ public class MODELGEN extends TGGRuntimeUtil {
 		}
 		return null;		
 	}
+	
+	public MODELGENStopCriterion getStopCriterion() {
+		return stopCriterion;
+	}
+	
+	public boolean stop(){
+		return stopCriterion.dont();
+	}
+
 
 }

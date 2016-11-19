@@ -1,14 +1,13 @@
 package org.emoflon.ibex.tgg.operational.util;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.function.BiConsumer;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.common.util.EList;
-import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import runtime.Edge;
 import runtime.RuntimeFactory;
@@ -26,12 +25,10 @@ public class EdgeUtil {
 				to.getContents().add(edge);
 			}
 
-			// Retrieve all EReference instances
-			Set<EStructuralFeature> references = eMoflonEMFUtil.getAllReferences(node);
-
 			// Iterate through all references
-			for (EStructuralFeature reference : references) {
+			for (EReference reference : node.eClass().getEAllReferences()) {
 				if (!reference.isDerived()) {
+					
 					// Check if the reference to be handled is a containment
 					// edge
 					// (i.e.,
@@ -73,7 +70,14 @@ public class EdgeUtil {
 
 	private static void performActionOnFeature(Edge e, BiConsumer<EStructuralFeature, EObject> actionMany, BiConsumer<EStructuralFeature, EObject> actionOne) {
 		EStructuralFeature feature = e.getSrc().eClass().getEStructuralFeature(e.getName());
+		e.getSrc().eSetDeliver(false);
+		e.getTrg().eSetDeliver(false);
 		if(!feature.isDerived()){
+			
+			if(((EReference)feature).isContainment()){
+				e.getTrg().eResource().getContents().remove(e.getTrg());
+			}
+			
 			if (feature.isMany()) {
 				actionMany.accept(feature, e.getTrg());
 			} else

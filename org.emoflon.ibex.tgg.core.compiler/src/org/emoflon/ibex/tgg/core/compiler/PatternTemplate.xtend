@@ -5,6 +5,7 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.PatternWithProtocolNACs
 import java.util.Collection
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.MODELGENPattern
 
 class PatternTemplate {
 	
@@ -34,10 +35,12 @@ class PatternTemplate {
 		
 		'''
 	}
+	
 		
 	def generateOperationalPattern(RulePartPattern pattern) {
+	
 		return '''
-		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
+		pattern «pattern.getName»(«FOR e : pattern.signatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
 			«IF pattern.ignored»
 			check(false);
 			«ENDIF»
