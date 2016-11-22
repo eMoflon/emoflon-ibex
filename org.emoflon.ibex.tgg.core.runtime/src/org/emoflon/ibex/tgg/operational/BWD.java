@@ -15,9 +15,5 @@ public class BWD extends TGGRuntimeUtil {
 		return OperationMode.BWD;
 	}
 
-	@Override
-	protected Resource[] getResourcesForEdgeCreation() {
-		return new Resource[]{trgR};
-	}
 
 }

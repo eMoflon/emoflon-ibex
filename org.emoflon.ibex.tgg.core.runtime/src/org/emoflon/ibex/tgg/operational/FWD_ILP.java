@@ -1,14 +1,17 @@
 package org.emoflon.ibex.tgg.operational;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import gnu.trove.set.hash.TIntHashSet;
 import language.TGG;
+import runtime.Edge;
 import runtime.TGGRuleApplication;
 
 public class FWD_ILP extends TGGRuntimeUtil_ILP {
@@ -41,8 +44,14 @@ public class FWD_ILP extends TGGRuntimeUtil_ILP {
 	}
 
 	@Override
-	protected Resource[] getResourcesForEdgeCreation() {
-		return new Resource[]{srcR};
+	protected Collection<Edge> getOutputEdgesOf(TGGRuleApplication ra) {
+		ArrayList<Edge> result = new ArrayList<>();
+		ra.getCreatedTrg().forEach(e -> {
+			if(e instanceof Edge)
+				result.add((Edge) e);
+		});
+		return result;
 	}
+
 
 }

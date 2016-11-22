@@ -1,6 +1,8 @@
 package org.emoflon.ibex.tgg.operational;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -9,6 +11,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 import gnu.trove.set.hash.TIntHashSet;
 import language.TGG;
+import runtime.Edge;
 import runtime.TGGRuleApplication;
 
 public class CC extends TGGRuntimeUtil_ILP {
@@ -22,10 +25,6 @@ public class CC extends TGGRuntimeUtil_ILP {
 		return OperationMode.CC;
 	}
 
-	@Override
-	protected Resource[] getResourcesForEdgeCreation() {
-		return new Resource[]{srcR, trgR};
-	}
 
 	@Override
 	protected Collection<HashMap<EObject, TIntHashSet>> getInputCreateTables() {
@@ -43,6 +42,11 @@ public class CC extends TGGRuntimeUtil_ILP {
 	@Override
 	protected int getWeight(TGGRuleApplication m) {
 		return m.getCreatedSrc().size() + m.getCreatedTrg().size();
+	}
+	
+	@Override
+	protected Collection<Edge> getOutputEdgesOf(TGGRuleApplication ra) {
+		return Collections.emptyList();
 	}
 
 }

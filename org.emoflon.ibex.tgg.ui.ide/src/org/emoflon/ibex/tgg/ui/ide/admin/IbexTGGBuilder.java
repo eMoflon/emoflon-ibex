@@ -94,9 +94,9 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 
 	private void generateXtendManipulationCode(TGGProject tggProject) {
-		TGGCompiler compiler = new TGGCompiler();
+		TGGCompiler compiler = new TGGCompiler(tggProject.getTggModel());
 		
-		String manipulationCode = compiler.getXtendManipulationCode(tggProject.getTggModel());
+		String manipulationCode = compiler.getXtendManipulationCode();
 		createFile(RUN_FOLDER, Transformation, XTEND_EXTENSION, manipulationCode);
 	}
 
@@ -189,16 +189,16 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 
 	private void generatePatterns(TGGProject tggProject) {
-		TGGCompiler compiler = new TGGCompiler();
-		
-		String commonPatternContents = compiler.getCommonViatraPatterns();
-		createFile(MODEL_PATTERNS_FOLDER, compiler.getCommonPatternFileName(), VIATRA_QUERY_FILE_EXTENSION, commonPatternContents);
-		
-		compiler.preparePatterns(tggProject.getTggModel());
+		TGGCompiler compiler = new TGGCompiler(tggProject.getTggModel());
+
+		compiler.preparePatterns();
 		tggProject.getTggModel().getRules().forEach(r -> {
 			String contents = compiler.getViatraPatterns(r);			
 			createFile(MODEL_PATTERNS_FOLDER, r.getName(), VIATRA_QUERY_FILE_EXTENSION, contents);
 		});		
+		
+		String commonPatternContents = compiler.getCommonViatraPatterns();
+		createFile(MODEL_PATTERNS_FOLDER, compiler.getCommonPatternFileName(), VIATRA_QUERY_FILE_EXTENSION, commonPatternContents);
 	}
 
 	private void createFile(String folder, String fileName, String extension, String contents) {
