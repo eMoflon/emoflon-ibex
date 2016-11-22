@@ -6,10 +6,12 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.PatternWithProtocolNACs
 import java.util.Collection
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.MODELGENPattern
+import org.eclipse.emf.ecore.EReference
 
 class PatternTemplate {
 	
-	def generateCommonPatterns() {
+	def generateCommonPatterns(Collection<EReference> edgeTypes) {
+		
 		return '''
 		pattern marked(o: EObject){
 			TGGRuleApplication.createdSrc(p,o);
@@ -18,6 +20,30 @@ class PatternTemplate {
 			TGGRuleApplication.createdTrg(p,o);
 			TGGRuleApplication.final(p, true);
 		}
+		
+		«FOR et : edgeTypes»
+		pattern «EdgePatternNaming.getEMFEdge(et)»(s:«et.EContainingClass.name», t:«et.EType.name»){
+			«et.EContainingClass.name».«et.name»(s,t);
+		}
+		
+		pattern «EdgePatternNaming.getEdgeWrapper(et)»(s:«et.EContainingClass.name», t:«et.EType.name», e:Edge){
+			Edge.src(e,s);
+			Edge.trg(e,t);
+			Edge.name(e, "«et.name»");
+		}
+		
+		pattern «EdgePatternNaming.getCreateEdgeWrapper(et)»(s:«et.EContainingClass.name», t:«et.EType.name»){
+			find «EdgePatternNaming.getEMFEdge(et)»(s,t);
+			neg find «EdgePatternNaming.getEdgeWrapper(et)»(s,t,_);
+		}
+		
+		pattern «EdgePatternNaming.getDeleteEdgeWrapper(et)»(s:«et.EContainingClass.name», t:«et.EType.name», e:Edge){
+			find «EdgePatternNaming.getEMFEdge(et)»(s,t);
+			find «EdgePatternNaming.getEdgeWrapper(et)»(s,t,e);
+		}
+		
+		«ENDFOR»
+		
 		'''
 	}
 		

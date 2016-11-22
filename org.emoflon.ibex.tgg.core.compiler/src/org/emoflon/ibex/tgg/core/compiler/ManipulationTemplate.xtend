@@ -7,6 +7,8 @@ class ManipulationTemplate {
 	def getManipulationCode(TGG tgg){
 		
 		val suffixes = #{PatternSuffixes.FWD, PatternSuffixes.BWD, PatternSuffixes.CC, PatternSuffixes.MODELGEN}
+		val edgeTypes = TGGCompiler.getEdgeTypes(tgg)
+		
 		return '''
 	
 		package org.emoflon.ibex.tgg.run
@@ -25,6 +27,11 @@ class ManipulationTemplate {
 		import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil
 		import org.emoflon.ibex.tgg.operational.MODELGEN
 		import org.emoflon.ibex.tgg.operational.OperationMode
+		import org.apache.log4j.Logger
+		import org.apache.log4j.LogManager
+		import java.util.Collections
+		import org.apache.log4j.Level
+		import org.emoflon.ibex.tgg.common.*
 		
 		«FOR rule : tgg.rules»
 		«FOR suffix : suffixes»
@@ -54,6 +61,12 @@ class ManipulationTemplate {
 				// Create EMF scope and EMF IncQuery engine based on the resource
 				val scope = new EMFScope(set)
 				engine = ViatraQueryEngine.on(scope);
+				
+				val loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
+				loggers.add(LogManager.getRootLogger());
+				for ( Logger logger : loggers ) {
+				   logger.setLevel(Level.OFF);
+				}
 			
 				createTransformation
 			
@@ -76,7 +89,7 @@ class ManipulationTemplate {
 				this.manipulation = new SimpleModelManipulations(engine)
 				this.tggRuntimeUtil.setModelManipulation(this.manipulation)
 				// Initialize event-driven transformation
-				transformation = EventDrivenTransformation.forEngine(engine).addRules(getTransformationRuleGroup).build
+				transformation = EventDrivenTransformation.forEngine(engine).addRules(getTransformationRuleGroup).addRules(get_EdgePatterns).build
 			}
 			
 			private def getTransformationRuleGroup() {
@@ -117,6 +130,31 @@ class ManipulationTemplate {
 			«ENDFOR»
 			
 			«ENDFOR»
+			
+			«FOR edgeType : edgeTypes»
+			private def get«EdgePatternNaming.getCreateEdgeWrapper(edgeType)»() {
+			    createRule.name("«EdgePatternNaming.getCreateEdgeWrapper(edgeType)»").precondition(«EdgePatternNaming.getCreateEdgeWrapper(edgeType)»Matcher.querySpecification).action(
+			    CRUDActivationStateEnum.CREATED) [
+			     tggRuntimeUtil.createEdge(it)
+			    ].addLifeCycle(Lifecycles.getDefault(true, true)).build
+			}
+			
+			private def get«EdgePatternNaming.getDeleteEdgeWrapper(edgeType)»() {
+				createRule.name("«EdgePatternNaming.getDeleteEdgeWrapper(edgeType)»").precondition(«EdgePatternNaming.getDeleteEdgeWrapper(edgeType)»Matcher.querySpecification).action(
+				CRUDActivationStateEnum.DELETED) [
+				  tggRuntimeUtil.deleteEdge(it)
+			    ].addLifeCycle(Lifecycles.getDefault(true, true)).build
+			}
+			«ENDFOR»
+			
+			private def get_EdgePatterns(){
+				new EventDrivenTransformationRuleGroup(
+				«FOR edgeType : edgeTypes SEPARATOR ", "»
+				get«EdgePatternNaming.getCreateEdgeWrapper(edgeType)»(),
+				get«EdgePatternNaming.getDeleteEdgeWrapper(edgeType)»()
+				«ENDFOR»
+				)
+			}
 		}		
 		
 		'''

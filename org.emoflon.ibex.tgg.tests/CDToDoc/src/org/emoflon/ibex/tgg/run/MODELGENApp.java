@@ -41,16 +41,10 @@ public class MODELGENApp {
 		// load the resources containing your input 
 
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
-		stop.setMaxSrcCount(100);
+		stop.setMaxSrcCount(1000);
 		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop);
 		
 		Transformation trafo = new Transformation(rs, transformer);
-		
-		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
-		loggers.add(LogManager.getRootLogger());
-		for ( Logger logger : loggers ) {
-		    logger.setLevel(Level.OFF);
-		}
 		
 		trafo.execute();
 		trafo.dispose();

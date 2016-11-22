@@ -62,9 +62,6 @@ public abstract class TGGRuntimeUtil {
 		this.corrR = corrR;
 		this.trgR = trgR;
 		this.protocolR = protocolR;
-		for (Resource resource : getResourcesForEdgeCreation()) {
-			EdgeUtil.createEdgeWrappers(resource, protocolR);
-		}
 		this.strategy = getStrategy();
 	}
 	
@@ -73,8 +70,6 @@ public abstract class TGGRuntimeUtil {
 	public OperationStrategy getStrategy(){
 		return OperationStrategy.NORMAL;
 	}
-
-	protected abstract Resource[] getResourcesForEdgeCreation();
 
 	public void setModelManipulation(IModelManipulations manipulator) {
 		this.manipulator = manipulator;
@@ -261,6 +256,27 @@ public abstract class TGGRuntimeUtil {
 						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.TRG)
 						.collect(Collectors.toSet()));
 
+	}
+	
+	public void createEdge(IPatternMatch match){	
+		try {
+			Edge newEdge = (Edge) manipulator.create(protocolR, runtimePackage.getEdge());
+			newEdge.setSrc((EObject) match.get("s"));
+			newEdge.setTrg((EObject) match.get("t"));
+			
+			String[] splitPatternName = match.patternName().split("_");
+			String edgeName = splitPatternName[splitPatternName.length-1];
+			newEdge.setName(edgeName);
+		} catch (ModelManipulationException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
+	public void deleteEdge(IPatternMatch match){
+		Edge edge = ((Edge)match.get("e"));
+		edge.setName("");
+		edge.eResource().getContents().remove(edge);
 	}
 
 

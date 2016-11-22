@@ -14,10 +14,4 @@ public class FWD extends TGGRuntimeUtil {
 	public OperationMode getMode() {
 		return OperationMode.FWD;
 	}
-
-	@Override
-	protected Resource[] getResourcesForEdgeCreation() {
-		return new Resource[]{srcR};
-	}
-
 }

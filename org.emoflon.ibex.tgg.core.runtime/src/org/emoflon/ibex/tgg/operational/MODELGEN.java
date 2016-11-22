@@ -20,11 +20,6 @@ public class MODELGEN extends TGGRuntimeUtil {
 	public OperationMode getMode() {
 		return OperationMode.MODELGEN;
 	}
-
-	@Override
-	protected Resource[] getResourcesForEdgeCreation() {
-		return new Resource[]{};
-	}
 	
 	@Override
 	public TGGRuleApplication apply(String ruleName, IPatternMatch match) {

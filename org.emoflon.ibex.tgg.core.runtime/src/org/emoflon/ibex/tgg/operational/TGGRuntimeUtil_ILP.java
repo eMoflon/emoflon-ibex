@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import net.sf.javailp.Result;
 import net.sf.javailp.Solver;
 import net.sf.javailp.SolverFactory;
 import net.sf.javailp.SolverFactoryGurobi;
+import runtime.Edge;
 import runtime.TGGRuleApplication;
 
 public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
@@ -120,17 +122,29 @@ public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 	// ILP problem related methods
 	
 	private void filter() {
+		//created Edges must be redefined
+		createdEdges = new ArrayList<>();
+		
 		SolverFactory factory = new SolverFactoryGurobi();
 		factory.setParameter(Solver.VERBOSE, 0);
+		int all = 0;
+		int chosen = 0;
 		for (int v : getArrayFromResult(factory.get().solve(prepareProblem()))) {
 			if (v < 0) {
 				eliminate(intToMatch(-v));
+				all++;
 			}
 			else{
+				all++;
+				chosen++;
+				createdEdges.addAll(getOutputEdgesOf(intToMatch(v)));
 				intToMatch(v).setFinal(true);
 			}
 		}
+		System.out.println(chosen + " of " + all + " rule applications are chosen");
 	}
+
+	protected abstract Collection<Edge> getOutputEdgesOf(TGGRuleApplication ra);
 
 	private Problem prepareProblem() {
 
