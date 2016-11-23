@@ -17,14 +17,16 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -89,16 +91,26 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		buildIsNecessary = false;
 	}
 
+	private void executeWithTimeCheck(Runnable runnable, String message){
+		long tic = System.currentTimeMillis();
+		runnable.run();
+		long toc = System.currentTimeMillis();
+		
+		logger.debug(message + " took " + (toc - tic)/1000.0 + "s" );
+	}
+	
 	private void generateFiles() {
-		performClean();
+		executeWithTimeCheck(this::performClean, "cleaning");
+		
 		generateEditorModel().ifPresent(editorModel -> 
 		generateInternalModels(editorModel).ifPresent(internalModel ->
 		{
-			generatePatterns(internalModel);
-			generateXtendManipulationCode(internalModel);
+			executeWithTimeCheck(() -> generatePatterns(internalModel), "generating viatra patterns");
+			executeWithTimeCheck(() -> generateXtendManipulationCode(internalModel), "generating xtend code");
 		}
 		));
-		generateAttrCondLib();
+		
+		executeWithTimeCheck(this::generateAttrCondLib, "generating attribute constraint library");
 	}
 
 	private void generateXtendManipulationCode(TGGProject tggProject) {
@@ -117,25 +129,30 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 
 	private Optional<TripleGraphGrammarFile> generateEditorModel() {
+		long tic = System.currentTimeMillis();
+		
+		Optional<TripleGraphGrammarFile> result = Optional.empty();
 		try {
 			XtextResourceSet resourceSet = new XtextResourceSet();
 			IFile schemaFile = getProject().getFile(IbexTGGNature.SCHEMA_FILE);
 			if (schemaFile.exists()) {
 				XtextResource schemaResource = loadSchema(resourceSet, schemaFile);
 				if (schemaIsOfExpectedType(schemaResource)) {
-					TripleGraphGrammarFile xtextParsedTGG = (TripleGraphGrammarFile) schemaResource.getContents()
-							.get(0);
+					TripleGraphGrammarFile xtextParsedTGG = (TripleGraphGrammarFile) schemaResource.getContents().get(0);
 					loadAllRulesToTGGFile(xtextParsedTGG, resourceSet, getProject().getFolder(SRC_FOLDER));
 					addAttrCondDefLibraryReferencesToSchema(xtextParsedTGG);
 					saveModelInProject(MODEL_FOLDER, getProject().getName() + EDITOR_MODEL_EXTENSION, resourceSet, xtextParsedTGG);
-					return Optional.of(xtextParsedTGG);
+					result = Optional.of(xtextParsedTGG);
 				}
 			}
 		} catch (CoreException | IOException e) {
 			LogUtils.error(logger, e);
 		}
-
-		return Optional.empty();
+ 
+		long toc = System.currentTimeMillis();
+		logger.debug("Generation of editor model took " + (toc - tic)/1000.0 + "s");
+		
+		return result;
 	}
 	
 	private void addAttrCondDefLibraryReferencesToSchema(TripleGraphGrammarFile xtextParsedTGG) {
@@ -220,6 +237,8 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 
 	private Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG) {
+		long tic = System.currentTimeMillis();
+		
 		EditorTGGtoInternalTGG converter = new EditorTGGtoInternalTGG();
 		TGGProject tggProject = converter.convertXtextTGG(xtextParsedTGG);
 		
@@ -230,6 +249,9 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}
+		
+		long toc = System.currentTimeMillis();
+		logger.debug("Generating internal models took " + (toc - tic)/1000.0 + "s");
 		
 		return Optional.of(tggProject);
 	}
@@ -255,12 +277,16 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		if(buildIsNecessary)
 			return false;
 		
-		if (delta.getResource().getName().endsWith(TGG_FILE_EXTENSION)) {
+		if (isTggFileToBeCompiled(delta)) {
 			buildIsNecessary = true;
 			return false;
 		}
 		
 		return true;
+	}
+
+	private boolean isTggFileToBeCompiled(IResourceDelta delta) {
+		return delta.getResource().getName().endsWith(TGG_FILE_EXTENSION) && !delta.getResource().getProjectRelativePath().toString().startsWith("bin/");
 	}
 	
 	private void performClean() {
