@@ -60,6 +60,8 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	public static final Logger logger = Logger.getLogger(IbexTGGBuilder.class);
 
+	private boolean buildIsNecessary = false;
+	
 	@Override
 	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
 		switch (kind) {
@@ -72,6 +74,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		case AUTO_BUILD:
 		case INCREMENTAL_BUILD:
 			generateFilesIfchangeIsRelevant();
+			break;
 		default:
 			break;
 		}
@@ -81,6 +84,11 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	private void generateFilesIfchangeIsRelevant() throws CoreException {
 		getDelta(getProject()).accept(this);
+		
+		if(buildIsNecessary)
+			generateFiles();
+		
+		buildIsNecessary = false;
 	}
 
 	private void generateFiles() {
@@ -254,11 +262,14 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
+		if(buildIsNecessary)
+			return false;
+		
 		if (delta.getResource().getName().endsWith(TGG_FILE_EXTENSION)) {
-			generateFiles();
+			buildIsNecessary = true;
 			return false;
 		}
-
+		
 		return true;
 	}
 
