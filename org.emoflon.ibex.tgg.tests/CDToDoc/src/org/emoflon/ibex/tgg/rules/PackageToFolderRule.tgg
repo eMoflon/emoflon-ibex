@@ -32,5 +32,8 @@
 }
 
 #attributeConditions {
-	
+	addPrefix("package:", p2.name, temp)
+	validate(temp)
+	addPrefix("folder:", temp, f2)
 }
+ 

@@ -19,5 +19,5 @@
 }
 
 #attributeConditions {
-
-}
+	eq(p.name, f.name)
+} 

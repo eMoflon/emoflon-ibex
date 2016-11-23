@@ -29,5 +29,8 @@
 }
 
 #attributeConditions {
-	
+	#userDefined validate(0:EString){
+		#sync:[B]
+		#gen: 
+	}
 }
