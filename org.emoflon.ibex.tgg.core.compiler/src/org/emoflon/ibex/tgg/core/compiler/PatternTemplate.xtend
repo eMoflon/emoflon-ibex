@@ -1,12 +1,13 @@
 package org.emoflon.ibex.tgg.core.compiler
 
+import java.util.Collection
 import java.util.Map
+import org.eclipse.emf.ecore.EReference
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
-import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.PatternWithProtocolNACs
-import java.util.Collection
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.MODELGENPattern
-import org.eclipse.emf.ecore.EReference
+import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.protocolnacs.ProtocolNACsPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.ILPAllMarkedPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.ILPPattern
 
 class PatternTemplate {
 	
@@ -32,12 +33,12 @@ class PatternTemplate {
 			Edge.name(e, "«et.name»");
 		}
 		
-		pattern «EdgePatternNaming.getCreateEdgeWrapper(et)»(s:«et.EContainingClass.name», t:«et.EType.name»){
+		pattern «EdgePatternNaming.getMissingEdgeWrapper(et)»(s:«et.EContainingClass.name», t:«et.EType.name»){
 			find «EdgePatternNaming.getEMFEdge(et)»(s,t);
 			neg find «EdgePatternNaming.getEdgeWrapper(et)»(s,t,_);
 		}
 		
-		pattern «EdgePatternNaming.getDeleteEdgeWrapper(et)»(s:«et.EContainingClass.name», t:«et.EType.name», e:Edge){
+		pattern «EdgePatternNaming.getExistingEdgeWrapper(et)»(s:«et.EContainingClass.name», t:«et.EType.name», e:Edge){
 			find «EdgePatternNaming.getEMFEdge(et)»(s,t);
 			find «EdgePatternNaming.getEdgeWrapper(et)»(s,t,e);
 		}
@@ -94,14 +95,17 @@ class PatternTemplate {
 		'''
 	}
 	
-	def generateProtocolNACsPattern(PatternWithProtocolNACs pattern) {
+	def generateProtocolNACsPattern(ProtocolNACsPattern pattern) {
 		return '''
 		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
 			«FOR pi : pattern.positiveInvocations»
 			find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
 			«ENDFOR»
-			«FOR e : pattern.NACrelevantElements»
+			«FOR e : pattern.markingNACs»
 			neg find marked(«e.name»);
+			«ENDFOR»
+			«FOR e : pattern.marked»
+			find marked(«e.name»);
 			«ENDFOR»
 		}
 		'''
@@ -131,5 +135,34 @@ class PatternTemplate {
 		    «ENDFOR»
 		}
 		'''
+	}
+	
+	def generateILPAllMarkedPattern(ILPAllMarkedPattern pattern){
+		return '''
+		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
+		    «FOR e : pattern.signatureElements»
+		    find marked(«e.name»);
+		    «ENDFOR»
+		    «FOR pi : pattern.positiveInvocations»
+		    find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
+		    «ENDFOR»
+		    check(true);
+		}
+		'''
+	}
+	
+	def generateILPPattern(ILPPattern pattern){
+		return '''
+	    pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
+	    	«FOR pi : pattern.positiveInvocations»
+	    		find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
+	    	«ENDFOR»
+	    	«FOR ni : pattern.negativeInvocations»
+	    		neg find «ni.getName»(«FOR e : ni.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
+	    	«ENDFOR»	
+	    }
+		
+		'''
+			
 	}
 }

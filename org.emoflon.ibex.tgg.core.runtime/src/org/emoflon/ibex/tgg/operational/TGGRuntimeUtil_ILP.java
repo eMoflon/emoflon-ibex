@@ -55,14 +55,6 @@ public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 		super.finalize();
 	}
 
-	@Override
-	public TGGRuleApplication apply(String ruleName, IPatternMatch match) {
-
-		TGGRuleApplication result = super.apply(ruleName, match);
-		calculateTables(result);
-		return result;
-	}
-
 	public void calculateTables(TGGRuleApplication m) {
 		matchToInt.put(m, idCounter);
 		intToMatch.put(idCounter, m);
@@ -124,6 +116,11 @@ public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 	private void filter() {
 		//created Edges must be redefined
 		createdEdges = new ArrayList<>();
+		
+		protocolR.getContents().forEach(c ->{
+			if(c instanceof TGGRuleApplication)
+				calculateTables((TGGRuleApplication) c);
+		});
 		
 		SolverFactory factory = new SolverFactoryGurobi();
 		factory.setParameter(Solver.VERBOSE, 0);

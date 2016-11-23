@@ -13,7 +13,6 @@ import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.IModelManipulations;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.ModelManipulationException;
 import org.emoflon.ibex.tgg.operational.util.EdgeUtil;
-import org.emoflon.ibex.tgg.operational.util.ILPUtil;
 
 import language.BindingType;
 import language.DomainType;
@@ -68,7 +67,7 @@ public abstract class TGGRuntimeUtil {
 	public abstract OperationMode getMode();
 
 	public OperationStrategy getStrategy(){
-		return OperationStrategy.NORMAL;
+		return OperationStrategy.PROTOCOL_NACS;
 	}
 
 	public void setModelManipulation(IModelManipulations manipulator) {
@@ -177,7 +176,7 @@ public abstract class TGGRuntimeUtil {
 					runtimePackage.getTGGRuleApplication());
 
 			manipulator.set(protocol, runtimePackage.getTGGRuleApplication_Name(), ruleName);
-			manipulator.set(protocol, runtimePackage.getTGGRuleApplication_Final(), strategy == OperationStrategy.NORMAL);
+			manipulator.set(protocol, runtimePackage.getTGGRuleApplication_Final(), strategy == OperationStrategy.PROTOCOL_NACS);
 
 			fillProtocolInfo(blackSrcElements.get(ruleName), protocol,
 					runtimePackage.getTGGRuleApplication_ContextSrc(), createdElements, match);

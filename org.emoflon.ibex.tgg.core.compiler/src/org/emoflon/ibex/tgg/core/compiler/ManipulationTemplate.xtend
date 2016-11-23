@@ -6,7 +6,7 @@ class ManipulationTemplate {
 	
 	def getManipulationCode(TGG tgg){
 		
-		val suffixes = #{PatternSuffixes.FWD, PatternSuffixes.BWD, PatternSuffixes.CC, PatternSuffixes.MODELGEN}
+		val suffixes = #{PatternSuffixes.FWD_PROTOCOLNACS, PatternSuffixes.BWD_PROTOCOLNACS, PatternSuffixes.FWD_ILP, PatternSuffixes.BWD_ILP, PatternSuffixes.CC_ILP, PatternSuffixes.MODELGEN}
 		val edgeTypes = TGGCompiler.getEdgeTypes(tgg)
 		
 		return '''
@@ -27,6 +27,7 @@ class ManipulationTemplate {
 		import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil
 		import org.emoflon.ibex.tgg.operational.MODELGEN
 		import org.emoflon.ibex.tgg.operational.OperationMode
+		import org.emoflon.ibex.tgg.operational.OperationStrategy
 		import org.apache.log4j.Logger
 		import org.apache.log4j.LogManager
 		import java.util.Collections
@@ -93,12 +94,16 @@ class ManipulationTemplate {
 			}
 			
 			private def getTransformationRuleGroup() {
-				if (tggRuntimeUtil.mode == OperationMode.FWD)
-					return get«PatternSuffixes.FWD»
-				else if (tggRuntimeUtil.mode == OperationMode.BWD)
-					return get«PatternSuffixes.BWD»
-				else if (tggRuntimeUtil.mode == OperationMode.CC)
-					return get«PatternSuffixes.CC»
+				if (tggRuntimeUtil.mode == OperationMode.FWD && tggRuntimeUtil.strategy == OperationStrategy.PROTOCOL_NACS)
+					return get«PatternSuffixes.FWD_PROTOCOLNACS»
+				else if (tggRuntimeUtil.mode == OperationMode.BWD && tggRuntimeUtil.strategy == OperationStrategy.PROTOCOL_NACS)
+					return get«PatternSuffixes.BWD_PROTOCOLNACS»
+				else if (tggRuntimeUtil.mode == OperationMode.FWD && tggRuntimeUtil.strategy == OperationStrategy.ILP)
+					return get«PatternSuffixes.FWD_ILP»
+				else if (tggRuntimeUtil.mode == OperationMode.BWD && tggRuntimeUtil.strategy == OperationStrategy.ILP)
+					return get«PatternSuffixes.BWD_ILP»	
+				else if (tggRuntimeUtil.mode == OperationMode.CC && tggRuntimeUtil.strategy == OperationStrategy.ILP)
+					return get«PatternSuffixes.CC_ILP»
 				else if (tggRuntimeUtil.mode == OperationMode.MODELGEN)
 					return get«PatternSuffixes.MODELGEN»
 			}
@@ -132,15 +137,15 @@ class ManipulationTemplate {
 			«ENDFOR»
 			
 			«FOR edgeType : edgeTypes»
-			private def get«EdgePatternNaming.getCreateEdgeWrapper(edgeType)»() {
-			    createRule.name("«EdgePatternNaming.getCreateEdgeWrapper(edgeType)»").precondition(«EdgePatternNaming.getCreateEdgeWrapper(edgeType)»Matcher.querySpecification).action(
+			private def get«EdgePatternNaming.getMissingEdgeWrapper(edgeType)»() {
+			    createRule.name("«EdgePatternNaming.getMissingEdgeWrapper(edgeType)»").precondition(«EdgePatternNaming.getMissingEdgeWrapper(edgeType)»Matcher.querySpecification).action(
 			    CRUDActivationStateEnum.CREATED) [
 			     tggRuntimeUtil.createEdge(it)
 			    ].addLifeCycle(Lifecycles.getDefault(true, true)).build
 			}
 			
-			private def get«EdgePatternNaming.getDeleteEdgeWrapper(edgeType)»() {
-				createRule.name("«EdgePatternNaming.getDeleteEdgeWrapper(edgeType)»").precondition(«EdgePatternNaming.getDeleteEdgeWrapper(edgeType)»Matcher.querySpecification).action(
+			private def get«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»() {
+				createRule.name("«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»").precondition(«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»Matcher.querySpecification).action(
 				CRUDActivationStateEnum.DELETED) [
 				  tggRuntimeUtil.deleteEdge(it)
 			    ].addLifeCycle(Lifecycles.getDefault(true, true)).build
@@ -150,8 +155,8 @@ class ManipulationTemplate {
 			private def get_EdgePatterns(){
 				new EventDrivenTransformationRuleGroup(
 				«FOR edgeType : edgeTypes SEPARATOR ", "»
-				get«EdgePatternNaming.getCreateEdgeWrapper(edgeType)»(),
-				get«EdgePatternNaming.getDeleteEdgeWrapper(edgeType)»()
+				get«EdgePatternNaming.getMissingEdgeWrapper(edgeType)»(),
+				get«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»()
 				«ENDFOR»
 				)
 			}

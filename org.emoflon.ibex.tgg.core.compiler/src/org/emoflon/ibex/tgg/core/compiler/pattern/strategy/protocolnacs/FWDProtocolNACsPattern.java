@@ -1,24 +1,28 @@
-package org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs;
+package org.emoflon.ibex.tgg.core.compiler.pattern.strategy.protocolnacs;
 
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
 
 import language.DomainType;
 import language.TGGRule;
 
-public class BWDwithProtocolNACsPattern extends PatternWithProtocolNACs {
+public class FWDProtocolNACsPattern extends ProtocolNACsPattern {
 
-	public BWDwithProtocolNACsPattern(TGGRule rule) {
+	public FWDProtocolNACsPattern(TGGRule rule) {
 		super(rule);
 	}
 
+
+
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.BWD;
+		return PatternSuffixes.FWD_PROTOCOLNACS;
 	}
+
+
 
 	@Override
 	protected DomainType getInputDomainType() {
-		return DomainType.TRG;
+		return DomainType.SRC;
 	}
 
 }
