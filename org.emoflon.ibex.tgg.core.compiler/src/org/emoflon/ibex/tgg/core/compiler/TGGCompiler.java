@@ -36,8 +36,8 @@ public class TGGCompiler {
 
 	private TGG tgg;
 
-	public TGGCompiler(TGG tggModel) {
-		tgg = addOppositeEdges(tggModel);
+	public TGGCompiler(TGG tgg) {
+		this.tgg = tgg;
 	}
 
 	public void preparePatterns() {
@@ -92,23 +92,6 @@ public class TGGCompiler {
 
 			ruleToPatterns.put(rule, patterns);
 		}
-	}
-
-	private TGG addOppositeEdges(TGG tggModel) {
-		tggModel.getRules().stream().flatMap(r -> r.getEdges().stream()).forEach(e -> {
-			if (e.getType().getEOpposite() != null) {
-				TGGRuleEdge oppositeEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
-				oppositeEdge.setBindingType(e.getBindingType());
-				oppositeEdge.setDomainType(e.getDomainType());
-				oppositeEdge.setType(e.getType().getEOpposite());
-				oppositeEdge.setSrcNode(e.getTrgNode());
-				oppositeEdge.setTrgNode(e.getSrcNode());
-				oppositeEdge.setName(oppositeEdge.getSrcNode().getName() + "__" + oppositeEdge.getType().getName()
-						+ "__" + oppositeEdge.getTrgNode().getName() + "_eMoflonEdge");
-				((TGGRule) e.eContainer()).getEdges().add(oppositeEdge);
-			}
-		});
-		return tggModel;
 	}
 
 	public String getViatraPatterns(TGGRule rule) {
