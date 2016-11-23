@@ -26,74 +26,74 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-
 public class EditorTGGtoInternalTGG {
-	
+
 	private EcoreFactory ecoreFactory = EcoreFactory.eINSTANCE;
 	private LanguageFactory tggFactory = LanguageFactory.eINSTANCE;
-	private HashMap<EObject,EObject> xtextToTGG = new HashMap<>();
-	private HashMap<EObject,EObject> tggToXtext = new HashMap<>();
-	
-	public TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG){
+	private HashMap<EObject, EObject> xtextToTGG = new HashMap<>();
+	private HashMap<EObject, EObject> tggToXtext = new HashMap<>();
+
+	public TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG) {
 		EPackage corrPackage = createCorrModel(xtextTGG);
 		TGG tgg = createTGG(xtextTGG);
 		tgg.setCorr(corrPackage);
 		return new TGGProject(corrPackage, tgg);
 	}
-	
+
 	private TGG createTGG(TripleGraphGrammarFile xtextTGG) {
-		
+
 		TGG tgg = tggFactory.createTGG();
 		tgg.setName(xtextTGG.getSchema().getName());
 		tgg.getSrc().addAll(xtextTGG.getSchema().getSourceTypes());
 		tgg.getTrg().addAll(xtextTGG.getSchema().getTargetTypes());
-		
+
 		map(xtextTGG, tgg);
-		
-		for(Rule xtextRule : xtextTGG.getRules()){
+
+		for (Rule xtextRule : xtextTGG.getRules()) {
 			TGGRule tggRule = tggFactory.createTGGRule();
 			tggRule.setName(xtextRule.getName());
 			tggRule.setAbstract(xtextRule.isAbstractRule());
 			tgg.getRules().add(tggRule);
-			map(xtextRule,tggRule);
-			
+			map(xtextRule, tggRule);
+
 			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule.getSourcePatterns(), DomainType.SRC));
 			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule.getTargetPatterns(), DomainType.TRG));
 			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextRule.getCorrespondencePatterns()));
-		
+
 			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule));
 		}
-		
-		return tgg;
+
+		return addOppositeEdges(tgg);
 	}
-	
+
 	private Collection<TGGRuleEdge> createTGGRuleEdges(TGGRule tggRule) {
-		
+
 		ArrayList<TGGRuleEdge> result = new ArrayList<>();
-		
-		for(TGGRuleNode node : tggRule.getNodes()){
-			if(node.getDomainType() == DomainType.SRC || node.getDomainType() == DomainType.TRG){
+
+		for (TGGRuleNode node : tggRule.getNodes()) {
+			if (node.getDomainType() == DomainType.SRC || node.getDomainType() == DomainType.TRG) {
 				ObjectVariablePattern ov = (ObjectVariablePattern) tggToXtext.get(node);
-				for(LinkVariablePattern lv : ov.getLinkVariablePatterns()){
+				for (LinkVariablePattern lv : ov.getLinkVariablePatterns()) {
 					TGGRuleEdge tggEdge = tggFactory.createTGGRuleEdge();
 					tggEdge.setType(lv.getType());
 					tggEdge.setSrcNode(node);
 					tggEdge.setTrgNode((TGGRuleNode) xtextToTGG.get(lv.getTarget()));
 					tggEdge.setBindingType(getBindingType(lv.getOp()));
 					tggEdge.setDomainType(node.getDomainType());
-					tggEdge.setName(tggEdge.getSrcNode().getName() + "__" + tggEdge.getType().getName() + "__" + tggEdge.getTrgNode().getName() + "_eMoflonEdge");
+					tggEdge.setName(tggEdge.getSrcNode().getName() + "__" + tggEdge.getType().getName() + "__"
+							+ tggEdge.getTrgNode().getName() + "_eMoflonEdge");
 					map(lv, tggEdge);
 					result.add(tggEdge);
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	private Collection<TGGRuleNode> createTGGRuleNodesFromCorrOVs(Collection<CorrVariablePattern> corrOVs) {
 		ArrayList<TGGRuleNode> result = new ArrayList<>();
-		for(CorrVariablePattern cv : corrOVs){
+		for (CorrVariablePattern cv : corrOVs) {
 			TGGRuleCorr corrNode = tggFactory.createTGGRuleCorr();
 			corrNode.setName(cv.getName());
 			corrNode.setType((EClass) xtextToTGG.get(cv.getType()));
@@ -107,9 +107,9 @@ public class EditorTGGtoInternalTGG {
 		return result;
 	}
 
-	private Collection<TGGRuleNode> createTGGRuleNodes(Collection<ObjectVariablePattern> ovs, DomainType domainType){
+	private Collection<TGGRuleNode> createTGGRuleNodes(Collection<ObjectVariablePattern> ovs, DomainType domainType) {
 		ArrayList<TGGRuleNode> result = new ArrayList<>();
-		for(ObjectVariablePattern ov : ovs){
+		for (ObjectVariablePattern ov : ovs) {
 			TGGRuleNode tggNode = getTGGRuleNode(ov);
 			tggNode.setDomainType(domainType);
 			result.add(tggNode);
@@ -122,68 +122,91 @@ public class EditorTGGtoInternalTGG {
 		tggNode.setName(ov.getName());
 		tggNode.setType(ov.getType());
 		tggNode.setBindingType(getBindingType(ov.getOp()));
-		map(ov,tggNode);
+		map(ov, tggNode);
 		return tggNode;
 	}
 
 	private BindingType getBindingType(Operator op) {
-		if(op == null)
+		if (op == null)
 			return BindingType.CONTEXT;
 		String value = op.getValue();
-		if("++".equals(value))
+		if ("++".equals(value))
 			return BindingType.CREATE;
-		if("!".equals(value))
+		if ("!".equals(value))
 			return BindingType.NEGATIVE;
 		return null;
 	}
 
-	private EPackage createCorrModel(TripleGraphGrammarFile xtextTGG){
-		
+	private EPackage createCorrModel(TripleGraphGrammarFile xtextTGG) {
+
 		EPackage corrModel = ecoreFactory.createEPackage();
-		
+
 		corrModel.setName(xtextTGG.getSchema().getName());
 		corrModel.setNsPrefix(xtextTGG.getSchema().getName());
 		corrModel.setNsURI("platform:/plugin/" + corrModel.getName() + "/model/" + corrModel.getName() + ".ecore");
-		
-		for(CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()){	
+
+		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
 			corrModel.getEClassifiers().add(createEClass(ct));
 		}
-		
-		for(CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()){
 
-			if(ct.getSuper() != null){
+		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
+
+			if (ct.getSuper() != null) {
 				((EClass) xtextToTGG.get(ct)).getESuperTypes().add((EClass) xtextToTGG.get(ct.getSuper()));
 			}
 		}
-		
+
 		return corrModel;
 	}
 
 	private EClass createEClass(CorrType ct) {
 		EClass corrClass = ecoreFactory.createEClass();
 		corrClass.setName(ct.getName());
-		
+
 		EReference srcRef = ecoreFactory.createEReference();
 		srcRef.setName("source");
 		srcRef.setLowerBound(0);
 		srcRef.setUpperBound(1);
 		srcRef.setEType(ct.getSource());
 		corrClass.getEStructuralFeatures().add(srcRef);
-		
+
 		EReference trgRef = ecoreFactory.createEReference();
 		trgRef.setName("target");
 		trgRef.setLowerBound(0);
 		trgRef.setUpperBound(1);
 		trgRef.setEType(ct.getTarget());
 		corrClass.getEStructuralFeatures().add(trgRef);
-		
+
 		map(ct, corrClass);
-		
+
 		return corrClass;
 	}
-	
-	private void map(EObject xtextObject, EObject tggObject){
+
+	private void map(EObject xtextObject, EObject tggObject) {
 		xtextToTGG.put(xtextObject, tggObject);
 		tggToXtext.put(tggObject, xtextObject);
+	}
+
+	private TGG addOppositeEdges(TGG tggModel) {
+		tggModel.getRules().stream().flatMap(r -> r.getEdges().stream()).forEach(e -> {
+			if (e.getType().getEOpposite() != null) {
+				EReference oppositeRef = e.getType().getEOpposite();
+				TGGRule rule = (TGGRule) e.eContainer();
+				if (rule.getEdges().stream().noneMatch(oe -> oe.getType().equals(oppositeRef)
+						&& oe.getSrcNode().equals(e.getTrgNode()) && oe.getTrgNode().equals(e.getSrcNode()))) {
+					TGGRuleEdge oppositeEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+					oppositeEdge.setBindingType(e.getBindingType());
+					oppositeEdge.setDomainType(e.getDomainType());
+					oppositeEdge.setType(oppositeRef);
+					oppositeEdge.setSrcNode(e.getTrgNode());
+					oppositeEdge.setTrgNode(e.getSrcNode());
+					oppositeEdge.setName(oppositeEdge.getSrcNode().getName() + "__" + oppositeRef.getName()
+							+ "__" + oppositeEdge.getTrgNode().getName() + "_eMoflonEdge");
+					rule.getEdges().add(oppositeEdge);
+				}
+				
+			}
+		});
+		return tggModel;
 	}
 }

@@ -8,9 +8,9 @@ public class EdgePatternNaming {
 	
 	private static final String EdgeWrapper = "EdgeWrapper";
 	
-	private static final String CreateEdgeWrapper = "Create" + EdgeWrapper;
+	private static final String MissingEdgeWrapper = "Missing" + EdgeWrapper;
 	
-	private static final String DeleteEdgeWrapper = "Delete" + EdgeWrapper;
+	private static final String ExistingEdgeWrapper = "Obsolete" + EdgeWrapper;
 	
 	public static String getSuffix(EReference ref){
 		return ref.getEContainingClass().getName() + "_" + ref.getEType().getName() + "_" + ref.getName();
@@ -24,12 +24,12 @@ public class EdgePatternNaming {
 		return EdgeWrapper + getSuffix(ref);
 	}
 	
-	public static String getCreateEdgeWrapper(EReference ref){
-		return CreateEdgeWrapper + getSuffix(ref);
+	public static String getMissingEdgeWrapper(EReference ref){
+		return MissingEdgeWrapper + getSuffix(ref);
 	}
 	
-	public static String getDeleteEdgeWrapper(EReference ref){
-		return DeleteEdgeWrapper + getSuffix(ref);
+	public static String getExistingEdgeWrapper(EReference ref){
+		return ExistingEdgeWrapper + getSuffix(ref);
 	}
 	
 }

@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs;
+package org.emoflon.ibex.tgg.core.compiler.pattern.strategy.protocolnacs;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -11,9 +11,9 @@ import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleElement;
 
-public abstract class PatternWithProtocolNACs extends Pattern {
+public abstract class ProtocolNACsPattern extends Pattern {
 
-	public PatternWithProtocolNACs(TGGRule rule) {
+	public ProtocolNACsPattern(TGGRule rule) {
 		super(rule);
 	}
 	
@@ -24,10 +24,16 @@ public abstract class PatternWithProtocolNACs extends Pattern {
 				.collect(Collectors.toSet());
 	}
 	
-	public Collection<TGGRuleElement> getNACrelevantElements(){
+	public Collection<TGGRuleElement> getMarkingNACs(){
 		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
 				.filter(e -> e.getBindingType() == BindingType.CREATE && e.getDomainType() == getInputDomainType())
 				.collect(Collectors.toSet());
+	}
+	
+	public Collection<TGGRuleElement> getMarked(){
+		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
+				.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == getInputDomainType())
+				.collect(Collectors.toSet()); 
 	}
 
 	abstract protected DomainType getInputDomainType();
