@@ -14,7 +14,7 @@ public class BruteForceProtocol_CC extends BruteForceProtocol {
 	protected Collection<HashMap<EObject, TIntHashSet>> getInputCreateTables() {
 		HashSet<HashMap<EObject, TIntHashSet>> result = new HashSet<>();
 		result.add(createdSrcToMatch);
-		result.add(createdTrgToMatch);
+		result.add(createdTrgToMatch); 
 		return result;
 	}
 
