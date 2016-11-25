@@ -9,9 +9,9 @@ import runtime.TGGRuleApplication;
 public class MODELGEN extends TGGRuntimeUtil {
 
 	private MODELGENStopCriterion stopCriterion;
-	
 
-	public MODELGEN(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, MODELGENStopCriterion stopCriterion) {
+	public MODELGEN(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR,
+			MODELGENStopCriterion stopCriterion) {
 		super(tgg, srcR, corrR, trgR, protocolR);
 		this.stopCriterion = stopCriterion;
 	}
@@ -20,23 +20,22 @@ public class MODELGEN extends TGGRuntimeUtil {
 	public OperationMode getMode() {
 		return OperationMode.MODELGEN;
 	}
-	
+
 	@Override
-	public TGGRuleApplication apply(String ruleName, IPatternMatch match) {
-		
-		TGGRuleApplication result = null;
-		if(!stopCriterion.dont(ruleName)){
-			result = super.apply(ruleName, match);
-			stopCriterion.update(result);
+	public void apply(String ruleName, IPatternMatch match) {
+
+		if (!stopCriterion.dont(ruleName)) {
+			super.apply(ruleName, match);
+			stopCriterion.update(ruleName, greenSrcNodes.get(ruleName).size() + greenSrcEdges.get(ruleName).size(),
+					greenTrgNodes.get(ruleName).size() + greenTrgEdges.get(ruleName).size());
 		}
-		return null;		
 	}
-	
+
 	public MODELGENStopCriterion getStopCriterion() {
 		return stopCriterion;
 	}
-	
-	public boolean stop(){
+
+	public boolean stop() {
 		return stopCriterion.dont();
 	}
 
@@ -44,20 +43,24 @@ public class MODELGEN extends TGGRuntimeUtil {
 	public OperationStrategy getStrategy() {
 		return OperationStrategy.PROTOCOL_NACS;
 	}
-	
+
 	/**
-	 * Differences of MODELGEN::run from super::run are
-	 * - the next match is randomly chosen
-	 * - applied matches are not removed from the match container
+	 * Differences of MODELGEN::run from super::run are - the next match is
+	 * randomly chosen - applied matches are not removed from the match
+	 * container
 	 */
 	@Override
-	public void run(){
-		while(!matchContainer.isEmpty() && !stop()){
+	public void run() {
+		while (!matchContainer.isEmpty() && !stop()) {
 			IPatternMatch match = matchContainer.getNextRandom();
 			String ruleName = matchContainer.getRuleName(match);
 			apply(ruleName, match);
 		}
 	}
-
+	
+	@Override
+	protected boolean protocol() {
+		return false;
+	}
 
 }

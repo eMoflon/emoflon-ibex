@@ -19,6 +19,7 @@ import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
 import language.TGG;
+import runtime.RuntimePackage;
 
 public class MODELGENApp {
 
@@ -53,14 +54,16 @@ public class MODELGENApp {
 		transformer.finalize();
 
 		s.save(null);
-//		t.save(null);
-//		c.save(null);
-//		p.save(null);
+		t.save(null);
+		c.save(null);
+		p.save(null);
 	}
 	
 	private static void registerMetamodels(ResourceSet rs){
 		// Register internals
 		LanguagePackage.eINSTANCE.getName();
+		RuntimePackage.eINSTANCE.getName();
+
 		
 		// Add mapping for correspondence metamodel
 		Resource corr = rs.getResource(URI.createFileURI("model/CDToDoc.ecore"), true);
