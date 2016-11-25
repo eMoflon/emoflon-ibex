@@ -43,7 +43,6 @@ public class CCApp {
 		// load the resources containing your input 
 		s.load(null);
 		t.load(null);
-		c.load(null);
 		p.load(null);
 
 		System.out.println("Starting consistency checking");
