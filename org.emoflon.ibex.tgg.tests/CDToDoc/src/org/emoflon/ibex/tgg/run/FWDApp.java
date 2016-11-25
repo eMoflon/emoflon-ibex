@@ -1,27 +1,22 @@
 package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.tgg.operational.FWD;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.FWD_ILP;
-import org.emoflon.ibex.tgg.operational.OperationMode;
-import org.emoflon.ibex.tgg.operational.OperationStrategy;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
 import language.TGG;
+import runtime.RuntimePackage;
 
 public class FWDApp {
 
@@ -35,27 +30,37 @@ public class FWDApp {
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		
 		// create your resources 
-		Resource s = rs.createResource(URI.createFileURI("src_gen.xmi"));
+		Resource s = rs.createResource(URI.createFileURI("src.xmi"));
 		Resource t = rs.createResource(URI.createFileURI("trg.xmi"));
 		Resource c = rs.createResource(URI.createFileURI("corr.xmi"));
 		Resource p = rs.createResource(URI.createFileURI("protocol.xmi"));
 		
 		// load the resources containing your input 
-		s.load(null);	
+		s.load(null);
+		t.load(null);
+		c.load(null);
+		p.load(null);
 		
 		System.out.println("Starting FWD");
 		long tic = System.currentTimeMillis();
 		TGGRuntimeUtil transformer = new FWD_ILP(tgg, s, c, t, p);
 		
-		Transformation trafo = new Transformation(rs, transformer);
-		
+		Transformation trafo = new Transformation(rs, transformer);						
 		trafo.execute();
+		
+		EObject pack = s.getContents().get(0);
+		EList<EObject> clazzs = (EList) pack.eGet(pack.eClass().getEStructuralFeature("clazzs"));
+		EcoreUtil.delete(s.getContents().get(0));
+		
+		transformer.run();
+		
 		trafo.dispose();
 		
 		transformer.finalize();
 		long toc = System.currentTimeMillis();
 		System.out.println("Completed FWD in: " + (toc-tic) + " ms");
  
+		//s.save(null);
 		t.save(null);
 		c.save(null);
 		p.save(null);
@@ -64,6 +69,7 @@ public class FWDApp {
 	private static void registerMetamodels(ResourceSet rs){
 		// Register internals
 		LanguagePackage.eINSTANCE.getName();
+		RuntimePackage.eINSTANCE.getName();
 		
 		// Add mapping for correspondence metamodel
 		Resource corr = rs.getResource(URI.createFileURI("model/CDToDoc.ecore"), true);

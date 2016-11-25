@@ -122,6 +122,9 @@ public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 				calculateTables((TGGRuleApplication) c);
 		});
 		
+		if(matchToInt.size() == 0)
+			return;
+		
 		SolverFactory factory = new SolverFactoryGurobi();
 		factory.setParameter(Solver.VERBOSE, 0);
 		int all = 0;

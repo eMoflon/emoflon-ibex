@@ -1,66 +1,68 @@
 package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.tgg.operational.MODELGEN;
-import org.emoflon.ibex.tgg.operational.MODELGENStopCriterion;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.operational.FWD;
+import org.emoflon.ibex.tgg.operational.FWD_ILP;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
 import language.TGG;
+import runtime.RuntimePackage;
 
-public class MODELGENApp {
+public class FWDBatchApp {
 
 	public static void main(String[] args) throws IOException {
 		//BasicConfigurator.configure();
-		
+				
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
 		registerMetamodels(rs);
 		
 		Resource tggR = rs.getResource(URI.createFileURI("model/CDToDoc.tgg.xmi"), true);
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		
-		
 		// create your resources 
-		Resource s = rs.createResource(URI.createFileURI("src_gen.xmi"));
-		Resource t = rs.createResource(URI.createFileURI("trg_gen.xmi"));
-		Resource c = rs.createResource(URI.createFileURI("corr_gen.xmi"));
-		Resource p = rs.createResource(URI.createFileURI("protocol_gen.xmi"));
+		Resource s = rs.createResource(URI.createFileURI("src.xmi"));
+		Resource t = rs.createResource(URI.createFileURI("trg.xmi"));
+		Resource c = rs.createResource(URI.createFileURI("corr.xmi"));
+		Resource p = rs.createResource(URI.createFileURI("protocol.xmi"));
 		
 		// load the resources containing your input 
+		s.load(null);
 
-		MODELGENStopCriterion stop = new MODELGENStopCriterion();
-		stop.setMaxSrcCount(1000);
-		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop);
 		
-		Transformation trafo = new Transformation(rs, transformer);
+		System.out.println("Starting FWD");
+		long tic = System.currentTimeMillis();
+		TGGRuntimeUtil transformer = new FWD_ILP(tgg, s, c, t, p);
 		
+		Transformation trafo = new Transformation(rs, transformer);						
 		trafo.execute();
 		
 		transformer.run();
+		
 		trafo.dispose();
+		
 		transformer.finalize();
-
-		s.save(null);
-//		t.save(null);
-//		c.save(null);
-//		p.save(null);
+		long toc = System.currentTimeMillis();
+		System.out.println("Completed FWD in: " + (toc-tic) + " ms");
+ 
+		//s.save(null);
+		t.save(null);
+		c.save(null);
+		p.save(null);
 	}
 	
 	private static void registerMetamodels(ResourceSet rs){
 		// Register internals
 		LanguagePackage.eINSTANCE.getName();
+		RuntimePackage.eINSTANCE.getName();
 		
 		// Add mapping for correspondence metamodel
 		Resource corr = rs.getResource(URI.createFileURI("model/CDToDoc.ecore"), true);

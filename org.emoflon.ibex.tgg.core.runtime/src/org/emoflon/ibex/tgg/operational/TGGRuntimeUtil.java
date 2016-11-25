@@ -3,12 +3,14 @@ package org.emoflon.ibex.tgg.operational;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.IModelManipulations;
 import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.ModelManipulationException;
@@ -54,6 +56,10 @@ public abstract class TGGRuntimeUtil {
 	protected ArrayList<Edge> createdEdges = new ArrayList<>();
 
 	private OperationStrategy strategy;
+	
+	protected HashSet<IPatternMatch> pendingMatches = new HashSet<>();
+	
+	protected MatchContainer matchContainer;
 
 	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
@@ -62,16 +68,32 @@ public abstract class TGGRuntimeUtil {
 		this.trgR = trgR;
 		this.protocolR = protocolR;
 		this.strategy = getStrategy();
+		this.matchContainer = new MatchContainer(tgg);
 	}
 	
 	public abstract OperationMode getMode();
 
-	public OperationStrategy getStrategy(){
-		return OperationStrategy.PROTOCOL_NACS;
-	}
+	abstract public OperationStrategy getStrategy();
 
 	public void setModelManipulation(IModelManipulations manipulator) {
 		this.manipulator = manipulator;
+	}
+	
+	public void run(){
+		while(!matchContainer.isEmpty()){
+			IPatternMatch match = matchContainer.getNext();
+			String ruleName = matchContainer.getRuleName(match);
+			apply(ruleName, match);
+			removeMatch(match);
+		}
+	}
+	
+	public void addMatch(String ruleName, IPatternMatch match){
+		matchContainer.addMatch(ruleName, match);
+	}
+	
+	public void removeMatch(IPatternMatch match){
+		matchContainer.removeMatch(match);
 	}
 
 	public TGGRuleApplication apply(String ruleName, IPatternMatch match) {
@@ -101,6 +123,28 @@ public abstract class TGGRuntimeUtil {
 
 	protected boolean manipulateSrc(){
 		return getMode() == OperationMode.BWD || getMode() == OperationMode.MODELGEN;
+	}
+	
+	public void revoke(IPatternMatch match){
+		revoke((TGGRuleApplication)match.get("eMoflon_ProtocolNode"));
+	}
+	
+	protected void revoke(TGGRuleApplication ra){
+		
+		EcoreUtil.remove(ra);
+		
+		if(manipulateSrc()){
+			deleteNonCorrs(ra.getCreatedSrc());
+		}
+		if(manipulateTrg()){
+			deleteNonCorrs(ra.getCreatedTrg());
+		}
+		ra.getCreatedCorr().iterator().forEachRemaining(corrR.getContents()::remove);
+	}
+
+	private void deleteNonCorrs(Collection<EObject> elements) {
+		elements.stream().filter(e -> e instanceof Edge).forEach(e -> EdgeUtil.revokeEdge((Edge)e));
+		elements.iterator().forEachRemaining(EcoreUtil::remove);
 	}
 
 	public void finalize() {
@@ -252,7 +296,7 @@ public abstract class TGGRuntimeUtil {
 
 		blackCorrElements.put(ruleName,
 				r.getNodes().stream()
-						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.TRG)
+						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.CORR)
 						.collect(Collectors.toSet()));
 
 	}
@@ -273,9 +317,10 @@ public abstract class TGGRuntimeUtil {
 	}
 	
 	public void deleteEdge(IPatternMatch match){
-		Edge edge = ((Edge)match.get("e"));
-		edge.setName("");
-		edge.eResource().getContents().remove(edge);
+		Edge e = (Edge)match.get("e");
+		EcoreUtil.delete(e);
+		e.setSrc(null);
+		e.setTrg(null);
 	}
 
 
