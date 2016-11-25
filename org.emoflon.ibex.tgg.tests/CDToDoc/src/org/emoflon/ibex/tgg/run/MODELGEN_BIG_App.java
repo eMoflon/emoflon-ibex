@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
 import org.emoflon.ibex.tgg.operational.MODELGEN;
 import org.emoflon.ibex.tgg.operational.MODELGENStopCriterion;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
@@ -21,7 +22,7 @@ import language.LanguagePackage;
 import language.TGG;
 import runtime.RuntimePackage;
 
-public class MODELGENApp {
+public class MODELGEN_BIG_App {
 
 	public static void main(String[] args) throws IOException {
 		//BasicConfigurator.configure();
@@ -34,15 +35,23 @@ public class MODELGENApp {
 		
 		
 		// create your resources 
-		Resource s = rs.createResource(URI.createFileURI("src_gen.xmi"));
-		Resource t = rs.createResource(URI.createFileURI("trg_gen.xmi"));
-		Resource c = rs.createResource(URI.createFileURI("corr_gen.xmi"));
-		Resource p = rs.createResource(URI.createFileURI("protocol_gen.xmi"));
+		Resource s = new BinaryResourceImpl(URI.createFileURI("src_gen.xmi"));
+		rs.getResources().add(s);
+		
+		Resource t = new BinaryResourceImpl(URI.createFileURI("trg_gen.xmi"));
+		rs.getResources().add(t);
+		
+		Resource c = new BinaryResourceImpl(URI.createFileURI("corr_gen.xmi"));
+		rs.getResources().add(c);
+		
+		Resource p = new BinaryResourceImpl(URI.createFileURI("protocol_gen.xmi"));
+		rs.getResources().add(p);
 		
 		// load the resources containing your input 
 
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
-		stop.setMaxSrcCount(1000);
+		stop.setMaxSrcCount(500000);
+		long tic = System.currentTimeMillis();
 		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop);
 		
 		Transformation trafo = new Transformation(rs, transformer);
@@ -52,6 +61,9 @@ public class MODELGENApp {
 		transformer.run();
 		trafo.dispose();
 		transformer.finalize();
+		long toc = System.currentTimeMillis();
+		
+		System.out.println("Generated models in " + (toc-tic) + " ms");
 
 		s.save(null);
 		t.save(null);

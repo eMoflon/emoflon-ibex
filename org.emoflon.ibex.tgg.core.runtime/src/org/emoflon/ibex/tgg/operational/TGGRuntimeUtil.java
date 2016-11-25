@@ -36,15 +36,15 @@ public abstract class TGGRuntimeUtil {
 	 * these hash maps serve as rule info to indicate what variables are
 	 * black/green & src/corr/trg in a rule
 	 */
-	private HashMap<String, Collection<TGGRuleNode>> greenSrcNodes = new HashMap<>();
-	private HashMap<String, Collection<TGGRuleNode>> greenTrgNodes = new HashMap<>();
-	private HashMap<String, Collection<TGGRuleEdge>> greenSrcEdges = new HashMap<>();
-	private HashMap<String, Collection<TGGRuleEdge>> greenTrgEdges = new HashMap<>();
-	private HashMap<String, Collection<TGGRuleCorr>> greenCorrNodes = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleNode>> greenSrcNodes = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleNode>> greenTrgNodes = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleEdge>> greenSrcEdges = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleEdge>> greenTrgEdges = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleCorr>> greenCorrNodes = new HashMap<>();
 
-	private HashMap<String, Collection<TGGRuleElement>> blackSrcElements = new HashMap<>();
-	private HashMap<String, Collection<TGGRuleElement>> blackCorrElements = new HashMap<>();
-	private HashMap<String, Collection<TGGRuleElement>> blackTrgElements = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleElement>> blackSrcElements = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleElement>> blackCorrElements = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleElement>> blackTrgElements = new HashMap<>();
 
 	protected Resource srcR;
 	protected Resource trgR;
@@ -96,7 +96,7 @@ public abstract class TGGRuntimeUtil {
 		matchContainer.removeMatch(match);
 	}
 
-	public TGGRuleApplication apply(String ruleName, IPatternMatch match) {
+	public void apply(String ruleName, IPatternMatch match) {
 
 		/*
 		 * this hash map complements the match to a comatch of an original
@@ -114,7 +114,14 @@ public abstract class TGGRuntimeUtil {
 
 		createCorrs(ruleName, match, createdElements, greenCorrNodes.get(ruleName));
 
-		return prepareProtocol(ruleName, match, createdElements);
+		if(protocol()){
+			prepareProtocol(ruleName, match, createdElements);
+
+		}
+	}
+
+	protected boolean protocol() {
+		return true;
 	}
 
 	protected boolean manipulateTrg(){

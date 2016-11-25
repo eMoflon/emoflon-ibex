@@ -2,8 +2,6 @@ package org.emoflon.ibex.tgg.operational;
 
 import java.util.HashMap;
 
-import runtime.TGGRuleApplication;
-
 public class MODELGENStopCriterion {
 
 	private long startTime = System.currentTimeMillis();
@@ -57,12 +55,12 @@ public class MODELGENStopCriterion {
 		return false;
 	}
 
-	protected void update(TGGRuleApplication ra) {
-		currentSrcCount += ra.getCreatedSrc().size();
-		currentTrgCount += ra.getCreatedTrg().size();
-		if (currentRuleCount.containsKey(ra.getName()))
-			currentRuleCount.put(ra.getName(), currentRuleCount.get(ra.getName()) + 1);
+	protected void update(String ruleName, int srcElts, int trgElts) {
+		currentSrcCount += srcElts;
+		currentTrgCount += trgElts;
+		if (currentRuleCount.containsKey(ruleName))
+			currentRuleCount.put(ruleName, currentRuleCount.get(ruleName) + 1);
 		else
-			currentRuleCount.put(ra.getName(), 1);
+			currentRuleCount.put(ruleName, 1);
 	}
 }

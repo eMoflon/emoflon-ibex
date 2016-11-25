@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.emoflon.ibex.tgg.operational.CC;
 import org.emoflon.ibex.tgg.operational.MODELGEN;
 import org.emoflon.ibex.tgg.operational.MODELGENStopCriterion;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
@@ -21,7 +22,7 @@ import language.LanguagePackage;
 import language.TGG;
 import runtime.RuntimePackage;
 
-public class MODELGENApp {
+public class CCApp {
 
 	public static void main(String[] args) throws IOException {
 		//BasicConfigurator.configure();
@@ -40,10 +41,14 @@ public class MODELGENApp {
 		Resource p = rs.createResource(URI.createFileURI("protocol_gen.xmi"));
 		
 		// load the resources containing your input 
+		s.load(null);
+		t.load(null);
+		c.load(null);
+		p.load(null);
 
-		MODELGENStopCriterion stop = new MODELGENStopCriterion();
-		stop.setMaxSrcCount(1000);
-		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop);
+		System.out.println("Starting consistency checking");
+		long tic = System.currentTimeMillis();
+		TGGRuntimeUtil transformer = new CC(tgg, s, c, t, p);
 		
 		Transformation trafo = new Transformation(rs, transformer);
 		
@@ -52,9 +57,14 @@ public class MODELGENApp {
 		transformer.run();
 		trafo.dispose();
 		transformer.finalize();
+		
+		long toc = System.currentTimeMillis();
+		
+		System.out.println("Finished consistency checking in " + (toc-tic) + " ms");
 
-		s.save(null);
-		t.save(null);
+
+//		s.save(null);
+//		t.save(null);
 		c.save(null);
 		p.save(null);
 	}
