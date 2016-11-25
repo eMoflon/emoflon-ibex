@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational;
 
 import java.util.HashMap;
+import java.util.Random;
 
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
@@ -15,6 +16,8 @@ public class MatchContainer {
 	private HashMap<Integer, String> idToRuleName = new HashMap<>();
 
 	private TObjectIntMap<IPatternMatch> matchToRuleNameID = new TObjectIntHashMap<>();
+	
+	private Random random = new Random();
 
 	protected MatchContainer(TGG tgg) {
 		assignIDsToRuleNames(tgg);
@@ -40,6 +43,10 @@ public class MatchContainer {
 
 	protected IPatternMatch getNext() {
 		return (IPatternMatch) matchToRuleNameID.keys()[0];
+	}
+	
+	protected IPatternMatch getNextRandom() {
+		return (IPatternMatch) matchToRuleNameID.keys()[random.nextInt(matchToRuleNameID.size())];
 	}
 
 	protected boolean isEmpty() {
