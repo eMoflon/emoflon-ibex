@@ -40,5 +40,10 @@ public class MODELGEN extends TGGRuntimeUtil {
 		return stopCriterion.dont();
 	}
 
+	@Override
+	public OperationStrategy getStrategy() {
+		return OperationStrategy.PROTOCOL_NACS;
+	}
+
 
 }

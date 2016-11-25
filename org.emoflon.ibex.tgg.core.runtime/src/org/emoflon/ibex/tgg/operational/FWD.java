@@ -14,4 +14,9 @@ public class FWD extends TGGRuntimeUtil {
 	public OperationMode getMode() {
 		return OperationMode.FWD;
 	}
+
+	@Override
+	public OperationStrategy getStrategy() {
+		return OperationStrategy.PROTOCOL_NACS;
+	}
 }

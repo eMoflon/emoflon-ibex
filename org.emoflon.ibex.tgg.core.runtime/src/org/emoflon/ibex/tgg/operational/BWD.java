@@ -15,5 +15,10 @@ public class BWD extends TGGRuntimeUtil {
 		return OperationMode.BWD;
 	}
 
+	@Override
+	public OperationStrategy getStrategy() {
+		return OperationStrategy.PROTOCOL_NACS;
+	}
+
 
 }
