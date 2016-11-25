@@ -44,6 +44,20 @@ public class MODELGEN extends TGGRuntimeUtil {
 	public OperationStrategy getStrategy() {
 		return OperationStrategy.PROTOCOL_NACS;
 	}
+	
+	/**
+	 * Differences of MODELGEN::run from super::run are
+	 * - the next match is randomly chosen
+	 * - applied matches are not removed from the match container
+	 */
+	@Override
+	public void run(){
+		while(!matchContainer.isEmpty() && !stop()){
+			IPatternMatch match = matchContainer.getNextRandom();
+			String ruleName = matchContainer.getRuleName(match);
+			apply(ruleName, match);
+		}
+	}
 
 
 }
