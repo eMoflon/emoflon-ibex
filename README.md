@@ -1,7 +1,7 @@
 # eMoflon-ibex
 
 ## Installation
-1. Get recent version of eclipse including modelling tools
+1. Get current version of eclipse modeling tools
 2. Install
   - VIATRA (Eclipse Marketplace)
   - Xtext  (Eclipse Marketplace)
