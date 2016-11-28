@@ -27,6 +27,7 @@ public class IbexTGGNature implements IProjectNature {
 	public static final String IBEX_TGG_BUILDER_ID = "org.emoflon.ibex.tgg.ui.ide.builder";
 	public static final String XTEXT_NATURE_ID     = "org.eclipse.xtext.ui.shared.xtextNature";
 	public static final String VIATRA_NATURE_ID    = "org.eclipse.viatra.query.projectnature";
+	public static final String PLUGIN_NATURE_ID = "org.eclipse.pde.PluginNature";
 	public static final String SCHEMA_FILE = "src/org/emoflon/ibex/tgg/Schema.tgg";
 	
 	private IProject project;
@@ -95,14 +96,16 @@ public class IbexTGGNature implements IProjectNature {
 					"org.eclipse.viatra.query.runtime",
 					"org.apache.log4j",
 					"com.google.guava",
-					"org.eclipse.xtend.lib"
+					"org.eclipse.xtend.lib",
+					"org.eclipse.xtext.xbase.lib"
 					));
 			return changed;
 		});
 	}
 
 	private void setUpAsPluginProject() throws CoreException, IOException {
-        setUpBuildProperties();
+		WorkspaceHelper.addNature(project, PLUGIN_NATURE_ID, new NullProgressMonitor());
+		setUpBuildProperties();
         setUpManifestFile();
         WorkspaceHelper.addContainerToBuildPath(project, "org.eclipse.pde.core.requiredPlugins");	
     }
