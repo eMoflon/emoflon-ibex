@@ -96,7 +96,7 @@ public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 			return createdTrgToMatch.get(e);
 		if (createdCorrToMatch.containsKey(e))
 			return createdCorrToMatch.get(e);
-		return null;
+		return new TIntHashSet();
 	}
 	
 	private void eliminate(TGGRuleApplication m) {
