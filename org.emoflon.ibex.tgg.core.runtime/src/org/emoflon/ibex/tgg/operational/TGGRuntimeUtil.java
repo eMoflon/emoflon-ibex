@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.operational;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,7 +56,7 @@ public abstract class TGGRuntimeUtil {
 
 	private OperationStrategy strategy;
 	
-	protected HashSet<IPatternMatch> pendingMatches = new HashSet<>();
+	protected ArrayList<IPatternMatch> pendingEdgeWrapperMatches = new ArrayList<>();
 	
 	protected MatchContainer matchContainer;
 
@@ -80,6 +79,7 @@ public abstract class TGGRuntimeUtil {
 	}
 	
 	public void run(){
+		createEdges();
 		while(!matchContainer.isEmpty()){
 			IPatternMatch match = matchContainer.getNext();
 			String ruleName = matchContainer.getRuleName(match);
@@ -88,6 +88,14 @@ public abstract class TGGRuntimeUtil {
 		}
 	}
 	
+	protected void createEdges() {
+		while(!pendingEdgeWrapperMatches.isEmpty()){
+			IPatternMatch match = pendingEdgeWrapperMatches.get(0);
+			createEdge(match);
+			removeEdgeWrapperMatch(match);
+		}	
+	}
+
 	public void addMatch(String ruleName, IPatternMatch match){
 		matchContainer.addMatch(ruleName, match);
 	}
@@ -98,6 +106,8 @@ public abstract class TGGRuntimeUtil {
 
 	public void apply(String ruleName, IPatternMatch match) {
 
+		if(isObsolete(match))
+			return;
 		/*
 		 * this hash map complements the match to a comatch of an original
 		 * triple rule application
@@ -138,7 +148,7 @@ public abstract class TGGRuntimeUtil {
 	
 	protected void revoke(TGGRuleApplication ra){
 		
-		EcoreUtil.remove(ra);
+		EcoreUtil.delete(ra);
 		
 		if(manipulateSrc()){
 			deleteNonCorrs(ra.getCreatedSrc());
@@ -308,13 +318,16 @@ public abstract class TGGRuntimeUtil {
 
 	}
 	
-	public void createEdge(IPatternMatch match){	
+	private void createEdge(IPatternMatch match){	
+		if(isObsolete(match))
+			return;
+		
 		try {
 			Edge newEdge = (Edge) manipulator.create(protocolR, runtimePackage.getEdge());
 			newEdge.setSrc((EObject) match.get("s"));
 			newEdge.setTrg((EObject) match.get("t"));
 			
-			String[] splitPatternName = match.patternName().split("_");
+			String[] splitPatternName = match.patternName().split("_eMoflonEdgeWrapper_");
 			String edgeName = splitPatternName[splitPatternName.length-1];
 			newEdge.setName(edgeName);
 		} catch (ModelManipulationException e) {
@@ -328,6 +341,29 @@ public abstract class TGGRuntimeUtil {
 		EcoreUtil.delete(e);
 		e.setSrc(null);
 		e.setTrg(null);
+	}
+	
+	public void addEdgeWrapperMatch(IPatternMatch match){
+		pendingEdgeWrapperMatches.add(match);
+	}
+	
+	public void removeEdgeWrapperMatch(IPatternMatch match){
+		pendingEdgeWrapperMatches.remove(match);
+	}
+	
+	/**
+	 * As the pattern matcher might stop reporting broken matches (as objects do not live in the resource set anymore),
+	 * this method checks whether the match contains dangling objects
+	 */
+	private boolean isObsolete(IPatternMatch match){
+		for(String parameterName : match.parameterNames()){
+			EObject eobject = (EObject) match.get(parameterName);
+			if(eobject.eContainer() == null && eobject.eResource() == null)
+				return true;
+		}
+		return false;
+			
+			
 	}
 
 

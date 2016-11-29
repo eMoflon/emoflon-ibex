@@ -51,6 +51,7 @@ public class MODELGEN extends TGGRuntimeUtil {
 	 */
 	@Override
 	public void run() {
+		createEdges();
 		while (!matchContainer.isEmpty() && !stop()) {
 			IPatternMatch match = matchContainer.getNextRandom();
 			String ruleName = matchContainer.getRuleName(match);

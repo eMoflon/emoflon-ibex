@@ -10,10 +10,10 @@ public class EdgePatternNaming {
 	
 	private static final String MissingEdgeWrapper = "Missing" + EdgeWrapper;
 	
-	private static final String ExistingEdgeWrapper = "Obsolete" + EdgeWrapper;
+	private static final String ExistingEdgeWrapper = "Existing" + EdgeWrapper;
 	
 	public static String getSuffix(EReference ref){
-		return ref.getEContainingClass().getName() + "_" + ref.getEType().getName() + "_" + ref.getName();
+		return ref.getEContainingClass().getName() + "_" + ref.getEType().getName() + "_eMoflonEdgeWrapper_" + ref.getName();
 	}
 	
 	public static String getEMFEdge(EReference ref){

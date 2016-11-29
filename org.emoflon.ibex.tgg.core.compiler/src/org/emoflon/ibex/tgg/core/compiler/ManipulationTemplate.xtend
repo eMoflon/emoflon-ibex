@@ -145,8 +145,10 @@ class ManipulationTemplate {
 						private def get«EdgePatternNaming.getMissingEdgeWrapper(edgeType)»() {
 						    createRule.name("«EdgePatternNaming.getMissingEdgeWrapper(edgeType)»").precondition(«EdgePatternNaming.getMissingEdgeWrapper(edgeType)»Matcher.querySpecification).action(
 						    CRUDActivationStateEnum.CREATED) [
-						     tggRuntimeUtil.createEdge(it)
-						    ].addLifeCycle(Lifecycles.getDefault(true, true)).build
+						     tggRuntimeUtil.addEdgeWrapperMatch(it)].action(
+						     CRUDActivationStateEnum.DELETED) [
+						     tggRuntimeUtil.removeEdgeWrapperMatch(it)].
+						     addLifeCycle(Lifecycles.getDefault(true, true)).build
 						}
 						
 						private def get«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»() {
