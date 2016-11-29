@@ -70,8 +70,7 @@ class ApplicationStubTemplate {
 				// change your input models here if necessary
 				
 				tggRuntime.run();
-				transformation.dispose();	
-				tggRuntime.finalize();
+				transformation.dispose();
 		 
 				s.save(null);
 				t.save(null);

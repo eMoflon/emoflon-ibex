@@ -21,16 +21,6 @@ public class MODELGEN extends TGGRuntimeUtil {
 		return OperationMode.MODELGEN;
 	}
 
-	@Override
-	public void apply(String ruleName, IPatternMatch match) {
-
-		if (!stopCriterion.dont(ruleName)) {
-			super.apply(ruleName, match);
-			stopCriterion.update(ruleName, greenSrcNodes.get(ruleName).size() + greenSrcEdges.get(ruleName).size(),
-					greenTrgNodes.get(ruleName).size() + greenTrgEdges.get(ruleName).size());
-		}
-	}
-
 	public MODELGENStopCriterion getStopCriterion() {
 		return stopCriterion;
 	}
@@ -44,21 +34,19 @@ public class MODELGEN extends TGGRuntimeUtil {
 		return OperationStrategy.PROTOCOL_NACS;
 	}
 
-	/**
-	 * Differences of MODELGEN::run from super::run are - the next match is
-	 * randomly chosen - applied matches are not removed from the match
-	 * container
-	 */
 	@Override
-	public void run() {
-		createEdges();
-		while (!matchContainer.isEmpty() && !stop()) {
+	protected void processOperationalRuleMatches() {
+		while (!stop()) {
 			IPatternMatch match = matchContainer.getNextRandom();
 			String ruleName = matchContainer.getRuleName(match);
-			apply(ruleName, match);
+			if (!stopCriterion.dont(ruleName)) {
+				processOperationalRuleMatch(ruleName, match);
+				stopCriterion.update(ruleName, greenSrcNodes.get(ruleName).size() + greenSrcEdges.get(ruleName).size(),
+						greenTrgNodes.get(ruleName).size() + greenTrgEdges.get(ruleName).size());
+			}
 		}
 	}
-	
+
 	@Override
 	protected boolean protocol() {
 		return false;

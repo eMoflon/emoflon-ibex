@@ -18,10 +18,8 @@ class ManipulationTemplate {
 				
 				import org.eclipse.viatra.query.runtime.api.ViatraQueryEngine
 				import org.eclipse.viatra.query.runtime.emf.EMFScope
-				import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.IModelManipulations
 				import org.eclipse.viatra.transformation.runtime.emf.rules.eventdriven.EventDrivenTransformationRuleFactory
 				import org.eclipse.viatra.transformation.runtime.emf.transformation.eventdriven.EventDrivenTransformation
-				import org.eclipse.viatra.transformation.runtime.emf.modelmanipulation.SimpleModelManipulations
 				import org.eclipse.viatra.transformation.evm.specific.Lifecycles
 				import org.eclipse.viatra.transformation.evm.specific.crud.CRUDActivationStateEnum
 				import org.eclipse.viatra.transformation.runtime.emf.rules.EventDrivenTransformationRuleGroup
@@ -51,7 +49,6 @@ class ManipulationTemplate {
 				
 					/* Transformation rule-related extensions */
 					extension EventDrivenTransformationRuleFactory = new EventDrivenTransformationRuleFactory
-					extension IModelManipulations manipulation
 				
 					protected ViatraQueryEngine engine
 					protected Resource resource
@@ -89,9 +86,6 @@ class ManipulationTemplate {
 					}
 					
 					private def createTransformation() {
-						// Initialize model manipulation API
-						this.manipulation = new SimpleModelManipulations(engine)
-						this.tggRuntimeUtil.setModelManipulation(this.manipulation)
 						// Initialize event-driven transformation
 						transformation = EventDrivenTransformation.forEngine(engine).addRules(getTransformationRuleGroup).addRules(get_EdgePatterns).addRules(get«PatternSuffixes.PROTOCOL»).build
 					}
@@ -125,13 +119,13 @@ class ManipulationTemplate {
 								createRule.name("«rule.name»«suffix»").precondition(«rule.name»«suffix»Matcher.querySpecification).action(
 									«IF suffix.equals(PatternSuffixes.PROTOCOL)»
 										CRUDActivationStateEnum.DELETED) [
-											tggRuntimeUtil.revoke(it)
+											tggRuntimeUtil.revokeOperationalRule(it)
 										].action(CRUDActivationStateEnum.CREATED)[]
 									«ELSE»
 										CRUDActivationStateEnum.CREATED) [
-										         tggRuntimeUtil.addMatch("«rule.name»", it)
+										         tggRuntimeUtil.addOperationalRuleMatch("«rule.name»", it)
 										].action(CRUDActivationStateEnum.DELETED)[
-										         tggRuntimeUtil.removeMatch(it)]
+										         tggRuntimeUtil.removeOperationalRuleMatch(it)]
 									«ENDIF»		
 								.addLifeCycle(				
 									Lifecycles.getDefault(true, true)

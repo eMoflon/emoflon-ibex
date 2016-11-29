@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -30,10 +31,10 @@ public class FWDApp {
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		
 		// create your resources 
-		Resource s = rs.createResource(URI.createFileURI("src.xmi"));
-		Resource t = rs.createResource(URI.createFileURI("trg.xmi"));
-		Resource c = rs.createResource(URI.createFileURI("corr.xmi"));
-		Resource p = rs.createResource(URI.createFileURI("protocol.xmi"));
+		Resource s = rs.createResource(URI.createFileURI("src_gen.xmi"));
+		Resource t = rs.createResource(URI.createFileURI("trg_gen.xmi"));
+		Resource c = rs.createResource(URI.createFileURI("corr_gen.xmi"));
+		Resource p = rs.createResource(URI.createFileURI("protocol_gen.xmi"));
 		
 		// load the resources containing your input 
 		s.load(null);
@@ -43,27 +44,26 @@ public class FWDApp {
 		
 		System.out.println("Starting FWD");
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil transformer = new FWD_ILP(tgg, s, c, t, p);
+		TGGRuntimeUtil tggRuntime = new FWD_ILP(tgg, s, c, t, p);
 		
-		Transformation trafo = new Transformation(rs, transformer);						
-		trafo.execute();
+		Transformation transformation = new Transformation(rs, tggRuntime);						
+		transformation.execute();
 		
-		EObject pack = s.getContents().get(0);
-		EList<EObject> clazzs = (EList) pack.eGet(pack.eClass().getEStructuralFeature("clazzs"));
-		EcoreUtil.delete(s.getContents().get(0));
+		ArrayList<EObject> allObjects = new ArrayList<>();
+		s.getAllContents().forEachRemaining(allObjects::add);
+		allObjects.forEach(EcoreUtil::delete);
 		
-		transformer.run();
+		tggRuntime.run();
 		
-		trafo.dispose();
+		transformation.dispose();
 		
-		transformer.finalize();
 		long toc = System.currentTimeMillis();
 		System.out.println("Completed FWD in: " + (toc-tic) + " ms");
  
-		//s.save(null);
-		t.save(null);
-		c.save(null);
-		p.save(null);
+//		s.save(null);
+//		t.save(null);
+//		c.save(null);
+//		p.save(null);
 	}
 	
 	private static void registerMetamodels(ResourceSet rs){
