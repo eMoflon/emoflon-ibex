@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import runtime.Edge;
 import runtime.RuntimeFactory;
 
-public class EdgeUtil {
+public class FromEdgeWrapperToEMFEdgeUtil {
 
 	public static void applyEdges(Collection<Edge> edges) {
 		edges.forEach(e -> performApplyEdgeActionOnFeature(e, (f, o) -> ((EList) e.getSrc().eGet(f)).add(o),

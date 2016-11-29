@@ -60,7 +60,6 @@ public class MODELGEN_BIG_App {
 		
 		transformer.run();
 		trafo.dispose();
-		transformer.finalize();
 		long toc = System.currentTimeMillis();
 		
 		System.out.println("Generated models in " + (toc-tic) + " ms");

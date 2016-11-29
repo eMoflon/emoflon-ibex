@@ -42,7 +42,7 @@ public class MODELGENApp {
 		// load the resources containing your input 
 
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
-		stop.setMaxSrcCount(1000);
+		stop.setMaxSrcCount(100);
 		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop);
 		
 		Transformation trafo = new Transformation(rs, transformer);
@@ -51,7 +51,6 @@ public class MODELGENApp {
 		
 		transformer.run();
 		trafo.dispose();
-		transformer.finalize();
 
 		s.save(null);
 		t.save(null);
