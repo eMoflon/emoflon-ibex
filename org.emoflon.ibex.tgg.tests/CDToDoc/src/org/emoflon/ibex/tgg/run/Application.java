@@ -7,20 +7,16 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.operational.FWD;
-import org.emoflon.ibex.tgg.operational.FWD_ILP;
-import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
+import org.emoflon.ibex.tgg.operational.*;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
 import language.TGG;
 import runtime.RuntimePackage;
 
-public class FWDBatchApp {
+public class Application {
 
 	public static void main(String[] args) throws IOException {
-		//BasicConfigurator.configure();
 				
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
 		registerMetamodels(rs);
@@ -36,23 +32,39 @@ public class FWDBatchApp {
 		
 		// load the resources containing your input 
 		s.load(null);
-
+		//t.load(null);
+		//c.load(null);
+		//p.load(null);			
+						
 		
-		System.out.println("Starting FWD");
-		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil transformer = new FWD_ILP(tgg, s, c, t, p);
+		TGGRuntimeUtil tggRuntime = null;
 		
-		Transformation trafo = new Transformation(rs, transformer);						
-		trafo.execute();
+		// choose your operation type (FWD, BWD, CC, MODELGEN etc.)
 		
-		transformer.run();
+		tggRuntime = new FWD(tgg, s, c, t, p);
 		
-		trafo.dispose();
+		//tggRuntime = new FWD_ILP(tgg, s, c, t, p);
 		
-		long toc = System.currentTimeMillis();
-		System.out.println("Completed FWD in: " + (toc-tic) + " ms");
+		//tggRuntime = new BWD(tgg, s, c, t, p);
+		
+		//tggRuntime = new BWD_ILP(tgg, s, c, t, p);
+		
+		//tggRuntime = new CC(tgg, s, c, t, p);
+		
+		//MODELGENStopCriterion stop = new MODELGENStopCriterion();
+		//stop.setMaxSrcCount(1000);
+		//tggRuntime = new MODELGEN(tgg, s, c, t, p, stop);
+		
+		
+		Transformation transformation = new Transformation(rs, tggRuntime);						
+		transformation.execute();
+		
+		// change your input models here if necessary
+		
+		tggRuntime.run();
+		transformation.dispose();
  
-		//s.save(null);
+		s.save(null);
 		t.save(null);
 		c.save(null);
 		p.save(null);
@@ -70,17 +82,8 @@ public class FWDBatchApp {
 		Registry.INSTANCE.put("platform:/resource/CDToDoc/model/CDToDoc.ecore", pcorr);
 		Registry.INSTANCE.put("platform:/plugin/CDToDoc/model/CDToDoc.ecore", pcorr);
 		
-		// Add mappings for all other required dependencies
-		Resource cd = rs.getResource(URI.createFileURI("domains/CD.ecore"), true);
-		EPackage pcd = (EPackage) cd.getContents().get(0);
-		Registry.INSTANCE.put(cd.getURI().toString(), pcd);
-		Registry.INSTANCE.put("platform:/resource/CDToDoc/domains/CD.ecore", pcd);
-		Registry.INSTANCE.put("platform:/plugin/CD/model/CD.ecore", pcd);
+		// TODO: Add mappings for all other required dependencies
 		
-		Resource doc = rs.getResource(URI.createFileURI("domains/Doc.ecore"), true);
-		EPackage pdoc = (EPackage) doc.getContents().get(0);
-		Registry.INSTANCE.put(doc.getURI().toString(), pdoc);
-		Registry.INSTANCE.put("platform:/resource/CDToDoc/domains/Doc.ecore", pdoc);	
-		Registry.INSTANCE.put("platform:/plugin/Doc/model/Doc.ecore", pdoc);	
 	}
 }
+

@@ -55,7 +55,6 @@ public class CCApp {
 		
 		transformer.run();
 		trafo.dispose();
-		transformer.finalize();
 		
 		long toc = System.currentTimeMillis();
 		
