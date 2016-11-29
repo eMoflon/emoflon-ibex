@@ -1,11 +1,10 @@
 #using CDToDoc.*
 #using AttrCondDefLibrary.*
 
-#rule PackageToFolderRule_Anker #with CDToDoc
+#rule RootPackageToFileRule #with CDToDoc
 
-#source { 
+#source {
 	p1:Package{
-		name == "root"
 		++-packages->p2
 	}
 	
@@ -15,11 +14,10 @@
 #target {
 	
 	f1:Folder{
-		name == "root"
-		++-folders->f2
+		++-files->f2
 	}
 	
-	++f2:Doc.Folder
+	++f2:Doc.File
 }
 
 #correspondence {
@@ -27,7 +25,7 @@
 		#src->p1
 		#trg->f1
 	}
-	++p2f2:PackageToFolder{
+	++p2f2:PackageToFile{
 		#src->p2
 		#trg->f2
 	}
