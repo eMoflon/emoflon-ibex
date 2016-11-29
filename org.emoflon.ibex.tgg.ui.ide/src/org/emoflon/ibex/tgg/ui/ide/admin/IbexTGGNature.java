@@ -74,7 +74,9 @@ public class IbexTGGNature implements IProjectNature {
 		new ManifestFileUpdater().processManifest(project, manifest -> {
 			boolean changed = false;
 			changed |= ManifestFileUpdater.updateDependencies(manifest, Arrays.asList(
-					"org.emoflon.ibex.tgg.core.runtime"
+					"org.emoflon.ibex.tgg.core.runtime",
+					"org.emoflon.ibex.tgg.core.language",
+					"org.moflon.core.utilities"
 					));
 			return changed;
 		});
@@ -94,6 +96,9 @@ public class IbexTGGNature implements IProjectNature {
 			changed |= ManifestFileUpdater.updateDependencies(manifest, Arrays.asList(
 					"org.eclipse.viatra.transformation.runtime.emf",
 					"org.eclipse.viatra.query.runtime",
+					"org.eclipse.viatra.transformation.evm",
+					"org.eclipse.viatra.transformation.evm.transactions",
+					"org.eclipse.viatra.query.runtime.base.itc",
 					"org.apache.log4j",
 					"com.google.guava",
 					"org.eclipse.xtend.lib",
