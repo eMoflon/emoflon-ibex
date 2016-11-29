@@ -1,26 +1,31 @@
 package org.emoflon.ibex.tgg.operational;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
+import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import language.TGG;
 import language.TGGRule;
 
 public class MatchContainer {
 
-	private HashMap<String, Integer> ruleNameToId = new HashMap<>();
-	private HashMap<Integer, String> idToRuleName = new HashMap<>();
+	private TObjectIntMap<String> ruleNameToId;
+	private TIntObjectMap<String> idToRuleName;
 
-	private TObjectIntMap<IPatternMatch> matchToRuleNameID = new TObjectIntHashMap<>();
-	
-	private Random random = new Random();
+	private TObjectIntMap<IPatternMatch> matchToRuleNameID;
+
+	private Random random;
 
 	protected MatchContainer(TGG tgg) {
+		this.ruleNameToId = new TObjectIntHashMap<>(tgg.getRules().size());
+		this.idToRuleName = new TIntObjectHashMap<>(tgg.getRules().size());
+		this.matchToRuleNameID = new TObjectIntHashMap<>();
+		this.random = new Random();
 		assignIDsToRuleNames(tgg);
 	}
 
@@ -45,12 +50,12 @@ public class MatchContainer {
 	protected IPatternMatch getNext() {
 		return (IPatternMatch) matchToRuleNameID.keySet().iterator().next();
 	}
-	
+
 	protected IPatternMatch getNextRandom() {
 		Iterator<IPatternMatch> it = matchToRuleNameID.keySet().iterator();
 		int randomIndex = random.nextInt(matchToRuleNameID.size());
 		int count = 0;
-		while(count < randomIndex){
+		while (count < randomIndex) {
 			count++;
 			it.next();
 		}
