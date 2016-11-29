@@ -4,11 +4,15 @@
 #rule Axiom #with CDToDoc
 
 #source {
-	++ p:Package
+	++ p:Package {
+		name:="root"
+	}
 }
 
 #target {
-	++ f:Folder
+	++ f:Folder {
+		name:="root"
+	}
 }
 
 #correspondence {
