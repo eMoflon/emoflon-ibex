@@ -47,6 +47,10 @@ public class ConsistencyPattern extends Pattern {
 		return "eMoflon_ProtocolNode";
 	}
 	
+	public String getRuleName(){
+		return rule.getName();
+	}
+	
 	
 	public Collection<TGGRuleElement> getContextSrc(){
 		return getAllRuleElements().filter(e -> isConform(e, BindingType.CONTEXT, DomainType.SRC)).collect(Collectors.toSet());

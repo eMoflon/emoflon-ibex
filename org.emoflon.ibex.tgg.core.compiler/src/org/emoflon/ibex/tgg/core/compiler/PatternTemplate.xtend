@@ -115,6 +115,7 @@ class PatternTemplate {
 		return '''
 		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«pattern.typeOf(e).name»«ENDFOR»){
 			TGGRuleApplication.final(«pattern.protocolNodeName», true);
+			TGGRuleApplication.name(«pattern.protocolNodeName», "«pattern.ruleName»");
 			«FOR e : pattern.contextSrc»
 			TGGRuleApplication.contextSrc(«pattern.protocolNodeName», «e.name»);
 			«ENDFOR»
