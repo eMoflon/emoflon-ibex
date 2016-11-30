@@ -35,4 +35,9 @@ public class SrcPattern extends RulePartPattern {
 		return isRelevantForSignature(n) && n.getBindingType() == BindingType.CREATE;
 	}
 
+	@Override
+	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+		return node1.getBindingType() == BindingType.CONTEXT && node2.getBindingType() == BindingType.CONTEXT;
+	}
+
 }

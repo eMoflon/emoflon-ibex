@@ -34,5 +34,10 @@ public class CCPattern extends RulePartPattern {
 	protected String getPatternNameSuffix() {
 		return PatternSuffixes.CC;
 	}
+	
+	@Override
+	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+		return node1.getDomainType() == node2.getDomainType();
+	}
 
 }

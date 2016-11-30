@@ -11,6 +11,7 @@ Require-Bundle: org.emoflon.ibex.tgg.core.language;bundle-version="1.0.0",
  org.eclipse.emf.common,
  org.eclipse.emf;bundle-version="2.6.0",
  org.eclipse.emf.ecore,
- org.emoflon.ibex.tgg.core.runtime
+ org.emoflon.ibex.tgg.core.runtime,
+ org.apache.commons.lang3
 Export-Package: org.emoflon.ibex.tgg.core.compiler
 

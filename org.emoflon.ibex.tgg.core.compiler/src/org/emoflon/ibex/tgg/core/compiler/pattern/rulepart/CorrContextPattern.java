@@ -45,4 +45,9 @@ public class CorrContextPattern extends RulePartPattern {
 		return n.getDomainType() == DomainType.CORR;
 	}
 
+	@Override
+	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+		return false;
+	}
+
 }

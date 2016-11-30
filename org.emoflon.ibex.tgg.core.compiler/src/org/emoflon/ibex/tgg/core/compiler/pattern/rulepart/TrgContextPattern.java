@@ -35,4 +35,9 @@ public class TrgContextPattern extends RulePartPattern {
 		return isRelevantForSignature(n);
 	}
 
+	@Override
+	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+		return false;
+	}
+
 }
