@@ -1,7 +1,11 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: CDToDoc;singleton:=true
+Bundle-ManifestVersion: 2
 Bundle-Name: Foo
+Bundle-SymbolicName: CDToDoc;singleton:=true
 Bundle-Version: 1.0
+Bundle-Vendor: eMoflon IBeX
+Export-Package: org.emoflon.ibex.tgg.common,
+ org.emoflon.ibex.tgg.common.util
 Require-Bundle: org.eclipse.viatra.transformation.runtime.emf,
  org.eclipse.viatra.query.runtime,
  org.apache.log4j,
@@ -13,10 +17,6 @@ Require-Bundle: org.eclipse.viatra.transformation.runtime.emf,
  org.eclipse.emf.ecore.xmi;bundle-version="2.12.0",
  org.eclipse.viatra.transformation.evm;bundle-version="1.4.0",
  org.eclipse.viatra.transformation.evm.transactions;bundle-version="1.4.0",
- org.eclipse.viatra.query.runtime.base.itc;bundle-version="1.4.0",
- CD;bundle-version="1.0.0",
- Doc;bundle-version="1.0.0"
-Bundle-ManifestVersion: 2
-Bundle-ActivationPolicy: lazy
+ org.eclipse.viatra.query.runtime.base.itc;bundle-version="1.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: eMoflon IBeX
+Bundle-ActivationPolicy: lazy
