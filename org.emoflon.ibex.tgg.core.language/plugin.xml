@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?><plugin>
   <extension point="org.eclipse.emf.ecore.generated_package">
-    <package class="language.LanguagePackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore"/>
+    <package class="language.LanguagePackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/"/>
+  </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="language.inplaceAttributes.InplaceAttributesPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//inplaceAttributes"/>
+  </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="language.csp.CspPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp"/>
+  </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="language.basic.BasicPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//basic"/>
+  </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="language.basic.expressions.ExpressionsPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions"/>
   </extension>
 </plugin>

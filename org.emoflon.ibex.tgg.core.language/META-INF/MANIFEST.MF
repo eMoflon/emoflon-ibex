@@ -3,7 +3,19 @@ Bundle-SymbolicName: org.emoflon.ibex.tgg.core.language;singleton:=tru
  e
 Export-Package: language.util,
  language.impl,
- language
+ language,
+ language.inplaceAttributes.util,
+ language.csp.impl,
+ language.csp.util,
+ language.inplaceAttributes.impl,
+ language.inplaceAttributes,
+ language.csp,
+ language.basic.impl,
+ language.basic.util,
+ language.basic.expressions.util,
+ language.basic.expressions.impl,
+ language.basic,
+ language.basic.expressions
 Bundle-Name: org.emoflon.ibex.tgg.core.language
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore,

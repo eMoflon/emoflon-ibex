@@ -20,4 +20,5 @@ Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: TU Darmstadt
-Import-Package: language
+Import-Package: language,
+ language.basic
