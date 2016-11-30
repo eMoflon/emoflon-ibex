@@ -118,9 +118,9 @@ class ManipulationTemplate {
 							private def get«rule.name»«suffix»() {
 								createRule.name("«rule.name»«suffix»").precondition(«rule.name»«suffix»Matcher.querySpecification).action(
 									«IF suffix.equals(PatternSuffixes.PROTOCOL)»
-										CRUDActivationStateEnum.DELETED) [
-											tggRuntimeUtil.revokeOperationalRule(it)
-										].action(CRUDActivationStateEnum.CREATED)[]
+										CRUDActivationStateEnum.CREATED) []
+										.action(CRUDActivationStateEnum.DELETED)[
+										tggRuntimeUtil.revokeOperationalRule(it)]
 									«ELSE»
 										CRUDActivationStateEnum.CREATED) [
 										         tggRuntimeUtil.addOperationalRuleMatch("«rule.name»", it)
@@ -146,11 +146,11 @@ class ManipulationTemplate {
 						}
 						
 						private def get«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»() {
-							createRule.name("«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»").precondition(«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»Matcher.querySpecification).action(
-							CRUDActivationStateEnum.DELETED) [
-							  tggRuntimeUtil.deleteEdge(it)
-							].action(CRUDActivationStateEnum.CREATED)[]
-							   .addLifeCycle(Lifecycles.getDefault(true, true)).build
+							createRule.name("«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»").precondition(«EdgePatternNaming.getExistingEdgeWrapper(edgeType)»Matcher.querySpecification).
+							action(CRUDActivationStateEnum.CREATED)[]
+							.action(CRUDActivationStateEnum.DELETED) [
+							  tggRuntimeUtil.deleteEdge(it)]
+							.addLifeCycle(Lifecycles.getDefault(true, true)).build
 						}
 					«ENDFOR»
 					

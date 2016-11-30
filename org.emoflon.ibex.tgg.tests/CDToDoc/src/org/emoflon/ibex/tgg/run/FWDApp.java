@@ -49,9 +49,8 @@ public class FWDApp {
 		Transformation transformation = new Transformation(rs, tggRuntime);						
 		transformation.execute();
 		
-		ArrayList<EObject> allObjects = new ArrayList<>();
-		s.getAllContents().forEachRemaining(allObjects::add);
-		allObjects.forEach(EcoreUtil::delete);
+		while(!s.getContents().isEmpty())
+			EcoreUtil.delete(s.getContents().get(0));
 		
 		tggRuntime.run();
 		
@@ -60,10 +59,10 @@ public class FWDApp {
 		long toc = System.currentTimeMillis();
 		System.out.println("Completed FWD in: " + (toc-tic) + " ms");
  
-//		s.save(null);
-//		t.save(null);
-//		c.save(null);
-//		p.save(null);
+		s.save(null);
+		t.save(null);
+		c.save(null);
+		p.save(null);
 	}
 	
 	private static void registerMetamodels(ResourceSet rs){
