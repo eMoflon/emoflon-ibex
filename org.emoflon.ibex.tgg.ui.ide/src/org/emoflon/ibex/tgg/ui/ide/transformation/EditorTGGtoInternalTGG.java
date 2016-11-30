@@ -176,7 +176,15 @@ public class EditorTGGtoInternalTGG {
 	
 	// TODO!
 	private TGGAttributeConstraintOperators convertOperator(String operator) {
-		return TGGAttributeConstraintOperators.EQUAL;
+		switch(operator) {
+		case "==": return TGGAttributeConstraintOperators.EQUAL;
+		case "!=": return TGGAttributeConstraintOperators.UNEQUAL;
+		case ">=": return TGGAttributeConstraintOperators.GR_EQUAL;
+		case "<=": return TGGAttributeConstraintOperators.LE_EQUAL;
+		case ">":  return TGGAttributeConstraintOperators.GREATER;
+		case "<":  return TGGAttributeConstraintOperators.LESSER;
+		default: return null;
+		}
 	}
 	
 	private TGGRuleNode getTGGRuleNode(ObjectVariablePattern ov) {
