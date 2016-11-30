@@ -71,6 +71,9 @@ class PatternTemplate {
 			«IF pattern.ignored»
 			check(false);
 			«ENDIF»
+			«FOR injectivityCheckPair : pattern.injectivityChecks»
+			«injectivityCheckPair.left.name» != «injectivityCheckPair.right.name»;
+			«ENDFOR»
 			«FOR edge : pattern.getBodyEdges»
 			Edge.src(«edge.name»,«edge.srcNode.name»);
 			Edge.trg(«edge.name»,«edge.trgNode.name»);
