@@ -1,5 +1,11 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
 
 import language.BindingType;
@@ -35,6 +41,9 @@ public class SrcContextPattern extends RulePartPattern {
 		return isRelevantForSignature(n);
 	}
 
-
+	@Override
+	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+		return false;
+	}
 
 }

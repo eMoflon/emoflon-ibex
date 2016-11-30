@@ -42,5 +42,10 @@ public class FWDPattern extends RulePartPattern {
 		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
 				.noneMatch(e -> e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CREATE);
 	}
+	
+	@Override
+	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+		return node1.getDomainType() == node2.getDomainType();
+	}
 
 }
