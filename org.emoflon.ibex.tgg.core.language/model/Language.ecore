@@ -65,14 +65,11 @@
   </eClassifiers>
   <eSubpackages name="inplaceAttributes" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//inplaceAttributes"
       nsPrefix="org.emoflon.ibex.tgg.core.language.inplaceAttributes">
-    <eClassifiers xsi:type="ecore:EClass" name="TGGInplaceAttributeExpression" abstract="true">
+    <eClassifiers xsi:type="ecore:EClass" name="TGGInplaceAttributeExpression">
       <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" lowerBound="1"
           eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EAttribute"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="valueExpr" eType="#//basic/expressions/TGGExpression"
           containment="true"/>
-    </eClassifiers>
-    <eClassifiers xsi:type="ecore:EClass" name="TGGInplaceAttributeAssignment" eSuperTypes="#//inplaceAttributes/TGGInplaceAttributeExpression"/>
-    <eClassifiers xsi:type="ecore:EClass" name="TGGInplaceAttributeConstraint" eSuperTypes="#//inplaceAttributes/TGGInplaceAttributeExpression">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="operator" lowerBound="1"
           eType="#//inplaceAttributes/TGGAttributeConstraintOperators" defaultValueLiteral=""/>
     </eClassifiers>

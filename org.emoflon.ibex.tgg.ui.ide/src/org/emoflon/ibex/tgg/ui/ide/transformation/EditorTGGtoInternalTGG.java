@@ -36,8 +36,7 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import language.inplaceAttributes.InplaceAttributesFactory;
 import language.inplaceAttributes.TGGAttributeConstraintOperators;
-import language.inplaceAttributes.TGGInplaceAttributeAssignment;
-import language.inplaceAttributes.TGGInplaceAttributeConstraint;
+import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import language.basic.expressions.ExpressionsFactory;
 import language.basic.expressions.TGGExpression;
 import language.basic.expressions.TGGLiteralExpression;
@@ -136,27 +135,27 @@ public class EditorTGGtoInternalTGG {
 		// This has to be done separately since some attribute expression may reference nodes that are not yet existent
 		for (TGGRuleNode tggNode : result) {
 			ObjectVariablePattern ov = rule2patMap.get(tggNode);
-			tggNode.getAttrExpr().addAll(ov.getAttributeAssignments().stream().map(assignment -> createTGGInplaceAttributeAssignment(tggNode, assignment)).collect(Collectors.toList()));
-			tggNode.getAttrExpr().addAll(ov.getAttributeConstraints().stream().map(constraint -> createTGGInplaceAttributeConstraint(result, tggNode, constraint)).collect(Collectors.toList()));
+			tggNode.getAttrExpr().addAll(ov.getAttributeAssignments().stream().map(assignment -> createTGGInplaceAttributeExpression(result, tggNode, assignment)).collect(Collectors.toList()));
+			tggNode.getAttrExpr().addAll(ov.getAttributeConstraints().stream().map(constraint -> createTGGInplaceAttributeExpression(result, tggNode, constraint)).collect(Collectors.toList()));
 		}
 		
 		return result;
 	}
-	
-	private TGGInplaceAttributeAssignment createTGGInplaceAttributeAssignment(TGGRuleNode node, AttributeAssignment assignment) {
-		TGGInplaceAttributeAssignment tiaa = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeAssignment();
-		Optional<EAttribute> test = node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(assignment.getAttribute().getName())).findFirst();
-		tiaa.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(assignment.getAttribute().getName())).findFirst().get());
-		tiaa.setValueExpr(createExpression(node, assignment.getValueExp()));
-		return tiaa;
-	}
 
-	private TGGInplaceAttributeConstraint createTGGInplaceAttributeConstraint(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeConstraint constraint) {
-		TGGInplaceAttributeConstraint tiac = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeConstraint();
-		tiac.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(constraint.getAttribute().getName())).findFirst().get());
-		tiac.setValueExpr(createExpression(node, constraint.getValueExp()));
-		tiac.setOperator(convertOperator(constraint.getOp()));
-		return tiac;
+	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeAssignment constraint) {
+		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
+		tiae.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(constraint.getAttribute().getName())).findFirst().get());
+		tiae.setValueExpr(createExpression(node, constraint.getValueExp()));
+		tiae.setOperator(convertOperator(constraint.getOp()));
+		return tiae;
+	}
+	
+	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeConstraint assignment) {
+		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
+		tiae.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(assignment.getAttribute().getName())).findFirst().get());
+		tiae.setValueExpr(createExpression(node, assignment.getValueExp()));
+		tiae.setOperator(TGGAttributeConstraintOperators.EQUAL);
+		return tiae;
 	}
 	
 	private TGGExpression createExpression(TGGRuleNode node, org.moflon.tgg.mosl.tgg.Expression expression) {
@@ -177,7 +176,8 @@ public class EditorTGGtoInternalTGG {
 	// TODO!
 	private TGGAttributeConstraintOperators convertOperator(String operator) {
 		switch(operator) {
-		case "==": return TGGAttributeConstraintOperators.EQUAL;
+		case "==": 
+		case ":=": return TGGAttributeConstraintOperators.EQUAL;
 		case "!=": return TGGAttributeConstraintOperators.UNEQUAL;
 		case ">=": return TGGAttributeConstraintOperators.GR_EQUAL;
 		case "<=": return TGGAttributeConstraintOperators.LE_EQUAL;
