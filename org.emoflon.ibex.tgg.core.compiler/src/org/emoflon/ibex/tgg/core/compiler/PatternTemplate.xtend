@@ -81,6 +81,10 @@ class PatternTemplate {
 			«ENDFOR»			
 			«FOR node : pattern.bodySrcTrgNodes»
 			«node.type.name»(«node.name»);
+			«FOR attrExpr : node.attrExpr»
+			«node.type.name».«attrExpr.attribute.name»(«node.name», «node.name»_«attrExpr.attribute.name»);
+			check ( «InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_" + attrExpr.attribute.name, attrExpr.valueExpr)» );
+			«ENDFOR»	
 			«ENDFOR»			
 			«FOR corr : pattern.bodyCorrNodes»
 			«corr.type.name».source(«corr.name»,«corr.source.name»);
