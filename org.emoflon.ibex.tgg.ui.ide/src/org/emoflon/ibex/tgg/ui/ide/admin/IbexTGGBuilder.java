@@ -265,12 +265,17 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		if(buildIsNecessary)
 			return false;
 		
-		if (delta.getResource().getName().endsWith(TGG_FILE_EXTENSION)) {
+		if (isTggFileToBeCompiled(delta)) {
 			buildIsNecessary = true;
 			return false;
 		}
 		
 		return true;
+	}
+	
+	private boolean isTggFileToBeCompiled(IResourceDelta delta) {
+		return delta.getResource().getName().endsWith(TGG_FILE_EXTENSION)
+				&& !delta.getResource().getProjectRelativePath().toString().startsWith("bin/");
 	}
 
 	private void performClean() {
