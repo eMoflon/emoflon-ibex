@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,7 +22,7 @@ public class BWDILPAllMarkedPattern extends ILPAllMarkedPattern {
 	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule) {
 		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
 				.filter(e -> e.getDomainType() == DomainType.TRG && e.getBindingType() == BindingType.CREATE)
-				.collect(Collectors.toSet());
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	@Override

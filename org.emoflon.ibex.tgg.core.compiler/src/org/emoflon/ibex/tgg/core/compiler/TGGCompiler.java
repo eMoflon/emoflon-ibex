@@ -2,10 +2,8 @@ package org.emoflon.ibex.tgg.core.compiler;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EPackage;
@@ -41,13 +39,13 @@ import runtime.RuntimePackage;
 
 public class TGGCompiler {
 
-	private HashMap<TGGRule, Collection<Pattern>> ruleToPatterns = new HashMap<>();
+	private LinkedHashMap<TGGRule, Collection<Pattern>> ruleToPatterns = new LinkedHashMap<>();
 	private PatternTemplate patternTemplate;
 
 	private TGG tgg;
 
-	private Map<String, String> aliasToEPackageUri = new HashMap<>();
-	private Map<EPackage, String> epackageToAlias = new HashMap<>();
+	private LinkedHashMap<String, String> aliasToEPackageUri = new LinkedHashMap<>();
+	private LinkedHashMap<EPackage, String> epackageToAlias = new LinkedHashMap<>();
 	private int packageCounter = 0;
 
 	public TGGCompiler(TGG tgg) {
@@ -63,7 +61,7 @@ public class TGGCompiler {
 		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
 		epackageToAlias.put(EcorePackage.eINSTANCE, "dep_ecore");
 
-		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage()).forEach(p -> {
+		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage()).forEachOrdered(p -> {
 			if (!epackageToAlias.containsKey(p)) {
 				String alias = "dep_" + ++packageCounter;
 				aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
@@ -184,24 +182,24 @@ public class TGGCompiler {
 				.collect(Collectors.joining());
 
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ILPPattern)
-				.map(p -> patternTemplate.generateILPPattern((ILPPattern) p)).collect(Collectors.joining());
+				.map(p -> patternTemplate.generateILPPattern((ILPPattern) p))
+				.collect(Collectors.joining());
 
 		return result;
 	}
 
 	private Collection<String> determineNonAliasedImports(TGGRule rule) {
-		Collection<String> result = new HashSet<>();
+		Collection<String> result = new LinkedHashSet<>();
 		result.add("org.emoflon.ibex.tgg.common.marked");
 		return result;
 	}
 
 	public String getCommonViatraPatterns() {
-
 		String result = "";
 
-		Map<String, String> aliasedImports = aliasToEPackageUri;
+		LinkedHashMap<String, String> aliasedImports = aliasToEPackageUri;
 
-		Collection<String> nonAliasedImports = new HashSet<>();
+		Collection<String> nonAliasedImports = new LinkedHashSet<>();
 
 		result += patternTemplate.generateHeaderAndImports(aliasedImports, nonAliasedImports, "common");
 		result += patternTemplate.generateCommonPatterns(getEdgeTypes(tgg));
@@ -209,7 +207,7 @@ public class TGGCompiler {
 		return result;
 	}
 
-	public String getCommonPatternFileName() {
+	public static String getCommonPatternFileName() {
 		return "_common_eMoflon";
 	}
 
@@ -218,9 +216,9 @@ public class TGGCompiler {
 		return mTemplate.getManipulationCode(tgg);
 	}
 
-	public static Set<EReference> getEdgeTypes(TGG tgg) {
+	public static LinkedHashSet<EReference> getEdgeTypes(TGG tgg) {
 		return tgg.getRules().stream().flatMap(r -> r.getEdges().stream()).map(e -> e.getType())
-				.collect(Collectors.toSet());
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 }

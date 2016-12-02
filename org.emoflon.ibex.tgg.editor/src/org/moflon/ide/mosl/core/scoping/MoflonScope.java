@@ -1,6 +1,7 @@
 package org.moflon.ide.mosl.core.scoping;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class MoflonScope extends SimpleScope {
 		Set<EObject> allPackages = objects
 			.stream()
 			.flatMap(o -> EcoreUtil2.getAllContentsOfType(o, EPackage.class).stream())
-			.collect(Collectors.toSet());
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 		
 		allPackages.addAll(objects);
 		

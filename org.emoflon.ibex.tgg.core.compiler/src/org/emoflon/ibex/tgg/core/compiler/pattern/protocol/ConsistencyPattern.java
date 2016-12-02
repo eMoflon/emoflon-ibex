@@ -1,10 +1,10 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern.protocol;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
 
@@ -14,21 +14,18 @@ import language.LanguageFactory;
 import language.TGGRule;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
-import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
 
 public class ConsistencyPattern extends Pattern {
 
-	
-	
 	public ConsistencyPattern(TGGRule rule){
 		super(rule);
 	}
 
 	@Override
 	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule) {
-
-		Collection<TGGRuleElement> result = Stream.concat(rule.getNodes().stream(), rule.getEdges().stream()).collect(Collectors.toSet());
+		Collection<TGGRuleElement> result = Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 		
 		TGGRuleNode protocolNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
 		protocolNode.setName(getProtocolNodeName());
@@ -53,27 +50,27 @@ public class ConsistencyPattern extends Pattern {
 	
 	
 	public Collection<TGGRuleElement> getContextSrc(){
-		return getAllRuleElements().filter(e -> isConform(e, BindingType.CONTEXT, DomainType.SRC)).collect(Collectors.toSet());
+		return getAllRuleElements().filter(e -> isConform(e, BindingType.CONTEXT, DomainType.SRC)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	public Collection<TGGRuleElement> getCreatedSrc(){
-		return getAllRuleElements().filter(e -> isConform(e, BindingType.CREATE, DomainType.SRC)).collect(Collectors.toSet());
+		return getAllRuleElements().filter(e -> isConform(e, BindingType.CREATE, DomainType.SRC)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	public Collection<TGGRuleElement> getContextTrg(){
-		return getAllRuleElements().filter(e -> isConform(e, BindingType.CONTEXT, DomainType.TRG)).collect(Collectors.toSet());
+		return getAllRuleElements().filter(e -> isConform(e, BindingType.CONTEXT, DomainType.TRG)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	public Collection<TGGRuleElement> getCreatedTrg(){
-		return getAllRuleElements().filter(e -> isConform(e, BindingType.CREATE, DomainType.TRG)).collect(Collectors.toSet());
+		return getAllRuleElements().filter(e -> isConform(e, BindingType.CREATE, DomainType.TRG)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	public Collection<TGGRuleElement> getContextCorr(){
-		return getAllRuleElements().filter(e -> isConform(e, BindingType.CONTEXT, DomainType.CORR)).collect(Collectors.toSet());
+		return getAllRuleElements().filter(e -> isConform(e, BindingType.CONTEXT, DomainType.CORR)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	public Collection<TGGRuleElement> getCreatedCorr(){
-		return getAllRuleElements().filter(e -> isConform(e, BindingType.CREATE, DomainType.CORR)).collect(Collectors.toSet());
+		return getAllRuleElements().filter(e -> isConform(e, BindingType.CREATE, DomainType.CORR)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	

@@ -1,10 +1,5 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
 
 import language.BindingType;
