@@ -27,6 +27,20 @@ import runtime.Edge;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 
+/**
+ * 
+ * The main transformation class which communicates with the pattern matcher and processes its matches by applying rules.
+ * The public methods of this class are invoked by the manipulation part of the pattern matcher.
+ * 
+ * This class is direction-agnostic and abstract in the following sense: 
+ * The decision of how to apply rules is left open (create only source, create only target, or both, or none).
+ * 
+ * Match maintenance is delegated to MatchContainer
+ * Rule applications (creating objects and setting their attributes) are delegated to ManipulationUtil
+ * 
+ * @author leblebici
+ * 
+ *  */
 public abstract class TGGRuntimeUtil {
 
 	/*

@@ -24,6 +24,13 @@ import net.sf.javailp.SolverFactoryGurobi;
 import runtime.Edge;
 import runtime.TGGRuleApplication;
 
+/**
+ * THE ILP-based extension of TGGRuntimeUtil.
+ * This class additionally calculates which rule applications create/require which elements and prepares an
+ * optimization problem. 
+ * @author leblebici
+ *
+ */
 public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 
 	protected TIntObjectHashMap<TGGRuleApplication> intToMatch = new TIntObjectHashMap<>();

@@ -12,6 +12,11 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import language.TGG;
 import language.TGGRule;
 
+/**
+ * 
+ * @author leblebici
+ * maintains matches that are reported by the pattern matcher
+ */
 public class MatchContainer {
 
 	private TObjectIntMap<String> ruleNameToId;
