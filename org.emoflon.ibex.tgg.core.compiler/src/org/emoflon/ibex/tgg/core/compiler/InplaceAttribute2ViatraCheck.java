@@ -36,6 +36,10 @@ public class InplaceAttribute2ViatraCheck {
 	public static boolean simpleExpression(TGGInplaceAttributeExpression expression) {
 		return expression.getOperator().equals(TGGAttributeConstraintOperators.EQUAL);
 	}
+	
+	public static boolean isENUMExpr(TGGInplaceAttributeExpression expression) {
+		return expression.getAttribute().getEType().eClass().equals(EcorePackage.eINSTANCE.getEEnum());
+	}
 
 	public static String convertOperatorEnumToString(TGGAttributeConstraintOperators operator) {
 		switch (operator) {
