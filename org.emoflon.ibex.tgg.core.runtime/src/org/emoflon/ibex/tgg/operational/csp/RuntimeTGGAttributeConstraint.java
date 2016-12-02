@@ -1,5 +1,9 @@
 package org.emoflon.ibex.tgg.operational.csp;
 
+import java.util.List;
+
+import language.csp.TGGAttributeConstraintAdornment;
+
 public class RuntimeTGGAttributeConstraint {
 	private static final char B = 'B';
 	private static final char F = 'F';
@@ -20,5 +24,15 @@ public class RuntimeTGGAttributeConstraint {
 	
 	public void setSatisfied(boolean value){
 		satisfied = value;
+	}
+ 
+	public List<RuntimeTGGAttributeConstraintVariable> getVariables() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<TGGAttributeConstraintAdornment> getAllowedAdornments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
