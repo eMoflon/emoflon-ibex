@@ -86,7 +86,7 @@ class PatternTemplate {
 			«node.type.name».«attrExpr.attribute.name»(«node.name», «InplaceAttribute2ViatraCheck.extractViatraEqualCheck(attrExpr)»);
 			«ELSE»
 			«node.type.name».«attrExpr.attribute.name»(«node.name», «node.name»_«attrExpr.attribute.name»);
-			check ( «InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_" + attrExpr.attribute.name, attrExpr)» );
+			check («InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_" + attrExpr.attribute.name, attrExpr)»);
 			«ENDIF»
 			«ENDFOR»	
 			«ENDFOR»			

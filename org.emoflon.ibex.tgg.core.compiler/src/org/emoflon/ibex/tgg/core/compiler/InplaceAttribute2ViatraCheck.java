@@ -5,6 +5,7 @@ import javax.xml.datatype.DatatypeFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 
 import language.basic.expressions.TGGAttributeExpression;
+import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGExpression;
 import language.basic.expressions.TGGLiteralExpression;
 import language.inplaceAttributes.TGGAttributeConstraintOperators;
@@ -14,8 +15,7 @@ public class InplaceAttribute2ViatraCheck {
 
 	public static String extractViatraCheck(String attributeName, TGGInplaceAttributeExpression expression) {
 		if (expression.getOperator().equals(TGGAttributeConstraintOperators.UNEQUAL)) {
-			if (expression.getAttribute().getEType().equals(EcorePackage.Literals.ESTRING)
-					|| expression.getAttribute().getEType().equals(EcorePackage.Literals.EENUM))
+			if (expression.getAttribute().getEType().equals(EcorePackage.Literals.ESTRING))
 				return "!" + attributeName + ".equals(" + extractViatraEqualCheck(expression) + ")";
 		}
 		return attributeName + " " + convertOperatorEnumToString(expression.getOperator()) + " " + extractViatraEqualCheck(expression);
@@ -25,6 +25,10 @@ public class InplaceAttribute2ViatraCheck {
 		if (expression.getValueExpr() instanceof TGGLiteralExpression) {
 			TGGLiteralExpression tle = (TGGLiteralExpression) expression.getValueExpr();
 			return tle.getValue();
+		}
+		if (expression.getValueExpr() instanceof TGGEnumExpression) {
+			TGGEnumExpression tee = (TGGEnumExpression) expression.getValueExpr();
+			return tee.getEenum().getName() + "::" + tee.getLiteral().toString();
 		}
 		return null;
 	}
