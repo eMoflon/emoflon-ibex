@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.BWDPattern;
@@ -37,16 +37,39 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.protocolnacs.Protocol
 
 import language.TGG;
 import language.TGGRule;
+import runtime.RuntimePackage;
 
 public class TGGCompiler {
 
 	private HashMap<TGGRule, Collection<Pattern>> ruleToPatterns = new HashMap<>();
-	private PatternTemplate patternTemplate = new PatternTemplate();
+	private PatternTemplate patternTemplate;
 
 	private TGG tgg;
 
+	private Map<String, String> aliasToEPackageUri = new HashMap<>();
+	private Map<EPackage, String> epackageToAlias = new HashMap<>();
+	private int packageCounter = 0;
+
 	public TGGCompiler(TGG tgg) {
 		this.tgg = tgg;
+		fillImportAliasTables(tgg);
+		patternTemplate = new PatternTemplate(epackageToAlias);
+	}
+
+	private void fillImportAliasTables(TGG tgg) {
+		aliasToEPackageUri.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
+		epackageToAlias.put(RuntimePackage.eINSTANCE, "dep_ibex");
+
+		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
+		epackageToAlias.put(EcorePackage.eINSTANCE, "dep_ecore");
+
+		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage()).forEach(p -> {
+			if (!epackageToAlias.containsKey(p)) {
+				String alias = "dep_" + ++packageCounter;
+				aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
+				epackageToAlias.put(p, alias);
+			}
+		});
 	}
 
 	public void preparePatterns() {
@@ -74,31 +97,31 @@ public class TGGCompiler {
 
 			CorrContextPattern corrContext = new CorrContextPattern(rule);
 			patterns.add(corrContext);
-			
+
 			CCPattern cc = new CCPattern(rule);
 			patterns.add(cc);
 			cc.getPositiveInvocations().add(src);
 			cc.getPositiveInvocations().add(trg);
 			cc.getPositiveInvocations().add(corrContext);
-			
+
 			FWDPattern fwd = new FWDPattern(rule);
 			patterns.add(fwd);
 			fwd.getPositiveInvocations().add(src);
 			fwd.getPositiveInvocations().add(corrContext);
 			fwd.getPositiveInvocations().add(trgContext);
-			
+
 			BWDPattern bwd = new BWDPattern(rule);
 			patterns.add(bwd);
 			bwd.getPositiveInvocations().add(trg);
 			bwd.getPositiveInvocations().add(corrContext);
 			bwd.getPositiveInvocations().add(srcContext);
-			
+
 			MODELGENPattern modelgen = new MODELGENPattern(rule);
 			patterns.add(modelgen);
 			modelgen.getPositiveInvocations().add(srcContext);
 			modelgen.getPositiveInvocations().add(trgContext);
 			modelgen.getPositiveInvocations().add(corrContext);
-			
+
 			FWDProtocolNACsPattern fwdWithProtocolNACs = new FWDProtocolNACsPattern(rule);
 			patterns.add(fwdWithProtocolNACs);
 			fwdWithProtocolNACs.getPositiveInvocations().add(fwd);
@@ -110,31 +133,30 @@ public class TGGCompiler {
 			FWDILPAllMarkedPattern fwdILPAllMarked = new FWDILPAllMarkedPattern(rule);
 			patterns.add(fwdILPAllMarked);
 			fwdILPAllMarked.getPositiveInvocations().add(src);
-			
+
 			BWDILPAllMarkedPattern bwdILPAllMarked = new BWDILPAllMarkedPattern(rule);
 			patterns.add(bwdILPAllMarked);
 			bwdILPAllMarked.getPositiveInvocations().add(trg);
-			
+
 			CCILPAllMarkedPattern ccILPAllMarked = new CCILPAllMarkedPattern(rule);
 			patterns.add(ccILPAllMarked);
 			ccILPAllMarked.getPositiveInvocations().add(src);
 			ccILPAllMarked.getPositiveInvocations().add(trg);
-			
+
 			FWDILPPattern fwdILP = new FWDILPPattern(rule);
 			patterns.add(fwdILP);
 			fwdILP.getPositiveInvocations().add(fwd);
 			fwdILP.getNegativeInvocations().add(fwdILPAllMarked);
-			
+
 			BWDILPPattern bwdILP = new BWDILPPattern(rule);
 			patterns.add(bwdILP);
 			bwdILP.getPositiveInvocations().add(bwd);
 			bwdILP.getNegativeInvocations().add(bwdILPAllMarked);
-			
+
 			CCILPPattern ccILP = new CCILPPattern(rule);
 			patterns.add(ccILP);
 			ccILP.getPositiveInvocations().add(cc);
 			ccILP.getNegativeInvocations().add(ccILPAllMarked);
-			
 
 			ruleToPatterns.put(rule, patterns);
 		}
@@ -142,7 +164,7 @@ public class TGGCompiler {
 
 	public String getViatraPatterns(TGGRule rule) {
 
-		String result = patternTemplate.generateHeaderAndImports(determineAliasedImports(rule),
+		String result = patternTemplate.generateHeaderAndImports(aliasToEPackageUri,
 				determineNonAliasedImports(rule), rule.getName());
 
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof RulePartPattern)
@@ -156,14 +178,13 @@ public class TGGCompiler {
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ProtocolNACsPattern)
 				.map(p -> patternTemplate.generateProtocolNACsPattern((ProtocolNACsPattern) p))
 				.collect(Collectors.joining());
-		
+
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ILPAllMarkedPattern)
 				.map(p -> patternTemplate.generateILPAllMarkedPattern((ILPAllMarkedPattern) p))
 				.collect(Collectors.joining());
-		
+
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ILPPattern)
-				.map(p -> patternTemplate.generateILPPattern((ILPPattern) p))
-				.collect(Collectors.joining());
+				.map(p -> patternTemplate.generateILPPattern((ILPPattern) p)).collect(Collectors.joining());
 
 		return result;
 	}
@@ -174,49 +195,13 @@ public class TGGCompiler {
 		return result;
 	}
 
-	private Map<String, String> determineAliasedImports(TGGRule rule) {
-		Map<String, String> imports = new HashMap<>();
-
-		addDefaultEPackagesAsImport(imports);
-
-		Set<EPackage> packs = rule.getNodes().stream().map(n -> n.getType().getEPackage()).collect(Collectors.toSet());
-		addEPackagesToImport(packs, imports);
-
-		return imports;
-	}
-
-	private Map<String, String> determineAliasedImports(TGG tgg) {
-		Map<String, String> imports = new HashMap<>();
-
-		addDefaultEPackagesAsImport(imports);
-
-		Set<EPackage> packs = tgg.getRules().stream().flatMap(r -> r.getNodes().stream())
-				.map(n -> n.getType().getEPackage()).collect(Collectors.toSet());
-		addEPackagesToImport(packs, imports);
-
-		return imports;
-	}
-
-	private void addDefaultEPackagesAsImport(Map<String, String> imports) {
-		imports.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
-	}
-
-	private void addEPackagesToImport(Set<EPackage> packs, Map<String, String> imports) {
-		Iterator<EPackage> it = packs.iterator();
-		for (int i = 0; i < packs.size(); i++) {
-			imports.put("dep_" + i, it.next().eResource().getURI().toString());
-		}
-	}
-
 	public String getCommonViatraPatterns() {
 
 		String result = "";
 
-		Map<String, String> aliasedImports = determineAliasedImports(tgg);
+		Map<String, String> aliasedImports = aliasToEPackageUri;
 
 		Collection<String> nonAliasedImports = new HashSet<>();
-		aliasedImports.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
-		addDefaultEPackagesAsImport(aliasedImports);
 
 		result += patternTemplate.generateHeaderAndImports(aliasedImports, nonAliasedImports, "common");
 		result += patternTemplate.generateCommonPatterns(getEdgeTypes(tgg));
