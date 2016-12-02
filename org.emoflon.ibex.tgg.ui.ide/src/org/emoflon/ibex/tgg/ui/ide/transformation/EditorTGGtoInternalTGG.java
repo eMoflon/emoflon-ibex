@@ -19,6 +19,7 @@ import org.moflon.tgg.mosl.tgg.AttributeConstraint;
 import org.moflon.tgg.mosl.tgg.AttributeExpression;
 import org.moflon.tgg.mosl.tgg.CorrType;
 import org.moflon.tgg.mosl.tgg.CorrVariablePattern;
+import org.moflon.tgg.mosl.tgg.EnumExpression;
 import org.moflon.tgg.mosl.tgg.LinkVariablePattern;
 import org.moflon.tgg.mosl.tgg.LiteralExpression;
 import org.moflon.tgg.mosl.tgg.ObjectVariablePattern;
@@ -38,6 +39,7 @@ import language.inplaceAttributes.InplaceAttributesFactory;
 import language.inplaceAttributes.TGGAttributeConstraintOperators;
 import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import language.basic.expressions.ExpressionsFactory;
+import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGExpression;
 import language.basic.expressions.TGGLiteralExpression;
 
@@ -142,7 +144,7 @@ public class EditorTGGtoInternalTGG {
 		return result;
 	}
 
-	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeAssignment constraint) {
+	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeConstraint constraint) {
 		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
 		tiae.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(constraint.getAttribute().getName())).findFirst().get());
 		tiae.setValueExpr(createExpression(node, constraint.getValueExp()));
@@ -150,7 +152,7 @@ public class EditorTGGtoInternalTGG {
 		return tiae;
 	}
 	
-	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeConstraint assignment) {
+	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeAssignment assignment) {
 		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
 		tiae.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(assignment.getAttribute().getName())).findFirst().get());
 		tiae.setValueExpr(createExpression(node, assignment.getValueExp()));
@@ -159,11 +161,18 @@ public class EditorTGGtoInternalTGG {
 	}
 	
 	private TGGExpression createExpression(TGGRuleNode node, org.moflon.tgg.mosl.tgg.Expression expression) {
-		if (expression instanceof org.moflon.tgg.mosl.tgg.LiteralExpression) {
+		if (expression instanceof LiteralExpression) {
 			LiteralExpression le = (LiteralExpression) expression;
 			TGGLiteralExpression tle = ExpressionsFactory.eINSTANCE.createTGGLiteralExpression();
 			tle.setValue(le.getValue());
 			return tle;
+		}
+		if (expression instanceof EnumExpression) {
+			EnumExpression ee = (EnumExpression) expression;
+			TGGEnumExpression tee = ExpressionsFactory.eINSTANCE.createTGGEnumExpression();
+			tee.setEenum(ee.getEenum());
+			tee.setLiteral(ee.getLiteral());
+			return tee;
 		}
 //		if (expression instanceof org.moflon.tgg.mosl.tgg.AttributeExpression) {
 //			AttributeExpression ae = (AttributeExpression) expression;
