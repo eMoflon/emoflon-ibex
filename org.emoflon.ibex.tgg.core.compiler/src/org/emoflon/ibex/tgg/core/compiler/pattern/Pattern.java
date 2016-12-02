@@ -64,13 +64,6 @@ public abstract class Pattern {
 		return negativeInvocations;
 	}
 	
-	public EClass typeOf(TGGRuleElement element){
-		if(element instanceof TGGRuleEdge)
-			return RuntimePackage.eINSTANCE.getEdge();
-		else
-			return ((TGGRuleNode)element).getType();
-	}
-	
 	public boolean ignored(){
 		return false;
 	}
