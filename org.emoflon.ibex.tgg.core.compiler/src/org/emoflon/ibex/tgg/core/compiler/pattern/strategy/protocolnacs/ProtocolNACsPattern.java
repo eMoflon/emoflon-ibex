@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern.strategy.protocolnacs;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,19 +22,19 @@ public abstract class ProtocolNACsPattern extends Pattern {
 	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule) {
 		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
 				.filter(e -> e.getBindingType() != BindingType.CREATE || e.getDomainType() == getInputDomainType())
-				.collect(Collectors.toSet());
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	public Collection<TGGRuleElement> getMarkingNACs(){
 		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
 				.filter(e -> e.getBindingType() == BindingType.CREATE && e.getDomainType() == getInputDomainType())
-				.collect(Collectors.toSet());
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	public Collection<TGGRuleElement> getMarked(){
 		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
 				.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == getInputDomainType())
-				.collect(Collectors.toSet()); 
+				.collect(Collectors.toCollection(LinkedHashSet::new)); 
 	}
 
 	abstract protected DomainType getInputDomainType();

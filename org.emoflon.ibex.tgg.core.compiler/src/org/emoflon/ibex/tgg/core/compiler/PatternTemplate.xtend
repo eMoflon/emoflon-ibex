@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.core.compiler
 
 import java.util.Collection
-import java.util.Map
 import language.TGGRuleElement
 import org.eclipse.emf.ecore.EReference
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
@@ -13,11 +12,12 @@ import runtime.RuntimePackage
 import language.TGGRuleNode
 import language.TGGRuleEdge
 import org.eclipse.emf.ecore.EPackage
+import java.util.LinkedHashMap
 
 class PatternTemplate {
 	
-	private Map<EPackage, String> importAliases;
-	new(Map<EPackage,String> importAliases){
+	private LinkedHashMap<EPackage, String> importAliases;
+	new(LinkedHashMap<EPackage,String> importAliases){
 		this.importAliases = importAliases;
 	}
 	
@@ -58,7 +58,7 @@ class PatternTemplate {
 		'''
 	}
 		
-	def generateHeaderAndImports(Map<String, String> aliasedImports, Collection<String> nonAliasedImports, String packageName){
+	def generateHeaderAndImports(LinkedHashMap<String, String> aliasedImports, Collection<String> nonAliasedImports, String packageName){
 		return '''
 		package org.emoflon.ibex.tgg.«packageName.toLowerCase»
 		

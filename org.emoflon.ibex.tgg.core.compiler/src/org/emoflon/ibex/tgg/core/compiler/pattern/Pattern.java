@@ -3,18 +3,11 @@ package org.emoflon.ibex.tgg.core.compiler.pattern;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.emf.ecore.EClass;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
-
 import language.TGGRule;
-import language.TGGRuleEdge;
 import language.TGGRuleElement;
-import language.TGGRuleNode;
-import runtime.RuntimePackage;
 
 public abstract class Pattern {
 
-	
 	protected TGGRule rule;
 	
 	/**

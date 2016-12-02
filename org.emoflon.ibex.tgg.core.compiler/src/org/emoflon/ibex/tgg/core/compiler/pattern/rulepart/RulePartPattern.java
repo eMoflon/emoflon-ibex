@@ -3,8 +3,8 @@ package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,7 +18,6 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
 
 public abstract class RulePartPattern extends Pattern {
 
@@ -72,7 +71,7 @@ public abstract class RulePartPattern extends Pattern {
 	}
 
 	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule){
-		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream()).filter(e -> isRelevantForSignature(e)).collect(Collectors.toSet());
+		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream()).filter(e -> isRelevantForSignature(e)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	protected abstract boolean isRelevantForSignature(TGGRuleElement e);

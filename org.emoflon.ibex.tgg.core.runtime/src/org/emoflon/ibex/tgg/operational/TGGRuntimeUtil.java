@@ -3,6 +3,8 @@ package org.emoflon.ibex.tgg.operational;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,15 +49,15 @@ public abstract class TGGRuntimeUtil {
 	 * these hash maps serve as rule info to indicate what variables are
 	 * black/green & src/corr/trg in a rule
 	 */
-	protected HashMap<String, Collection<TGGRuleNode>> greenSrcNodes = new HashMap<>();
-	protected HashMap<String, Collection<TGGRuleNode>> greenTrgNodes = new HashMap<>();
-	protected HashMap<String, Collection<TGGRuleEdge>> greenSrcEdges = new HashMap<>();
-	protected HashMap<String, Collection<TGGRuleEdge>> greenTrgEdges = new HashMap<>();
-	protected HashMap<String, Collection<TGGRuleCorr>> greenCorrNodes = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleNode>> greenSrcNodes = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleNode>> greenTrgNodes = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleEdge>> greenSrcEdges = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleEdge>> greenTrgEdges = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleCorr>> greenCorrNodes = new LinkedHashMap<>();
 
-	protected HashMap<String, Collection<TGGRuleElement>> blackSrcElements = new HashMap<>();
-	protected HashMap<String, Collection<TGGRuleElement>> blackCorrElements = new HashMap<>();
-	protected HashMap<String, Collection<TGGRuleElement>> blackTrgElements = new HashMap<>();
+	protected HashMap<String, Collection<TGGRuleElement>> blackSrcElements = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleElement>> blackCorrElements = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleElement>> blackTrgElements = new LinkedHashMap<>();
 
 	protected Resource srcR;
 	protected Resource trgR;
@@ -242,40 +244,40 @@ public abstract class TGGRuntimeUtil {
 		greenSrcNodes.put(ruleName,
 				r.getNodes().stream()
 						.filter(n -> n.getBindingType() == BindingType.CREATE && n.getDomainType() == DomainType.SRC)
-						.collect(Collectors.toSet()));
+						.collect(Collectors.toCollection(LinkedHashSet::new)));
 		greenTrgNodes.put(ruleName,
 				r.getNodes().stream()
 						.filter(n -> n.getBindingType() == BindingType.CREATE && n.getDomainType() == DomainType.TRG)
-						.collect(Collectors.toSet()));
+						.collect(Collectors.toCollection(LinkedHashSet::new)));
 		greenCorrNodes.put(ruleName,
 				r.getNodes().stream()
 						.filter(n -> n.getBindingType() == BindingType.CREATE && n.getDomainType() == DomainType.CORR)
-						.map(n -> (TGGRuleCorr) n).collect(Collectors.toSet()));
+						.map(n -> (TGGRuleCorr) n).collect(Collectors.toCollection(LinkedHashSet::new)));
 
 		greenSrcEdges.put(ruleName,
 				r.getEdges().stream()
 						.filter(e -> e.getBindingType() == BindingType.CREATE && e.getDomainType() == DomainType.SRC)
-						.collect(Collectors.toSet()));
+						.collect(Collectors.toCollection(LinkedHashSet::new)));
 
 		greenTrgEdges.put(ruleName,
 				r.getEdges().stream()
 						.filter(e -> e.getBindingType() == BindingType.CREATE && e.getDomainType() == DomainType.TRG)
-						.collect(Collectors.toSet()));
+						.collect(Collectors.toCollection(LinkedHashSet::new)));
 
 		blackSrcElements.put(ruleName,
 				Stream.concat(r.getNodes().stream(), r.getEdges().stream())
 						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.SRC)
-						.collect(Collectors.toSet()));
+						.collect(Collectors.toCollection(LinkedHashSet::new)));
 
 		blackTrgElements.put(ruleName,
 				Stream.concat(r.getNodes().stream(), r.getEdges().stream())
 						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.TRG)
-						.collect(Collectors.toSet()));
+						.collect(Collectors.toCollection(LinkedHashSet::new)));
 
 		blackCorrElements.put(ruleName,
 				r.getNodes().stream()
 						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.CORR)
-						.collect(Collectors.toSet()));
+						.collect(Collectors.toCollection(LinkedHashSet::new)));
 
 	}
 
