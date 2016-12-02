@@ -8,10 +8,13 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.resource.Resource;
 
 import runtime.Edge;
-import runtime.RuntimeFactory;
+
+/**
+ * @author leblebici
+ * Util class for creating (deleting) an EMF-Edge (EstructuralFeature) for a created (deleted) Edge
+ */
 
 public class FromEdgeWrapperToEMFEdgeUtil {
 

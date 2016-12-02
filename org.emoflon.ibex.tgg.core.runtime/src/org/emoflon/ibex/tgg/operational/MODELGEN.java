@@ -6,6 +6,17 @@ import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import language.TGG;
 import runtime.TGGRuleApplication;
 
+/**
+ * Different than other TGGRuntimeUtil subtypes, MODELGEN 
+ * 
+ * (i) additionally has a stop criterion (see MODELGENStopCriterion)
+ * (ii) does not remove processed matches from its MatchContainer in processOperationalRuleMatches() 
+ * (iii) gets matches randomly from MatchContainer
+ * (iv) does not create a protocol for scalability
+ * 
+ * @author leblebici
+ *
+ */
 public class MODELGEN extends TGGRuntimeUtil {
 
 	private MODELGENStopCriterion stopCriterion;

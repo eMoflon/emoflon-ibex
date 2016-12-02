@@ -16,6 +16,10 @@ import language.TGGRuleNode;
 import runtime.Edge;
 import runtime.RuntimePackage;
 
+/**
+ * @author leblebici
+ * Util class for creating EObjects, Edges, and Correspondences for a given set of green TGGRuleElement 
+ */
 public class ManipulationUtil {
 
 	private static RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
