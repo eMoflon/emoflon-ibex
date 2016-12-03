@@ -10,9 +10,15 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
+import com.sun.javafx.fxml.expression.LiteralExpression;
+
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import language.basic.expressions.TGGEnumExpression;
+import language.basic.expressions.TGGLiteralExpression;
+import language.inplaceAttributes.TGGAttributeConstraintOperators;
+import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.Edge;
 import runtime.RuntimePackage;
 
@@ -23,7 +29,7 @@ public class ManipulationUtil {
 	public static void createNonCorrNodes(IPatternMatch match, HashMap<String, EObject> comatch,
 			Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
 		for (TGGRuleNode n : greenNodes) {
-			comatch.put(n.getName(), createNode(n.getType(), nodeResource));
+			comatch.put(n.getName(), createNode(n, nodeResource));
 		}
 	}
 
@@ -43,7 +49,7 @@ public class ManipulationUtil {
 			Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		for (TGGRuleCorr c : greenCorrs) {
 			comatch.put(c.getName(),
-					createCorr(c.getType(), getVariableByName(c.getSource().getName(), comatch, match),
+					createCorr(c, getVariableByName(c.getSource().getName(), comatch, match),
 							getVariableByName(c.getTarget().getName(), comatch, match), corrR));
 		}
 	}
@@ -69,14 +75,29 @@ public class ManipulationUtil {
 		return edge;
 	}
 
-	private static EObject createNode(EClass type, Resource resource) {
-		EObject newObj = EcoreUtil.create(type);
+	private static EObject createNode(TGGRuleNode node, Resource resource) {
+		EObject newObj = EcoreUtil.create(node.getType());
+		
+		// apply inplace attribute assignments
+		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
+			if(attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
+				if (attrExpr instanceof TGGLiteralExpression) {
+					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
+					newObj.eSet(attrExpr.getAttribute(), tle.getValue());					
+				} else
+					if(attrExpr instanceof TGGEnumExpression) {
+						TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
+						newObj.eSet(attrExpr.getAttribute(), tee.getEenum().getName() + "." + tee.getLiteral().getName());
+					}
+				
+			}
+		}
 		resource.getContents().add(newObj);
 		return newObj;
 	}
 	
-	private static EObject createCorr(EClass type, EObject src, EObject trg, Resource corrR) {
-		EObject corr = createNode(type, corrR);
+	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {
+		EObject corr = createNode(node, corrR);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
 		return corr;

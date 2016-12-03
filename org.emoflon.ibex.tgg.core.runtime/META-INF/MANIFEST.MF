@@ -21,4 +21,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: TU Darmstadt
 Import-Package: language,
- language.basic
+ language.basic,
+ language.basic.expressions,
+ language.inplaceAttributes
