@@ -58,7 +58,7 @@ AttrCondDef:
 ;
 
 Param:
-	index = INT ':' (type = [ecore::EDataType | QualifiedName])?
+	name = ID ':' (type = [ecore::EDataType | QualifiedName])
 ;
 
 /* ------------- */
