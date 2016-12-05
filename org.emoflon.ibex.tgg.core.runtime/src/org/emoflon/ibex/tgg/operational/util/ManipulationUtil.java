@@ -132,7 +132,7 @@ public class ManipulationUtil {
 	}
 	
 	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {
-		EObject corr = createNode(node, corrR);
+		EObject corr = createNode(null, node, corrR);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
 		return corr;
