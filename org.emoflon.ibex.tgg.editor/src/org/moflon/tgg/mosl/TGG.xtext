@@ -99,8 +99,9 @@ AttrCondDefLibrary:
 ;
 
 Adornment:
-	value += '[' ('B'|'F')+ ']'
+	'[' value += ('B'|'F')+ ']'
 ;
+
 
 ParamValue:
 	(LocalVariable | Expression)
