@@ -71,92 +71,92 @@ class DefaultFilesHelper {
 		return '''
 		#library AttrCondDefLibrary {
 		
-			// Semantics:  0:Object == 1:Object
-			eq(0: , 1: ) {
+			// Semantics:  a:Object == b:Object
+			eq(a: EJavaObject, b: EJavaObject) {
 				#sync: [B B], [B F], [F B]
 				#gen:  [B B], [B F], [F B], [F F]
 			}
 		
-			// Semantics: 0:Prefix + 1:Word = 2:Result (where + is string concatenation)
-			addPrefix(0:EString, 1:EString, 2:EString) {
+			// Semantics: Prefix + Word = Result (where + is string concatenation)
+			addPrefix(prefix:EString, word:EString, result:EString) {
 				#sync: [B B B], [B B F], [B F B], [F B B]
 				#gen: [B B B], [B B F], [B F B], [F B B], [B F F], [F B F]
 			}
 			
-			// Semantics: 0:Suffix + 1:Word = 2:Result (where + is string concatenation)
-			addSuffix(0:EString, 1:EString, 2:EString) {
+			// Semantics: Suffix + Word = Result (where + is string concatenation)
+			addSuffix(suffix:EString, word:EString, result:EString) {
 				#sync: [B B B], [B B F], [B F B], [F B B]
 				#gen: [B B B], [B B F], [B F B], [F B B], [B F F], [F F F], [F B F]
 			}
 		
-			// Semantics: 1:LeftWord + 0:Separator + 2:RightWord = 3:Result (where + is string concatenation)
-			// Note:  0:Separator should be occur only once in 3:Result
-			concat(0:EString, 1:EString, 2:EString, 3:EString) {
+			// Semantics: LeftWord + Separator + RightWord = Result (where + is string concatenation)
+			// Note:  Separator should be occur only once in Result
+			concat(leftWord:EString, separator:EString, rightWord:EString, result:EString) {
 				#sync: [B B B B], [B B B F], [B B F B], [B F F B], [B F B B]
 				#gen: [B B B B] , [B B B F], [B B F B], [B F F B], [B F B B], [B F F F], [B F B F], [B B F F]
 			}
 		
-			// Semantics: 0:VariableString is set to 1:DefaultString if it is free (FB).
+			// Semantics: VariableString is set to DefaultString if it is free (FB).
 			//            If it already has a value (BB) then nothing is done and the condition is still satisfied.
 			//            The case (_F) does not make sense for #sync as this should be a fixed default string.
-			setDefaultString(0:EString, 1:EString) {
+			setDefaultString(variableString:EString, defaultString:EString) {
 				#sync: [B B], [F B]
 				#gen: [B B], [F B], [F F]
 			}
 		
-			// Semantics: 0:VariableNumber is set to 1:DefaultNumber if it is free (FB).
+			// Semantics: VariableNumber is set to DefaultNumber if it is free (FB).
 			//            If it already has a value (BB) then nothing is done and the condition is still satisfied.
 			//            The case (_F) does not make sense for #sync as this should be a fixed default number.
-			setDefaultNumber(0:EDouble, 1:EDouble) {
+			setDefaultNumber(variableNumber:EDouble, defaultNumber:EDouble) {
 				#sync: [B B], [F B]
 				#gen: [B B], [F B], [F F]
 			}
 		
-			// Semantics:  new Double(0:String) == 1:Double (where == is equality for doubles)
-			stringToDouble(0:EString, 1:EDouble) {
+			// Semantics:  new Double(stringValue) == doubleValue (where == is equality for doubles)
+			stringToDouble(stringValue:EString, doubleValue:EDouble) {
 				#sync: [B B], [B F], [F B]
 				#gen: [B B], [B F], [F B], [F F]
 			}
 		
-			// Semantics:  new Double(0:String) == 1:Int (where == is equality for ints)
-			stringToInt(0:EString, 1:EInt) {
+			// Semantics:  new Double(stringValue) == intValue (where == is equality for ints)
+			stringToInt(stringValue:EString, intValue:EInt) {
 				#sync: [B B], [B F], [F B]
 				#gen: [B B], [B F], [F B], [F F]
 			}
 		
-			// Semantics:  0:Operand * 1:Operand == 2:Result
-			multiply(0:EDouble, 1:EDouble, 2:EDouble) {
+			// Semantics:  operand1 * operand2 == result
+			multiply(operand1:EDouble, operand2:EDouble, result:EDouble) {
 				#sync: [B B B], [B B F], [B F B], [F B B]
 				#gen: [B B B], [B B F], [B F B], [F B B]
 			}
 		
-			// Semantics: 0:Numerator / 1:Denominator == 2:Result (/ is division for doubles)
-			divide(0:EDouble, 1:EDouble, 2:EDouble) {
+			// Semantics: Numerator / Denominator == Result (/ is division for doubles)
+			divide(numerator:EDouble, denominator:EDouble, result:EDouble) {
 				#sync: [B B B], [B B F], [B F B], [F B B]
 				#gen: [B B B], [B B F], [B F B], [F B B]
 			}
 		
-			// Semantics: 0:a + 1:b == 2:c (where + is addition for Numbers)
-			add(0:EDouble, 1:EDouble, 2:EDouble) {
+			// Semantics: summand1 + summand2 == result (where + is addition for Numbers)
+			add(summand1:EDouble, summand2:EDouble, result:EDouble) {
 				#sync: [B B B], [B B F], [B F B], [F B B]
 				#gen: [B B B], [B B F], [B F B], [F B B], [F F B], [F B F], [B F F]
 			}
 		
-			// Semantics: 0:a - 1:b == 2:c
-			sub(0:EDouble, 1:EDouble, 2:EDouble) {
+			// Semantics: minuend - subtrahend == result
+			sub(minuend:EDouble, subtrahend:EDouble, result:EDouble) {
 				#sync: [B B B], [B B F], [B F B], [F B B]
 				#gen: [B B B], [B B F], [B F B], [F B B], [F F B], [B F F], [F B F], [F F F]
 			}
 		
-			// Semantics: 2:c == max(0:a, 1:b)
-			max(0:EDouble, 1:EDouble, 2:EDouble) {
+			// Semantics: max == max(a, b)
+			max(a:EDouble, b:EDouble, max:EDouble) {
 				#sync: [B B B], [B B F], [B F B], [F B B]
 				#gen: [B B B], [B B F], [B F B], [F B B]
 			}
 		
-			// Semantics: 0:a <= 1:b
+			// Semantics: a <= b
 			// Note: For FB, BF, and FF, both a and b are set to the same value.
-			smallerOrEqual(0:EDouble, 1:EDouble) {
+			smallerOrEqual(a:EDouble, b:EDouble) {
 				#sync: [B B], [B F], [F B]
 				#gen: [B B], [B F], [F B], [F F]
 			}

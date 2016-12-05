@@ -204,7 +204,7 @@ class TGGFormatter extends AbstractFormatter2 {
 		attrconddef.regionFor.keyword(syncKW).prepend[newLine]
 		attrconddef.regionFor.keyword(genKW).prepend[newLine]
 		for (Param params : attrconddef.getParams()) {
-			params.regionFor.feature(PARAM__INDEX).append[noSpace]
+			params.regionFor.feature(PARAM__NAME).append[noSpace]
 			params.regionFor.feature(PARAM__TYPE).surround[noSpace]
 		}
 		for (Adornment adornment : attrconddef.getAllowedSyncAdornments()) {
