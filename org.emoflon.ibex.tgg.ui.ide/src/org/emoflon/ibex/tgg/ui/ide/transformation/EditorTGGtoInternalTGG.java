@@ -40,6 +40,7 @@ import language.inplaceAttributes.InplaceAttributesFactory;
 import language.inplaceAttributes.TGGAttributeConstraintOperators;
 import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import language.basic.expressions.ExpressionsFactory;
+import language.basic.expressions.TGGAttributeExpression;
 import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGExpression;
 import language.basic.expressions.TGGLiteralExpression;
@@ -175,11 +176,12 @@ public class EditorTGGtoInternalTGG {
 			tee.setLiteral(ee.getLiteral());
 			return tee;
 		}
-//		if (expression instanceof org.moflon.tgg.mosl.tgg.AttributeExpression) {
-//			AttributeExpression ae = (AttributeExpression) expression;
-//			TGGAttributeExpression tae = ExpressionsFactory.eINSTANCE.createTGGAttributeExpression();
-//			tae.
-//		}
+		if (expression instanceof org.moflon.tgg.mosl.tgg.AttributeExpression) {
+			AttributeExpression ae = (AttributeExpression) expression;
+			TGGAttributeExpression tae = ExpressionsFactory.eINSTANCE.createTGGAttributeExpression();
+			tae.setAttribute(ae.getAttribute());
+			tae.setObjectVar(node);
+		}
 		return null;
 	}
 	
