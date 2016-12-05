@@ -2,10 +2,12 @@
 #using AttrCondDefLibrary.*
 
 #rule Axiom #with CDToDoc
-
+ 
 #source {
 	++ p:Package {
 		name:="root"
+		index:=1
+		pEnum:=enum::PackageEnum::SECOND_ENUM
 	}
 }
 

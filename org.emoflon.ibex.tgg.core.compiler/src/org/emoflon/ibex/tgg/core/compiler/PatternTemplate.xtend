@@ -91,6 +91,18 @@ class PatternTemplate {
 			«ENDFOR»			
 			«FOR node : pattern.bodySrcTrgNodes»
 			«node.type.name»(«node.name»);
+			«FOR attrExpr : node.attrExpr»
+			«IF InplaceAttribute2ViatraCheck.simpleExpression(attrExpr)»
+			«node.type.name».«attrExpr.attribute.name»(«node.name», «InplaceAttribute2ViatraCheck.extractViatraEqualCheck(attrExpr)»);
+			«ELSE»
+			«node.type.name».«attrExpr.attribute.name»(«node.name», «node.name»_«attrExpr.attribute.name»);
+			«IF !InplaceAttribute2ViatraCheck.isENUMExpr(attrExpr)»
+			check («InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_" + attrExpr.attribute.name, attrExpr)»);
+			«ELSE»
+			«InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_" + attrExpr.attribute.name, attrExpr)»;
+			«ENDIF»
+			«ENDIF»
+			«ENDFOR»	
 			«ENDFOR»			
 			«FOR corr : pattern.bodyCorrNodes»
 			«corr.type.name».source(«corr.name»,«corr.source.name»);

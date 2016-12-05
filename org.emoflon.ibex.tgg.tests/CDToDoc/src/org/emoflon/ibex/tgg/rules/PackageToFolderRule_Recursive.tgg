@@ -6,10 +6,16 @@
 #source { 
 	p1:Package{
 		name != "root"
+		index == 1
+		pEnum != enum::PackageEnum::FIRST_ENUM
 		++-packages->p2
 	}
 	
-	++p2:Package
+	++p2:Package {
+		name := "recursive_package"
+		index := 1
+		pEnum := enum::PackageEnum::SECOND_ENUM
+	}
 }
 
 #target {
@@ -20,7 +26,9 @@
 		
 	}
 	
-	++f2:Doc.Folder
+	++f2:Doc.Folder {
+		name := "recursive_folder"
+	}
 }
 
 #correspondence {
