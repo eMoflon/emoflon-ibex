@@ -12,7 +12,6 @@
 	}
 	
 	++p2:Package {
-		name := "recursive_package"
 		index := 1
 		pEnum := enum::PackageEnum::SECOND_ENUM
 	}
@@ -43,5 +42,5 @@
 }
 
 #attributeConditions {
-	
+	eq(p2.name, "recursive_package")
 }
