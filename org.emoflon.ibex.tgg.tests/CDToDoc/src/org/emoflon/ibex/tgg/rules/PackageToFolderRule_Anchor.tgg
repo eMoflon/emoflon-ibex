@@ -1,15 +1,21 @@
 #using CDToDoc.*
 #using AttrCondDefLibrary.*
 
-#rule PackageToFolderRule_Anker #with CDToDoc
+#rule PackageToFolderRule_Anchor #with CDToDoc
 
 #source { 
 	p1:Package{
 		name == "root"
+		index <= 5
+		pEnum == enum::PackageEnum::SECOND_ENUM
 		++-packages->p2
 	}
 	
-	++p2:Package
+	++p2:Package {
+		name := "anchor_package"
+		index := 1
+		pEnum := enum::PackageEnum::SECOND_ENUM
+	}
 }
 
 #target {
@@ -19,7 +25,9 @@
 		++-folders->f2
 	}
 	
-	++f2:Doc.Folder
+	++f2:Doc.Folder {
+		name := "anchor_folder"
+	}
 }
 
 #correspondence {
