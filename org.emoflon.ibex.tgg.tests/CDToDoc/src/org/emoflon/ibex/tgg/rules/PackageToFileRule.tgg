@@ -1,14 +1,21 @@
 #using CDToDoc.*
 #using AttrCondDefLibrary.*
 
-#rule RootPackageToFileRule #with CDToDoc
+#rule PackageToFileRule #with CDToDoc
 
 #source {
 	p1:Package{
+		name!="root"
+		index < 3
+		pEnum==enum::PackageEnum::SECOND_ENUM
 		++-packages->p2
 	}
 	
-	++p2:Package
+	++p2:Package {
+		name:="tofile_package"
+		index:=8
+		pEnum:=enum::PackageEnum::FIRST_ENUM
+	}
 }
 
 #target {

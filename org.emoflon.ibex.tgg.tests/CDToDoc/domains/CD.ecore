@@ -7,6 +7,14 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="packages" upperBound="-1"
         eType="#//Package" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="index" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="pEnum" eType="#//PackageEnum"
+        defaultValueLiteral=""/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Clazz"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="PackageEnum">
+    <eLiterals name="FIRST_ENUM"/>
+    <eLiterals name="SECOND_ENUM" value="1"/>
+  </eClassifiers>
 </ecore:EPackage>

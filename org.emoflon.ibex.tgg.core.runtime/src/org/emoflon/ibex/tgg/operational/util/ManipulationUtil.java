@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
@@ -77,23 +81,39 @@ public class ManipulationUtil {
 
 	private static EObject createNode(TGGRuleNode node, Resource resource) {
 		EObject newObj = EcoreUtil.create(node.getType());
-		
+				
 		// apply inplace attribute assignments
 		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
 			if(attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
-				if (attrExpr instanceof TGGLiteralExpression) {
+				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
 					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
-					newObj.eSet(attrExpr.getAttribute(), tle.getValue());					
+					newObj.eSet(attrExpr.getAttribute(), convertString(attrExpr.getAttribute(), tle.getValue()));					
 				} else
-					if(attrExpr instanceof TGGEnumExpression) {
+					if(attrExpr.getValueExpr() instanceof TGGEnumExpression) {
 						TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
-						newObj.eSet(attrExpr.getAttribute(), tee.getEenum().getName() + "." + tee.getLiteral().getName());
+						newObj.eSet(attrExpr.getAttribute(), tee.getLiteral());
 					}
 				
 			}
 		}
 		resource.getContents().add(newObj);
 		return newObj;
+	}
+	
+	private static Object convertString(EAttribute attr, String value) {
+		if (attr.getEType().equals(EcorePackage.Literals.EINT)) 
+			return Integer.parseInt(value);
+		if (attr.getEType().equals(EcorePackage.Literals.EDOUBLE))
+			return Double.parseDouble(value);
+		if (attr.getEType().equals(EcorePackage.Literals.EFLOAT))
+			return Float.parseFloat(value);
+		if (attr.getEType().equals(EcorePackage.Literals.ECHAR))
+			return value.length() == 0 ? null : value.charAt(0);
+		if (attr.getEType().equals(EcorePackage.Literals.ESTRING))
+			return value.replace("\"", "");
+		
+		return null;
+
 	}
 	
 	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {

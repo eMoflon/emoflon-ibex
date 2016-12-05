@@ -14,10 +14,6 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
 public class InplaceAttribute2ViatraCheck {
 
 	public static String extractViatraCheck(String attributeName, TGGInplaceAttributeExpression expression) {
-		if (expression.getOperator().equals(TGGAttributeConstraintOperators.UNEQUAL)) {
-			if (expression.getAttribute().getEType().equals(EcorePackage.Literals.ESTRING))
-				return "!" + attributeName + ".equals(" + extractViatraEqualCheck(expression) + ")";
-		}
 		return attributeName + " " + convertOperatorEnumToString(expression.getOperator()) + " " + extractViatraEqualCheck(expression);
 	}
 
