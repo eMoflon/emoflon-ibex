@@ -14,3 +14,5 @@
   - Go to package src/org.moflon.tgg.mosl 
   - Right-Click on GenerateTGG.mwe2 
   - Press Run As -> MWE2 Workflow
+5. Install registration feature of Kermata: http://www.kermeta.org/k2/update/  
+
