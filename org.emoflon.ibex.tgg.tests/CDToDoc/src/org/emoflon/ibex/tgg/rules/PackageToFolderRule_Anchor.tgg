@@ -7,14 +7,12 @@
 	p1:Package{
 		name == "root"
 		index <= 5
-		pEnum == enum::PackageEnum::SECOND_ENUM
 		++-packages->p2
 	}
 	
 	++p2:Package {
 		name := "anchor_package"
 		index := 1
-		pEnum := enum::PackageEnum::SECOND_ENUM
 	}
 }
 
@@ -42,5 +40,5 @@
 }
 
 #attributeConditions {
-	
+	eq(p1.pEnum, p2.pEnum)
 }

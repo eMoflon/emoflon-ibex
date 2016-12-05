@@ -12,7 +12,9 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="pEnum" eType="#//PackageEnum"
         defaultValueLiteral=""/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Clazz"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Clazz">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="PackageEnum">
     <eLiterals name="FIRST_ENUM"/>
     <eLiterals name="SECOND_ENUM" value="1"/>

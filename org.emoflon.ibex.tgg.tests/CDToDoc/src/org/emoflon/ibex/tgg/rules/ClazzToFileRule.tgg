@@ -32,5 +32,5 @@
 }
 
 #attributeConditions {
-	
+	eq(c1.name, f2.name)
 }
