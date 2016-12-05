@@ -114,7 +114,9 @@ public class ManipulationUtil {
 		if (attr.getEType().equals(EcorePackage.Literals.ECHAR))
 			return value.length() == 0 ? null : value.charAt(0);
 		if (attr.getEType().equals(EcorePackage.Literals.ESTRING))
-			return value.replace("\"", "");
+			return value.substring(1, value.length() - 1);
+		if (attr.getEType().equals(EcorePackage.Literals.EBOOLEAN))
+			return Boolean.parseBoolean(value);
 		
 		return null;
 
