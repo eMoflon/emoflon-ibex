@@ -44,6 +44,7 @@ import language.basic.expressions.TGGAttributeExpression;
 import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGExpression;
 import language.basic.expressions.TGGLiteralExpression;
+import language.csp.definition.TGGAttributeConstraintDefinitionLibrary;
 
 public class EditorTGGtoInternalTGG {
 
@@ -80,9 +81,17 @@ public class EditorTGGtoInternalTGG {
 			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextRule.getCorrespondencePatterns()));
 
 			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule));
+			
+			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(tggRule));
 		}
 
 		return addOppositeEdges(tgg);
+	}
+	
+	private TGGAttributeConstraintDefinitionLibrary createAttributeConditionLibrary(TGGRule tggRule) {
+		
+		
+		return null;
 	}
 
 	private Collection<TGGRuleEdge> createTGGRuleEdges(TGGRule tggRule) {

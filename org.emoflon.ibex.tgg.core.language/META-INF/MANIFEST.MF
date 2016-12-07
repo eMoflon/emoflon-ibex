@@ -15,7 +15,10 @@ Export-Package: language.util,
  language.basic.expressions.util,
  language.basic.expressions.impl,
  language.basic,
- language.basic.expressions
+ language.basic.expressions,
+ language.csp.definition.util,
+ language.csp.definition.impl,
+ language.csp.definition
 Bundle-Name: org.emoflon.ibex.tgg.core.language
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore,
