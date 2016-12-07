@@ -32,14 +32,14 @@ public class FromEdgeWrapperToEMFEdgeUtil {
 		EStructuralFeature feature = e.getSrc().eClass().getEStructuralFeature(e.getName());
 		if (!feature.isDerived()) {
 
-			if (((EReference) feature).isContainment()) {
-				e.getTrg().eResource().getContents().remove(e.getTrg());
-			}
-
 			if (feature.isMany()) {
 				actionMany.accept(feature, e.getTrg());
 			} else
 				actionOne.accept(feature, e.getTrg());
+			
+			if (((EReference) feature).isContainment() && e.getTrg().eResource() != null) {
+				e.getTrg().eResource().getContents().remove(e.getTrg());
+			}
 		}
 
 	}
