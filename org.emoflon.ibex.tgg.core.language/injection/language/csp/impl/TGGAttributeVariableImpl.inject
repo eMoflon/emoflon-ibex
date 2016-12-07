@@ -1,16 +1,18 @@
 
+import java.util.Objects;
+
 partial class TGGAttributeVariableImpl {
 
 @members <--
 
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof TGGAttributeVariable) {
+		if (obj instanceof TGGAttributeVariable) {
 			this.getName().equals(((TGGAttributeVariable) obj).getName());
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.getName());

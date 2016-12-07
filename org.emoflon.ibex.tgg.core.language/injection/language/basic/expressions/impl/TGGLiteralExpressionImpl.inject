@@ -1,4 +1,6 @@
 
+import java.util.Objects;
+
 partial class TGGLiteralExpressionImpl {
 
 @members <--
@@ -9,7 +11,7 @@ partial class TGGLiteralExpressionImpl {
 			return this.getValue().equals(((TGGLiteralExpression) obj).getValue());
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.getValue());
