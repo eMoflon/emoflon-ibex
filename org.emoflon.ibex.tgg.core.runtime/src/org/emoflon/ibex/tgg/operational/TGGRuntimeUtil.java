@@ -142,7 +142,7 @@ public abstract class TGGRuntimeUtil {
 	}
 
 	protected void processMatchesForMissingEdgeWrappers() {
-		//the set pendingEdgeWrapperMatches is copied to an array here to avoid ConcurrentModificationException,
+		//the set matchesForMissingEdgeWrappers is copied to an array here to avoid ConcurrentModificationException,
 		//because each created edge wrapper destroys its match for missing edge wrapper
 		for (IPatternMatch match : matchesForMissingEdgeWrappers
 				.toArray(new IPatternMatch[matchesForMissingEdgeWrappers.size()])) {

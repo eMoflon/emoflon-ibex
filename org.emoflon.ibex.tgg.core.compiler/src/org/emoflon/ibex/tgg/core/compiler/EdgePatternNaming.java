@@ -4,9 +4,9 @@ import org.eclipse.emf.ecore.EReference;
 
 public class EdgePatternNaming {
 	
-	private static final String EMFEdge = "EMFEdge";
+	private static final String EMFEdge = "EMFEdge_";
 	
-	private static final String EdgeWrapper = "EdgeWrapper";
+	private static final String EdgeWrapper = "EdgeWrapper_";
 	
 	private static final String MissingEdgeWrapper = "Missing" + EdgeWrapper;
 	

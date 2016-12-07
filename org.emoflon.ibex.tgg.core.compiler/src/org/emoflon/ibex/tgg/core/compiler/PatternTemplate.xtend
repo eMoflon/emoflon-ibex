@@ -85,9 +85,7 @@ class PatternTemplate {
 			«injectivityCheckPair.left.name» != «injectivityCheckPair.right.name»;
 			«ENDFOR»
 			«FOR edge : pattern.getBodyEdges»
-			Edge.src(«edge.name»,«edge.srcNode.name»);
-			Edge.trg(«edge.name»,«edge.trgNode.name»);
-			Edge.name(«edge.name»,"«edge.type.name»");
+			find «EdgePatternNaming.getEdgeWrapper(edge.type)»(«edge.srcNode.name», «edge.trgNode.name», «edge.name»);
 			«ENDFOR»			
 			«FOR node : pattern.bodySrcTrgNodes»
 			«node.type.name»(«node.name»);
