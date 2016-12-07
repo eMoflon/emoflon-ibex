@@ -12,6 +12,11 @@ partial class TGGAttributeExpressionImpl {
 		return false;
 	}
 	
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.getObjectVar(), this.getAttribute());
+	}
+	
 -->
 
 }

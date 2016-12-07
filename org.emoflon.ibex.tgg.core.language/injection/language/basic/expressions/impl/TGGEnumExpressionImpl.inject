@@ -12,6 +12,11 @@ partial class TGGEnumExpressionImpl {
 		return false;
 	}
 	
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.getEenum(), this.basicGetLiteral());
+	}
+	
 -->
 
 }
