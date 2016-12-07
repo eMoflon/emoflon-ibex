@@ -31,10 +31,10 @@ public class FWDApp {
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		
 		// create your resources 
-		Resource s = rs.createResource(URI.createFileURI("src_gen.xmi"));
-		Resource t = rs.createResource(URI.createFileURI("trg_gen.xmi"));
-		Resource c = rs.createResource(URI.createFileURI("corr_gen.xmi"));
-		Resource p = rs.createResource(URI.createFileURI("protocol_gen.xmi"));
+		Resource s = rs.createResource(URI.createFileURI("instances/src_gen.xmi"));
+		Resource t = rs.createResource(URI.createFileURI("instances/trg_gen.xmi"));
+		Resource c = rs.createResource(URI.createFileURI("instances/corr_gen.xmi"));
+		Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
 		
 		// load the resources containing your input 
 		s.load(null);

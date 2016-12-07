@@ -29,10 +29,10 @@ public class FWDBatchApp {
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		
 		// create your resources 
-		Resource s = rs.createResource(URI.createFileURI("src.xmi"));
-		Resource t = rs.createResource(URI.createFileURI("trg.xmi"));
-		Resource c = rs.createResource(URI.createFileURI("corr.xmi"));
-		Resource p = rs.createResource(URI.createFileURI("protocol.xmi"));
+		Resource s = rs.createResource(URI.createFileURI("instances/src.xmi"));
+		Resource t = rs.createResource(URI.createFileURI("instances/trg.xmi"));
+		Resource c = rs.createResource(URI.createFileURI("instances/corr.xmi"));
+		Resource p = rs.createResource(URI.createFileURI("instances/protocol.xmi"));
 		
 		// load the resources containing your input 
 		s.load(null);

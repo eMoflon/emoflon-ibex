@@ -35,16 +35,16 @@ public class MODELGEN_BIG_App {
 		
 		
 		// create your resources 
-		Resource s = new BinaryResourceImpl(URI.createFileURI("src_gen.xmi"));
+		Resource s = new BinaryResourceImpl(URI.createFileURI("instances/src_gen.xmi"));
 		rs.getResources().add(s);
 		
-		Resource t = new BinaryResourceImpl(URI.createFileURI("trg_gen.xmi"));
+		Resource t = new BinaryResourceImpl(URI.createFileURI("instances/trg_gen.xmi"));
 		rs.getResources().add(t);
 		
-		Resource c = new BinaryResourceImpl(URI.createFileURI("corr_gen.xmi"));
+		Resource c = new BinaryResourceImpl(URI.createFileURI("instances/corr_gen.xmi"));
 		rs.getResources().add(c);
 		
-		Resource p = new BinaryResourceImpl(URI.createFileURI("protocol_gen.xmi"));
+		Resource p = new BinaryResourceImpl(URI.createFileURI("instances/protocol_gen.xmi"));
 		rs.getResources().add(p);
 		
 		// load the resources containing your input 
