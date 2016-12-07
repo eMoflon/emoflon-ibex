@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
@@ -31,18 +32,20 @@ import runtime.TGGRuleApplication;
 
 /**
  * 
- * The main transformation class which communicates with the pattern matcher and processes its matches by applying rules.
- * The public methods of this class are invoked by the manipulation part of the pattern matcher.
+ * The main transformation class which communicates with the pattern matcher and
+ * processes its matches by applying rules. The public methods of this class are
+ * invoked by the manipulation part of the pattern matcher.
  * 
- * This class is direction-agnostic and abstract in the following sense: 
- * The decision of how to apply rules is left open (create only source, create only target, or both, or none).
+ * This class is direction-agnostic and abstract in the following sense: The
+ * decision of how to apply rules is left open (create only source, create only
+ * target, or both, or none).
  * 
- * Match maintenance is delegated to MatchContainer
- * Rule applications (creating objects and setting their attributes) are delegated to ManipulationUtil
+ * Match maintenance is delegated to MatchContainer Rule applications (creating
+ * objects and setting their attributes) are delegated to ManipulationUtil
  * 
  * @author leblebici
  * 
- *  */
+ */
 public abstract class TGGRuntimeUtil {
 
 	/*
@@ -70,7 +73,7 @@ public abstract class TGGRuntimeUtil {
 
 	private OperationStrategy strategy;
 
-	protected ArrayList<IPatternMatch> pendingEdgeWrapperMatches = new ArrayList<>();
+	protected HashSet<IPatternMatch> matchesForMissingEdgeWrappers = new HashSet<>();
 
 	protected MatchContainer matchContainer;
 
@@ -87,8 +90,8 @@ public abstract class TGGRuntimeUtil {
 	abstract public OperationMode getMode();
 
 	abstract public OperationStrategy getStrategy();
-	
-	//methods for reacting to obsolete or missing edge wrapper matches 
+
+	// methods for reacting to obsolete or missing edge wrapper matches
 	public void deleteEdge(IPatternMatch match) {
 		Edge e = (Edge) match.get("e");
 		EcoreUtil.delete(e);
@@ -97,14 +100,14 @@ public abstract class TGGRuntimeUtil {
 	}
 
 	public void addEdgeWrapperMatch(IPatternMatch match) {
-		pendingEdgeWrapperMatches.add(match);
+		matchesForMissingEdgeWrappers.add(match);
 	}
 
 	public void removeEdgeWrapperMatch(IPatternMatch match) {
-		pendingEdgeWrapperMatches.remove(match);
+		matchesForMissingEdgeWrappers.remove(match);
 	}
-	
-	//methods for reacting to occurring or broken matches of operational rules
+
+	// methods for reacting to occurring or broken matches of operational rules
 	public void addOperationalRuleMatch(String ruleName, IPatternMatch match) {
 		matchContainer.addMatch(ruleName, match);
 	}
@@ -130,26 +133,29 @@ public abstract class TGGRuntimeUtil {
 		ManipulationUtil.deleteElements(ra.getCreatedCorr());
 	}
 
-	//main method and its helpers processing pending matches for missing edge wrappers and applicable operational rules
+	// main method and its helpers processing pending matches for missing edge
+	// wrappers and applicable operational rules
 	public void run() {
-		processMissingEdgeWrapperMatches();
+		processMatchesForMissingEdgeWrappers();
 		processOperationalRuleMatches();
 		finalize();
 	}
 
-	protected void processMissingEdgeWrapperMatches() {
-		while (!pendingEdgeWrapperMatches.isEmpty()) {
-			IPatternMatch match = pendingEdgeWrapperMatches.get(0);
-			processMissingEdgeWrapperMatch(match);
-			removeEdgeWrapperMatch(match);
+	protected void processMatchesForMissingEdgeWrappers() {
+		//the set matchesForMissingEdgeWrappers is copied to an array here to avoid ConcurrentModificationException,
+		//because each created edge wrapper destroys its match for missing edge wrapper
+		for (IPatternMatch match : matchesForMissingEdgeWrappers
+				.toArray(new IPatternMatch[matchesForMissingEdgeWrappers.size()])) {
+			this.processMatchForMissingEdgeWrapper(match);
+
 		}
 	}
-	
-	private void processMissingEdgeWrapperMatch(IPatternMatch match) {
-		
+
+	private void processMatchForMissingEdgeWrapper(IPatternMatch match) {
+
 		if (isObsolete(match))
 			return;
-	
+
 		Edge newEdge = (Edge) EcoreUtil.create(runtimePackage.getEdge());
 		protocolR.getContents().add(newEdge);
 		newEdge.setSrc((EObject) match.get("s"));
@@ -159,7 +165,7 @@ public abstract class TGGRuntimeUtil {
 		String edgeName = splitPatternName[splitPatternName.length - 1];
 		newEdge.setName(edgeName);
 	}
-	
+
 	protected void processOperationalRuleMatches() {
 		while (!matchContainer.isEmpty()) {
 			IPatternMatch match = matchContainer.getNext();
@@ -168,7 +174,7 @@ public abstract class TGGRuntimeUtil {
 			removeOperationalRuleMatch(match);
 		}
 	}
-	
+
 	public void processOperationalRuleMatch(String ruleName, IPatternMatch match) {
 
 		if (isObsolete(match))
@@ -195,7 +201,7 @@ public abstract class TGGRuntimeUtil {
 			prepareProtocol(ruleName, match, comatch);
 		}
 	}
-	
+
 	protected void finalize() {
 		FromEdgeWrapperToEMFEdgeUtil.applyEdges(createdEdges);
 	}
@@ -235,7 +241,8 @@ public abstract class TGGRuntimeUtil {
 	private void fillProtocolInfo(Collection<? extends TGGRuleElement> ruleInfos, TGGRuleApplication protocol,
 			EStructuralFeature feature, HashMap<String, EObject> createdElements, IPatternMatch match) {
 		ruleInfos.forEach(e -> {
-			((EList) protocol.eGet(feature)).add(ManipulationUtil.getVariableByName(e.getName(), createdElements, match));
+			((EList) protocol.eGet(feature))
+					.add(ManipulationUtil.getVariableByName(e.getName(), createdElements, match));
 		});
 	}
 
@@ -295,7 +302,7 @@ public abstract class TGGRuntimeUtil {
 		return false;
 
 	}
-	
+
 	protected boolean protocol() {
 		return true;
 	}

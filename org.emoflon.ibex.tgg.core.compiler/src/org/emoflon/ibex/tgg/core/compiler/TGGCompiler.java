@@ -61,13 +61,14 @@ public class TGGCompiler {
 		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
 		epackageToAlias.put(EcorePackage.eINSTANCE, "dep_ecore");
 
-		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage()).forEachOrdered(p -> {
-			if (!epackageToAlias.containsKey(p)) {
-				String alias = "dep_" + ++packageCounter;
-				aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
-				epackageToAlias.put(p, alias);
-			}
-		});
+		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage())
+				.forEachOrdered(p -> {
+					if (!epackageToAlias.containsKey(p)) {
+						String alias = "dep_" + ++packageCounter;
+						aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
+						epackageToAlias.put(p, alias);
+					}
+				});
 	}
 
 	public void preparePatterns() {
@@ -162,8 +163,8 @@ public class TGGCompiler {
 
 	public String getViatraPatterns(TGGRule rule) {
 
-		String result = patternTemplate.generateHeaderAndImports(aliasToEPackageUri,
-				determineNonAliasedImports(rule), rule.getName());
+		String result = patternTemplate.generateHeaderAndImports(aliasToEPackageUri, determineNonAliasedImports(rule),
+				rule.getName());
 
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof RulePartPattern)
 				.map(p -> patternTemplate.generateOperationalPattern((RulePartPattern) p))
@@ -182,8 +183,7 @@ public class TGGCompiler {
 				.collect(Collectors.joining());
 
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ILPPattern)
-				.map(p -> patternTemplate.generateILPPattern((ILPPattern) p))
-				.collect(Collectors.joining());
+				.map(p -> patternTemplate.generateILPPattern((ILPPattern) p)).collect(Collectors.joining());
 
 		return result;
 	}
@@ -191,6 +191,9 @@ public class TGGCompiler {
 	private Collection<String> determineNonAliasedImports(TGGRule rule) {
 		Collection<String> result = new LinkedHashSet<>();
 		result.add("org.emoflon.ibex.tgg.common.marked");
+		result.addAll(rule.getEdges().stream()
+				.map(e -> "org.emoflon.ibex.tgg.common." + EdgePatternNaming.getEdgeWrapper(e.getType()))
+				.collect(Collectors.toCollection(LinkedHashSet::new)));
 		return result;
 	}
 
