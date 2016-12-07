@@ -10,6 +10,9 @@
     <package class="language.csp.CspPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp"/>
   </extension>
   <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="language.csp.definition.DefinitionPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp//definition"/>
+  </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="language.basic.BasicPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//basic"/>
   </extension>
   <extension point="org.eclipse.emf.ecore.generated_package">

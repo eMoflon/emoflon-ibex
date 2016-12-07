@@ -2,6 +2,10 @@
   <extension id="org.emoflon.ibex.tgg.common._common_eMoflon" point="org.eclipse.viatra.query.runtime.queryspecification">
     <group group="org.eclipse.viatra.query.runtime.extensibility.SingletonExtensionFactory:org.emoflon.ibex.tgg.common._common_eMoflon" id="org.emoflon.ibex.tgg.common._common_eMoflon">
       <query-specification fqn="org.emoflon.ibex.tgg.common.marked"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdgePackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapperPackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapperPackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapperPackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
       <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdgeFolder_File_eMoflonEdgeWrapper_files"/>
       <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapperFolder_File_eMoflonEdgeWrapper_files"/>
       <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapperFolder_File_eMoflonEdgeWrapper_files"/>
@@ -14,10 +18,6 @@
       <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapperFolder_Folder_eMoflonEdgeWrapper_folders"/>
       <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapperFolder_Folder_eMoflonEdgeWrapper_folders"/>
       <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapperFolder_Folder_eMoflonEdgeWrapper_folders"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdgePackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapperPackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapperPackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapperPackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
     </group>
   </extension>
 </plugin>
