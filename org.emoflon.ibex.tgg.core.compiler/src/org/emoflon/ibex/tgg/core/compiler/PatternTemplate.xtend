@@ -95,11 +95,11 @@ class PatternTemplate {
 			«IF InplaceAttribute2ViatraCheck.simpleExpression(attrExpr)»
 			«node.type.name».«attrExpr.attribute.name»(«node.name», «InplaceAttribute2ViatraCheck.extractViatraEqualCheck(attrExpr)»);
 			«ELSE»
-			«node.type.name».«attrExpr.attribute.name»(«node.name», «node.name»_emoflonAttr_«attrExpr.attribute.name»);
+			«node.type.name».«attrExpr.attribute.name»(«node.name», «node.name»_«attrExpr.attribute.name»_emoflonAttr);
 			«IF !InplaceAttribute2ViatraCheck.isENUMExpr(attrExpr)»
-			check («InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_emoflonAttr_" + attrExpr.attribute.name, attrExpr)»);
+			check («InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_" + attrExpr.attribute.name + "_emoflonAttr", attrExpr)»);
 			«ELSE»
-			«InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_emoflonAttr_" + attrExpr.attribute.name, attrExpr)»;
+			«InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_" + attrExpr.attribute.name + "_emoflonAttr", attrExpr)»;
 			«ENDIF»
 			«ENDIF»
 			«ENDFOR»	

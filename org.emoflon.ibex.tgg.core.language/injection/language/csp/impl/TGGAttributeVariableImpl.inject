@@ -1,0 +1,16 @@
+
+partial class TGGAttributeVariableImpl {
+
+@members <--
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof TGGAttributeVariable) {
+			this.getName().equals(((TGGAttributeVariable) obj).getName());
+		}
+		return false;
+	}
+	
+-->
+
+}

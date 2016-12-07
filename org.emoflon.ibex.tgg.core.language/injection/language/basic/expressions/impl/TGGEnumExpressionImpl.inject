@@ -1,0 +1,17 @@
+
+partial class TGGEnumExpressionImpl {
+
+@members <--
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof TGGEnumExpression) {
+			TGGEnumExpression otherEnumExp = (TGGEnumExpression) obj;
+			return this.getEenum().equals(otherEnumExp.getEenum()) && this.basicGetLiteral().equals(otherEnumExp.getLiteral());
+		}
+		return false;
+	}
+	
+-->
+
+}

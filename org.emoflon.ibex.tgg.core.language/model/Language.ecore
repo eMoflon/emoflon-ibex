@@ -8,8 +8,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="corr" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"
         eType="#//TGGRule" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="constraintDefinitions"
-        upperBound="-1" eType="#//csp/definition/TGGAttributeConstraintDefinition"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraintDefinitionLibrary"
+        lowerBound="1" eType="#//csp/definition/TGGAttributeConstraintDefinitionLibrary"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRule" eSuperTypes="#//basic/TGGNamedElement">
@@ -21,8 +21,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
         eType="#//TGGRuleEdge" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConditionLibrary"
-        lowerBound="1" eType="#//csp/definition/TGGAttributeConstraintDefinitionLibrary"
-        containment="true"/>
+        lowerBound="1" eType="#//csp/TGGAttributeConstraintLibrary" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRuleElement" abstract="true" eSuperTypes="#//basic/TGGNamedElement">
@@ -86,10 +85,16 @@
   </eSubpackages>
   <eSubpackages name="csp" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp"
       nsPrefix="org.emoflon.ibex.tgg.core.language.csp">
-    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraint">
-      <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintLibrary">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraints"
+          upperBound="-1" eType="#//csp/TGGAttributeConstraint" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="parameterValues" upperBound="-1"
           eType="#//basic/expressions/TGGParamValue" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraint">
       <eStructuralFeatures xsi:type="ecore:EReference" name="definition" eType="#//csp/definition/TGGAttributeConstraintDefinition"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+          eType="#//basic/expressions/TGGParamValue"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeVariable" eSuperTypes="#//basic/expressions/TGGParamValue">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
@@ -114,10 +119,11 @@
       </eClassifiers>
       <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintParameterDefinition">
         <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EDataType"/>
-        <eStructuralFeatures xsi:type="ecore:EAttribute" name="index" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EInt"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
       </eClassifiers>
       <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintAdornment">
-        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" upperBound="-1"
+            eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
       </eClassifiers>
     </eSubpackages>
   </eSubpackages>
