@@ -3,10 +3,12 @@ package org.emoflon.ibex.tgg.ui.ide.transformation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
@@ -15,16 +17,23 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.xtext.parser.antlr.UnorderedGroupHelper.Collector;
+import org.moflon.tgg.mosl.tgg.Adornment;
+import org.moflon.tgg.mosl.tgg.AttrCond;
+import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.AttributeAssignment;
 import org.moflon.tgg.mosl.tgg.AttributeConstraint;
 import org.moflon.tgg.mosl.tgg.AttributeExpression;
 import org.moflon.tgg.mosl.tgg.CorrType;
 import org.moflon.tgg.mosl.tgg.CorrVariablePattern;
 import org.moflon.tgg.mosl.tgg.EnumExpression;
+import org.moflon.tgg.mosl.tgg.Expression;
 import org.moflon.tgg.mosl.tgg.LinkVariablePattern;
 import org.moflon.tgg.mosl.tgg.LiteralExpression;
+import org.moflon.tgg.mosl.tgg.LocalVariable;
 import org.moflon.tgg.mosl.tgg.ObjectVariablePattern;
 import org.moflon.tgg.mosl.tgg.Operator;
+import org.moflon.tgg.mosl.tgg.Param;
+import org.moflon.tgg.mosl.tgg.ParamValue;
 import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
@@ -40,9 +49,20 @@ import language.inplaceAttributes.InplaceAttributesFactory;
 import language.inplaceAttributes.TGGAttributeConstraintOperators;
 import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import language.basic.expressions.ExpressionsFactory;
+import language.basic.expressions.TGGAttributeExpression;
 import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGExpression;
 import language.basic.expressions.TGGLiteralExpression;
+import language.basic.expressions.TGGParamValue;
+import language.csp.CspFactory;
+import language.csp.TGGAttributeConstraint;
+import language.csp.TGGAttributeConstraintLibrary;
+import language.csp.TGGAttributeVariable;
+import language.csp.definition.DefinitionFactory;
+import language.csp.definition.TGGAttributeConstraintAdornment;
+import language.csp.definition.TGGAttributeConstraintDefinition;
+import language.csp.definition.TGGAttributeConstraintDefinitionLibrary;
+import language.csp.definition.TGGAttributeConstraintParameterDefinition;
 
 public class EditorTGGtoInternalTGG {
 
@@ -59,12 +79,12 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private TGG createTGG(TripleGraphGrammarFile xtextTGG) {
-
 		TGG tgg = tggFactory.createTGG();
 		tgg.setName(xtextTGG.getSchema().getName());
 		tgg.getSrc().addAll(xtextTGG.getSchema().getSourceTypes());
 		tgg.getTrg().addAll(xtextTGG.getSchema().getTargetTypes());
-
+		tgg.setAttributeConstraintDefinitionLibrary(createAttributeConditionDefinitionLibrary(xtextTGG.getSchema().getAttributeCondDefs()));
+		
 		map(xtextTGG, tgg);
 
 		for (Rule xtextRule : xtextTGG.getRules()) {
@@ -79,13 +99,76 @@ public class EditorTGGtoInternalTGG {
 			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextRule.getCorrespondencePatterns()));
 
 			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule));
+			
+			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
 
 		return addOppositeEdges(tgg);
 	}
+	
+	private TGGAttributeConstraintDefinitionLibrary createAttributeConditionDefinitionLibrary(EList<AttrCondDef> attrCondDefs) {
+		TGGAttributeConstraintDefinitionLibrary library = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintDefinitionLibrary();
+		
+		for(AttrCondDef attrCondDef : attrCondDefs) {
+			TGGAttributeConstraintDefinition definition = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintDefinition();
+			definition.setUserDefined(attrCondDef.isUserDefined());
+			definition.getGenAdornments().addAll(attrCondDef.getAllowedGenAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
+			definition.getSyncAdornments().addAll(attrCondDef.getAllowedSyncAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
+			definition.getParameterDefinitions().addAll(attrCondDef.getParams().stream().map(parameterDef -> createAttributeConstraintParameterDefinition(parameterDef)).collect(Collectors.toList()));
+			library.getTggAttributeConstraintDefinitions().add(definition);
+		}
+		
+		return library;
+	}
+	
+	private TGGAttributeConstraintLibrary createAttributeConditionLibrary(Collection<AttrCond> attrConds) {
+		TGGAttributeConstraintLibrary library = CspFactory.eINSTANCE.createTGGAttributeConstraintLibrary();
+		Map<Integer, TGGParamValue> paramValues = new HashMap<Integer, TGGParamValue>();
+		
+		library.getTggAttributeConstraints().addAll(attrConds.stream().map(attrCond -> createAttributeConstraint(attrCond, paramValues)).collect(Collectors.toList()));
+		library.getParameterValues().addAll(paramValues.values());
+		
+		return library;
+	}
+	
+	private TGGAttributeConstraint createAttributeConstraint(AttrCond attrCond, Map<Integer, TGGParamValue> foundValues) {
+		TGGAttributeConstraint attributeConstraint = CspFactory.eINSTANCE.createTGGAttributeConstraint();
+		attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
+		for(ParamValue paramValue : attrCond.getValues()) {
+			TGGParamValue newTGGParamValue = createParamValue(paramValue);
+			TGGParamValue checkedEntry = foundValues.putIfAbsent(newTGGParamValue.hashCode(), newTGGParamValue);
+			attributeConstraint.getParameters().add(checkedEntry != null ? checkedEntry : newTGGParamValue);
+		}
+		return attributeConstraint;
+	}
+	
+	private TGGParamValue createParamValue(ParamValue paramValue) {
+		if(paramValue instanceof LocalVariable) {
+			TGGAttributeVariable attrVariable = CspFactory.eINSTANCE.createTGGAttributeVariable();
+			attrVariable.setName(((LocalVariable) paramValue).getName());
+			return attrVariable;
+		}
+		if(paramValue instanceof Expression) {
+			return createExpression((Expression) paramValue);
+		}
+		return null;
+	}
+	
+	private TGGAttributeConstraintAdornment creatAttributeConditionAdornment(Adornment adornment) {
+		TGGAttributeConstraintAdornment tggAdornment = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintAdornment();
+		tggAdornment.getValue().addAll(adornment.getValue());
+		return tggAdornment;
+	}
+	
+	private TGGAttributeConstraintParameterDefinition createAttributeConstraintParameterDefinition(Param parameter) {
+		TGGAttributeConstraintParameterDefinition parameterDefinition = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintParameterDefinition();
+		parameterDefinition.setName(parameter.getParamName());
+		parameterDefinition.setType(parameter.getType());
+		xtextToTGG.put(parameter, parameterDefinition);
+		return parameterDefinition;
+	}
 
 	private Collection<TGGRuleEdge> createTGGRuleEdges(TGGRule tggRule) {
-
 		ArrayList<TGGRuleEdge> result = new ArrayList<>();
 
 		for (TGGRuleNode node : tggRule.getNodes()) {
@@ -148,7 +231,7 @@ public class EditorTGGtoInternalTGG {
 	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeConstraint constraint) {
 		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
 		tiae.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(constraint.getAttribute().getName())).findFirst().get());
-		tiae.setValueExpr(createExpression(node, constraint.getValueExp()));
+		tiae.setValueExpr(createExpression(constraint.getValueExp()));
 		tiae.setOperator(convertOperator(constraint.getOp()));
 		return tiae;
 	}
@@ -156,12 +239,12 @@ public class EditorTGGtoInternalTGG {
 	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeAssignment assignment) {
 		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
 		tiae.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(assignment.getAttribute().getName())).findFirst().get());
-		tiae.setValueExpr(createExpression(node, assignment.getValueExp()));
+		tiae.setValueExpr(createExpression(assignment.getValueExp()));
 		tiae.setOperator(TGGAttributeConstraintOperators.EQUAL);
 		return tiae;
 	}
 	
-	private TGGExpression createExpression(TGGRuleNode node, org.moflon.tgg.mosl.tgg.Expression expression) {
+	private TGGExpression createExpression(org.moflon.tgg.mosl.tgg.Expression expression) {
 		if (expression instanceof LiteralExpression) {
 			LiteralExpression le = (LiteralExpression) expression;
 			TGGLiteralExpression tle = ExpressionsFactory.eINSTANCE.createTGGLiteralExpression();
@@ -175,11 +258,13 @@ public class EditorTGGtoInternalTGG {
 			tee.setLiteral(ee.getLiteral());
 			return tee;
 		}
-//		if (expression instanceof org.moflon.tgg.mosl.tgg.AttributeExpression) {
-//			AttributeExpression ae = (AttributeExpression) expression;
-//			TGGAttributeExpression tae = ExpressionsFactory.eINSTANCE.createTGGAttributeExpression();
-//			tae.
-//		}
+		if (expression instanceof AttributeExpression) {
+			AttributeExpression ae = (AttributeExpression) expression;
+			TGGAttributeExpression tae = ExpressionsFactory.eINSTANCE.createTGGAttributeExpression();
+			tae.setAttribute(ae.getAttribute());
+			tae.setObjectVar((TGGRuleNode) xtextToTGG.get(ae.getObjectVar()));
+			return tae;
+		}
 		return null;
 	}
 	

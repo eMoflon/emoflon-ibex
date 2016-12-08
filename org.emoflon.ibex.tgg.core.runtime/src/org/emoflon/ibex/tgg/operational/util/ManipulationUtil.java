@@ -19,6 +19,7 @@ import com.sun.javafx.fxml.expression.LiteralExpression;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import language.basic.expressions.TGGAttributeExpression;
 import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGLiteralExpression;
 import language.inplaceAttributes.TGGAttributeConstraintOperators;
@@ -37,7 +38,7 @@ public class ManipulationUtil {
 	public static void createNonCorrNodes(IPatternMatch match, HashMap<String, EObject> comatch,
 			Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
 		for (TGGRuleNode n : greenNodes) {
-			comatch.put(n.getName(), createNode(n, nodeResource));
+			comatch.put(n.getName(), createNode(match, n, nodeResource));
 		}
 	}
 
@@ -83,7 +84,7 @@ public class ManipulationUtil {
 		return edge;
 	}
 
-	private static EObject createNode(TGGRuleNode node, Resource resource) {
+	private static EObject createNode(IPatternMatch match, TGGRuleNode node, Resource resource) {
 		EObject newObj = EcoreUtil.create(node.getType());
 				
 		// apply inplace attribute assignments
@@ -91,12 +92,20 @@ public class ManipulationUtil {
 			if(attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
 					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
-					newObj.eSet(attrExpr.getAttribute(), convertString(attrExpr.getAttribute(), tle.getValue()));					
-				} else
-					if(attrExpr.getValueExpr() instanceof TGGEnumExpression) {
-						TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
-						newObj.eSet(attrExpr.getAttribute(), tee.getLiteral());
-					}
+					newObj.eSet(attrExpr.getAttribute(), convertString(attrExpr.getAttribute(), tle.getValue()));		
+					continue;
+				} 
+				if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
+					TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
+					newObj.eSet(attrExpr.getAttribute(), tee.getLiteral());
+					continue;
+				}
+				if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
+					TGGAttributeExpression tae = (TGGAttributeExpression) attrExpr.getValueExpr();
+					EObject obj = (EObject) match.get(tae.getObjectVar().getName());
+					newObj.eSet(attrExpr.getAttribute(), obj.eGet(tae.getAttribute()));		
+					continue;
+				}
 				
 			}
 		}
@@ -123,7 +132,7 @@ public class ManipulationUtil {
 	}
 	
 	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {
-		EObject corr = createNode(node, corrR);
+		EObject corr = createNode(null, node, corrR);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
 		return corr;

@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.operational.csp;
 
 import java.util.List;
 
-import language.csp.TGGAttributeConstraintAdornment;
+import language.csp.definition.*;
 
 public class RuntimeTGGAttributeConstraint {
 	private static final char B = 'B';

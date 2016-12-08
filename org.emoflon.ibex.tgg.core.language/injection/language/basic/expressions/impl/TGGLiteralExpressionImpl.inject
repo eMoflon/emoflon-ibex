@@ -1,0 +1,22 @@
+
+import java.util.Objects;
+
+partial class TGGLiteralExpressionImpl {
+
+@members <--
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof TGGLiteralExpression)
+			return this.getValue().equals(((TGGLiteralExpression) obj).getValue());
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.getValue());
+	}
+	
+-->
+
+}

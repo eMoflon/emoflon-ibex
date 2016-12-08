@@ -14,7 +14,7 @@ import org.gervarro.democles.plan.Algorithm;
 import org.gervarro.democles.plan.WeightedOperation;
 
 import language.csp.CspFactory;
-import language.csp.TGGAttributeConstraintAdornment;
+import language.csp.definition.*;
 
 public class SearchPlanAction extends Algorithm<SimpleCombiner, RuntimeTGGAttributeConstraint>
 {
@@ -106,7 +106,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, RuntimeTGGAttrib
    {
       final String adornmentValue = StringUtils.repeat("B", constraint.getVariables().size());
 
-      TGGAttributeConstraintAdornment boundAdornment = CspFactory.eINSTANCE.createTGGAttributeConstraintAdornment();
+      TGGAttributeConstraintAdornment boundAdornment = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintAdornment();
       boundAdornment.setValue(adornmentValue);
 
       return boundAdornment;
