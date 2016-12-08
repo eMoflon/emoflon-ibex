@@ -102,7 +102,6 @@ public class EditorTGGtoInternalTGG {
 			
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
-
 		return addOppositeEdges(tgg);
 	}
 	
@@ -111,6 +110,7 @@ public class EditorTGGtoInternalTGG {
 		
 		for(AttrCondDef attrCondDef : attrCondDefs) {
 			TGGAttributeConstraintDefinition definition = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintDefinition();
+			definition.setName(attrCondDef.getName());
 			definition.setUserDefined(attrCondDef.isUserDefined());
 			definition.getGenAdornments().addAll(attrCondDef.getAllowedGenAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
 			definition.getSyncAdornments().addAll(attrCondDef.getAllowedSyncAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));

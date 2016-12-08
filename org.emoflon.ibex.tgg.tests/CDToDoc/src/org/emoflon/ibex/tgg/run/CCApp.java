@@ -43,7 +43,6 @@ public class CCApp {
 		// load the resources containing your input 
 		s.load(null);
 		t.load(null);
-		p.load(null);
 
 		System.out.println("Starting consistency checking");
 		long tic = System.currentTimeMillis();
@@ -61,8 +60,6 @@ public class CCApp {
 		System.out.println("Finished consistency checking in " + (toc-tic) + " ms");
 
 
-//		s.save(null);
-//		t.save(null);
 		c.save(null);
 		p.save(null);
 	}
