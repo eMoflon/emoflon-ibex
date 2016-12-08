@@ -5,7 +5,7 @@
 
 #source { 
 	p1:Package{
-		name == "root"
+//		name == "root"
 		index <= 5
 		++-packages->p2
 	}
@@ -41,4 +41,5 @@
 
 #attributeConditions {
 	eq(p1.pEnum, p2.pEnum)
+	eq(p1.name, "root")
 }

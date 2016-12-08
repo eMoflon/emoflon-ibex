@@ -115,6 +115,7 @@ public class EditorTGGtoInternalTGG {
 			definition.getGenAdornments().addAll(attrCondDef.getAllowedGenAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
 			definition.getSyncAdornments().addAll(attrCondDef.getAllowedSyncAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
 			definition.getParameterDefinitions().addAll(attrCondDef.getParams().stream().map(parameterDef -> createAttributeConstraintParameterDefinition(parameterDef)).collect(Collectors.toList()));
+			library.getTggAttributeConstraintDefinitions().add(definition);
 		}
 		
 		return library;
@@ -122,30 +123,21 @@ public class EditorTGGtoInternalTGG {
 	
 	private TGGAttributeConstraintLibrary createAttributeConditionLibrary(Collection<AttrCond> attrConds) {
 		TGGAttributeConstraintLibrary library = CspFactory.eINSTANCE.createTGGAttributeConstraintLibrary();
-		Collection<TGGParamValue> paramValues = new HashSet<TGGParamValue>();
+		Map<Integer, TGGParamValue> paramValues = new HashMap<Integer, TGGParamValue>();
 		
 		library.getTggAttributeConstraints().addAll(attrConds.stream().map(attrCond -> createAttributeConstraint(attrCond, paramValues)).collect(Collectors.toList()));
-		library.getParameterValues().addAll(paramValues);
+		library.getParameterValues().addAll(paramValues.values());
 		
 		return library;
 	}
 	
-	private TGGAttributeConstraint createAttributeConstraint(AttrCond attrCond, Collection<TGGParamValue> foundValues) {
+	private TGGAttributeConstraint createAttributeConstraint(AttrCond attrCond, Map<Integer, TGGParamValue> foundValues) {
 		TGGAttributeConstraint attributeConstraint = CspFactory.eINSTANCE.createTGGAttributeConstraint();
 		attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
 		for(ParamValue paramValue : attrCond.getValues()) {
 			TGGParamValue newTGGParamValue = createParamValue(paramValue);
-			
-			// check if we just created a duplicate entry and eliminate it in case
-			Optional<TGGParamValue> entry = foundValues.stream().filter(e -> e.equals(newTGGParamValue)).findFirst();
-			if (entry.isPresent()) {
-				attributeConstraint.getParameters().add(entry.get());
-			}
-			// else add it to found entries
-			else {
-				foundValues.add(newTGGParamValue);
-				attributeConstraint.getParameters().add(newTGGParamValue);
-			}
+			TGGParamValue checkedEntry = foundValues.putIfAbsent(newTGGParamValue.hashCode(), newTGGParamValue);
+			attributeConstraint.getParameters().add(checkedEntry != null ? checkedEntry : newTGGParamValue);
 		}
 		return attributeConstraint;
 	}
@@ -266,11 +258,12 @@ public class EditorTGGtoInternalTGG {
 			tee.setLiteral(ee.getLiteral());
 			return tee;
 		}
-		if (expression instanceof org.moflon.tgg.mosl.tgg.AttributeExpression) {
+		if (expression instanceof AttributeExpression) {
 			AttributeExpression ae = (AttributeExpression) expression;
 			TGGAttributeExpression tae = ExpressionsFactory.eINSTANCE.createTGGAttributeExpression();
 			tae.setAttribute(ae.getAttribute());
 			tae.setObjectVar((TGGRuleNode) xtextToTGG.get(ae.getObjectVar()));
+			return tae;
 		}
 		return null;
 	}

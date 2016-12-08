@@ -42,5 +42,6 @@
 }
 
 #attributeConditions {
-	eq(p2.name, "recursive_package")
+	eq(p1.name, myVar)
+	eq(p2.name, myVar)
 }
