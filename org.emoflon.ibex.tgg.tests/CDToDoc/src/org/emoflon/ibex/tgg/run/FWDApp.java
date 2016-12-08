@@ -38,9 +38,9 @@ public class FWDApp {
 		
 		// load the resources containing your input 
 		s.load(null);
-		t.load(null);
-		c.load(null);
-		p.load(null);
+//		t.load(null);
+//		c.load(null);
+//		p.load(null);
 		
 		System.out.println("Starting FWD");
 		long tic = System.currentTimeMillis();
@@ -49,8 +49,8 @@ public class FWDApp {
 		Transformation transformation = new Transformation(rs, tggRuntime);						
 		transformation.execute();
 		
-		while(!s.getContents().isEmpty())
-			EcoreUtil.delete(s.getContents().get(0));
+//		while(!s.getContents().isEmpty())
+//			EcoreUtil.delete(s.getContents().get(0));
 		
 		tggRuntime.run();
 		
