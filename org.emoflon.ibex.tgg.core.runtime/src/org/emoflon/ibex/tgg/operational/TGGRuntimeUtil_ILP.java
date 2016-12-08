@@ -7,27 +7,25 @@ import java.util.HashSet;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.hash.TIntHashSet;
+import gurobi.GRB;
+import gurobi.GRBEnv;
+import gurobi.GRBException;
+import gurobi.GRBLinExpr;
+import gurobi.GRBModel;
+import gurobi.GRBVar;
 import language.TGG;
-import net.sf.javailp.Constraint;
-import net.sf.javailp.Linear;
-import net.sf.javailp.OptType;
-import net.sf.javailp.Problem;
-import net.sf.javailp.Result;
-import net.sf.javailp.Solver;
-import net.sf.javailp.SolverFactory;
-import net.sf.javailp.SolverFactoryGurobi;
 import runtime.Edge;
 import runtime.TGGRuleApplication;
 
 /**
- * THE ILP-based extension of TGGRuntimeUtil.
- * This class additionally calculates which rule applications create/require which elements and prepares an
- * optimization problem. 
+ * THE ILP-based extension of TGGRuntimeUtil. This class additionally calculates
+ * which rule applications create/require which elements and prepares an
+ * optimization problem.
+ * 
  * @author leblebici
  *
  */
@@ -105,43 +103,41 @@ public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 			return createdCorrToMatch.get(e);
 		return new TIntHashSet();
 	}
-	
+
 	private void eliminate(TGGRuleApplication m) {
 		deleteOutputElementsOf(m);
 		m.eResource().getContents().remove(m);
 	}
-	
+
 	protected abstract void deleteOutputElementsOf(TGGRuleApplication m);
-	
+
 	protected void deleteElements(Collection<EObject> elts) {
 		elts.forEach(e -> e.eResource().getContents().remove(e));
 		createdEdges.removeAll(elts);
 	}
 
 	// ILP problem related methods
-	
+
 	private void filter() {
-		//created Edges must be redefined
+		// created Edges must be redefined
 		createdEdges = new ArrayList<>();
-		
-		protocolR.getContents().forEach(c ->{
-			if(c instanceof TGGRuleApplication)
+
+		protocolR.getContents().forEach(c -> {
+			if (c instanceof TGGRuleApplication)
 				calculateTables((TGGRuleApplication) c);
 		});
-		
-		if(matchToInt.size() == 0)
+
+		if (matchToInt.size() == 0)
 			return;
-		
-		SolverFactory factory = new SolverFactoryGurobi();
-		factory.setParameter(Solver.VERBOSE, 0);
+
 		int all = 0;
 		int chosen = 0;
-		for (int v : getArrayFromResult(factory.get().solve(prepareProblem()))) {
+				
+		for (int v : chooseTGGRuleApplications()) {
 			if (v < 0) {
 				eliminate(intToMatch(-v));
 				all++;
-			}
-			else{
+			} else {
 				all++;
 				chosen++;
 				createdEdges.addAll(getOutputEdgesOf(intToMatch(v)));
@@ -153,58 +149,99 @@ public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 
 	protected abstract Collection<Edge> getOutputEdgesOf(TGGRuleApplication ra);
 
-	private Problem prepareProblem() {
+	private int[] chooseTGGRuleApplications() {
 
-		Problem ilpProblem = new Problem();
+		try {
+			GRBEnv env = new GRBEnv("Gurobi_ILP.log");
+			GRBModel model = new GRBModel(env);
+			
+			TIntObjectHashMap<GRBVar> gurobiVariables = defineGurobiVariables(model);
+			
+			defineGurobiExclusions(model, gurobiVariables);
 
-		defineExclusions(ilpProblem);
+			defineGurobiImplications(model, gurobiVariables);
 
-		defineImplications(ilpProblem);
+			defineGurobiObjective(model, gurobiVariables);
+			
+			model.optimize();
+			
+			int[] result = new int[intToMatch.size()];
+			
+			intToMatch.keySet().forEach(v -> {
+				try {
+					if(gurobiVariables.get(v).get(GRB.DoubleAttr.X) > 0)
+						result[v-1] = v;
+					else
+						result[v-1] = -v;
+				} catch (GRBException e) {
+					e.printStackTrace();
+				}
+				return true;
+			});
+		
+			env.dispose();
+			model.dispose();
+			
+			return result;
+			
+		} catch (GRBException e) {
+			e.printStackTrace();
+		}
 
-		defineVariableTypesAsBoolean(ilpProblem);
-
-		defineObjective(ilpProblem);
-
-		return ilpProblem;
+		return null;
 	}
 
-	private void defineExclusions(Problem ilpProblem) {
+	private TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
+		TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<>();
+		intToMatch.keySet().forEach(v -> {
+			try {
+				gurobiVariables.put(v, model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x"+v));
+			} catch (GRBException e) {
+				e.printStackTrace();
+			}
+			return true;
+		});
+		return gurobiVariables;
+	}
+
+	private void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 		for (HashMap<EObject, TIntHashSet> createToMatch : getInputCreateTables()) {
 			for (EObject el : createToMatch.keySet()) {
 				TIntHashSet variables = createToMatch.get(el);
-				Linear linear = new Linear();
+				GRBLinExpr expr = new GRBLinExpr();
 				variables.forEach(v -> {
-					linear.add(1, v);
+					expr.addTerm(1.0, gurobiVars.get(v));
 					return true;
 				});
-				ilpProblem.add(new Constraint(String.valueOf(clauseName++), linear, "<=", 1));
+				try {
+					model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + clauseName++);
+				} catch (GRBException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
-	private void defineImplications(Problem ilpProblem) {
+	private void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 		for (HashMap<EObject, TIntHashSet> contextToMatch : getContextTables()) {
 			for (EObject el : contextToMatch.keySet()) {
 				TIntHashSet variables = contextToMatch.get(el);
 				variables.forEach(v -> {
-					Linear linear = new Linear();
-					linear.add(1, v);
+				    GRBLinExpr expr = new GRBLinExpr();
+					expr.addTerm(1.0, gurobiVars.get(v));
 					getCreatorsOf(el).forEach(v2 -> {
-						linear.add(-1, v2);
+						expr.addTerm(-1.0, gurobiVars.get(v2));
 						return true;
 					});
-					ilpProblem.add(new Constraint(String.valueOf(clauseName++), linear, "<=", 0));
+				    try {
+						model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "IMPL"+clauseName++);
+					} catch (GRBException e) {
+						e.printStackTrace();
+					}
 					return true;
 				});
 			}
 		}
-	}
-	
-	private void defineVariableTypesAsBoolean(Problem ilpProblem) {
-		intToMatch.keySet().forEach(v -> {
-			ilpProblem.setVarType(v, Boolean.class);
-			return true;
-		});
 	}
 
 	protected abstract Collection<HashMap<EObject, TIntHashSet>> getInputCreateTables();
@@ -216,48 +253,22 @@ public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 		result.add(contextTrgToMatch);
 		return result;
 	}
-	
-	private void defineObjective(Problem ilpProblem) {
-		Linear objective = new Linear();
+
+	private void defineGurobiObjective(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
+		GRBLinExpr expr = new GRBLinExpr();
 		intToMatch.keySet().forEach(v -> {
 			int weight = getWeight(intToMatch(v));
-			objective.add(weight, v);
+			expr.addTerm(weight, gurobiVars.get(v));
 			return true;
 		});
-		ilpProblem.setObjective(objective, OptType.MAX);
+		try {
+			model.setObjective(expr, GRB.MAXIMIZE);
+		} catch (GRBException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected abstract int getWeight(TGGRuleApplication ra);
-	
-	protected int[] getArrayFromResult(Result result) {
 
-		String[] resultPartials = result.toString().split(", ");
 
-		// cutting clutter at start and finish
-		resultPartials[0] = resultPartials[0].split("\\{")[1];
-		resultPartials[resultPartials.length - 1] = resultPartials[resultPartials.length - 1].split("\\}")[0];
-
-		int[] returnArray = new int[intToMatch.keySet().size()];
-		int returnArrayPos = 0;
-
-		for (int i = 0; i < resultPartials.length; i++) {
-			// solver also reports results of formulas, this rules them out
-			if (!resultPartials[i].contains(".")) {
-
-				String[] eval = resultPartials[i].split("=");
-
-				int identifier = Integer.parseInt(eval[0]);
-
-				// negate identifier if equals 0
-				if (Integer.parseInt(eval[1]) == 0) {
-					identifier = 0 - identifier;
-				}
-				returnArray[returnArrayPos] = identifier;
-				returnArrayPos++;
-			}
-		}
-
-		return returnArray;
-	}
-	
 }
