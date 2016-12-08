@@ -116,6 +116,7 @@ public class EditorTGGtoInternalTGG {
 			definition.getSyncAdornments().addAll(attrCondDef.getAllowedSyncAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
 			definition.getParameterDefinitions().addAll(attrCondDef.getParams().stream().map(parameterDef -> createAttributeConstraintParameterDefinition(parameterDef)).collect(Collectors.toList()));
 			library.getTggAttributeConstraintDefinitions().add(definition);
+			xtextToTGG.put(attrCondDef, definition);
 		}
 		
 		return library;
@@ -138,6 +139,7 @@ public class EditorTGGtoInternalTGG {
 			TGGParamValue newTGGParamValue = createParamValue(paramValue);
 			TGGParamValue checkedEntry = foundValues.putIfAbsent(newTGGParamValue.hashCode(), newTGGParamValue);
 			attributeConstraint.getParameters().add(checkedEntry != null ? checkedEntry : newTGGParamValue);
+			attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
 		}
 		return attributeConstraint;
 	}
