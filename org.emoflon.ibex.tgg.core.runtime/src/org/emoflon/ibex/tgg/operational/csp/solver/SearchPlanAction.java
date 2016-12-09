@@ -96,21 +96,23 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, RuntimeTGGAttrib
 
    private WeightedOperation<RuntimeTGGAttributeConstraint> createWeightedOperationForConstraintWithAdornment(final RuntimeTGGAttributeConstraint constraint, final TGGAttributeConstraintAdornment adornment)
    {
-      long frees = adornment.getValue().chars().filter(c -> c == 'F').count();
+      long frees = adornment.getValue().stream().filter(c -> c.equals("F")).count();
       float weight = (float) Math.pow(frees, 3);
 
       return createOperation(constraint, createBoundMask(constraint, adornment), createFreeMask(constraint, adornment), weight);
    }
 
-   private TGGAttributeConstraintAdornment createBoundAdornment(final RuntimeTGGAttributeConstraint constraint)
-   {
-      final String adornmentValue = StringUtils.repeat("B", constraint.getVariables().size());
-
-      TGGAttributeConstraintAdornment boundAdornment = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintAdornment();
-      boundAdornment.setValue(adornmentValue);
-
-      return boundAdornment;
-   }
+//   private TGGAttributeConstraintAdornment createBoundAdornment(final RuntimeTGGAttributeConstraint constraint)
+//   {
+//      final String adornmentValue = StringUtils.repeat("B", constraint.getVariables().size());
+//
+//      TGGAttributeConstraintAdornment boundAdornment = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintAdornment();
+//      for(int i = 0; i < constraint.getVariables().size(); i++){
+//    	  boundAdornment.getValue().add("B");
+//      }
+//
+//      return boundAdornment;
+//   }
 
    private Adornment createBoundMask(final RuntimeTGGAttributeConstraint constraint, final TGGAttributeConstraintAdornment adornment)
    {
@@ -121,7 +123,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, RuntimeTGGAttrib
       {
          RuntimeTGGAttributeConstraintVariable variable = constraint.getVariables().get(i);
          int index = variables.indexOf(variable);
-         if (adornment.getValue().charAt(i) == 'B')
+         if (adornment.getValue().get(i).equals("B"))
          {
             bits[index] = true;
          }
@@ -138,7 +140,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, RuntimeTGGAttrib
       {
          RuntimeTGGAttributeConstraintVariable variable = constraint.getVariables().get(i);
          int index = variables.indexOf(variable);
-         if (adornment.getValue().charAt(i) == 'F')
+         if (adornment.getValue().get(i).equals("F"))
          {
             bits[index] = true;
          }
