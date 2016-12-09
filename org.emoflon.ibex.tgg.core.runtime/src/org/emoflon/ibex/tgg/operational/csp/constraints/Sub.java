@@ -12,8 +12,15 @@ public class Sub extends RuntimeTGGAttributeConstraint
     * 
     * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
     */
-   public void solve(RuntimeTGGAttributeConstraintVariable a, RuntimeTGGAttributeConstraintVariable b, RuntimeTGGAttributeConstraintVariable c)
-   {
+	@Override
+	public void solve() {
+		if (variables.size() != 2)
+			throw new RuntimeException("The CSP -SUB- needs exactly three variables");
+
+		RuntimeTGGAttributeConstraintVariable a = variables.get(0);
+		RuntimeTGGAttributeConstraintVariable b = variables.get(1);
+		RuntimeTGGAttributeConstraintVariable c = variables.get(2);
+
       String bindingStates = getBindingStates(a, b, c);
 
       if (bindingStates.equals("BBB"))

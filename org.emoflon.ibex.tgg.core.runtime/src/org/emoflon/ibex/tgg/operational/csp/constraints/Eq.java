@@ -12,8 +12,14 @@ public class Eq extends RuntimeTGGAttributeConstraint
     * 
     * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
     */
-   public void solve(RuntimeTGGAttributeConstraintVariable a, RuntimeTGGAttributeConstraintVariable b)
-   {
+	@Override
+	public void solve() {
+		if (variables.size() != 2)
+			throw new RuntimeException("The CSP -EQ- needs exactly two variables");
+
+		RuntimeTGGAttributeConstraintVariable a = variables.get(0);
+		RuntimeTGGAttributeConstraintVariable b = variables.get(1);
+
       String bindingStates = getBindingStates(a, b);
 
       if (bindingStates.equals("BB"))
