@@ -149,7 +149,6 @@ public abstract class TGGRuntimeUtil {
 		for (IPatternMatch match : matchesForMissingEdgeWrappers
 				.toArray(new IPatternMatch[matchesForMissingEdgeWrappers.size()])) {
 			this.processMatchForMissingEdgeWrapper(match);
-
 		}
 	}
 

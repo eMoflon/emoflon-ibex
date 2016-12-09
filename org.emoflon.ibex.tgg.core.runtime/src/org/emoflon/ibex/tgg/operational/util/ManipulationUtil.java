@@ -28,48 +28,41 @@ import runtime.Edge;
 import runtime.RuntimePackage;
 
 /**
- * @author leblebici
- * Util class for creating EObjects, Edges, and Correspondences for a given set of green TGGRuleElement 
+ * @author leblebici Util class for creating EObjects, Edges, and
+ *         Correspondences for a given set of green TGGRuleElement
  */
 public class ManipulationUtil {
 
 	private static RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
-	public static void createNonCorrNodes(IPatternMatch match, HashMap<String, EObject> comatch,
-			Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
+	public static void createNonCorrNodes(IPatternMatch match, HashMap<String, EObject> comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
 		for (TGGRuleNode n : greenNodes) {
 			comatch.put(n.getName(), createNode(match, n, nodeResource));
 		}
 	}
 
-	public static Collection<Edge> createEdges(IPatternMatch match, HashMap<String, EObject> comatch,
-			Collection<TGGRuleEdge> greenEdges, Resource edgeResource) {
+	public static Collection<Edge> createEdges(IPatternMatch match, HashMap<String, EObject> comatch, Collection<TGGRuleEdge> greenEdges, Resource edgeResource) {
 		ArrayList<Edge> result = new ArrayList<>();
 		for (TGGRuleEdge e : greenEdges) {
-			Edge edge = createEdge(e, getVariableByName(e.getSrcNode().getName(), comatch, match),
-					getVariableByName(e.getTrgNode().getName(), comatch, match), edgeResource);
+			Edge edge = createEdge(e, getVariableByName(e.getSrcNode().getName(), comatch, match), getVariableByName(e.getTrgNode().getName(), comatch, match), edgeResource);
 			comatch.put(e.getName(), edge);
 			result.add(edge);
 		}
 		return result;
 	}
-	
-	public static void createCorrs(IPatternMatch match, HashMap<String, EObject> comatch,
-			Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
+
+	public static void createCorrs(IPatternMatch match, HashMap<String, EObject> comatch, Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		for (TGGRuleCorr c : greenCorrs) {
-			comatch.put(c.getName(),
-					createCorr(c, getVariableByName(c.getSource().getName(), comatch, match),
-							getVariableByName(c.getTarget().getName(), comatch, match), corrR));
+			comatch.put(c.getName(), createCorr(c, getVariableByName(c.getSource().getName(), comatch, match), getVariableByName(c.getTarget().getName(), comatch, match), corrR));
 		}
 	}
-	
+
 	public static void deleteElements(Collection<EObject> elements) {
 		elements.stream().filter(e -> e instanceof Edge).forEach(e -> FromEdgeWrapperToEMFEdgeUtil.revokeEdge((Edge) e));
 		elements.stream().forEach(EcoreUtil::delete);
 	}
 
-	public static EObject getVariableByName(String name, HashMap<String, EObject> comatch,
-			IPatternMatch match) {
+	public static EObject getVariableByName(String name, HashMap<String, EObject> comatch, IPatternMatch match) {
 		if (comatch.containsKey(name))
 			return comatch.get(name);
 		return (EObject) match.get(name);
@@ -86,15 +79,15 @@ public class ManipulationUtil {
 
 	private static EObject createNode(IPatternMatch match, TGGRuleNode node, Resource resource) {
 		EObject newObj = EcoreUtil.create(node.getType());
-				
+
 		// apply inplace attribute assignments
 		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
-			if(attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
+			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
 					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
-					newObj.eSet(attrExpr.getAttribute(), convertString(attrExpr.getAttribute(), tle.getValue()));		
+					newObj.eSet(attrExpr.getAttribute(), convertString(attrExpr.getAttribute(), tle.getValue()));
 					continue;
-				} 
+				}
 				if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
 					TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
 					newObj.eSet(attrExpr.getAttribute(), tee.getLiteral());
@@ -103,18 +96,18 @@ public class ManipulationUtil {
 				if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
 					TGGAttributeExpression tae = (TGGAttributeExpression) attrExpr.getValueExpr();
 					EObject obj = (EObject) match.get(tae.getObjectVar().getName());
-					newObj.eSet(attrExpr.getAttribute(), obj.eGet(tae.getAttribute()));		
+					newObj.eSet(attrExpr.getAttribute(), obj.eGet(tae.getAttribute()));
 					continue;
 				}
-				
+
 			}
 		}
 		resource.getContents().add(newObj);
 		return newObj;
 	}
-	
+
 	private static Object convertString(EAttribute attr, String value) {
-		if (attr.getEType().equals(EcorePackage.Literals.EINT)) 
+		if (attr.getEType().equals(EcorePackage.Literals.EINT))
 			return Integer.parseInt(value);
 		if (attr.getEType().equals(EcorePackage.Literals.EDOUBLE))
 			return Double.parseDouble(value);
@@ -126,11 +119,10 @@ public class ManipulationUtil {
 			return value.substring(1, value.length() - 1);
 		if (attr.getEType().equals(EcorePackage.Literals.EBOOLEAN))
 			return Boolean.parseBoolean(value);
-		
-		return null;
 
+		return null;
 	}
-	
+
 	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {
 		EObject corr = createNode(null, node, corrR);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
