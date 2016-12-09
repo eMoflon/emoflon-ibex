@@ -116,7 +116,7 @@ public class EditorTGGtoInternalTGG {
 			definition.getSyncAdornments().addAll(attrCondDef.getAllowedSyncAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
 			definition.getParameterDefinitions().addAll(attrCondDef.getParams().stream().map(parameterDef -> createAttributeConstraintParameterDefinition(parameterDef)).collect(Collectors.toList()));
 			library.getTggAttributeConstraintDefinitions().add(definition);
-			xtextToTGG.put(attrCondDef, definition);
+			map(attrCondDef, definition);
 		}
 		
 		return library;
@@ -166,7 +166,7 @@ public class EditorTGGtoInternalTGG {
 		TGGAttributeConstraintParameterDefinition parameterDefinition = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintParameterDefinition();
 		parameterDefinition.setName(parameter.getParamName());
 		parameterDefinition.setType(parameter.getType());
-		xtextToTGG.put(parameter, parameterDefinition);
+		map(parameter, parameterDefinition);
 		return parameterDefinition;
 	}
 
