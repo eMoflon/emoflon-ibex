@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
@@ -83,8 +85,9 @@ public class EditorTGGtoInternalTGG {
 		tgg.setName(xtextTGG.getSchema().getName());
 		tgg.getSrc().addAll(xtextTGG.getSchema().getSourceTypes());
 		tgg.getTrg().addAll(xtextTGG.getSchema().getTargetTypes());
-		tgg.setAttributeConstraintDefinitionLibrary(createAttributeConditionDefinitionLibrary(xtextTGG.getSchema().getAttributeCondDefs()));
-		
+		tgg.setAttributeConstraintDefinitionLibrary(
+				createAttributeConditionDefinitionLibrary(xtextTGG.getSchema().getAttributeCondDefs()));
+
 		map(xtextTGG, tgg);
 
 		for (Rule xtextRule : xtextTGG.getRules()) {
@@ -99,71 +102,83 @@ public class EditorTGGtoInternalTGG {
 			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextRule.getCorrespondencePatterns()));
 
 			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule));
-			
+
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
 		return addOppositeEdges(tgg);
 	}
-	
-	private TGGAttributeConstraintDefinitionLibrary createAttributeConditionDefinitionLibrary(EList<AttrCondDef> attrCondDefs) {
-		TGGAttributeConstraintDefinitionLibrary library = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintDefinitionLibrary();
-		
-		for(AttrCondDef attrCondDef : attrCondDefs) {
-			TGGAttributeConstraintDefinition definition = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintDefinition();
+
+	private TGGAttributeConstraintDefinitionLibrary createAttributeConditionDefinitionLibrary(
+			EList<AttrCondDef> attrCondDefs) {
+		TGGAttributeConstraintDefinitionLibrary library = DefinitionFactory.eINSTANCE
+				.createTGGAttributeConstraintDefinitionLibrary();
+
+		for (AttrCondDef attrCondDef : attrCondDefs) {
+			TGGAttributeConstraintDefinition definition = DefinitionFactory.eINSTANCE
+					.createTGGAttributeConstraintDefinition();
 			definition.setName(attrCondDef.getName());
 			definition.setUserDefined(attrCondDef.isUserDefined());
-			definition.getGenAdornments().addAll(attrCondDef.getAllowedGenAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
-			definition.getSyncAdornments().addAll(attrCondDef.getAllowedSyncAdornments().stream().map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
-			definition.getParameterDefinitions().addAll(attrCondDef.getParams().stream().map(parameterDef -> createAttributeConstraintParameterDefinition(parameterDef)).collect(Collectors.toList()));
+			definition.getGenAdornments().addAll(attrCondDef.getAllowedGenAdornments().stream()
+					.map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
+			definition.getSyncAdornments().addAll(attrCondDef.getAllowedSyncAdornments().stream()
+					.map(adornment -> creatAttributeConditionAdornment(adornment)).collect(Collectors.toList()));
+			definition.getParameterDefinitions()
+					.addAll(attrCondDef.getParams().stream()
+							.map(parameterDef -> createAttributeConstraintParameterDefinition(parameterDef))
+							.collect(Collectors.toList()));
 			library.getTggAttributeConstraintDefinitions().add(definition);
 			xtextToTGG.put(attrCondDef, definition);
 		}
-		
+
 		return library;
 	}
-	
+
 	private TGGAttributeConstraintLibrary createAttributeConditionLibrary(Collection<AttrCond> attrConds) {
 		TGGAttributeConstraintLibrary library = CspFactory.eINSTANCE.createTGGAttributeConstraintLibrary();
-		Map<Integer, TGGParamValue> paramValues = new HashMap<Integer, TGGParamValue>();
-		
-		library.getTggAttributeConstraints().addAll(attrConds.stream().map(attrCond -> createAttributeConstraint(attrCond, paramValues)).collect(Collectors.toList()));
-		library.getParameterValues().addAll(paramValues.values());
-		
+		ParamValueSet paramValues = new ParamValueSet();
+
+		library.getTggAttributeConstraints().addAll(attrConds.stream()
+				.map(attrCond -> createAttributeConstraint(attrCond, paramValues)).collect(Collectors.toList()));
+		library.getParameterValues().addAll(paramValues.getCollection());
+
 		return library;
 	}
-	
-	private TGGAttributeConstraint createAttributeConstraint(AttrCond attrCond, Map<Integer, TGGParamValue> foundValues) {
+
+	private TGGAttributeConstraint createAttributeConstraint(AttrCond attrCond,
+			ParamValueSet foundValues) {
 		TGGAttributeConstraint attributeConstraint = CspFactory.eINSTANCE.createTGGAttributeConstraint();
 		attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
-		for(ParamValue paramValue : attrCond.getValues()) {
+		for (ParamValue paramValue : attrCond.getValues()) {
 			TGGParamValue newTGGParamValue = createParamValue(paramValue);
-			TGGParamValue checkedEntry = foundValues.putIfAbsent(newTGGParamValue.hashCode(), newTGGParamValue);
-			attributeConstraint.getParameters().add(checkedEntry != null ? checkedEntry : newTGGParamValue);
+			TGGParamValue checkedEntry = foundValues.putIfAbsent(newTGGParamValue);
+			attributeConstraint.getParameters().add(checkedEntry);
 			attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
 		}
 		return attributeConstraint;
 	}
-	
+
 	private TGGParamValue createParamValue(ParamValue paramValue) {
-		if(paramValue instanceof LocalVariable) {
+		if (paramValue instanceof LocalVariable) {
 			TGGAttributeVariable attrVariable = CspFactory.eINSTANCE.createTGGAttributeVariable();
 			attrVariable.setName(((LocalVariable) paramValue).getName());
 			return attrVariable;
 		}
-		if(paramValue instanceof Expression) {
+		if (paramValue instanceof Expression) {
 			return createExpression((Expression) paramValue);
 		}
 		return null;
 	}
-	
+
 	private TGGAttributeConstraintAdornment creatAttributeConditionAdornment(Adornment adornment) {
-		TGGAttributeConstraintAdornment tggAdornment = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintAdornment();
+		TGGAttributeConstraintAdornment tggAdornment = DefinitionFactory.eINSTANCE
+				.createTGGAttributeConstraintAdornment();
 		tggAdornment.getValue().addAll(adornment.getValue());
 		return tggAdornment;
 	}
-	
+
 	private TGGAttributeConstraintParameterDefinition createAttributeConstraintParameterDefinition(Param parameter) {
-		TGGAttributeConstraintParameterDefinition parameterDefinition = DefinitionFactory.eINSTANCE.createTGGAttributeConstraintParameterDefinition();
+		TGGAttributeConstraintParameterDefinition parameterDefinition = DefinitionFactory.eINSTANCE
+				.createTGGAttributeConstraintParameterDefinition();
 		parameterDefinition.setName(parameter.getParamName());
 		parameterDefinition.setType(parameter.getType());
 		xtextToTGG.put(parameter, parameterDefinition);
@@ -219,33 +234,44 @@ public class EditorTGGtoInternalTGG {
 			rule2patMap.put(tggNode, ov);
 			result.add(tggNode);
 		}
-		
-		// This has to be done separately since some attribute expression may reference nodes that are not yet existent
+
+		// This has to be done separately since some attribute expression may
+		// reference nodes that are not yet existent
 		for (TGGRuleNode tggNode : result) {
 			ObjectVariablePattern ov = rule2patMap.get(tggNode);
-			tggNode.getAttrExpr().addAll(ov.getAttributeAssignments().stream().map(assignment -> createTGGInplaceAttributeExpression(result, tggNode, assignment)).collect(Collectors.toList()));
-			tggNode.getAttrExpr().addAll(ov.getAttributeConstraints().stream().map(constraint -> createTGGInplaceAttributeExpression(result, tggNode, constraint)).collect(Collectors.toList()));
+			tggNode.getAttrExpr()
+					.addAll(ov.getAttributeAssignments().stream()
+							.map(assignment -> createTGGInplaceAttributeExpression(result, tggNode, assignment))
+							.collect(Collectors.toList()));
+			tggNode.getAttrExpr()
+					.addAll(ov.getAttributeConstraints().stream()
+							.map(constraint -> createTGGInplaceAttributeExpression(result, tggNode, constraint))
+							.collect(Collectors.toList()));
 		}
-		
+
 		return result;
 	}
 
-	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeConstraint constraint) {
+	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes,
+			TGGRuleNode node, AttributeConstraint constraint) {
 		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
-		tiae.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(constraint.getAttribute().getName())).findFirst().get());
+		tiae.setAttribute(node.getType().getEAttributes().stream()
+				.filter(attr -> attr.getName().equals(constraint.getAttribute().getName())).findFirst().get());
 		tiae.setValueExpr(createExpression(constraint.getValueExp()));
 		tiae.setOperator(convertOperator(constraint.getOp()));
 		return tiae;
 	}
-	
-	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes, TGGRuleNode node, AttributeAssignment assignment) {
+
+	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes,
+			TGGRuleNode node, AttributeAssignment assignment) {
 		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
-		tiae.setAttribute(node.getType().getEAttributes().stream().filter(attr -> attr.getName().equals(assignment.getAttribute().getName())).findFirst().get());
+		tiae.setAttribute(node.getType().getEAttributes().stream()
+				.filter(attr -> attr.getName().equals(assignment.getAttribute().getName())).findFirst().get());
 		tiae.setValueExpr(createExpression(assignment.getValueExp()));
 		tiae.setOperator(TGGAttributeConstraintOperators.EQUAL);
 		return tiae;
 	}
-	
+
 	private TGGExpression createExpression(org.moflon.tgg.mosl.tgg.Expression expression) {
 		if (expression instanceof LiteralExpression) {
 			LiteralExpression le = (LiteralExpression) expression;
@@ -269,21 +295,28 @@ public class EditorTGGtoInternalTGG {
 		}
 		return null;
 	}
-	
+
 	// TODO!
 	private TGGAttributeConstraintOperators convertOperator(String operator) {
-		switch(operator) {
-		case "==": 
-		case ":=": return TGGAttributeConstraintOperators.EQUAL;
-		case "!=": return TGGAttributeConstraintOperators.UNEQUAL;
-		case ">=": return TGGAttributeConstraintOperators.GR_EQUAL;
-		case "<=": return TGGAttributeConstraintOperators.LE_EQUAL;
-		case ">":  return TGGAttributeConstraintOperators.GREATER;
-		case "<":  return TGGAttributeConstraintOperators.LESSER;
-		default: return null;
+		switch (operator) {
+		case "==":
+		case ":=":
+			return TGGAttributeConstraintOperators.EQUAL;
+		case "!=":
+			return TGGAttributeConstraintOperators.UNEQUAL;
+		case ">=":
+			return TGGAttributeConstraintOperators.GR_EQUAL;
+		case "<=":
+			return TGGAttributeConstraintOperators.LE_EQUAL;
+		case ">":
+			return TGGAttributeConstraintOperators.GREATER;
+		case "<":
+			return TGGAttributeConstraintOperators.LESSER;
+		default:
+			return null;
 		}
 	}
-	
+
 	private TGGRuleNode getTGGRuleNode(ObjectVariablePattern ov) {
 		TGGRuleNode tggNode = tggFactory.createTGGRuleNode();
 		tggNode.setName(ov.getName());
@@ -367,13 +400,69 @@ public class EditorTGGtoInternalTGG {
 					oppositeEdge.setType(oppositeRef);
 					oppositeEdge.setSrcNode(e.getTrgNode());
 					oppositeEdge.setTrgNode(e.getSrcNode());
-					oppositeEdge.setName(oppositeEdge.getSrcNode().getName() + "__" + oppositeRef.getName()
-							+ "__" + oppositeEdge.getTrgNode().getName() + "_eMoflonEdge");
+					oppositeEdge.setName(oppositeEdge.getSrcNode().getName() + "__" + oppositeRef.getName() + "__"
+							+ oppositeEdge.getTrgNode().getName() + "_eMoflonEdge");
 					rule.getEdges().add(oppositeEdge);
 				}
-				
+
 			}
 		});
 		return tggModel;
+	}
+
+	class ParamValueSet {
+		List<TGGParamValue> collection = new ArrayList<TGGParamValue>();
+
+		public TGGParamValue putIfAbsent(TGGParamValue entry) {
+			TGGParamValue value = getDuplicate(entry);
+			if (value == null)
+				collection.add(value);
+			
+			return value;
+		}
+
+		public TGGParamValue getDuplicate(TGGParamValue entry) {
+			if (entry instanceof TGGLiteralExpression) {
+				Optional<TGGParamValue> duplicate = collection.stream()
+						.filter(element -> element instanceof TGGLiteralExpression)
+						.filter(element -> ((TGGLiteralExpression) entry).getValue()
+								.equals(((TGGLiteralExpression) entry).getValue()))
+						.findFirst();
+				return duplicate.isPresent() ? duplicate.get() : entry;
+			}
+			if (entry instanceof TGGEnumExpression) {
+				Optional<TGGParamValue> duplicate = collection.stream()
+						.filter(element -> element instanceof TGGEnumExpression)
+						.filter(element -> ((TGGEnumExpression) entry).getEenum()
+								.equals(((TGGEnumExpression) entry).getEenum())
+								&& ((TGGEnumExpression) entry).getLiteral()
+										.equals(((TGGEnumExpression) entry).getLiteral()))
+						.findFirst();
+				return duplicate.isPresent() ? duplicate.get() : entry;
+			}
+			if (entry instanceof TGGAttributeExpression) {
+				Optional<TGGParamValue> duplicate = collection.stream()
+						.filter(element -> element instanceof TGGAttributeExpression)
+						.filter(element -> ((TGGAttributeExpression) entry).getAttribute()
+								.equals(((TGGAttributeExpression) entry).getAttribute())
+								&& ((TGGAttributeExpression) entry).getObjectVar()
+										.equals(((TGGAttributeExpression) entry).getObjectVar()))
+						.findFirst();
+				return duplicate.isPresent() ? duplicate.get() : entry;
+			}
+			if (entry instanceof TGGAttributeVariable) {
+				Optional<TGGParamValue> duplicate = collection.stream()
+						.filter(element -> element instanceof TGGAttributeVariable)
+						.filter(element -> ((TGGAttributeVariable) entry).getName()
+								.equals(((TGGAttributeVariable) entry).getName()))
+						.findFirst();
+				return duplicate.isPresent() ? duplicate.get() : entry;
+			}
+			return entry;
+		}
+
+		public List<TGGParamValue> getCollection() {
+			return collection;
+		}
 	}
 }
