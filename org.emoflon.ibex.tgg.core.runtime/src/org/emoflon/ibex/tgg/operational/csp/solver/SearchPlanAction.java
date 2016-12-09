@@ -116,37 +116,27 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, RuntimeTGGAttrib
 
    private Adornment createBoundMask(final RuntimeTGGAttributeConstraint constraint, final TGGAttributeConstraintAdornment adornment)
    {
-
-      boolean[] bits = new boolean[variables.size()];
-
-      for (int i = 0; i < constraint.getVariables().size(); i++)
-      {
-         RuntimeTGGAttributeConstraintVariable variable = constraint.getVariables().get(i);
-         int index = variables.indexOf(variable);
-         if (adornment.getValue().get(i).equals("B"))
-         {
-            bits[index] = true;
-         }
-      }
-
-      return new Adornment(bits);
+	   return createMask(constraint, adornment, "B");
    }
 
    private Adornment createFreeMask(final RuntimeTGGAttributeConstraint constraint, final TGGAttributeConstraintAdornment adornment)
    {
-      boolean[] bits = new boolean[variables.size()];
-
-      for (int i = 0; i < constraint.getVariables().size(); i++)
-      {
-         RuntimeTGGAttributeConstraintVariable variable = constraint.getVariables().get(i);
-         int index = variables.indexOf(variable);
-         if (adornment.getValue().get(i).equals("F"))
-         {
-            bits[index] = true;
-         }
-      }
-
-      return new Adornment(bits);
+	   return createMask(constraint, adornment, "F");
    }
+   
+   private Adornment createMask(final RuntimeTGGAttributeConstraint constraint, final TGGAttributeConstraintAdornment adornment, String mode)
+   {
+	      boolean[] bits = new boolean[variables.size()];
 
+	      for (int i = 0; i < constraint.getVariables().size(); i++)
+	      {
+	         RuntimeTGGAttributeConstraintVariable variable = constraint.getVariables().get(i);
+	         int index = variables.indexOf(variable);
+	         if (adornment.getValue().get(i).equals(mode))
+	         {
+	            bits[index] = true;
+	         }
+	      }
+	      return new Adornment(bits);
+   }
 }
