@@ -142,8 +142,10 @@ public abstract class TGGRuntimeUtil {
 	}
 
 	protected void processMatchesForMissingEdgeWrappers() {
-		//the set matchesForMissingEdgeWrappers is copied to an array here to avoid ConcurrentModificationException,
-		//because each created edge wrapper destroys its match for missing edge wrapper
+		// the set matchesForMissingEdgeWrappers is copied to an array here to
+		// avoid ConcurrentModificationException,
+		// because each created edge wrapper destroys its match for missing edge
+		// wrapper
 		for (IPatternMatch match : matchesForMissingEdgeWrappers
 				.toArray(new IPatternMatch[matchesForMissingEdgeWrappers.size()])) {
 			this.processMatchForMissingEdgeWrapper(match);
@@ -152,9 +154,6 @@ public abstract class TGGRuntimeUtil {
 	}
 
 	private void processMatchForMissingEdgeWrapper(IPatternMatch match) {
-
-		if (isObsolete(match))
-			return;
 
 		Edge newEdge = (Edge) EcoreUtil.create(runtimePackage.getEdge());
 		protocolR.getContents().add(newEdge);
@@ -177,7 +176,7 @@ public abstract class TGGRuntimeUtil {
 
 	public void processOperationalRuleMatch(String ruleName, IPatternMatch match) {
 
-		if (isObsolete(match))
+		if (!conformTypesOfGreenNodes(match, ruleName))
 			return;
 		/*
 		 * this hash map complements the match to a comatch of an original
@@ -200,6 +199,22 @@ public abstract class TGGRuntimeUtil {
 		if (protocol()) {
 			prepareProtocol(ruleName, match, comatch);
 		}
+	}
+
+	private boolean conformTypesOfGreenNodes(IPatternMatch match, String ruleName) {
+		if (!manipulateSrc()) {
+			for (TGGRuleNode gsn : greenSrcNodes.get(ruleName)) {
+				if (gsn.getType() != ((EObject) match.get(gsn.getName())).eClass())
+					return false;
+			}
+		}
+		if (!manipulateTrg()) {
+			for (TGGRuleNode gtn : greenTrgNodes.get(ruleName)) {
+				if (gtn.getType() != ((EObject) match.get(gtn.getName())).eClass())
+					return false;
+			}
+		}
+		return true;
 	}
 
 	protected void finalize() {
@@ -285,21 +300,6 @@ public abstract class TGGRuntimeUtil {
 				r.getNodes().stream()
 						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.CORR)
 						.collect(Collectors.toCollection(LinkedHashSet::new)));
-
-	}
-
-	/**
-	 * As the pattern matcher might stop reporting broken matches (as objects do
-	 * not live in the resource set anymore), this method checks whether the
-	 * match contains dangling objects
-	 */
-	private boolean isObsolete(IPatternMatch match) {
-		for (String parameterName : match.parameterNames()) {
-			EObject eobject = (EObject) match.get(parameterName);
-			if (eobject.eContainer() == null && eobject.eResource() == null)
-				return true;
-		}
-		return false;
 
 	}
 
