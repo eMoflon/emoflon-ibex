@@ -127,7 +127,7 @@ public class EditorTGGtoInternalTGG {
 							.map(parameterDef -> createAttributeConstraintParameterDefinition(parameterDef))
 							.collect(Collectors.toList()));
 			library.getTggAttributeConstraintDefinitions().add(definition);
-			xtextToTGG.put(attrCondDef, definition);
+			map(attrCondDef, definition);
 		}
 
 		return library;
@@ -181,7 +181,7 @@ public class EditorTGGtoInternalTGG {
 				.createTGGAttributeConstraintParameterDefinition();
 		parameterDefinition.setName(parameter.getParamName());
 		parameterDefinition.setType(parameter.getType());
-		xtextToTGG.put(parameter, parameterDefinition);
+		map(parameter, parameterDefinition);
 		return parameterDefinition;
 	}
 
