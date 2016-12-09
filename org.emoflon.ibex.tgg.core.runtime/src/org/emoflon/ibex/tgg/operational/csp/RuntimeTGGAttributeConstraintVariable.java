@@ -6,6 +6,11 @@ public class RuntimeTGGAttributeConstraintVariable {
 	private Object value;
 	private String type;
 
+	public RuntimeTGGAttributeConstraintVariable(boolean bound, Object value) {
+		this.bound = bound;
+		this.value = value;
+	}
+	
 	public RuntimeTGGAttributeConstraintVariable(boolean bound, Object value, String type) {
 		this.bound = bound;
 		this.type = type;
@@ -21,31 +26,31 @@ public class RuntimeTGGAttributeConstraintVariable {
 	}
 
 	public void bindToValue(Object value) {
-		setBound(true);
-
-		switch (type.toLowerCase()) {
-		case "int":
-			setValue(((Number) value).intValue());
-			break;
-		case "double":
-			setValue(((Number) value).doubleValue());
-			break;
-		case "float":
-			setValue(((Number) value).floatValue());
-			break;
-		case "number":
-			if (value instanceof Number) {
-				double val = ((Number) value).doubleValue();
-				if (val == Math.round(val))
-					setValue(((Number) value).intValue());
-				else
-					setValue(value);
-			}
-			break;
-		default:
+//		setBound(true);
+//
+//		switch (type.toLowerCase()) {
+//		case "int":
+//			setValue(((Number) value).intValue());
+//			break;
+//		case "double":
+//			setValue(((Number) value).doubleValue());
+//			break;
+//		case "float":
+//			setValue(((Number) value).floatValue());
+//			break;
+//		case "number":
+//			if (value instanceof Number) {
+//				double val = ((Number) value).doubleValue();
+//				if (val == Math.round(val))
+//					setValue(((Number) value).intValue());
+//				else
+//					setValue(value);
+//			}
+//			break;
+//		default:
 			setValue(value);
-			break;
-		}
+//			break;
+//		}
 	}
 
 	private void setValue(Object value) {

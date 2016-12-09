@@ -134,7 +134,10 @@
     </eClassifiers>
     <eSubpackages name="expressions" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions"
         nsPrefix="org.emoflon.ibex.tgg.core.language.misc.expressions">
-      <eClassifiers xsi:type="ecore:EClass" name="TGGParamValue"/>
+      <eClassifiers xsi:type="ecore:EClass" name="TGGParamValue">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinition"
+            eType="#//csp/definition/TGGAttributeConstraintParameterDefinition"/>
+      </eClassifiers>
       <eClassifiers xsi:type="ecore:EClass" name="TGGExpression" abstract="true" eSuperTypes="#//basic/expressions/TGGParamValue"/>
       <eClassifiers xsi:type="ecore:EClass" name="TGGLiteralExpression" eSuperTypes="#//basic/expressions/TGGExpression">
         <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

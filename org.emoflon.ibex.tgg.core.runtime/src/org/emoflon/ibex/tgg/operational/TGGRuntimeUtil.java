@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
+import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.util.FromEdgeWrapperToEMFEdgeUtil;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
@@ -26,6 +27,7 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import language.csp.TGGAttributeConstraintLibrary;
 import runtime.Edge;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
@@ -52,6 +54,8 @@ public abstract class TGGRuntimeUtil {
 	 * these hash maps serve as rule info to indicate what variables are
 	 * black/green & src/corr/trg in a rule
 	 */
+	protected HashMap<String, TGGAttributeConstraintLibrary> rule2constraintLibrary = new LinkedHashMap<>();
+	
 	protected HashMap<String, Collection<TGGRuleNode>> greenSrcNodes = new LinkedHashMap<>();
 	protected HashMap<String, Collection<TGGRuleNode>> greenTrgNodes = new LinkedHashMap<>();
 	protected HashMap<String, Collection<TGGRuleEdge>> greenSrcEdges = new LinkedHashMap<>();
@@ -182,7 +186,8 @@ public abstract class TGGRuntimeUtil {
 		 * triple rule application
 		 */
 		HashMap<String, EObject> comatch = new HashMap<>();
-
+		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(rule2constraintLibrary.get(ruleName), match);
+		
 		if (manipulateSrc()) {
 			ManipulationUtil.createNonCorrNodes(match, comatch, greenSrcNodes.get(ruleName), srcR);
 			createdEdges.addAll(ManipulationUtil.createEdges(match, comatch, greenSrcEdges.get(ruleName), protocolR));
@@ -262,6 +267,8 @@ public abstract class TGGRuntimeUtil {
 
 	private void prepareRuleInfo(TGGRule r) {
 		String ruleName = r.getName();
+		rule2constraintLibrary.put(r.getName(), r.getAttributeConditionLibrary());
+		
 		greenSrcNodes.put(ruleName,
 				r.getNodes().stream()
 						.filter(n -> n.getBindingType() == BindingType.CREATE && n.getDomainType() == DomainType.SRC)

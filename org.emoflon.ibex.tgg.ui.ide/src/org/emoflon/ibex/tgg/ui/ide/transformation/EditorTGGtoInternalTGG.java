@@ -149,22 +149,28 @@ public class EditorTGGtoInternalTGG {
 		TGGAttributeConstraint attributeConstraint = CspFactory.eINSTANCE.createTGGAttributeConstraint();
 		attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
 		for (ParamValue paramValue : attrCond.getValues()) {
-			TGGParamValue newTGGParamValue = createParamValue(paramValue);
+			TGGParamValue newTGGParamValue = createParamValue((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()), paramValue);
 			TGGParamValue checkedEntry = foundValues.putIfAbsent(newTGGParamValue);
-			attributeConstraint.getParameters().add(checkedEntry);
 			attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
+			attributeConstraint.getParameters().add(checkedEntry);
 		}
 		return attributeConstraint;
 	}
 
-	private TGGParamValue createParamValue(ParamValue paramValue) {
+	private TGGParamValue createParamValue(TGGAttributeConstraintDefinition definition, ParamValue paramValue) {
+		int index = ((AttrCond) paramValue.eContainer()).getValues().indexOf(paramValue);
+		TGGAttributeConstraintParameterDefinition paramDef = definition.getParameterDefinitions().get(index);
+		
 		if (paramValue instanceof LocalVariable) {
 			TGGAttributeVariable attrVariable = CspFactory.eINSTANCE.createTGGAttributeVariable();
 			attrVariable.setName(((LocalVariable) paramValue).getName());
+			attrVariable.setParameterDefinition(paramDef);
 			return attrVariable;
 		}
 		if (paramValue instanceof Expression) {
-			return createExpression((Expression) paramValue);
+			TGGExpression exp = createExpression((Expression) paramValue); 
+			exp.setParameterDefinition(paramDef);
+			return exp;
 		}
 		return null;
 	}
