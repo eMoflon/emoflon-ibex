@@ -26,7 +26,7 @@ public class RuntimeTGGAttributeConstraintVariable {
 	}
 
 	public void bindToValue(Object value) {
-//		setBound(true);
+		setBound(true);
 //
 //		switch (type.toLowerCase()) {
 //		case "int":

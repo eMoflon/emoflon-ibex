@@ -14,8 +14,11 @@ public abstract class RuntimeTGGAttributeConstraint {
 	
 	protected List<RuntimeTGGAttributeConstraintVariable> variables;
 	
+	private List<TGGAttributeConstraintAdornment> allowedAdorments;
+	
 	public RuntimeTGGAttributeConstraint() {
-		variables = new ArrayList<RuntimeTGGAttributeConstraintVariable>();
+		variables = new ArrayList<>();
+		allowedAdorments = new ArrayList<>();
 	}
 	
 	public String getBindingStates(RuntimeTGGAttributeConstraintVariable... variables) {
@@ -43,8 +46,7 @@ public abstract class RuntimeTGGAttributeConstraint {
 	}
 
 	public List<TGGAttributeConstraintAdornment> getAllowedAdornments() {
-		// TODO Auto-generated method stub
-		return null;
+		return allowedAdorments;
 	}
 	
 	protected abstract void solve();
