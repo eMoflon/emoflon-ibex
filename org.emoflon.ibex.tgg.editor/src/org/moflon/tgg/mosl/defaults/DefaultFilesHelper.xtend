@@ -71,12 +71,48 @@ class DefaultFilesHelper {
 		return '''
 		#library AttrCondDefLibrary {
 		
-			// Semantics:  a:Object == b:Object
-			eq(a: EJavaObject, b: EJavaObject) {
+			// Semantics:  a:EString == b:EString
+			eq_string(a: EString, b: EString) {
 				#sync: [B B], [B F], [F B]
 				#gen:  [B B], [B F], [F B], [F F]
 			}
 		
+			// Semantics:  a:EInt == b:EInt
+			eq_int(a: EInt, b: EInt) {
+				#sync: [B B], [B F], [F B]
+				#gen:  [B B], [B F], [F B], [F F]
+			}
+		
+			// Semantics:  a:EFloat == b:EFloat
+			eq_float(a: EFloat, b: EFloat) {
+				#sync: [B B], [B F], [F B]
+				#gen:  [B B], [B F], [F B], [F F]
+			}
+			
+			// Semantics:  a:EDouble == b:EDouble
+			eq_double(a: EDouble, b: EDouble) {
+				#sync: [B B], [B F], [F B]
+				#gen:  [B B], [B F], [F B], [F F]
+			}
+			
+			// Semantics:  a:ELong == b:ELong
+			eq_long(a: ELong, b: ELong) {
+				#sync: [B B], [B F], [F B]
+				#gen:  [B B], [B F], [F B], [F F]
+			}
+
+			// Semantics:  a:EChar == b:EChar
+			eq_char(a: EChar, b: EChar) {
+				#sync: [B B], [B F], [F B]
+				#gen:  [B B], [B F], [F B], [F F]
+			}
+						
+			// Semantics:  a:EBoolean == b:EBoolean
+			eq_boolean(a: EBoolean, b: EBoolean) {
+				#sync: [B B], [B F], [F B]
+				#gen:  [B B], [B F], [F B], [F F]
+			}
+								
 			// Semantics: Prefix + Word = Result (where + is string concatenation)
 			addPrefix(prefix:EString, word:EString, result:EString) {
 				#sync: [B B B], [B B F], [B F B], [F B B]

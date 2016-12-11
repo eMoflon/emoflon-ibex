@@ -32,5 +32,5 @@
 }
 
 #attributeConditions {
-	eq(c1.name, f2.name)
+	eq_string(c1.name, f2.name)
 }

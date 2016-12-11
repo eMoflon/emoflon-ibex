@@ -40,6 +40,5 @@
 }
 
 #attributeConditions {
-	eq(p1.pEnum, p2.pEnum)
-	eq(p1.name, "root")
+	eq_string(p1.name, "root")
 }

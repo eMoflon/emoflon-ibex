@@ -42,6 +42,6 @@
 }
 
 #attributeConditions {
-	eq(p1.name, myVar)
-	eq(p2.name, myVar)
+	eq_string(p1.name, myVar)
+	eq_string(p2.name, myVar)
 }
