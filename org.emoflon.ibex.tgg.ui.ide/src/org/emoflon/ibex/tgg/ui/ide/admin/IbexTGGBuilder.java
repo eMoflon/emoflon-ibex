@@ -119,12 +119,12 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 
 	private void generateFiles() {
+		generateAttrCondLib();
 		generateEditorModel().ifPresent(editorModel -> 
 		generateInternalModels(editorModel).ifPresent(internalModel -> {
 		generatePatterns(internalModel);
 		generateXtendManipulationCode(internalModel);
 		generateApplicationStub(internalModel);}));
-		generateAttrCondLib();
 	}
 
 	private void generateApplicationStub(TGGProject internalModel) {
