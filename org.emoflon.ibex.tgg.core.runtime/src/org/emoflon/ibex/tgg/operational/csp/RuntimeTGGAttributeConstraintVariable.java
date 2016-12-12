@@ -18,7 +18,7 @@ public class RuntimeTGGAttributeConstraintVariable {
 	}
 
 	public boolean isBound() {
-		return false;
+		return bound;
 	}
 
 	public Object getValue() {
