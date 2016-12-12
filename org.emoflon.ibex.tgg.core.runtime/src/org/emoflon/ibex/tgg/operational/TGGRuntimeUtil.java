@@ -183,15 +183,16 @@ public abstract class TGGRuntimeUtil {
 
 		if (!conformTypesOfGreenNodes(match, ruleName))
 			return;
+
+		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(rule2constraintLibrary.get(ruleName), match, getMode() == OperationMode.MODELGEN);
+		if(!cspContainer.solve())
+			return;
+		
 		/*
 		 * this hash map complements the match to a comatch of an original
 		 * triple rule application
 		 */
 		HashMap<String, EObject> comatch = new HashMap<>();
-		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(rule2constraintLibrary.get(ruleName), match, getMode() == OperationMode.MODELGEN);
-		if(cspContainer.solve())
-			System.out.println("CSP solving successful");
-		
 		
 		if (manipulateSrc()) {
 			ManipulationUtil.createNonCorrNodes(match, comatch, greenSrcNodes.get(ruleName), srcR);
