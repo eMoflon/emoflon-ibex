@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -27,6 +28,7 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import language.basic.expressions.TGGAttributeExpression;
 import language.csp.TGGAttributeConstraintLibrary;
 import runtime.Edge;
 import runtime.RuntimePackage;
@@ -190,7 +192,6 @@ public abstract class TGGRuntimeUtil {
 		if(cspContainer.solve())
 			System.out.println("CSP solving successful");
 		
-		//TODO extract values here
 		
 		if (manipulateSrc()) {
 			ManipulationUtil.createNonCorrNodes(match, comatch, greenSrcNodes.get(ruleName), srcR);
@@ -201,11 +202,23 @@ public abstract class TGGRuntimeUtil {
 			ManipulationUtil.createNonCorrNodes(match, comatch, greenTrgNodes.get(ruleName), trgR);
 			createdEdges.addAll(ManipulationUtil.createEdges(match, comatch, greenTrgEdges.get(ruleName), protocolR));
 		}
-
+		
+		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
+		applyCSPValues(comatch, cspValues);
+		
 		ManipulationUtil.createCorrs(match, comatch, greenCorrNodes.get(ruleName), corrR);
 
 		if (protocol()) {
 			prepareProtocol(ruleName, match, comatch);
+		}
+	}
+
+	private void applyCSPValues(HashMap<String, EObject> comatch, Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
+		for(Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
+			EObject entry = comatch.get(cspVal.getLeft().getObjectVar().getName());
+			if(entry != null) {
+				entry.eSet(cspVal.getLeft().getAttribute(), cspVal.getRight());
+			}
 		}
 	}
 

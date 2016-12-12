@@ -6,10 +6,10 @@ public class RuntimeTGGAttributeConstraintVariable {
 	private Object value;
 	private String type;
 
-	public RuntimeTGGAttributeConstraintVariable(boolean bound, Object value) {
-		this.bound = bound;
-		this.value = value;
-	}
+//	public RuntimeTGGAttributeConstraintVariable(boolean bound, Object value) {
+//		this.bound = bound;
+//		this.value = value;
+//	}
 	
 	public RuntimeTGGAttributeConstraintVariable(boolean bound, Object value, String type) {
 		this.bound = bound;

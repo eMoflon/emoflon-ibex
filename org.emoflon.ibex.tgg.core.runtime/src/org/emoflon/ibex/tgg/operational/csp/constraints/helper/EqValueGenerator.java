@@ -8,19 +8,19 @@ public interface EqValueGenerator {
 	
 	default Object generateValue(String type) {
 		switch (type) {
-		case "String":
+		case "java.lang.String":
 			return Generator.getNewRandomString(null);
-		case "Integer":
+		case "java.lang.Integer":
 			return Integer.valueOf((int) (Math.random() * 1000.0));
-		case "Long":
+		case "java.lang.Long":
 			return Long.valueOf((long) (Math.random() * 1000));
-		case "Double":
+		case "java.lang.Double":
 			return Double.valueOf((Math.random() * 1000.0));
-		case "Float":
+		case "java.lang.Float":
 			return Float.valueOf((float) (Math.random() * 1000.0));
-		case "Char":
+		case "java.lang.Char":
 			return (char) ((new Random()).nextInt(26) + 'a');
-		case "Boolean": 
+		case "java.lang.Boolean": 
 			return Math.random() > 0.5;
 		default:
 			throw new RuntimeException("The type " + type + " is not supported for random value generation in Eq-constraints");

@@ -85,7 +85,7 @@ public class ManipulationUtil {
 			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
 					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
-					newObj.eSet(attrExpr.getAttribute(), convertString(attrExpr.getAttribute(), tle.getValue()));
+					newObj.eSet(attrExpr.getAttribute(), String2EPrimitive.convertString(attrExpr.getAttribute().getEType(), tle.getValue()));
 					continue;
 				}
 				if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
@@ -104,23 +104,6 @@ public class ManipulationUtil {
 		}
 		resource.getContents().add(newObj);
 		return newObj;
-	}
-
-	private static Object convertString(EAttribute attr, String value) {
-		if (attr.getEType().equals(EcorePackage.Literals.EINT))
-			return Integer.parseInt(value);
-		if (attr.getEType().equals(EcorePackage.Literals.EDOUBLE))
-			return Double.parseDouble(value);
-		if (attr.getEType().equals(EcorePackage.Literals.EFLOAT))
-			return Float.parseFloat(value);
-		if (attr.getEType().equals(EcorePackage.Literals.ECHAR))
-			return value.length() == 0 ? null : value.charAt(0);
-		if (attr.getEType().equals(EcorePackage.Literals.ESTRING))
-			return value.substring(1, value.length() - 1);
-		if (attr.getEType().equals(EcorePackage.Literals.EBOOLEAN))
-			return Boolean.parseBoolean(value);
-
-		return null;
 	}
 
 	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {

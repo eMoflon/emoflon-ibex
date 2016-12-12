@@ -38,9 +38,6 @@ public class FWDApp {
 		
 		// load the resources containing your input 
 		s.load(null);
-//		t.load(null);
-//		c.load(null);
-//		p.load(null);
 		
 		System.out.println("Starting FWD");
 		long tic = System.currentTimeMillis();

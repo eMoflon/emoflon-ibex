@@ -13,6 +13,7 @@
 	++p2:Package {
 		name := "anchor_package"
 		index := 1
+		pEnum := enum::PackageEnum::SECOND_ENUM
 	}
 }
 
