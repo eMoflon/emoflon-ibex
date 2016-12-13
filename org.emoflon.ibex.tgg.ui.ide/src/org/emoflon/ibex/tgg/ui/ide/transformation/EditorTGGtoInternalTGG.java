@@ -426,18 +426,19 @@ public class EditorTGGtoInternalTGG {
 		SearchPlanAction spa = new SearchPlanAction();
 		for (TGGRule rule : tggModel.getRules()) {
 			TGGAttributeConstraintLibrary libraryOfTheRule = rule.getAttributeConditionLibrary();
-			libraryOfTheRule.getSorted_FWD().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-					libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.FWD));
-	
-			libraryOfTheRule.getSorted_BWD().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-					libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.BWD));
+			if(!libraryOfTheRule.getTggAttributeConstraints().isEmpty()){
+				libraryOfTheRule.getSorted_FWD().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.FWD));
+		
+				libraryOfTheRule.getSorted_BWD().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.BWD));
 
-			libraryOfTheRule.getSorted_CC().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-					libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.CC));
+				libraryOfTheRule.getSorted_CC().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.CC));
 
-			libraryOfTheRule.getSorted_MODELGEN().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-					libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.MODELGEN));
-
+				libraryOfTheRule.getSorted_MODELGEN().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.MODELGEN));
+			}
 		}
 		
 		return tggModel;
