@@ -2,22 +2,22 @@
   <extension id="org.emoflon.ibex.tgg.common._common_eMoflon" point="org.eclipse.viatra.query.runtime.queryspecification">
     <group group="org.eclipse.viatra.query.runtime.extensibility.SingletonExtensionFactory:org.emoflon.ibex.tgg.common._common_eMoflon" id="org.emoflon.ibex.tgg.common._common_eMoflon">
       <query-specification fqn="org.emoflon.ibex.tgg.common.marked"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdgePackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapperPackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapperPackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapperPackage_Clazz_eMoflonEdgeWrapper_clazzs"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdgeFolder_File_eMoflonEdgeWrapper_files"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapperFolder_File_eMoflonEdgeWrapper_files"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapperFolder_File_eMoflonEdgeWrapper_files"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapperFolder_File_eMoflonEdgeWrapper_files"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdgePackage_Package_eMoflonEdgeWrapper_packages"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapperPackage_Package_eMoflonEdgeWrapper_packages"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapperPackage_Package_eMoflonEdgeWrapper_packages"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapperPackage_Package_eMoflonEdgeWrapper_packages"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdgeFolder_Folder_eMoflonEdgeWrapper_folders"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapperFolder_Folder_eMoflonEdgeWrapper_folders"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapperFolder_Folder_eMoflonEdgeWrapper_folders"/>
-      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapperFolder_Folder_eMoflonEdgeWrapper_folders"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdge_Package_Clazz_eMoflonEdgeWrapper_clazzs"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapper_Package_Clazz_eMoflonEdgeWrapper_clazzs"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapper_Package_Clazz_eMoflonEdgeWrapper_clazzs"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapper_Package_Clazz_eMoflonEdgeWrapper_clazzs"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdge_Folder_File_eMoflonEdgeWrapper_files"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapper_Folder_File_eMoflonEdgeWrapper_files"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapper_Folder_File_eMoflonEdgeWrapper_files"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapper_Folder_File_eMoflonEdgeWrapper_files"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdge_Package_Package_eMoflonEdgeWrapper_packages"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapper_Package_Package_eMoflonEdgeWrapper_packages"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapper_Package_Package_eMoflonEdgeWrapper_packages"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapper_Package_Package_eMoflonEdgeWrapper_packages"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EMFEdge_Folder_Folder_eMoflonEdgeWrapper_folders"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.EdgeWrapper_Folder_Folder_eMoflonEdgeWrapper_folders"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.MissingEdgeWrapper_Folder_Folder_eMoflonEdgeWrapper_folders"/>
+      <query-specification fqn="org.emoflon.ibex.tgg.common.ExistingEdgeWrapper_Folder_Folder_eMoflonEdgeWrapper_folders"/>
     </group>
   </extension>
 </plugin>
