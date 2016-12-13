@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.operational.csp.generator;
 
-import csp.constraints.generator.LoremIpsum;
 
 public class Generator
 {
