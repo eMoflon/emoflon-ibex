@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.operational.csp.constraints;
 
-import java.util.HashMap;
-
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 
 public class RuntimeTGGAttributeConstraintFactory {
