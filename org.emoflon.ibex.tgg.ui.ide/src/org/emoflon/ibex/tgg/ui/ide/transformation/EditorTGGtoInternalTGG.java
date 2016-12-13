@@ -19,6 +19,8 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.xtext.parser.antlr.UnorderedGroupHelper.Collector;
+import org.emoflon.ibex.tgg.ui.ide.transformation.csp.sorting.CSPSearchPlanMode;
+import org.emoflon.ibex.tgg.ui.ide.transformation.csp.sorting.SearchPlanAction;
 import org.moflon.tgg.mosl.tgg.Adornment;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
@@ -105,7 +107,11 @@ public class EditorTGGtoInternalTGG {
 
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
-		return addOppositeEdges(tgg);
+		
+		tgg = addOppositeEdges(tgg);
+		tgg = sortTGGAttributeConstraints(tgg);
+		
+		return tgg;
 	}
 
 	private TGGAttributeConstraintDefinitionLibrary createAttributeConditionDefinitionLibrary(
@@ -144,12 +150,12 @@ public class EditorTGGtoInternalTGG {
 		return library;
 	}
 
-	private TGGAttributeConstraint createAttributeConstraint(AttrCond attrCond,
-			ParamValueSet foundValues) {
+	private TGGAttributeConstraint createAttributeConstraint(AttrCond attrCond, ParamValueSet foundValues) {
 		TGGAttributeConstraint attributeConstraint = CspFactory.eINSTANCE.createTGGAttributeConstraint();
 		attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
 		for (ParamValue paramValue : attrCond.getValues()) {
-			TGGParamValue newTGGParamValue = createParamValue((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()), paramValue);
+			TGGParamValue newTGGParamValue = createParamValue(
+					(TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()), paramValue);
 			TGGParamValue checkedEntry = foundValues.putIfAbsent(newTGGParamValue);
 			attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
 			attributeConstraint.getParameters().add(checkedEntry);
@@ -160,7 +166,7 @@ public class EditorTGGtoInternalTGG {
 	private TGGParamValue createParamValue(TGGAttributeConstraintDefinition definition, ParamValue paramValue) {
 		int index = ((AttrCond) paramValue.eContainer()).getValues().indexOf(paramValue);
 		TGGAttributeConstraintParameterDefinition paramDef = definition.getParameterDefinitions().get(index);
-		
+
 		if (paramValue instanceof LocalVariable) {
 			TGGAttributeVariable attrVariable = CspFactory.eINSTANCE.createTGGAttributeVariable();
 			attrVariable.setName(((LocalVariable) paramValue).getName());
@@ -168,7 +174,7 @@ public class EditorTGGtoInternalTGG {
 			return attrVariable;
 		}
 		if (paramValue instanceof Expression) {
-			TGGExpression exp = createExpression((Expression) paramValue); 
+			TGGExpression exp = createExpression((Expression) paramValue);
 			exp.setParameterDefinition(paramDef);
 			return exp;
 		}
@@ -413,6 +419,28 @@ public class EditorTGGtoInternalTGG {
 
 			}
 		});
+		return tggModel;
+	}
+
+	private TGG sortTGGAttributeConstraints(TGG tggModel) {
+		SearchPlanAction spa = new SearchPlanAction();
+		for (TGGRule rule : tggModel.getRules()) {
+			TGGAttributeConstraintLibrary libraryOfTheRule = rule.getAttributeConditionLibrary();
+			if(!libraryOfTheRule.getTggAttributeConstraints().isEmpty()){
+				libraryOfTheRule.getSorted_FWD().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.FWD));
+		
+				libraryOfTheRule.getSorted_BWD().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.BWD));
+
+				libraryOfTheRule.getSorted_CC().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.CC));
+
+				libraryOfTheRule.getSorted_MODELGEN().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.MODELGEN));
+			}
+		}
+		
 		return tggModel;
 	}
 

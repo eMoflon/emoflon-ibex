@@ -18,31 +18,31 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.ibex.tgg.operational.csp.solver;
+package org.emoflon.ibex.tgg.ui.ide.transformation.csp.sorting;
 
-import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
+import language.csp.TGGAttributeConstraint;
 import org.gervarro.democles.common.Combiner;
 
-public class SimpleCombiner implements Combiner<SimpleCombiner, RuntimeTGGAttributeConstraint> {
-	private final CodeGeneratorChain<RuntimeTGGAttributeConstraint> last;
+public class SimpleCombiner implements Combiner<SimpleCombiner, TGGAttributeConstraint> {
+	private final Chain<TGGAttributeConstraint> last;
 	
 	public SimpleCombiner() {
 		this.last = null;
 	}
 	
-	private SimpleCombiner(final SimpleCombiner src, final RuntimeTGGAttributeConstraint second) {
-		this.last = new CodeGeneratorChain<RuntimeTGGAttributeConstraint>(second, src.last);
+	private SimpleCombiner(final SimpleCombiner src, final TGGAttributeConstraint second) {
+		this.last = new Chain<TGGAttributeConstraint>(second, src.last);
 	}
 	
-	public final SimpleCombiner combine(final RuntimeTGGAttributeConstraint second) {
+	public final SimpleCombiner combine(final TGGAttributeConstraint second) {
 		return new SimpleCombiner(this, second);
 	}
 
-	public final boolean hasSameOrigin(RuntimeTGGAttributeConstraint operation) {
+	public final boolean hasSameOrigin(TGGAttributeConstraint operation) {
 		return last != null && last.getValue() == operation;
 	}
 	
-	public final CodeGeneratorChain<RuntimeTGGAttributeConstraint> getRoot() {
+	public final Chain<TGGAttributeConstraint> getRoot() {
 		return last;
 	}
 }

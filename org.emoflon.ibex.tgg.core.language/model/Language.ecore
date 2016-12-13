@@ -90,6 +90,14 @@
           upperBound="-1" eType="#//csp/TGGAttributeConstraint" containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="parameterValues" upperBound="-1"
           eType="#//basic/expressions/TGGParamValue" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="sorted_BWD" upperBound="-1"
+          eType="#//csp/TGGAttributeConstraint"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="sorted_FWD" upperBound="-1"
+          eType="#//csp/TGGAttributeConstraint"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="sorted_CC" upperBound="-1"
+          eType="#//csp/TGGAttributeConstraint"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="sorted_MODELGEN" upperBound="-1"
+          eType="#//csp/TGGAttributeConstraint"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraint">
       <eStructuralFeatures xsi:type="ecore:EReference" name="definition" eType="#//csp/definition/TGGAttributeConstraintDefinition"/>

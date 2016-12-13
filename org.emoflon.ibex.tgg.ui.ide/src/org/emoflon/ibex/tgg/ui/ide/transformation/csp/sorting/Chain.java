@@ -18,42 +18,42 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.ibex.tgg.operational.csp.solver;
+package org.emoflon.ibex.tgg.ui.ide.transformation.csp.sorting;
 
-public class CodeGeneratorChain<T> {
-	private final CodeGeneratorChain<T> next;
+public class Chain<T> {
+	private final Chain<T> next;
 	private final T value;
 
-	public CodeGeneratorChain(T element) {
+	public Chain(T element) {
 		this(element, null);
 	}
 	
-	CodeGeneratorChain(T value, CodeGeneratorChain<T> next) {
+	Chain(T value, Chain<T> next) {
 		this.value = value;
 		this.next = next;
 	}
 
-	final CodeGeneratorChain<T> copy() {
+	final Chain<T> copy() {
 		return copyAndMerge(null);
 	}
 	
-	final CodeGeneratorChain<T> copyAndMerge(CodeGeneratorChain<T> otherChain) {
+	final Chain<T> copyAndMerge(Chain<T> otherChain) {
 		if (next != null) {
-			return new CodeGeneratorChain<T>(value, next.copyAndMerge(otherChain));
+			return new Chain<T>(value, next.copyAndMerge(otherChain));
 		} else {
-			return new CodeGeneratorChain<T>(value, otherChain);
+			return new Chain<T>(value, otherChain);
 		}
 	}
 	
-	final CodeGeneratorChain<T> reverseCopy() {
+	final Chain<T> reverseCopy() {
 		return reverseCopy(null);
 	}
 	
-	private final CodeGeneratorChain<T> reverseCopy(CodeGeneratorChain<T> reverseTail) {
+	private final Chain<T> reverseCopy(Chain<T> reverseTail) {
 		if (next != null) {
-			return next.reverseCopy(new CodeGeneratorChain<T>(value, reverseTail));
+			return next.reverseCopy(new Chain<T>(value, reverseTail));
 		} else {
-			return new CodeGeneratorChain<T>(value, reverseTail);
+			return new Chain<T>(value, reverseTail);
 		}
 	}
 	
@@ -61,7 +61,7 @@ public class CodeGeneratorChain<T> {
     	return value;
     }
     
-    public final CodeGeneratorChain<T> getNext() {
+    public final Chain<T> getNext() {
     	return next;
     }
 }

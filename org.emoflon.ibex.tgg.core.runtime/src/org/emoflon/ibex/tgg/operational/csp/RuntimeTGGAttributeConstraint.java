@@ -21,11 +21,9 @@ public abstract class RuntimeTGGAttributeConstraint {
 	private TGGAttributeConstraint constraint;
 	protected List<RuntimeTGGAttributeConstraintVariable> variables;
 	
-	private List<TGGAttributeConstraintAdornment> allowedAdorments;
 	
 	public RuntimeTGGAttributeConstraint() {
 		variables = new ArrayList<>();
-		allowedAdorments = new ArrayList<>();
 	}
 	
 	public String getBindingStates(RuntimeTGGAttributeConstraintVariable... variables) {
@@ -52,9 +50,6 @@ public abstract class RuntimeTGGAttributeConstraint {
 		return variables;
 	}
 
-	public List<TGGAttributeConstraintAdornment> getAllowedAdornments() {
-		return allowedAdorments;
-	}
 	
 	protected abstract void solve();
 	
@@ -69,13 +64,8 @@ public abstract class RuntimeTGGAttributeConstraint {
 		return tuples;
 	}
 	
-	public void initialize(RuntimeTGGAttributeConstraintContainer cont, TGGAttributeConstraint constraint, boolean modelgen) {
+	public void initialize(RuntimeTGGAttributeConstraintContainer cont, TGGAttributeConstraint constraint) {
 		this.constraint = constraint;
-		
-		if(modelgen)
-		    allowedAdorments.addAll(constraint.getDefinition().getGenAdornments());
-		else
-			allowedAdorments.addAll(constraint.getDefinition().getSyncAdornments());
 	
 		variables = constraint.getParameters().stream().map(p -> cont.params2runtimeVariable.get(p)).collect(Collectors.toList());
 	}

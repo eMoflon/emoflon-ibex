@@ -11,10 +11,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
+import org.emoflon.ibex.tgg.operational.OperationMode;
 import org.emoflon.ibex.tgg.operational.csp.constraints.RuntimeTGGAttributeConstraintFactory;
-import org.emoflon.ibex.tgg.operational.csp.solver.CodeGeneratorChain;
-import org.emoflon.ibex.tgg.operational.csp.solver.SearchPlanAction;
-import org.emoflon.ibex.tgg.operational.csp.solver.SimpleCombiner;
 import org.emoflon.ibex.tgg.operational.util.String2EPrimitive;
 
 import language.basic.expressions.TGGAttributeExpression;
@@ -34,25 +32,39 @@ public class RuntimeTGGAttributeConstraintContainer {
 	private IPatternMatch match;
 	private Collection<String> boundObjectNames;
 	
-	private boolean modelgen;
-	
-	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IPatternMatch match, boolean modelgen) {
+	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IPatternMatch match, OperationMode mode) {
 		this.match = match;
 		this.boundObjectNames = match.parameterNames();
-		this.modelgen = modelgen;
-		
+
 		constraintFactory = new RuntimeTGGAttributeConstraintFactory();
 		extractRuntimeParameters(library);
-		extractRuntimeConstraints(library);
+		extractRuntimeConstraints(library, mode);
 	}
 
-	private void extractRuntimeConstraints(TGGAttributeConstraintLibrary library) {
-		constraints = library.getTggAttributeConstraints().stream().map(c -> extractRuntimeConstraint(c)).collect(Collectors.toList());
+	private void extractRuntimeConstraints(TGGAttributeConstraintLibrary library, OperationMode mode) {
+		List<TGGAttributeConstraint> sortedSpecificationConstraints = null;
+		switch (mode) {
+		case FWD:
+			sortedSpecificationConstraints = library.getSorted_FWD();
+			break;
+		case BWD:
+			sortedSpecificationConstraints = library.getSorted_BWD();
+			break;
+		case CC:
+			sortedSpecificationConstraints = library.getSorted_CC();
+			break;
+		case MODELGEN:
+			sortedSpecificationConstraints = library.getSorted_MODELGEN();
+			break;
+		default:
+			break;
+		}
+		constraints = sortedSpecificationConstraints.stream().map(c -> extractRuntimeConstraint(c)).collect(Collectors.toList());
 	}
 	
 	private RuntimeTGGAttributeConstraint extractRuntimeConstraint(TGGAttributeConstraint c) {
 		RuntimeTGGAttributeConstraint runtimeConstraint = constraintFactory.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
-		runtimeConstraint.initialize(this, c, modelgen);
+		runtimeConstraint.initialize(this, c);
 		return runtimeConstraint;
 	}
 
@@ -103,26 +115,13 @@ public class RuntimeTGGAttributeConstraintContainer {
 		constraints.add(constraint);
 	}
 	
-	public Collection<RuntimeTGGAttributeConstraint> getConstraints() {
-		return constraints;
-	}
 	
 	public boolean solve(){
-		if(constraints.isEmpty())
-			return true;
-		
-		SearchPlanAction searcPlanAction = new SearchPlanAction();
-		SimpleCombiner combiner = searcPlanAction.sortConstraints(constraints, new ArrayList<RuntimeTGGAttributeConstraintVariable>(params2runtimeVariable.values()));
-		CodeGeneratorChain<RuntimeTGGAttributeConstraint> chain = combiner.getRoot();
-
-		while(chain != null){
-			RuntimeTGGAttributeConstraint nextConstraint = chain.getValue();
-			nextConstraint.solve();
-			if(!nextConstraint.isSatisfied())
+		for(RuntimeTGGAttributeConstraint constraint : constraints){
+			constraint.solve();
+			if(!constraint.isSatisfied())
 				return false;
-			chain = chain.getNext();
 		}
-		
 		return true;
 	}
 	
