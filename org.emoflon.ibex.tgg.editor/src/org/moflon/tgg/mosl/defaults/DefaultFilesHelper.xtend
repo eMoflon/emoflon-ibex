@@ -46,6 +46,7 @@ class DefaultFilesHelper {
 		return '''
 		#using «schema».*
 		#using AttrCondDefLibrary.*
+		#using UserAttrCondDefLibrary.*
 		
 		#rule «ruleName» #with «schema»
 		
@@ -197,6 +198,15 @@ class DefaultFilesHelper {
 				#gen: [B B], [B F], [F B], [F F]
 			}
 		
+		}
+		'''
+	}
+	
+	static def generateEmptyUserAttrCondDefLibrary(){
+		return '''
+		#library UserAttrCondDefLibrary {
+			// for reference on how to define your own constraints please refer to the automatically generated AttrCondDefLibrary which contains all predefined constraint
+
 		}
 		'''
 	}

@@ -119,7 +119,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 
 	private void generateFiles() {
-		generateAttrCondLib();
+		generateAttrCondLibs();
 		generateEditorModel().ifPresent(editorModel -> 
 		generateInternalModels(editorModel).ifPresent(internalModel -> {
 		generatePatterns(internalModel);
@@ -139,9 +139,10 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		createFile(RUN_FOLDER, Transformation, XTEND_EXTENSION, manipulationCode, true);
 	}
 
-	private void generateAttrCondLib() {
+	private void generateAttrCondLibs() {
 		try {
 			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(getProject());
+			AttrCondDefLibraryProvider.userAttrCondDefLibrary(getProject());
 		} catch (CoreException | IOException e) {
 			LogUtils.error(logger, e);
 		}
