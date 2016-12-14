@@ -9,7 +9,6 @@ public class Multiply extends RuntimeTGGAttributeConstraint
    /**
     * Constraint multiply(a,b,c) a * b = c
     * 
-    * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
     */
 	@Override
 	public void solve() {

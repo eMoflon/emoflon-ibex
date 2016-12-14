@@ -2,12 +2,14 @@ package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -43,6 +45,19 @@ public class CCApp {
 		// load the resources containing your input 
 		s.load(null);
 		t.load(null);
+		
+		int objCount = 0;
+		int edgeCount = 0;
+		
+		
+		Iterator<EObject> it = s.getAllContents();
+		while(it.hasNext()){
+			EObject obj = it.next();
+			objCount++;
+			if(obj.eContainer() != null)
+				edgeCount++;
+		}
+		System.out.println(objCount + " , " + edgeCount);
 
 		System.out.println("Starting consistency checking");
 		long tic = System.currentTimeMillis();

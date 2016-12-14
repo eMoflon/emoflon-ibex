@@ -9,7 +9,6 @@ public class AddPrefix extends RuntimeTGGAttributeConstraint {
 	 * addPrefix(prefix,word,result) prefix+word = result (prefix concatenated
 	 * with word equals result)
 	 * 
-	 * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
 	 */
 	@Override
 	public void solve() {

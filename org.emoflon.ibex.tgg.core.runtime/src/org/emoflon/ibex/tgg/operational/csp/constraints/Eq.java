@@ -8,7 +8,6 @@ public class Eq extends RuntimeTGGAttributeConstraint {
 	/**
 	 * Constraint eq(a,b)
 	 * 
-	 * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
 	 */
 	@Override
 	public void solve() {

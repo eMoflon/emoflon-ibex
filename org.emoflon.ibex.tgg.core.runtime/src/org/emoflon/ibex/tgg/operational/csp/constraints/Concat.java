@@ -12,7 +12,6 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 	 * 
 	 * a . ":" . b = c
 	 * 
-	 * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
 	 */
 	@Override
 	public void solve() {
