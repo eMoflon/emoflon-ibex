@@ -7,12 +7,12 @@ import language.TGG;
 import runtime.TGGRuleApplication;
 
 /**
- * Different than other TGGRuntimeUtil subtypes, MODELGEN 
+ * Different than other TGGRuntimeUtil subtypes, MODELGEN
  * 
- * (i) additionally has a stop criterion (see MODELGENStopCriterion)
- * (ii) does not remove processed matches from its MatchContainer in processOperationalRuleMatches() 
- * (iii) gets matches randomly from MatchContainer
- * (iv) does not create a protocol for scalability
+ * (i) additionally has a stop criterion (see MODELGENStopCriterion) (ii) does
+ * not remove processed matches from its MatchContainer in
+ * processOperationalRuleMatches() (iii) gets matches randomly from
+ * MatchContainer (iv) does not create a protocol for scalability
  * 
  * @author leblebici
  *
@@ -45,15 +45,23 @@ public class MODELGEN extends TGGRuntimeUtil {
 		return OperationStrategy.PROTOCOL_NACS;
 	}
 
+	/**
+	 * differently from the super class implementation, MODELGEN
+	 * (i) does not remove successful matches (but uses them repeatedly)
+	 * (ii) updates the state of its stop criterion 
+	 */
 	@Override
 	protected void processOperationalRuleMatches() {
 		while (!stop()) {
 			IPatternMatch match = matchContainer.getNextRandom();
 			String ruleName = matchContainer.getRuleName(match);
 			if (!stopCriterion.dont(ruleName)) {
-				processOperationalRuleMatch(ruleName, match);
-				stopCriterion.update(ruleName, greenSrcNodes.get(ruleName).size() + greenSrcEdges.get(ruleName).size(),
-						greenTrgNodes.get(ruleName).size() + greenTrgEdges.get(ruleName).size());
+				if (processOperationalRuleMatch(ruleName, match))
+					stopCriterion.update(ruleName,
+							greenSrcNodes.get(ruleName).size() + greenSrcEdges.get(ruleName).size(),
+							greenTrgNodes.get(ruleName).size() + greenTrgEdges.get(ruleName).size());
+				else
+					removeOperationalRuleMatch(match);
 			}
 		}
 	}
