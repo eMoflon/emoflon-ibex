@@ -13,11 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.PredefRuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.tgg.operational.csp.solver.CodeGeneratorChain;
 import org.emoflon.ibex.tgg.operational.OperationMode;
-import org.emoflon.ibex.tgg.operational.csp.constraints.RuntimeTGGAttributeConstraintFactory;
-import org.emoflon.ibex.tgg.operational.csp.solver.SearchPlanAction;
-import org.emoflon.ibex.tgg.operational.csp.solver.SimpleCombiner;
 import org.emoflon.ibex.tgg.operational.util.String2EPrimitive;
 
 import language.basic.expressions.TGGAttributeExpression;
@@ -39,10 +35,9 @@ public class RuntimeTGGAttributeConstraintContainer {
 	
 	private boolean modelgen;
 	
-	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IPatternMatch match, boolean modelgen, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
+	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IPatternMatch match, OperationMode mode, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.parameterNames();
-		this.modelgen = modelgen;
 		this.constraintProvider = runtimeConstraintProvider;
 		
 		extractRuntimeParameters(library);
@@ -72,7 +67,7 @@ public class RuntimeTGGAttributeConstraintContainer {
 	
 	private RuntimeTGGAttributeConstraint extractRuntimeConstraint(TGGAttributeConstraint c) {
 		RuntimeTGGAttributeConstraint runtimeConstraint = constraintProvider.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
-		runtimeConstraint.initialize(this, c, modelgen);
+		runtimeConstraint.initialize(this, c);
 		return runtimeConstraint;
 	}
 
