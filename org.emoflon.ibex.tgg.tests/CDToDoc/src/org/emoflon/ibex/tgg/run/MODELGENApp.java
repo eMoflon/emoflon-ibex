@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.operational.MODELGEN;
 import org.emoflon.ibex.tgg.operational.MODELGENStopCriterion;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -43,7 +44,7 @@ public class MODELGENApp {
 
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
 		stop.setMaxSrcCount(1000);
-		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop);
+		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop, new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
 		Transformation trafo = new Transformation(rs, transformer);
 		

@@ -22,7 +22,9 @@ Require-Bundle: org.eclipse.xtext,
  SDMLanguage,
  org.moflon.tgg.language,
  org.eclipse.emf.mwe2.launch
-Import-Package: org.apache.log4j
+Import-Package: language.basic,
+ language.csp.definition,
+ org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: 
  org.moflon.ide.mosl.core.scoping,

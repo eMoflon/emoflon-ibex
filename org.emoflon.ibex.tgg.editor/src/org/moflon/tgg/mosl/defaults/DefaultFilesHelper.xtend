@@ -1,6 +1,9 @@
 package org.moflon.tgg.mosl.defaults
 
 import org.moflon.core.utilities.MoflonUtil
+import org.moflon.tgg.mosl.tgg.AttrCondDef
+import java.util.Collection
+import language.csp.definition.TGGAttributeConstraintDefinition
 
 class DefaultFilesHelper {
 
@@ -198,6 +201,93 @@ class DefaultFilesHelper {
 			}
 		
 		}
+		'''
+	}
+	
+	static def generateUserRuntimeAttrCondFactory(Collection<String> userDefConstraints) {
+		return '''
+		package org.emoflon.ibex.tgg.operational.csp.constraints.factories;
+		
+		import java.util.Collection;
+		import java.util.HashMap;
+		import java.util.HashSet;
+		import java.util.Map;
+		import java.util.function.Supplier;
+		import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
+		
+		«FOR constraint : userDefConstraints»
+		import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«UserAttrCondHelper.getFileName(constraint)»;
+		«ENDFOR»
+		
+		public class UserDefinedRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
+		
+			private Collection<String> constraints; 
+			private Map<String, Supplier<RuntimeTGGAttributeConstraint>> creators;
+			
+			public UserDefinedRuntimeTGGAttrConstraintFactory() {
+				initialize();
+			}
+			
+			private void initialize() {
+				creators = new HashMap<>();
+				«FOR constraint : userDefConstraints»
+				creators.put("«constraint»", () -> new «UserAttrCondHelper.getFileName(constraint)»());
+				«ENDFOR»
+				
+				constraints = new HashSet<String>();
+				constraints.addAll(creators.keySet());
+			}
+			
+			@Override
+			public RuntimeTGGAttributeConstraint createRuntimeTGGAttributeConstraint(String name) {
+				Supplier<RuntimeTGGAttributeConstraint> creator = creators.get(name);
+				if(creator == null)
+					throw new RuntimeException("CSP not implemented");
+				return creator.get();
+			}
+			
+			@Override
+			public boolean containsRuntimeTGGAttributeConstraint(String name) {
+				return constraints.contains(name);
+			}
+		}
+		'''
+	}
+	
+	static def generateUserAttrCondDefStub(TGGAttributeConstraintDefinition tacd) {
+		return '''
+		package org.emoflon.ibex.tgg.operational.csp.constraints.custom;
+		
+		import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
+		import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
+		
+		public class «UserAttrCondHelper.getFileName(tacd.name)» extends RuntimeTGGAttributeConstraint
+		{
+		
+		   /**
+		    * Constraint «tacd.name»(«UserAttrCondHelper.getParameterString(tacd)»)
+		    * 
+		    * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
+		    */
+			@Override
+			public void solve() {
+				if (variables.size() != «tacd.parameterDefinitions.size»)
+					throw new RuntimeException("The CSP -«tacd.name.toUpperCase»- needs exactly «tacd.parameterDefinitions.size» variables");
+		
+				«FOR param : tacd.parameterDefinitions»
+				RuntimeTGGAttributeConstraintVariable v«tacd.parameterDefinitions.indexOf(param)» = variables.get(«tacd.parameterDefinitions.indexOf(param)»);
+				«ENDFOR»
+		      	String bindingStates = getBindingStates(«UserAttrCondHelper.getParameterString(tacd)»);
+		
+			  	switch(bindingStates) {
+			  		«FOR adornment : UserAttrCondHelper.getAdorments(tacd)»
+			  		case "«adornment»": 
+			  		«ENDFOR»
+		       		default:  throw new UnsupportedOperationException("This case in the constraint has not been implemented yet: " + bindingStates);
+		      	}
+		   	}
+		}
+		
 		'''
 	}
 }

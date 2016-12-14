@@ -29,5 +29,8 @@
 }
 
 #attributeConditions {
-	
+	#userDefined uppercase(a: EString, b: EString) {
+		#sync: [B B], [B F], [F B]
+		#gen:  [B B], [B F], [F B], [F F]
+	}
 }

@@ -17,6 +17,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.util.FromEdgeWrapperToEMFEdgeUtil;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
@@ -75,6 +77,7 @@ public abstract class TGGRuntimeUtil {
 
 	private RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
+	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 	protected ArrayList<Edge> createdEdges = new ArrayList<>();
 
 	private OperationStrategy strategy;
@@ -83,7 +86,7 @@ public abstract class TGGRuntimeUtil {
 
 	protected MatchContainer matchContainer;
 
-	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
+	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
 		this.srcR = srcR;
 		this.corrR = corrR;
@@ -91,6 +94,8 @@ public abstract class TGGRuntimeUtil {
 		this.protocolR = protocolR;
 		this.strategy = getStrategy();
 		this.matchContainer = new MatchContainer(tgg);
+		this.runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
+		this.runtimeConstraintProvider.registerFactory(userDefinedConstraintFactory);
 	}
 
 	abstract public OperationMode getMode();
@@ -184,7 +189,7 @@ public abstract class TGGRuntimeUtil {
 		if (!conformTypesOfGreenNodes(match, ruleName))
 			return false;
 
-		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(rule2constraintLibrary.get(ruleName), match, getMode());
+		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(rule2constraintLibrary.get(ruleName), match, getMode() == OperationMode.MODELGEN, runtimeConstraintProvider);
 		if(!cspContainer.solve())
 			return false;
 		

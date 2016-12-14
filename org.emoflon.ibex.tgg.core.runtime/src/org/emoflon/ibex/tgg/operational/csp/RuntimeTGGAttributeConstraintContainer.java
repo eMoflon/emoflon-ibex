@@ -11,8 +11,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.PredefRuntimeTGGAttrConstraintFactory;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
+import org.emoflon.ibex.tgg.operational.csp.solver.CodeGeneratorChain;
 import org.emoflon.ibex.tgg.operational.OperationMode;
 import org.emoflon.ibex.tgg.operational.csp.constraints.RuntimeTGGAttributeConstraintFactory;
+import org.emoflon.ibex.tgg.operational.csp.solver.SearchPlanAction;
+import org.emoflon.ibex.tgg.operational.csp.solver.SimpleCombiner;
 import org.emoflon.ibex.tgg.operational.util.String2EPrimitive;
 
 import language.basic.expressions.TGGAttributeExpression;
@@ -26,17 +31,20 @@ import language.csp.TGGAttributeVariable;
 public class RuntimeTGGAttributeConstraintContainer {
 
 	private List<RuntimeTGGAttributeConstraint> constraints;
-	private RuntimeTGGAttributeConstraintFactory constraintFactory;
+	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	protected Map<TGGParamValue, RuntimeTGGAttributeConstraintVariable> params2runtimeVariable = new HashMap<>();
 	
 	private IPatternMatch match;
 	private Collection<String> boundObjectNames;
 	
-	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IPatternMatch match, OperationMode mode) {
+	private boolean modelgen;
+	
+	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IPatternMatch match, boolean modelgen, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.parameterNames();
-
-		constraintFactory = new RuntimeTGGAttributeConstraintFactory();
+		this.modelgen = modelgen;
+		this.constraintProvider = runtimeConstraintProvider;
+		
 		extractRuntimeParameters(library);
 		extractRuntimeConstraints(library, mode);
 	}
@@ -63,8 +71,8 @@ public class RuntimeTGGAttributeConstraintContainer {
 	}
 	
 	private RuntimeTGGAttributeConstraint extractRuntimeConstraint(TGGAttributeConstraint c) {
-		RuntimeTGGAttributeConstraint runtimeConstraint = constraintFactory.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
-		runtimeConstraint.initialize(this, c);
+		RuntimeTGGAttributeConstraint runtimeConstraint = constraintProvider.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
+		runtimeConstraint.initialize(this, c, modelgen);
 		return runtimeConstraint;
 	}
 

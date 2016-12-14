@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
 import org.emoflon.ibex.tgg.operational.MODELGEN;
 import org.emoflon.ibex.tgg.operational.MODELGENStopCriterion;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -52,7 +53,7 @@ public class MODELGEN_BIG_App {
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
 		stop.setMaxSrcCount(500000);
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop);
+		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop, new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
 		Transformation trafo = new Transformation(rs, transformer);
 		
