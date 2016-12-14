@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.PredefRuntimeTGGAttrConstraintFactory;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.csp.solver.CodeGeneratorChain;
 import org.emoflon.ibex.tgg.operational.csp.solver.SearchPlanAction;
 import org.emoflon.ibex.tgg.operational.csp.solver.SimpleCombiner;
@@ -28,7 +29,7 @@ import language.csp.TGGAttributeVariable;
 public class RuntimeTGGAttributeConstraintContainer {
 
 	private List<RuntimeTGGAttributeConstraint> constraints;
-	private PredefRuntimeTGGAttrConstraintFactory constraintFactory;
+	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	protected Map<TGGParamValue, RuntimeTGGAttributeConstraintVariable> params2runtimeVariable = new HashMap<>();
 	
 	private IPatternMatch match;
@@ -36,12 +37,12 @@ public class RuntimeTGGAttributeConstraintContainer {
 	
 	private boolean modelgen;
 	
-	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IPatternMatch match, boolean modelgen) {
+	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IPatternMatch match, boolean modelgen, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.parameterNames();
 		this.modelgen = modelgen;
+		this.constraintProvider = runtimeConstraintProvider;
 		
-		constraintFactory = new PredefRuntimeTGGAttrConstraintFactory();
 		extractRuntimeParameters(library);
 		extractRuntimeConstraints(library);
 	}
@@ -51,7 +52,7 @@ public class RuntimeTGGAttributeConstraintContainer {
 	}
 	
 	private RuntimeTGGAttributeConstraint extractRuntimeConstraint(TGGAttributeConstraint c) {
-		RuntimeTGGAttributeConstraint runtimeConstraint = constraintFactory.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
+		RuntimeTGGAttributeConstraint runtimeConstraint = constraintProvider.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
 		runtimeConstraint.initialize(this, c, modelgen);
 		return runtimeConstraint;
 	}

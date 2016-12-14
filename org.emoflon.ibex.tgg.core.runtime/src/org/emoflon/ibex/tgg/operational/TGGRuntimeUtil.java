@@ -189,7 +189,7 @@ public abstract class TGGRuntimeUtil {
 		if (!conformTypesOfGreenNodes(match, ruleName))
 			return;
 
-		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(rule2constraintLibrary.get(ruleName), match, getMode() == OperationMode.MODELGEN);
+		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(rule2constraintLibrary.get(ruleName), match, getMode() == OperationMode.MODELGEN, runtimeConstraintProvider);
 		if(!cspContainer.solve())
 			return;
 		
