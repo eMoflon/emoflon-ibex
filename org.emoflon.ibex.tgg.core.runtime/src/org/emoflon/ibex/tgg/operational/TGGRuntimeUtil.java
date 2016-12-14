@@ -179,14 +179,14 @@ public abstract class TGGRuntimeUtil {
 		}
 	}
 
-	public void processOperationalRuleMatch(String ruleName, IPatternMatch match) {
+	public boolean processOperationalRuleMatch(String ruleName, IPatternMatch match) {
 
 		if (!conformTypesOfGreenNodes(match, ruleName))
-			return;
+			return false;
 
 		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(rule2constraintLibrary.get(ruleName), match, getMode());
 		if(!cspContainer.solve())
-			return;
+			return false;
 		
 		/*
 		 * this hash map complements the match to a comatch of an original
@@ -212,6 +212,8 @@ public abstract class TGGRuntimeUtil {
 		if (protocol()) {
 			prepareProtocol(ruleName, match, comatch);
 		}
+		
+		return true;
 	}
 
 	private void applyCSPValues(HashMap<String, EObject> comatch, Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
