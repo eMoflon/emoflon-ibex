@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
-import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
 public class Add extends RuntimeTGGAttributeConstraint {
 	/**
@@ -39,17 +38,17 @@ public class Add extends RuntimeTGGAttributeConstraint {
 		// modelgen implementations
 		else if (bindingStates.equals("FFB")) {
 			setSatisfied(true);
-			int newNumber = Generator.getNewUniqueNumber();
+			int newNumber = (int) generateValue(a.getType());
 			a.bindToValue(newNumber);
 			b.bindToValue(((Number) a.getValue()).doubleValue() + ((Number) c.getValue()).doubleValue());
 		} else if (bindingStates.equals("BFF")) {
 			setSatisfied(true);
-			long newNumber = Generator.getNewUniqueNumber();
+			int newNumber = (int) generateValue(b.getType());
 			b.bindToValue(newNumber);
 			c.bindToValue(((Number) a.getValue()).doubleValue() + ((Number) b.getValue()).doubleValue());
 		} else if (bindingStates.equals("FBF")) {
 			setSatisfied(true);
-			long newNumber = Generator.getNewUniqueNumber();
+			int newNumber = (int) generateValue(a.getType());
 			a.bindToValue(newNumber);
 			c.bindToValue(((Number) a.getValue()).doubleValue() + ((Number) b.getValue()).doubleValue());
 		} else {

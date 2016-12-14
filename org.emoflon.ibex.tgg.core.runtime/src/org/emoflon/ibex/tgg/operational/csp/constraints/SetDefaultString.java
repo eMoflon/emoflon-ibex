@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
-import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
 public class SetDefaultString extends RuntimeTGGAttributeConstraint {
 	@Override
@@ -25,8 +24,8 @@ public class SetDefaultString extends RuntimeTGGAttributeConstraint {
 
 		case "FF":
 
-			var_0.bindToValue(Generator.getNewRandomString(var_0.getType()));
-			var_1.bindToValue(Generator.getNewRandomString(var_1.getType()));
+			var_0.bindToValue(generateValue(var_0.getType()));
+			var_1.bindToValue(generateValue(var_1.getType()));
 			setSatisfied(true);
 			return;
 

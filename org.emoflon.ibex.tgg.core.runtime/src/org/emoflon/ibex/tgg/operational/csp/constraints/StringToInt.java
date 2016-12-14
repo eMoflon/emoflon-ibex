@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
-import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
 public class StringToInt extends RuntimeTGGAttributeConstraint {
 
@@ -34,7 +33,7 @@ public class StringToInt extends RuntimeTGGAttributeConstraint {
 			}
 			// modelgen implementations
 			else if (bindingStates.equals("FF")) {
-				int newNumber = Generator.getNewUniqueNumber();
+				int newNumber = (int) generateValue(number.getType());
 				number.bindToValue(newNumber);
 				string.bindToValue(number.getValue().toString());
 				setSatisfied(true);

@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
-import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
 public class AddPrefix extends RuntimeTGGAttributeConstraint {
 
@@ -49,18 +48,18 @@ public class AddPrefix extends RuntimeTGGAttributeConstraint {
 		}
 		// modelgen implementations
 		else if (bindingStates.equals("BFF")) {
-			String randomWord = Generator.getNewRandomString(word.getType());
+			String randomWord = (String) generateValue(word.getType());
 			word.bindToValue(randomWord);
 			result.bindToValue(prefix.getValue() + randomWord);
 			setSatisfied(true);
 		} else if (bindingStates.equals("FFF")) {
-			String randomWord = Generator.getNewRandomString(word.getType());
+			String randomWord = (String) generateValue(word.getType());
 			prefix.bindToValue("prefix");
 			word.bindToValue(randomWord);
 			result.bindToValue(prefix.getValue() + randomWord);
 			setSatisfied(true);
 		} else if (bindingStates.equals("FBF")) {
-			String randomWord = Generator.getNewRandomString(prefix.getType());
+			String randomWord = (String) generateValue(prefix.getType());
 			prefix.bindToValue(randomWord);
 			result.bindToValue(prefix.getValue().toString() + word.getValue());
 			setSatisfied(true);

@@ -3,9 +3,11 @@ package org.emoflon.ibex.tgg.operational.csp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.emoflon.ibex.tgg.operational.csp.helper.LoremIpsum;
 
 import language.basic.expressions.TGGAttributeExpression;
 import language.csp.TGGAttributeConstraint;
@@ -68,5 +70,26 @@ public abstract class RuntimeTGGAttributeConstraint {
 		this.constraint = constraint;
 	
 		variables = constraint.getParameters().stream().map(p -> cont.params2runtimeVariable.get(p)).collect(Collectors.toList());
+	}
+	
+	protected Object generateValue(String type) {
+		switch (type) {
+		case "java.lang.String":
+			return LoremIpsum.getInstance().randomWord();
+		case "java.lang.Integer":
+			return Integer.valueOf((int) (Math.random() * 1000.0));
+		case "java.lang.Long":
+			return Long.valueOf((long) (Math.random() * 1000));
+		case "java.lang.Double":
+			return Double.valueOf((Math.random() * 1000.0));
+		case "java.lang.Float":
+			return Float.valueOf((float) (Math.random() * 1000.0));
+		case "java.lang.Char":
+			return (char) ((new Random()).nextInt(26) + 'a');
+		case "java.lang.Boolean": 
+			return Math.random() > 0.5;
+		default:
+			throw new RuntimeException("The type " + type + " is not supported for random value generation in Eq-constraints");
+		}
 	}
 }

@@ -4,7 +4,6 @@ import java.util.regex.Pattern;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
-import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
 public class Concat extends RuntimeTGGAttributeConstraint {
 
@@ -70,8 +69,8 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 		// modelgen implementations
 		case "BFFF": {
 			setSatisfied(true);
-			String value1 = Generator.getNewRandomString(a.getType());
-			String value2 = Generator.getNewRandomString(b.getType());
+			String value1 = (String) generateValue(a.getType());
+			String value2 = (String) generateValue(b.getType());
 			a.bindToValue(value1);
 			b.bindToValue(value2);
 			c.bindToValue(value1 + separator.getValue() + value2);
@@ -80,14 +79,14 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 
 		case "BBFF": {
 			setSatisfied(true);
-			String value2 = Generator.getNewRandomString(c.getType());
+			String value2 = (String) generateValue(c.getType());
 			c.bindToValue((String) a.getValue() + separator.getValue() + value2);
 			return;
 		}
 
 		case "BFBF": {
 			setSatisfied(true);
-			String value1 = Generator.getNewRandomString(a.getType());
+			String value1 = (String) generateValue(a.getType());
 			a.bindToValue(value1);
 			c.bindToValue(value1 + separator.getValue() + b.getValue());
 			return;

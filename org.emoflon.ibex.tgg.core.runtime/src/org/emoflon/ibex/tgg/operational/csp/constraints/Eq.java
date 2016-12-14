@@ -2,9 +2,8 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
-import org.emoflon.ibex.tgg.operational.csp.constraints.helper.EqValueGenerator;
 
-public class Eq extends RuntimeTGGAttributeConstraint implements EqValueGenerator {
+public class Eq extends RuntimeTGGAttributeConstraint {
 
 	/**
 	 * Constraint eq(a,b)
