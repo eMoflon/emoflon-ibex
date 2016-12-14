@@ -5,7 +5,7 @@ import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariabl
 import org.emoflon.ibex.tgg.operational.csp.constraints.helper.EqValueGenerator;
 import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
-public class Eq_EChar extends RuntimeTGGAttributeConstraint implements EqValueGenerator
+public class Eq_Char extends RuntimeTGGAttributeConstraint implements EqValueGenerator
 {
 
    /**

@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.FWD_ILP;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -41,7 +42,7 @@ public class FWDApp {
 		
 		System.out.println("Starting FWD");
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil tggRuntime = new FWD_ILP(tgg, s, c, t, p);
+		TGGRuntimeUtil tggRuntime = new FWD_ILP(tgg, s, c, t, p, new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
 		Transformation transformation = new Transformation(rs, tggRuntime);						
 		transformation.execute();

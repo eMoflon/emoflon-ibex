@@ -16,6 +16,7 @@ import org.emoflon.ibex.tgg.operational.CC;
 import org.emoflon.ibex.tgg.operational.MODELGEN;
 import org.emoflon.ibex.tgg.operational.MODELGENStopCriterion;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -46,7 +47,7 @@ public class CCApp {
 
 		System.out.println("Starting consistency checking");
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil transformer = new CC(tgg, s, c, t, p);
+		TGGRuntimeUtil transformer = new CC(tgg, s, c, t, p, new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
 		Transformation trafo = new Transformation(rs, transformer);
 		

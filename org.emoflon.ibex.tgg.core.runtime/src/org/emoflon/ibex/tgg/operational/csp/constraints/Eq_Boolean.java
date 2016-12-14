@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
 import org.emoflon.ibex.tgg.operational.csp.constraints.helper.EqValueGenerator;
-import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
 public class Eq_Boolean extends RuntimeTGGAttributeConstraint implements EqValueGenerator
 {

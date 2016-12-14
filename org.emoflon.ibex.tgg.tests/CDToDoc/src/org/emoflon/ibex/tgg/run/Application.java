@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.operational.*;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -41,7 +42,7 @@ public class Application {
 		
 		// choose your operation type (FWD, BWD, CC, MODELGEN etc.)
 		
-		tggRuntime = new FWD(tgg, s, c, t, p);
+		tggRuntime = new FWD(tgg, s, c, t, p, new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
 		//tggRuntime = new FWD_ILP(tgg, s, c, t, p);
 		

@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.FWD;
 import org.emoflon.ibex.tgg.operational.FWD_ILP;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -40,7 +41,7 @@ public class FWDBatchApp {
 		
 		System.out.println("Starting FWD");
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil transformer = new FWD_ILP(tgg, s, c, t, p);
+		TGGRuntimeUtil transformer = new FWD_ILP(tgg, s, c, t, p, new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
 		Transformation trafo = new Transformation(rs, transformer);						
 		trafo.execute();

@@ -42,6 +42,5 @@
 }
 
 #attributeConditions {
-	eq_string(p1.name, myVar)
-	eq_string(p2.name, myVar)
+	uppercase(p1.name, p2.name)
 }

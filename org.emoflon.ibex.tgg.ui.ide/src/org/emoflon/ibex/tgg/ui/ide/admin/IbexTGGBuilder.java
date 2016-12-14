@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
@@ -45,6 +46,7 @@ import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 import language.TGG;
+import language.csp.definition.TGGAttributeConstraintDefinition;
 
 public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResourceDeltaVisitor {
 	private static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
@@ -119,11 +121,11 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 
 	private void generateFiles() {
-		generateAttrCondLibs();
 		generateEditorModel().ifPresent(editorModel -> 
 		generateInternalModels(editorModel).ifPresent(internalModel -> {
 		generatePatterns(internalModel);
 		generateXtendManipulationCode(internalModel);
+		generateAttrCondLibsAndStubs(internalModel);
 		generateApplicationStub(internalModel);}));
 	}
 
@@ -139,10 +141,13 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		createFile(RUN_FOLDER, Transformation, XTEND_EXTENSION, manipulationCode, true);
 	}
 
-	private void generateAttrCondLibs() {
+	private void generateAttrCondLibsAndStubs(TGGProject internalModel) {
+		Collection<TGGAttributeConstraintDefinition> userAttrCondDefs = internalModel.getTggModel().getAttributeConstraintDefinitionLibrary().getTggAttributeConstraintDefinitions().stream().filter(ac -> ac.isUserDefined()).collect(Collectors.toList());
+		Collection<String> userAttrCondNames = userAttrCondDefs.stream().map(udc -> udc.getName()).collect(Collectors.toList());
 		try {
 			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(getProject());
-			AttrCondDefLibraryProvider.userAttrCondDefLibrary(getProject());
+			AttrCondDefLibraryProvider.userAttrCondDefFactory(getProject(), userAttrCondNames);
+			AttrCondDefLibraryProvider.userAttrCondDefStubs(getProject(), userAttrCondDefs);
 		} catch (CoreException | IOException e) {
 			LogUtils.error(logger, e);
 		}

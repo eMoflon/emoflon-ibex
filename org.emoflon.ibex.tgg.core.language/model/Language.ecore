@@ -108,7 +108,8 @@
       </eClassifiers>
       <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinition"
           eSuperTypes="#//basic/TGGNamedElement">
-        <eStructuralFeatures xsi:type="ecore:EAttribute" name="userDefined" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="userDefined" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"
+            defaultValueLiteral="true"/>
         <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinitions"
             upperBound="-1" eType="#//csp/definition/TGGAttributeConstraintParameterDefinition"
             containment="true"/>

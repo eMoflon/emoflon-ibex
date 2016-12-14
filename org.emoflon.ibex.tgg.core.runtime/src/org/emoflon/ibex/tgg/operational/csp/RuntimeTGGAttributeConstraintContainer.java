@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
-import org.emoflon.ibex.tgg.operational.csp.constraints.RuntimeTGGAttributeConstraintFactory;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.PredefRuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.solver.CodeGeneratorChain;
 import org.emoflon.ibex.tgg.operational.csp.solver.SearchPlanAction;
 import org.emoflon.ibex.tgg.operational.csp.solver.SimpleCombiner;
@@ -28,7 +28,7 @@ import language.csp.TGGAttributeVariable;
 public class RuntimeTGGAttributeConstraintContainer {
 
 	private List<RuntimeTGGAttributeConstraint> constraints;
-	private RuntimeTGGAttributeConstraintFactory constraintFactory;
+	private PredefRuntimeTGGAttrConstraintFactory constraintFactory;
 	protected Map<TGGParamValue, RuntimeTGGAttributeConstraintVariable> params2runtimeVariable = new HashMap<>();
 	
 	private IPatternMatch match;
@@ -41,7 +41,7 @@ public class RuntimeTGGAttributeConstraintContainer {
 		this.boundObjectNames = match.parameterNames();
 		this.modelgen = modelgen;
 		
-		constraintFactory = new RuntimeTGGAttributeConstraintFactory();
+		constraintFactory = new PredefRuntimeTGGAttrConstraintFactory();
 		extractRuntimeParameters(library);
 		extractRuntimeConstraints(library);
 	}
