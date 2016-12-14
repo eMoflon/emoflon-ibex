@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.csp.generator;
+package org.emoflon.ibex.tgg.operational.csp.helper;
 
 import java.util.Random;
 
@@ -8,6 +8,18 @@ import java.util.Random;
  */
 public class LoremIpsum
 {
+	
+   private static LoremIpsum instance;
+   
+   private LoremIpsum(){
+	   
+   }
+   
+   public static LoremIpsum getInstance(){
+	   if(instance == null)
+		   instance = new LoremIpsum();
+	   return instance;
+   }
 
    /*
     * The Lorem Ipsum Standard Paragraph
@@ -33,10 +45,6 @@ public class LoremIpsum
    private final String _n = System.getProperty("line.separator");
 
    private Random random = new Random();
-
-   public LoremIpsum()
-   {
-   }
 
    /**
     * Get a random word

@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
-import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
 public class SetDefaultNumber extends RuntimeTGGAttributeConstraint {
 	@Override
@@ -26,7 +25,7 @@ public class SetDefaultNumber extends RuntimeTGGAttributeConstraint {
 
 		// modelgen implementations
 		case "FF":
-			int number = Generator.getNewUniqueNumber();
+			int number = (int) generateValue(var_0.getType());
 			var_0.bindToValue(number);
 			var_1.bindToValue(number);
 			setSatisfied(true);

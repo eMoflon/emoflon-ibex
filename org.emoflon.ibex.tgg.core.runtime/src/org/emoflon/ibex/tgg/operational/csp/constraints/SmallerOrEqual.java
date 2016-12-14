@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
-import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
 public class SmallerOrEqual extends RuntimeTGGAttributeConstraint {
 
@@ -27,7 +26,7 @@ public class SmallerOrEqual extends RuntimeTGGAttributeConstraint {
 		}
 		// modelgen implementations
 		else if (bindingStates.equals("FF")) {
-			int number = Generator.getNewUniqueNumber();
+			int number = (int) generateValue(a.getType());
 			a.bindToValue(number);
 			b.bindToValue(number);
 			setSatisfied(true);

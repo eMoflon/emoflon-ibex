@@ -7,8 +7,7 @@ public class Divide extends RuntimeTGGAttributeConstraint {
 
 	/**
 	 * Constraint divide(a,b,c) a / b = c
-	 * 
-	 * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
+
 	 */
 	@Override
 	public void solve() {

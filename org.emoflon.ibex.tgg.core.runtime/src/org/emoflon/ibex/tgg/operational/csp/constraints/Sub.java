@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
-import org.emoflon.ibex.tgg.operational.csp.generator.Generator;
 
 public class Sub extends RuntimeTGGAttributeConstraint
 {
@@ -10,7 +9,6 @@ public class Sub extends RuntimeTGGAttributeConstraint
    /**
     * Constraint sub(a,b,c) a - b = c
     * 
-    * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
     */
 	@Override
 	public void solve() {
@@ -46,27 +44,28 @@ public class Sub extends RuntimeTGGAttributeConstraint
       // modelgen implementations
       else if (bindingStates.equals("FFF"))
       {
-         int firstNumber = (int) Generator.getNewUniqueNumber();
-         int secNumber = (int) Generator.getNewUniqueNumber();
-         a.bindToValue(secNumber);
-         b.bindToValue(firstNumber);
+         int firstNumber = (int) generateValue(a.getType());
+         int secNumber = (int) generateValue(b.getType());
+
+         a.bindToValue(firstNumber);
+         b.bindToValue(secNumber);
          c.bindToValue(firstNumber - secNumber);
          setSatisfied(true);
       } else if (bindingStates.equals("BFF"))
       {
-         long firstNumber = Generator.getNewUniqueNumber();
+         int firstNumber = (int) generateValue(b.getType());
          b.bindToValue(firstNumber);
-         c.bindToValue(firstNumber - (long) a.getValue());
+         c.bindToValue(firstNumber - (int) a.getValue());
          setSatisfied(true);
       } else if (bindingStates.equals("FBF"))
       {
-         long firstNumber = Generator.getNewUniqueNumber();
+         long firstNumber = (int) generateValue(a.getType());
          a.bindToValue(firstNumber);
-         c.bindToValue(firstNumber - (long) b.getValue());
+         c.bindToValue(firstNumber - (int) b.getValue());
          setSatisfied(true);
       } else if (bindingStates.equals("FFB"))
       {
-         long firstNumber = Generator.getNewUniqueNumber();
+         long firstNumber = (int) generateValue(b.getType());
          b.bindToValue(firstNumber);
          a.bindToValue((long) c.getValue() + (long) b.getValue());
          setSatisfied(true);

@@ -8,7 +8,6 @@ public class Max extends RuntimeTGGAttributeConstraint {
 	/**
 	 * Constraint max(a,b,c) c = max(a,b)
 	 * 
-	 * @see TGGLanguage.csp.impl.ConstraintImpl#solve()
 	 */
 	@Override
 	public void solve() {
