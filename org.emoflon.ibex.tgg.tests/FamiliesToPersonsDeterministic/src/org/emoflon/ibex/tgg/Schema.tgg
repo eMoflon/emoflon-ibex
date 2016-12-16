@@ -1,6 +1,6 @@
 // Add imports here
-#import "platform:/resource/Families/model/Families.ecore"
-#import "platform:/resource/Persons/model/Persons.ecore"
+#import "platform:/plugin/Families/model/Families.ecore"
+#import "platform:/plugin/Persons/model/Persons.ecore"
 
 #schema FamiliesToPersonsDeterministic
 	
