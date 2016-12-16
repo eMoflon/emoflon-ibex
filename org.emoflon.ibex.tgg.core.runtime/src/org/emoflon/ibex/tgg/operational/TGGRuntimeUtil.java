@@ -1,9 +1,7 @@
 package org.emoflon.ibex.tgg.operational;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
@@ -12,6 +10,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -19,9 +18,12 @@ import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.tgg.operational.util.FromEdgeWrapperToEMFEdgeUtil;
+import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
+import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
+import gnu.trove.set.hash.TCustomHashSet;
+import gnu.trove.set.hash.THashSet;
 import language.BindingType;
 import language.DomainType;
 import language.TGG;
@@ -32,7 +34,6 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.basic.expressions.TGGAttributeExpression;
 import language.csp.TGGAttributeConstraintLibrary;
-import runtime.Edge;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 
@@ -59,16 +60,18 @@ public abstract class TGGRuntimeUtil {
 	 * black/green & src/corr/trg in a rule
 	 */
 	protected HashMap<String, TGGAttributeConstraintLibrary> rule2constraintLibrary = new LinkedHashMap<>();
-	
+
 	protected HashMap<String, Collection<TGGRuleNode>> greenSrcNodes = new LinkedHashMap<>();
 	protected HashMap<String, Collection<TGGRuleNode>> greenTrgNodes = new LinkedHashMap<>();
 	protected HashMap<String, Collection<TGGRuleEdge>> greenSrcEdges = new LinkedHashMap<>();
 	protected HashMap<String, Collection<TGGRuleEdge>> greenTrgEdges = new LinkedHashMap<>();
 	protected HashMap<String, Collection<TGGRuleCorr>> greenCorrNodes = new LinkedHashMap<>();
 
-	protected HashMap<String, Collection<TGGRuleElement>> blackSrcElements = new LinkedHashMap<>();
-	protected HashMap<String, Collection<TGGRuleElement>> blackCorrElements = new LinkedHashMap<>();
-	protected HashMap<String, Collection<TGGRuleElement>> blackTrgElements = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleNode>> blackSrcNodes = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleNode>> blackTrgNodes = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleEdge>> blackSrcEdges = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleEdge>> blackTrgEdges = new LinkedHashMap<>();
+	protected HashMap<String, Collection<TGGRuleNode>> blackCorrNodes = new LinkedHashMap<>();
 
 	protected Resource srcR;
 	protected Resource trgR;
@@ -78,15 +81,16 @@ public abstract class TGGRuntimeUtil {
 	private RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
-	protected ArrayList<Edge> createdEdges = new ArrayList<>();
 
 	private OperationStrategy strategy;
 
-	protected HashSet<IPatternMatch> matchesForMissingEdgeWrappers = new HashSet<>();
-
 	protected MatchContainer matchContainer;
 
-	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
+	protected THashSet<EObject> markedNodes = new THashSet<>();
+	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
+
+	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR,
+			RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
 		this.srcR = srcR;
 		this.corrR = corrR;
@@ -101,22 +105,6 @@ public abstract class TGGRuntimeUtil {
 	abstract public OperationMode getMode();
 
 	abstract public OperationStrategy getStrategy();
-
-	// methods for reacting to obsolete or missing edge wrapper matches
-	public void deleteEdge(IPatternMatch match) {
-		Edge e = (Edge) match.get("e");
-		EcoreUtil.delete(e);
-		e.setSrc(null);
-		e.setTrg(null);
-	}
-
-	public void addEdgeWrapperMatch(IPatternMatch match) {
-		matchesForMissingEdgeWrappers.add(match);
-	}
-
-	public void removeEdgeWrapperMatch(IPatternMatch match) {
-		matchesForMissingEdgeWrappers.remove(match);
-	}
 
 	// methods for reacting to occurring or broken matches of operational rules
 	public void addOperationalRuleMatch(String ruleName, IPatternMatch match) {
@@ -136,43 +124,47 @@ public abstract class TGGRuntimeUtil {
 		EcoreUtil.delete(ra);
 
 		if (manipulateSrc()) {
-			ManipulationUtil.deleteElements(ra.getCreatedSrc());
+			ManipulationUtil.deleteNodes(ra.getCreatedSrc());
 		}
 		if (manipulateTrg()) {
-			ManipulationUtil.deleteElements(ra.getCreatedTrg());
+			ManipulationUtil.deleteNodes(ra.getCreatedTrg());
 		}
-		ManipulationUtil.deleteElements(ra.getCreatedCorr());
+		ManipulationUtil.deleteNodes(ra.getCreatedCorr());
+	}
+
+	public void registerRuleApplication(IPatternMatch match) {
+		registerProtocol((TGGRuleApplication) match.get("eMoflon_ProtocolNode"), match);
+	}
+
+	private void registerProtocol(TGGRuleApplication ra, IPatternMatch match) {
+		if (markingSrc()) {
+			registerMarkedEdges(greenSrcEdges.get(ra.getName()), match);
+			registerMarkedNodes(greenSrcNodes.get(ra.getName()), match);
+		}
+		if (markingTrg()) {
+			registerMarkedEdges(greenTrgEdges.get(ra.getName()), match);
+			registerMarkedNodes(greenTrgNodes.get(ra.getName()), match);
+		}
+	}
+
+	private void registerMarkedNodes(Collection<TGGRuleNode> specificationNodes, IPatternMatch match) {
+		specificationNodes.forEach(gn -> markedNodes.add((EObject) match.get(gn.getName())));
+	}
+
+	private void registerMarkedEdges(Collection<TGGRuleEdge> specificationEdges, IPatternMatch match) {
+		specificationEdges.forEach(ge -> {
+			EObject src = (EObject) match.get(ge.getSrcNode().getName());
+			EObject trg = (EObject) match.get(ge.getTrgNode().getName());
+			EReference ref = ge.getType();
+			markedEdges.add(new RuntimeEdge(src, trg, ref));
+		});
 	}
 
 	// main method and its helpers processing pending matches for missing edge
 	// wrappers and applicable operational rules
 	public void run() {
-		processMatchesForMissingEdgeWrappers();
 		processOperationalRuleMatches();
 		finalize();
-	}
-
-	protected void processMatchesForMissingEdgeWrappers() {
-		// the set matchesForMissingEdgeWrappers is copied to an array here to
-		// avoid ConcurrentModificationException,
-		// because each created edge wrapper destroys its match for missing edge
-		// wrapper
-		for (IPatternMatch match : matchesForMissingEdgeWrappers
-				.toArray(new IPatternMatch[matchesForMissingEdgeWrappers.size()])) {
-			this.processMatchForMissingEdgeWrapper(match);
-		}
-	}
-
-	private void processMatchForMissingEdgeWrapper(IPatternMatch match) {
-
-		Edge newEdge = (Edge) EcoreUtil.create(runtimePackage.getEdge());
-		protocolR.getContents().add(newEdge);
-		newEdge.setSrc((EObject) match.get("s"));
-		newEdge.setTrg((EObject) match.get("t"));
-
-		String[] splitPatternName = match.patternName().split("_eMoflonEdgeWrapper_");
-		String edgeName = splitPatternName[splitPatternName.length - 1];
-		newEdge.setName(edgeName);
 	}
 
 	protected void processOperationalRuleMatches() {
@@ -186,58 +178,143 @@ public abstract class TGGRuntimeUtil {
 
 	public boolean processOperationalRuleMatch(String ruleName, IPatternMatch match) {
 
+		if (someElementsAlreadyProcessed(ruleName, match))
+			return false;
+
+		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(
+				rule2constraintLibrary.get(ruleName), match, getMode(), runtimeConstraintProvider);
+		if (!cspContainer.solve())
+			return false;
+
 		if (!conformTypesOfGreenNodes(match, ruleName))
 			return false;
 
-		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(rule2constraintLibrary.get(ruleName), match, getMode(), runtimeConstraintProvider);
-		if(!cspContainer.solve())
+		//TODO: what if some context elements are not processed?
+		//the match is then "pending" (and waiting for its context)
+		if (!allContextElementsalreadyProcessed(match, ruleName))
 			return false;
-		
+
 		/*
 		 * this hash map complements the match to a comatch of an original
 		 * triple rule application
 		 */
 		HashMap<String, EObject> comatch = new HashMap<>();
-		
+
 		if (manipulateSrc()) {
 			ManipulationUtil.createNonCorrNodes(match, comatch, greenSrcNodes.get(ruleName), srcR);
-			createdEdges.addAll(ManipulationUtil.createEdges(match, comatch, greenSrcEdges.get(ruleName), protocolR));
+			ManipulationUtil.createEdges(match, comatch, greenSrcEdges.get(ruleName), protocolR);
 		}
 
 		if (manipulateTrg()) {
 			ManipulationUtil.createNonCorrNodes(match, comatch, greenTrgNodes.get(ruleName), trgR);
-			createdEdges.addAll(ManipulationUtil.createEdges(match, comatch, greenTrgEdges.get(ruleName), protocolR));
+			ManipulationUtil.createEdges(match, comatch, greenTrgEdges.get(ruleName), protocolR);
 		}
-		
+
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
 		applyCSPValues(comatch, cspValues);
-		
+
 		ManipulationUtil.createCorrs(match, comatch, greenCorrNodes.get(ruleName), corrR);
 
 		if (protocol()) {
 			prepareProtocol(ruleName, match, comatch);
 		}
+
+		return true;
+	}
+
+	private boolean allContextElementsalreadyProcessed(IPatternMatch match, String ruleName) {
+
+		if(markingSrc()){
+			if(!allNodesAlreadyProcessed(blackSrcNodes.get(ruleName), match))
+				return false;
+			if(!allEdgesAlreadyProcessed(blackSrcEdges.get(ruleName), match))
+				return false;
+		}
+		
+		if(markingTrg()){
+			if(!allNodesAlreadyProcessed(blackTrgNodes.get(ruleName), match))
+				return false;
+			if(!allEdgesAlreadyProcessed(blackTrgEdges.get(ruleName), match))
+				return false;
+		}
 		
 		return true;
 	}
 
-	private void applyCSPValues(HashMap<String, EObject> comatch, Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
-		for(Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
+	protected boolean someElementsAlreadyProcessed(String ruleName, IPatternMatch match) {
+
+		if (markingSrc()) {
+			if (someNodesAlreadyProcessed(greenSrcNodes.get(ruleName), match))
+				return true;
+			if (someEdgesAlreadyProcessed(greenSrcEdges.get(ruleName), match))
+				return true;
+		}
+
+		if (markingTrg()) {
+			if (someNodesAlreadyProcessed(greenTrgNodes.get(ruleName), match))
+				return true;
+			if (someEdgesAlreadyProcessed(greenTrgEdges.get(ruleName), match))
+				return true;
+		}
+		return false;
+	}
+
+	private boolean someNodesAlreadyProcessed(Collection<TGGRuleNode> specificationNodes, IPatternMatch match) {
+		for (TGGRuleNode node : specificationNodes)
+			if (markedNodes.contains(match.get(node.getName())))
+				return true;
+
+		return false;
+	}
+	
+	private boolean someEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IPatternMatch match) {
+		for (TGGRuleEdge edge : specificationEdges) {
+			EObject src = (EObject) match.get(edge.getSrcNode().getName());
+			EObject trg = (EObject) match.get(edge.getTrgNode().getName());
+			EReference ref = edge.getType();
+			if (markedEdges.contains(new RuntimeEdge(src, trg, ref)))
+				return true;
+		}
+		return false;
+	}
+	
+	private boolean allNodesAlreadyProcessed(Collection<TGGRuleNode> specificationNodes, IPatternMatch match) {
+		for (TGGRuleNode node : specificationNodes)
+			if (!markedNodes.contains(match.get(node.getName())))
+				return false;
+
+		return true;
+	}
+
+	private boolean allEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IPatternMatch match) {
+		for (TGGRuleEdge edge : specificationEdges) {
+			EObject src = (EObject) match.get(edge.getSrcNode().getName());
+			EObject trg = (EObject) match.get(edge.getTrgNode().getName());
+			EReference ref = edge.getType();
+			if (!markedEdges.contains(new RuntimeEdge(src, trg, ref)))
+				return false;
+		}
+		return true;
+	}
+
+	private void applyCSPValues(HashMap<String, EObject> comatch,
+			Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
+		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
 			EObject entry = comatch.get(cspVal.getLeft().getObjectVar().getName());
-			if(entry != null) {
+			if (entry != null) {
 				entry.eSet(cspVal.getLeft().getAttribute(), cspVal.getRight());
 			}
 		}
 	}
 
 	private boolean conformTypesOfGreenNodes(IPatternMatch match, String ruleName) {
-		if (!manipulateSrc()) {
+		if (markingSrc()) {
 			for (TGGRuleNode gsn : greenSrcNodes.get(ruleName)) {
 				if (gsn.getType() != ((EObject) match.get(gsn.getName())).eClass())
 					return false;
 			}
 		}
-		if (!manipulateTrg()) {
+		if (markingTrg()) {
 			for (TGGRuleNode gtn : greenTrgNodes.get(ruleName)) {
 				if (gtn.getType() != ((EObject) match.get(gtn.getName())).eClass())
 					return false;
@@ -247,7 +324,6 @@ public abstract class TGGRuntimeUtil {
 	}
 
 	protected void finalize() {
-		FromEdgeWrapperToEMFEdgeUtil.applyEdges(createdEdges);
 	}
 
 	private TGGRuleApplication prepareProtocol(String ruleName, IPatternMatch match,
@@ -259,23 +335,16 @@ public abstract class TGGRuntimeUtil {
 		protocol.setName(ruleName);
 		protocol.setFinal(strategy == OperationStrategy.PROTOCOL_NACS);
 
-		fillProtocolInfo(blackSrcElements.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_ContextSrc(),
+		fillProtocolInfo(blackSrcNodes.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_ContextSrc(),
 				createdElements, match);
-		fillProtocolInfo(blackTrgElements.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_ContextTrg(),
+		fillProtocolInfo(blackTrgNodes.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_ContextTrg(),
 				createdElements, match);
-		fillProtocolInfo(blackCorrElements.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_ContextCorr(),
+		fillProtocolInfo(blackCorrNodes.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_ContextCorr(),
 				createdElements, match);
-
 		fillProtocolInfo(greenSrcNodes.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedSrc(),
 				createdElements, match);
-		fillProtocolInfo(greenSrcEdges.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedSrc(),
-				createdElements, match);
-
 		fillProtocolInfo(greenTrgNodes.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedTrg(),
 				createdElements, match);
-		fillProtocolInfo(greenTrgEdges.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedTrg(),
-				createdElements, match);
-
 		fillProtocolInfo(greenCorrNodes.get(ruleName), protocol, runtimePackage.getTGGRuleApplication_CreatedCorr(),
 				createdElements, match);
 		return protocol;
@@ -293,7 +362,7 @@ public abstract class TGGRuntimeUtil {
 	private void prepareRuleInfo(TGGRule r) {
 		String ruleName = r.getName();
 		rule2constraintLibrary.put(r.getName(), r.getAttributeConditionLibrary());
-		
+
 		greenSrcNodes.put(ruleName,
 				r.getNodes().stream()
 						.filter(n -> n.getBindingType() == BindingType.CREATE && n.getDomainType() == DomainType.SRC)
@@ -317,17 +386,27 @@ public abstract class TGGRuntimeUtil {
 						.filter(e -> e.getBindingType() == BindingType.CREATE && e.getDomainType() == DomainType.TRG)
 						.collect(Collectors.toCollection(LinkedHashSet::new)));
 
-		blackSrcElements.put(ruleName,
-				Stream.concat(r.getNodes().stream(), r.getEdges().stream())
+		blackSrcNodes.put(ruleName,
+				r.getNodes().stream()
 						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.SRC)
 						.collect(Collectors.toCollection(LinkedHashSet::new)));
 
-		blackTrgElements.put(ruleName,
-				Stream.concat(r.getNodes().stream(), r.getEdges().stream())
+		blackSrcEdges.put(ruleName,
+				r.getEdges().stream()
+						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.SRC)
+						.collect(Collectors.toCollection(LinkedHashSet::new)));
+
+		blackTrgNodes.put(ruleName,
+				r.getNodes().stream()
 						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.TRG)
 						.collect(Collectors.toCollection(LinkedHashSet::new)));
 
-		blackCorrElements.put(ruleName,
+		blackTrgEdges.put(ruleName,
+				r.getEdges().stream()
+						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.TRG)
+						.collect(Collectors.toCollection(LinkedHashSet::new)));
+
+		blackCorrNodes.put(ruleName,
 				r.getNodes().stream()
 						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.CORR)
 						.collect(Collectors.toCollection(LinkedHashSet::new)));
@@ -338,12 +417,20 @@ public abstract class TGGRuntimeUtil {
 		return true;
 	}
 
+	protected boolean manipulateSrc() {
+		return getMode() == OperationMode.BWD || getMode() == OperationMode.MODELGEN;
+	}
+
 	protected boolean manipulateTrg() {
 		return getMode() == OperationMode.FWD || getMode() == OperationMode.MODELGEN;
 	}
 
-	protected boolean manipulateSrc() {
-		return getMode() == OperationMode.BWD || getMode() == OperationMode.MODELGEN;
+	protected boolean markingSrc() {
+		return !manipulateSrc();
+	}
+	
+	protected boolean markingTrg() {
+		return !manipulateTrg();
 	}
 
 }

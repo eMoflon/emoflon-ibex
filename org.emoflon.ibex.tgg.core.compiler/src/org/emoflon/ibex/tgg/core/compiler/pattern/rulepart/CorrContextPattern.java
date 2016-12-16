@@ -42,7 +42,7 @@ public class CorrContextPattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return n.getDomainType() == DomainType.CORR;
+		return isRelevantForSignature(n) && n.getDomainType() == DomainType.CORR;
 	}
 
 	@Override

@@ -5,9 +5,6 @@ import language.TGGRuleElement
 import org.eclipse.emf.ecore.EReference
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.ILPAllMarkedPattern
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.ILPPattern
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.protocolnacs.ProtocolNACsPattern
 import runtime.RuntimePackage
 import language.TGGRuleNode
 import language.TGGRuleEdge
@@ -23,34 +20,10 @@ class PatternTemplate {
 	
 	def generateCommonPatterns(Collection<EReference> edgeTypes) {
 		
-		return '''
-		pattern marked(o: EObject){
-			TGGRuleApplication.createdSrc(p,o);
-			TGGRuleApplication.final(p, true);
-		} or {
-			TGGRuleApplication.createdTrg(p,o);
-			TGGRuleApplication.final(p, true);
-		}
-		
+		return '''	
 		«FOR et : edgeTypes»
-		pattern «EdgePatternNaming.getEMFEdge(et)»(s:«importAliases.get(et.EContainingClass.EPackage)»::«et.EContainingClass.name», t:«importAliases.get(et.EType.EPackage)»::«et.EType.name»){
+		pattern «EdgePatternNaming.getEdgePatternNaming(et)»(s:«importAliases.get(et.EContainingClass.EPackage)»::«et.EContainingClass.name», t:«importAliases.get(et.EType.EPackage)»::«et.EType.name»){
 			«et.EContainingClass.name».«et.name»(s,t);
-		}
-		
-		pattern «EdgePatternNaming.getEdgeWrapper(et)»(s:«importAliases.get(et.EContainingClass.EPackage)»::«et.EContainingClass.name», t:«importAliases.get(et.EType.EPackage)»::«et.EType.name», e:Edge){
-			Edge.src(e,s);
-			Edge.trg(e,t);
-			Edge.name(e, "«et.name»");
-		}
-		
-		pattern «EdgePatternNaming.getMissingEdgeWrapper(et)»(s:«importAliases.get(et.EContainingClass.EPackage)»::«et.EContainingClass.name», t:«importAliases.get(et.EType.EPackage)»::«et.EType.name»){
-			find «EdgePatternNaming.getEMFEdge(et)»(s,t);
-			neg find «EdgePatternNaming.getEdgeWrapper(et)»(s,t,_);
-		}
-		
-		pattern «EdgePatternNaming.getExistingEdgeWrapper(et)»(s:«importAliases.get(et.EContainingClass.EPackage)»::«et.EContainingClass.name», t:«importAliases.get(et.EType.EPackage)»::«et.EType.name», e:Edge){
-			find «EdgePatternNaming.getEMFEdge(et)»(s,t);
-			find «EdgePatternNaming.getEdgeWrapper(et)»(s,t,e);
 		}
 		
 		«ENDFOR»
@@ -85,7 +58,7 @@ class PatternTemplate {
 			«injectivityCheckPair.left.name» != «injectivityCheckPair.right.name»;
 			«ENDFOR»
 			«FOR edge : pattern.getBodyEdges»
-			find «EdgePatternNaming.getEdgeWrapper(edge.type)»(«edge.srcNode.name», «edge.trgNode.name», «edge.name»);
+			find «EdgePatternNaming.getEdgePatternNaming(edge.type)»(«edge.srcNode.name», «edge.trgNode.name»);
 			«ENDFOR»			
 			«FOR node : pattern.bodySrcTrgNodes»
 			«node.type.name»(«node.name»);
@@ -118,25 +91,13 @@ class PatternTemplate {
 		'''
 	}
 	
-	def generateProtocolNACsPattern(ProtocolNACsPattern pattern) {
+	
+	def generateConsistencyPattern(ConsistencyPattern pattern) {
 		return '''
 		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
 			«FOR pi : pattern.positiveInvocations»
 			find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
 			«ENDFOR»
-			«FOR e : pattern.markingNACs»
-			neg find marked(«e.name»);
-			«ENDFOR»
-			«FOR e : pattern.marked»
-			find marked(«e.name»);
-			«ENDFOR»
-		}
-		'''
-	}
-	
-	def generateConsistencyPattern(ConsistencyPattern pattern) {
-		return '''
-		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
 			TGGRuleApplication.final(«pattern.protocolNodeName», true);
 			TGGRuleApplication.name(«pattern.protocolNodeName», "«pattern.ruleName»");
 			«FOR e : pattern.contextSrc»
@@ -161,35 +122,9 @@ class PatternTemplate {
 		'''
 	}
 	
-	def generateILPAllMarkedPattern(ILPAllMarkedPattern pattern){
-		return '''
-		pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
-		    «FOR e : pattern.signatureElements»
-		    find marked(«e.name»);
-		    «ENDFOR»
-		    «FOR pi : pattern.positiveInvocations»
-		    find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
-		    «ENDFOR»
-		    check(true);
-		}
-		'''
-	}
-	
-	def generateILPPattern(ILPPattern pattern){
-		return '''
-	    pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
-	    	«FOR pi : pattern.positiveInvocations»
-	    		find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
-	    	«ENDFOR»
-	    	«FOR ni : pattern.negativeInvocations»
-	    		neg find «ni.getName»(«FOR e : ni.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
-	    	«ENDFOR»	
-	    }		
-		'''
-	}
 	
 	def typeOf(TGGRuleElement e){
-		return'''«IF e instanceof TGGRuleEdge»«importAliases.get(RuntimePackage.eINSTANCE)»::Edge«ELSE»«importAliases.get((e as TGGRuleNode).type.EPackage)»::«(e as TGGRuleNode).type.name»«ENDIF»'''
+		return'''«importAliases.get((e as TGGRuleNode).type.EPackage)»::«(e as TGGRuleNode).type.name»'''
 	}
 	
 }
