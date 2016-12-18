@@ -45,8 +45,8 @@ public abstract class TGGRuntimeUtil_ILP extends TGGRuntimeUtil {
 	private int idCounter = 1;
 	private int clauseName = 0;
 
-	public TGGRuntimeUtil_ILP(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
-		super(tgg, srcR, corrR, trgR, protocolR, userDefinedConstraintFactory);
+	public TGGRuntimeUtil_ILP(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
+		super(tgg, srcR, corrR, trgR, protocolR);
 
 	}
 

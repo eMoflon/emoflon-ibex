@@ -16,8 +16,8 @@ import runtime.TGGRuleApplication;
 
 public class BWD_ILP extends TGGRuntimeUtil_ILP {
 
-	public BWD_ILP(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
-		super(tgg, srcR, corrR, trgR, protocolR, userDefinedConstraintFactory);
+	public BWD_ILP(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
+		super(tgg, srcR, corrR, trgR, protocolR);
 	}
 
 	@Override

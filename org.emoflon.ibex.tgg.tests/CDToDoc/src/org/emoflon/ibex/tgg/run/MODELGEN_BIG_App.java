@@ -53,8 +53,9 @@ public class MODELGEN_BIG_App {
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
 		stop.setMaxSrcCount(500000);
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop, new UserDefinedRuntimeTGGAttrConstraintFactory());
-		
+		TGGRuntimeUtil transformer = new MODELGEN(tgg, s, c, t, p, stop);
+		transformer.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
+
 		Transformation trafo = new Transformation(rs, transformer);
 		
 		trafo.execute();

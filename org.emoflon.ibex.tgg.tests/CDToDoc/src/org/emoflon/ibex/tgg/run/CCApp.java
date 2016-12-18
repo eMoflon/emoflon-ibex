@@ -62,7 +62,9 @@ public class CCApp {
 
 		System.out.println("Starting consistency checking");
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil transformer = new CC(tgg, s, c, t, p, new UserDefinedRuntimeTGGAttrConstraintFactory());
+		TGGRuntimeUtil transformer = new CC(tgg, s, c, t, p);
+		transformer.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
+
 		
 		Transformation trafo = new Transformation(rs, transformer);
 		

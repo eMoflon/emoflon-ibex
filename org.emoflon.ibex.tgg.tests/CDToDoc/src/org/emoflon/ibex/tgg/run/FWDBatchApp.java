@@ -37,12 +37,12 @@ public class FWDBatchApp {
 		
 		// load the resources containing your input 
 		s.load(null);
-
 		
 		System.out.println("Starting FWD");
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil transformer = new FWD_ILP(tgg, s, c, t, p, new UserDefinedRuntimeTGGAttrConstraintFactory());
-		
+		TGGRuntimeUtil transformer = new FWD_ILP(tgg, s, c, t, p);
+		transformer.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
+
 		Transformation trafo = new Transformation(rs, transformer);						
 		trafo.execute();
 		

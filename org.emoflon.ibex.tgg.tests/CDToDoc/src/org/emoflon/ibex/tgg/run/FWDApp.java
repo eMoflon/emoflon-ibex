@@ -1,16 +1,12 @@
 package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.FWD_ILP;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
@@ -42,13 +38,11 @@ public class FWDApp {
 		
 		System.out.println("Starting FWD");
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil tggRuntime = new FWD_ILP(tgg, s, c, t, p, new UserDefinedRuntimeTGGAttrConstraintFactory());
+		TGGRuntimeUtil tggRuntime = new FWD_ILP(tgg, s, c, t, p);
+		tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
 		Transformation transformation = new Transformation(rs, tggRuntime);						
 		transformation.execute();
-		
-//		while(!s.getContents().isEmpty())
-//			EcoreUtil.delete(s.getContents().get(0));
 		
 		tggRuntime.run();
 		

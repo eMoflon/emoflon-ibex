@@ -7,8 +7,8 @@ import language.TGG;
 
 public class FWD extends TGGRuntimeUtil {
 
-	public FWD(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
-		super(tgg, srcR, corrR, trgR, protocolR, userDefinedConstraintFactory);
+	public FWD(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
+		super(tgg, srcR, corrR, trgR, protocolR);
 	}
 
 	@Override

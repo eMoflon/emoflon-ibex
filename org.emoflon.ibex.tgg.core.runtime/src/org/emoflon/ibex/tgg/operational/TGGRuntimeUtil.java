@@ -86,7 +86,7 @@ public abstract class TGGRuntimeUtil {
 
 	protected MatchContainer matchContainer;
 
-	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
+	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
 		this.srcR = srcR;
 		this.corrR = corrR;
@@ -95,7 +95,6 @@ public abstract class TGGRuntimeUtil {
 		this.strategy = getStrategy();
 		this.matchContainer = new MatchContainer(tgg);
 		this.runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
-		this.runtimeConstraintProvider.registerFactory(userDefinedConstraintFactory);
 	}
 
 	abstract public OperationMode getMode();
@@ -142,6 +141,10 @@ public abstract class TGGRuntimeUtil {
 			ManipulationUtil.deleteElements(ra.getCreatedTrg());
 		}
 		ManipulationUtil.deleteElements(ra.getCreatedCorr());
+	}
+	
+	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
+		return runtimeConstraintProvider;
 	}
 
 	// main method and its helpers processing pending matches for missing edge
