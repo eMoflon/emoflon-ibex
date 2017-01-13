@@ -80,7 +80,7 @@ public abstract class TGGRuntimeUtil {
 
 	private RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
-	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
+	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
 
 	private OperationStrategy strategy;
 
@@ -89,8 +89,7 @@ public abstract class TGGRuntimeUtil {
 	protected THashSet<EObject> markedNodes = new THashSet<>();
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 
-	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR,
-			RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
+	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
 		this.srcR = srcR;
 		this.corrR = corrR;
@@ -98,8 +97,6 @@ public abstract class TGGRuntimeUtil {
 		this.protocolR = protocolR;
 		this.strategy = getStrategy();
 		this.matchContainer = new MatchContainer(tgg);
-		this.runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
-		this.runtimeConstraintProvider.registerFactory(userDefinedConstraintFactory);
 	}
 
 	abstract public OperationMode getMode();
@@ -181,6 +178,10 @@ public abstract class TGGRuntimeUtil {
 		EReference ref = specificationEdge.getType();
 		RuntimeEdge edge = new RuntimeEdge(src, trg, ref);
 		return edge;
+	}
+	
+	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
+		return runtimeConstraintProvider;
 	}
 
 	// main method and its helpers processing pending matches for missing edge

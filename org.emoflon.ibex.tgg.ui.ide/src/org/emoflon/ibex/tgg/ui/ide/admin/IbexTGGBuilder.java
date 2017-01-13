@@ -40,6 +40,8 @@ import org.emoflon.ibex.tgg.ui.ide.transformation.TGGProject;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.WorkspaceHelper;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
+import org.moflon.tgg.mosl.defaults.RunFileHelper;
+import org.moflon.tgg.mosl.defaults.RunFileType;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.Rule;
@@ -126,7 +128,16 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		generatePatterns(internalModel);
 		generateXtendManipulationCode(internalModel);
 		generateAttrCondLibsAndStubs(internalModel);
-		generateApplicationStub(internalModel);}));
+		generateApplicationStub(internalModel);
+		generateRunFiles();}));
+	}
+	
+	private void generateRunFiles() {
+		try {
+			RunFileHelper.createFiles(getProject());
+		} catch (CoreException | IOException e) {
+			LogUtils.error(logger, e);
+		}
 	}
 
 	private void generateApplicationStub(TGGProject internalModel) {

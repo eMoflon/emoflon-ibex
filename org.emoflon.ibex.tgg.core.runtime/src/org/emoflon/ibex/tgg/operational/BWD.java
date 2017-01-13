@@ -7,8 +7,8 @@ import language.TGG;
 
 public class BWD extends TGGRuntimeUtil {
 
-	public BWD(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
-		super(tgg, srcR, corrR, trgR, protocolR, userDefinedConstraintFactory);
+	public BWD(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
+		super(tgg, srcR, corrR, trgR, protocolR);
 	}
 
 	@Override

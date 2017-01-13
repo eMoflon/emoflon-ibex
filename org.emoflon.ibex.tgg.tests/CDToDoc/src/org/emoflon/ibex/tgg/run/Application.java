@@ -42,7 +42,8 @@ public class Application {
 		
 		// choose your operation type (FWD, BWD, CC, MODELGEN etc.)
 		
-		tggRuntime = new FWD(tgg, s, c, t, p, new UserDefinedRuntimeTGGAttrConstraintFactory());
+		tggRuntime = new FWD(tgg, s, c, t, p);
+		tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
 		//tggRuntime = new FWD_ILP(tgg, s, c, t, p);
 		

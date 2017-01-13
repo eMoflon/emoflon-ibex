@@ -23,8 +23,8 @@ public class MODELGEN extends TGGRuntimeUtil {
 	private MODELGENStopCriterion stopCriterion;
 
 	public MODELGEN(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR,
-			MODELGENStopCriterion stopCriterion, RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
-		super(tgg, srcR, corrR, trgR, protocolR, userDefinedConstraintFactory);
+			MODELGENStopCriterion stopCriterion) {
+		super(tgg, srcR, corrR, trgR, protocolR);
 		this.stopCriterion = stopCriterion;
 	}
 
