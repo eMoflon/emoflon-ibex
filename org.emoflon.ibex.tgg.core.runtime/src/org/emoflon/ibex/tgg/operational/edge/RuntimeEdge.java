@@ -5,6 +5,7 @@ import org.eclipse.emf.ecore.EReference;
 
 public class RuntimeEdge {
 
+	
 	protected EObject src;
 	protected EObject trg;
 	protected EReference ref;
@@ -14,5 +15,20 @@ public class RuntimeEdge {
 		this.trg = trg;
 		this.ref = ref;
 	}
+	
+	public EObject getSrc() {
+		return src;
+	}
+
+	public EObject getTrg() {
+		return trg;
+	}
+
+	public EReference getRef() {
+		return ref;
+	}
+
+
+
 
 }

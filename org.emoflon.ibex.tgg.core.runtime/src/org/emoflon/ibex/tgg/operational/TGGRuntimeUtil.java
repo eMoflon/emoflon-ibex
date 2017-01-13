@@ -116,21 +116,38 @@ public abstract class TGGRuntimeUtil {
 	}
 
 	public void revokeOperationalRule(IPatternMatch match) {
-		revoke((TGGRuleApplication) match.get("eMoflon_ProtocolNode"));
+		TGGRuleApplication protocol = (TGGRuleApplication) match.get("eMoflon_ProtocolNode");
+		revokeEdges(match, protocol.getName());
+		revokeNodes(protocol);
 	}
 
-	protected void revoke(TGGRuleApplication ra) {
+	private void revokeEdges(IPatternMatch match, String ruleName) {
+		revokeEdges(greenSrcEdges.get(ruleName), match, manipulateSrc());
+		revokeEdges(greenTrgEdges.get(ruleName), match, manipulateTrg());
+	}
 
+	private void revokeEdges(Collection<TGGRuleEdge> specificationEdges, IPatternMatch match, boolean delete) {
+		specificationEdges.forEach(se -> {
+			RuntimeEdge runtimeEdge = getRuntimeEdge(match, se);
+			markedEdges.remove(runtimeEdge);
+			if(delete)
+				ManipulationUtil.deleteEdge(runtimeEdge.getSrc(), runtimeEdge.getTrg(), runtimeEdge.getRef());		
+		});
+	}
+
+	protected void revokeNodes(TGGRuleApplication ra) {
 		EcoreUtil.delete(ra);
-
-		if (manipulateSrc()) {
-			ManipulationUtil.deleteNodes(ra.getCreatedSrc());
-		}
-		if (manipulateTrg()) {
-			ManipulationUtil.deleteNodes(ra.getCreatedTrg());
-		}
-		ManipulationUtil.deleteNodes(ra.getCreatedCorr());
+		revokeNodes(ra.getCreatedSrc(), manipulateSrc());
+		revokeNodes(ra.getContextTrg(), manipulateTrg());
+		revokeNodes(ra.getCreatedCorr(), manipulateCorr());
 	}
+	
+	private void revokeNodes(Collection<EObject> nodes, boolean delete){
+		markedNodes.removeAll(nodes);
+		if(delete)
+			ManipulationUtil.deleteNodes(nodes);
+	}
+	
 
 	public void registerRuleApplication(IPatternMatch match) {
 		registerProtocol((TGGRuleApplication) match.get("eMoflon_ProtocolNode"), match);
@@ -153,11 +170,17 @@ public abstract class TGGRuntimeUtil {
 
 	private void registerMarkedEdges(Collection<TGGRuleEdge> specificationEdges, IPatternMatch match) {
 		specificationEdges.forEach(ge -> {
-			EObject src = (EObject) match.get(ge.getSrcNode().getName());
-			EObject trg = (EObject) match.get(ge.getTrgNode().getName());
-			EReference ref = ge.getType();
-			markedEdges.add(new RuntimeEdge(src, trg, ref));
+			RuntimeEdge edge = getRuntimeEdge(match, ge);
+			markedEdges.add(edge);
 		});
+	}
+
+	private RuntimeEdge getRuntimeEdge(IPatternMatch match, TGGRuleEdge specificationEdge) {
+		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
+		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
+		EReference ref = specificationEdge.getType();
+		RuntimeEdge edge = new RuntimeEdge(src, trg, ref);
+		return edge;
 	}
 
 	// main method and its helpers processing pending matches for missing edge
@@ -424,6 +447,10 @@ public abstract class TGGRuntimeUtil {
 	protected boolean manipulateTrg() {
 		return getMode() == OperationMode.FWD || getMode() == OperationMode.MODELGEN;
 	}
+	
+	protected boolean manipulateCorr() {
+		return true;
+	}
 
 	protected boolean markingSrc() {
 		return !manipulateSrc();
@@ -431,6 +458,10 @@ public abstract class TGGRuntimeUtil {
 	
 	protected boolean markingTrg() {
 		return !manipulateTrg();
+	}
+	
+	protected boolean markingCorr() {
+		return !manipulateCorr();
 	}
 
 }

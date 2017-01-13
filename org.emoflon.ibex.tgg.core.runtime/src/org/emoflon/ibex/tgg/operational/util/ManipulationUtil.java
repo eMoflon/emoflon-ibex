@@ -71,6 +71,13 @@ public class ManipulationUtil {
 			trg.eResource().getContents().remove(trg);
 		}
 	}
+	
+	public static void deleteEdge(EObject src, EObject trg, EReference ref){
+		if(ref.isMany())
+			((EList)src.eGet(ref)).remove(trg);
+		else
+			src.eUnset(ref);
+	}
 
 	private static EObject createNode(IPatternMatch match, TGGRuleNode node, Resource resource) {
 		EObject newObj = EcoreUtil.create(node.getType());
