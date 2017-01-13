@@ -4,32 +4,14 @@ import org.eclipse.emf.ecore.EReference;
 
 public class EdgePatternNaming {
 	
-	private static final String EMFEdge = "EMFEdge_";
-	
-	private static final String EdgeWrapper = "EdgeWrapper_";
-	
-	private static final String MissingEdgeWrapper = "Missing" + EdgeWrapper;
-	
-	private static final String ExistingEdgeWrapper = "Existing" + EdgeWrapper;
+	private static final String EdgePattern = "EdgePattern_";
 	
 	public static String getSuffix(EReference ref){
-		return ref.getEContainingClass().getName() + "_" + ref.getEType().getName() + "_eMoflonEdgeWrapper_" + ref.getName();
+		return ref.getEContainingClass().getName() + "_" + ref.getEType().getName() + "_eMoflonEdge_" + ref.getName();
 	}
 	
-	public static String getEMFEdge(EReference ref){
-		return EMFEdge + getSuffix(ref);
-	}
-	
-	public static String getEdgeWrapper(EReference ref){
-		return EdgeWrapper + getSuffix(ref);
-	}
-	
-	public static String getMissingEdgeWrapper(EReference ref){
-		return MissingEdgeWrapper + getSuffix(ref);
-	}
-	
-	public static String getExistingEdgeWrapper(EReference ref){
-		return ExistingEdgeWrapper + getSuffix(ref);
+	public static String getEdgePatternNaming(EReference ref){
+		return EdgePattern + getSuffix(ref);
 	}
 	
 }

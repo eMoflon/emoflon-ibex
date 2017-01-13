@@ -36,13 +36,6 @@ public abstract class RulePartPattern extends Pattern {
 	protected Collection<TGGRuleNode> bodyNodes = new ArrayList<>();
 	
 	
-	/**
-	 * each body edge e corresponds to the following text:
-	 * 
-	 *  Edge.src(e, <<src of n>>);
-	 *  Edge.trg(e, <<trg of n>>);
-	 *  Edge.name(e, <<type name of e>>);
-	 */
 	protected Collection<TGGRuleEdge> bodyEdges = new ArrayList<>();
 	
 	
@@ -52,26 +45,26 @@ public abstract class RulePartPattern extends Pattern {
 	}
 
 	private void fillCollections(TGGRule rule) {
-		bodyNodes = calculateBodyNodes(signatureElements);
-		bodyEdges = calculateBodyEdges(signatureElements);		
+		bodyNodes = calculateBodyNodes(rule.getNodes());
+		bodyEdges = calculateBodyEdges(rule.getEdges());		
 	}
 
 
-	private Collection<TGGRuleEdge> calculateBodyEdges(Collection<TGGRuleElement> signatureElements){
+	private Collection<TGGRuleEdge> calculateBodyEdges(Collection<TGGRuleEdge> signatureElements){
 		ArrayList<TGGRuleEdge> result = new ArrayList<>();
-		signatureElements.stream().filter(e -> e instanceof TGGRuleEdge && isRelevantForBody((TGGRuleEdge)e)).forEach(e -> result.add((TGGRuleEdge) e));
+		signatureElements.stream().filter(e -> isRelevantForBody(e)).forEach(e -> result.add((TGGRuleEdge) e));
 		return result;
 	}
 
 
-	private Collection<TGGRuleNode> calculateBodyNodes(Collection<TGGRuleElement> signatureElements) {
+	private Collection<TGGRuleNode> calculateBodyNodes(Collection<TGGRuleNode> signatureElements) {
 		ArrayList<TGGRuleNode> result = new ArrayList<>();
-		signatureElements.stream().filter(e -> e instanceof TGGRuleNode && isRelevantForBody((TGGRuleNode)e)).forEach(e -> result.add((TGGRuleNode) e));;
+		signatureElements.stream().filter(e -> isRelevantForBody(e)).forEach(e -> result.add((TGGRuleNode) e));;
         return result;
 	}
 
 	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule){
-		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream()).filter(e -> isRelevantForSignature(e)).collect(Collectors.toCollection(LinkedHashSet::new));
+		return rule.getNodes().stream().filter(e -> isRelevantForSignature(e)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	protected abstract boolean isRelevantForSignature(TGGRuleElement e);

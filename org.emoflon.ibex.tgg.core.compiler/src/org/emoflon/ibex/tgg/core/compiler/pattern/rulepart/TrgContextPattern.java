@@ -22,7 +22,7 @@ public class TrgContextPattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return isRelevantForSignature(e);
+		return e.getDomainType() == DomainType.TRG && e.getBindingType() == BindingType.CONTEXT;
 	}
 
 	@Override

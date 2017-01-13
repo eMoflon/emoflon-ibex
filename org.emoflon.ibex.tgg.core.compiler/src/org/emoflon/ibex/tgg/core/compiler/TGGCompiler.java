@@ -21,17 +21,6 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.BWDILPAllMarkedPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.BWDILPPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.CCILPAllMarkedPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.CCILPPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.FWDILPAllMarkedPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.FWDILPPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.ILPAllMarkedPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.ilp.ILPPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.protocolnacs.BWDProtocolNACsPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.protocolnacs.FWDProtocolNACsPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.strategy.protocolnacs.ProtocolNACsPattern;
 
 import language.TGG;
 import language.TGGRule;
@@ -77,9 +66,6 @@ public class TGGCompiler {
 
 			Collection<Pattern> patterns = new ArrayList<>();
 
-			ConsistencyPattern protocol = new ConsistencyPattern(rule);
-			patterns.add(protocol);
-
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
 			patterns.add(srcContext);
 
@@ -120,42 +106,11 @@ public class TGGCompiler {
 			modelgen.getPositiveInvocations().add(srcContext);
 			modelgen.getPositiveInvocations().add(trgContext);
 			modelgen.getPositiveInvocations().add(corrContext);
-
-			FWDProtocolNACsPattern fwdWithProtocolNACs = new FWDProtocolNACsPattern(rule);
-			patterns.add(fwdWithProtocolNACs);
-			fwdWithProtocolNACs.getPositiveInvocations().add(fwd);
-
-			BWDProtocolNACsPattern bwdWithProtocolNACs = new BWDProtocolNACsPattern(rule);
-			patterns.add(bwdWithProtocolNACs);
-			bwdWithProtocolNACs.getPositiveInvocations().add(bwd);
-
-			FWDILPAllMarkedPattern fwdILPAllMarked = new FWDILPAllMarkedPattern(rule);
-			patterns.add(fwdILPAllMarked);
-			fwdILPAllMarked.getPositiveInvocations().add(src);
-
-			BWDILPAllMarkedPattern bwdILPAllMarked = new BWDILPAllMarkedPattern(rule);
-			patterns.add(bwdILPAllMarked);
-			bwdILPAllMarked.getPositiveInvocations().add(trg);
-
-			CCILPAllMarkedPattern ccILPAllMarked = new CCILPAllMarkedPattern(rule);
-			patterns.add(ccILPAllMarked);
-			ccILPAllMarked.getPositiveInvocations().add(src);
-			ccILPAllMarked.getPositiveInvocations().add(trg);
-
-			FWDILPPattern fwdILP = new FWDILPPattern(rule);
-			patterns.add(fwdILP);
-			fwdILP.getPositiveInvocations().add(fwd);
-			fwdILP.getNegativeInvocations().add(fwdILPAllMarked);
-
-			BWDILPPattern bwdILP = new BWDILPPattern(rule);
-			patterns.add(bwdILP);
-			bwdILP.getPositiveInvocations().add(bwd);
-			bwdILP.getNegativeInvocations().add(bwdILPAllMarked);
-
-			CCILPPattern ccILP = new CCILPPattern(rule);
-			patterns.add(ccILP);
-			ccILP.getPositiveInvocations().add(cc);
-			ccILP.getNegativeInvocations().add(ccILPAllMarked);
+			
+			ConsistencyPattern protocol = new ConsistencyPattern(rule);
+			patterns.add(protocol);
+			protocol.getPositiveInvocations().add(src);
+			protocol.getPositiveInvocations().add(trg);
 
 			ruleToPatterns.put(rule, patterns);
 		}
@@ -174,25 +129,13 @@ public class TGGCompiler {
 				.map(p -> patternTemplate.generateConsistencyPattern((ConsistencyPattern) p))
 				.collect(Collectors.joining());
 
-		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ProtocolNACsPattern)
-				.map(p -> patternTemplate.generateProtocolNACsPattern((ProtocolNACsPattern) p))
-				.collect(Collectors.joining());
-
-		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ILPAllMarkedPattern)
-				.map(p -> patternTemplate.generateILPAllMarkedPattern((ILPAllMarkedPattern) p))
-				.collect(Collectors.joining());
-
-		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ILPPattern)
-				.map(p -> patternTemplate.generateILPPattern((ILPPattern) p)).collect(Collectors.joining());
-
 		return result;
 	}
 
 	private Collection<String> determineNonAliasedImports(TGGRule rule) {
 		Collection<String> result = new LinkedHashSet<>();
-		result.add("org.emoflon.ibex.tgg.common.marked");
 		result.addAll(rule.getEdges().stream()
-				.map(e -> "org.emoflon.ibex.tgg.common." + EdgePatternNaming.getEdgeWrapper(e.getType()))
+				.map(e -> "org.emoflon.ibex.tgg.common." + EdgePatternNaming.getEdgePatternNaming(e.getType()))
 				.collect(Collectors.toCollection(LinkedHashSet::new)));
 		return result;
 	}
