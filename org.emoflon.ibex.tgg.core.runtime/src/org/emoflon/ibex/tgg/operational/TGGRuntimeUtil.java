@@ -80,21 +80,16 @@ public abstract class TGGRuntimeUtil {
 
 	private RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
-	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
+	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
 
 	private OperationStrategy strategy;
 
 	protected MatchContainer matchContainer;
 
-<<<<<<< HEAD
-	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
-=======
 	protected THashSet<EObject> markedNodes = new THashSet<>();
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 
-	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR,
-			RuntimeTGGAttrConstraintFactory userDefinedConstraintFactory) {
->>>>>>> refs/remotes/origin/opt
+	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		tgg.getRules().forEach(r -> prepareRuleInfo(r));
 		this.srcR = srcR;
 		this.corrR = corrR;
@@ -102,7 +97,6 @@ public abstract class TGGRuntimeUtil {
 		this.protocolR = protocolR;
 		this.strategy = getStrategy();
 		this.matchContainer = new MatchContainer(tgg);
-		this.runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
 	}
 
 	abstract public OperationMode getMode();
