@@ -34,8 +34,7 @@ public class FORWARD_App {
 			Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
 			
 			// load the resources containing your input 
-			s.save(null);
-			t.save(null);
+			s.load(null);
 			
 			System.out.println("Starting FORWARD");
 			long tic = System.currentTimeMillis();

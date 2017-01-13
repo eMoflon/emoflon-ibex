@@ -34,6 +34,7 @@ public class BACKWARD_App {
 			Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
 			
 			// load the resources containing your input 
+			t.load(null);
 			
 			System.out.println("Starting BACKWARD");
 			long tic = System.currentTimeMillis();
