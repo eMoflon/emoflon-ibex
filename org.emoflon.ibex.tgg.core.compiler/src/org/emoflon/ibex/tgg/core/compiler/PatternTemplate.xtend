@@ -23,12 +23,16 @@ class PatternTemplate {
 		return '''	
 		«FOR et : edgeTypes»
 		pattern «EdgePatternNaming.getEdgePatternNaming(et)»(s:«importAliases.get(et.EContainingClass.EPackage)»::«et.EContainingClass.name», t:«importAliases.get(et.EType.EPackage)»::«et.EType.name»){
-			«et.EContainingClass.name».«et.name»(s,t);
+			«et.EContainingClass.name».«IF isKeyword(et.name)»^«ENDIF»«et.name»(s,t);
 		}
 		
 		«ENDFOR»
 		
 		'''
+	}
+	
+	def isKeyword(String name) {
+		return name.equals("super")
 	}
 		
 	def generateHeaderAndImports(LinkedHashMap<String, String> aliasedImports, Collection<String> nonAliasedImports, String packageName){

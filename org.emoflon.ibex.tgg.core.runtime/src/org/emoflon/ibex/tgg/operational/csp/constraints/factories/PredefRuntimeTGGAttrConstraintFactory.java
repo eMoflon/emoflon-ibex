@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.SetDefaultNumber;
 import org.emoflon.ibex.tgg.operational.csp.constraints.SetDefaultString;
 import org.emoflon.ibex.tgg.operational.csp.constraints.SmallerOrEqual;
 import org.emoflon.ibex.tgg.operational.csp.constraints.StringToDouble;
+import org.emoflon.ibex.tgg.operational.csp.constraints.StringToInt;
 import org.emoflon.ibex.tgg.operational.csp.constraints.Sub;
 
 public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
@@ -49,6 +50,7 @@ public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstra
 		creators.put("setDefaultNumber", () -> new SetDefaultNumber());
 		creators.put("setefaultString", () -> new SetDefaultString());
 		creators.put("smallerOrEqual", () -> new SmallerOrEqual());
+		creators.put("stringToInt", () -> new StringToInt());
 		creators.put("stringToDouble", () -> new StringToDouble());
 		creators.put("sub", () -> new Sub());
 
