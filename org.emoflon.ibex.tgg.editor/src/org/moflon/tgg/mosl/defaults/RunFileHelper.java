@@ -33,10 +33,10 @@ public class RunFileHelper {
 		String runLoad = "";
 
 		if(mode.equals(RunFileType.FORWARD) || mode.equals(RunFileType.FORWARD_ILP) || mode.equals(RunFileType.CONSISTENCY_CHECK))
-			runLoad += "s.save(null);\n";
+			runLoad += "s.load(null);\n";
 		
 		if(!mode.equals(RunFileType.BACKWARD) && !mode.equals(RunFileType.BACKWARD_ILP) || mode.equals(RunFileType.CONSISTENCY_CHECK))
-			runLoad += "t.save(null);\n";
+			runLoad += "t.load(null);\n";
 		
 		return runLoad;
 	}
