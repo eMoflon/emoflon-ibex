@@ -147,30 +147,10 @@ public abstract class TGGRuntimeUtil {
 	
 
 	public void registerRuleApplication(IPatternMatch match) {
-		registerProtocol((TGGRuleApplication) match.get("eMoflon_ProtocolNode"), match);
+		TGGRuleApplication protocol = (TGGRuleApplication) match.get("eMoflon_ProtocolNode");
+		//TODO what happens here in case of an offline synch?
 	}
 
-	private void registerProtocol(TGGRuleApplication ra, IPatternMatch match) {
-		if (markingSrc()) {
-			registerMarkedEdges(greenSrcEdges.get(ra.getName()), match);
-			registerMarkedNodes(greenSrcNodes.get(ra.getName()), match);
-		}
-		if (markingTrg()) {
-			registerMarkedEdges(greenTrgEdges.get(ra.getName()), match);
-			registerMarkedNodes(greenTrgNodes.get(ra.getName()), match);
-		}
-	}
-
-	private void registerMarkedNodes(Collection<TGGRuleNode> specificationNodes, IPatternMatch match) {
-		specificationNodes.forEach(gn -> markedNodes.add((EObject) match.get(gn.getName())));
-	}
-
-	private void registerMarkedEdges(Collection<TGGRuleEdge> specificationEdges, IPatternMatch match) {
-		specificationEdges.forEach(ge -> {
-			RuntimeEdge edge = getRuntimeEdge(match, ge);
-			markedEdges.add(edge);
-		});
-	}
 
 	private RuntimeEdge getRuntimeEdge(IPatternMatch match, TGGRuleEdge specificationEdge) {
 		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
@@ -226,19 +206,24 @@ public abstract class TGGRuntimeUtil {
 
 		if (manipulateSrc()) {
 			ManipulationUtil.createNonCorrNodes(match, comatch, greenSrcNodes.get(ruleName), srcR);
-			ManipulationUtil.createEdges(match, comatch, greenSrcEdges.get(ruleName), protocolR);
 		}
+		Collection<RuntimeEdge> srcEdges = ManipulationUtil.createEdges(match, comatch, greenSrcEdges.get(ruleName), manipulateSrc());
 
 		if (manipulateTrg()) {
 			ManipulationUtil.createNonCorrNodes(match, comatch, greenTrgNodes.get(ruleName), trgR);
-			ManipulationUtil.createEdges(match, comatch, greenTrgEdges.get(ruleName), protocolR);
 		}
+		Collection<RuntimeEdge> trgEdges = ManipulationUtil.createEdges(match, comatch, greenTrgEdges.get(ruleName), manipulateTrg());
 
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
 		applyCSPValues(comatch, cspValues);
 
 		ManipulationUtil.createCorrs(match, comatch, greenCorrNodes.get(ruleName), corrR);
-
+		
+		markedNodes.addAll(comatch.values());
+		match.parameterNames().forEach(n -> markedNodes.add((EObject) match.get(n)));
+		markedEdges.addAll(srcEdges);
+		markedEdges.addAll(trgEdges);
+		
 		if (protocol()) {
 			prepareProtocol(ruleName, match, comatch);
 		}

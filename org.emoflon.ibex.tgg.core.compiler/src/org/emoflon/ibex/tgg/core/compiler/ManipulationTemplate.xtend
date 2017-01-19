@@ -83,7 +83,7 @@ class ManipulationTemplate {
 					
 					private def createTransformation() {
 						// Initialize event-driven transformation
-						transformation = EventDrivenTransformation.forEngine(engine).addRules(getTransformationRuleGroup).addRules(get«PatternSuffixes.PROTOCOL»).build
+						transformation = EventDrivenTransformation.forEngine(engine).addRules(getTransformationRuleGroup).build
 					}
 					
 					private def getTransformationRuleGroup() {
