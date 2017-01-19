@@ -54,13 +54,13 @@ public class MODELGEN extends TGGRuntimeUtil {
 	@Override
 	protected void processOperationalRuleMatches() {
 		while (!stop()) {
-			IPatternMatch match = matchContainer.getNextRandom();
-			String ruleName = matchContainer.getRuleName(match);
+			IPatternMatch match = operationalMatchContainer.getNextRandom();
+			String ruleName = operationalMatchContainer.getRuleName(match);
 			if (!stopCriterion.dont(ruleName)) {
 				if (processOperationalRuleMatch(ruleName, match))
 					stopCriterion.update(ruleName,
-							greenSrcNodes.get(ruleName).size() + greenSrcEdges.get(ruleName).size(),
-							greenTrgNodes.get(ruleName).size() + greenTrgEdges.get(ruleName).size());
+							ruleInfos.getGreenSrcNodes(ruleName).size() + ruleInfos.getGreenSrcEdges(ruleName).size(),
+							ruleInfos.getGreenTrgNodes(ruleName).size() + ruleInfos.getGreenTrgEdges(ruleName).size());
 				else
 					removeOperationalRuleMatch(match);
 			}

@@ -38,7 +38,7 @@ public class ConsistencyPattern extends Pattern {
 	
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		return false;
+		return true;
 	}
 
 	@Override

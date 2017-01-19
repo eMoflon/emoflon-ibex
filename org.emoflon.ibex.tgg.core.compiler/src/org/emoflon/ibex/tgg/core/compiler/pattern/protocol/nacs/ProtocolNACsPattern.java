@@ -32,7 +32,7 @@ public abstract class ProtocolNACsPattern extends Pattern {
 	
 	@Override
 	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return isRelevantForSignature(n) && n.getBindingType() == BindingType.CREATE;
+		return isRelevantForSignature(n);
 	}
 	
 	protected abstract DomainType getInputDomainType();

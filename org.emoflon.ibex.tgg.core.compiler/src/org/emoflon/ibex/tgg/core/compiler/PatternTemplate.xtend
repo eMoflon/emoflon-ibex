@@ -1,17 +1,15 @@
 package org.emoflon.ibex.tgg.core.compiler
 
 import java.util.Collection
-import language.TGGRuleElement
-import org.eclipse.emf.ecore.EReference
-import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
-import runtime.RuntimePackage
-import language.TGGRuleNode
-import language.TGGRuleEdge
-import org.eclipse.emf.ecore.EPackage
 import java.util.LinkedHashMap
 import language.BindingType
+import language.TGGRuleElement
+import language.TGGRuleNode
+import org.eclipse.emf.ecore.EPackage
+import org.eclipse.emf.ecore.EReference
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.ProtocolNACsPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
 
 class PatternTemplate {
 
@@ -24,11 +22,6 @@ class PatternTemplate {
 	def generateCommonPatterns(Collection<EReference> edgeTypes) {
 
 		return '''	
-			«FOR et : edgeTypes»
-				pattern «EdgePatternNaming.getEdgePatternNaming(et)»(s:«importAliases.get(et.EContainingClass.EPackage)»::«et.EContainingClass.name», t:«importAliases.get(et.EType.EPackage)»::«et.EType.name»){
-					«et.EContainingClass.name».«IF isKeyword(et.name)»^«ENDIF»«et.name»(s,t);
-				}
-			«ENDFOR»
 			
 			pattern marked(p:TGGRuleApplication, o:EObject){
 				TGGRuleApplication.createdSrc(p, o);
@@ -77,7 +70,7 @@ class PatternTemplate {
 					«injectivityCheckPair.left.name» != «injectivityCheckPair.right.name»;
 				«ENDFOR»
 				«FOR edge : pattern.getBodyEdges»
-					find «EdgePatternNaming.getEdgePatternNaming(edge.type)»(«edge.srcNode.name», «edge.trgNode.name»);
+					«edge.srcNode.type.name».«edge.type.name»(«edge.srcNode.name», «edge.trgNode.name»);
 				«ENDFOR»			
 				«FOR node : pattern.bodySrcTrgNodes»
 					«node.type.name»(«node.name»);
@@ -117,7 +110,7 @@ class PatternTemplate {
 					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
 				«ENDFOR»
 				«FOR node : pattern.bodySrcTrgNodes»
-					neg find marked(_«node.name»_eMoflonProtocol, «node.name»);
+					«IF node.bindingType.equals(BindingType.CREATE)»neg «ENDIF»find marked(_«node.name»_eMoflonProtocol, «node.name»);
 				«ENDFOR»
 			}
 		'''
@@ -134,8 +127,6 @@ class PatternTemplate {
 				«FOR node : pattern.bodySrcTrgNodes»
 					«IF node.bindingType == BindingType.CREATE»
 						find marked(«pattern.protocolNodeName», «node.name»);
-					«ELSE»
-						find context(«pattern.protocolNodeName», «node.name»);
 					«ENDIF»
 				«ENDFOR»
 				}

@@ -26,5 +26,13 @@ public class PatternSuffixes {
 	
 	public static final String TRG_PROTOCOL_NACS = "_TRG_PROTOCOL_NACS";
 	
+	public static final String SRC_PROTOCOL_PACS = "_SRC_PROTOCOL_PACS";
+	
+	public static final String TRG_PROTOCOL_PACS = "_TRG_PROTOCOL_PACS";
+	
 	public static final String WHOLE = "_WHOLE";
+
+	
+
+	
 }

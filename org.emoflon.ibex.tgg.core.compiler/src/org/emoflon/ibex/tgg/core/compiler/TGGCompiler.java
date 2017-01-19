@@ -72,7 +72,7 @@ public class TGGCompiler {
 
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
 			patterns.add(srcContext);
-
+			
 			SrcPattern src = new SrcPattern(rule);
 			patterns.add(src);
 			src.getPositiveInvocations().add(srcContext);
@@ -157,9 +157,6 @@ public class TGGCompiler {
 		Collection<String> result = new LinkedHashSet<>();
 		result.add("org.emoflon.ibex.tgg.common.marked");
 		result.add("org.emoflon.ibex.tgg.common.context");
-		result.addAll(rule.getEdges().stream()
-				.map(e -> "org.emoflon.ibex.tgg.common." + EdgePatternNaming.getEdgePatternNaming(e.getType()))
-				.collect(Collectors.toCollection(LinkedHashSet::new)));
 		return result;
 	}
 
