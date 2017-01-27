@@ -32,11 +32,12 @@ public class RunFileHelper {
 	public static String getLoadCall(RunFileType mode) {
 		String runLoad = "";
 
-		if(mode.equals(RunFileType.FORWARD) || mode.equals(RunFileType.FORWARD_ILP) || mode.equals(RunFileType.CONSISTENCY_CHECK))
-			runLoad += "s.save(null);\n";
-		
-		if(!mode.equals(RunFileType.BACKWARD) && !mode.equals(RunFileType.BACKWARD_ILP) || mode.equals(RunFileType.CONSISTENCY_CHECK))
-			runLoad += "t.save(null);\n";
+		if(mode.equals(RunFileType.SYNCH))
+			runLoad += "s.load(null);\n";
+		else if (mode.equals(RunFileType.CONSISTENCY_CHECK)){
+			runLoad += "s.load(null);\n";
+			runLoad += "t.load(null);\n";
+		}
 		
 		return runLoad;
 	}
@@ -44,17 +45,9 @@ public class RunFileHelper {
 	public static String getCreator(RunFileType mode) {
 		String runCreator = "";
 		switch (mode) {
-		case FORWARD:
-			runCreator += "TGGRuntimeUtil tggRuntime = new FWD(tgg, s, c, t, p);\n";
-			break;
-		case FORWARD_ILP:
-			runCreator += "TGGRuntimeUtil tggRuntime = new FWD_ILP(tgg, s, c, t, p);\n";
-			break;
-		case BACKWARD:
-			runCreator += "TGGRuntimeUtil tggRuntime = new BWD(tgg, s, c, t, p);\n";
-			break;
-		case BACKWARD_ILP:
-			runCreator += "TGGRuntimeUtil tggRuntime = new BWD_ILP(tgg, s, c, t, p);\n";
+		case SYNCH:
+			runCreator += "TGGRuntimeUtil tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p);\n";
+			runCreator += "tggRuntime.setMode(OperationMode.FWD);\n";
 			break;
 		case MODELGEN:
 			runCreator += "MODELGENStopCriterion stop = new MODELGENStopCriterion();\n";
@@ -73,10 +66,10 @@ public class RunFileHelper {
 	public static String getSaveCall(RunFileType mode) {
 		String runSave = "";
 
-		if(!mode.equals(RunFileType.FORWARD) && !mode.equals(RunFileType.FORWARD_ILP))
+		if(!mode.equals(RunFileType.SYNCH))
 			runSave += "s.save(null);\n";
 		
-		if(!mode.equals(RunFileType.BACKWARD) && !mode.equals(RunFileType.BACKWARD_ILP))
+		if(!mode.equals(RunFileType.SYNCH))
 			runSave += "t.save(null);\n";
 		
 		runSave += "c.save(null);\n";

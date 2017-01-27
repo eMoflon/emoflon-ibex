@@ -16,9 +16,23 @@ public class PatternSuffixes {
 	
 	public static final String CC = "_CC";
 	
-	public static final String FWD = "FWD";
+	public static final String FWD = "_FWD";
 	
-	public static final String BWD = "BWD";
+	public static final String BWD = "_BWD";
 	
 	public static final String MODELGEN = "_MODELGEN";
+	
+	public static final String SRC_PROTOCOL_NACS = "_SRC_PROTOCOL_NACS";
+	
+	public static final String TRG_PROTOCOL_NACS = "_TRG_PROTOCOL_NACS";
+	
+	public static final String SRC_PROTOCOL_PACS = "_SRC_PROTOCOL_PACS";
+	
+	public static final String TRG_PROTOCOL_PACS = "_TRG_PROTOCOL_PACS";
+	
+	public static final String WHOLE = "_WHOLE";
+
+	
+
+	
 }

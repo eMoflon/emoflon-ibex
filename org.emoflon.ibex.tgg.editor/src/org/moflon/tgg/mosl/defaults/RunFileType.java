@@ -2,10 +2,7 @@ package org.moflon.tgg.mosl.defaults;
 
 public enum RunFileType {
 
-	FORWARD,
-	BACKWARD,
-	FORWARD_ILP,
-	BACKWARD_ILP,
+	SYNCH,
 	MODELGEN,
 	CONSISTENCY_CHECK
 	

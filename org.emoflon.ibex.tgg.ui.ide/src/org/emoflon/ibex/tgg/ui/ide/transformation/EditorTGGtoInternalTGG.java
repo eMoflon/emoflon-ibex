@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -107,10 +108,10 @@ public class EditorTGGtoInternalTGG {
 
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
-		
+
 		tgg = addOppositeEdges(tgg);
 		tgg = sortTGGAttributeConstraints(tgg);
-		
+
 		return tgg;
 	}
 
@@ -400,24 +401,24 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private TGG addOppositeEdges(TGG tggModel) {
-		tggModel.getRules().stream().flatMap(r -> r.getEdges().stream()).forEach(e -> {
-			if (e.getType().getEOpposite() != null) {
-				EReference oppositeRef = e.getType().getEOpposite();
-				TGGRule rule = (TGGRule) e.eContainer();
-				if (rule.getEdges().stream().noneMatch(oe -> oe.getType().equals(oppositeRef)
-						&& oe.getSrcNode().equals(e.getTrgNode()) && oe.getTrgNode().equals(e.getSrcNode()))) {
-					TGGRuleEdge oppositeEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
-					oppositeEdge.setBindingType(e.getBindingType());
-					oppositeEdge.setDomainType(e.getDomainType());
-					oppositeEdge.setType(oppositeRef);
-					oppositeEdge.setSrcNode(e.getTrgNode());
-					oppositeEdge.setTrgNode(e.getSrcNode());
-					oppositeEdge.setName(oppositeEdge.getSrcNode().getName() + "__" + oppositeRef.getName() + "__"
-							+ oppositeEdge.getTrgNode().getName() + "_eMoflonEdge");
-					rule.getEdges().add(oppositeEdge);
-				}
-
+		Collection<TGGRuleEdge> edgesWithOpposite = tggModel.getRules().stream().flatMap(r -> r.getEdges().stream())
+				.filter(e -> e.getType().getEOpposite() != null).collect(Collectors.toCollection(LinkedHashSet::new));
+		edgesWithOpposite.forEach(e -> {
+			EReference oppositeRef = e.getType().getEOpposite();
+			TGGRule rule = (TGGRule) e.eContainer();
+			if (rule.getEdges().stream().noneMatch(oe -> oe.getType().equals(oppositeRef)
+					&& oe.getSrcNode().equals(e.getTrgNode()) && oe.getTrgNode().equals(e.getSrcNode()))) {
+				TGGRuleEdge oppositeEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+				oppositeEdge.setBindingType(e.getBindingType());
+				oppositeEdge.setDomainType(e.getDomainType());
+				oppositeEdge.setType(oppositeRef);
+				oppositeEdge.setSrcNode(e.getTrgNode());
+				oppositeEdge.setTrgNode(e.getSrcNode());
+				oppositeEdge.setName(oppositeEdge.getSrcNode().getName() + "__" + oppositeRef.getName() + "__"
+						+ oppositeEdge.getTrgNode().getName() + "_eMoflonEdge");
+				rule.getEdges().add(oppositeEdge);
 			}
+
 		});
 		return tggModel;
 	}
@@ -426,21 +427,25 @@ public class EditorTGGtoInternalTGG {
 		SearchPlanAction spa = new SearchPlanAction();
 		for (TGGRule rule : tggModel.getRules()) {
 			TGGAttributeConstraintLibrary libraryOfTheRule = rule.getAttributeConditionLibrary();
-			if(!libraryOfTheRule.getTggAttributeConstraints().isEmpty()){
-				libraryOfTheRule.getSorted_FWD().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.FWD));
-		
-				libraryOfTheRule.getSorted_BWD().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.BWD));
+			if (!libraryOfTheRule.getTggAttributeConstraints().isEmpty()) {
+				libraryOfTheRule.getSorted_FWD()
+						.addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+								libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.FWD));
 
-				libraryOfTheRule.getSorted_CC().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.CC));
+				libraryOfTheRule.getSorted_BWD()
+						.addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+								libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.BWD));
 
-				libraryOfTheRule.getSorted_MODELGEN().addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-						libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.MODELGEN));
+				libraryOfTheRule.getSorted_CC()
+						.addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+								libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.CC));
+
+				libraryOfTheRule.getSorted_MODELGEN()
+						.addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
+								libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.MODELGEN));
 			}
 		}
-		
+
 		return tggModel;
 	}
 

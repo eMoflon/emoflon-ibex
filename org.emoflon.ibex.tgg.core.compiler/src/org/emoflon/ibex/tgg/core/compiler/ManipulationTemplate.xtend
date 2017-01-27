@@ -6,7 +6,7 @@ class ManipulationTemplate {
 
 	def getManipulationCode(TGG tgg) {
 
-		val suffixes = #{PatternSuffixes.FWD, PatternSuffixes.BWD, PatternSuffixes.MODELGEN, PatternSuffixes.PROTOCOL}
+		val suffixes = #{PatternSuffixes.PROTOCOL, PatternSuffixes.FWD, PatternSuffixes.BWD, PatternSuffixes.MODELGEN, PatternSuffixes.CC}
 
 		return '''
 			
@@ -83,35 +83,43 @@ class ManipulationTemplate {
 					
 					private def createTransformation() {
 						// Initialize event-driven transformation
-						transformation = EventDrivenTransformation.forEngine(engine).addRules(getTransformationRuleGroup).addRules(get«PatternSuffixes.PROTOCOL»).build
+						transformation = EventDrivenTransformation.forEngine(engine).addRules(getTransformationRuleGroup).build
 					}
 					
 					private def getTransformationRuleGroup() {
-						if (tggRuntimeUtil.mode == OperationMode.FWD && tggRuntimeUtil.strategy == OperationStrategy.PROTOCOL_NACS)
-							return get«PatternSuffixes.FWD»
-						else if (tggRuntimeUtil.mode == OperationMode.BWD && tggRuntimeUtil.strategy == OperationStrategy.PROTOCOL_NACS)
-							return get«PatternSuffixes.BWD»
+						if (tggRuntimeUtil.mode == OperationMode.FWD || tggRuntimeUtil.mode == OperationMode.BWD)
+							return getSynch
 						else if (tggRuntimeUtil.mode == OperationMode.MODELGEN)
 							return get«PatternSuffixes.MODELGEN»
 					}
 					
-					«FOR suffix : suffixes»
-						private def get«suffix»() {
-							new EventDrivenTransformationRuleGroup(
+					private def getSynch() {
+						new EventDrivenTransformationRuleGroup(
 							«FOR rule : tgg.rules SEPARATOR ", "»
-								get«rule.name»«suffix»()
+								get«rule.name»«PatternSuffixes.FWD»(),
+								get«rule.name»«PatternSuffixes.BWD»(),
+								get«rule.name»«PatternSuffixes.PROTOCOL»()
 							«ENDFOR»
 							)
-						}
+					}
+					
+					private def get«PatternSuffixes.MODELGEN»(){
+						new EventDrivenTransformationRuleGroup(
+							«FOR rule : tgg.rules SEPARATOR ", "»
+							get«rule.name»«PatternSuffixes.MODELGEN»()
+							«ENDFOR»
+						 )
+					}
 						
+					
+					«FOR suffix : suffixes»
 						«FOR rule : tgg.rules»
 							private def get«rule.name»«suffix»() {
 								createRule.name("«rule.name»«suffix»").precondition(«rule.name»«suffix»Matcher.querySpecification).action(
 									«IF suffix.equals(PatternSuffixes.PROTOCOL)»
-										CRUDActivationStateEnum.CREATED) [
-										tggRuntimeUtil.registerRuleApplication(it)]
+										CRUDActivationStateEnum.CREATED) []
 										.action(CRUDActivationStateEnum.DELETED)[
-										tggRuntimeUtil.revokeOperationalRule(it)]
+										tggRuntimeUtil.addBrokenMatch(it)]
 									«ELSE»
 										CRUDActivationStateEnum.CREATED) [
 										         tggRuntimeUtil.addOperationalRuleMatch("«rule.name»", it)
@@ -119,7 +127,7 @@ class ManipulationTemplate {
 										         tggRuntimeUtil.removeOperationalRuleMatch(it)]
 									«ENDIF»		
 								.addLifeCycle(				
-									Lifecycles.getDefault(true, true)
+									Lifecycles.getDefault(false, true)
 									).build
 							}
 						«ENDFOR»

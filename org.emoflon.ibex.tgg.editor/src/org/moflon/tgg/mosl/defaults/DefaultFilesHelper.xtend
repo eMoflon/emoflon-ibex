@@ -131,7 +131,7 @@ class DefaultFilesHelper {
 			
 				// Semantics: LeftWord + Separator + RightWord = Result (where + is string concatenation)
 				// Note:  Separator should be occur only once in Result
-				concat(leftWord:EString, separator:EString, rightWord:EString, result:EString) {
+				concat(separator:EString, leftWord:EString, rightWord:EString, result:EString) {
 					#sync: [B B B B], [B B B F], [B B F B], [B F F B], [B F B B]
 					#gen: [B B B B] , [B B B F], [B B F B], [B F F B], [B F B B], [B F F F], [B F B F], [B B F F]
 				}

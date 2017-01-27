@@ -11,6 +11,9 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.ProtocolNACsPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.BWDPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CCPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CorrContextPattern;
@@ -21,6 +24,7 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.WholeRulePattern;
 
 import language.TGG;
 import language.TGGRule;
@@ -68,10 +72,14 @@ public class TGGCompiler {
 
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
 			patterns.add(srcContext);
-
+			
 			SrcPattern src = new SrcPattern(rule);
 			patterns.add(src);
 			src.getPositiveInvocations().add(srcContext);
+			
+			SrcProtocolNACsPattern srcProtocolNACs = new SrcProtocolNACsPattern(rule);
+			patterns.add(srcProtocolNACs);
+			srcProtocolNACs.getPositiveInvocations().add(src);
 
 			TrgContextPattern trgContext = new TrgContextPattern(rule);
 			patterns.add(trgContext);
@@ -79,6 +87,10 @@ public class TGGCompiler {
 			TrgPattern trg = new TrgPattern(rule);
 			patterns.add(trg);
 			trg.getPositiveInvocations().add(trgContext);
+			
+			TrgProtocolNACsPattern trgProocolNACs = new TrgProtocolNACsPattern(rule);
+			patterns.add(trgProocolNACs);
+			trgProocolNACs.getPositiveInvocations().add(trg);
 
 			CorrContextPattern corrContext = new CorrContextPattern(rule);
 			patterns.add(corrContext);
@@ -91,13 +103,13 @@ public class TGGCompiler {
 
 			FWDPattern fwd = new FWDPattern(rule);
 			patterns.add(fwd);
-			fwd.getPositiveInvocations().add(src);
+			fwd.getPositiveInvocations().add(srcProtocolNACs);
 			fwd.getPositiveInvocations().add(corrContext);
 			fwd.getPositiveInvocations().add(trgContext);
 
 			BWDPattern bwd = new BWDPattern(rule);
 			patterns.add(bwd);
-			bwd.getPositiveInvocations().add(trg);
+			bwd.getPositiveInvocations().add(trgProocolNACs);
 			bwd.getPositiveInvocations().add(corrContext);
 			bwd.getPositiveInvocations().add(srcContext);
 
@@ -107,10 +119,15 @@ public class TGGCompiler {
 			modelgen.getPositiveInvocations().add(trgContext);
 			modelgen.getPositiveInvocations().add(corrContext);
 			
+			WholeRulePattern whole = new WholeRulePattern(rule);
+			patterns.add(whole);
+			whole.getPositiveInvocations().add(src);
+			whole.getPositiveInvocations().add(trg);
+			whole.getPositiveInvocations().add(corrContext);
+			
 			ConsistencyPattern protocol = new ConsistencyPattern(rule);
 			patterns.add(protocol);
-			protocol.getPositiveInvocations().add(src);
-			protocol.getPositiveInvocations().add(trg);
+			protocol.getPositiveInvocations().add(whole);
 
 			ruleToPatterns.put(rule, patterns);
 		}
@@ -124,6 +141,10 @@ public class TGGCompiler {
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof RulePartPattern)
 				.map(p -> patternTemplate.generateOperationalPattern((RulePartPattern) p))
 				.collect(Collectors.joining());
+		
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ProtocolNACsPattern)
+				.map(p -> patternTemplate.generateProtocolNACsPattern((ProtocolNACsPattern) p))
+				.collect(Collectors.joining());
 
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ConsistencyPattern)
 				.map(p -> patternTemplate.generateConsistencyPattern((ConsistencyPattern) p))
@@ -134,9 +155,8 @@ public class TGGCompiler {
 
 	private Collection<String> determineNonAliasedImports(TGGRule rule) {
 		Collection<String> result = new LinkedHashSet<>();
-		result.addAll(rule.getEdges().stream()
-				.map(e -> "org.emoflon.ibex.tgg.common." + EdgePatternNaming.getEdgePatternNaming(e.getType()))
-				.collect(Collectors.toCollection(LinkedHashSet::new)));
+		result.add("org.emoflon.ibex.tgg.common.marked");
+		result.add("org.emoflon.ibex.tgg.common.context");
 		return result;
 	}
 

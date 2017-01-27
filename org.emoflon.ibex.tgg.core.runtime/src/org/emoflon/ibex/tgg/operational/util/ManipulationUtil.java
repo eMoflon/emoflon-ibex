@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -9,6 +10,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
+import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -35,12 +37,17 @@ public class ManipulationUtil {
 		}
 	}
 
-	public static void createEdges(IPatternMatch match, HashMap<String, EObject> comatch,
-			Collection<TGGRuleEdge> greenEdges, Resource edgeResource) {
+	public static Collection<RuntimeEdge> createEdges(IPatternMatch match, HashMap<String, EObject> comatch,
+			Collection<TGGRuleEdge> greenEdges, boolean createEMFEdgesAsWell) {
+		Collection<RuntimeEdge> result = new ArrayList<>();
 		for (TGGRuleEdge e : greenEdges) {
-			createEdge(e, getVariableByName(e.getSrcNode().getName(), comatch, match),
-					getVariableByName(e.getTrgNode().getName(), comatch, match), edgeResource);
+			EObject src = getVariableByName(e.getSrcNode().getName(), comatch, match);
+			EObject trg = getVariableByName(e.getTrgNode().getName(), comatch, match);
+			if (createEMFEdgesAsWell)
+				createEMFEdge(e, src,trg);
+			result.add(new RuntimeEdge(src, trg, e.getType()));
 		}
+		return result;
 	}
 
 	public static void createCorrs(IPatternMatch match, HashMap<String, EObject> comatch,
@@ -61,20 +68,20 @@ public class ManipulationUtil {
 		return (EObject) match.get(name);
 	}
 
-	private static void createEdge(TGGRuleEdge e, EObject src, EObject trg, Resource edgeResource) {
+	private static void createEMFEdge(TGGRuleEdge e, EObject src, EObject trg) {
 		EReference ref = e.getType();
-		if(ref.isMany())
-			((EList)src.eGet(ref)).add(trg);
+		if (ref.isMany())
+			((EList) src.eGet(ref)).add(trg);
 		else
 			src.eSet(ref, trg);
-		if(ref.isContainment() && trg.eResource()!=null){
+		if (ref.isContainment() && trg.eResource() != null) {
 			trg.eResource().getContents().remove(trg);
 		}
 	}
-	
-	public static void deleteEdge(EObject src, EObject trg, EReference ref){
-		if(ref.isMany())
-			((EList)src.eGet(ref)).remove(trg);
+
+	public static void deleteEdge(EObject src, EObject trg, EReference ref) {
+		if (ref.isMany())
+			((EList) src.eGet(ref)).remove(trg);
 		else
 			src.eUnset(ref);
 	}
