@@ -16,7 +16,7 @@ import language.LanguagePackage;
 import language.TGG;
 import runtime.RuntimePackage;
 
-public class CONSISTENCY_CHECK_App {
+public class SYNCH_App {
 
 	public static void main(String[] args) throws IOException {
 		//BasicConfigurator.configure();
@@ -35,11 +35,11 @@ public class CONSISTENCY_CHECK_App {
 		
 		// load the resources containing your input 
 		s.load(null);
-		t.load(null);
 		
-		System.out.println("Starting CONSISTENCY_CHECK");
+		System.out.println("Starting SYNCH");
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil tggRuntime = new CC(tgg, s, c, t, p);
+		TGGRuntimeUtil tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p);
+		tggRuntime.setMode(OperationMode.FWD);
 		tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
 		Transformation transformation = new Transformation(rs, tggRuntime);						
@@ -50,10 +50,8 @@ public class CONSISTENCY_CHECK_App {
 		transformation.dispose();
 		
 		long toc = System.currentTimeMillis();
-		System.out.println("Completed CONSISTENCY_CHECK in: " + (toc-tic) + " ms");
+		System.out.println("Completed SYNCH in: " + (toc-tic) + " ms");
 	 
-	 	s.save(null);
-	 	t.save(null);
 	 	c.save(null);
 	 	p.save(null);
 	}
