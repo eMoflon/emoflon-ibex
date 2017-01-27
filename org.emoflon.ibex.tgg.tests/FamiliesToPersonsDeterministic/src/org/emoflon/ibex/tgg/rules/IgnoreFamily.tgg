@@ -1,0 +1,24 @@
+#using FamiliesToPersonsDeterministic.*
+#using AttrCondDefLibrary.*
+
+#rule IgnoreFamily #with FamiliesToPersonsDeterministic
+
+#source { 
+	fr:FamilyRegister {
+		++ -families->f
+	}
+	
+	++ f:Family
+}
+
+#target {
+	 
+}
+
+#correspondence {
+	
+}
+
+#attributeConditions {
+	
+}
