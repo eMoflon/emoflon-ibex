@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.operational.FWD;
+import org.emoflon.ibex.tgg.operational.OperationMode;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.run.Transformation;
@@ -53,7 +54,8 @@ public class IbexTestRunner extends BXToolForEMF<FamilyRegister, PersonRegister,
 		FamilyRegister freg = FamiliesFactory.eINSTANCE.createFamilyRegister();
 		s.getContents().add(freg);
 		
-		TGGRuntimeUtil tggRuntime = new FWD(tgg, s, c, t, p, new UserDefinedRuntimeTGGAttrConstraintFactory());
+		TGGRuntimeUtil tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p);
+		tggRuntime.setMode(OperationMode.FWD);
 		Transformation transformation = new Transformation(rs, tggRuntime);						
 		transformation.execute();		
 		tggRuntime.run();
