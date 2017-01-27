@@ -24,7 +24,7 @@ public class MODELGEN_App {
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
 		registerMetamodels(rs);
 		
-		Resource tggR = rs.getResource(URI.createFileURI("model/CDToDoc.tgg.xmi"), true);
+		Resource tggR = rs.getResource(URI.createFileURI("model/FamiliesToPersonsDeterministic.tgg.xmi"), true);
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		
 		// create your resources 
@@ -66,24 +66,24 @@ public class MODELGEN_App {
 
 		
 		// Add mapping for correspondence metamodel
-		Resource corr = rs.getResource(URI.createFileURI("model/CDToDoc.ecore"), true);
+		Resource corr = rs.getResource(URI.createFileURI("model/FamiliesToPersonsDeterministic.ecore"), true);
 		EPackage pcorr = (EPackage) corr.getContents().get(0);
 		Registry.INSTANCE.put(corr.getURI().toString(), corr);
-		Registry.INSTANCE.put("platform:/resource/CDToDoc/model/CDToDoc.ecore", pcorr);
-		Registry.INSTANCE.put("platform:/plugin/CDToDoc/model/CDToDoc.ecore", pcorr);
+		Registry.INSTANCE.put("platform:/resource/FamiliesToPersonsDeterministic/model/FamiliesToPersonsDeterministic.ecore", pcorr);
+		Registry.INSTANCE.put("platform:/plugin/FamiliesToPersonsDeterministic/model/FamiliesToPersonsDeterministic.ecore", pcorr);
 		
 		// TODO: Uncomment the following lines and register source and target metamodels
 		// Add mappings for all other required dependencies
 		//Resource source = rs.getResource(URI.createFileURI("domains/MySource.ecore"), true);
 		//EPackage psource = (EPackage) source.getContents().get(0);
 		//Registry.INSTANCE.put(source.getURI().toString(), psource);
-		//Registry.INSTANCE.put("platform:/resource/CDToDoc/domains/MySource.ecore", psource);
+		//Registry.INSTANCE.put("platform:/resource/FamiliesToPersonsDeterministic/domains/MySource.ecore", psource);
 		//Registry.INSTANCE.put("platform:/plugin/MySource/model/MySource.ecore", psource);
 		
 		//Resource target = rs.getResource(URI.createFileURI("domains/MyTarget.ecore"), true);
 		//EPackage ptarget = (EPackage) target.getContents().get(0);
 		//Registry.INSTANCE.put(target.getURI().toString(), ptarget);
-		//Registry.INSTANCE.put("platform:/resource/CDToDoc/domains/MyTarget.ecore", ptarget);	
+		//Registry.INSTANCE.put("platform:/resource/FamiliesToPersonsDeterministic/domains/MyTarget.ecore", ptarget);	
 		//Registry.INSTANCE.put("platform:/plugin/MyTarget/model/MyTarget.ecore", ptarget);	
 	}
 }

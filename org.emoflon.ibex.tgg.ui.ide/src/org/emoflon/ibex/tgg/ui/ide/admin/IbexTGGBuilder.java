@@ -33,7 +33,6 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
-import org.emoflon.ibex.tgg.core.compiler.ApplicationStubTemplate;
 import org.emoflon.ibex.tgg.core.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoInternalTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.TGGProject;
@@ -128,7 +127,6 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		generatePatterns(internalModel);
 		generateXtendManipulationCode(internalModel);
 		generateAttrCondLibsAndStubs(internalModel);
-		generateApplicationStub(internalModel);
 		generateRunFiles();}));
 	}
 	
@@ -140,10 +138,6 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		}
 	}
 
-	private void generateApplicationStub(TGGProject internalModel) {
-		String applicationStubContent = (new ApplicationStubTemplate()).getApplicationStub(internalModel.getTggModel());
-		createFile(RUN_FOLDER, APPLICATION, JAVA_EXTENSION, applicationStubContent, false);
-	}
 
 	private void generateXtendManipulationCode(TGGProject tggProject) {
 		TGGCompiler compiler = new TGGCompiler(tggProject.getTggModel());
