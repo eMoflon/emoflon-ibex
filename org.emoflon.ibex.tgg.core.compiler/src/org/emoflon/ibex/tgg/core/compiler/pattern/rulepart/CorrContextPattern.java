@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
 
+import java.util.stream.Stream;
+
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
 
 import language.BindingType;
@@ -18,14 +20,15 @@ public class CorrContextPattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		
-		if(e.getBindingType() == BindingType.CREATE)
-			return false;	
-		if(e instanceof TGGRuleCorr)
+
+		if (e.getBindingType() == BindingType.CREATE)
+			return false;
+		if (e instanceof TGGRuleCorr)
 			return true;
-		if(e instanceof TGGRuleNode){
-			TGGRuleNode n = (TGGRuleNode)e;
-			return (n.getIncomingCorrsSource().size() + n.getIncomingCorrsTarget().size() > 0);
+		if (e instanceof TGGRuleNode) {
+			TGGRuleNode n = (TGGRuleNode) e;
+			return Stream.concat(n.getIncomingCorrsSource().stream(), n.getIncomingCorrsTarget().stream())
+					.anyMatch(c -> c.getBindingType() == BindingType.CONTEXT);
 		}
 		return false;
 	}
@@ -47,7 +50,7 @@ public class CorrContextPattern extends RulePartPattern {
 
 	@Override
 	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
-		return ! (node1.getDomainType() == DomainType.CORR && node2.getDomainType() == DomainType.CORR);
+		return !(node1.getDomainType() == DomainType.CORR && node2.getDomainType() == DomainType.CORR);
 	}
 
 }
