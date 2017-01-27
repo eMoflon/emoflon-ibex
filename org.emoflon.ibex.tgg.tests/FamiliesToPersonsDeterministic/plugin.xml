@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><plugin>
+  <extension id="org.emoflon.ibex.tgg.common._common_eMoflon" point="org.eclipse.viatra.query.runtime.queryspecification">
+    <group group="org.eclipse.viatra.query.runtime.extensibility.SingletonExtensionFactory:org.emoflon.ibex.tgg.common._common_eMoflon" id="org.emoflon.ibex.tgg.common._common_eMoflon">
+      <query-specification fqn="org.emoflon.ibex.tgg.common.marked"/>
+    </group>
+  </extension>
+</plugin>
