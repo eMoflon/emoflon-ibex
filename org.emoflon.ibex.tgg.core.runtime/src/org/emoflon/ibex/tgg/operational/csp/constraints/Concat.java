@@ -78,8 +78,9 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 
 		case "BBFF": {
 			setSatisfied(true);
-			String value2 = (String) generateValue(c.getType());
-			c.bindToValue((String) a.getValue() + separator.getValue() + value2);
+			String value = (String) generateValue(b.getType());
+			b.bindToValue(value);
+			c.bindToValue((String) a.getValue() + separator.getValue() + value);
 			return;
 		}
 
