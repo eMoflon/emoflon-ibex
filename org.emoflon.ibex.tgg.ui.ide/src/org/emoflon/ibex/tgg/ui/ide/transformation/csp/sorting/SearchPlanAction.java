@@ -10,6 +10,8 @@ import org.gervarro.democles.common.Adornment;
 import org.gervarro.democles.plan.Algorithm;
 import org.gervarro.democles.plan.WeightedOperation;
 
+import com.google.common.collect.Lists;
+
 import language.BindingType;
 import language.DomainType;
 import language.basic.expressions.TGGAttributeExpression;
@@ -44,7 +46,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 
 		// 3. Call search plan algorithm to sort weighted operations
 		SimpleCombiner sc;
-		ArrayList<TGGAttributeConstraint> sortedList;
+		List<TGGAttributeConstraint> sortedList;
 		PrintStream out = System.out;
 		PrintStream err = System.err;
 		System.setOut(new PrintStream(new OutputStream() {
@@ -69,6 +71,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 			System.setOut(out);
 			System.setErr(err);
 		}
+		sortedList = Lists.reverse(sortedList);
 
 		return sortedList;
 	}
