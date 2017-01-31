@@ -1,6 +1,7 @@
-package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
+package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support;
 
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
 
 import language.BindingType;
 import language.DomainType;

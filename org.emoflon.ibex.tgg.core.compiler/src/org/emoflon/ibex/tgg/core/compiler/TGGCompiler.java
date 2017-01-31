@@ -16,15 +16,16 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.SrcProtocolNACsP
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.BWDPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CCPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.CorrContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.FWDPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.MODELGENPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcContextPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.SrcPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgContextPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.TrgPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.WholeRulePattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.CorrContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.SrcContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.SrcPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.TrgContextPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.TrgPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECPatterns;
 
 import language.TGG;
 import language.TGGRule;
@@ -65,9 +66,7 @@ public class TGGCompiler {
 	}
 
 	public void preparePatterns() {
-
 		for (TGGRule rule : tgg.getRules()) {
-
 			Collection<Pattern> patterns = new ArrayList<>();
 
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
@@ -88,9 +87,9 @@ public class TGGCompiler {
 			patterns.add(trg);
 			trg.getPositiveInvocations().add(trgContext);
 			
-			TrgProtocolNACsPattern trgProocolNACs = new TrgProtocolNACsPattern(rule);
-			patterns.add(trgProocolNACs);
-			trgProocolNACs.getPositiveInvocations().add(trg);
+			TrgProtocolNACsPattern trgProcolNACs = new TrgProtocolNACsPattern(rule);
+			patterns.add(trgProcolNACs);
+			trgProcolNACs.getPositiveInvocations().add(trg);
 
 			CorrContextPattern corrContext = new CorrContextPattern(rule);
 			patterns.add(corrContext);
@@ -109,7 +108,7 @@ public class TGGCompiler {
 
 			BWDPattern bwd = new BWDPattern(rule);
 			patterns.add(bwd);
-			bwd.getPositiveInvocations().add(trgProocolNACs);
+			bwd.getPositiveInvocations().add(trgProcolNACs);
 			bwd.getPositiveInvocations().add(corrContext);
 			bwd.getPositiveInvocations().add(srcContext);
 
@@ -131,10 +130,16 @@ public class TGGCompiler {
 
 			ruleToPatterns.put(rule, patterns);
 		}
+		
+		for (TGGRule rule : tgg.getRules()) {
+			DECPatterns decPatterns = new DECPatterns(rule, ruleToPatterns);
+			
+		}
+		
 	}
 
 	public String getViatraPatterns(TGGRule rule) {
-
+		
 		String result = patternTemplate.generateHeaderAndImports(aliasToEPackageUri, determineNonAliasedImports(rule),
 				rule.getName());
 

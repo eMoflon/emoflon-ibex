@@ -46,6 +46,10 @@ public abstract class Pattern {
 	
 	public Pattern(TGGRule rule){
 		this.rule = rule;
+		initialize();
+	}
+	
+	protected void initialize() {
 		signatureElements = getSignatureElements(rule);
 		bodyNodes = calculateBodyNodes(rule.getNodes());
 		bodyEdges = calculateBodyEdges(rule.getEdges());	

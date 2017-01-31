@@ -17,7 +17,7 @@ public abstract class RulePartPattern extends Pattern {
 
 	
 	public RulePartPattern(TGGRule rule){
-		super(rule);	
+		super(rule);
 	}
 
 
