@@ -15,6 +15,8 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class DECHelper {
+	
+	private static final String DEC_NODE = "DECNode"; 
 
 	protected static int countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection) {
 		return rule.getNodes().parallelStream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection)).max((a, b) -> a > b ? a : b).get();
@@ -83,7 +85,7 @@ public class DECHelper {
 		
 		// create a new edge and node to indicate a dangling edge which we try to detect
 		TGGRuleNode newNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		newNode.setName(entryPoint.getName() + "_" + edgeType.getName() + "_" + "DECNode");
+		newNode.setName(entryPoint.getName() + "_" + edgeType.getName() + "_" + DEC_NODE);
 		newNode.setDomainType(entryPoint.getDomainType());
 		newNode.setBindingType(BindingType.CREATE);
 		newNode.setType(getOppositeType(edgeType, eDirection));
@@ -105,5 +107,9 @@ public class DECHelper {
 		}
 		
 		return copy;
+	}
+	
+	protected static boolean isDECNodE(TGGRuleNode node) {
+		return node.getName().contains(DEC_NODE); 
 	}
 }

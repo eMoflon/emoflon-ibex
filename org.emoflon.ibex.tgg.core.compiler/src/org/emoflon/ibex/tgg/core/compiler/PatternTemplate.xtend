@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.EReference
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.ProtocolNACsPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECPattern
 
 class PatternTemplate {
 
@@ -100,6 +101,24 @@ class PatternTemplate {
 				check(true);
 			}
 			
+		'''
+	}
+	
+	def generateDECcheckPattern(DECPattern pattern) {
+
+		return '''
+			pattern «pattern.getName»(«FOR e : pattern.signatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
+				«FOR injectivityCheckPair : pattern.injectivityChecks»
+					«injectivityCheckPair.left.name» != «injectivityCheckPair.right.name»;
+				«ENDFOR»
+				«FOR edge : pattern.getBodyEdges»
+					«edge.srcNode.type.name».«edge.type.name»(«edge.srcNode.name», «edge.trgNode.name»);
+				«ENDFOR»			
+				«FOR node : pattern.bodySrcTrgNodes»
+					«node.type.name»(«node.name»);
+				«ENDFOR»
+				check(true);
+			}
 		'''
 	}
 

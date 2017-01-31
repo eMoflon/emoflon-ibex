@@ -12,42 +12,40 @@ import language.TGGRuleNode;
 public class DECPattern extends RulePartPattern {
 	
 	private TGGRuleNode entryPoint;
-	private EReference edgeType;
-
+	
 	public DECPattern(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
-		super(rule);
-		this.entryPoint = entryPoint;
-		this.edgeType = edgeType;
+		super(DECHelper.createCheckEdgeRule(rule, entryPoint, edgeType, eDirection));
 	}
 
 	@Override
 	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
-		// TODO Auto-generated method stub
-		return false;
+		if(DECHelper.isDECNodE(node1) || DECHelper.isDECNodE(node2)) 
+			return false;
+		
+		return true;	
 	}
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleNode n) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		// TODO Auto-generated method stub
-		return false;
+		if(e instanceof TGGRuleNode && DECHelper.isDECNodE((TGGRuleNode) e))
+			return false;
+		
+		return true;
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		// TODO Auto-generated method stub
-		return null;
+		return "_DEC";
 	}
 	
 	/**
@@ -58,13 +56,4 @@ public class DECPattern extends RulePartPattern {
 	protected boolean isEmpty() {
 		return getNegativeInvocations().isEmpty();
 	}
-	
-	private int countIncomingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType) {
-		return (int) entryPoint.getIncomingEdges().stream().filter(e -> e.getBindingType().equals(BindingType.CREATE) && e.getType().equals(edgeType)).count();
-	}
-	
-	private int countOutgoingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType) {
-		return (int) entryPoint.getOutgoingEdges().stream().filter(e -> e.getBindingType().equals(BindingType.CREATE) && e.getType().equals(edgeType)).count();
-	}
-
 }

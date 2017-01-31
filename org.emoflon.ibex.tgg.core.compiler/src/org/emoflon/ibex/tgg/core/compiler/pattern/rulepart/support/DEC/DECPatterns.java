@@ -43,6 +43,10 @@ public class DECPatterns extends RulePartPattern {
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
 
+			// entry nodes have to have create binding type
+			if (!n.getBindingType().equals(BindingType.CREATE))
+				continue;
+			
 			// we don't care about correspondence nodes
 			if (n.getDomainType().equals(DomainType.CORR))
 				continue;
