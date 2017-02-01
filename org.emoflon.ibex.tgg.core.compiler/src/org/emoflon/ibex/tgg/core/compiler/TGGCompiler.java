@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.core.compiler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -25,8 +26,10 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.SrcContextPat
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.SrcPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.TrgContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.TrgPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECPatterns;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.SearchEdgePattern;
 
+import language.DomainType;
 import language.TGG;
 import language.TGGRule;
 import runtime.RuntimePackage;
@@ -68,7 +71,7 @@ public class TGGCompiler {
 	public void preparePatterns() {
 		for (TGGRule rule : tgg.getRules()) {
 			Collection<Pattern> patterns = new ArrayList<>();
-
+			
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
 			patterns.add(srcContext);
 			
@@ -131,11 +134,20 @@ public class TGGCompiler {
 			ruleToPatterns.put(rule, patterns);
 		}
 		
+		// add no DEC patterns to Src- and TrgPattern, respectivly and register them
 		for (TGGRule rule : tgg.getRules()) {
-			DECPatterns decPatterns = new DECPatterns(rule, ruleToPatterns);
+			NoDECsPatterns srcNoDecPatterns = new NoDECsPatterns(rule, ruleToPatterns, DomainType.SRC);
+			NoDECsPatterns trgNoDecPatterns = new NoDECsPatterns(rule, ruleToPatterns, DomainType.TRG);
 			
+			if(!srcNoDecPatterns.isEmpty()) {
+				ruleToPatterns.get(rule).add(srcNoDecPatterns);
+				ruleToPatterns.get(rule).stream().filter(r -> r instanceof SrcPattern).forEach(r -> r.getPositiveInvocations().add(srcNoDecPatterns));				
+			}
+			if(!trgNoDecPatterns.isEmpty()) {
+				ruleToPatterns.get(rule).add(trgNoDecPatterns);
+				ruleToPatterns.get(rule).stream().filter(r -> r instanceof TrgPattern).forEach(r -> r.getPositiveInvocations().add(trgNoDecPatterns));
+			}
 		}
-		
 	}
 
 	public String getViatraPatterns(TGGRule rule) {
@@ -143,8 +155,12 @@ public class TGGCompiler {
 		String result = patternTemplate.generateHeaderAndImports(aliasToEPackageUri, determineNonAliasedImports(rule),
 				rule.getName());
 
-		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof RulePartPattern)
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof RulePartPattern && !(p instanceof SearchEdgePattern))
 				.map(p -> patternTemplate.generateOperationalPattern((RulePartPattern) p))
+				.collect(Collectors.joining());
+		
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof SearchEdgePattern)
+				.map(p -> patternTemplate.generateSearchEdgePattern((SearchEdgePattern) p))
 				.collect(Collectors.joining());
 		
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ProtocolNACsPattern)

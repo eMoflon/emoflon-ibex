@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.EReference
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.ProtocolNACsPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.SearchEdgePattern
 
 class PatternTemplate {
 
@@ -104,7 +104,7 @@ class PatternTemplate {
 		'''
 	}
 	
-	def generateDECcheckPattern(DECPattern pattern) {
+	def generateSearchEdgePattern(SearchEdgePattern pattern) {
 
 		return '''
 			pattern «pattern.getName»(«FOR e : pattern.signatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){

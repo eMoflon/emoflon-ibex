@@ -21,17 +21,18 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class DECPatterns extends RulePartPattern {
+public class NoDECsPatterns extends RulePartPattern {
 
 	private boolean decDetected = false;
 	private Map<TGGRule, Collection<Pattern>> ruleToPatterns;
-
-	public DECPatterns(TGGRule rule, Map<TGGRule, Collection<Pattern>> ruleToPatterns) {
+	private DomainType domain;
+	
+	public NoDECsPatterns(TGGRule rule, Map<TGGRule, Collection<Pattern>> ruleToPatterns, DomainType domain) {
 		super(rule);
-
 		this.ruleToPatterns = ruleToPatterns;
-
-		createDECEntries(rule);
+		this.domain = domain;
+		createDECEntries(rule, domain);
+		initialize();
 	}
 
 	/**
@@ -39,7 +40,7 @@ public class DECPatterns extends RulePartPattern {
 	 * 
 	 * @param rule
 	 */
-	private void createDECEntries(TGGRule rule) {
+	private void createDECEntries(TGGRule rule, DomainType domain) {
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
 
@@ -47,13 +48,13 @@ public class DECPatterns extends RulePartPattern {
 			if (!n.getBindingType().equals(BindingType.CREATE))
 				continue;
 			
-			// we don't care about correspondence nodes
-			if (n.getDomainType().equals(DomainType.CORR))
+			// we don't care about correspondence nodes and generate DECs only for the current domain (SRC or TRG)
+			if (!n.getDomainType().equals(domain) || n.getDomainType().equals(DomainType.CORR))
 				continue;
 
 			// check if edge type occurs in our current rule for the given entry point,
 			// if not -> search if some other rule might translate such an edge
-			for (EReference eType : nodeClass.getEReferences()) {
+			for (EReference eType : DECHelper.extractEReferences(nodeClass)) {
 				for (EdgeDirection eDirection : EdgeDirection.values()) {
 
 					// check type
@@ -64,13 +65,13 @@ public class DECPatterns extends RulePartPattern {
 					// if the edge has any multiplicity or there is no edge representation at all in this rule
 					if (eType.getUpperBound() == 1 && numOfEdges == 1)
 						continue;
-
-					// initialize DECpattern
-					DECPattern decPattern = new DECPattern(rule, n, eType, eDirection);
+					
+					// initialise DECpattern 
+					DECPattern decPattern = new DECPattern(rule, n, eType, eDirection, ruleToPatterns);
 
 					// check if the edges are represented and translated elsewhere
 					TGG tgg = (TGG) rule.eContainer();
-					List<TGGRule> rules = tgg.getRules().stream().filter(r -> DECHelper.countEdgeInRule(rule, eType, eDirection) > numOfEdges).collect(Collectors.toList());
+					List<TGGRule> rules = tgg.getRules().stream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection) > numOfEdges).collect(Collectors.toList());
 
 					// find src or trg pattern already generated for the found rules
 					for (TGGRule filteredRule : rules) {
@@ -94,8 +95,12 @@ public class DECPatterns extends RulePartPattern {
 					// if any decpattern was created which has at least one negative invocation, we'll add it to this pattern
 					// a negative invocation means here that we were able to find another rule that translated the edge
 					// which might remain untranslated if we apply the current rule
-					if (!decPattern.isEmpty())
-						getPositiveInvocations().add(decPattern);
+					// we also register the pattern so that it is found when we generate the code and initialize the search pattern
+					if (!decPattern.isEmpty() || DECHelper.isEdgeInTGG(tgg, eType, eDirection)) {
+						getNegativeInvocations().add(decPattern);
+						decPattern.createSearchEdgePattern(rule, n, eType, eDirection, ruleToPatterns);
+						ruleToPatterns.get(rule).add(decPattern);
+					}
 				}
 
 			}
@@ -103,7 +108,7 @@ public class DECPatterns extends RulePartPattern {
 	}
 
 	@Override
-	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return false;
 	}
 
@@ -119,16 +124,15 @@ public class DECPatterns extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		return true;
+		return e.getDomainType() == domain;
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		// TODO Auto-generated method stub
-		return null;
+		return "_NO_DECs_" + domain.getName();
 	}
 
-	protected boolean isEmpty() {
+	public boolean isEmpty() {
 		return getPositiveInvocations().isEmpty() && getNegativeInvocations().isEmpty();
 	}
 }

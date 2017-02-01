@@ -44,7 +44,7 @@ public class BWDPattern extends RulePartPattern {
 	}
 	
 	@Override
-	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getDomainType() == node2.getDomainType();
 	}
 
