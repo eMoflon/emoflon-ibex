@@ -16,22 +16,25 @@ public class DECPattern extends RulePartPattern {
 
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
+	private EdgeDirection eDirection;
 	
-	public DECPattern(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, Map<TGGRule, Collection<Pattern>> ruleToPatterns) {
+	public DECPattern(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, DECTrackingContainer decTC) {
 		super(rule);
 		this.entryPoint = entryPoint;
 		this.edgeType = edgeType;
+		this.eDirection = eDirection;
+		initialize();
 	}
 
-	protected void createSearchEdgePattern(TGGRule rule, TGGRuleNode n, EReference eType, EdgeDirection eDirection, Map<TGGRule, Collection<Pattern>> ruleToPatterns) {
+	protected void createSearchEdgePattern(TGGRule rule, TGGRuleNode n, EReference eType, EdgeDirection eDirection, DECTrackingContainer decTC) {
 		SearchEdgePattern pattern = new SearchEdgePattern(rule, n, eType, eDirection);
 		getPositiveInvocations().add(pattern);
-		ruleToPatterns.get(rule).add(pattern);
+		decTC.getRuleToPatternsMap().get(rule).add(pattern);
 	}
 
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -46,12 +49,12 @@ public class DECPattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		return false;
+		return entryPoint != null && entryPoint.getDomainType() == e.getDomainType();
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_" + entryPoint.getName() +"_" + edgeType.getName() +  "_DEC_" + entryPoint.getDomainType().getName();
+		return "_" + entryPoint.getName() +"_" + edgeType.getName() + "_" + eDirection.toString().toLowerCase() + "_DEC_" + entryPoint.getDomainType().getName();
 	}
 
 	/**

@@ -15,7 +15,7 @@ import language.TGGRuleNode;
 public abstract class Pattern {
 
 	protected TGGRule rule;
-	
+
 	/**
 	 * each positive pattern invocation for a pattern pat corresponds to the following text
 	 * find pat(<<signature elements of pat separated with ",">>);
@@ -119,6 +119,10 @@ public abstract class Pattern {
 		return false;
 	}
 	
+	
+	public TGGRule getRule() {
+		return rule;
+	}
 
 	
 }

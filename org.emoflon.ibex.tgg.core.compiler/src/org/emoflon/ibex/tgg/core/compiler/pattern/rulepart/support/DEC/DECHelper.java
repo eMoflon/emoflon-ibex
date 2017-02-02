@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
 
 import language.BindingType;
 import language.LanguageFactory;
@@ -26,34 +27,41 @@ public class DECHelper {
 	/*
 	 * These edge counting rules only work in the context of dec because we filter those rules where our entry point is not set to context
 	 */
-	protected static boolean isEdgeInTGG(TGG tgg, EReference eType, EdgeDirection eDirection) {
-		return tgg.getRules().parallelStream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection) > 0).count() != 0;
+	protected static boolean isEdgeInTGG(TGG tgg, EReference eType, EdgeDirection eDirection, boolean findRescuePattern) {
+		return tgg.getRules().parallelStream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection, findRescuePattern) > 0).count() != 0;
 	}
 
-	protected static int countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection) {
-		return rule.getNodes().stream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection)).max((a, b) -> a > b ? a : b).get();
+	protected static int countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern) {
+		return rule.getNodes().stream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection, findRescuePattern)).max((a, b) -> a > b ? a : b).get();
 	}
 
-	protected static int countEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
-		return eDirection == EdgeDirection.OUTGOING ? countIncomingEdgeInRule(rule, edgeType) : countOutgoingEdgeInRule(rule, edgeType);
+	// TODO can be merged into the upper method
+	protected static int countEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern) {
+		return eDirection == EdgeDirection.INCOMING ? countIncomingEdgeInRule(rule, edgeType, findRescuePattern) : countOutgoingEdgeInRule(rule, edgeType, findRescuePattern);
 	}
 
-	protected static int countIncomingEdgeInRule(TGGRule rule, EReference edgeType) {
-		return rule.getNodes().stream().map(n -> countIncomingEdgeInRule(rule, n, edgeType)).max((a, b) -> a > b ? a : b).get();
+	protected static int countIncomingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern) {
+		if (!findRescuePattern)
+			return rule.getNodes().stream().map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)).max(Integer::compare).get();
+
+		return rule.getNodes().stream().map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)).max(Integer::compare).get();
 	}
 
-	protected static int countOutgoingEdgeInRule(TGGRule rule, EReference edgeType) {
-		return rule.getNodes().stream().map(n -> countOutgoingEdgeInRule(rule, n, edgeType)).max((a, b) -> a > b ? a : b).get();
+	protected static int countOutgoingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern) {
+		if (!findRescuePattern)
+			return rule.getNodes().stream().map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)).max(Integer::compare).get();
+
+		return rule.getNodes().stream().map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)).max(Integer::compare).get();
 	}
 
-	protected static int countIncomingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType) {
+	protected static int countIncomingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, boolean findRescuePattern) {
 		return (int) entryPoint.getIncomingEdges().stream()
-				.filter(e -> e.getTrgNode().getBindingType() == BindingType.CONTEXT && e.getBindingType().equals(BindingType.CREATE) && e.getType().equals(edgeType)).count();
+				.filter(e -> (!findRescuePattern || e.getTrgNode().getBindingType() == BindingType.CONTEXT) && e.getBindingType() == BindingType.CREATE && e.getType().equals(edgeType)).count();
 	}
 
-	protected static int countOutgoingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType) {
+	protected static int countOutgoingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, boolean findRescuePattern) {
 		return (int) entryPoint.getOutgoingEdges().stream()
-				.filter(e -> e.getSrcNode().getBindingType() == BindingType.CONTEXT && e.getBindingType().equals(BindingType.CREATE) && e.getType().equals(edgeType)).count();
+				.filter(e -> (!findRescuePattern || e.getSrcNode().getBindingType() == BindingType.CONTEXT) && e.getBindingType().equals(BindingType.CREATE) && e.getType().equals(edgeType)).count();
 	}
 
 	/**
@@ -137,5 +145,21 @@ public class DECHelper {
 		EPackage pkg = (EPackage) nodeClass.eContainer();
 		return pkg.getEClassifiers().stream().filter(c -> (c instanceof EClass)).flatMap(c -> ((EClass) c).getEReferences().stream())
 				.filter(r -> r.getEType().equals(nodeClass) || r.eContainer().equals(nodeClass)).collect(Collectors.toList());
+	}
+	
+	protected static TGGRuleNode getDECNode(TGGRule rule) {
+		return rule.getNodes().stream().filter(n -> n.getName().endsWith(DEC_NODE)).findFirst().get();
+	}
+
+	/**
+	 * Here we get all DECPatterns and search for external patterns that we have to import into the viatra pattern generated for the given rule
+	 * 
+	 * @param rule
+	 * @param collect
+	 * @return
+	 */
+	public static Collection<String> determineImports(TGGRule rule, List<Pattern> decPatterns) {
+		return decPatterns.stream().flatMap(p -> p.getNegativeInvocations().stream()).filter(p -> !(p instanceof SearchEdgePattern)).map(p -> p.getRule().getName().toLowerCase() + "." + p.getName())
+				.collect(Collectors.toSet());
 	}
 }

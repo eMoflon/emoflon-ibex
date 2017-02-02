@@ -43,6 +43,15 @@ class PatternTemplate {
 	def isKeyword(String name) {
 		return name.equals("super")
 	}
+	
+	def generateExternalPatternImports(Collection<String> patterns) {
+		return '''
+		«FOR p : patterns»
+			import org.emoflon.ibex.tgg.«p»
+		«ENDFOR»
+		
+		'''
+	}
 
 	def generateHeaderAndImports(LinkedHashMap<String, String> aliasedImports, Collection<String> nonAliasedImports,
 		String packageName) {

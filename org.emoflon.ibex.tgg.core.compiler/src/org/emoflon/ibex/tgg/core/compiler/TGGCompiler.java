@@ -26,6 +26,9 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.SrcContextPat
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.SrcPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.TrgContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.TrgPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECHelper;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECPattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECTrackingContainer;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.SearchEdgePattern;
 
@@ -58,30 +61,33 @@ public class TGGCompiler {
 		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
 		epackageToAlias.put(EcorePackage.eINSTANCE, "dep_ecore");
 
-		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage())
-				.forEachOrdered(p -> {
-					if (!epackageToAlias.containsKey(p)) {
-						String alias = "dep_" + ++packageCounter;
-						aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
-						epackageToAlias.put(p, alias);
-					}
-				});
+		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage()).forEachOrdered(p -> {
+			if (!epackageToAlias.containsKey(p)) {
+				String alias = "dep_" + ++packageCounter;
+				aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
+				epackageToAlias.put(p, alias);
+			}
+		});
 	}
 
 	public void preparePatterns() {
 		for (TGGRule rule : tgg.getRules()) {
 			Collection<Pattern> patterns = new ArrayList<>();
-			
+
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
 			patterns.add(srcContext);
-			
+
 			SrcPattern src = new SrcPattern(rule);
 			patterns.add(src);
 			src.getPositiveInvocations().add(srcContext);
-			
+
 			SrcProtocolNACsPattern srcProtocolNACs = new SrcProtocolNACsPattern(rule);
 			patterns.add(srcProtocolNACs);
 			srcProtocolNACs.getPositiveInvocations().add(src);
+			
+			SrcProtocolNACsAndDECPattern srcProtocolDECs = new SrcProtocolNACsAndDECPattern(rule);
+			patterns.add(srcProtocolDECs);
+			srcProtocolDECs.getPositiveInvocations().add(srcProtocolNACs);
 
 			TrgContextPattern trgContext = new TrgContextPattern(rule);
 			patterns.add(trgContext);
@@ -89,11 +95,15 @@ public class TGGCompiler {
 			TrgPattern trg = new TrgPattern(rule);
 			patterns.add(trg);
 			trg.getPositiveInvocations().add(trgContext);
-			
-			TrgProtocolNACsPattern trgProcolNACs = new TrgProtocolNACsPattern(rule);
-			patterns.add(trgProcolNACs);
-			trgProcolNACs.getPositiveInvocations().add(trg);
 
+			TrgProtocolNACsPattern trgProtocolNACs = new TrgProtocolNACsPattern(rule);
+			patterns.add(trgProtocolNACs);
+			trgProtocolNACs.getPositiveInvocations().add(trg);
+
+			TrgProtocolNACsAndDECPattern trgProtocolDECs = new TrgProtocolNACsAndDECPattern(rule);
+			patterns.add(trgProtocolDECs);
+			trgProtocolDECs.getPositiveInvocations().add(trgProtocolNACs);
+			
 			CorrContextPattern corrContext = new CorrContextPattern(rule);
 			patterns.add(corrContext);
 
@@ -111,7 +121,7 @@ public class TGGCompiler {
 
 			BWDPattern bwd = new BWDPattern(rule);
 			patterns.add(bwd);
-			bwd.getPositiveInvocations().add(trgProcolNACs);
+			bwd.getPositiveInvocations().add(trgProtocolNACs);
 			bwd.getPositiveInvocations().add(corrContext);
 			bwd.getPositiveInvocations().add(srcContext);
 
@@ -120,55 +130,57 @@ public class TGGCompiler {
 			modelgen.getPositiveInvocations().add(srcContext);
 			modelgen.getPositiveInvocations().add(trgContext);
 			modelgen.getPositiveInvocations().add(corrContext);
-			
+
 			WholeRulePattern whole = new WholeRulePattern(rule);
 			patterns.add(whole);
 			whole.getPositiveInvocations().add(src);
 			whole.getPositiveInvocations().add(trg);
 			whole.getPositiveInvocations().add(corrContext);
-			
+
 			ConsistencyPattern protocol = new ConsistencyPattern(rule);
 			patterns.add(protocol);
 			protocol.getPositiveInvocations().add(whole);
 
 			ruleToPatterns.put(rule, patterns);
 		}
+
+		// initialise DECTrackingContainer which is responsible to hold information needed for DEC generation such as which patterns belongs to which rule
+		// or what's the mapping of signature elements for the calls to external patterns
+		DECTrackingContainer decTC = new DECTrackingContainer(ruleToPatterns);
 		
-		// add no DEC patterns to Src- and TrgPattern, respectivly and register them
+		// add no DEC patterns to Src- and TrgPattern, respectively and register them
 		for (TGGRule rule : tgg.getRules()) {
-			NoDECsPatterns srcNoDecPatterns = new NoDECsPatterns(rule, ruleToPatterns, DomainType.SRC);
-			NoDECsPatterns trgNoDecPatterns = new NoDECsPatterns(rule, ruleToPatterns, DomainType.TRG);
-			
-			if(!srcNoDecPatterns.isEmpty()) {
+			NoDECsPatterns srcNoDecPatterns = new NoDECsPatterns(rule, decTC, DomainType.SRC);
+			NoDECsPatterns trgNoDecPatterns = new NoDECsPatterns(rule, decTC, DomainType.TRG);
+
+			if (!srcNoDecPatterns.isEmpty()) {
 				ruleToPatterns.get(rule).add(srcNoDecPatterns);
-				ruleToPatterns.get(rule).stream().filter(r -> r instanceof SrcPattern).forEach(r -> r.getPositiveInvocations().add(srcNoDecPatterns));				
+				ruleToPatterns.get(rule).stream().filter(r -> r instanceof SrcProtocolNACsAndDECPattern).forEach(r -> r.getPositiveInvocations().add(srcNoDecPatterns));
 			}
-			if(!trgNoDecPatterns.isEmpty()) {
+			if (!trgNoDecPatterns.isEmpty()) {
 				ruleToPatterns.get(rule).add(trgNoDecPatterns);
-				ruleToPatterns.get(rule).stream().filter(r -> r instanceof TrgPattern).forEach(r -> r.getPositiveInvocations().add(trgNoDecPatterns));
+				ruleToPatterns.get(rule).stream().filter(r -> r instanceof TrgProtocolNACsAndDECPattern).forEach(r -> r.getPositiveInvocations().add(trgNoDecPatterns));
 			}
 		}
 	}
 
 	public String getViatraPatterns(TGGRule rule) {
-		
-		String result = patternTemplate.generateHeaderAndImports(aliasToEPackageUri, determineNonAliasedImports(rule),
-				rule.getName());
+
+		String result = patternTemplate.generateHeaderAndImports(aliasToEPackageUri, determineNonAliasedImports(rule), rule.getName());
+
+		result += patternTemplate
+				.generateExternalPatternImports(DECHelper.determineImports(rule, ruleToPatterns.get(rule).stream().filter(p -> (p instanceof DECPattern)).collect(Collectors.toList())));
 
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof RulePartPattern && !(p instanceof SearchEdgePattern))
-				.map(p -> patternTemplate.generateOperationalPattern((RulePartPattern) p))
-				.collect(Collectors.joining());
-		
-		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof SearchEdgePattern)
-				.map(p -> patternTemplate.generateSearchEdgePattern((SearchEdgePattern) p))
-				.collect(Collectors.joining());
-		
-		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ProtocolNACsPattern)
-				.map(p -> patternTemplate.generateProtocolNACsPattern((ProtocolNACsPattern) p))
+				.map(p -> patternTemplate.generateOperationalPattern((RulePartPattern) p)).collect(Collectors.joining());
+
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof SearchEdgePattern).map(p -> patternTemplate.generateSearchEdgePattern((SearchEdgePattern) p))
 				.collect(Collectors.joining());
 
-		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ConsistencyPattern)
-				.map(p -> patternTemplate.generateConsistencyPattern((ConsistencyPattern) p))
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ProtocolNACsPattern).map(p -> patternTemplate.generateProtocolNACsPattern((ProtocolNACsPattern) p))
+				.collect(Collectors.joining());
+
+		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof ConsistencyPattern).map(p -> patternTemplate.generateConsistencyPattern((ConsistencyPattern) p))
 				.collect(Collectors.joining());
 
 		return result;
@@ -204,8 +216,7 @@ public class TGGCompiler {
 	}
 
 	public static LinkedHashSet<EReference> getEdgeTypes(TGG tgg) {
-		return tgg.getRules().stream().flatMap(r -> r.getEdges().stream()).map(e -> e.getType())
-				.collect(Collectors.toCollection(LinkedHashSet::new));
+		return tgg.getRules().stream().flatMap(r -> r.getEdges().stream()).map(e -> e.getType()).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 }

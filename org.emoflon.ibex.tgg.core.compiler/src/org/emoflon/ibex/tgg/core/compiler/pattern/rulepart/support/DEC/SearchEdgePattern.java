@@ -42,8 +42,8 @@ public class SearchEdgePattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		if(e instanceof TGGRuleNode && DECHelper.isDECNodE((TGGRuleNode) e))
-			return false;
+//		if(e instanceof TGGRuleNode && DECHelper.isDECNodE((TGGRuleNode) e))
+//			return false;
 		
 		return true;
 	}
