@@ -91,6 +91,8 @@ class ManipulationTemplate {
 							return getSynch
 						else if (tggRuntimeUtil.mode == OperationMode.MODELGEN)
 							return get«PatternSuffixes.MODELGEN»
+						else if (tggRuntimeUtil.mode == OperationMode.CC)
+							return get«PatternSuffixes.CC»
 					}
 					
 					private def getSynch() {
@@ -109,6 +111,14 @@ class ManipulationTemplate {
 							get«rule.name»«PatternSuffixes.MODELGEN»()
 							«ENDFOR»
 						 )
+					}
+					
+					private def get«PatternSuffixes.CC»(){
+						new EventDrivenTransformationRuleGroup(
+							«FOR rule : tgg.rules SEPARATOR ", "»
+							get«rule.name»«PatternSuffixes.CC»()
+							«ENDFOR»
+						)
 					}
 						
 					

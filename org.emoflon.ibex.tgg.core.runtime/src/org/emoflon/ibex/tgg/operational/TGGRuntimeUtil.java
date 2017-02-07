@@ -147,7 +147,7 @@ public class TGGRuntimeUtil {
 		return true;
 	}
 
-	private TGGRuleApplication prepareProtocol(String ruleName, IPatternMatch match,
+	protected void prepareProtocol(String ruleName, IPatternMatch match,
 			HashMap<String, EObject> createdElements) {
 		RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
@@ -168,8 +168,6 @@ public class TGGRuntimeUtil {
 		match.parameterNames().forEach(n -> {
 			ra.getNodeMappings().put(n, (EObject) match.get(n));
 		});
-		return ra;
-
 	}
 
 	private void fillProtocolInfo(Collection<? extends TGGRuleElement> ruleInfos, TGGRuleApplication protocol,
@@ -181,30 +179,33 @@ public class TGGRuntimeUtil {
 	}
 
 	private boolean allContextElementsalreadyProcessed(IPatternMatch match, String ruleName) {
+		
+		if(getStrategy() == OperationStrategy.PROTOCOL_NACS){
+			if (markingSrc()) {
+				if (!allEdgesAlreadyProcessed(ruleInfos.getBlackSrcEdges(ruleName), match))
+					return false;
+			}
 
-		if (markingSrc()) {
-			if (!allEdgesAlreadyProcessed(ruleInfos.getBlackSrcEdges(ruleName), match))
-				return false;
+			if (markingTrg()) {
+				if (!allEdgesAlreadyProcessed(ruleInfos.getBlackTrgEdges(ruleName), match))
+					return false;
+			}
 		}
-
-		if (markingTrg()) {
-			if (!allEdgesAlreadyProcessed(ruleInfos.getBlackTrgEdges(ruleName), match))
-				return false;
-		}
-
 		return true;
 	}
 
 	protected boolean someElementsAlreadyProcessed(String ruleName, IPatternMatch match) {
 
-		if (markingSrc()) {
-			if (someEdgesAlreadyProcessed(ruleInfos.getGreenSrcEdges(ruleName), match))
-				return true;
-		}
+		if(getStrategy() == OperationStrategy.PROTOCOL_NACS){
+			if (markingSrc()) {
+				if (someEdgesAlreadyProcessed(ruleInfos.getGreenSrcEdges(ruleName), match))
+					return true;
+			}
 
-		if (markingTrg()) {
-			if (someEdgesAlreadyProcessed(ruleInfos.getGreenTrgEdges(ruleName), match))
-				return true;
+			if (markingTrg()) {
+				if (someEdgesAlreadyProcessed(ruleInfos.getGreenTrgEdges(ruleName), match))
+					return true;
+			}
 		}
 		return false;
 	}
@@ -231,7 +232,7 @@ public class TGGRuntimeUtil {
 		return true;
 	}
 
-	private void applyCSPValues(HashMap<String, EObject> comatch,
+	protected void applyCSPValues(HashMap<String, EObject> comatch,
 			Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
 		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
 			EObject entry = comatch.get(cspVal.getLeft().getObjectVar().getName());
@@ -241,7 +242,7 @@ public class TGGRuntimeUtil {
 		}
 	}
 
-	private boolean conformTypesOfGreenNodes(IPatternMatch match, String ruleName) {
+	protected boolean conformTypesOfGreenNodes(IPatternMatch match, String ruleName) {
 		if (markingSrc()) {
 			for (TGGRuleNode gsn : ruleInfos.getGreenSrcNodes(ruleName)) {
 				if (gsn.getType() != ((EObject) match.get(gsn.getName())).eClass())
