@@ -1,8 +1,9 @@
-package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
+package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support;
 
 import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -49,7 +50,7 @@ public class CorrContextPattern extends RulePartPattern {
 	}
 
 	@Override
-	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return !(node1.getDomainType() == DomainType.CORR && node2.getDomainType() == DomainType.CORR);
 	}
 

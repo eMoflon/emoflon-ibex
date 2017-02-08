@@ -10,6 +10,11 @@ import org.eclipse.emf.ecore.EReference
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.ProtocolNACsPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.SearchEdgePattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECTrackingContainer
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECPattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECHelper
+import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern
 
 class PatternTemplate {
 
@@ -41,6 +46,15 @@ class PatternTemplate {
 
 	def isKeyword(String name) {
 		return name.equals("super")
+	}
+	
+	def generateExternalPatternImports(Collection<String> patterns) {
+		return '''
+		«FOR p : patterns»
+			import org.emoflon.ibex.tgg.«p»
+		«ENDFOR»
+		
+		'''
 	}
 
 	def generateHeaderAndImports(LinkedHashMap<String, String> aliasedImports, Collection<String> nonAliasedImports,
@@ -102,6 +116,56 @@ class PatternTemplate {
 			
 		'''
 	}
+	
+	def generateDECPattern(DECPattern pattern, DECTrackingContainer decTC) {
+		return '''
+			pattern «pattern.getName»(«FOR e : pattern.signatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
+				«IF pattern.ignored»
+					check(false);
+				«ENDIF»
+				«FOR pi : pattern.positiveInvocations»
+					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«IF pattern.negativeInvocations.empty && DECHelper.isDECNode(e as TGGRuleNode)»_«ENDIF»«e.name»«ENDFOR»);
+				«ENDFOR»
+				«FOR ni : pattern.negativeInvocations»
+					neg find «ni.getName»(«FOR e : decTC.getMapping(pattern, ni) SEPARATOR ", "»«e»«ENDFOR»);
+				«ENDFOR»
+				check(true);
+			}
+			
+		'''
+	}
+	
+	def generateSearchEdgePattern(SearchEdgePattern pattern) {
+
+		return '''
+			pattern «pattern.getName»(«FOR e : pattern.signatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
+				«FOR injectivityCheckPair : pattern.injectivityChecks»
+					«injectivityCheckPair.left.name» != «injectivityCheckPair.right.name»;
+				«ENDFOR»
+				«FOR edge : pattern.getBodyEdges»
+					«edge.srcNode.type.name».«edge.type.name»(«edge.srcNode.name», «edge.trgNode.name»);
+				«ENDFOR»			
+				«FOR node : pattern.bodySrcTrgNodes»
+					«node.type.name»(«node.name»);
+				«ENDFOR»
+				check(true);
+			}
+			
+		'''
+	}
+	
+	def generateProtocolDECPattern(Pattern pattern) {
+		return '''
+			pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
+				«FOR pi : pattern.positiveInvocations»
+					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
+				«ENDFOR»
+				«FOR node : pattern.bodySrcTrgNodes»
+					«IF node.bindingType.equals(BindingType.CONTEXT)»find marked(_«node.name»_eMoflonProtocol, «node.name»);«ENDIF»
+				«ENDFOR»
+			}
+		'''
+	}
 
 	def generateProtocolNACsPattern(ProtocolNACsPattern pattern) {
 		return '''
@@ -110,9 +174,10 @@ class PatternTemplate {
 					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
 				«ENDFOR»
 				«FOR node : pattern.bodySrcTrgNodes»
-					«IF node.bindingType.equals(BindingType.CREATE)»neg «ENDIF»find marked(_«node.name»_eMoflonProtocol, «node.name»);
+					«IF node.bindingType.equals(BindingType.CREATE)»neg find marked(_«node.name»_eMoflonProtocol, «node.name»);«ENDIF»
 				«ENDFOR»
 			}
+			
 		'''
 	}
 
@@ -130,6 +195,7 @@ class PatternTemplate {
 					«ENDIF»
 				«ENDFOR»
 				}
+				
 		'''
 	}
 

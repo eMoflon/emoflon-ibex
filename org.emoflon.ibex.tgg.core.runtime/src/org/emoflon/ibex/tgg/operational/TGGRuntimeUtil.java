@@ -98,6 +98,12 @@ public class TGGRuntimeUtil {
 
 	public boolean processOperationalRuleMatch(String ruleName, IPatternMatch match) {
 
+		if (match.patternName().endsWith("FWD") && !markingSrc())
+			return false;
+		
+		if (match.patternName().endsWith("BWD") && !markingTrg())
+			return false;
+		
 		if (someElementsAlreadyProcessed(ruleName, match))
 			return false;
 

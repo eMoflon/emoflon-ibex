@@ -17,12 +17,12 @@ public abstract class RulePartPattern extends Pattern {
 
 	
 	public RulePartPattern(TGGRule rule){
-		super(rule);	
+		super(rule);
 	}
 
 
 	public Collection<Pair<TGGRuleNode, TGGRuleNode>> getInjectivityChecks() {
-		List<TGGRuleNode> signatureNodes = signatureElements.stream().filter(e -> e instanceof TGGRuleNode)
+		List<TGGRuleNode> signatureNodes = getSignatureElements().stream().filter(e -> e instanceof TGGRuleNode)
 				.map(e -> (TGGRuleNode) e).collect(Collectors.toList());
 		Collection<Pair<TGGRuleNode, TGGRuleNode>> injectivityCheckPairs = new ArrayList<>();
 		for(int i = 0; i < signatureNodes.size(); i++){
@@ -30,7 +30,7 @@ public abstract class RulePartPattern extends Pattern {
 				TGGRuleNode nodeI = signatureNodes.get(i);
 				TGGRuleNode nodeJ = signatureNodes.get(j);
 				if(compatibleTypes(nodeI.getType(), nodeJ.getType())){
-					if(!injectivityIsAlreadyCheckedBySubpattern(nodeI, nodeJ)){
+					if(!injectivityIsAlreadyChecked(nodeI, nodeJ)){
 						injectivityCheckPairs.add(MutablePair.of(nodeI, nodeJ));
 					}
 				}
@@ -39,7 +39,7 @@ public abstract class RulePartPattern extends Pattern {
 		return injectivityCheckPairs;
 	}
 	
-	abstract protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2);
+	abstract protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2);
 	
 
 	private boolean compatibleTypes(EClass class1, EClass class2){

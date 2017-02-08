@@ -1,6 +1,7 @@
-package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart;
+package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support;
 
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -9,25 +10,25 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class TrgPattern extends RulePartPattern {
+public class SrcPattern extends RulePartPattern {
 
-	public TrgPattern(TGGRule rule) {
+	public SrcPattern(TGGRule rule) {
 		super(rule);
 	}
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getDomainType() == DomainType.TRG;
+		return e.getDomainType() == DomainType.SRC;
 	}
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return e.getDomainType() == DomainType.TRG && e.getBindingType() == BindingType.CREATE;
+		return e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CREATE;
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.TRG;
+		return PatternSuffixes.SRC;
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class TrgPattern extends RulePartPattern {
 	}
 
 	@Override
-	protected boolean injectivityIsAlreadyCheckedBySubpattern(TGGRuleNode node1, TGGRuleNode node2) {
+	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getBindingType() == BindingType.CONTEXT && node2.getBindingType() == BindingType.CONTEXT;
 	}
 
