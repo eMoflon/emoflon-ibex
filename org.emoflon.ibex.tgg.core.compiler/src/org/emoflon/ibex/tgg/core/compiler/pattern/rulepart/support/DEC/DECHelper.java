@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -13,6 +14,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
 
 import language.BindingType;
+import language.DomainType;
 import language.LanguageFactory;
 import language.TGG;
 import language.TGGRule;
@@ -22,46 +24,52 @@ import language.TGGRuleNode;
 
 public class DECHelper {
 
-	private static final String DEC_NODE = "DECNode";
+	public static final String DEC_NODE = "DECNode";
 
 	/*
 	 * These edge counting rules only work in the context of dec because we filter those rules where our entry point is not set to context
 	 */
-	protected static boolean isEdgeInTGG(TGG tgg, EReference eType, EdgeDirection eDirection, boolean findRescuePattern) {
-		return tgg.getRules().parallelStream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection, findRescuePattern) > 0).count() != 0;
+	protected static boolean isEdgeInTGG(TGG tgg, EReference eType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
+		return tgg.getRules().parallelStream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection, findRescuePattern, mode).getLeft() > 0).count() != 0;
 	}
 
-	protected static int countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern) {
-		return rule.getNodes().stream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection, findRescuePattern)).max((a, b) -> a > b ? a : b).get();
+	protected static Triple<Integer, TGGRuleNode, TGGRuleNode> countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
+		return rule.getNodes().stream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection, findRescuePattern, mode)).max((t1, t2) -> Integer.compare(t1.getLeft(),  t2.getLeft())).get();
 	}
 
 	// TODO can be merged into the upper method
-	protected static int countEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern) {
-		return eDirection == EdgeDirection.INCOMING ? countIncomingEdgeInRule(rule, edgeType, findRescuePattern) : countOutgoingEdgeInRule(rule, edgeType, findRescuePattern);
+	protected static Triple<Integer, TGGRuleNode, TGGRuleNode> countEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
+		return eDirection == EdgeDirection.INCOMING ? countIncomingEdgeInRule(rule, edgeType, findRescuePattern, mode) : countOutgoingEdgeInRule(rule, edgeType, findRescuePattern, mode);
 	}
 
-	protected static int countIncomingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern) {
+	protected static Triple<Integer, TGGRuleNode, TGGRuleNode> countIncomingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern, DomainType mode) {
+		Stream<TGGRuleNode>  stream = rule.getNodes().stream().filter(n -> n.getDomainType() == mode);
 		if (!findRescuePattern)
-			return rule.getNodes().stream().map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)).max(Integer::compare).get();
+			return stream.map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)).max((t1, t2) -> Integer.compare(t1.getLeft(),  t2.getLeft())).orElse(Triple.of(0, null, null));
 
-		return rule.getNodes().stream().map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)).max(Integer::compare).get();
+		return stream.map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)).max((t1, t2) -> Integer.compare(t1.getLeft(),  t2.getLeft())).orElse(Triple.of(0, null, null));
 	}
 
-	protected static int countOutgoingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern) {
+	protected static Triple<Integer, TGGRuleNode, TGGRuleNode> countOutgoingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern, DomainType mode) {
+		Stream<TGGRuleNode>  stream = rule.getNodes().stream().filter(n -> n.getDomainType() == mode);
 		if (!findRescuePattern)
-			return rule.getNodes().stream().map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)).max(Integer::compare).get();
+			return stream.map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)).max((t1, t2) -> Integer.compare(t1.getLeft(),  t2.getLeft())).orElse(Triple.of(0, null, null));
 
-		return rule.getNodes().stream().map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)).max(Integer::compare).get();
+		return stream.map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)).max((t1, t2) -> Integer.compare(t1.getLeft(),  t2.getLeft())).orElse(Triple.of(0, null, null));
 	}
 
-	protected static int countIncomingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, boolean findRescuePattern) {
-		return (int) entryPoint.getIncomingEdges().stream()
-				.filter(e -> (!findRescuePattern || e.getTrgNode().getBindingType() == BindingType.CONTEXT) && e.getBindingType() == BindingType.CREATE && e.getType().equals(edgeType)).count();
+	protected static Triple<Integer, TGGRuleNode, TGGRuleNode> countIncomingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, boolean findRescuePattern) {
+		List<TGGRuleEdge> edges = entryPoint.getIncomingEdges().stream()
+				.filter(e -> (!findRescuePattern || e.getTrgNode().getBindingType() == BindingType.CONTEXT) && e.getBindingType() == BindingType.CREATE && e.getType().equals(edgeType))
+				.collect(Collectors.toList());
+		return Triple.of(edges.size(), edges.size() == 0 ? null : edges.get(0).getTrgNode(), edges.size() == 0 ? null : edges.get(0).getSrcNode());
 	}
 
-	protected static int countOutgoingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, boolean findRescuePattern) {
-		return (int) entryPoint.getOutgoingEdges().stream()
-				.filter(e -> (!findRescuePattern || e.getSrcNode().getBindingType() == BindingType.CONTEXT) && e.getBindingType().equals(BindingType.CREATE) && e.getType().equals(edgeType)).count();
+	protected static Triple<Integer, TGGRuleNode, TGGRuleNode> countOutgoingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, boolean findRescuePattern) {
+		List<TGGRuleEdge> edges = entryPoint.getOutgoingEdges().stream()
+				.filter(e -> (!findRescuePattern || e.getSrcNode().getBindingType() == BindingType.CONTEXT) && e.getBindingType().equals(BindingType.CREATE) && e.getType().equals(edgeType))
+				.collect(Collectors.toList());
+		return Triple.of(edges.size(), edges.size() == 0 ? null : edges.get(0).getSrcNode(), edges.size() == 0 ? null : edges.get(0).getTrgNode());
 	}
 
 	/**
@@ -137,7 +145,7 @@ public class DECHelper {
 		return copy;
 	}
 
-	protected static boolean isDECNodE(TGGRuleNode node) {
+	public static boolean isDECNode(TGGRuleNode node) {
 		return node.getName().contains(DEC_NODE);
 	}
 
@@ -146,7 +154,7 @@ public class DECHelper {
 		return pkg.getEClassifiers().stream().filter(c -> (c instanceof EClass)).flatMap(c -> ((EClass) c).getEReferences().stream())
 				.filter(r -> r.getEType().equals(nodeClass) || r.eContainer().equals(nodeClass)).collect(Collectors.toList());
 	}
-	
+
 	protected static TGGRuleNode getDECNode(TGGRule rule) {
 		return rule.getNodes().stream().filter(n -> n.getName().endsWith(DEC_NODE)).findFirst().get();
 	}

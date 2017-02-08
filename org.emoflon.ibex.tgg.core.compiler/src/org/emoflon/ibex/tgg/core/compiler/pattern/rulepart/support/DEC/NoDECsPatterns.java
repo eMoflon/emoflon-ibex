@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
@@ -35,6 +36,7 @@ public class NoDECsPatterns extends RulePartPattern {
 		this.domain = domain;
 		createDECEntries(rule, domain);
 		initialize();
+		getPositiveInvocations().add(decTC.getRuleToPatternsMap().get(rule).stream().filter(p -> domain == DomainType.SRC ? p instanceof SrcPattern : p instanceof TrgPattern).findFirst().get());
 	}
 
 	/**
@@ -59,25 +61,29 @@ public class NoDECsPatterns extends RulePartPattern {
 			for (EReference eType : DECHelper.extractEReferences(nodeClass)) {
 				for (EdgeDirection eDirection : EdgeDirection.values()) {
 					TGG tgg = (TGG) rule.eContainer();
-					
+
 					// check type
 					if (!DECHelper.getType(eType, eDirection).equals(n.getType()))
 						continue;
 
-					int numOfEdges = DECHelper.countEdgeInRule(rule, n, eType, eDirection, false);
+					int numOfEdges = DECHelper.countEdgeInRule(rule, n, eType, eDirection, false, domain).getLeft();
 					// if the edge has any multiplicity or there is no edge representation at all in this rule, else continue
 					if (eType.getUpperBound() == 1 && numOfEdges == 1)
 						continue;
-					
+
 					// if edge is handled in no rule at all
-					if (!DECHelper.isEdgeInTGG(tgg, eType, eDirection, false)) 
+					if (!DECHelper.isEdgeInTGG(tgg, eType, eDirection, false, domain))
 						continue;
 
-					// initialise DECpattern
+					// initialise DECpattern and register the entryNodeName and DECNodeName for the signature mapping
 					DECPattern decPattern = new DECPattern(rule, n, eType, eDirection, decTC);
+					SearchEdgePattern sep = decPattern.createSearchEdgePattern(rule, n, eType, eDirection, decTC);
+					decTC.addEntryAndDec(decPattern, n.getName(), DECHelper.getDECNode(sep.getRule()).getName());
 
-					// check if the edges are represented and translated elsewhere
-					List<TGGRule> rules = tgg.getRules().stream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection, true) > 0).collect(Collectors.toList());
+					// check if the edges are represented and translated elsewhere and register signature mapping (todo: clean this up a bit)
+					List<TGGRule> rules = tgg.getRules().stream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection, true, domain).getLeft() > 0).collect(Collectors.toList());
+					rules.stream().map(r -> Pair.of(r, DECHelper.countEdgeInRule(r, eType, eDirection, true, domain)))
+							.forEach(p -> decTC.addToSignatureMapping(decPattern, p.getKey().getName(), p.getValue().getMiddle().getName(), p.getValue().getRight().getName()));
 
 					// find src or trg pattern already generated for the found rules
 					for (TGGRule filteredRule : rules) {
@@ -103,10 +109,8 @@ public class NoDECsPatterns extends RulePartPattern {
 					// which might remain untranslated if we apply the current rule
 					// we also register the pattern so that it is found when we generate the code and initialize the search pattern
 					getNegativeInvocations().add(decPattern);
-					decPattern.createSearchEdgePattern(rule, n, eType, eDirection, decTC);
 					decTC.getRuleToPatternsMap().get(rule).add(decPattern);
 				}
-
 			}
 		}
 	}

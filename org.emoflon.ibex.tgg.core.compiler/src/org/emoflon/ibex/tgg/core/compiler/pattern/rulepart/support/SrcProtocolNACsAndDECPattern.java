@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.core.compiler;
+package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support;
 
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 
@@ -11,4 +11,8 @@ public class SrcProtocolNACsAndDECPattern extends SrcProtocolNACsPattern {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	protected String getPatternNameSuffix() {
+		return "_PROTOCOL_DEC_SRC";
+	}
 }

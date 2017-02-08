@@ -17,75 +17,71 @@ public abstract class Pattern {
 	protected TGGRule rule;
 
 	/**
-	 * each positive pattern invocation for a pattern pat corresponds to the following text
-	 * find pat(<<signature elements of pat separated with ",">>);
+	 * each positive pattern invocation for a pattern pat corresponds to the following text find pat(<<signature elements of pat separated with ",">>);
 	 */
 	protected Collection<Pattern> positiveInvocations = new ArrayList<>();
-	
+
 	/**
-	 * each negative pattern invocation for a pattern pat corresponds to the following text
-	 * neg find pat(<<signature elements of pat separated with ",">>);
+	 * each negative pattern invocation for a pattern pat corresponds to the following text neg find pat(<<signature elements of pat separated with ",">>);
 	 */
 	protected Collection<Pattern> negativeInvocations = new ArrayList<>();
-	
+
 	/**
 	 * each signature element e of a pattern corresponds to a parameter:
 	 * 
-	 *  pattern(e1 : <type of e1>, e2: <type of e2,...)
-	 *  
-	 *  <type of e> is Edge if e is a TGGRuleEdge
+	 * pattern(e1 : <type of e1>, e2: <type of e2,...)
+	 * 
+	 * <type of e> is Edge if e is a TGGRuleEdge
 	 */
-	protected Collection<TGGRuleElement> signatureElements;
-	
+	// protected Collection<TGGRuleElement> signatureElements;
 
 	protected Collection<TGGRuleNode> bodyNodes;
-	
-	
+
 	protected Collection<TGGRuleEdge> bodyEdges;
-	
-	
-	public Pattern(TGGRule rule){
+
+	public Pattern(TGGRule rule) {
 		this.rule = rule;
 		initialize();
 	}
-	
+
 	protected void initialize() {
-		signatureElements = getSignatureElements(rule);
+		// signatureElements = getSignatureElements(rule);
 		bodyNodes = calculateBodyNodes(rule.getNodes());
-		bodyEdges = calculateBodyEdges(rule.getEdges());	
+		bodyEdges = calculateBodyEdges(rule.getEdges());
 	}
-	
-	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule){
+
+	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule) {
 		return rule.getNodes().stream().filter(e -> isRelevantForSignature(e)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
-	
-	private Collection<TGGRuleEdge> calculateBodyEdges(Collection<TGGRuleEdge> signatureElements){
+
+	private Collection<TGGRuleEdge> calculateBodyEdges(Collection<TGGRuleEdge> signatureElements) {
 		ArrayList<TGGRuleEdge> result = new ArrayList<>();
 		signatureElements.stream().filter(e -> isRelevantForBody(e)).forEach(e -> result.add((TGGRuleEdge) e));
 		return result;
 	}
 
-
 	private Collection<TGGRuleNode> calculateBodyNodes(Collection<TGGRuleNode> signatureElements) {
 		ArrayList<TGGRuleNode> result = new ArrayList<>();
-		signatureElements.stream().filter(e -> isRelevantForBody(e)).forEach(e -> result.add((TGGRuleNode) e));;
-        return result;
+		signatureElements.stream().filter(e -> isRelevantForBody(e)).forEach(e -> result.add((TGGRuleNode) e));
+		;
+		return result;
 	}
-	
+
 	protected abstract boolean isRelevantForBody(TGGRuleEdge e);
+
 	protected abstract boolean isRelevantForBody(TGGRuleNode n);
-	
+
 	public Collection<TGGRuleNode> getBodyNodes() {
 		return bodyNodes;
 	}
-	
-	public Collection<TGGRuleCorr> getBodyCorrNodes(){
+
+	public Collection<TGGRuleCorr> getBodyCorrNodes() {
 		Collection<TGGRuleCorr> corrs = new HashSet<>();
-		bodyNodes.stream().filter(n -> n instanceof TGGRuleCorr).forEach(n -> corrs.add((TGGRuleCorr)n));
+		bodyNodes.stream().filter(n -> n instanceof TGGRuleCorr).forEach(n -> corrs.add((TGGRuleCorr) n));
 		return corrs;
 	}
-	
-	public Collection<TGGRuleNode> getBodySrcTrgNodes(){
+
+	public Collection<TGGRuleNode> getBodySrcTrgNodes() {
 		Collection<TGGRuleNode> srcTrgNodes = new HashSet<TGGRuleNode>(bodyNodes);
 		srcTrgNodes.removeAll(getBodyCorrNodes());
 		return srcTrgNodes;
@@ -94,19 +90,19 @@ public abstract class Pattern {
 	public Collection<TGGRuleEdge> getBodyEdges() {
 		return bodyEdges;
 	}
-	
+
 	protected abstract boolean isRelevantForSignature(TGGRuleElement e);
 
-	public String getName(){
+	public String getName() {
 		return rule.getName() + getPatternNameSuffix();
 	}
-	
+
 	abstract protected String getPatternNameSuffix();
-	
+
 	public Collection<TGGRuleElement> getSignatureElements() {
-		return signatureElements;
+		return getSignatureElements(getRule());
 	}
-	
+
 	public Collection<Pattern> getPositiveInvocations() {
 		return positiveInvocations;
 	}
@@ -114,15 +110,13 @@ public abstract class Pattern {
 	public Collection<Pattern> getNegativeInvocations() {
 		return negativeInvocations;
 	}
-	
-	public boolean ignored(){
+
+	public boolean ignored() {
 		return false;
 	}
-	
-	
+
 	public TGGRule getRule() {
 		return rule;
 	}
 
-	
 }

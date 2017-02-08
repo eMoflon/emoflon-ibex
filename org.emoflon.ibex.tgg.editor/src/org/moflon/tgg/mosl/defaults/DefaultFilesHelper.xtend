@@ -338,7 +338,7 @@ class DefaultFilesHelper {
 					«RunFileHelper.getCreator(mode)»
 					tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
 					
-					Transformation transformation = new Transformation(rs, tggRuntime);						
+					«projectName»Transformation transformation = new «projectName»Transformation(rs, tggRuntime);						
 					transformation.execute();
 					
 					tggRuntime.run();
@@ -365,19 +365,8 @@ class DefaultFilesHelper {
 					Registry.INSTANCE.put("platform:/resource/«projectName»/model/«projectName».ecore", pcorr);
 					Registry.INSTANCE.put("platform:/plugin/«projectName»/model/«projectName».ecore", pcorr);
 					
-					// TODO: Uncomment the following lines and register source and target metamodels
-					// Add mappings for all other required dependencies
-					//Resource source = rs.getResource(URI.createFileURI("domains/MySource.ecore"), true);
-					//EPackage psource = (EPackage) source.getContents().get(0);
-					//Registry.INSTANCE.put(source.getURI().toString(), psource);
-					//Registry.INSTANCE.put("platform:/resource/«projectName»/domains/MySource.ecore", psource);
-					//Registry.INSTANCE.put("platform:/plugin/MySource/model/MySource.ecore", psource);
-					
-					//Resource target = rs.getResource(URI.createFileURI("domains/MyTarget.ecore"), true);
-					//EPackage ptarget = (EPackage) target.getContents().get(0);
-					//Registry.INSTANCE.put(target.getURI().toString(), ptarget);
-					//Registry.INSTANCE.put("platform:/resource/«projectName»/domains/MyTarget.ecore", ptarget);	
-					//Registry.INSTANCE.put("platform:/plugin/MyTarget/model/MyTarget.ecore", ptarget);	
+					// SourcePackage.eInstance.getName();
+					// TargetPackage.eInstance.getName();
 				}
 			}
 		'''

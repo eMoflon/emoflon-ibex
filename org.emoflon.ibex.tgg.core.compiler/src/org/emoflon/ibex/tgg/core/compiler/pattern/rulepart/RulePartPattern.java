@@ -22,7 +22,7 @@ public abstract class RulePartPattern extends Pattern {
 
 
 	public Collection<Pair<TGGRuleNode, TGGRuleNode>> getInjectivityChecks() {
-		List<TGGRuleNode> signatureNodes = signatureElements.stream().filter(e -> e instanceof TGGRuleNode)
+		List<TGGRuleNode> signatureNodes = getSignatureElements().stream().filter(e -> e instanceof TGGRuleNode)
 				.map(e -> (TGGRuleNode) e).collect(Collectors.toList());
 		Collection<Pair<TGGRuleNode, TGGRuleNode>> injectivityCheckPairs = new ArrayList<>();
 		for(int i = 0; i < signatureNodes.size(); i++){

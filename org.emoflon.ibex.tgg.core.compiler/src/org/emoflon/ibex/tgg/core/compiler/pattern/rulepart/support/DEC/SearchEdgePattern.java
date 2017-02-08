@@ -24,7 +24,7 @@ public class SearchEdgePattern extends RulePartPattern {
 
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		if(DECHelper.isDECNodE(node1) || DECHelper.isDECNodE(node2)) 
+		if(DECHelper.isDECNode(node1) || DECHelper.isDECNode(node2)) 
 			return false;
 		
 		return true;	

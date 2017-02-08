@@ -143,7 +143,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		TGGCompiler compiler = new TGGCompiler(tggProject.getTggModel());
 
 		String manipulationCode = compiler.getXtendManipulationCode();
-		createFile(RUN_FOLDER, Transformation, XTEND_EXTENSION, manipulationCode, true);
+		createFile(RUN_FOLDER, tggProject.getTggModel().getName() + Transformation, XTEND_EXTENSION, manipulationCode, true);
 	}
 
 	private void generateAttrCondLibsAndStubs(TGGProject internalModel) {

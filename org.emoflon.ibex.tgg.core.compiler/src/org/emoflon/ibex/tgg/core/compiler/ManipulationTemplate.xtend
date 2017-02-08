@@ -37,7 +37,7 @@ class ManipulationTemplate {
 					«ENDFOR»
 				«ENDFOR»
 				
-				class Transformation{	
+				class «tgg.name»Transformation{	
 					
 					
 					/* Transformation-related extensions */

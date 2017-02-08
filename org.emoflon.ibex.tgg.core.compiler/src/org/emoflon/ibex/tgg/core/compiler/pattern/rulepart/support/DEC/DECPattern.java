@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
@@ -17,19 +18,26 @@ public class DECPattern extends RulePartPattern {
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
-	
+	private DECTrackingContainer decTC;
+	private SearchEdgePattern sep;
+
 	public DECPattern(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, DECTrackingContainer decTC) {
 		super(rule);
 		this.entryPoint = entryPoint;
+		this.decTC = decTC;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
 		initialize();
 	}
 
-	protected void createSearchEdgePattern(TGGRule rule, TGGRuleNode n, EReference eType, EdgeDirection eDirection, DECTrackingContainer decTC) {
-		SearchEdgePattern pattern = new SearchEdgePattern(rule, n, eType, eDirection);
-		getPositiveInvocations().add(pattern);
-		decTC.getRuleToPatternsMap().get(rule).add(pattern);
+	protected SearchEdgePattern createSearchEdgePattern(TGGRule rule, TGGRuleNode n, EReference eType, EdgeDirection eDirection, DECTrackingContainer decTC) {
+		if (sep != null)
+			throw new RuntimeException("SearchEdgePattern found. Generating this pattern twice is a bad idea!");
+		
+		sep = new SearchEdgePattern(rule, n, eType, eDirection);
+		getPositiveInvocations().add(sep);
+		decTC.getRuleToPatternsMap().get(rule).add(sep);
+		return sep;
 	}
 
 	@Override
@@ -46,15 +54,18 @@ public class DECPattern extends RulePartPattern {
 	protected boolean isRelevantForBody(TGGRuleNode n) {
 		return false;
 	}
-
+	
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-		return entryPoint != null && entryPoint.getDomainType() == e.getDomainType();
+		if (sep == null)
+			throw new RuntimeException("No SearchEdgePattern found. Please generate one first before calculating the signature!");
+		
+		return sep.getSignatureElements().stream().filter(element -> element.getName().equals(e.getName())).count() != 0;
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_" + entryPoint.getName() +"_" + edgeType.getName() + "_" + eDirection.toString().toLowerCase() + "_DEC_" + entryPoint.getDomainType().getName();
+		return "_" + entryPoint.getName() + "_" + edgeType.getName() + "_" + eDirection.toString().toLowerCase() + "_DEC_" + entryPoint.getDomainType().getName();
 	}
 
 	/**

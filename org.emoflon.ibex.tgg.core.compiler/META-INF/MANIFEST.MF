@@ -14,4 +14,6 @@ Require-Bundle: org.emoflon.ibex.tgg.core.language;bundle-version="1.0.0",
  org.emoflon.ibex.tgg.core.runtime,
  org.apache.commons.lang3
 Export-Package: org.emoflon.ibex.tgg.core.compiler
+Import-Package: org.antlr.v4.runtime.misc,
+ org.eclipse.xtext.util
 
