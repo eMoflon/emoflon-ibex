@@ -11,11 +11,9 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.tgg.operational.FWD;
 import org.emoflon.ibex.tgg.operational.OperationMode;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
-import org.emoflon.ibex.tgg.run.Transformation;
+import org.emoflon.ibex.tgg.run.FamiliesToPersonsDeterministicTransformation;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import Families.FamiliesFactory;
@@ -56,7 +54,7 @@ public class IbexTestRunner extends BXToolForEMF<FamilyRegister, PersonRegister,
 		
 		TGGRuntimeUtil tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p);
 		tggRuntime.setMode(OperationMode.FWD);
-		Transformation transformation = new Transformation(rs, tggRuntime);						
+		FamiliesToPersonsDeterministicTransformation transformation = new FamiliesToPersonsDeterministicTransformation(rs, tggRuntime);						
 		transformation.execute();		
 		tggRuntime.run();
 		transformation.dispose();

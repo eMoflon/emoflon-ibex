@@ -8,7 +8,7 @@
 }
 
 #target {
-	++ personsRegister:PersonsRegister
+	++ personsRegister:PersonRegister
 }
 
 #correspondence {
