@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
@@ -87,9 +87,9 @@ public class NoDECsPatterns extends RulePartPattern {
 
 					// find src or trg pattern already generated for the found rules
 					for (TGGRule filteredRule : rules) {
-						Collection<Pattern> patterns = decTC.getRuleToPatternsMap().get(filteredRule);
+						Collection<IbexPattern> patterns = decTC.getRuleToPatternsMap().get(filteredRule);
 
-						Pattern pattern = null;
+						IbexPattern pattern = null;
 						switch (n.getDomainType()) {
 						case SRC:
 							pattern = patterns.stream().filter(p -> p instanceof SrcProtocolNACsPattern).findFirst().get();

@@ -12,11 +12,15 @@
 }
 
 #target {
-	 
+	pr:PersonRegister
 }
 
 #correspondence {
-	
+	fr2pr:RegisterToRegister
+	{
+		#src->fr
+		#trg->pr
+	}
 }
 
 #attributeConditions {

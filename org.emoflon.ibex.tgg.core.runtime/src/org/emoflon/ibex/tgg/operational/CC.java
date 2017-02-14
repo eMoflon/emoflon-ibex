@@ -6,9 +6,9 @@ import java.util.HashMap;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
+import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
 import gnu.trove.map.TIntObjectMap;
@@ -33,11 +33,11 @@ public class CC extends TGGRuntimeUtil {
 	private int nameCounter = 0;
 
 	private int idCounter = 1;
-	TIntObjectHashMap<IPatternMatch> idToMatch = new TIntObjectHashMap<>();
+	TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
 
 	TIntIntHashMap weights = new TIntIntHashMap();
 
-	THashMap<IPatternMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
+	THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
 
 	TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
 			new RuntimeEdgeHashingStrategy());
@@ -54,7 +54,7 @@ public class CC extends TGGRuntimeUtil {
 	protected void finalize() {
 		for(int v : chooseTGGRuleApplications()){
 			if(v < 0){
-				IPatternMatch match = idToMatch.get(-v);
+				IMatch match = idToMatch.get(-v);
 				HashMap<String, EObject> comatch = matchToCoMatch.get(match);
 				comatch.values().forEach(EcoreUtil::delete);
 			}
@@ -73,7 +73,7 @@ public class CC extends TGGRuntimeUtil {
 	}
 
 	@Override
-	protected void prepareProtocol(String ruleName, IPatternMatch match, HashMap<String, EObject> comatch) {
+	protected void prepareProtocol(String ruleName, IMatch match, HashMap<String, EObject> comatch) {
 
 		idToMatch.put(idCounter, match);
 
@@ -106,7 +106,7 @@ public class CC extends TGGRuntimeUtil {
 		idCounter++;
 	}
 
-	private THashSet<EObject> getGreenNodes(IPatternMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<EObject> getGreenNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
 		result.addAll(getNodes(match, comatch, ruleInfos.getGreenSrcNodes(ruleName)));
 		result.addAll(getNodes(match, comatch, ruleInfos.getGreenTrgNodes(ruleName)));
@@ -114,7 +114,7 @@ public class CC extends TGGRuntimeUtil {
 		return result;
 	}
 
-	private THashSet<EObject> getBlackNodes(IPatternMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<EObject> getBlackNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
 		result.addAll(getNodes(match, comatch, ruleInfos.getBlackSrcNodes(ruleName)));
 		result.addAll(getNodes(match, comatch, ruleInfos.getBlackTrgNodes(ruleName)));
@@ -122,7 +122,7 @@ public class CC extends TGGRuntimeUtil {
 		return result;
 	}
 
-	private THashSet<EObject> getNodes(IPatternMatch match, HashMap<String, EObject> comatch,
+	private THashSet<EObject> getNodes(IMatch match, HashMap<String, EObject> comatch,
 			Collection<? extends TGGRuleNode> specNodes) {
 		THashSet<EObject> result = new THashSet<>();
 		specNodes.forEach(n -> {
@@ -131,7 +131,7 @@ public class CC extends TGGRuntimeUtil {
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getGreenEdges(IPatternMatch match, HashMap<String, EObject> comatch,
+	private THashSet<RuntimeEdge> getGreenEdges(IMatch match, HashMap<String, EObject> comatch,
 			String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
 		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenSrcEdges(ruleName), false));
@@ -139,7 +139,7 @@ public class CC extends TGGRuntimeUtil {
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getBlackEdges(IPatternMatch match, HashMap<String, EObject> comatch,
+	private THashSet<RuntimeEdge> getBlackEdges(IMatch match, HashMap<String, EObject> comatch,
 			String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
 		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getBlackSrcEdges(ruleName), false));

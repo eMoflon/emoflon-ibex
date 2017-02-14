@@ -5,12 +5,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.ProtocolNACsPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
@@ -41,7 +42,7 @@ import runtime.RuntimePackage;
 
 public class TGGCompiler {
 
-	private LinkedHashMap<TGGRule, Collection<Pattern>> ruleToPatterns = new LinkedHashMap<>();
+	private LinkedHashMap<TGGRule, Collection<IbexPattern>> ruleToPatterns = new LinkedHashMap<>();
 	private PatternTemplate patternTemplate;
 
 	private TGG tgg;
@@ -60,6 +61,10 @@ public class TGGCompiler {
 		// initialise DECTrackingContainer which is responsible to hold information needed for DEC generation such as which patterns belongs to which rule
 		// or what's the mapping of signature elements for the calls to external patterns
 		decTC = new DECTrackingContainer(ruleToPatterns);
+	}
+	
+	public Map<TGGRule, Collection<IbexPattern>> getRuleToPatternMap(){
+		return ruleToPatterns;
 	}
 
 	private void fillImportAliasTables(TGG tgg) {
@@ -80,7 +85,7 @@ public class TGGCompiler {
 
 	public void preparePatterns() {
 		for (TGGRule rule : tgg.getRules()) {
-			Collection<Pattern> patterns = new ArrayList<>();
+			Collection<IbexPattern> patterns = new ArrayList<>();
 
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
 			patterns.add(srcContext);
@@ -179,7 +184,7 @@ public class TGGCompiler {
 		result += ruleToPatterns.get(rule).stream().filter(p -> isOperationalPattern(p))
 				.map(p -> patternTemplate.generateOperationalPattern((RulePartPattern) p)).collect(Collectors.joining());
 
-		result += ruleToPatterns.get(rule).stream().filter(p -> isRootPattern(p)).map(p -> patternTemplate.generateProtocolDECPattern((Pattern) p)).collect(Collectors.joining());
+		result += ruleToPatterns.get(rule).stream().filter(p -> isRootPattern(p)).map(p -> patternTemplate.generateProtocolDECPattern((IbexPattern) p)).collect(Collectors.joining());
 		
 		result += ruleToPatterns.get(rule).stream().filter(p -> p instanceof DECPattern).map(p -> patternTemplate.generateDECPattern((DECPattern) p, decTC)).collect(Collectors.joining());
 		
@@ -195,11 +200,11 @@ public class TGGCompiler {
 		return result;
 	}
 	
-	private boolean isOperationalPattern(Pattern p) {
+	private boolean isOperationalPattern(IbexPattern p) {
 		return p instanceof RulePartPattern && !(p instanceof SearchEdgePattern) && !(p instanceof DECPattern) && !isRootPattern(p);
 	}
 	
-	private boolean isRootPattern(Pattern p) {
+	private boolean isRootPattern(IbexPattern p) {
 		return p instanceof SrcProtocolNACsAndDECPattern || p instanceof TrgProtocolNACsAndDECPattern;
 	}
 

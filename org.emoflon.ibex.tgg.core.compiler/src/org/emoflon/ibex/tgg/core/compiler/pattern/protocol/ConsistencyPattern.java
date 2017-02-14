@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
-import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -18,7 +18,7 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
-public class ConsistencyPattern extends Pattern {
+public class ConsistencyPattern extends IbexPattern {
 
 	public ConsistencyPattern(TGGRule rule) {
 		super(rule);

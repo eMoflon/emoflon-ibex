@@ -7,13 +7,11 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.ICommand;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.PlatformUI;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.WorkspaceHelper;
@@ -26,7 +24,6 @@ public class IbexTGGNature implements IProjectNature {
 	public static final String IBEX_TGG_NATURE_ID  = "org.emoflon.ibex.tgg.ui.ide.nature";
 	public static final String IBEX_TGG_BUILDER_ID = "org.emoflon.ibex.tgg.ui.ide.builder";
 	public static final String XTEXT_NATURE_ID     = "org.eclipse.xtext.ui.shared.xtextNature";
-	public static final String VIATRA_NATURE_ID    = "org.eclipse.viatra.query.projectnature";
 	public static final String PLUGIN_NATURE_ID = "org.eclipse.pde.PluginNature";
 	public static final String SCHEMA_FILE = "src/org/emoflon/ibex/tgg/Schema.tgg";
 	
@@ -66,7 +63,6 @@ public class IbexTGGNature implements IProjectNature {
 		WorkspaceHelper.setUpAsJavaProject(project, new NullProgressMonitor());
 		setUpAsPluginProject();
 		setUpAsXtextProject();
-		setUpAsViatraProject();
 		setUpAsIbexProject();
 	}
 	
@@ -84,28 +80,6 @@ public class IbexTGGNature implements IProjectNature {
 
 	private void setUpAsXtextProject() throws CoreException {
 		WorkspaceHelper.addNature(project, XTEXT_NATURE_ID, new NullProgressMonitor());
-	}
-	
-	@SuppressWarnings("deprecation")
-	private void setUpAsViatraProject() throws CoreException, IOException {
-		WorkspaceHelper.addFolder(project, "src-gen", new NullProgressMonitor());
-		WorkspaceHelper.setAsSourceFolderInBuildpath(JavaCore.create(project), new IFolder[]{project.getFolder("src-gen")}, null, new NullProgressMonitor());
-		WorkspaceHelper.addNature(project, VIATRA_NATURE_ID, new NullProgressMonitor());
-		new ManifestFileUpdater().processManifest(project, manifest -> {
-			boolean changed = false;
-			changed |= ManifestFileUpdater.updateDependencies(manifest, Arrays.asList(
-					"org.eclipse.viatra.transformation.runtime.emf",
-					"org.eclipse.viatra.query.runtime",
-					"org.eclipse.viatra.transformation.evm",
-					"org.eclipse.viatra.transformation.evm.transactions",
-					"org.eclipse.viatra.query.runtime.base.itc",
-					"org.apache.log4j",
-					"com.google.guava",
-					"org.eclipse.xtend.lib",
-					"org.eclipse.xtext.xbase.lib"
-					));
-			return changed;
-		});
 	}
 
 	private void setUpAsPluginProject() throws CoreException, IOException {

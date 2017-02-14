@@ -10,11 +10,11 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
+import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
 import gnu.trove.map.hash.THashMap;
@@ -60,7 +60,7 @@ public class TGGRuntimeUtil {
 	private OperationMode mode;
 
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
-	protected THashMap<TGGRuleApplication, IPatternMatch> brokenRuleApplications = new THashMap<>();
+	protected THashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new THashMap<>();
 
 	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		ruleInfos = new RuleInfos(tgg);
@@ -79,24 +79,24 @@ public class TGGRuntimeUtil {
 	}
 
 	// methods for reacting to occurring matches of operational rules
-	public void addOperationalRuleMatch(String ruleName, IPatternMatch match) {
+	public void addOperationalRuleMatch(String ruleName, IMatch match) {
 		operationalMatchContainer.addMatch(ruleName, match);
 	}
 
-	public void removeOperationalRuleMatch(IPatternMatch match) {
+	public void removeOperationalRuleMatch(IMatch match) {
 		operationalMatchContainer.removeMatch(match);
 	}
 
 	protected void processOperationalRuleMatches() {
 		while (!operationalMatchContainer.isEmpty()) {
-			IPatternMatch match = operationalMatchContainer.getNext();
+			IMatch match = operationalMatchContainer.getNext();
 			String ruleName = operationalMatchContainer.getRuleName(match);
 			processOperationalRuleMatch(ruleName, match);
 			removeOperationalRuleMatch(match);
 		}
 	}
 
-	public boolean processOperationalRuleMatch(String ruleName, IPatternMatch match) {
+	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {
 
 		if (match.patternName().endsWith("FWD") && !markingSrc())
 			return false;
@@ -153,7 +153,7 @@ public class TGGRuntimeUtil {
 		return true;
 	}
 
-	protected void prepareProtocol(String ruleName, IPatternMatch match,
+	protected void prepareProtocol(String ruleName, IMatch match,
 			HashMap<String, EObject> createdElements) {
 		RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
@@ -177,14 +177,14 @@ public class TGGRuntimeUtil {
 	}
 
 	private void fillProtocolInfo(Collection<? extends TGGRuleElement> ruleInfos, TGGRuleApplication protocol,
-			EStructuralFeature feature, HashMap<String, EObject> createdElements, IPatternMatch match) {
+			EStructuralFeature feature, HashMap<String, EObject> createdElements, IMatch match) {
 		ruleInfos.forEach(e -> {
 			((EList) protocol.eGet(feature))
 					.add(ManipulationUtil.getVariableByName(e.getName(), createdElements, match));
 		});
 	}
 
-	private boolean allContextElementsalreadyProcessed(IPatternMatch match, String ruleName) {
+	private boolean allContextElementsalreadyProcessed(IMatch match, String ruleName) {
 		
 		if(getStrategy() == OperationStrategy.PROTOCOL_NACS){
 			if (markingSrc()) {
@@ -200,7 +200,7 @@ public class TGGRuntimeUtil {
 		return true;
 	}
 
-	protected boolean someElementsAlreadyProcessed(String ruleName, IPatternMatch match) {
+	protected boolean someElementsAlreadyProcessed(String ruleName, IMatch match) {
 
 		if(getStrategy() == OperationStrategy.PROTOCOL_NACS){
 			if (markingSrc()) {
@@ -216,7 +216,7 @@ public class TGGRuntimeUtil {
 		return false;
 	}
 
-	private boolean someEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IPatternMatch match) {
+	private boolean someEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IMatch match) {
 		for (TGGRuleEdge edge : specificationEdges) {
 			EObject src = (EObject) match.get(edge.getSrcNode().getName());
 			EObject trg = (EObject) match.get(edge.getTrgNode().getName());
@@ -227,7 +227,7 @@ public class TGGRuntimeUtil {
 		return false;
 	}
 
-	private boolean allEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IPatternMatch match) {
+	private boolean allEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IMatch match) {
 		for (TGGRuleEdge edge : specificationEdges) {
 			EObject src = (EObject) match.get(edge.getSrcNode().getName());
 			EObject trg = (EObject) match.get(edge.getTrgNode().getName());
@@ -248,7 +248,7 @@ public class TGGRuntimeUtil {
 		}
 	}
 
-	protected boolean conformTypesOfGreenNodes(IPatternMatch match, String ruleName) {
+	protected boolean conformTypesOfGreenNodes(IMatch match, String ruleName) {
 		if (markingSrc()) {
 			for (TGGRuleNode gsn : ruleInfos.getGreenSrcNodes(ruleName)) {
 				if (gsn.getType() != ((EObject) match.get(gsn.getName())).eClass())
@@ -266,14 +266,14 @@ public class TGGRuntimeUtil {
 
 	// methods for reacting to broken matches of src/trg patterns
 
-	public void addBrokenMatch(IPatternMatch match) {
+	public void addBrokenMatch(IMatch match) {
 		TGGRuleApplication ra = (TGGRuleApplication) match.get("eMoflon_ProtocolNode");
 		// does the broken match really belong to the rule application?
 		if (isCompatibleWith(ra, match))
 			brokenRuleApplications.put(ra, match);
 	}
 
-	private boolean isCompatibleWith(TGGRuleApplication ra, IPatternMatch match) {
+	private boolean isCompatibleWith(TGGRuleApplication ra, IMatch match) {
 		for (String name : match.parameterNames()) {
 			if (!name.equals("eMoflon_ProtocolNode"))
 				if (match.get(name) != ra.getNodeMappings().get(name))
@@ -294,18 +294,18 @@ public class TGGRuntimeUtil {
 		}
 	}
 
-	protected void revokeOperationalRule(TGGRuleApplication ruleApplication, IPatternMatch match) {
+	protected void revokeOperationalRule(TGGRuleApplication ruleApplication, IMatch match) {
 		revokeEdges(ruleApplication, match);
 		revokeNodes(ruleApplication);
 		EcoreUtil.delete(ruleApplication);
 	}
 
-	private void revokeEdges(TGGRuleApplication ruleApplication, IPatternMatch match) {
+	private void revokeEdges(TGGRuleApplication ruleApplication, IMatch match) {
 		revokeEdges(ruleInfos.getGreenSrcEdges(ruleApplication.getName()), match, manipulateSrc());
 		revokeEdges(ruleInfos.getGreenTrgEdges(ruleApplication.getName()), match, manipulateTrg());
 	}
 
-	private void revokeEdges(Collection<TGGRuleEdge> specificationEdges, IPatternMatch match,
+	private void revokeEdges(Collection<TGGRuleEdge> specificationEdges, IMatch match,
 			boolean delete) {
 		specificationEdges.forEach(se -> {
 			RuntimeEdge runtimeEdge = getRuntimeEdge(match, se);
@@ -326,7 +326,7 @@ public class TGGRuntimeUtil {
 			ManipulationUtil.deleteNodes(new THashSet<>(nodes));
 	}
 
-	private RuntimeEdge getRuntimeEdge(IPatternMatch match, TGGRuleEdge specificationEdge) {
+	private RuntimeEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
 		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
 		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
 		EReference ref = specificationEdge.getType();

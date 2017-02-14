@@ -1,11 +1,9 @@
 package org.emoflon.ibex.tgg.operational;
 
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.viatra.query.runtime.api.IPatternMatch;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
+import org.emoflon.ibex.tgg.operational.util.IMatch;
 
 import language.TGG;
-import runtime.TGGRuleApplication;
 
 /**
  * Different than other TGGRuntimeUtil subtypes, MODELGEN
@@ -54,7 +52,7 @@ public class MODELGEN extends TGGRuntimeUtil {
 	@Override
 	protected void processOperationalRuleMatches() {
 		while (!stop()) {
-			IPatternMatch match = operationalMatchContainer.getNextRandom();
+			IMatch match = operationalMatchContainer.getNextRandom();
 			String ruleName = operationalMatchContainer.getRuleName(match);
 			if (!stopCriterion.dont(ruleName)) {
 				if (processOperationalRuleMatch(ruleName, match))

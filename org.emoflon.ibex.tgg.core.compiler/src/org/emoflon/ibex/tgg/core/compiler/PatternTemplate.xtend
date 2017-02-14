@@ -14,7 +14,7 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.SearchEdg
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECTrackingContainer
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECHelper
-import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern
 
 class PatternTemplate {
 
@@ -105,10 +105,10 @@ class PatternTemplate {
 					«corr.type.name».source(«corr.name»,«corr.source.name»);
 					«corr.type.name».target(«corr.name»,«corr.target.name»);
 				«ENDFOR»
-				«FOR pi : pattern.positiveInvocations»
+				«FOR pi : pattern.getPositiveInvocations»
 					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
 				«ENDFOR»
-				«FOR ni : pattern.negativeInvocations»
+				«FOR ni : pattern.getNegativeInvocations»
 					neg find «ni.getName»(«FOR e : ni.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
 				«ENDFOR»
 				check(true);
@@ -123,10 +123,10 @@ class PatternTemplate {
 				«IF pattern.ignored»
 					check(false);
 				«ENDIF»
-				«FOR pi : pattern.positiveInvocations»
-					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«IF pattern.negativeInvocations.empty && DECHelper.isDECNode(e as TGGRuleNode)»_«ENDIF»«e.name»«ENDFOR»);
+				«FOR pi : pattern.getPositiveInvocations»
+					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«IF pattern.getNegativeInvocations.empty && DECHelper.isDECNode(e as TGGRuleNode)»_«ENDIF»«e.name»«ENDFOR»);
 				«ENDFOR»
-				«FOR ni : pattern.negativeInvocations»
+				«FOR ni : pattern.getNegativeInvocations»
 					neg find «ni.getName»(«FOR e : decTC.getMapping(pattern, ni) SEPARATOR ", "»«e»«ENDFOR»);
 				«ENDFOR»
 				check(true);
@@ -154,10 +154,10 @@ class PatternTemplate {
 		'''
 	}
 	
-	def generateProtocolDECPattern(Pattern pattern) {
+	def generateProtocolDECPattern(IbexPattern pattern) {
 		return '''
 			pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
-				«FOR pi : pattern.positiveInvocations»
+				«FOR pi : pattern.getPositiveInvocations»
 					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
 				«ENDFOR»
 				«FOR node : pattern.bodySrcTrgNodes»
@@ -170,7 +170,7 @@ class PatternTemplate {
 	def generateProtocolNACsPattern(ProtocolNACsPattern pattern) {
 		return '''
 			pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
-				«FOR pi : pattern.positiveInvocations»
+				«FOR pi : pattern.getPositiveInvocations»
 					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
 				«ENDFOR»
 				«FOR node : pattern.bodySrcTrgNodes»
@@ -184,7 +184,7 @@ class PatternTemplate {
 	def generateConsistencyPattern(ConsistencyPattern pattern) {
 		return '''
 			pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
-				«FOR pi : pattern.positiveInvocations»
+				«FOR pi : pattern.getPositiveInvocations»
 					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
 				«ENDFOR»
 				TGGRuleApplication.final(«pattern.protocolNodeName», true);

@@ -8,12 +8,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.viatra.query.runtime.api.IPatternMatch;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.PredefRuntimeTGGAttrConstraintFactory;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.OperationMode;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
+import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.String2EPrimitive;
 
 import language.basic.expressions.TGGAttributeExpression;
@@ -30,12 +28,12 @@ public class RuntimeTGGAttributeConstraintContainer {
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	protected Map<TGGParamValue, RuntimeTGGAttributeConstraintVariable> params2runtimeVariable = new HashMap<>();
 	
-	private IPatternMatch match;
+	private IMatch match;
 	private Collection<String> boundObjectNames;
 	
 	private boolean modelgen;
 	
-	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IPatternMatch match, OperationMode mode, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
+	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IMatch match, OperationMode mode, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.parameterNames();
 		this.constraintProvider = runtimeConstraintProvider;

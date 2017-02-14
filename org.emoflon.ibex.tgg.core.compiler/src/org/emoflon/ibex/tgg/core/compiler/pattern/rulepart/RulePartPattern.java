@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EClass;
-import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern;
 
 import language.TGGRule;
 import language.TGGRuleNode;
 
-public abstract class RulePartPattern extends Pattern {
+public abstract class RulePartPattern extends IbexPattern {
 
 	
 	public RulePartPattern(TGGRule rule){

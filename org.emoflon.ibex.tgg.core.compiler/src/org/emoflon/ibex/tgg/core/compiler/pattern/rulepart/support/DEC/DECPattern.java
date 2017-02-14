@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern;
 
 import language.TGGRule;

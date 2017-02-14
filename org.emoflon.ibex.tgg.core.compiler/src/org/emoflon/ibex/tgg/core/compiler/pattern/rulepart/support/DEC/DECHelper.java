@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -166,7 +166,7 @@ public class DECHelper {
 	 * @param collect
 	 * @return
 	 */
-	public static Collection<String> determineImports(TGGRule rule, List<Pattern> decPatterns) {
+	public static Collection<String> determineImports(TGGRule rule, List<IbexPattern> decPatterns) {
 		return decPatterns.stream().flatMap(p -> p.getNegativeInvocations().stream()).filter(p -> !(p instanceof SearchEdgePattern)).map(p -> p.getRule().getName().toLowerCase() + "." + p.getName())
 				.collect(Collectors.toSet());
 	}

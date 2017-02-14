@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs;
 
 import java.util.Collection;
 
-import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -11,7 +11,7 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public abstract class ProtocolNACsPattern extends Pattern {
+public abstract class ProtocolNACsPattern extends IbexPattern {
 
 	public ProtocolNACsPattern(TGGRule rule) {
 		super(rule);

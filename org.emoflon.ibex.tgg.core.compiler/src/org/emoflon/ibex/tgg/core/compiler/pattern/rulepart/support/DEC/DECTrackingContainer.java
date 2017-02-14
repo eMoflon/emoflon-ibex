@@ -6,25 +6,25 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern;
+import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern;
 
 import language.TGGRule;
 
 public class DECTrackingContainer {
 
-	private Map<TGGRule, Collection<Pattern>> ruleToPatterns;
+	private Map<TGGRule, Collection<IbexPattern>> ruleToPatterns;
 
 	// Map<DecPattern, Map<RuleName, Pair<entryPointName, DECNodeName>>>
 	private Map<DECPattern, Map<String, Pair<String, String>>> signatureMapping;
 	private Map<DECPattern, Pair<String, String>> entryAndDecMap;
 
-	public DECTrackingContainer(Map<TGGRule, Collection<Pattern>> ruleToPatterns) {
+	public DECTrackingContainer(Map<TGGRule, Collection<IbexPattern>> ruleToPatterns) {
 		this.ruleToPatterns = ruleToPatterns;
 		this.signatureMapping = new HashMap<>();
 		this.entryAndDecMap = new HashMap<>();
 	}
 
-	public Map<TGGRule, Collection<Pattern>> getRuleToPatternsMap() {
+	public Map<TGGRule, Collection<IbexPattern>> getRuleToPatternsMap() {
 		return ruleToPatterns;
 	}
 
@@ -54,7 +54,7 @@ public class DECTrackingContainer {
 		return entryAndDecMap.get(pattern).getRight();
 	}
 
-	public Collection<String> getMapping(DECPattern pattern, Pattern subPattern) {
+	public Collection<String> getMapping(DECPattern pattern, IbexPattern subPattern) {
 		String entryName = getEntryPointName(pattern);
 		String decName = getDECNodeName(pattern);
 

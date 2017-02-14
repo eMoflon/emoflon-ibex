@@ -341,10 +341,6 @@ class DefaultFilesHelper {
 					«projectName»Transformation transformation = new «projectName»Transformation(rs, tggRuntime);						
 					transformation.execute();
 					
-					tggRuntime.run();
-					
-					transformation.dispose();
-					
 					long toc = System.currentTimeMillis();
 					System.out.println("Completed «mode.name» in: " + (toc-tic) + " ms");
 				 
@@ -354,19 +350,22 @@ class DefaultFilesHelper {
 				
 				private static void registerMetamodels(ResourceSet rs){
 					// Register internals
-					LanguagePackage.eINSTANCE.getName();
-					RuntimePackage.eINSTANCE.getName();
+					LanguagePackage.init();
+					RuntimePackage.init();
+					SpecificationPackage.init();
+					EMFTypePackage.init();
+					RelationalConstraintPackage.init();
 			
 					
 					// Add mapping for correspondence metamodel
 					Resource corr = rs.getResource(URI.createFileURI("model/«projectName».ecore"), true);
 					EPackage pcorr = (EPackage) corr.getContents().get(0);
-					Registry.INSTANCE.put(corr.getURI().toString(), corr);
-					Registry.INSTANCE.put("platform:/resource/«projectName»/model/«projectName».ecore", pcorr);
-					Registry.INSTANCE.put("platform:/plugin/«projectName»/model/«projectName».ecore", pcorr);
+					resourceSet.getPackageRegistry().put(corr.getURI().toString(), corr);
+					resourceSet.getPackageRegistry().put("platform:/resource/«projectName»/model/«projectName».ecore", pcorr);
+					resourceSet.getPackageRegistry().put("platform:/plugin/«projectName»/model/«projectName».ecore", pcorr);
 					
-					// SourcePackage.eInstance.getName();
-					// TargetPackage.eInstance.getName();
+					// SourcePackage.init();
+					// TargetPackage.init();
 				}
 			}
 		'''

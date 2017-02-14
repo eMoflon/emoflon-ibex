@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational;
 import java.util.Iterator;
 import java.util.Random;
 
-import org.eclipse.viatra.query.runtime.api.IPatternMatch;
+import org.emoflon.ibex.tgg.operational.util.IMatch;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
@@ -22,7 +22,7 @@ public class MatchContainer {
 	private TObjectIntMap<String> ruleNameToId;
 	private TIntObjectMap<String> idToRuleName;
 
-	private TObjectIntMap<IPatternMatch> matchToRuleNameID;
+	private TObjectIntMap<IMatch> matchToRuleNameID;
 
 	private Random random;
 
@@ -43,21 +43,21 @@ public class MatchContainer {
 		}
 	}
 
-	protected void addMatch(String ruleName, IPatternMatch match) {
+	protected void addMatch(String ruleName, IMatch match) {
 		matchToRuleNameID.put(match, ruleNameToId.get(ruleName));
 	}
 
-	protected void removeMatch(IPatternMatch match) {
+	protected void removeMatch(IMatch match) {
 		if (matchToRuleNameID.containsKey(match))
 			matchToRuleNameID.remove(match);
 	}
 
-	protected IPatternMatch getNext() {
-		return (IPatternMatch) matchToRuleNameID.keySet().iterator().next();
+	protected IMatch getNext() {
+		return (IMatch) matchToRuleNameID.keySet().iterator().next();
 	}
 
-	protected IPatternMatch getNextRandom() {
-		Iterator<IPatternMatch> it = matchToRuleNameID.keySet().iterator();
+	protected IMatch getNextRandom() {
+		Iterator<IMatch> it = matchToRuleNameID.keySet().iterator();
 		int randomIndex = random.nextInt(matchToRuleNameID.size());
 		int count = 0;
 		while (count < randomIndex) {
@@ -71,7 +71,7 @@ public class MatchContainer {
 		return matchToRuleNameID.isEmpty();
 	}
 
-	protected String getRuleName(IPatternMatch match) {
+	protected String getRuleName(IMatch match) {
 		return idToRuleName.get(matchToRuleNameID.get(match));
 	}
 

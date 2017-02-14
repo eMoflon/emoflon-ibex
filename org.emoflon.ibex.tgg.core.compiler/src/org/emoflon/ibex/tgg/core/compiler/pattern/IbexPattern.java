@@ -12,19 +12,19 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public abstract class Pattern {
+public abstract class IbexPattern {
 
 	protected TGGRule rule;
 
 	/**
 	 * each positive pattern invocation for a pattern pat corresponds to the following text find pat(<<signature elements of pat separated with ",">>);
 	 */
-	protected Collection<Pattern> positiveInvocations = new ArrayList<>();
+	protected Collection<IbexPattern> positiveInvocations = new ArrayList<>();
 
 	/**
 	 * each negative pattern invocation for a pattern pat corresponds to the following text neg find pat(<<signature elements of pat separated with ",">>);
 	 */
-	protected Collection<Pattern> negativeInvocations = new ArrayList<>();
+	protected Collection<IbexPattern> negativeInvocations = new ArrayList<>();
 
 	/**
 	 * each signature element e of a pattern corresponds to a parameter:
@@ -39,7 +39,7 @@ public abstract class Pattern {
 
 	protected Collection<TGGRuleEdge> bodyEdges;
 
-	public Pattern(TGGRule rule) {
+	public IbexPattern(TGGRule rule) {
 		this.rule = rule;
 		initialize();
 	}
@@ -103,11 +103,11 @@ public abstract class Pattern {
 		return getSignatureElements(getRule());
 	}
 
-	public Collection<Pattern> getPositiveInvocations() {
+	public Collection<IbexPattern> getPositiveInvocations() {
 		return positiveInvocations;
 	}
 
-	public Collection<Pattern> getNegativeInvocations() {
+	public Collection<IbexPattern> getNegativeInvocations() {
 		return negativeInvocations;
 	}
 
