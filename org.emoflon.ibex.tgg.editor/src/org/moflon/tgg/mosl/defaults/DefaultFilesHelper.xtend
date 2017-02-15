@@ -1,10 +1,8 @@
 package org.moflon.tgg.mosl.defaults
 
 import org.moflon.core.utilities.MoflonUtil
-import org.moflon.tgg.mosl.tgg.AttrCondDef
 import java.util.Collection
 import language.csp.definition.TGGAttributeConstraintDefinition
-import org.moflon.tgg.language.algorithm.ApplicationTypes
 
 class DefaultFilesHelper {
 

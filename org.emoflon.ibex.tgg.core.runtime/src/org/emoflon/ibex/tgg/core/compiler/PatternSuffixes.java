@@ -30,9 +30,5 @@ public class PatternSuffixes {
 	
 	public static final String TRG_PROTOCOL_PACS = "_TRG_PROTOCOL_PACS";
 	
-	public static final String WHOLE = "_WHOLE";
-
-	
-
-	
+	public static final String WHOLE = "_WHOLE";	
 }

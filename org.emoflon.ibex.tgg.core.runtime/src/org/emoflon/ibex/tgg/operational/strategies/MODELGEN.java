@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.strategies;
 import java.io.IOException;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.core.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.OperationMode;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.util.EmptyMatch;
@@ -54,7 +55,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	protected abstract void registerUserMetamodels() throws IOException;
 
 	public boolean isPatternRelevant(String patternName) {
-		return patternName.endsWith("_MODELGEN");
+		return patternName.endsWith(PatternSuffixes.MODELGEN);
 	}
 	
 	/**
