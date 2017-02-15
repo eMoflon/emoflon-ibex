@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.OperationMode;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IMatch; 
 import org.emoflon.ibex.tgg.operational.util.String2EPrimitive;
 
 import language.basic.expressions.TGGAttributeExpression;

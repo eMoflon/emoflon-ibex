@@ -38,7 +38,6 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.SearchEdg
 import language.DomainType;
 import language.TGG;
 import language.TGGRule;
-import runtime.RuntimePackage;
 
 public class TGGCompiler {
 
@@ -68,19 +67,19 @@ public class TGGCompiler {
 	}
 
 	private void fillImportAliasTables(TGG tgg) {
-		aliasToEPackageUri.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
-		epackageToAlias.put(RuntimePackage.eINSTANCE, "dep_ibex");
-
-		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
-		epackageToAlias.put(EcorePackage.eINSTANCE, "dep_ecore");
-
-		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage()).forEachOrdered(p -> {
-			if (!epackageToAlias.containsKey(p)) {
-				String alias = "dep_" + ++packageCounter;
-				aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
-				epackageToAlias.put(p, alias);
-			}
-		});
+//		aliasToEPackageUri.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
+//		epackageToAlias.put(RuntimePackage.eINSTANCE, "dep_ibex");
+//
+//		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
+//		epackageToAlias.put(EcorePackage.eINSTANCE, "dep_ecore");
+//
+//		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage()).forEachOrdered(p -> {
+//			if (!epackageToAlias.containsKey(p)) {
+//				String alias = "dep_" + ++packageCounter;
+//				aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
+//				epackageToAlias.put(p, alias);
+//			}
+//		});
 	}
 
 	public void preparePatterns() {

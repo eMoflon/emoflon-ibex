@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational;
+package org.emoflon.ibex.tgg.operational.strategies;
 
 import java.util.HashMap;
 

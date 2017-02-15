@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational;
+package org.emoflon.ibex.tgg.operational.util;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -88,47 +88,53 @@ public class RuleInfos {
 						.map(n -> (TGGRuleCorr) n).collect(Collectors.toCollection(LinkedHashSet::new)));
 	}
 
-	protected Collection<TGGRuleNode> getGreenSrcNodes(String ruleName) {
+	public Collection<TGGRuleNode> getGreenSrcNodes(String ruleName) {
 		return greenSrcNodes.get(ruleName);
 	}
 
-	protected Collection<TGGRuleEdge> getGreenSrcEdges(String ruleName) {
+	public Collection<TGGRuleEdge> getGreenSrcEdges(String ruleName) {
 		return greenSrcEdges.get(ruleName);
 	}
 
-	protected Collection<TGGRuleNode> getGreenTrgNodes(String ruleName) {
+	public Collection<TGGRuleNode> getGreenTrgNodes(String ruleName) {
 		return greenTrgNodes.get(ruleName);
 	}
 
-	protected Collection<TGGRuleEdge> getGreenTrgEdges(String ruleName) {
+	public Collection<TGGRuleEdge> getGreenTrgEdges(String ruleName) {
 		return greenTrgEdges.get(ruleName);
 	}
 
-	protected Collection<TGGRuleNode> getBlackSrcNodes(String ruleName) {
+	public Collection<TGGRuleNode> getBlackSrcNodes(String ruleName) {
 		return blackSrcNodes.get(ruleName);
 	}
 
-	protected Collection<TGGRuleEdge> getBlackSrcEdges(String ruleName) {
+	public Collection<TGGRuleEdge> getBlackSrcEdges(String ruleName) {
 		return blackSrcEdges.get(ruleName);
 	}
 
-	protected Collection<TGGRuleNode> getBlackTrgNodes(String ruleName) {
+	public Collection<TGGRuleNode> getBlackTrgNodes(String ruleName) {
 		return blackTrgNodes.get(ruleName);
 	}
 
-	protected Collection<TGGRuleEdge> getBlackTrgEdges(String ruleName) {
+	public Collection<TGGRuleEdge> getBlackTrgEdges(String ruleName) {
 		return blackTrgEdges.get(ruleName);
 	}
 
-	protected Collection<TGGRuleCorr> getGreenCorrNodes(String ruleName) {
+	public Collection<TGGRuleCorr> getGreenCorrNodes(String ruleName) {
 		return greenCorrNodes.get(ruleName);
 	}
 
-	protected Collection<TGGRuleCorr> getBlackCorrNodes(String ruleName) {
+	public Collection<TGGRuleCorr> getBlackCorrNodes(String ruleName) {
 		return blackCorrNodes.get(ruleName);
 	}
 	
-	protected TGGAttributeConstraintLibrary getRuleCSPConstraintLibrary(String ruleName){
+	public TGGAttributeConstraintLibrary getRuleCSPConstraintLibrary(String ruleName){
 		return rule2constraintLibrary.get(ruleName);
+	}
+	
+	public boolean isAxiom(String ruleName){
+		return blackSrcNodes.get(ruleName).isEmpty() &&
+			   blackTrgNodes.get(ruleName).isEmpty() &&
+			   blackCorrNodes.get(ruleName).isEmpty();	
 	}
 }

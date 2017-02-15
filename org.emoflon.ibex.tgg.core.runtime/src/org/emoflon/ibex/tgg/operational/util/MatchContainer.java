@@ -1,9 +1,7 @@
-package org.emoflon.ibex.tgg.operational;
+package org.emoflon.ibex.tgg.operational.util;
 
 import java.util.Iterator;
 import java.util.Random;
-
-import org.emoflon.ibex.tgg.operational.util.IMatch;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
@@ -26,7 +24,7 @@ public class MatchContainer {
 
 	private Random random;
 
-	protected MatchContainer(TGG tgg) {
+	public MatchContainer(TGG tgg) {
 		this.ruleNameToId = new TObjectIntHashMap<>(tgg.getRules().size());
 		this.idToRuleName = new TIntObjectHashMap<>(tgg.getRules().size());
 		this.matchToRuleNameID = new TObjectIntHashMap<>();
@@ -43,20 +41,20 @@ public class MatchContainer {
 		}
 	}
 
-	protected void addMatch(String ruleName, IMatch match) {
+	public void addMatch(String ruleName, IMatch match) {
 		matchToRuleNameID.put(match, ruleNameToId.get(ruleName));
 	}
 
-	protected void removeMatch(IMatch match) {
+	public void removeMatch(IMatch match) {
 		if (matchToRuleNameID.containsKey(match))
 			matchToRuleNameID.remove(match);
 	}
 
-	protected IMatch getNext() {
+	public IMatch getNext() {
 		return (IMatch) matchToRuleNameID.keySet().iterator().next();
 	}
 
-	protected IMatch getNextRandom() {
+	public IMatch getNextRandom() {
 		Iterator<IMatch> it = matchToRuleNameID.keySet().iterator();
 		int randomIndex = random.nextInt(matchToRuleNameID.size());
 		int count = 0;
@@ -67,11 +65,11 @@ public class MatchContainer {
 		return it.next();
 	}
 
-	protected boolean isEmpty() {
+	public boolean isEmpty() {
 		return matchToRuleNameID.isEmpty();
 	}
 
-	protected String getRuleName(IMatch match) {
+	public String getRuleName(IMatch match) {
 		return idToRuleName.get(matchToRuleNameID.get(match));
 	}
 

@@ -1,0 +1,23 @@
+#using FamiliesToPersonsDeterministic.*
+#using AttrCondDefLibrary.*
+
+#abstract #rule HandleRegisters #with FamiliesToPersonsDeterministic
+
+#source { 
+	++ familyRegister:FamilyRegister
+}
+
+#target {
+	++ personsRegister:PersonRegister
+}
+
+#correspondence {
+	++ roots:RegisterToRegister { 
+		#src->familyRegister
+		#trg->personsRegister
+	}
+}
+
+#attributeConditions {
+
+}

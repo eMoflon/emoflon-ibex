@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.core.compiler;
+package org.emoflon.ibex.tgg.operational.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,9 +12,9 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.emoflon.ibex.tgg.core.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.core.compiler.pattern.IbexPattern;
-import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.gervarro.democles.common.DataFrame;
 import org.gervarro.democles.common.IDataFrame;
 import org.gervarro.democles.common.PatternMatcherPlugin;
@@ -40,10 +40,8 @@ import org.gervarro.democles.runtime.AdornedNativeOperationBuilder;
 import org.gervarro.democles.runtime.GenericOperationBuilder;
 import org.gervarro.democles.runtime.InterpretableAdornedOperation;
 import org.gervarro.democles.runtime.JavaIdentifierProvider;
-import org.gervarro.democles.specification.emf.Constant;
 import org.gervarro.democles.specification.emf.Constraint;
 import org.gervarro.democles.specification.emf.ConstraintParameter;
-import org.gervarro.democles.specification.emf.EMFDemoclesPatternMetamodelPlugin;
 import org.gervarro.democles.specification.emf.EMFPatternBuilder;
 import org.gervarro.democles.specification.emf.Pattern;
 import org.gervarro.democles.specification.emf.PatternBody;
@@ -56,8 +54,6 @@ import org.gervarro.democles.specification.emf.constraint.RelationalTypeModule;
 import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFTypeFactory;
 import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFVariable;
 import org.gervarro.democles.specification.emf.constraint.emf.emf.Reference;
-import org.gervarro.democles.specification.emf.constraint.relational.Equal;
-import org.gervarro.democles.specification.emf.constraint.relational.RelationalConstraintFactory;
 import org.gervarro.democles.specification.impl.DefaultPattern;
 import org.gervarro.democles.specification.impl.DefaultPatternBody;
 import org.gervarro.democles.specification.impl.DefaultPatternFactory;
@@ -70,15 +66,14 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class DemoclesDriver implements MatchEventListener {
+public class DemoclesHelper implements MatchEventListener {
 	private ResourceSet rs;
-	private String workspacePath;
 	private Collection<Pattern> patterns;
 	private HashMap<IDataFrame, IMatch> matches;
 	private RetePatternMatcherModule retePatternMatcherModule;
 	private EMFPatternBuilder<DefaultPattern, DefaultPatternBody> patternBuilder;
 	private Collection<RetePattern> patternMatchers;
-	protected TGGRuntimeUtil tggRuntime;
+	protected OperationalStrategy app;
 	private TGG tgg;
 	private HashMap<IbexPattern, Pattern> patternMap;
 	private boolean debug;
@@ -86,33 +81,23 @@ public class DemoclesDriver implements MatchEventListener {
 	// Factories
 	private final SpecificationFactory factory = SpecificationFactory.eINSTANCE;
 	private final EMFTypeFactory emfTypeFactory = EMFTypeFactory.eINSTANCE;
-	private final RelationalConstraintFactory relationalFactory = RelationalConstraintFactory.eINSTANCE;
-					
+	// TODO for attributes
+	// private final RelationalConstraintFactory relationalFactory = RelationalConstraintFactory.eINSTANCE;				
 	
-	public DemoclesDriver(ResourceSet rs, TGGRuntimeUtil tggRuntime, String workspacePath, TGG tgg, boolean debug) {
+	public DemoclesHelper(ResourceSet rs, OperationalStrategy app, TGG tgg, boolean debug) throws IOException {
 		this.rs = rs;
-		this.workspacePath = workspacePath;
 		patterns = new ArrayList<>();
 		matches = new HashMap<>();
 		patternMatchers = new ArrayList<>();
-		this.tggRuntime = tggRuntime;
+		this.app = app;
 		this.tgg = tgg;
 		patternMap = new HashMap<>();
 		this.debug = debug;
-	}
-	
-	public void execute() throws IOException {
+		 
 		init();
-		run();
 	}
 	
-	public void dispose() throws IOException {
-		finalise();
-	}
-
-	private void init() throws IOException {
-		EMFDemoclesPatternMetamodelPlugin.setWorkspaceRootDirectory(rs, workspacePath);
-		
+	private void init() throws IOException {		
 		// Create EMF-based pattern specification
 		createDemoclesPatterns();
 		if(debug)
@@ -146,33 +131,26 @@ public class DemoclesDriver implements MatchEventListener {
 		r.getContents().addAll(patterns);
 		try {
 			r.save(null);
+			rs.getResources().remove(r);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void createDemoclesPatterns() {
-		if (debug) {
-			TGGCompiler compiler = new TGGCompiler(tgg);
-			compiler.preparePatterns();
+		TGGCompiler compiler = new TGGCompiler(tgg);
+		compiler.preparePatterns();
 
-			for (TGGRule r : compiler.getRuleToPatternMap().keySet()) {
-				for (IbexPattern pattern : compiler.getRuleToPatternMap().get(r)) {
-					patterns.add(ibexToDemocles(pattern));
-				}
+		for (TGGRule r : compiler.getRuleToPatternMap().keySet()) {
+			for (IbexPattern pattern : compiler.getRuleToPatternMap().get(r)) {
+				if(patternIsNotEmpty(pattern) && app.isPatternRelevant(pattern.getName()))
+					ibexToDemocles(pattern);
 			}
-			
-			return;
 		}
-		
-		Resource r = rs.createResource(URI.createPlatformResourceURI(tgg.getName() + "/patterns.xmi", true));
-		try {
-			r.load(null);
-			patterns.addAll((Collection<? extends Pattern>) r.getContents());
-			rs.getResources().remove(r);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	}
+
+	private boolean patternIsNotEmpty(IbexPattern pattern) {
+		return !pattern.getSignatureElements().isEmpty();
 	}
 
 	private Pattern ibexToDemocles(IbexPattern ibexPattern) {
@@ -266,7 +244,7 @@ public class DemoclesDriver implements MatchEventListener {
 		
 		// Pattern invocations
 		for (IbexPattern inv : ibexPattern.getPositiveInvocations()) {
-			if (!inv.getSignatureElements().isEmpty()) {
+			if (patternIsNotEmpty(inv)) {
 				PatternInvocationConstraint invCon = createInvocationConstraint(inv, true, nodeToVar);
 				if(!invCon.getParameters().isEmpty())
 					constraints.add(invCon);
@@ -274,37 +252,17 @@ public class DemoclesDriver implements MatchEventListener {
 		}
 		
 		for (IbexPattern inv : ibexPattern.getNegativeInvocations()) {
-			if (!inv.getSignatureElements().isEmpty()) {
+			if (patternIsNotEmpty(inv)) {
 				PatternInvocationConstraint invCon = createInvocationConstraint(inv, false, nodeToVar);
 				if(!invCon.getParameters().isEmpty())
 					constraints.add(invCon);
 			}
 		}
 		
-		handleEmptyPattern(pattern);
-		
 		patternMap.put(ibexPattern, pattern);
+		patterns.add(pattern);
+		
 		return pattern;
-	}
-
-	private void handleEmptyPattern(Pattern pattern) {
-		PatternBody body = pattern.getBodies().get(0);
-		if(body.getConstraints().isEmpty() && body.getLocalVariables().isEmpty() && pattern.getSymbolicParameters().isEmpty()){
-			Constant constant = factory.createConstant();
-			constant.setValue(new Boolean(true));
-			body.getConstants().add(constant);
-			
-			Equal eq = relationalFactory.createEqual();
-			ConstraintParameter p = factory.createConstraintParameter();
-			p.setReference(constant);
-			eq.getParameters().add(p);
-			
-			ConstraintParameter q = factory.createConstraintParameter();
-			q.setReference(constant);
-			eq.getParameters().add(q);
-			
-			body.getConstraints().add(eq);
-		}
 	}
 
 	private PatternInvocationConstraint createInvocationConstraint(IbexPattern inv, boolean isTrue, HashMap<TGGRuleNode, EMFVariable> nodeToVar) {
@@ -324,11 +282,14 @@ public class DemoclesDriver implements MatchEventListener {
 
 	private void retrievePatternMatchers() {
 		for (Pattern pattern : patterns) {
-			if (pattern.getName().endsWith(tggRuntime.getMode().name())) {
-				patternMatchers.add(retePatternMatcherModule.getPatternMatcher(
-						PatternMatcherPlugin.getIdentifier(pattern.getName(), pattern.getSymbolicParameters().size())));
+			if (app.isPatternRelevant(pattern.getName())){
+				patternMatchers.add(retePatternMatcherModule.getPatternMatcher(getPatternID(pattern)));
 			}
 		}
+	}
+
+	private String getPatternID(Pattern pattern) {
+		return PatternMatcherPlugin.getIdentifier(pattern.getName(), pattern.getSymbolicParameters().size());
 	}
 
 	private EMFInterpretableIncrementalOperationBuilder<VariableRuntime> configureDemocles() {
@@ -386,12 +347,12 @@ public class DemoclesDriver implements MatchEventListener {
 		return emfNativeOperationModule;
 	}
 
-	private void run() {
-		// Commit the initial model (and trigger the Rete network)
+	public void updateMatches() {
+		// Trigger the Rete network
 		retePatternMatcherModule.performIncrementalUpdates();
 	}
 
-	private void finalise() throws IOException {
+	public void terminate() throws IOException {
 		patternMatchers.forEach(pm -> pm.removeEventListener(this));
 	}
 	
@@ -401,20 +362,22 @@ public class DemoclesDriver implements MatchEventListener {
 		final DataFrame frame = event.getMatching();
 		
 		Optional<Pattern> p = patterns.stream()
-							.filter(pattern -> pattern.getName().equals(event.getSource().toString()))
+							.filter(pattern -> getPatternID(pattern).equals(event.getSource().toString()))
 							.findAny();
 		
 		p.ifPresent(pattern -> {
 			// React to create
 			if (type.contentEquals(MatchEvent.INSERT)) {
-				IMatch match = new IMatch(frame, pattern);
-				matches.put(frame, new IMatch(frame, pattern));
-				tggRuntime.addOperationalRuleMatch(pattern.getName(), match);
+				IMatch match = new IbexMatch(frame, pattern);
+				matches.put(frame, match);
+				app.addOperationalRuleMatch(pattern.getName(), match);
 			}
 
 			// React to delete
-			if (type.equals(MatchEvent.DELETE))
-				tggRuntime.removeOperationalRuleMatch(matches.get(frame));
+			if (type.equals(MatchEvent.DELETE)){
+				app.removeOperationalRuleMatch(matches.get(frame));
+				matches.remove(frame);
+			}
 		});
 	}
 }

@@ -21,8 +21,8 @@ class ManipulationTemplate {
 				import org.eclipse.viatra.transformation.runtime.emf.rules.EventDrivenTransformationRuleGroup
 				import org.eclipse.emf.ecore.resource.Resource	
 				import org.eclipse.emf.ecore.resource.ResourceSet
-				import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil
-				import org.emoflon.ibex.tgg.operational.MODELGEN
+				import org.emoflon.ibex.tgg.operational.OperationalStrategy
+				import org.emoflon.ibex.tgg.operational.strategies.MODELGEN_OLD
 				import org.emoflon.ibex.tgg.operational.OperationMode
 				import org.emoflon.ibex.tgg.operational.OperationStrategy
 				import org.apache.log4j.Logger

@@ -356,7 +356,7 @@ public class EditorTGGtoInternalTGG {
 
 		corrModel.setName(xtextTGG.getSchema().getName());
 		corrModel.setNsPrefix(xtextTGG.getSchema().getName());
-		corrModel.setNsURI("platform:/plugin/" + corrModel.getName() + "/model/" + corrModel.getName() + ".ecore");
+		corrModel.setNsURI("platform:/resource/" + corrModel.getName() + "/model/" + corrModel.getName() + ".ecore");
 
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
 			corrModel.getEClassifiers().add(createEClass(ct));

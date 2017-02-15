@@ -293,79 +293,52 @@ class DefaultFilesHelper {
 		'''
 	}
 
-	static def generateRunFile(String projectName, String fileName, RunFileType mode) {
+	static def generateModelGenFile(String projectName, String fileName) {
 		return '''
 			package org.emoflon.ibex.tgg.run;
 			
 			import java.io.IOException;
 			
-			import org.eclipse.emf.common.util.URI;
-			import org.eclipse.emf.ecore.EPackage;
-			import org.eclipse.emf.ecore.EPackage.Registry;
-			import org.eclipse.emf.ecore.resource.Resource;
-			import org.eclipse.emf.ecore.resource.ResourceSet;
-			import org.emoflon.ibex.tgg.operational.*;
-			import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
-			import org.moflon.core.utilities.eMoflonEMFUtil;
+			import org.apache.log4j.BasicConfigurator;
+			import org.emoflon.ibex.tgg.operational.strategies.MODELGEN;
+			import org.emoflon.ibex.tgg.operational.strategies.MODELGENStopCriterion;
 			
-			import language.LanguagePackage;
-			import language.TGG;
-			import runtime.RuntimePackage;
+			public class «fileName» extends MODELGEN {
 			
-			public class «fileName» {
+				public «fileName»(String projectName) {
+					super(projectName);
+				}
 			
 				public static void main(String[] args) throws IOException {
-					//BasicConfigurator.configure();
-							
-					ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
-					registerMetamodels(rs);
+					BasicConfigurator.configure();
 					
-					Resource tggR = rs.getResource(URI.createFileURI("model/«projectName».tgg.xmi"), true);
-					TGG tgg = (TGG) tggR.getContents().get(0);
+					MODELGEN_App generator = new MODELGEN_App("«projectName»");
 					
-					// create your resources 
-					Resource s = rs.createResource(URI.createFileURI("instances/src_gen.xmi"));
-					Resource t = rs.createResource(URI.createFileURI("instances/trg_gen.xmi"));
-					Resource c = rs.createResource(URI.createFileURI("instances/corr_gen.xmi"));
-					Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
+					generator.createAndPrepareResourceSet("./../");
+					generator.registerInternalMetamodels(); 
+					generator.registerUserMetamodels();
+					generator.loadTGG();
+					generator.initialiseEngine();
+					generator.loadModels();
 					
-					// load the resources containing your input 
-					«RunFileHelper.getLoadCall(mode)»
-					
-					System.out.println("Starting «mode.name»");
-					long tic = System.currentTimeMillis();
-					«RunFileHelper.getCreator(mode)»
-					tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
-					
-					«projectName»Transformation transformation = new «projectName»Transformation(rs, tggRuntime);						
-					transformation.execute();
-					
-					long toc = System.currentTimeMillis();
-					System.out.println("Completed «mode.name» in: " + (toc-tic) + " ms");
-				 
-				 	«RunFileHelper.getSaveCall(mode)»
-				}
-					
-				
-				private static void registerMetamodels(ResourceSet rs){
-					// Register internals
-					LanguagePackage.init();
-					RuntimePackage.init();
-					SpecificationPackage.init();
-					EMFTypePackage.init();
-					RelationalConstraintPackage.init();
+					MODELGENStopCriterion stop = new MODELGENStopCriterion();
+					stop.setMaxSrcCount(1000);
+					generator.setStopCriterion(stop);
 			
+					logger.info("Starting MODELGEN");
+					long tic = System.currentTimeMillis();
+					generator.run();
+					long toc = System.currentTimeMillis();
+					logger.info("Completed MODELGEN in: " + (toc-tic) + " ms");
+				 
+				 	generator.saveModels();
+				 	generator.terminate();
+				}
+				
+				protected void registerUserMetamodels() throws IOException {
+					loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 					
-					// Add mapping for correspondence metamodel
-					Resource corr = rs.getResource(URI.createFileURI("model/«projectName».ecore"), true);
-					EPackage pcorr = (EPackage) corr.getContents().get(0);
-					resourceSet.getPackageRegistry().put(corr.getURI().toString(), corr);
-					resourceSet.getPackageRegistry().put("platform:/resource/«projectName»/model/«projectName».ecore", pcorr);
-					resourceSet.getPackageRegistry().put("platform:/plugin/«projectName»/model/«projectName».ecore", pcorr);
-					
-					// SourcePackage.init();
-					// TargetPackage.init();
+					//FIXME load and register source and target metamodels
 				}
 			}
 		'''

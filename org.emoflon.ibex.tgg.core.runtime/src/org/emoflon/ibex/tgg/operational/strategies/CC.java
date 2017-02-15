@@ -1,14 +1,17 @@
-package org.emoflon.ibex.tgg.operational;
+package org.emoflon.ibex.tgg.operational.strategies;
 
 import java.util.Collection;
 import java.util.HashMap;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.operational.OperationMode;
+import org.emoflon.ibex.tgg.operational.OperationStrategy;
+import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IbexMatch;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
 import gnu.trove.map.TIntObjectMap;
@@ -25,10 +28,9 @@ import gurobi.GRBException;
 import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
-import language.TGG;
 import language.TGGRuleNode;
 
-public class CC extends TGGRuntimeUtil {
+public abstract class CC extends OperationalStrategy {
 	
 	private int nameCounter = 0;
 
@@ -46,8 +48,8 @@ public class CC extends TGGRuntimeUtil {
 	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
-	public CC(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
-		super(tgg, srcR, corrR, trgR, protocolR);
+	public CC(String projectName) {
+		super(projectName);
 	}
 	
 	@Override
@@ -59,7 +61,6 @@ public class CC extends TGGRuntimeUtil {
 				comatch.values().forEach(EcoreUtil::delete);
 			}
 		}
-		super.finalize();
 	}
 
 	@Override
