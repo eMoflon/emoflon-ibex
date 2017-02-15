@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -21,7 +22,7 @@ import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContain
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.MODELGEN;
+import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.operational.util.DemoclesHelper;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
@@ -40,6 +41,8 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.basic.expressions.TGGAttributeExpression;
+import language.csp.TGGAttributeConstraint;
+import language.csp.TGGAttributeConstraintLibrary;
 import language.impl.LanguagePackageImpl;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
@@ -66,15 +69,12 @@ public abstract class OperationalStrategy {
 
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
 
-	private OperationStrategy strategy;
-
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 	protected THashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new THashMap<>();
 
 	public OperationalStrategy(String projectName) {
 		this.projectPath = projectName;
 		base = URI.createPlatformResourceURI("/", true);
-		this.strategy = getStrategy();
 	}
 	
 	/**
@@ -158,7 +158,7 @@ public abstract class OperationalStrategy {
 	protected void run() throws IOException {
 		processBrokenMatches();
 		processOperationalRuleMatches();
-		finalize();
+		wrapUp();
 	}
 	
 	protected void processOperationalRuleMatches() {
@@ -187,7 +187,7 @@ public abstract class OperationalStrategy {
 			return false;
 
 		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(
-				ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, getMode(), runtimeConstraintProvider);
+				ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
 		if (!cspContainer.solve())
 			return false;
 
@@ -232,15 +232,13 @@ public abstract class OperationalStrategy {
 		return true;
 	}
 
-	protected void prepareProtocol(String ruleName, IMatch match,
-			HashMap<String, EObject> createdElements) {
+	protected void prepareProtocol(String ruleName, IMatch match, HashMap<String, EObject> createdElements) {
 		RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
 
 		TGGRuleApplication ra = (TGGRuleApplication) EcoreUtil.create(runtimePackage.getTGGRuleApplication());
 		p.getContents().add(ra);
 
 		ra.setName(ruleName);
-		ra.setFinal(strategy == OperationStrategy.PROTOCOL_NACS);
 
 		fillProtocolInfo(ruleInfos.getGreenSrcNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedSrc(),
 				createdElements, match);
@@ -253,6 +251,12 @@ public abstract class OperationalStrategy {
 		match.parameterNames().forEach(n -> {
 			ra.getNodeMappings().put(n, (EObject) match.get(n));
 		});
+		
+		setIsRuleApplicationFinal(ra);
+	}
+
+	protected void setIsRuleApplicationFinal(TGGRuleApplication ra) {
+		ra.setFinal(true);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -264,35 +268,31 @@ public abstract class OperationalStrategy {
 		});
 	}
 
-	private boolean allContextElementsalreadyProcessed(IMatch match, String ruleName) {
-		
-		if(getStrategy() == OperationStrategy.PROTOCOL_NACS){
-			if (markingSrc()) {
-				if (!allEdgesAlreadyProcessed(ruleInfos.getBlackSrcEdges(ruleName), match))
-					return false;
-			}
-
-			if (markingTrg()) {
-				if (!allEdgesAlreadyProcessed(ruleInfos.getBlackTrgEdges(ruleName), match))
-					return false;
-			}
+	protected boolean allContextElementsalreadyProcessed(IMatch match, String ruleName) {
+		if (markingSrc()) {
+			if (!allEdgesAlreadyProcessed(ruleInfos.getBlackSrcEdges(ruleName), match))
+				return false;
 		}
+
+		if (markingTrg()) {
+			if (!allEdgesAlreadyProcessed(ruleInfos.getBlackTrgEdges(ruleName), match))
+				return false;
+		}
+		
 		return true;
 	}
 
 	protected boolean someElementsAlreadyProcessed(String ruleName, IMatch match) {
-
-		if(getStrategy() == OperationStrategy.PROTOCOL_NACS){
-			if (markingSrc()) {
-				if (someEdgesAlreadyProcessed(ruleInfos.getGreenSrcEdges(ruleName), match))
-					return true;
-			}
-
-			if (markingTrg()) {
-				if (someEdgesAlreadyProcessed(ruleInfos.getGreenTrgEdges(ruleName), match))
-					return true;
-			}
+		if (markingSrc()) {
+			if (someEdgesAlreadyProcessed(ruleInfos.getGreenSrcEdges(ruleName), match))
+				return true;
 		}
+
+		if (markingTrg()) {
+			if (someEdgesAlreadyProcessed(ruleInfos.getGreenTrgEdges(ruleName), match))
+				return true;
+		}
+
 		return false;
 	}
 
@@ -424,19 +424,13 @@ public abstract class OperationalStrategy {
 		return runtimeConstraintProvider;
 	}
 
-	abstract public OperationMode getMode();
-
 	protected boolean protocol() {
 		return true;
 	}
 
-	protected boolean manipulateSrc() {
-		return getMode() == OperationMode.BWD || getMode() == OperationMode.MODELGEN;
-	}
+	abstract protected boolean manipulateSrc();
 
-	protected boolean manipulateTrg() {
-		return getMode() == OperationMode.FWD || getMode() == OperationMode.MODELGEN;
-	}
+	abstract protected boolean manipulateTrg();
 
 	protected boolean manipulateCorr() {
 		return true;
@@ -454,9 +448,7 @@ public abstract class OperationalStrategy {
 		return !manipulateCorr();
 	}
 
-	public OperationStrategy getStrategy() {
-		return OperationStrategy.PROTOCOL_NACS;
-	}
-	
-	abstract protected void finalize();
+	abstract protected void wrapUp();
+
+	abstract public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library);
 }

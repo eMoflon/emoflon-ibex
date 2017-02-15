@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.OperationMode;
+import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.tgg.operational.util.IMatch; 
+import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.String2EPrimitive;
 
 import language.basic.expressions.TGGAttributeExpression;
@@ -30,36 +30,18 @@ public class RuntimeTGGAttributeConstraintContainer {
 	
 	private IMatch match;
 	private Collection<String> boundObjectNames;
-	
-	private boolean modelgen;
-	
-	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IMatch match, OperationMode mode, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
+		
+	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IMatch match, OperationalStrategy strategy, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.parameterNames();
 		this.constraintProvider = runtimeConstraintProvider;
 		
 		extractRuntimeParameters(library);
-		extractRuntimeConstraints(library, mode);
+		extractRuntimeConstraints(library, strategy);
 	}
 
-	private void extractRuntimeConstraints(TGGAttributeConstraintLibrary library, OperationMode mode) {
-		List<TGGAttributeConstraint> sortedSpecificationConstraints = null;
-		switch (mode) {
-		case FWD:
-			sortedSpecificationConstraints = library.getSorted_FWD();
-			break;
-		case BWD:
-			sortedSpecificationConstraints = library.getSorted_BWD();
-			break;
-		case CC:
-			sortedSpecificationConstraints = library.getSorted_CC();
-			break;
-		case MODELGEN:
-			sortedSpecificationConstraints = library.getSorted_MODELGEN();
-			break;
-		default:
-			break;
-		}
+	private void extractRuntimeConstraints(TGGAttributeConstraintLibrary library, OperationalStrategy strategy) {
+		List<TGGAttributeConstraint> sortedSpecificationConstraints = strategy.getConstraints(library);
 		constraints = sortedSpecificationConstraints.stream().map(c -> extractRuntimeConstraint(c)).collect(Collectors.toList());
 	}
 	

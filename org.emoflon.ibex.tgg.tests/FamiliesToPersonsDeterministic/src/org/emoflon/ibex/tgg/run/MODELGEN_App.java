@@ -3,8 +3,8 @@ package org.emoflon.ibex.tgg.run;
 import java.io.IOException;
 
 import org.apache.log4j.BasicConfigurator;
-import org.emoflon.ibex.tgg.operational.strategies.MODELGEN;
-import org.emoflon.ibex.tgg.operational.strategies.MODELGENStopCriterion;
+import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
+import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
 
 public class MODELGEN_App extends MODELGEN {
 
@@ -42,5 +42,10 @@ public class MODELGEN_App extends MODELGEN {
 		loadAndRegisterMetamodel(projectPath + "/model/Families.ecore");
 		loadAndRegisterMetamodel(projectPath + "/model/Persons.ecore");
 		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
+	}
+	
+	@Override
+	public boolean isPatternRelevant(String patternName) {
+		return patternName.endsWith("_CONTEXT");
 	}
 }
