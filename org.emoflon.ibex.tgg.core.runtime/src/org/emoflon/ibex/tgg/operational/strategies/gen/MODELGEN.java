@@ -72,15 +72,15 @@ public abstract class MODELGEN extends OperationalStrategy {
 		
 		IMatch match = operationalMatchContainer.getNextRandom();
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		if (!stopCriterion.dont(ruleName)) {
-			if (processOperationalRuleMatch(ruleName, match))
-				stopCriterion.update(ruleName,
-						ruleInfos.getGreenSrcNodes(ruleName).size() + ruleInfos.getGreenSrcEdges(ruleName).size(),
-						ruleInfos.getGreenTrgNodes(ruleName).size() + ruleInfos.getGreenTrgEdges(ruleName).size());
-			else
-				removeOperationalRuleMatch(match);
-		}
-		
+		if(stopCriterion.dont(ruleName))
+			removeOperationalRuleMatch(match);
+		else if (processOperationalRuleMatch(ruleName, match))
+			stopCriterion.update(
+					ruleName,
+					ruleInfos.getGreenSrcNodes(ruleName).size() + ruleInfos.getGreenSrcEdges(ruleName).size(),
+					ruleInfos.getGreenTrgNodes(ruleName).size() + ruleInfos.getGreenTrgEdges(ruleName).size()
+			);
+			
 		processOperationalRuleMatches();
 	}
 

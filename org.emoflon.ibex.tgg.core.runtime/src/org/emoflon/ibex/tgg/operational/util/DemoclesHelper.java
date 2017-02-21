@@ -370,7 +370,8 @@ public class DemoclesHelper implements MatchEventListener {
 			if (type.contentEquals(MatchEvent.INSERT)) {
 				IMatch match = new IbexMatch(frame, pattern);
 				matches.put(frame, match);
-				app.addOperationalRuleMatch(pattern.getName(), match);
+				//FIXME [anjorin] Better way of accessing rule name!
+				app.addOperationalRuleMatch(pattern.getName().substring(0, pattern.getName().indexOf("_")), match);
 			}
 
 			// React to delete
