@@ -2,10 +2,14 @@ package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.util.HashMap;
 
+import language.TGG;
+
 public class MODELGENStopCriterion {
 
 	private long startTime = System.currentTimeMillis();
 
+	private TGG tgg;
+	
 	private long timeOutInMS = -1;
 
 	private int currentSrcCount;
@@ -18,6 +22,10 @@ public class MODELGENStopCriterion {
 
 	private HashMap<String, Integer> currentRuleCount = new HashMap<>();
 
+	public MODELGENStopCriterion(TGG tgg) {
+		this.tgg = tgg;
+	}
+	
 	public void setTimeOutInMS(long timeOutInMS) {
 		this.timeOutInMS = timeOutInMS;
 	}
@@ -30,8 +38,11 @@ public class MODELGENStopCriterion {
 		this.maxTrgCount = maxTrgCount;
 	}
 
-	public void setMaxRuleCount(HashMap<String, Integer> maxRuleCount) {
-		this.maxRuleCount = maxRuleCount;
+	public void setMaxRuleCount(String ruleName, int maxNoOfApplications) {
+		if(tgg.getRules().stream().noneMatch(r -> r.getName().contentEquals(ruleName)))
+			throw new IllegalArgumentException(ruleName + " is not a name of a TGG rule in " + tgg.getName());
+			
+		maxRuleCount.put(ruleName, maxNoOfApplications);
 	}
 
 	protected boolean dont(String ruleName) {

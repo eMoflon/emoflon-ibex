@@ -24,8 +24,9 @@ public class MODELGEN_App extends MODELGEN {
 		generator.initialiseEngine();
 		generator.loadModels();
 		
-		MODELGENStopCriterion stop = new MODELGENStopCriterion();
-		stop.setMaxSrcCount(1000);
+		MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
+		stop.setMaxSrcCount(10);
+		stop.setMaxRuleCount("HandleRegisters", 1);
 		generator.setStopCriterion(stop);
 
 		logger.info("Starting MODELGEN");
@@ -42,10 +43,5 @@ public class MODELGEN_App extends MODELGEN {
 		loadAndRegisterMetamodel(projectPath + "/model/Families.ecore");
 		loadAndRegisterMetamodel(projectPath + "/model/Persons.ecore");
 		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
-	}
-	
-	@Override
-	public boolean isPatternRelevant(String patternName) {
-		return patternName.endsWith("_CONTEXT");
 	}
 }
