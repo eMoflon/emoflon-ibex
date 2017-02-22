@@ -12,6 +12,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
@@ -370,8 +371,8 @@ public class DemoclesHelper implements MatchEventListener {
 			if (type.contentEquals(MatchEvent.INSERT)) {
 				IMatch match = new IbexMatch(frame, pattern);
 				matches.put(frame, match);
-				//FIXME [anjorin] Better way of accessing rule name!
-				app.addOperationalRuleMatch(pattern.getName().substring(0, pattern.getName().indexOf("_")), match);
+				//FIXME [anjorin] Better way of accessing rule name.
+				app.addOperationalRuleMatch(PatternSuffixes.removeSuffix(pattern.getName()), match);
 			}
 
 			// React to delete

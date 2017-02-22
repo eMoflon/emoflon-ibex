@@ -2,6 +2,8 @@ package org.emoflon.ibex.tgg.compiler;
 
 public class PatternSuffixes {
 	
+	//FIXME[anjorin] Extract "_" as global separation character. Then change to "__" instead of "_"!
+	
 	public static final String SRC = "_SRC";
 	
 	public static final String TRG = "_TRG";
@@ -30,5 +32,9 @@ public class PatternSuffixes {
 	
 	public static final String TRG_PROTOCOL_PACS = "_TRG_PROTOCOL_PACS";
 	
-	public static final String WHOLE = "_WHOLE";	
+	public static final String WHOLE = "_WHOLE";
+
+	public static String removeSuffix(String name) {
+		return name.substring(0, name.indexOf("_"));
+	}	
 }

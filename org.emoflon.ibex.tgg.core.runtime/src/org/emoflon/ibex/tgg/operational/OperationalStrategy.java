@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
@@ -29,6 +30,7 @@ import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
 import org.gervarro.democles.specification.emf.EMFDemoclesPatternMetamodelPlugin;
+import org.gervarro.democles.specification.emf.Pattern;
 import org.gervarro.democles.specification.emf.SpecificationPackage;
 import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFTypePackage;
 import org.gervarro.democles.specification.emf.constraint.relational.RelationalConstraintPackage;
@@ -177,10 +179,10 @@ public abstract class OperationalStrategy {
 	}
 
 	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {
-		if (match.patternName().endsWith("FWD") && !markingSrc())
+		if (match.patternName().endsWith(PatternSuffixes.FWD) && !markingSrc())
 			return false;
 		
-		if (match.patternName().endsWith("BWD") && !markingTrg())
+		if (match.patternName().endsWith(PatternSuffixes.BWD) && !markingTrg())
 			return false;
 		
 		if (someElementsAlreadyProcessed(ruleName, match))
