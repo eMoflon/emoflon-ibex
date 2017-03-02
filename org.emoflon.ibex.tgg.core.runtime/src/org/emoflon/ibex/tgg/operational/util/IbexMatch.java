@@ -34,10 +34,10 @@ public class IbexMatch implements IMatch {
 	
 	private int varNameToIndex(String varName) {
 		for(int i = 0; i <= pattern.getSymbolicParameters().size(); i++){
-			if(varName.equals(pattern.getSymbolicParameters().get(i)))
+			if(varName.equals(pattern.getSymbolicParameters().get(i).getName()))
 				return i;
 		}
 		
-		return -1;
+		throw new IllegalArgumentException("Not able to find variable " + varName + " in match of " + pattern.getName());
 	}
 }

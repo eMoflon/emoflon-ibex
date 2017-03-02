@@ -30,7 +30,6 @@ import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
 import org.gervarro.democles.specification.emf.EMFDemoclesPatternMetamodelPlugin;
-import org.gervarro.democles.specification.emf.Pattern;
 import org.gervarro.democles.specification.emf.SpecificationPackage;
 import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFTypePackage;
 import org.gervarro.democles.specification.emf.constraint.relational.RelationalConstraintPackage;
@@ -159,14 +158,17 @@ public abstract class OperationalStrategy {
 	
 	protected void run() throws IOException {
 		processBrokenMatches();
-		processOperationalRuleMatches();
+		
+		do {
+			engine.updateMatches();
+		} while(processOperationalRuleMatches());
+		
 		wrapUp();
 	}
 	
-	protected void processOperationalRuleMatches() {
-		engine.updateMatches();
+	protected boolean processOperationalRuleMatches() {
 		if(operationalMatchContainer.isEmpty())
-			return;
+			return false;
 		
 		while (!operationalMatchContainer.isEmpty()) {
 			IMatch match = operationalMatchContainer.getNext();
@@ -175,7 +177,7 @@ public abstract class OperationalStrategy {
 			removeOperationalRuleMatch(match);
 		}
 		
-		processOperationalRuleMatches();
+		return true;
 	}
 
 	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {

@@ -65,10 +65,9 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * (ii) updates the state of its stop criterion 
 	 */
 	@Override
-	protected void processOperationalRuleMatches() {
-		engine.updateMatches();
+	protected boolean processOperationalRuleMatches() {
 		if(stopCriterion.dont() || operationalMatchContainer.isEmpty())
-			return;
+			return false;
 		
 		IMatch match = operationalMatchContainer.getNextRandom();
 		String ruleName = operationalMatchContainer.getRuleName(match);
@@ -81,7 +80,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 					ruleInfos.getGreenTrgNodes(ruleName).size() + ruleInfos.getGreenTrgEdges(ruleName).size()
 			);
 			
-		processOperationalRuleMatches();
+		return true;
 	}
 
 	@Override
