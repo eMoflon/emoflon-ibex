@@ -17,6 +17,12 @@
 		#src->FamilyRegister
 		#trg->PersonRegister
 	}
+	
+	MemberToPerson {
+		#src->FamilyMember
+		#trg->Person
+	} 
+	
 }
 
 #attributeConditions {

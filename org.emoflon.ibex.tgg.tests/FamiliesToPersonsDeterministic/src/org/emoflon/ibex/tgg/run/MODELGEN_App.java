@@ -25,7 +25,7 @@ public class MODELGEN_App extends MODELGEN {
 		generator.loadModels();
 		
 		MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
-		stop.setMaxSrcCount(10);
+		stop.setTimeOutInMS(1000);
 		stop.setMaxRuleCount("HandleRegisters", 1);
 		generator.setStopCriterion(stop);
 
