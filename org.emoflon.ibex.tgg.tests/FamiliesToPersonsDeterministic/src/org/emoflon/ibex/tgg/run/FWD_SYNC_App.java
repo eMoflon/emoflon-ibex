@@ -3,33 +3,27 @@ package org.emoflon.ibex.tgg.run;
 import java.io.IOException;
 
 import org.apache.log4j.BasicConfigurator;
-import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
-import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
+import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_SYNC;
 
-public class MODELGEN_App extends MODELGEN {
+public class FWD_SYNC_App extends FWD_SYNC {
 
-	public MODELGEN_App(String projectName, String workspacePath, boolean debug) throws IOException {
+	public FWD_SYNC_App(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
 	}
 
 	public static void main(String[] args) throws IOException {
 		BasicConfigurator.configure();
 
-		MODELGEN_App generator = new MODELGEN_App("FamiliesToPersonsDeterministic", "./../", false);
-
-		MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
-		stop.setTimeOutInMS(1000);
-		stop.setMaxRuleCount("HandleRegisters", 1);
-		generator.setStopCriterion(stop);
+		FWD_SYNC_App synchroniser = new FWD_SYNC_App("FamiliesToPersonsDeterministic", "./../", false);
 
 		logger.info("Starting MODELGEN");
 		long tic = System.currentTimeMillis();
-		generator.run();
+		synchroniser.run();
 		long toc = System.currentTimeMillis();
 		logger.info("Completed MODELGEN in: " + (toc - tic) + " ms");
 
-		generator.saveModels();
-		generator.terminate();
+		synchroniser.saveModels();
+		synchroniser.terminate();
 	}
 
 	protected void registerUserMetamodels() throws IOException {

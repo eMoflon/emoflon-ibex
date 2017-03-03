@@ -73,10 +73,18 @@ public abstract class OperationalStrategy {
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 	protected THashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new THashMap<>();
 
-	public OperationalStrategy(String projectName) {
+	public OperationalStrategy(String projectName, String workspacePath, boolean debug) throws IOException {
 		this.projectPath = projectName;
 		base = URI.createPlatformResourceURI("/", true);
+		createAndPrepareResourceSet(workspacePath);
+		registerInternalMetamodels(); 
+		registerUserMetamodels();
+		loadTGG();
+		initialiseEngine(debug);
+		loadModels();
 	}
+	
+	protected abstract void registerUserMetamodels() throws IOException;
 	
 	/**
 	 * Decide if matches of this pattern should be watched and notified by the
@@ -99,8 +107,8 @@ public abstract class OperationalStrategy {
 	
 	abstract protected void loadModels() throws IOException;
 	
-	protected void initialiseEngine() throws IOException {
-		engine = new DemoclesHelper(rs, this, tgg, true);		
+	protected void initialiseEngine(boolean debug) throws IOException {
+		engine = new DemoclesHelper(rs, this, tgg, debug);		
 	}
 
 	protected void terminate() throws IOException {

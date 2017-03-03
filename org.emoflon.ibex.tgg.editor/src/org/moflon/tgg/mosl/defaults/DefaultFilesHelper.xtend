@@ -1,3 +1,4 @@
+
 package org.moflon.tgg.mosl.defaults
 
 import org.moflon.core.utilities.MoflonUtil
@@ -293,52 +294,50 @@ class DefaultFilesHelper {
 
 	static def generateModelGenFile(String projectName, String fileName) {
 		return '''
-			package org.emoflon.ibex.tgg.run;
-			
-			import java.io.IOException;
-			
-			import org.apache.log4j.BasicConfigurator;
-			import org.emoflon.ibex.tgg.operational.strategies.MODELGEN;
-			import org.emoflon.ibex.tgg.operational.strategies.MODELGENStopCriterion;
-			
-			public class «fileName» extends MODELGEN {
-			
-				public «fileName»(String projectName) {
-					super(projectName);
-				}
-			
-				public static void main(String[] args) throws IOException {
-					BasicConfigurator.configure();
-					
-					MODELGEN_App generator = new MODELGEN_App("«projectName»");
-					
-					generator.createAndPrepareResourceSet("./../");
-					generator.registerInternalMetamodels(); 
-					generator.registerUserMetamodels();
-					generator.loadTGG();
-					generator.initialiseEngine();
-					generator.loadModels();
-					
-					MODELGENStopCriterion stop = new MODELGENStopCriterion();
-					stop.setMaxSrcCount(1000);
-					generator.setStopCriterion(stop);
-			
-					logger.info("Starting MODELGEN");
-					long tic = System.currentTimeMillis();
-					generator.run();
-					long toc = System.currentTimeMillis();
-					logger.info("Completed MODELGEN in: " + (toc-tic) + " ms");
-				 
-				 	generator.saveModels();
-				 	generator.terminate();
-				}
-				
-				protected void registerUserMetamodels() throws IOException {
-					loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
-					
-					//FIXME load and register source and target metamodels
-				}
+		package org.emoflon.ibex.tgg.run;
+		
+		import java.io.IOException;
+		
+		import org.apache.log4j.BasicConfigurator;
+		import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
+		import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
+		
+		public class «fileName» extends MODELGEN {
+		
+			public «fileName»(String projectName, String workspacePath, boolean debug) throws IOException {
+				super(projectName, workspacePath, debug);
 			}
+		
+			public static void main(String[] args) throws IOException {
+				BasicConfigurator.configure();
+		
+				«fileName» generator = new «fileName»("«projectName»", "./../", false);
+		
+				MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
+				stop.setTimeOutInMS(1000);
+				generator.setStopCriterion(stop);
+		
+				logger.info("Starting MODELGEN");
+				long tic = System.currentTimeMillis();
+				generator.run();
+				long toc = System.currentTimeMillis();
+				logger.info("Completed MODELGEN in: " + (toc - tic) + " ms");
+		
+				generator.saveModels();
+				generator.terminate();
+			}
+		
+			protected void registerUserMetamodels() throws IOException {
+				loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
+				//FIXME load and register source and target metamodels
+			}
+		}
+		'''
+	}
+	
+	static def generateFwdSyncAppFile(String projectName, String fileName){
+		return '''
+			TODO
 		'''
 	}
 }

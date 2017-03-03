@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
@@ -9,8 +10,8 @@ import language.csp.TGGAttributeConstraintLibrary;
 
 public abstract class BWD_SYNC extends OperationalStrategy {
 
-	public BWD_SYNC(String projectName) {
-		super(projectName);
+	public BWD_SYNC(String projectName, String workspacePath, boolean debug) throws IOException {
+		super(projectName, workspacePath, debug);
 	}
 
 	@Override

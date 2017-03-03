@@ -26,8 +26,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 	protected MODELGENStopCriterion stopCriterion;
 		
-	public MODELGEN(String projectName) {
-		super(projectName);
+	public MODELGEN(String projectName, String workspacePath, boolean debug) throws IOException {
+		super(projectName, workspacePath, debug);
 	}
 	
 	protected void setStopCriterion(MODELGENStopCriterion stop) {

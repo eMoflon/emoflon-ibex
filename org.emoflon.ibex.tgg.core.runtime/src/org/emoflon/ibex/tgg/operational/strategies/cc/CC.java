@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.cc;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +50,8 @@ public abstract class CC extends OperationalStrategy {
 	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
-	public CC(String projectName) {
-		super(projectName);
+	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
+		super(projectName, workspacePath, debug);
 	}
 	
 	@Override

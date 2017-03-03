@@ -99,7 +99,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	
 	private void generateRunFiles() {
 		try {
-			RunFileHelper.createFiles(getProject());
+			new RunFileHelper(getProject()).createFiles();
 		} catch (CoreException | IOException e) {
 			LogUtils.error(logger, e);
 		}
