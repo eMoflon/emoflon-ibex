@@ -170,14 +170,18 @@ public abstract class OperationalStrategy {
 		if(operationalMatchContainer.isEmpty())
 			return false;
 		
+		processAllMatches();
+		
+		return true;
+	}
+
+	private void processAllMatches() {
 		while (!operationalMatchContainer.isEmpty()) {
 			IMatch match = operationalMatchContainer.getNext();
 			String ruleName = operationalMatchContainer.getRuleName(match);
 			processOperationalRuleMatch(ruleName, match);
 			removeOperationalRuleMatch(match);
 		}
-		
-		return true;
 	}
 
 	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {

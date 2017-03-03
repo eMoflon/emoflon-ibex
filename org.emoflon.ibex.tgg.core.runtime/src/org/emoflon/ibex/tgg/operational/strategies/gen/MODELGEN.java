@@ -74,13 +74,17 @@ public abstract class MODELGEN extends OperationalStrategy {
 		if(stopCriterion.dont(ruleName))
 			removeOperationalRuleMatch(match);
 		else if (processOperationalRuleMatch(ruleName, match))
-			stopCriterion.update(
-					ruleName,
-					ruleInfos.getGreenSrcNodes(ruleName).size() + ruleInfos.getGreenSrcEdges(ruleName).size(),
-					ruleInfos.getGreenTrgNodes(ruleName).size() + ruleInfos.getGreenTrgEdges(ruleName).size()
-			);
+			updateStopCriterion(ruleName);
 			
 		return true;
+	}
+
+	private void updateStopCriterion(String ruleName) {
+		stopCriterion.update(
+				ruleName,
+				ruleInfos.getGreenSrcNodes(ruleName).size() + ruleInfos.getGreenSrcEdges(ruleName).size(),
+				ruleInfos.getGreenTrgNodes(ruleName).size() + ruleInfos.getGreenTrgEdges(ruleName).size()
+		);
 	}
 
 	@Override

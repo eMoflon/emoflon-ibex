@@ -73,10 +73,6 @@ public class ManipulationUtil {
 			((EList) src.eGet(ref)).add(trg);
 		else
 			src.eSet(ref, trg);
-		
-		if (ref.isContainment() && trg.eResource() != null) {
-			trg.eResource().getContents().remove(trg);
-		}
 	}
 
 	public static void deleteEdge(EObject src, EObject trg, EReference ref) {
@@ -118,13 +114,7 @@ public class ManipulationUtil {
 	}
 
 	private static void handlePlacementInResource(TGGRuleNode node, Resource resource, EObject newObj) {
-		// TODO[anjorin] For now check carefully if object will be added as a child of another object in this co-match
-		//              If yes, do not add to the resource
-		// Consider simplifying this later (so simply always add to the resource) as soon as Democles accepts this
-		if(node.getIncomingEdges().stream()
-				.map(TGGRuleEdge::getType)
-				.noneMatch(EReference::isContainment))
-			resource.getContents().add(newObj);
+		resource.getContents().add(newObj);
 	}
 
 	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {
