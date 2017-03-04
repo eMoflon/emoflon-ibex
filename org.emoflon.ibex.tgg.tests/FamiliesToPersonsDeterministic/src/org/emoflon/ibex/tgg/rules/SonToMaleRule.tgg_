@@ -1,7 +1,7 @@
 #using FamiliesToPersonsDeterministic.*
 #using AttrCondDefLibrary.*
 
-#rule SonToMaleRule #with FamiliesToPersonsDeterministic
+#abstract #rule SonToMaleRule #with FamiliesToPersonsDeterministic
 
 #source { 
 	f:Family {

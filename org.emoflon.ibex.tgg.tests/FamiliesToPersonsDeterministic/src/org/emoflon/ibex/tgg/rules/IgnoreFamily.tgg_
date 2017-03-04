@@ -1,7 +1,7 @@
 #using FamiliesToPersonsDeterministic.*
 #using AttrCondDefLibrary.*
 
-#rule IgnoreFamily #with FamiliesToPersonsDeterministic
+#abstract #rule IgnoreFamily #with FamiliesToPersonsDeterministic
 
 #source { 
 	fr:FamilyRegister {
