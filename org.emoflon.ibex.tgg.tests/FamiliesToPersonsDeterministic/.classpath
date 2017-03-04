@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry excluding="org/emoflon/ibex/tgg/run/CONSISTENCY_CHECK_App.java|org/emoflon/ibex/tgg/run/SYNCH_App.java|org/emoflon/ibex/tgg/run/SYNC_App.java" kind="src" path="src"/>
+	<classpathentry excluding="org/emoflon/ibex/tgg/run/CONSISTENCY_CHECK_App.java|org/emoflon/ibex/tgg/run/SYNCH_App.java" kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
