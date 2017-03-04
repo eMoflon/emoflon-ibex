@@ -165,7 +165,9 @@ public abstract class OperationalStrategy {
 	}
 	
 	protected void run() throws IOException {
-		processBrokenMatches();
+		do {
+			engine.updateMatches();
+		} while(processBrokenMatches());
 		
 		do {
 			engine.updateMatches();
@@ -378,11 +380,16 @@ public abstract class OperationalStrategy {
 		return true;
 	}
 
-	protected void processBrokenMatches() {
-		engine.updateMatches();
+	protected boolean processBrokenMatches() {
 		if(brokenRuleApplications.isEmpty())
-			return;
+			return false;
 		
+		revokeAllMatches();
+
+		return true;
+	}
+
+	private void revokeAllMatches() {
 		while(!brokenRuleApplications.isEmpty()){
 			THashSet<TGGRuleApplication> revoked = new THashSet<>();
 			for(TGGRuleApplication ra : brokenRuleApplications.keySet()){
@@ -392,8 +399,6 @@ public abstract class OperationalStrategy {
 			for(TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);
 		}
-		
-		processBrokenMatches();
 	}
 
 	protected void revokeOperationalRule(TGGRuleApplication ruleApplication, IMatch match) {

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EReference;
@@ -68,6 +69,8 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class DemoclesHelper implements MatchEventListener {
+	private static final Logger logger = Logger.getLogger(DemoclesHelper.class);
+	
 	private ResourceSet rs;
 	private Collection<Pattern> patterns;
 	private HashMap<IDataFrame, IMatch> matches;
@@ -358,6 +361,11 @@ public class DemoclesHelper implements MatchEventListener {
 	}
 	
 	public void handleEvent(final MatchEvent event) {
+		logger.debug("Received Match Event: " + event.hashCode());
+		logger.debug("Type: " + event.getEventType().hashCode());
+		logger.debug("Producing pattern: " + event.getSource().hashCode());
+		logger.debug("Match: " + event.getMatching().hashCode());
+		
 		// React to events
 		final String type = event.getEventType();
 		final DataFrame frame = event.getMatching();
