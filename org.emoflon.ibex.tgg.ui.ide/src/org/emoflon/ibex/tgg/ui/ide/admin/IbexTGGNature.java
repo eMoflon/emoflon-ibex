@@ -11,7 +11,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.PlatformUI;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.WorkspaceHelper;
@@ -29,7 +36,7 @@ public class IbexTGGNature implements IProjectNature {
 	
 	private IProject project;
 
-	private Logger logger = Logger.getLogger(IbexTGGNature.class);
+	private static Logger logger = Logger.getLogger(IbexTGGNature.class);
 	
 	@Override
 	public void configure() throws CoreException {
@@ -38,7 +45,7 @@ public class IbexTGGNature implements IProjectNature {
 			public void run() {
 				try {
 					performSetUpRoutines();
-					addIBexTGGBuilder();
+					addIBexTGGBuilder(); 
 				} catch (CoreException | IOException e) {
 					LogUtils.error(logger, e);
 				}
@@ -86,8 +93,66 @@ public class IbexTGGNature implements IProjectNature {
 		WorkspaceHelper.addNature(project, PLUGIN_NATURE_ID, new NullProgressMonitor());
 		setUpBuildProperties();
         setUpManifestFile();
-        WorkspaceHelper.addContainerToBuildPath(project, "org.eclipse.pde.core.requiredPlugins");	
+        addContainerToBuildPath(project, "org.eclipse.pde.core.requiredPlugins");	
     }
+	
+	/**
+	 * Adds the given container to the build path of the given project if it
+	 * contains no entry with the same name, yet.
+	 */
+	public static void addContainerToBuildPath(final IProject project, final String container) {
+		addContainerToBuildPath(JavaCore.create(project), container);
+	}
+
+	/**
+	 * Adds the given container to the build path of the given java project.
+	 */
+	private static void addContainerToBuildPath(final IJavaProject iJavaProject, final String container) {
+		try {
+			// Get current entries on the classpath
+			Collection<IClasspathEntry> classpathEntries = new ArrayList<>(
+					Arrays.asList(iJavaProject.getRawClasspath()));
+
+			addContainerToBuildPath(classpathEntries, container);
+
+			setBuildPath(iJavaProject, classpathEntries);
+		} catch (JavaModelException e) {
+			LogUtils.error(logger, e, "Unable to set classpath variable");
+		}
+	}
+
+	/**
+	 * Adds the given container to the list of build path entries (if not
+	 * included, yet)
+	 */
+	private static void addContainerToBuildPath(final Collection<IClasspathEntry> classpathEntries,
+			final String container) {
+		IClasspathEntry entry = JavaCore.newContainerEntry(new Path(container));
+		for (IClasspathEntry iClasspathEntry : classpathEntries) {
+			if (iClasspathEntry.getPath().equals(entry.getPath())) {
+				// No need to add variable - already on classpath
+				return;
+			}
+		}
+
+		classpathEntries.add(entry);
+	}
+
+	private static void setBuildPath(final IJavaProject javaProject, final Collection<IClasspathEntry> entries,
+			final IProgressMonitor monitor) throws JavaModelException {
+		final SubMonitor subMon = SubMonitor.convert(monitor, "Set build path", 1);
+		// Create new buildpath
+		IClasspathEntry[] newEntries = new IClasspathEntry[entries.size()];
+		entries.toArray(newEntries);
+
+		// Set new classpath with added entries
+		javaProject.setRawClasspath(newEntries, subMon.newChild(1));
+	}
+
+	private static void setBuildPath(final IJavaProject javaProject, final Collection<IClasspathEntry> entries)
+			throws JavaModelException {
+		setBuildPath(javaProject, entries, new NullProgressMonitor());
+	}
 
 	private void setUpBuildProperties() throws CoreException {
 		logger.debug("Adding build.properties");
