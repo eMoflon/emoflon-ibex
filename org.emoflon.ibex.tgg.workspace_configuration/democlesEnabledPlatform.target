@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Democles-enabled platform" sequenceNumber="26">
+<?pde version="3.8"?><target name="Democles-enabled platform" sequenceNumber="31">
 <locations>
-<location path="${eclipse_home}" type="Profile"/>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.gervarro.democles.feature.advanced.feature.group" version="0.5.0.v20170303-0014"/>
+<repository location="http://gervarro.org/democles/advanced/integration-0.5.0/"/>
+</location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.gervarro.democles.feature.interpreter.feature.group" version="0.5.0.v20170228-2313"/>
 <unit id="org.gervarro.democles.feature.compiler.source.feature.group" version="0.5.0.v20161103-0012"/>
@@ -11,15 +14,5 @@
 <unit id="org.gervarro.democles.feature.interpreter.source.feature.group" version="0.5.0.v20170228-2313"/>
 <repository location="http://gervarro.org/democles/integration-0.5.0/"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.gervarro.democles.feature.advanced.feature.group" version="0.5.0.v20170303-0014"/>
-<repository location="http://gervarro.org/democles/advanced/integration-0.5.0/"/>
-</location>
 </locations>
-<environment>
-<os>macosx</os>
-<ws>cocoa</ws>
-<arch>x86_64</arch>
-<nl>en_GB</nl>
-</environment>
 </target>
