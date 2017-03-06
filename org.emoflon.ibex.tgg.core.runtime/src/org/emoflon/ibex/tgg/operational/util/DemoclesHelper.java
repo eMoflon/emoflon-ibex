@@ -361,11 +361,6 @@ public class DemoclesHelper implements MatchEventListener {
 	}
 	
 	public void handleEvent(final MatchEvent event) {
-		logger.debug("Received Match Event: " + event.hashCode());
-		logger.debug("Type: " + event.getEventType().hashCode());
-		logger.debug("Producing pattern: " + event.getSource().hashCode());
-		logger.debug("Match: " + event.getMatching().hashCode());
-		
 		// React to events
 		final String type = event.getEventType();
 		final DataFrame frame = event.getMatching();
