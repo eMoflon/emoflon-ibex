@@ -1,10 +1,12 @@
 package org.emoflon.ibex.tgg.ui.ide.visualisation
 
 import org.gervarro.democles.specification.emf.Pattern
+import org.gervarro.democles.specification.emf.PatternInvocationConstraint
 import org.gervarro.democles.specification.emf.Variable
 import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFVariable
 import org.gervarro.democles.specification.emf.constraint.emf.emf.Reference
-import org.gervarro.democles.specification.emf.PatternInvocationConstraint
+import org.moflon.tgg.mosl.tgg.ObjectVariablePattern
+import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
 
 class PlantUMLGenerator {
 	
@@ -73,4 +75,48 @@ class PlantUMLGenerator {
 	static def patternVariables(Pattern pattern) {
 		pattern.bodies.get(0).header.symbolicParameters
 	}
+	
+	static def String visualiseTGGFile(TripleGraphGrammarFile file) {
+		'''
+		@startuml
+		«IF file.rules.length != 1»title "I can only visualise exactly one TGG rule in one file"
+		«ELSE»
+		digraph root {
+			fontname=Monospace
+			fontsize=9
+			subgraph "cluster_source" {
+				 label="";
+				 pencolor="invis";
+				 «var r = file.rules.get(0)»
+			     «FOR sp : r.sourcePatterns»
+			    	«visualiseSourcePattern(sp)»
+			     «ENDFOR»
+			}
+			subgraph "cluster_target" {
+				 label="";
+				 pencolor="invis";
+			}
+			subgraph "correspondence" {
+				 label="";
+				 pencolor="invis";
+			}
+		}
+		«ENDIF»
+		@enduml
+		'''
+	}
+	
+	def static visualiseSourcePattern(ObjectVariablePattern p) {
+		'''
+		 "«p.name» : «p.type.name»" [fontsize=9, fontname=Monospace, penwidth=1, shape=record, color=«operatorToColour(p)», fillcolor=LIGHTYELLOW, label="{«p.name» : «p.type.name» | }",style=filled];
+		'''
+	}
+	
+	def static operatorToColour(ObjectVariablePattern p) {
+		if(p.op != null)
+			return "GREEN"
+		else
+			return "BLACK"
+	}
+	
 }

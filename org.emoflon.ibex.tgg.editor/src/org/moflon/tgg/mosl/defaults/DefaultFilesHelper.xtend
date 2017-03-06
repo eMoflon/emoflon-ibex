@@ -335,7 +335,7 @@ class DefaultFilesHelper {
 		'''
 	}
 	
-	static def generateFwdSyncAppFile(String projectName, String fileName){
+	static def generateSyncAppFile(String projectName, String fileName){
 		return '''
 			TODO
 		'''

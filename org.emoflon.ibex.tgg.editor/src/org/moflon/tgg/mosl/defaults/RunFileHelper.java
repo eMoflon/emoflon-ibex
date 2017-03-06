@@ -22,7 +22,7 @@ public class RunFileHelper {
 	
 	public void createFiles() throws CoreException, IOException {
 			createDefaultFile("MODELGEN_App", DefaultFilesHelper::generateModelGenFile);
-			createDefaultFile("FWD_SYNC_App", DefaultFilesHelper::generateFwdSyncAppFile);
+			createDefaultFile("SYNC_App", DefaultFilesHelper::generateSyncAppFile);
 	}
 
 	private void createDefaultFile(String fileName, BiFunction<String, String, String> generator) throws CoreException {
