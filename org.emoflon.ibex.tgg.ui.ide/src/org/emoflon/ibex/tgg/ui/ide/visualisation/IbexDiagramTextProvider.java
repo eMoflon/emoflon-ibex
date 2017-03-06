@@ -16,9 +16,9 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 
 	@Override
 	public String getDiagramText(IEditorPart editor) {
-		return maybeVisualisePattern(editor)
-			   .orElse(maybeVisualiseTGGRule(editor)
-	           .orElse(PlantUMLGenerator.emptyDiagram()));
+		return maybeVisualisePattern(editor).orElse(
+			   maybeVisualiseTGGRule(editor).orElse(
+			   PlantUMLGenerator.emptyDiagram()));
 	}
 
 	private Optional<String> maybeVisualiseTGGRule(IEditorPart editor) {

@@ -7,6 +7,9 @@ import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFVariable
 import org.gervarro.democles.specification.emf.constraint.emf.emf.Reference
 import org.moflon.tgg.mosl.tgg.ObjectVariablePattern
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
+import org.moflon.tgg.mosl.tgg.LinkVariablePattern
+import org.moflon.tgg.mosl.tgg.Operator
+import org.moflon.tgg.mosl.tgg.CorrVariablePattern
 
 class PlantUMLGenerator {
 	
@@ -81,24 +84,30 @@ class PlantUMLGenerator {
 		@startuml
 		«IF file.rules.length != 1»title "I can only visualise exactly one TGG rule in one file"
 		«ELSE»
+		«var r = file.rules.get(0)»
 		digraph root {
 			fontname=Monospace
 			fontsize=9
 			subgraph "cluster_source" {
 				 label="";
 				 pencolor="invis";
-				 «var r = file.rules.get(0)»
 			     «FOR sp : r.sourcePatterns»
-			    	«visualiseSourcePattern(sp)»
+			    	«visualisePattern(sp, "LIGHTYELLOW")»
 			     «ENDFOR»
 			}
 			subgraph "cluster_target" {
 				 label="";
 				 pencolor="invis";
+				 «FOR sp : r.targetPatterns»
+				 	«visualisePattern(sp, "MISTYROSE")»
+				 «ENDFOR»
 			}
 			subgraph "correspondence" {
 				 label="";
 				 pencolor="invis";
+				 «FOR cp : r.correspondencePatterns»
+				 	«visualiseCorrs(cp)»
+				 «ENDFOR»
 			}
 		}
 		«ENDIF»
@@ -106,14 +115,31 @@ class PlantUMLGenerator {
 		'''
 	}
 	
-	def static visualiseSourcePattern(ObjectVariablePattern p) {
+	def static visualiseCorrs(CorrVariablePattern corr) {
 		'''
-		 "«p.name» : «p.type.name»" [fontsize=9, fontname=Monospace, penwidth=1, shape=record, color=«operatorToColour(p)», fillcolor=LIGHTYELLOW, label="{«p.name» : «p.type.name» | }",style=filled];
+		«idForPattern(corr.source)» -> «idForPattern(corr.target)» [penwidth=7, dir="both", style="tapered", arrowtail="none", arrowhead="none", color=«operatorToColour(corr.op)», constraint=false];
 		'''
 	}
 	
-	def static operatorToColour(ObjectVariablePattern p) {
-		if(p.op != null)
+	def static visualisePattern(ObjectVariablePattern p, String domainColour) {
+		'''
+		 «idForPattern(p)» [fontsize=9, fontname=Monospace, penwidth=1, shape=record, color=«operatorToColour(p.op)», fillcolor=«domainColour», label="{«p.name» : «p.type.name» | }",style=filled];
+		 «FOR lv : p.linkVariablePatterns»
+		 «visaliseLinkVariable(p, lv)»
+		 «ENDFOR»
+		'''
+	}
+	
+	def static idForPattern(ObjectVariablePattern p) {
+		'''"«p.name» : «p.type.name»"'''
+	}
+	
+	def static visaliseLinkVariable(ObjectVariablePattern src, LinkVariablePattern p) {
+		'''«idForPattern(src)» -> «idForPattern(p.target)» [fontname=Monospace, penwidth=1, color=«operatorToColour(p.op)», label="«p.type.name»", fontsize=8, constraint=true];'''
+	}
+	
+	def static operatorToColour(Operator op) {
+		if(op != null)
 			return "GREEN"
 		else
 			return "BLACK"
