@@ -4,17 +4,17 @@
 #rule HandleRegisters #with FamiliesToPersonsDeterministic
 
 #source { 
-	++ familyRegister:FamilyRegister
+	++ fr:FamilyRegister
 }
 
 #target {
-	++ personsRegister:PersonRegister
+	++ pr:PersonRegister
 }
 
 #correspondence {
 	++ roots:RegisterToRegister { 
-		#src->familyRegister
-		#trg->personsRegister
+		#src->fr
+		#trg->pr
 	}
 }
 
