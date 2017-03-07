@@ -28,3 +28,4 @@ Export-Package: org.moflon.tgg.mosl.ui.contentassist,
  org.moflon.tgg.mosl.ui.internal,
  org.moflon.tgg.mosl.ui.quickfix
 Bundle-Activator: org.moflon.tgg.mosl.ui.internal.TGGActivator
+Import-Package: org.apache.log4j

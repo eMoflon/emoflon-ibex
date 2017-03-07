@@ -1,15 +1,20 @@
 package org.emoflon.ibex.tgg.ui.ide.visualisation
 
+import java.util.Collection
+import org.apache.commons.lang3.tuple.Pair
+import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
 import org.gervarro.democles.specification.emf.Pattern
 import org.gervarro.democles.specification.emf.PatternInvocationConstraint
 import org.gervarro.democles.specification.emf.Variable
 import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFVariable
 import org.gervarro.democles.specification.emf.constraint.emf.emf.Reference
-import org.moflon.tgg.mosl.tgg.ObjectVariablePattern
-import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
-import org.moflon.tgg.mosl.tgg.LinkVariablePattern
-import org.moflon.tgg.mosl.tgg.Operator
 import org.moflon.tgg.mosl.tgg.CorrVariablePattern
+import org.moflon.tgg.mosl.tgg.LinkVariablePattern
+import org.moflon.tgg.mosl.tgg.ObjectVariablePattern
+import org.moflon.tgg.mosl.tgg.Operator
+import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
 
 class PlantUMLGenerator {
 	
@@ -144,5 +149,41 @@ class PlantUMLGenerator {
 		else
 			return "BLACK"
 	}
+	
+	def static String visualiseEcoreElements(Collection<EClass> eclasses, Collection<EReference> refs){
+		'''
+		@startuml
+		«FOR c : eclasses»
+		class «identifierFor(c)»
+		«ENDFOR»
+		«FOR r : refs»
+		«identifierFor(r.EContainingClass)»«IF r.isContainment» *«ENDIF»--> «multiplicityFor(r)» «identifierFor(r.EReferenceType)» : "«r.name»"
+		«ENDFOR»
+		@enduml
+		'''
+	}
+	
+	def static multiplicityFor(EReference r) {
+		'''"«IF r.lowerBound == -1»*«ELSE»«r.lowerBound»«ENDIF»..«IF r.upperBound == -1»*«ELSE»«r.upperBound»«ENDIF»"'''
+	}
+	
+	private def static String identifierFor(EClass c)
+		'''"«c.EPackage.name».«c.name»"'''
+		
+	def static String visualiseModelElements(Collection<EObject> objects, Collection<Pair<String, Pair<EObject, EObject>>> links){
+		'''
+		@startuml
+		«FOR o : objects»
+		object «identifierFor(o)»
+		«ENDFOR»
+		«FOR l : links»
+		«identifierFor(l.right.left)» --> «identifierFor(l.right.right)» : "«l.left»"
+		«ENDFOR»
+		@enduml
+		'''
+	}
+	
+	protected def static Object identifierFor(EObject o)
+		'''«o.hashCode».«o.eClass.name»'''
 	
 }
