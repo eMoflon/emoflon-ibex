@@ -9,7 +9,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 
 import language.TGGRuleCorr;
@@ -29,15 +28,15 @@ import runtime.RuntimePackage;
 public class ManipulationUtil {
 
 	private static RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
-
-	public static void createNonCorrNodes(IPatternMatch match, HashMap<String, EObject> comatch,
+	
+	public static void createNonCorrNodes(IMatch match, HashMap<String, EObject> comatch,
 			Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
 		for (TGGRuleNode n : greenNodes) {
 			comatch.put(n.getName(), createNode(match, n, nodeResource));
 		}
 	}
 
-	public static Collection<RuntimeEdge> createEdges(IPatternMatch match, HashMap<String, EObject> comatch,
+	public static Collection<RuntimeEdge> createEdges(IMatch match, HashMap<String, EObject> comatch,
 			Collection<TGGRuleEdge> greenEdges, boolean createEMFEdgesAsWell) {
 		Collection<RuntimeEdge> result = new ArrayList<>();
 		for (TGGRuleEdge e : greenEdges) {
@@ -50,7 +49,7 @@ public class ManipulationUtil {
 		return result;
 	}
 
-	public static void createCorrs(IPatternMatch match, HashMap<String, EObject> comatch,
+	public static void createCorrs(IMatch match, HashMap<String, EObject> comatch,
 			Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		for (TGGRuleCorr c : greenCorrs) {
 			comatch.put(c.getName(), createCorr(c, getVariableByName(c.getSource().getName(), comatch, match),
@@ -62,7 +61,7 @@ public class ManipulationUtil {
 		elements.stream().forEach(EcoreUtil::delete);
 	}
 
-	public static EObject getVariableByName(String name, HashMap<String, EObject> comatch, IPatternMatch match) {
+	public static EObject getVariableByName(String name, HashMap<String, EObject> comatch, IMatch match) {
 		if (comatch.containsKey(name))
 			return comatch.get(name);
 		return (EObject) match.get(name);
@@ -74,9 +73,6 @@ public class ManipulationUtil {
 			((EList) src.eGet(ref)).add(trg);
 		else
 			src.eSet(ref, trg);
-		if (ref.isContainment() && trg.eResource() != null) {
-			trg.eResource().getContents().remove(trg);
-		}
 	}
 
 	public static void deleteEdge(EObject src, EObject trg, EReference ref) {
@@ -86,7 +82,7 @@ public class ManipulationUtil {
 			src.eUnset(ref);
 	}
 
-	private static EObject createNode(IPatternMatch match, TGGRuleNode node, Resource resource) {
+	private static EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
 		EObject newObj = EcoreUtil.create(node.getType());
 
 		// apply inplace attribute assignments
@@ -112,8 +108,13 @@ public class ManipulationUtil {
 
 			}
 		}
-		resource.getContents().add(newObj);
+		
+		handlePlacementInResource(node, resource, newObj);
 		return newObj;
+	}
+
+	private static void handlePlacementInResource(TGGRuleNode node, Resource resource, EObject newObj) {
+		resource.getContents().add(newObj);
 	}
 
 	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {

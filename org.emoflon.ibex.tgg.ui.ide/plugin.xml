@@ -15,4 +15,11 @@
       <run class="org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGBuilder"/>
     </builder>
   </extension>
+  <extension
+        point="net.sourceforge.plantuml.eclipse.diagramTextProvider">
+     <diagramTextProvider
+           fileExtensions="patterns"
+           providerClass="org.emoflon.ibex.tgg.ui.ide.visualisation.IbexDiagramTextProvider">
+     </diagramTextProvider>
+  </extension>
 </plugin>

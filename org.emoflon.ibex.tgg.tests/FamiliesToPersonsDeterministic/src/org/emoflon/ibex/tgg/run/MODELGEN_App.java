@@ -2,88 +2,39 @@ package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EPackage.Registry;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.tgg.operational.*;
-import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
-import org.moflon.core.utilities.eMoflonEMFUtil;
+import org.apache.log4j.BasicConfigurator;
+import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
+import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
 
-import language.LanguagePackage;
-import language.TGG;
-import runtime.RuntimePackage;
+public class MODELGEN_App extends MODELGEN {
 
-public class MODELGEN_App {
+	public MODELGEN_App(String projectName, String workspacePath, boolean debug) throws IOException {
+		super(projectName, workspacePath, debug);
+	}
 
 	public static void main(String[] args) throws IOException {
-		//BasicConfigurator.configure();
-				
-		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
-		registerMetamodels(rs);
-		
-		Resource tggR = rs.getResource(URI.createFileURI("model/FamiliesToPersonsDeterministic.tgg.xmi"), true);
-		TGG tgg = (TGG) tggR.getContents().get(0);
-		
-		// create your resources 
-		Resource s = rs.createResource(URI.createFileURI("instances/src_gen.xmi"));
-		Resource t = rs.createResource(URI.createFileURI("instances/trg_gen.xmi"));
-		Resource c = rs.createResource(URI.createFileURI("instances/corr_gen.xmi"));
-		Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
-		
-		// load the resources containing your input 
-		
-		System.out.println("Starting MODELGEN");
-		long tic = System.currentTimeMillis();
-		MODELGENStopCriterion stop = new MODELGENStopCriterion();
-		stop.setMaxSrcCount(1000);
-		TGGRuntimeUtil tggRuntime = new MODELGEN(tgg, s, c, t, p, stop);
-		tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
-		
-		Transformation transformation = new Transformation(rs, tggRuntime);						
-		transformation.execute();
-		
-		tggRuntime.run();
-		
-		transformation.dispose();
-		
-		long toc = System.currentTimeMillis();
-		System.out.println("Completed MODELGEN in: " + (toc-tic) + " ms");
-	 
-	 	s.save(null);
-	 	t.save(null);
-	 	c.save(null);
-	 	p.save(null);
-	}
-		
-	
-	private static void registerMetamodels(ResourceSet rs){
-		// Register internals
-		LanguagePackage.eINSTANCE.getName();
-		RuntimePackage.eINSTANCE.getName();
+		BasicConfigurator.configure();
 
-		
-		// Add mapping for correspondence metamodel
-		Resource corr = rs.getResource(URI.createFileURI("model/FamiliesToPersonsDeterministic.ecore"), true);
-		EPackage pcorr = (EPackage) corr.getContents().get(0);
-		Registry.INSTANCE.put(corr.getURI().toString(), corr);
-		Registry.INSTANCE.put("platform:/resource/FamiliesToPersonsDeterministic/model/FamiliesToPersonsDeterministic.ecore", pcorr);
-		Registry.INSTANCE.put("platform:/plugin/FamiliesToPersonsDeterministic/model/FamiliesToPersonsDeterministic.ecore", pcorr);
-		
-		// TODO: Uncomment the following lines and register source and target metamodels
-		// Add mappings for all other required dependencies
-		//Resource source = rs.getResource(URI.createFileURI("domains/MySource.ecore"), true);
-		//EPackage psource = (EPackage) source.getContents().get(0);
-		//Registry.INSTANCE.put(source.getURI().toString(), psource);
-		//Registry.INSTANCE.put("platform:/resource/FamiliesToPersonsDeterministic/domains/MySource.ecore", psource);
-		//Registry.INSTANCE.put("platform:/plugin/MySource/model/MySource.ecore", psource);
-		
-		//Resource target = rs.getResource(URI.createFileURI("domains/MyTarget.ecore"), true);
-		//EPackage ptarget = (EPackage) target.getContents().get(0);
-		//Registry.INSTANCE.put(target.getURI().toString(), ptarget);
-		//Registry.INSTANCE.put("platform:/resource/FamiliesToPersonsDeterministic/domains/MyTarget.ecore", ptarget);	
-		//Registry.INSTANCE.put("platform:/plugin/MyTarget/model/MyTarget.ecore", ptarget);	
+		MODELGEN_App generator = new MODELGEN_App("FamiliesToPersonsDeterministic", "./../", false);
+
+		MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
+		stop.setTimeOutInMS(1000);
+		stop.setMaxRuleCount("HandleRegisters", 1);
+		generator.setStopCriterion(stop);
+
+		logger.info("Starting MODELGEN");
+		long tic = System.currentTimeMillis();
+		generator.run();
+		long toc = System.currentTimeMillis();
+		logger.info("Completed MODELGEN in: " + (toc - tic) + " ms");
+
+		generator.saveModels();
+		generator.terminate();
+	}
+
+	protected void registerUserMetamodels() throws IOException {
+		loadAndRegisterMetamodel(projectPath + "/model/Families.ecore");
+		loadAndRegisterMetamodel(projectPath + "/model/Persons.ecore");
+		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 	}
 }

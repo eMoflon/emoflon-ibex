@@ -1,10 +1,9 @@
+
 package org.moflon.tgg.mosl.defaults
 
 import org.moflon.core.utilities.MoflonUtil
-import org.moflon.tgg.mosl.tgg.AttrCondDef
 import java.util.Collection
 import language.csp.definition.TGGAttributeConstraintDefinition
-import org.moflon.tgg.language.algorithm.ApplicationTypes
 
 class DefaultFilesHelper {
 
@@ -293,82 +292,52 @@ class DefaultFilesHelper {
 		'''
 	}
 
-	static def generateRunFile(String projectName, String fileName, RunFileType mode) {
+	static def generateModelGenFile(String projectName, String fileName) {
 		return '''
-			package org.emoflon.ibex.tgg.run;
-			
-			import java.io.IOException;
-			
-			import org.eclipse.emf.common.util.URI;
-			import org.eclipse.emf.ecore.EPackage;
-			import org.eclipse.emf.ecore.EPackage.Registry;
-			import org.eclipse.emf.ecore.resource.Resource;
-			import org.eclipse.emf.ecore.resource.ResourceSet;
-			import org.emoflon.ibex.tgg.operational.*;
-			import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
-			import org.moflon.core.utilities.eMoflonEMFUtil;
-			
-			import language.LanguagePackage;
-			import language.TGG;
-			import runtime.RuntimePackage;
-			
-			public class «fileName» {
-			
-				public static void main(String[] args) throws IOException {
-					//BasicConfigurator.configure();
-							
-					ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
-					registerMetamodels(rs);
-					
-					Resource tggR = rs.getResource(URI.createFileURI("model/«projectName».tgg.xmi"), true);
-					TGG tgg = (TGG) tggR.getContents().get(0);
-					
-					// create your resources 
-					Resource s = rs.createResource(URI.createFileURI("instances/src_gen.xmi"));
-					Resource t = rs.createResource(URI.createFileURI("instances/trg_gen.xmi"));
-					Resource c = rs.createResource(URI.createFileURI("instances/corr_gen.xmi"));
-					Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
-					
-					// load the resources containing your input 
-					«RunFileHelper.getLoadCall(mode)»
-					
-					System.out.println("Starting «mode.name»");
-					long tic = System.currentTimeMillis();
-					«RunFileHelper.getCreator(mode)»
-					tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
-					
-					«projectName»Transformation transformation = new «projectName»Transformation(rs, tggRuntime);						
-					transformation.execute();
-					
-					tggRuntime.run();
-					
-					transformation.dispose();
-					
-					long toc = System.currentTimeMillis();
-					System.out.println("Completed «mode.name» in: " + (toc-tic) + " ms");
-				 
-				 	«RunFileHelper.getSaveCall(mode)»
-				}
-					
-				
-				private static void registerMetamodels(ResourceSet rs){
-					// Register internals
-					LanguagePackage.eINSTANCE.getName();
-					RuntimePackage.eINSTANCE.getName();
-			
-					
-					// Add mapping for correspondence metamodel
-					Resource corr = rs.getResource(URI.createFileURI("model/«projectName».ecore"), true);
-					EPackage pcorr = (EPackage) corr.getContents().get(0);
-					Registry.INSTANCE.put(corr.getURI().toString(), corr);
-					Registry.INSTANCE.put("platform:/resource/«projectName»/model/«projectName».ecore", pcorr);
-					Registry.INSTANCE.put("platform:/plugin/«projectName»/model/«projectName».ecore", pcorr);
-					
-					// SourcePackage.eInstance.getName();
-					// TargetPackage.eInstance.getName();
-				}
+		package org.emoflon.ibex.tgg.run;
+		
+		import java.io.IOException;
+		
+		import org.apache.log4j.BasicConfigurator;
+		import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
+		import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
+		
+		public class «fileName» extends MODELGEN {
+		
+			public «fileName»(String projectName, String workspacePath, boolean debug) throws IOException {
+				super(projectName, workspacePath, debug);
 			}
+		
+			public static void main(String[] args) throws IOException {
+				BasicConfigurator.configure();
+		
+				«fileName» generator = new «fileName»("«projectName»", "./../", false);
+		
+				MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
+				stop.setTimeOutInMS(1000);
+				generator.setStopCriterion(stop);
+		
+				logger.info("Starting MODELGEN");
+				long tic = System.currentTimeMillis();
+				generator.run();
+				long toc = System.currentTimeMillis();
+				logger.info("Completed MODELGEN in: " + (toc - tic) + " ms");
+		
+				generator.saveModels();
+				generator.terminate();
+			}
+		
+			protected void registerUserMetamodels() throws IOException {
+				loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
+				//FIXME load and register source and target metamodels
+			}
+		}
+		'''
+	}
+	
+	static def generateSyncAppFile(String projectName, String fileName){
+		return '''
+			TODO
 		'''
 	}
 }
