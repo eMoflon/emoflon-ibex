@@ -1,4 +1,6 @@
 /bin/
 /src-gen/
 /xtend-gen/
-/model/
+/.DS_Store
+/patterns.patterns
+/patterns.xmi

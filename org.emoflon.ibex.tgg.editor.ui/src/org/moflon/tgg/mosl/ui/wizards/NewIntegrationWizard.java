@@ -16,8 +16,6 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGNature;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.WorkspaceHelper;
-import org.moflon.ide.ui.admin.wizards.metamodel.AbstractMoflonProjectInfoPage;
-import org.moflon.ide.ui.admin.wizards.metamodel.AbstractMoflonWizard;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.defaults.DefaultFilesHelper;
 

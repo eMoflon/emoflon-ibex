@@ -26,7 +26,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGPlugin;
 import org.moflon.core.utilities.LogUtils;
-import org.moflon.ide.ui.UIActivator;
 
 public class NewTGGRuleProjectInfoPage extends WizardPage
 {
@@ -57,9 +56,9 @@ public class NewTGGRuleProjectInfoPage extends WizardPage
       // Set information on the page
       setTitle("New TGG rule wizard");
       setDescription("Create a new TGG rule");
-      setImageDescriptor(UIActivator.getImage("resources/icons/metamodelProjectWizard.gif"));
+      setImageDescriptor(AbstractMoflonWizard.getImage("resources/icons/metamodelProjectWizard.gif"));
    }
-
+   
    private void setProjectAndRuleLocation()
    {
       IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

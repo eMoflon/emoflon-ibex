@@ -1,7 +1,5 @@
 package org.moflon.tgg.mosl.ui.wizards;
 
-import org.moflon.ide.ui.admin.wizards.metamodel.AbstractMoflonProjectInfoPage;
-
 public class NewIntegrationProjectInfoPage extends AbstractMoflonProjectInfoPage {
 
 	public NewIntegrationProjectInfoPage() {

@@ -1,6 +1,6 @@
 // Add imports here
-#import "platform:/plugin/Families/model/Families.ecore"
-#import "platform:/plugin/Persons/model/Persons.ecore"
+#import "platform:/resource/FamiliesToPersonsDeterministic/model/Families.ecore"
+#import "platform:/resource/FamiliesToPersonsDeterministic/model/Persons.ecore"
 
 #schema FamiliesToPersonsDeterministic
 	
@@ -9,14 +9,20 @@
 }
 
 #target { 
-	Persons	
+	Persons
 } 
 
 #correspondence {
 	RegisterToRegister {
 		#src->FamilyRegister
-		#trg->PersonsRegister
+		#trg->PersonRegister
 	}
+	
+	MemberToPerson {
+		#src->FamilyMember
+		#trg->Person
+	} 
+	
 }
 
 #attributeConditions {

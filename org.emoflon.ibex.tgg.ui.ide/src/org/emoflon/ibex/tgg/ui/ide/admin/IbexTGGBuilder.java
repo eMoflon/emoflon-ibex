@@ -33,11 +33,9 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
-import org.emoflon.ibex.tgg.core.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoInternalTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.TGGProject;
 import org.moflon.core.utilities.LogUtils;
-import org.moflon.core.utilities.WorkspaceHelper;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.defaults.RunFileHelper;
 import org.moflon.tgg.mosl.tgg.AttrCond;
@@ -45,23 +43,15 @@ import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
-import language.TGG;
 import language.csp.definition.TGGAttributeConstraintDefinition;
 
 public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResourceDeltaVisitor {
 	private static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
 	private static final String ECORE_FILE_EXTENSION = ".ecore";
-	private static final String VIATRA_QUERY_FILE_EXTENSION = ".vql";
-	private static final String Transformation = "Transformation";
-	private static final String XTEND_EXTENSION = ".xtend";
 	private static final String TGG_FILE_EXTENSION = ".tgg";
 	private static final String EDITOR_MODEL_EXTENSION = ".editor.xmi";
 	private static final String SRC_FOLDER = "src";
-	private static final String RUN_FOLDER = SRC_FOLDER + "/org/emoflon/ibex/tgg/run";
 	private static final String MODEL_FOLDER = "model";
-	private static final String MODEL_PATTERNS_FOLDER = MODEL_FOLDER + "/patterns";
-	private static final String APPLICATION = "Application";
-	private static final String JAVA_EXTENSION = ".java";
 
 	public static final Logger logger = Logger.getLogger(IbexTGGBuilder.class);
 
@@ -81,34 +71,12 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		case AUTO_BUILD:
 		case INCREMENTAL_BUILD:
 			generateFilesIfchangeIsRelevant();
-			removeObsoletePatternFiles();
 			break;
 		default:
 			break;
 		}
 
 		return null;
-	}
-
-	private void removeObsoletePatternFiles() {
-		tggProject.ifPresent(p -> {
-			try {
-				for (IResource r : getProject().getFolder(MODEL_PATTERNS_FOLDER).members()) {
-					if(isNotCommonPattern(r.getName()) && isNotARuleName(r.getName(), p.getTggModel()))
-						r.delete(true, new NullProgressMonitor());
-				}
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		});
-	}
-
-	private boolean isNotCommonPattern(String name) {
-		return !(TGGCompiler.getCommonPatternFileName() + VIATRA_QUERY_FILE_EXTENSION).equals(name);
-	}
-
-	private boolean isNotARuleName(String patternName, TGG tgg) {
-		return tgg.getRules().stream().map(r -> r.getName() + ".vql").noneMatch(patternName::equals);
 	}
 
 	private void generateFilesIfchangeIsRelevant() throws CoreException {
@@ -122,27 +90,19 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	private void generateFiles() {
 		generateEditorModel().ifPresent(editorModel -> 
-		generateInternalModels(editorModel).ifPresent(internalModel -> {
-		generatePatterns(internalModel);
-		generateXtendManipulationCode(internalModel);
-		generateAttrCondLibsAndStubs(internalModel);
-		generateRunFiles();}));
+		generateInternalModels(editorModel).ifPresent(internalModel -> 
+		{
+			generateAttrCondLibsAndStubs(internalModel);
+			generateRunFiles();
+		}));
 	}
 	
 	private void generateRunFiles() {
 		try {
-			RunFileHelper.createFiles(getProject());
+			new RunFileHelper(getProject()).createFiles();
 		} catch (CoreException | IOException e) {
 			LogUtils.error(logger, e);
 		}
-	}
-
-
-	private void generateXtendManipulationCode(TGGProject tggProject) {
-		TGGCompiler compiler = new TGGCompiler(tggProject.getTggModel());
-
-		String manipulationCode = compiler.getXtendManipulationCode();
-		createFile(RUN_FOLDER, tggProject.getTggModel().getName() + Transformation, XTEND_EXTENSION, manipulationCode, true);
 	}
 
 	private void generateAttrCondLibsAndStubs(TGGProject internalModel) {
@@ -234,32 +194,6 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		return schemaResource;
 	}
 
-	private void generatePatterns(TGGProject tggProject) {
-		TGGCompiler compiler = new TGGCompiler(tggProject.getTggModel());
-
-		compiler.preparePatterns();
-		tggProject.getTggModel().getRules().forEach(r -> {
-			String contents = compiler.getViatraPatterns(r);
-			createFile(MODEL_PATTERNS_FOLDER, r.getName(), VIATRA_QUERY_FILE_EXTENSION, contents, true);
-		});
-
-		String commonPatternContents = compiler.getCommonViatraPatterns();
-		createFile(MODEL_PATTERNS_FOLDER, compiler.getCommonPatternFileName(), VIATRA_QUERY_FILE_EXTENSION,
-				commonPatternContents, true);
-	}
-
-	private void createFile(String folder, String fileName, String extension, String contents, boolean override) {
-		IFile file = getProject().getFolder(folder).getFile(fileName + extension);
-		try {
-			if(!file.exists())
-				WorkspaceHelper.addAllFoldersAndFile(getProject(), file.getProjectRelativePath(), contents, new NullProgressMonitor());				
-			if (file.exists() && override)
-				IbexWorkspaceUtil.saveIfNecessary(contents, file);
-		} catch (CoreException | IOException e) {
-			LogUtils.error(logger, e);
-		}
-	}
-
 	private Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG) {
 		EditorTGGtoInternalTGG converter = new EditorTGGtoInternalTGG();
 		tggProject = Optional.of(converter.convertXtextTGG(xtextParsedTGG));
@@ -322,15 +256,5 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 				LogUtils.error(logger, e);
 			}
 		});
-
-		try {
-			IFolder patterns = getProject().getFolder(MODEL_PATTERNS_FOLDER);
-			if (patterns.exists())
-				for (IResource f : patterns.members())
-					if (f.getName().endsWith(VIATRA_QUERY_FILE_EXTENSION))
-						f.delete(true, new NullProgressMonitor());
-		} catch (CoreException e) {
-			LogUtils.error(logger, e);
-		}
 	}
 }

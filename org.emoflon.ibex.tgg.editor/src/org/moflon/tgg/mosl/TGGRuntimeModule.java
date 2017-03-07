@@ -10,12 +10,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EObjectValidator;
 import org.eclipse.xtext.scoping.IScopeProvider;
-import org.moflon.tgg.language.csp.impl.CspPackageImpl;
 import org.moflon.tgg.mosl.scoping.TGGScopeProvider;
 
 import com.google.inject.Binder;
-
-import SDMLanguage.SDMLanguagePackage;
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
@@ -40,8 +37,6 @@ public class TGGRuntimeModule extends org.moflon.tgg.mosl.AbstractTGGRuntimeModu
    public org.eclipse.emf.ecore.EValidator.Registry bindEValidatorRegistry()
    {
       org.eclipse.emf.ecore.EValidator.Registry registry = super.bindEValidatorRegistry();
-      registry.put(SDMLanguagePackage.eINSTANCE, new NonRequiredFeatureValidatingValidator());
-      registry.put(CspPackageImpl.eINSTANCE, new NonRequiredFeatureValidatingValidator());
       return registry;
    }
    

@@ -36,7 +36,6 @@ import org.moflon.tgg.mosl.tgg.Rule
 import org.moflon.tgg.mosl.tgg.Schema
 import org.moflon.tgg.mosl.tgg.TggPackage
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
-import org.moflon.codegen.eclipse.CodeGeneratorPlugin
 import org.moflon.ide.mosl.core.scoping.MoflonScope
 
 /**
@@ -131,7 +130,8 @@ class TGGScopeProvider extends AbstractDeclarativeScopeProvider {
 		
 		// Get imports from schema
 		val ResourceSet set = new ResourceSetImpl
-		CodeGeneratorPlugin.createPluginToResourceMapping(set);
+		// FIXME [anjorin] Consequence?
+		//CodeGeneratorPlugin.createPluginToResourceMapping(set);
 		val schema = (current as Rule).schema
 		val packages = schema.imports.map[u | set.getResource(URI.createURI(u.name), true).contents.get(0) as EPackage]
 		
@@ -181,7 +181,8 @@ class TGGScopeProvider extends AbstractDeclarativeScopeProvider {
 	
 	def potential_packages(EObject context) {
 		val set = new ResourceSetImpl()
-		CodeGeneratorPlugin.createPluginToResourceMapping(set);
+		//FIXME [anjorin] Consequence?
+		//CodeGeneratorPlugin.createPluginToResourceMapping(set);
 		var schema = context as Schema
 		var resources = schema.imports.map[u | set.getResource(URI.createURI(u.name), true)]
 		return new MoflonScope(resources.map[r | r.contents.get(0)])

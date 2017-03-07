@@ -14,21 +14,13 @@ Require-Bundle: org.emoflon.ibex.tgg.editor;visibility:=reexport,
  org.eclipse.xtext.ui.codetemplates.ui,
  org.eclipse.compare,
  org.moflon.core.utilities;bundle-version="1.1.0",
- org.moflon.ide.ui;bundle-version="2.0.0",
- org.moflon.ide.core;bundle-version="2.1.0",
- org.moflon.ide.plugins;bundle-version="2.0.0",
- org.moflon.tgg.language;bundle-version="2.0.0",
  org.emoflon.ibex.tgg.ui.ide;bundle-version="1.0.0",
- SDMLanguage;bundle-version="2.0.0",
  org.eclipse.ui.editors,
  org.eclipse.ui,
  org.eclipse.emf.ecore.editor;bundle-version="2.11.0",
  org.eclipse.jface,
  org.eclipse.jdt.core,
- org.eclipse.core.resources,
- MocaTree;bundle-version="2.0.0",
- org.gervarro.eclipse.workspace.autosetup;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.eclipse.workspace.util;bundle-version="[2.0.0,3.0.0)"
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.moflon.tgg.mosl.ui.contentassist,
  org.moflon.tgg.mosl.ui.contentassist.antlr,
@@ -36,4 +28,3 @@ Export-Package: org.moflon.tgg.mosl.ui.contentassist,
  org.moflon.tgg.mosl.ui.internal,
  org.moflon.tgg.mosl.ui.quickfix
 Bundle-Activator: org.moflon.tgg.mosl.ui.internal.TGGActivator
-Import-Package: org.apache.log4j
