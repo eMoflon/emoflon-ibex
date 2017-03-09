@@ -8,7 +8,9 @@
 	 	++ -families->f
 	}
 	
-	++ f:Family
+	++ f:Family {
+		name := "Test"
+	}
 }
 
 #target {

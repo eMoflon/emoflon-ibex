@@ -5,6 +5,7 @@
 
 #source { 
 	f:Family {
+		name  == "Test"
 		++ -sons->son
 	}
 	
