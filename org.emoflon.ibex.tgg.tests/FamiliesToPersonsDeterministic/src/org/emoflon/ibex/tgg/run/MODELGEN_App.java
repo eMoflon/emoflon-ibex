@@ -15,7 +15,7 @@ public class MODELGEN_App extends MODELGEN {
 	public static void main(String[] args) throws IOException {
 		BasicConfigurator.configure();
 
-		MODELGEN_App generator = new MODELGEN_App("FamiliesToPersonsDeterministic", "./../", false);
+		MODELGEN_App generator = new MODELGEN_App("FamiliesToPersonsDeterministic", "./../", true);
 
 		MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
 		stop.setTimeOutInMS(1000);

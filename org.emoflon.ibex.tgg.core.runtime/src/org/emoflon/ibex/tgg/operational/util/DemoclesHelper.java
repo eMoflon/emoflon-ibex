@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,7 @@ import org.gervarro.democles.runtime.AdornedNativeOperationBuilder;
 import org.gervarro.democles.runtime.GenericOperationBuilder;
 import org.gervarro.democles.runtime.InterpretableAdornedOperation;
 import org.gervarro.democles.runtime.JavaIdentifierProvider;
+import org.gervarro.democles.specification.emf.Constant;
 import org.gervarro.democles.specification.emf.Constraint;
 import org.gervarro.democles.specification.emf.ConstraintParameter;
 import org.gervarro.democles.specification.emf.EMFPatternBuilder;
@@ -69,8 +71,9 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class DemoclesHelper implements MatchEventListener {
+
 	private static final Logger logger = Logger.getLogger(DemoclesHelper.class);
-	
+
 	private ResourceSet rs;
 	private Collection<Pattern> patterns;
 	private HashMap<IDataFrame, IMatch> matches;
@@ -81,13 +84,15 @@ public class DemoclesHelper implements MatchEventListener {
 	private TGG tgg;
 	private HashMap<IbexPattern, Pattern> patternMap;
 	private boolean debug;
-	
+	private DemoclesAttributeHelper dAttrHelper;
+
 	// Factories
 	private final SpecificationFactory factory = SpecificationFactory.eINSTANCE;
 	private final EMFTypeFactory emfTypeFactory = EMFTypeFactory.eINSTANCE;
 	// TODO for attributes
-	// private final RelationalConstraintFactory relationalFactory = RelationalConstraintFactory.eINSTANCE;				
-	
+	// private final RelationalConstraintFactory relationalFactory =
+	// RelationalConstraintFactory.eINSTANCE;
+
 	public DemoclesHelper(ResourceSet rs, OperationalStrategy app, TGG tgg, boolean debug) throws IOException {
 		this.rs = rs;
 		patterns = new ArrayList<>();
@@ -97,10 +102,11 @@ public class DemoclesHelper implements MatchEventListener {
 		this.tgg = tgg;
 		patternMap = new HashMap<>();
 		this.debug = debug;
-		 
+		this.dAttrHelper = new DemoclesAttributeHelper();
+
 		init();
 	}
-	
+
 	private void init() throws IOException {		
 		// Create EMF-based pattern specification
 		createDemoclesPatterns();
@@ -129,7 +135,7 @@ public class DemoclesHelper implements MatchEventListener {
 		// Install model event listeners on the resource set
 		NotificationModule.installNotificationAdapter(rs, emfNativeOperationModule);
 	}
-	
+
 	private void saveDemoclesPatterns() {
 		Resource r = rs.createResource(URI.createPlatformResourceURI(tgg.getName() + "/patterns.xmi", true));
 		r.getContents().addAll(patterns);
@@ -147,7 +153,7 @@ public class DemoclesHelper implements MatchEventListener {
 
 		for (TGGRule r : compiler.getRuleToPatternMap().keySet()) {
 			for (IbexPattern pattern : compiler.getRuleToPatternMap().get(r)) {
-				if(patternIsNotEmpty(pattern) && app.isPatternRelevant(pattern.getName()))
+				if (patternIsNotEmpty(pattern) && app.isPatternRelevant(pattern.getName()))
 					ibexToDemocles(pattern);
 			}
 		}
@@ -158,19 +164,25 @@ public class DemoclesHelper implements MatchEventListener {
 	}
 
 	private Pattern ibexToDemocles(IbexPattern ibexPattern) {
-		if(patternMap.containsKey(ibexPattern))
+		if (patternMap.containsKey(ibexPattern))
 			return patternMap.get(ibexPattern);
-		
+
 		// Root pattern
 		Pattern pattern = factory.createPattern();
 		pattern.setName(ibexPattern.getName());
 		PatternBody body = factory.createPatternBody();
 		pattern.getBodies().add(body);
-		
+
 		// Parameters
-		HashMap<TGGRuleNode, EMFVariable> nodeToVar = new HashMap<>();
+		Map<TGGRuleNode, EMFVariable> nodeToVar = new HashMap<>();
 		EList<Variable> parameters = pattern.getSymbolicParameters();
+
+		// Constraints
+		EList<Constraint> constraints = body.getConstraints();
 		
+		// Constants
+		EList<Constant> constants = body.getConstants();
+
 		// Signature elements
 		for (TGGRuleElement element : ibexPattern.getSignatureElements()) {
 			if (!nodeToVar.containsKey(element)) {
@@ -180,11 +192,14 @@ public class DemoclesHelper implements MatchEventListener {
 					var.setName(node.getName());
 					var.setEClassifier(node.getType());
 					nodeToVar.put(node, var);
+
+					dAttrHelper.extractConstants(node, var);
+					dAttrHelper.extractAttributeVariables(node, var);
 				}
 			}
-			parameters.add(nodeToVar.get(element));				
+			parameters.add(nodeToVar.get(element));
 		}
-		
+
 		// All other nodes
 		EList<Variable> locals = body.getLocalVariables();
 		for (TGGRuleNode node : ibexPattern.getBodyNodes()) {
@@ -194,12 +209,28 @@ public class DemoclesHelper implements MatchEventListener {
 				var.setEClassifier(node.getType());
 				nodeToVar.put(node, var);
 				locals.add(nodeToVar.get(node));
+
+				dAttrHelper.extractConstants(node, var);
+				dAttrHelper.extractAttributeVariables(node, var);
 			}
 		}
 		
-		// Constraints
-		EList<Constraint> constraints = body.getConstraints();
-
+		dAttrHelper.resolveAttributeVariables(nodeToVar.values());
+		
+		// Attributes as constraints
+		constraints.addAll(dAttrHelper.getAttributes());
+		
+		// Inplace Attribute constraints as constraints
+		constraints.addAll(dAttrHelper.getRelationalConstraints());
+		
+		constants.addAll(dAttrHelper.getConstants());
+		
+		// add new variables as nodes
+		locals.addAll(dAttrHelper.getEMFVariables());
+		
+		// reset attribute helper. Do it here before the recursive call of this method
+		dAttrHelper.clearAll();
+		
 		// Edges as constraints
 		for (TGGRuleEdge edge : ibexPattern.getBodyEdges()) {
 			Reference ref = emfTypeFactory.createReference();
@@ -208,14 +239,14 @@ public class DemoclesHelper implements MatchEventListener {
 			ConstraintParameter from = factory.createConstraintParameter();
 			from.setReference(nodeToVar.get(edge.getSrcNode()));
 			ref.getParameters().add(from);
-			
+
 			ConstraintParameter to = factory.createConstraintParameter();
 			to.setReference(nodeToVar.get(edge.getTrgNode()));
 			ref.getParameters().add(to);
-			
+
 			constraints.add(ref);
 		}
-		
+
 		// Handle Corrs
 		for (TGGRuleCorr corr : ibexPattern.getBodyCorrNodes()) {
 			Reference srcRef = emfTypeFactory.createReference();
@@ -224,52 +255,52 @@ public class DemoclesHelper implements MatchEventListener {
 			ConstraintParameter from = factory.createConstraintParameter();
 			from.setReference(nodeToVar.get(corr));
 			srcRef.getParameters().add(from);
-			
+
 			ConstraintParameter to = factory.createConstraintParameter();
 			to.setReference(nodeToVar.get(corr.getSource()));
 			srcRef.getParameters().add(to);
-			
+
 			constraints.add(srcRef);
-			
+
 			Reference trgRef = emfTypeFactory.createReference();
 			trgRef.setEModelElement((EReference) corr.getType().getEStructuralFeature("target"));
 
 			to = factory.createConstraintParameter();
 			to.setReference(nodeToVar.get(corr));
 			trgRef.getParameters().add(to);
-			
+
 			from = factory.createConstraintParameter();
 			from.setReference(nodeToVar.get(corr.getTarget()));
 			trgRef.getParameters().add(from);
-			
+
 			constraints.add(trgRef);
 
 		}
-		
+
 		// Pattern invocations
 		for (IbexPattern inv : ibexPattern.getPositiveInvocations()) {
 			if (patternIsNotEmpty(inv)) {
 				PatternInvocationConstraint invCon = createInvocationConstraint(inv, true, nodeToVar);
-				if(!invCon.getParameters().isEmpty())
+				if (!invCon.getParameters().isEmpty())
 					constraints.add(invCon);
 			}
 		}
-		
+
 		for (IbexPattern inv : ibexPattern.getNegativeInvocations()) {
 			if (patternIsNotEmpty(inv)) {
 				PatternInvocationConstraint invCon = createInvocationConstraint(inv, false, nodeToVar);
-				if(!invCon.getParameters().isEmpty())
+				if (!invCon.getParameters().isEmpty())
 					constraints.add(invCon);
 			}
 		}
-		
+
 		patternMap.put(ibexPattern, pattern);
 		patterns.add(pattern);
-		
+
 		return pattern;
 	}
 
-	private PatternInvocationConstraint createInvocationConstraint(IbexPattern inv, boolean isTrue, HashMap<TGGRuleNode, EMFVariable> nodeToVar) {
+	private PatternInvocationConstraint createInvocationConstraint(IbexPattern inv, boolean isTrue, Map<TGGRuleNode, EMFVariable> nodeToVar) {
 		PatternInvocationConstraint invCon = factory.createPatternInvocationConstraint();
 		invCon.setPositive(isTrue);
 		invCon.setInvokedPattern(ibexToDemocles(inv));
