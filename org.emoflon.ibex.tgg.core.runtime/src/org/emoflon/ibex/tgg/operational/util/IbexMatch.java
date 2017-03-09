@@ -25,7 +25,7 @@ public class IbexMatch implements IMatch {
 
 	public EObject get(String name) {
 		int index = varNameToIndex(name);
-		return (EObject) frame.getValue(index);
+		return index == -1 ? null : (EObject) frame.getValue(index);
 	}
 
 	public String patternName() {
@@ -37,7 +37,7 @@ public class IbexMatch implements IMatch {
 			if(varName.equals(pattern.getSymbolicParameters().get(i).getName()))
 				return i;
 		}
-		
-		throw new IllegalArgumentException("Not able to find variable " + varName + " in match of " + pattern.getName());
+		return -1;
+//		throw new IllegalArgumentException("Not able to find variable " + varName + " in match of " + pattern.getName());
 	}
 }

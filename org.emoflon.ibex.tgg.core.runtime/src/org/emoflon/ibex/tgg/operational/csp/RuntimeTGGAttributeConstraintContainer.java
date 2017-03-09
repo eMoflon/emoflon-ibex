@@ -109,7 +109,7 @@ public class RuntimeTGGAttributeConstraintContainer {
 	}
 	
 	public Collection<Pair<TGGAttributeExpression, Object>> getBoundAttributeExpValues() {
-		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream().map(constraint -> constraint.getBoundAttrExprValues()).reduce(new ArrayList<Pair<TGGAttributeExpression, Object>>(), (a, b) -> a.addAll(b) ? a : null);
+		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream().map(constraint -> constraint.getBoundAttrExprValues()).reduce(new ArrayList<Pair<TGGAttributeExpression, Object>>(), (a, b) -> a.addAll(b) ? a : a);
 		return col == null ? new ArrayList<Pair<TGGAttributeExpression,Object>>() : col;
 	}
 }
