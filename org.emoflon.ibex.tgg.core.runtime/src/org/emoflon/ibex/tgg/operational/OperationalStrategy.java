@@ -23,7 +23,6 @@ import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContain
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.operational.util.DemoclesHelper;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
@@ -51,7 +50,7 @@ import runtime.impl.RuntimePackageImpl;
 
 public abstract class OperationalStrategy {
 
-	protected final static Logger logger = Logger.getLogger(MODELGEN.class);
+	protected final static Logger logger = Logger.getLogger(OperationalStrategy.class);
 	protected final URI base;
 	protected final String projectPath;
 
@@ -319,9 +318,15 @@ public abstract class OperationalStrategy {
 			EObject src = (EObject) match.get(edge.getSrcNode().getName());
 			EObject trg = (EObject) match.get(edge.getTrgNode().getName());
 			EReference ref = edge.getType();
+			
+			if(src == null | trg == null | ref == null)
+				throw new IllegalStateException("The match " + match.patternName() + " is invalid for this operational strategy (the edge -" + ref.getName() + "-> appears to be expected but is missing)!  "
+						+ "Are you sure you have implemented isPatternRelevant correctly?");
+			
 			if (markedEdges.contains(new RuntimeEdge(src, trg, ref)))
 				return true;
 		}
+		
 		return false;
 	}
 
