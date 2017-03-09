@@ -206,7 +206,9 @@ public class DemoclesAttributeHelper {
 	
 	protected Object convertLiteral(String literal, EDataType type) {
 		if(type.equals(EcorePackage.Literals.ESTRING) ) {
-			return literal;
+			if(!(literal.startsWith("\"") && literal.endsWith("\""))) 
+				throw new RuntimeException("Trimming of the string did not work. Your string should start and end with \"");
+			return literal.substring(1, literal.length() - 1);
 		}
 		if(type.equals(EcorePackage.Literals.EINT) ) {
 			return Integer.parseInt(literal);
@@ -221,7 +223,10 @@ public class DemoclesAttributeHelper {
 			return Boolean.parseBoolean(literal);
 		}
 		if(type.equals(EcorePackage.Literals.ECHAR) ) {
-			return literal.length() == 0 ? '\0' : literal.charAt(0);
+			if(!(literal.startsWith("\'") && literal.endsWith("\'"))) 
+				throw new RuntimeException("Trimming of the char did not work. Your string should start and end with \'");
+
+			return literal.length() < 2 ? '\0' : literal.charAt(1);
 		}
 		if(type.equals(EcorePackage.Literals.ELONG) ) {
 			return Long.parseLong(literal);
