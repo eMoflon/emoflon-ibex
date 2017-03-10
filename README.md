@@ -5,7 +5,7 @@
 2. Install
   - Xtext  (Eclipse Marketplace)
   - eMoflon IDE Core (do not install the rest!) Link:[eMoflon-builds](https://emoflon.github.io/installation.html)
-  - PlantUML (e.g. http://plantuml.sourceforge.net/updatesitejuno/) and GraphViz
+  - PlantUML (make sure you use: http://plantuml.sourceforge.net/updatesitejuno/) and GraphViz
 3. Check encoding for Xtend Files
   - In Eclipse: Go to Window->Preferences->General->Workspace 
   - Change Text file encoding to 'Other: UTF-8'
