@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.pattern.common;
 
 import org.eclipse.emf.ecore.EcorePackage;
+import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.operational.util.IbexMatch;
 
@@ -94,12 +95,12 @@ public class MarkedPattern extends IbexPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return (localProtocol ? "_LocalProtocol" : "") + "_" + domain.getName();
+		return (localProtocol ? PatternSuffixes.LOCAL_MARKED : "") + "_" + domain.getName();
 	}
 	
 	@Override
 	public String getName() {
-		return "MarkedSubPattern" + getPatternNameSuffix();
+		return "MarkedPattern" + getPatternNameSuffix();
 	}
 
 	public DomainType getDomain() {
