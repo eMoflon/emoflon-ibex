@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.ConsistencyPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
@@ -20,10 +22,11 @@ import org.emoflon.ibex.tgg.compiler.pattern.rulepart.WholeRulePattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcContextPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcProtocolNACsAndDECPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcProtocolAndDECPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgContextPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolNACsAndDECPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.DECPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.DECTrackingContainer;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
 
@@ -33,7 +36,8 @@ import language.TGGRule;
 
 public class TGGCompiler {
 
-	private LinkedHashMap<TGGRule, Collection<IbexPattern>> ruleToPatterns = new LinkedHashMap<>();
+	private List<IbexPattern> markedPattern = new ArrayList<>();
+	private Map<TGGRule, Collection<IbexPattern>> ruleToPatterns = new LinkedHashMap<>();
 
 	private TGG tgg;
 	
@@ -52,9 +56,11 @@ public class TGGCompiler {
 	}
 
 	public void preparePatterns() {
+		createMarkedPatterns();
+		
 		for (TGGRule rule : tgg.getRules()) {
 			Collection<IbexPattern> patterns = new ArrayList<>();
-
+			
 			SrcContextPattern srcContext = new SrcContextPattern(rule);
 			patterns.add(srcContext);
 
@@ -66,7 +72,7 @@ public class TGGCompiler {
 			patterns.add(srcProtocolNACs);
 			srcProtocolNACs.getPositiveInvocations().add(src);
 			
-			SrcProtocolNACsAndDECPattern srcProtocolDECs = new SrcProtocolNACsAndDECPattern(rule);
+			SrcProtocolAndDECPattern srcProtocolDECs = new SrcProtocolAndDECPattern(rule);
 			patterns.add(srcProtocolDECs);
 			srcProtocolDECs.getPositiveInvocations().add(srcProtocolNACs);
 
@@ -81,7 +87,7 @@ public class TGGCompiler {
 			patterns.add(trgProtocolNACs);
 			trgProtocolNACs.getPositiveInvocations().add(trg);
 
-			TrgProtocolNACsAndDECPattern trgProtocolDECs = new TrgProtocolNACsAndDECPattern(rule);
+			TrgProtocolAndDECPattern trgProtocolDECs = new TrgProtocolAndDECPattern(rule);
 			patterns.add(trgProtocolDECs);
 			trgProtocolDECs.getPositiveInvocations().add(trgProtocolNACs);
 			
@@ -133,17 +139,36 @@ public class TGGCompiler {
 
 			if (!srcNoDecPatterns.isEmpty()) {
 				ruleToPatterns.get(rule).add(srcNoDecPatterns);
-				ruleToPatterns.get(rule).stream().filter(r -> r instanceof SrcProtocolNACsAndDECPattern).forEach(r -> r.getPositiveInvocations().add(srcNoDecPatterns));
+				ruleToPatterns.get(rule).stream().filter(r -> r instanceof SrcProtocolAndDECPattern).forEach(r -> r.getPositiveInvocations().add(srcNoDecPatterns));
 			}
 			if (!trgNoDecPatterns.isEmpty()) {
 				ruleToPatterns.get(rule).add(trgNoDecPatterns);
-				ruleToPatterns.get(rule).stream().filter(r -> r instanceof TrgProtocolNACsAndDECPattern).forEach(r -> r.getPositiveInvocations().add(trgNoDecPatterns));
+				ruleToPatterns.get(rule).stream().filter(r -> r instanceof TrgProtocolAndDECPattern).forEach(r -> r.getPositiveInvocations().add(trgNoDecPatterns));
 			}
 		}
 	}
 	
+	public List<IbexPattern> getMarkedPatterns() {
+		return markedPattern;
+	}
+	
 	public static LinkedHashSet<EReference> getEdgeTypes(TGG tgg) {
 		return tgg.getRules().stream().flatMap(r -> r.getEdges().stream()).map(e -> e.getType()).collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+	
+	public void createMarkedPatterns() {
+		MarkedPattern signProtocolSrcMarkedPattern = new MarkedPattern(DomainType.SRC, false);
+		MarkedPattern signProtocolTrgMarkedPattern = new MarkedPattern(DomainType.TRG, false);
+		MarkedPattern localProtocolSrcMarkedPattern = new MarkedPattern(signProtocolSrcMarkedPattern, DomainType.SRC, true);
+		MarkedPattern localProtocolTrgMarkedPattern = new MarkedPattern(signProtocolTrgMarkedPattern, DomainType.TRG, true);
+		
+		localProtocolSrcMarkedPattern.getPositiveInvocations().add(signProtocolSrcMarkedPattern);
+		localProtocolTrgMarkedPattern.getPositiveInvocations().add(signProtocolTrgMarkedPattern);
+		
+		markedPattern.add(localProtocolSrcMarkedPattern);
+		markedPattern.add(localProtocolTrgMarkedPattern);
+		markedPattern.add(signProtocolSrcMarkedPattern);
+		markedPattern.add(signProtocolTrgMarkedPattern);
 	}
 
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.log4j.BasicConfigurator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 public class SYNC_App extends SYNC {
@@ -27,6 +28,7 @@ public class SYNC_App extends SYNC {
 		synchroniser.saveModels();
 		synchroniser.terminate();
 	}
+	
 
 	protected void registerUserMetamodels() throws IOException {
 		loadAndRegisterMetamodel(projectPath + "/model/Families.ecore");
@@ -51,5 +53,13 @@ public class SYNC_App extends SYNC {
 		p = createResource(projectPath + "/instances/protocol.xmi");
 		
 		EcoreUtil.resolveAll(rs);
+	}
+	
+	@Override
+	public boolean isPatternRelevant(String patternName) {
+		return patternName.endsWith(PatternSuffixes.BWD) 
+			|| patternName.endsWith(PatternSuffixes.FWD)
+			|| patternName.endsWith(PatternSuffixes.WHOLE)
+			|| patternName.endsWith(PatternSuffixes.PROTOCOL);
 	}
 }
