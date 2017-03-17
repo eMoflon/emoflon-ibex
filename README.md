@@ -15,6 +15,7 @@
   - In Eclipse: Go to Window->Preferences->Plugin Development->Target Platform
   - Select "democlesEnabledPlatform"
   - Press Apply
+  - Open the file ```democlesEnabledPlatform.target``` in org.emoflon.ibex.tgg.workspace_configuration and perform updates on the individual components
 6. Set up your developer workspace
   - Open the workspace_configuration project, choose the PSF file ```devProjectSet.psf```, right-click and select ```Import Project Set...```.  After this you should have exactly 6 projects in your workspace.
 7. Execute MWE2
