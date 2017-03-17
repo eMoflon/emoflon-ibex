@@ -24,5 +24,5 @@
   - Right-Click on GenerateTGG.mwe2 
   - Press Run As -> MWE2 Workflow
 8. Create a new Eclipse launch configuration for your runtime projects.
-  - Choose the newer versions of democles plug-ins for available plug-ins to launch with
-  - In the runtime workspace import the PSF file ```runtimeProjectSet.psf```
+  - Choose the newer versions of democles plug-ins for available plug-ins to launch with.
+  - In the runtime workspace import the PSF file ```runtimeProjectSet.psf```
