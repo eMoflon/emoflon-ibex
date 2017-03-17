@@ -463,7 +463,7 @@ public class DemoclesHelper implements MatchEventListener {
 		algorithm.addComponentBuilder(new AdornedNativeOperationDrivenComponentBuilder<VariableRuntime>(emfIncrementalOperationModule));
 		// Relational component
 		algorithm.addComponentBuilder(new FilterComponentBuilder<VariableRuntime>(relationalOperationModule));
-		// Pattern invocation component
+
 		retePatternMatcherModule.setSearchPlanAlgorithm(algorithm);
 		retePatternMatcherModule.addOperationBuilder(emfBatchOperationModule);
 		retePatternMatcherModule.addOperationBuilder(relationalOperationModule);
