@@ -37,7 +37,6 @@ import org.gervarro.democles.operation.emf.EMFIdentifierProviderBuilder;
 import org.gervarro.democles.operation.emf.EMFInterpretableIncrementalOperationBuilder;
 import org.gervarro.democles.plan.incremental.builder.AdornedNativeOperationDrivenComponentBuilder;
 import org.gervarro.democles.plan.incremental.builder.FilterComponentBuilder;
-import org.gervarro.democles.plan.incremental.builder.PatternInvocationComponentBuilder;
 import org.gervarro.democles.plan.incremental.leaf.ReteSearchPlanAlgorithm;
 import org.gervarro.democles.runtime.AdornedNativeOperationBuilder;
 import org.gervarro.democles.runtime.GenericOperationBuilder;
@@ -124,7 +123,7 @@ public class DemoclesHelper implements MatchEventListener {
 				.collect(Collectors.toList());
 		
 		// 2) EMF-independent to pattern matcher runtime (i.e., Rete network) transformation
-		internalPatterns.forEach(retePatternMatcherModule::build);
+		retePatternMatcherModule.build(internalPatterns.toArray(new DefaultPattern[internalPatterns.size()]));
 		
 		retePatternMatcherModule.getSession().setAutoCommitMode(false);
 		
