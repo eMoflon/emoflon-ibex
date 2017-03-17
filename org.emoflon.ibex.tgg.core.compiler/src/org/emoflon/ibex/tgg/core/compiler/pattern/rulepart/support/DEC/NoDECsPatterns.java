@@ -110,6 +110,7 @@ public class NoDECsPatterns extends RulePartPattern {
 					// we also register the pattern so that it is found when we generate the code and initialize the search pattern
 					getNegativeInvocations().add(decPattern);
 					decTC.getRuleToPatternsMap().get(rule).add(decPattern);
+					decDetected = true;
 				}
 			}
 		}
@@ -141,6 +142,6 @@ public class NoDECsPatterns extends RulePartPattern {
 	}
 
 	public boolean isEmpty() {
-		return getPositiveInvocations().isEmpty() && getNegativeInvocations().isEmpty();
+		return !decDetected;
 	}
 }
