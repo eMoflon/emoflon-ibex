@@ -23,6 +23,6 @@
   - Go to package src/org.moflon.tgg.mosl 
   - Right-Click on GenerateTGG.mwe2 
   - Press Run As -> MWE2 Workflow
-8. Set up your runtime workspace
-  - Open the workspace_configuration project, choose ```ibex_runtime_workspace_run_configuration.launch```, right-click and select ```Run As``` and choose to start a new Eclipse application.
+8. Create a new Eclipse launch configuration for your runtime projects.
+  - Choose the newer versions of democles plug-ins for available plug-ins to launch with
   - In the runtime workspace import the PSF file ```runtimeProjectSet.psf```
