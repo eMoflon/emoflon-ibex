@@ -4,9 +4,9 @@ import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPatter
 
 import language.TGGRule;
 
-public class SrcProtocolNACsAndDECPattern extends SrcProtocolNACsPattern {
+public class SrcProtocolAndDECPattern extends SrcProtocolNACsPattern {
 
-	public SrcProtocolNACsAndDECPattern(TGGRule rule) {
+	public SrcProtocolAndDECPattern(TGGRule rule) {
 		super(rule);
 		// TODO Auto-generated constructor stub
 	}

@@ -1,44 +1,57 @@
 package org.emoflon.ibex.tgg.compiler.pattern.protocol;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 
-import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import language.basic.expressions.ExpressionsFactory;
+import language.basic.expressions.TGGExpression;
+import language.basic.expressions.TGGLiteralExpression;
+import language.inplaceAttributes.InplaceAttributesFactory;
+import language.inplaceAttributes.TGGAttributeConstraintOperators;
+import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
 public class ConsistencyPattern extends IbexPattern {
 
+	private TGGRuleNode protocolNode;
+	
 	public ConsistencyPattern(TGGRule rule) {
 		super(rule);
-	}
-
-	@Override
-	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule) {
-		Collection<TGGRuleElement> result = super.getSignatureElements(rule);
-
-		TGGRuleNode protocolNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
+		
+		protocolNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
 		protocolNode.setName(getProtocolNodeName());
 		protocolNode.setType(RuntimePackage.eINSTANCE.getTGGRuleApplication());
-		result.add(protocolNode);
-
-		return result;
+		
+		TGGInplaceAttributeExpression tae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
+		tae.setAttribute(RuntimePackage.Literals.TGG_RULE_APPLICATION__NAME);
+		tae.setOperator(TGGAttributeConstraintOperators.EQUAL);
+		
+		TGGLiteralExpression le = ExpressionsFactory.eINSTANCE.createTGGLiteralExpression();
+		le.setValue("\"" + rule.getName() + "\"");
+		
+		tae.setValueExpr(le);
+		protocolNode.getAttrExpr().add(tae);
+		this.getBodyNodes().add(protocolNode);
 	}
 	
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
 		return true;
+	}
+	
+	@Override
+	public Collection<TGGRuleElement> getSignatureElements() {
+	 Collection<TGGRuleElement> signatureElements = super.getSignatureElements();
+	 signatureElements.add(protocolNode);
+	 return signatureElements;
 	}
 
 	@Override

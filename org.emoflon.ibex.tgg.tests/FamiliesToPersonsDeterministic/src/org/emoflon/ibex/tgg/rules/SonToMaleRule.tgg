@@ -5,7 +5,8 @@
 
 #source { 
 	f:Family {
-		name  == "Test"
+		name == "Test"
+		postalNumber == 5511
 		++ -sons->son
 	}
 	
@@ -28,5 +29,7 @@
 }
 
 #attributeConditions {
-	
+//	eq_string(f.name, son.name)
+//	eq_string(tempVar, son.name)
+//	eq_string(tempVar, "Test")
 }

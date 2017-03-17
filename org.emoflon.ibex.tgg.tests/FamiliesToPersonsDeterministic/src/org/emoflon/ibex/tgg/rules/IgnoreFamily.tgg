@@ -9,6 +9,7 @@
 	}
 	
 	++ f:Family {
+		postalNumber:=5511
 		name := "Test"
 	}
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,6 +18,12 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.protocol.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcProtocolAndDECPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECPattern;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.gervarro.democles.common.DataFrame;
 import org.gervarro.democles.common.IDataFrame;
@@ -62,12 +69,16 @@ import org.gervarro.democles.specification.impl.DefaultPatternBody;
 import org.gervarro.democles.specification.impl.DefaultPatternFactory;
 import org.gervarro.democles.specification.impl.PatternInvocationConstraintModule;
 
+import language.BindingType;
+import language.DomainType;
+import language.LanguageFactory;
 import language.TGG;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import runtime.RuntimePackage;
 
 public class DemoclesHelper implements MatchEventListener {
 
@@ -92,6 +103,8 @@ public class DemoclesHelper implements MatchEventListener {
 	// private final RelationalConstraintFactory relationalFactory =
 	// RelationalConstraintFactory.eINSTANCE;
 
+	private List<IbexPattern> markedPatterns;
+
 	public DemoclesHelper(ResourceSet rs, OperationalStrategy app, TGG tgg, boolean debug) throws IOException {
 		this.rs = rs;
 		patterns = new ArrayList<>();
@@ -106,31 +119,31 @@ public class DemoclesHelper implements MatchEventListener {
 		init();
 	}
 
-	private void init() throws IOException {		
+	private void init() throws IOException {
 		// Create EMF-based pattern specification
 		createDemoclesPatterns();
-		if(debug)
+		if (debug)
 			saveDemoclesPatterns();
-		
+
 		// Democles configuration
-		final EMFInterpretableIncrementalOperationBuilder<VariableRuntime> 
-			emfNativeOperationModule = configureDemocles();
-		
+		final EMFInterpretableIncrementalOperationBuilder<VariableRuntime> emfNativeOperationModule = configureDemocles();
+
 		// Build the pattern matchers in 2 phases
 		// 1) EMF-based to EMF-independent transformation
+
 		final Collection<DefaultPattern> internalPatterns = patterns.stream()
 				.map(patternBuilder::build)
 				.collect(Collectors.toList());
 		
 		// 2) EMF-independent to pattern matcher runtime (i.e., Rete network) transformation
 		retePatternMatcherModule.build(internalPatterns.toArray(new DefaultPattern[internalPatterns.size()]));
-		
+
 		retePatternMatcherModule.getSession().setAutoCommitMode(false);
-		
+
 		// Attach match listener to pattern matchers
 		retrievePatternMatchers();
 		patternMatchers.forEach(pm -> pm.addEventListener(this));
-		
+
 		// Install model event listeners on the resource set
 		NotificationModule.installNotificationAdapter(rs, emfNativeOperationModule);
 	}
@@ -149,6 +162,11 @@ public class DemoclesHelper implements MatchEventListener {
 	private void createDemoclesPatterns() {
 		TGGCompiler compiler = new TGGCompiler(tgg);
 		compiler.preparePatterns();
+		this.markedPatterns = compiler.getMarkedPatterns();
+
+		for (IbexPattern markedPattern : compiler.getMarkedPatterns()) {
+			ibexToDemocles(markedPattern);
+		}
 
 		for (TGGRule r : compiler.getRuleToPatternMap().keySet()) {
 			for (IbexPattern pattern : compiler.getRuleToPatternMap().get(r)) {
@@ -176,9 +194,97 @@ public class DemoclesHelper implements MatchEventListener {
 		Map<TGGRuleNode, EMFVariable> nodeToVar = new HashMap<>();
 		EList<Variable> parameters = pattern.getSymbolicParameters();
 
+		// Extract constraints and fill nodeToVar and parameters
+		EList<Constraint> constraints = ibexToDemocles(ibexPattern, body, nodeToVar, parameters);
+
+		// Pattern invocations
+		for (IbexPattern inv : ibexPattern.getPositiveInvocations()) {
+			if (patternIsNotEmpty(inv)) {
+				PatternInvocationConstraint invCon = createInvocationConstraint(inv, true, nodeToVar);
+				if (!invCon.getParameters().isEmpty())
+					constraints.add(invCon);
+			}
+		}
+
+		for (IbexPattern inv : ibexPattern.getNegativeInvocations()) {
+			if (patternIsNotEmpty(inv)) {
+				PatternInvocationConstraint invCon = createInvocationConstraint(inv, false, nodeToVar);
+				if (!invCon.getParameters().isEmpty())
+					constraints.add(invCon);
+			}
+		}
+
+		if (ibexPattern instanceof SrcProtocolAndDECPattern) {
+			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
+				TGGRuleNode node = (TGGRuleNode) el;
+				if (node.getBindingType().equals(BindingType.CONTEXT) && !node.getDomainType().equals(DomainType.CORR)) {
+					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(DomainType.SRC, true), true, null, nodeToVar.get(node));
+					if (!invCon.getParameters().isEmpty())
+						constraints.add(invCon);
+				}
+			}
+		}
+
+		if (ibexPattern instanceof TrgProtocolAndDECPattern) {
+			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
+				TGGRuleNode node = (TGGRuleNode) el;
+				if (node.getBindingType().equals(BindingType.CONTEXT) && !node.getDomainType().equals(DomainType.CORR)) {
+					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(node.getDomainType(), true), true, null, nodeToVar.get(node));
+					if (!invCon.getParameters().isEmpty())
+						constraints.add(invCon);
+				}
+			}
+		}
+
+		if (ibexPattern instanceof SrcProtocolNACsPattern) {
+			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
+				TGGRuleNode node = (TGGRuleNode) el;
+				if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
+					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(node.getDomainType(), true), false, null, nodeToVar.get(node));
+					if (!invCon.getParameters().isEmpty())
+						constraints.add(invCon);
+				}
+			}
+		}
+
+		if (ibexPattern instanceof TrgProtocolNACsPattern) {
+			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
+				TGGRuleNode node = (TGGRuleNode) el;
+				if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
+					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(node.getDomainType(), true), false, null, nodeToVar.get(node));
+					if (!invCon.getParameters().isEmpty())
+						constraints.add(invCon);
+				}
+			}
+		}
+
+		if (ibexPattern instanceof ConsistencyPattern) {
+			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
+				TGGRuleNode node = (TGGRuleNode) el;
+				if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
+					TGGRuleNode protocolNode = (TGGRuleNode) ibexPattern.getSignatureElements().stream().filter(e -> ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).findAny().get();
+					EMFVariable protocol = nodeToVar.get(protocolNode);
+					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(node.getDomainType(), false), true, protocol, nodeToVar.get(node));
+					if (!invCon.getParameters().isEmpty())
+						constraints.add(invCon);
+				}
+			}
+		}
+
+		patternMap.put(ibexPattern, pattern);
+		patterns.add(pattern);
+
+		return pattern;
+	}
+
+	private IbexPattern getMarkedPattern(DomainType domain, boolean local) {
+		return markedPatterns.stream().map(p -> (MarkedPattern) p).filter(p -> p.getDomain().equals(domain) && !(p.isLocal() ^ local)).findFirst().get();
+	}
+
+	private EList<Constraint> ibexToDemocles(IbexPattern ibexPattern, PatternBody body, Map<TGGRuleNode, EMFVariable> nodeToVar, EList<Variable> parameters) {
 		// Constraints
 		EList<Constraint> constraints = body.getConstraints();
-		
+
 		// Constants
 		EList<Constant> constants = body.getConstants();
 
@@ -213,24 +319,26 @@ public class DemoclesHelper implements MatchEventListener {
 				dAttrHelper.extractAttributeVariables(node, var);
 			}
 		}
-		
+
 		dAttrHelper.resolveAttributeVariables(nodeToVar.values());
-		
+
 		// Attributes as constraints
 		constraints.addAll(dAttrHelper.getAttributes());
-		
+
 		// Inplace Attribute constraints as constraints
 		constraints.addAll(dAttrHelper.getRelationalConstraints());
-		
+
 		constants.addAll(dAttrHelper.getConstants());
-		
+
 		// add new variables as nodes
 		locals.addAll(dAttrHelper.getEMFVariables());
-		
-		// reset attribute helper. Do it here before the recursive call of this method
+
+		// reset attribute helper. Do it here before the recursive call of this
+		// method
 		dAttrHelper.clearAll();
-		
+
 		// Edges as constraints
+		if(!(ibexPattern instanceof MarkedPattern && ((MarkedPattern) ibexPattern).isLocal()))
 		for (TGGRuleEdge edge : ibexPattern.getBodyEdges()) {
 			Reference ref = emfTypeFactory.createReference();
 			ref.setEModelElement(edge.getType());
@@ -275,28 +383,7 @@ public class DemoclesHelper implements MatchEventListener {
 			constraints.add(trgRef);
 
 		}
-
-		// Pattern invocations
-		for (IbexPattern inv : ibexPattern.getPositiveInvocations()) {
-			if (patternIsNotEmpty(inv)) {
-				PatternInvocationConstraint invCon = createInvocationConstraint(inv, true, nodeToVar);
-				if (!invCon.getParameters().isEmpty())
-					constraints.add(invCon);
-			}
-		}
-
-		for (IbexPattern inv : ibexPattern.getNegativeInvocations()) {
-			if (patternIsNotEmpty(inv)) {
-				PatternInvocationConstraint invCon = createInvocationConstraint(inv, false, nodeToVar);
-				if (!invCon.getParameters().isEmpty())
-					constraints.add(invCon);
-			}
-		}
-
-		patternMap.put(ibexPattern, pattern);
-		patterns.add(pattern);
-
-		return pattern;
+		return constraints;
 	}
 
 	private PatternInvocationConstraint createInvocationConstraint(IbexPattern inv, boolean isTrue, Map<TGGRuleNode, EMFVariable> nodeToVar) {
@@ -304,19 +391,39 @@ public class DemoclesHelper implements MatchEventListener {
 		invCon.setPositive(isTrue);
 		invCon.setInvokedPattern(ibexToDemocles(inv));
 		for (TGGRuleElement element : inv.getSignatureElements()) {
-			if(nodeToVar.containsKey(element)){
+			if (nodeToVar.containsKey(element)) {
 				ConstraintParameter parameter = factory.createConstraintParameter();
 				invCon.getParameters().add(parameter);
 				parameter.setReference(nodeToVar.get(element));
 			}
 		}
-		
+
+		return invCon;
+	}
+
+	private PatternInvocationConstraint createMarkedPatternCall(IbexPattern markedPattern, boolean isPositive, EMFVariable protocol, EMFVariable node) {
+		PatternInvocationConstraint invCon = factory.createPatternInvocationConstraint();
+		invCon.setPositive(isPositive);
+		invCon.setInvokedPattern(patternMap.get(markedPattern));
+		for (TGGRuleElement element : markedPattern.getSignatureElements()) {
+			if (element.getName().equals(MarkedPattern.PROTOCOL_NAME)) {
+				ConstraintParameter parameter = factory.createConstraintParameter();
+				invCon.getParameters().add(parameter);
+				parameter.setReference(protocol);
+			}
+			if (element.getName().equals(MarkedPattern.OBJECT_NAME)) {
+				ConstraintParameter parameter = factory.createConstraintParameter();
+				invCon.getParameters().add(parameter);
+				parameter.setReference(node);
+			}
+		}
+
 		return invCon;
 	}
 
 	private void retrievePatternMatchers() {
 		for (Pattern pattern : patterns) {
-			if (app.isPatternRelevant(pattern.getName())){
+			if (app.isPatternRelevant(pattern.getName())) {
 				patternMatchers.add(retePatternMatcherModule.getPatternMatcher(getPatternID(pattern)));
 			}
 		}
@@ -330,47 +437,32 @@ public class DemoclesHelper implements MatchEventListener {
 		final EMFConstraintModule emfTypeModule = new EMFConstraintModule(rs);
 		final EMFTypeModule internalEMFTypeModule = new EMFTypeModule(emfTypeModule);
 		final RelationalTypeModule internalRelationalTypeModule = new RelationalTypeModule(CoreConstraintModule.INSTANCE);
-		
+
 		patternBuilder = new EMFPatternBuilder<DefaultPattern, DefaultPatternBody>(new DefaultPatternFactory());
-		final PatternInvocationConstraintModule<DefaultPattern, DefaultPatternBody> patternInvocationTypeModule = 
-				new PatternInvocationConstraintModule<DefaultPattern, DefaultPatternBody>(patternBuilder);
-		final PatternInvocationTypeModule<DefaultPattern, DefaultPatternBody> internalPatternInvocationTypeModule =
-				new PatternInvocationTypeModule<DefaultPattern, DefaultPatternBody>(patternInvocationTypeModule);
+		final PatternInvocationConstraintModule<DefaultPattern, DefaultPatternBody> patternInvocationTypeModule = new PatternInvocationConstraintModule<DefaultPattern, DefaultPatternBody>(patternBuilder);
+		final PatternInvocationTypeModule<DefaultPattern, DefaultPatternBody> internalPatternInvocationTypeModule = new PatternInvocationTypeModule<DefaultPattern, DefaultPatternBody>(patternInvocationTypeModule);
 		patternBuilder.addConstraintTypeSwitch(internalPatternInvocationTypeModule.getConstraintTypeSwitch());
 		patternBuilder.addConstraintTypeSwitch(internalRelationalTypeModule.getConstraintTypeSwitch());
 		patternBuilder.addConstraintTypeSwitch(internalEMFTypeModule.getConstraintTypeSwitch());
 		patternBuilder.addVariableTypeSwitch(internalEMFTypeModule.getVariableTypeSwitch());
-	
+
 		retePatternMatcherModule = new RetePatternMatcherModule();
 		// EMF native
-		final EMFInterpretableIncrementalOperationBuilder<VariableRuntime> emfNativeOperationModule =
-				new EMFInterpretableIncrementalOperationBuilder<VariableRuntime>(
-						retePatternMatcherModule, emfTypeModule);
+		final EMFInterpretableIncrementalOperationBuilder<VariableRuntime> emfNativeOperationModule = new EMFInterpretableIncrementalOperationBuilder<VariableRuntime>(retePatternMatcherModule, emfTypeModule);
 		// EMF batch
-		final GenericOperationBuilder<VariableRuntime> emfBatchOperationModule =
-				new GenericOperationBuilder<VariableRuntime>(emfNativeOperationModule,
-						DefaultEMFBatchAdornmentStrategy.INSTANCE);
-		final EMFIdentifierProviderBuilder<VariableRuntime> emfIdentifierProviderModule =
-				new EMFIdentifierProviderBuilder<VariableRuntime>(
-						JavaIdentifierProvider.INSTANCE);
+		final GenericOperationBuilder<VariableRuntime> emfBatchOperationModule = new GenericOperationBuilder<VariableRuntime>(emfNativeOperationModule, DefaultEMFBatchAdornmentStrategy.INSTANCE);
+		final EMFIdentifierProviderBuilder<VariableRuntime> emfIdentifierProviderModule = new EMFIdentifierProviderBuilder<VariableRuntime>(JavaIdentifierProvider.INSTANCE);
 		// Relational
-		final ListOperationBuilder<InterpretableAdornedOperation,VariableRuntime> relationalOperationModule =
-				new ListOperationBuilder<InterpretableAdornedOperation,VariableRuntime>(
-						new RelationalOperationBuilder<VariableRuntime>());
-		
+		final ListOperationBuilder<InterpretableAdornedOperation, VariableRuntime> relationalOperationModule = new ListOperationBuilder<InterpretableAdornedOperation, VariableRuntime>(
+				new RelationalOperationBuilder<VariableRuntime>());
+
 		final ReteSearchPlanAlgorithm algorithm = new ReteSearchPlanAlgorithm();
 		// EMF incremental
-		final AdornedNativeOperationBuilder<VariableRuntime> emfIncrementalOperationModule =
-				new AdornedNativeOperationBuilder<VariableRuntime>(
-						emfNativeOperationModule,
-						DefaultEMFIncrementalAdornmentStrategy.INSTANCE);
+		final AdornedNativeOperationBuilder<VariableRuntime> emfIncrementalOperationModule = new AdornedNativeOperationBuilder<VariableRuntime>(emfNativeOperationModule, DefaultEMFIncrementalAdornmentStrategy.INSTANCE);
 		// EMF component
-		algorithm.addComponentBuilder(
-				new AdornedNativeOperationDrivenComponentBuilder<VariableRuntime>(
-						emfIncrementalOperationModule));
+		algorithm.addComponentBuilder(new AdornedNativeOperationDrivenComponentBuilder<VariableRuntime>(emfIncrementalOperationModule));
 		// Relational component
-		algorithm.addComponentBuilder(
-				new FilterComponentBuilder<VariableRuntime>(relationalOperationModule));
+		algorithm.addComponentBuilder(new FilterComponentBuilder<VariableRuntime>(relationalOperationModule));
 		// Pattern invocation component
 		retePatternMatcherModule.setSearchPlanAlgorithm(algorithm);
 		retePatternMatcherModule.addOperationBuilder(emfBatchOperationModule);
@@ -387,27 +479,25 @@ public class DemoclesHelper implements MatchEventListener {
 	public void terminate() throws IOException {
 		patternMatchers.forEach(pm -> pm.removeEventListener(this));
 	}
-	
+
 	public void handleEvent(final MatchEvent event) {
 		// React to events
 		final String type = event.getEventType();
 		final DataFrame frame = event.getMatching();
-		
-		Optional<Pattern> p = patterns.stream()
-							.filter(pattern -> getPatternID(pattern).equals(event.getSource().toString()))
-							.findAny();
-		
+
+		Optional<Pattern> p = patterns.stream().filter(pattern -> getPatternID(pattern).equals(event.getSource().toString())).findAny();
+
 		p.ifPresent(pattern -> {
 			// React to create
 			if (type.contentEquals(MatchEvent.INSERT)) {
 				IMatch match = new IbexMatch(frame, pattern);
 				matches.put(frame, match);
-				//FIXME [anjorin] Better way of accessing rule name.
+				// FIXME [anjorin] Better way of accessing rule name.
 				app.addOperationalRuleMatch(PatternSuffixes.removeSuffix(pattern.getName()), match);
 			}
 
 			// React to delete
-			if (type.equals(MatchEvent.DELETE)){
+			if (type.equals(MatchEvent.DELETE)) {
 				app.removeOperationalRuleMatch(matches.get(frame));
 				matches.remove(frame);
 			}

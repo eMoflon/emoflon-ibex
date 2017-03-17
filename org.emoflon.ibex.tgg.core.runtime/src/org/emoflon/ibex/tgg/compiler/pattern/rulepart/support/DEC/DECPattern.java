@@ -1,11 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC;
 
-import java.util.Collection;
-import java.util.Map;
-
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 
 import language.TGGRule;
