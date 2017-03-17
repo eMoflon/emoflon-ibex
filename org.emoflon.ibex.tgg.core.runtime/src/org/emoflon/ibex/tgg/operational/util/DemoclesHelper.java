@@ -373,8 +373,6 @@ public class DemoclesHelper implements MatchEventListener {
 		algorithm.addComponentBuilder(
 				new FilterComponentBuilder<VariableRuntime>(relationalOperationModule));
 		// Pattern invocation component
-		algorithm.addComponentBuilder(
-				new PatternInvocationComponentBuilder<VariableRuntime>(retePatternMatcherModule));
 		retePatternMatcherModule.setSearchPlanAlgorithm(algorithm);
 		retePatternMatcherModule.addOperationBuilder(emfBatchOperationModule);
 		retePatternMatcherModule.addOperationBuilder(relationalOperationModule);
