@@ -56,7 +56,7 @@ public class CC extends TGGRuntimeUtil {
 			if(v < 0){
 				IPatternMatch match = idToMatch.get(-v);
 				HashMap<String, EObject> comatch = matchToCoMatch.get(match);
-				comatch.values().forEach(EcoreUtil::delete);
+				comatch.values().forEach(corr -> corr.eResource().getContents().remove(corr));
 			}
 		}
 		super.finalize();
