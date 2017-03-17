@@ -57,14 +57,7 @@ public class MatchContainer {
 	}
 
 	protected IPatternMatch getNextRandom() {
-		Iterator<IPatternMatch> it = matchToRuleNameID.keySet().iterator();
-		int randomIndex = random.nextInt(matchToRuleNameID.size());
-		int count = 0;
-		while (count < randomIndex) {
-			count++;
-			it.next();
-		}
-		return it.next();
+		return matchToRuleNameID.keySet().stream().findAny().get();
 	}
 
 	protected boolean isEmpty() {
