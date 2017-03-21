@@ -15,10 +15,11 @@ import org.moflon.tgg.mosl.tgg.LinkVariablePattern
 import org.moflon.tgg.mosl.tgg.ObjectVariablePattern
 import org.moflon.tgg.mosl.tgg.Operator
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
+import org.gervarro.democles.specification.emf.PatternBody
 
 class PlantUMLGenerator {
 	
-	static def String emptyDiagram(){
+	public static def String emptyDiagram(){
 		'''
 		@startuml
 		title Choose an element that can be visualised
@@ -26,65 +27,80 @@ class PlantUMLGenerator {
 		'''
 	}
 	
-	static def String visualisePattern(Pattern p){
+	public static def String visualisePatternBody(PatternBody b){
 		'''
 		@startuml
-		«visualisePatternBody(p)»
+		«visualiseIsolatedPatternBody(b)»
+		«FOR pi : patternInvocations(b)»
+			«visualiseSymbolicParameters(pi.invokedPattern)»
+			«var i = 0»
+			«FOR param : pi.parameters»
+			«IF pi.positive»
+				«identifierFor(param.reference as Variable, b.header)» #--# «identifierFor(pi.invokedPattern.symbolicParameters.get(i++), pi.invokedPattern)»
+			«ELSE»
+				namespace «pi.invokedPattern.name» #DDDDDD {
+				«identifierFor(param.reference as Variable, b.header)» #..# «identifierFor(pi.invokedPattern.symbolicParameters.get(i++), pi.invokedPattern)»
+				}
+			«ENDIF»
+			«ENDFOR»
+		«ENDFOR»
 		@enduml
 		'''
 	}
 	
-	static def String visualisePatternBody(Pattern p){
-		'''
-		«visualiseIsolatedPattern(p)»
-		«FOR pi : patternInvocations(p)»
-			«visualisePatternBody(pi.invokedPattern)»
-			«p.name»«IF pi.positive»--+«ELSE»--x«ENDIF» «pi.invokedPattern.name»
-		«ENDFOR»
-		'''
-	}
-	
-	static def patternInvocations(Pattern p){
-		p.bodies.get(0).constraints.filter(PatternInvocationConstraint)
-	}
-	
-	static def String visualiseIsolatedPattern(Pattern p) {
+	private static def String visualiseSymbolicParameters(Pattern p){
 		'''
 		«FOR v : patternVariables(p) SEPARATOR "\n"»
 			class «identifierFor(v, p)»<< (V,#FF7700)>>
 		«ENDFOR»
-		
-		«FOR ref : referenceConstraints(p)»
-			«identifierFor(extractSrc(ref), p)» --> "«ref.EModelElement.name»" «identifierFor(extractTrg(ref), p)»
+		'''
+	}
+	
+	private static def patternInvocations(PatternBody body){
+		body.constraints.filter(PatternInvocationConstraint)
+	}
+	
+	private static def String visualiseIsolatedPatternBody(PatternBody b) {
+		'''
+		«visualiseSymbolicParameters(b.header)»
+		«FOR v : localVariables(b) SEPARATOR "\n"»
+			class «identifierFor(v, b.header)»<< (L,#B0D8F0)>>
+		«ENDFOR»
+		«FOR ref : referenceConstraints(b)»
+			«identifierFor(extractSrc(ref), b.header)» --> "«ref.EModelElement.name»" «identifierFor(extractTrg(ref), b.header)»
 		«ENDFOR»
 		'''
-	}	
+	}
 	
-	static def identifierFor(Variable v, Pattern pattern){
+	private def static localVariables(PatternBody body) {
+		body.localVariables
+	}
+	
+	private static def identifierFor(Variable v, Pattern pattern){
 		'''"«pattern.name».«v.name»:«(v as EMFVariable).EClassifier.name»"'''
 	}
 	
-	static def extractVar(Reference ref, int i){
+	private static def extractVar(Reference ref, int i){
 		ref.parameters.get(i).reference as Variable
 	}
 	
-	static def extractSrc(Reference ref){
+	private static def extractSrc(Reference ref){
 		extractVar(ref, 0)	
 	}
 	
-	static def extractTrg(Reference ref){
+	private static def extractTrg(Reference ref){
 		extractVar(ref, 1)	
 	}
 	
-	static def referenceConstraints(Pattern pattern){
-		pattern.bodies.get(0).constraints.filter(Reference)
+	private static def referenceConstraints(PatternBody body){
+		body.constraints.filter(Reference)
 	}
 	
-	static def patternVariables(Pattern pattern) {
-		pattern.bodies.get(0).header.symbolicParameters
+	private static def patternVariables(Pattern p) {
+		p.symbolicParameters
 	}
 	
-	static def String visualiseTGGFile(TripleGraphGrammarFile file) {
+	public static def String visualiseTGGFile(TripleGraphGrammarFile file) {
 		'''
 		@startuml
 		«IF file.rules.length != 1»title "I can only visualise exactly one TGG rule in one file"
@@ -120,13 +136,13 @@ class PlantUMLGenerator {
 		'''
 	}
 	
-	def static visualiseCorrs(CorrVariablePattern corr) {
+	private def static visualiseCorrs(CorrVariablePattern corr) {
 		'''
 		«idForPattern(corr.source)» -> «idForPattern(corr.target)» [penwidth=7, dir="both", style="tapered", arrowtail="none", arrowhead="none", color=«operatorToColour(corr.op)», constraint=false];
 		'''
 	}
 	
-	def static visualisePattern(ObjectVariablePattern p, String domainColour) {
+	private def static visualisePattern(ObjectVariablePattern p, String domainColour) {
 		'''
 		 «idForPattern(p)» [fontsize=9, fontname=Monospace, penwidth=1, shape=record, color=«operatorToColour(p.op)», fillcolor=«domainColour», label="{«p.name» : «p.type.name» | }",style=filled];
 		 «FOR lv : p.linkVariablePatterns»
@@ -135,22 +151,22 @@ class PlantUMLGenerator {
 		'''
 	}
 	
-	def static idForPattern(ObjectVariablePattern p) {
+	private def static idForPattern(ObjectVariablePattern p) {
 		'''"«p.name» : «p.type.name»"'''
 	}
 	
-	def static visaliseLinkVariable(ObjectVariablePattern src, LinkVariablePattern p) {
+	private def static visaliseLinkVariable(ObjectVariablePattern src, LinkVariablePattern p) {
 		'''«idForPattern(src)» -> «idForPattern(p.target)» [fontname=Monospace, penwidth=1, color=«operatorToColour(p.op)», label="«p.type.name»", fontsize=8, constraint=true];'''
 	}
 	
-	def static operatorToColour(Operator op) {
+	private def static operatorToColour(Operator op) {
 		if(op != null)
 			return "GREEN"
 		else
 			return "BLACK"
 	}
 	
-	def static String visualiseEcoreElements(Collection<EClass> eclasses, Collection<EReference> refs){
+	public def static String visualiseEcoreElements(Collection<EClass> eclasses, Collection<EReference> refs){
 		'''
 		@startuml
 		«FOR c : eclasses»
@@ -163,14 +179,14 @@ class PlantUMLGenerator {
 		'''
 	}
 	
-	def static multiplicityFor(EReference r) {
+	private def static multiplicityFor(EReference r) {
 		'''"«IF r.lowerBound == -1»*«ELSE»«r.lowerBound»«ENDIF»..«IF r.upperBound == -1»*«ELSE»«r.upperBound»«ENDIF»"'''
 	}
 	
 	private def static String identifierFor(EClass c)
 		'''"«c.EPackage.name».«c.name»"'''
 		
-	def static String visualiseModelElements(Collection<EObject> objects, Collection<Pair<String, Pair<EObject, EObject>>> links){
+	public def static String visualiseModelElements(Collection<EObject> objects, Collection<Pair<String, Pair<EObject, EObject>>> links){
 		'''
 		@startuml
 		«FOR o : objects»
@@ -183,7 +199,7 @@ class PlantUMLGenerator {
 		'''
 	}
 	
-	protected def static Object identifierFor(EObject o)
+	private def static Object identifierFor(EObject o)
 		'''«o.hashCode».«o.eClass.name»'''
 	
 }
