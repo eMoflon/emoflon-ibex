@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.gervarro.democles.specification.emf.Pattern;
+import org.gervarro.democles.specification.emf.PatternBody;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider;
@@ -111,8 +112,8 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 				.map(EcoreEditor::getSelection)
 				.flatMap(maybeCast(TreeSelection.class))
 				.map(TreeSelection::getFirstElement)
-				.flatMap(maybeCast(Pattern.class))
-				.map(PlantUMLGenerator::visualisePattern);
+				.flatMap(maybeCast(PatternBody.class))
+				.map(PlantUMLGenerator::visualisePatternBody);
 	}
 
 	@Override
