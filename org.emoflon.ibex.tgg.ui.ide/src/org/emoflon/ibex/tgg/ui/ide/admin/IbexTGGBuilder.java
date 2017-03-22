@@ -90,13 +90,20 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	private void generateFiles() {
 		generateEditorModel().ifPresent(editorModel -> 
-		generateInternalModels(editorModel).ifPresent(internalModel -> 
 		{
-			generateAttrCondLibsAndStubs(internalModel);
-			generateRunFiles();
-		}));
+			generateFlattenedEditorModel(editorModel);
+			generateInternalModels(editorModel).ifPresent(internalModel -> 
+			{
+				generateAttrCondLibsAndStubs(internalModel);
+				generateRunFiles();
+			});
+		});
 	}
 	
+	private void generateFlattenedEditorModel(TripleGraphGrammarFile editorModel) {
+		// TODO [fstolte]
+	}
+
 	private void generateRunFiles() {
 		try {
 			new RunFileHelper(getProject()).createFiles();
