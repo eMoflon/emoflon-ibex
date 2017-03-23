@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.xtext.ui.editor.XtextEditor;
+import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoFlattenedTGG;
 import org.gervarro.democles.specification.emf.PatternBody;
 import org.moflon.ide.visualisation.dot.language.ToggleRefinementHandler;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
@@ -115,8 +116,8 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 	}
 	
 	private TripleGraphGrammarFile flatten(TripleGraphGrammarFile file) {
-		// TODO [fstolte]
-		return file;
+		// TODO
+		return new EditorTGGtoFlattenedTGG().flatten(file);
 	}
 
 	private Optional<String> maybeVisualisePattern(IEditorPart editor) {

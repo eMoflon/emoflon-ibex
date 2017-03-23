@@ -33,6 +33,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
+import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoFlattenedTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoInternalTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.TGGProject;
 import org.moflon.core.utilities.LogUtils;
@@ -50,6 +51,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	private static final String ECORE_FILE_EXTENSION = ".ecore";
 	private static final String TGG_FILE_EXTENSION = ".tgg";
 	private static final String EDITOR_MODEL_EXTENSION = ".editor.xmi";
+	private static final String EDITOR_FLATTENED_MODEL_EXTENSION = "_flattened.editor.xmi";
 	private static final String SRC_FOLDER = "src";
 	private static final String MODEL_FOLDER = "model";
 
@@ -101,7 +103,15 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	}
 	
 	private void generateFlattenedEditorModel(TripleGraphGrammarFile editorModel) {
-		// TODO [fstolte]
+		EditorTGGtoFlattenedTGG flattener = new EditorTGGtoFlattenedTGG();
+		TripleGraphGrammarFile flattenedTGG = flattener.flatten(editorModel);
+
+		try {
+			ResourceSet rs = editorModel.eResource().getResourceSet();
+			saveModelInProject(MODEL_FOLDER, getProject().getName() + EDITOR_FLATTENED_MODEL_EXTENSION, rs, flattenedTGG);
+		} catch (IOException e) {
+			LogUtils.error(logger, e);
+		}
 	}
 
 	private void generateRunFiles() {
