@@ -171,6 +171,9 @@ class PlantUMLGenerator {
 		@startuml
 		«FOR c : eclasses»
 		class «identifierFor(c)»
+			«FOR s : c.ESuperTypes»
+			«identifierFor(c)»--|>«identifierFor(s)»
+			«ENDFOR»
 		«ENDFOR»
 		«FOR r : refs»
 		«identifierFor(r.EContainingClass)»«IF r.isContainment» *«ENDIF»--> «multiplicityFor(r)» «identifierFor(r.EReferenceType)» : "«r.name»"
