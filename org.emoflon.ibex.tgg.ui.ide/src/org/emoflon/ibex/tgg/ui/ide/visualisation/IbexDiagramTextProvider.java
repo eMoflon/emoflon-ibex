@@ -17,8 +17,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.xtext.ui.editor.XtextEditor;
-import org.gervarro.democles.specification.emf.Pattern;
+import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoFlattenedTGG;
 import org.gervarro.democles.specification.emf.PatternBody;
+import org.moflon.ide.visualisation.dot.language.ToggleRefinementHandler;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider;
@@ -103,7 +104,19 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 				.map(e -> e.getDocument().readOnly(res -> res.getContents().get(0)))
 				.flatMap(maybeCast(TripleGraphGrammarFile.class))
 				.map(file -> file.getSchema() == null? file : null)
+				.map(this::flattenIfRequested)
 				.map(PlantUMLGenerator::visualiseTGGFile);
+	}
+
+	private TripleGraphGrammarFile flattenIfRequested(TripleGraphGrammarFile file){
+		if(ToggleRefinementHandler.flattenRefinements())
+			return flatten(file);
+			
+		return file;
+	}
+	
+	private TripleGraphGrammarFile flatten(TripleGraphGrammarFile file) {
+		return new EditorTGGtoFlattenedTGG().flatten(file);
 	}
 
 	private Optional<String> maybeVisualisePattern(IEditorPart editor) {

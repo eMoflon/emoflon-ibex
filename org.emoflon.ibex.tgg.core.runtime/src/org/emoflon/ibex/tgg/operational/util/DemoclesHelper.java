@@ -71,7 +71,6 @@ import org.gervarro.democles.specification.impl.PatternInvocationConstraintModul
 
 import language.BindingType;
 import language.DomainType;
-import language.LanguageFactory;
 import language.TGG;
 import language.TGGRule;
 import language.TGGRuleCorr;
@@ -99,10 +98,7 @@ public class DemoclesHelper implements MatchEventListener {
 	// Factories
 	private final SpecificationFactory factory = SpecificationFactory.eINSTANCE;
 	private final EMFTypeFactory emfTypeFactory = EMFTypeFactory.eINSTANCE;
-	// TODO for attributes
-	// private final RelationalConstraintFactory relationalFactory =
-	// RelationalConstraintFactory.eINSTANCE;
-
+	
 	private List<IbexPattern> markedPatterns;
 
 	public DemoclesHelper(ResourceSet rs, OperationalStrategy app, TGG tgg, boolean debug) throws IOException {
@@ -122,8 +118,6 @@ public class DemoclesHelper implements MatchEventListener {
 	private void init() throws IOException {
 		// Create EMF-based pattern specification
 		createDemoclesPatterns();
-		if (debug)
-			saveDemoclesPatterns();
 
 		// Democles configuration
 		final EMFInterpretableIncrementalOperationBuilder<VariableRuntime> emfNativeOperationModule = configureDemocles();
@@ -146,6 +140,8 @@ public class DemoclesHelper implements MatchEventListener {
 
 		// Install model event listeners on the resource set
 		NotificationModule.installNotificationAdapter(rs, emfNativeOperationModule);
+		
+		if (debug) saveDemoclesPatterns();
 	}
 
 	private void saveDemoclesPatterns() {
@@ -162,11 +158,7 @@ public class DemoclesHelper implements MatchEventListener {
 	private void createDemoclesPatterns() {
 		TGGCompiler compiler = new TGGCompiler(tgg);
 		compiler.preparePatterns();
-		this.markedPatterns = compiler.getMarkedPatterns();
-
-		for (IbexPattern markedPattern : compiler.getMarkedPatterns()) {
-			ibexToDemocles(markedPattern);
-		}
+		markedPatterns = compiler.getMarkedPatterns();
 
 		for (TGGRule r : compiler.getRuleToPatternMap().keySet()) {
 			for (IbexPattern pattern : compiler.getRuleToPatternMap().get(r)) {
@@ -333,8 +325,7 @@ public class DemoclesHelper implements MatchEventListener {
 		// add new variables as nodes
 		locals.addAll(dAttrHelper.getEMFVariables());
 
-		// reset attribute helper. Do it here before the recursive call of this
-		// method
+		// reset attribute helper. Do it here before the recursive call of this method
 		dAttrHelper.clearAll();
 
 		// Edges as constraints
@@ -383,6 +374,7 @@ public class DemoclesHelper implements MatchEventListener {
 			constraints.add(trgRef);
 
 		}
+		
 		return constraints;
 	}
 
