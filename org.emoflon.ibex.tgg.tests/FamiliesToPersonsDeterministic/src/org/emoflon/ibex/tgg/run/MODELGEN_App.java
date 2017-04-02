@@ -2,7 +2,9 @@ package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
 
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.log4j.BasicConfigurator;
+import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
 

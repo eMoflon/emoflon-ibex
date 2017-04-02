@@ -1,54 +1,119 @@
 package org.emoflon.ibex.tgg.compiler;
 
+/**
+ * All suffixes used to distinguish the different patterns based on their names.
+ * 
+ * The context of a pattern is is the part of the pattern that consists of the
+ * context elements of the original TGG rule.
+ * 
+ * The source/target/corr components of a pattern are the parts of the pattern
+ * that consist of source/target/corr elements of the original TGG rule.
+ * 
+ * @author anthony.anjorin
+ */
 public class PatternSuffixes {
 	
-	//FIXME[anjorin] Extract "_" as global separation character. Then change to "__" instead of "_"!
+	/** Used to separate the suffix from the name of the pattern */
+	public static final String SEP = "__"; 
 	
-	// These patterns contain source and target elements of a rule
-	public static final String SRC = "_SRC";
+	/** Contains the entire source component of the pattern */
+	public static final String SRC = SEP + "SRC";
 	
-	public static final String TRG = "_TRG";
+	/** Contains the entire target component of the pattern */
+	public static final String TRG = SEP + "TRG";
 	
-	// These patterns are rule part patterns meaning that they consist of the context elements of their specific domain
-	public static final String SRC_CONTEXT = "_SRC_CONTEXT";
+	/** Contains the context of the source component of the pattern */
+	public static final String SRC_CONTEXT = SEP + "SRC_CONTEXT";
 	
-	public static final String TRG_CONTEXT = "_TRG_CONTEXT";
+	/** Contains the context of the target component of the pattern */
+	public static final String TRG_CONTEXT = SEP + "TRG_CONTEXT";
 	
-	public static final String CORR_CONTEXT = "_CORR_CONTEXT";
+	/** Contains the context of the corr component of the pattern */
+	public static final String CORR_CONTEXT = SEP + "CORR_CONTEXT";
 	
-	// A pattern that calls for the Whole pattern + consists of protocol nodes to check if created/translated elements have already been translated
-	public static final String PROTOCOL = "_PROTOCOL";
-	
-	// This suffix indicates a pattern that is used to find consistency relations between two models
-	public static final String CC = "_CC";
-	
-	// Forward and Backward rule suffix, e.g. for sync
-	public static final String FWD = "_FWD";
-	
-	public static final String BWD = "_BWD";
-	
-	// This indicates a pattern that is used to generate models that conform to the rule specifications
-	public static final String MODELGEN = "_MODELGEN";
+	/** 
+	 * Contains the entire context of the original TGG rule.  
+	 * Used for applying the original TGG rules, i.e., for the model generator. 
+	 */
+	public static final String MODELGEN = SEP + "MODELGEN";
 
-	// Rules with this suffices are meant to cheat if translated elements in rules have not yet been marked
-	public static final String SRC_PROTOCOL_NACS = "_SRC_PROTOCOL_NACS";
+	/**
+	 * Forbid this pattern to ensure that all source elements created by the original
+	 * rule have not yet been translated (marked)
+	 */
+	public static final String SRC_PROTOCOL_NACS = SEP + "SRC_PROTOCOL_NACS";
 	
-	public static final String TRG_PROTOCOL_NACS = "_TRG_PROTOCOL_NACS";
+	/**
+	 * Forbid this pattern to ensure that all target elements created by the original
+	 * rule have not yet been translated (marked)
+	 */
+	public static final String TRG_PROTOCOL_NACS = SEP + "TRG_PROTOCOL_NACS";
 	
-	// TODO
-	public static final String SRC_PROTOCOL_PACS = "_SRC_PROTOCOL_PACS";
-	
-	public static final String TRG_PROTOCOL_PACS = "_TRG_PROTOCOL_PACS";
-	
-	// A pattern that consists of the whole tgg rule as a pattern
-	public static final String WHOLE = "_WHOLE";
+	/**
+	 * Used to check that all source context elements of the original rule are
+	 * marked and that DEC is not violated.
+	 */
+	public static final String PROTOCOL_DEC_SRC = SEP + "PROTOCOL_DEC_SRC";
 
-	// This suffix indicates a MarkedPattern where the protocol node is not placed in the signature
-	// Such a rule calls for another MarkedRule (without this suffix) to find this protocol
-	// Note that such pattern are, in contrast to those above, not generated for each rule both only once
-	public static final String LOCAL_MARKED = "_LocalMarked";
+	/**
+	 * Used to check that all target context elements of the original rule are
+	 * marked and that DEC is not violated.
+	 */
+	public static final String PROTOCOL_DEC_TRG = SEP + "PROTOCOL_DEC_TRG";
 	
+	/**
+	 * If this pattern matches, then the corresponding TGG forward rule is
+	 * applicable. This means that (i) the entire source component,
+	 * corr-context, and target context can be matched and have been marked, and
+	 * (ii) the source elements created by the rule can be translated, i.e., are
+	 * not already marked.
+	 */
+	public static final String FWD = SEP + "FWD";
+	
+	/**
+	 * If this pattern matches, then the corresponding TGG backward rule is
+	 * applicable. This means that (i) the entire target component,
+	 * corr-context, and source context can be matched and have been marked, and
+	 * (ii) the target elements created by the rule can be translated, i.e., are
+	 * not already marked.
+	 */
+	public static final String BWD = SEP + "BWD";
+	
+	/**
+	 * TODO [Erhan]: What is this used for?
+	 * A pattern that calls for the Whole pattern + consists of
+	 * protocol nodes to check if created/translated elements have already been
+	 * translated
+	 */
+	public static final String PROTOCOL = SEP + "PROTOCOL";
+
+	/**
+	 * TODO [Erhan]: What is this used for? A pattern that consists of the whole
+	 * tgg rule as a pattern
+	 */
+	public static final String WHOLE = SEP + "WHOLE";
+	
+	/**
+	 * TODO [Erhan]: What is this used for? This suffix indicates a pattern that
+	 * is used to find consistency relations between two models
+	 */
+	public static final String CC = SEP + "CC";
+
+	/**
+	 * This suffix indicates a marked pattern with a local protocol node, i.e.,
+	 * the protocol node is not in the signature of the pattern. Such a pattern
+	 * can be used to check if a certain element has been marked.
+	 */
+	public static final String LOCAL_MARKED = SEP + "LOCAL_MARKED";
+	
+	/**
+	 * Removes the suffix of a given pattern name.
+	 * 
+	 * @param name
+	 *            Name of the pattern
+	 * @return Name without suffix
+	 */
 	public static String removeSuffix(String name) {
-		return name.substring(0, name.indexOf("_"));
+		return name.substring(0, name.indexOf(SEP));
 	}	
 }

@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 
-import language.BindingType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;

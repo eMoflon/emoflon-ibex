@@ -160,6 +160,10 @@ public class DemoclesHelper implements MatchEventListener {
 		compiler.preparePatterns();
 		markedPatterns = compiler.getMarkedPatterns();
 
+		for (IbexPattern pattern : markedPatterns) {
+			ibexToDemocles(pattern);
+		}
+		
 		for (TGGRule r : compiler.getRuleToPatternMap().keySet()) {
 			for (IbexPattern pattern : compiler.getRuleToPatternMap().get(r)) {
 				if (patternIsNotEmpty(pattern) && app.isPatternRelevant(pattern.getName()))
