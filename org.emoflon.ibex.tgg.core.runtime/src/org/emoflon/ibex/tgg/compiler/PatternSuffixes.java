@@ -43,7 +43,7 @@ public class PatternSuffixes {
 	// A pattern that consists of the whole tgg rule as a pattern
 	public static final String WHOLE = "_WHOLE";
 
-	// This suffix indicatzes a MarkedPattern where the protocol node is not placed in the signature
+	// This suffix indicates a MarkedPattern where the protocol node is not placed in the signature
 	// Such a rule calls for another MarkedRule (without this suffix) to find this protocol
 	// Note that such pattern are, in contrast to those above, not generated for each rule both only once
 	public static final String LOCAL_MARKED = "_LocalMarked";
