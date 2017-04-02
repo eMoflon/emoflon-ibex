@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.compiler;
 
+import language.DomainType;
+
 /**
  * All suffixes used to distinguish the different patterns based on their names.
  * 
@@ -8,6 +10,10 @@ package org.emoflon.ibex.tgg.compiler;
  * 
  * The source/target/corr components of a pattern are the parts of the pattern
  * that consist of source/target/corr elements of the original TGG rule.
+ * 
+ * DEC refers to the "Dangling Edge Condition", i.e., the presence of edges that
+ * can never be translated caused by applying a certain rule (thus violating
+ * DEC).
  * 
  * @author anthony.anjorin
  */
@@ -23,13 +29,13 @@ public class PatternSuffixes {
 	public static final String TRG = SEP + "TRG";
 	
 	/** Contains the context of the source component of the pattern */
-	public static final String SRC_CONTEXT = SEP + "SRC_CONTEXT";
+	public static final String SRC_CONTEXT = SEP + "CONTEXT_SRC";
 	
 	/** Contains the context of the target component of the pattern */
-	public static final String TRG_CONTEXT = SEP + "TRG_CONTEXT";
+	public static final String TRG_CONTEXT = SEP + "CONTEXT_TRG";
 	
 	/** Contains the context of the corr component of the pattern */
-	public static final String CORR_CONTEXT = SEP + "CORR_CONTEXT";
+	public static final String CORR_CONTEXT = SEP + "CONTEXT_CORR";
 	
 	/** 
 	 * Contains the entire context of the original TGG rule.  
@@ -41,13 +47,13 @@ public class PatternSuffixes {
 	 * Forbid this pattern to ensure that all source elements created by the original
 	 * rule have not yet been translated (marked)
 	 */
-	public static final String SRC_PROTOCOL_NACS = SEP + "SRC_PROTOCOL_NACS";
+	public static final String SRC_PROTOCOL_NACS = SEP + "PROTOCOL_NACS_SRC";
 	
 	/**
 	 * Forbid this pattern to ensure that all target elements created by the original
 	 * rule have not yet been translated (marked)
 	 */
-	public static final String TRG_PROTOCOL_NACS = SEP + "TRG_PROTOCOL_NACS";
+	public static final String TRG_PROTOCOL_NACS = SEP + "PROTOCOL_NACS_TRG";
 	
 	/**
 	 * Used to check that all source context elements of the original rule are
@@ -60,6 +66,13 @@ public class PatternSuffixes {
 	 * marked and that DEC is not violated.
 	 */
 	public static final String PROTOCOL_DEC_TRG = SEP + "PROTOCOL_DEC_TRG";
+	
+	/**
+	 * These patterns are used to enforce DEC in a domain
+	 */
+	public static String NO_DEC(DomainType domain) {
+		return SEP + "_NO_DECs_" + domain.getName();
+	}	
 	
 	/**
 	 * If this pattern matches, then the corresponding TGG forward rule is
@@ -115,5 +128,6 @@ public class PatternSuffixes {
 	 */
 	public static String removeSuffix(String name) {
 		return name.substring(0, name.indexOf(SEP));
-	}	
+	}
+
 }

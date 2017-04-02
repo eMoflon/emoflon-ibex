@@ -31,15 +31,17 @@ class PlantUMLGenerator {
 		'''
 		@startuml
 		«visualiseIsolatedPatternBody(b)»
+		«var j = 0»
 		«FOR pi : patternInvocations(b)»
-			«visualiseSymbolicParameters(pi.invokedPattern)»
+			«var prefix = j++ + "\\"»
+			«visualiseSymbolicParametersWithPrefix(pi.invokedPattern, prefix)»
 			«var i = 0»
 			«FOR param : pi.parameters»
 			«IF pi.positive»
-				«identifierFor(param.reference as Variable, b.header)» #--# «identifierFor(pi.invokedPattern.symbolicParameters.get(i++), pi.invokedPattern)»
+				«identifierFor(param.reference as Variable, b.header)» #--# «identifierForWithPrefix(pi.invokedPattern.symbolicParameters.get(i++), pi.invokedPattern, prefix)»
 			«ELSE»
-				namespace «pi.invokedPattern.name» #DDDDDD {
-				«identifierFor(param.reference as Variable, b.header)» #..# «identifierFor(pi.invokedPattern.symbolicParameters.get(i++), pi.invokedPattern)»
+				namespace «prefix»«pi.invokedPattern.name» #DDDDDD {
+				«identifierFor(param.reference as Variable, b.header)» #..# «identifierForWithPrefix(pi.invokedPattern.symbolicParameters.get(i++), pi.invokedPattern, prefix)»
 				}
 			«ENDIF»
 			«ENDFOR»
@@ -49,9 +51,13 @@ class PlantUMLGenerator {
 	}
 	
 	private static def String visualiseSymbolicParameters(Pattern p){
+		visualiseSymbolicParametersWithPrefix(p, "");
+	}
+	
+	private static def String visualiseSymbolicParametersWithPrefix(Pattern p, String prefix){
 		'''
 		«FOR v : patternVariables(p) SEPARATOR "\n"»
-			class «identifierFor(v, p)»<< (V,#FF7700)>>
+			class «identifierForWithPrefix(v, p, prefix)»<< (V,#FF7700)>>
 		«ENDFOR»
 		'''
 	}
@@ -77,7 +83,11 @@ class PlantUMLGenerator {
 	}
 	
 	private static def identifierFor(Variable v, Pattern pattern){
-		'''"«pattern.name».«v.name»:«(v as EMFVariable).EClassifier.name»"'''
+		identifierForWithPrefix(v, pattern, "")
+	}
+	
+	private static def identifierForWithPrefix(Variable v, Pattern pattern, String prefix){
+		'''"«prefix»«pattern.name».«v.name»:«(v as EMFVariable).EClassifier.name»"'''
 	}
 	
 	private static def extractVar(Reference ref, int i){

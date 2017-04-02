@@ -35,6 +35,7 @@ import org.gervarro.democles.constraint.emf.EMFConstraintModule;
 import org.gervarro.democles.event.MatchEvent;
 import org.gervarro.democles.event.MatchEventListener;
 import org.gervarro.democles.interpreter.incremental.rete.RetePattern;
+import org.gervarro.democles.interpreter.incremental.rete.RetePatternBody;
 import org.gervarro.democles.interpreter.incremental.rete.RetePatternMatcherModule;
 import org.gervarro.democles.notification.emf.NotificationModule;
 import org.gervarro.democles.operation.RelationalOperationBuilder;
@@ -134,6 +135,8 @@ public class DemoclesHelper implements MatchEventListener {
 
 		retePatternMatcherModule.getSession().setAutoCommitMode(false);
 
+		if(debug) printReteNetwork();
+
 		// Attach match listener to pattern matchers
 		retrievePatternMatchers();
 		patternMatchers.forEach(pm -> pm.addEventListener(this));
@@ -142,6 +145,16 @@ public class DemoclesHelper implements MatchEventListener {
 		NotificationModule.installNotificationAdapter(rs, emfNativeOperationModule);
 		
 		if (debug) saveDemoclesPatterns();
+	}
+
+	private void printReteNetwork() {
+		for (final RetePattern retePattern : retePatternMatcherModule.getPatterns()) {
+			final List<RetePatternBody> bodies = retePattern.getBodies();
+			for (int i = 0; i < bodies.size(); i++) {
+				final RetePatternBody body = bodies.get(i);
+				System.out.println(body.getHeader().toString() + " @ " + i + ": " + body.getRuntime().toString());
+			}
+		}
 	}
 
 	private void saveDemoclesPatterns() {
@@ -159,10 +172,6 @@ public class DemoclesHelper implements MatchEventListener {
 		TGGCompiler compiler = new TGGCompiler(tgg);
 		compiler.preparePatterns();
 		markedPatterns = compiler.getMarkedPatterns();
-
-		for (IbexPattern pattern : markedPatterns) {
-			ibexToDemocles(pattern);
-		}
 		
 		for (TGGRule r : compiler.getRuleToPatternMap().keySet()) {
 			for (IbexPattern pattern : compiler.getRuleToPatternMap().get(r)) {
@@ -376,7 +385,6 @@ public class DemoclesHelper implements MatchEventListener {
 			trgRef.getParameters().add(from);
 
 			constraints.add(trgRef);
-
 		}
 		
 		return constraints;
@@ -400,7 +408,7 @@ public class DemoclesHelper implements MatchEventListener {
 	private PatternInvocationConstraint createMarkedPatternCall(IbexPattern markedPattern, boolean isPositive, EMFVariable protocol, EMFVariable node) {
 		PatternInvocationConstraint invCon = factory.createPatternInvocationConstraint();
 		invCon.setPositive(isPositive);
-		invCon.setInvokedPattern(patternMap.get(markedPattern));
+		invCon.setInvokedPattern(ibexToDemocles(markedPattern));
 		for (TGGRuleElement element : markedPattern.getSignatureElements()) {
 			if (element.getName().equals(MarkedPattern.PROTOCOL_NAME)) {
 				ConstraintParameter parameter = factory.createConstraintParameter();
