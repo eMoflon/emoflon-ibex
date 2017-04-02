@@ -17,10 +17,10 @@ public class EditorTGGtoFlattenedTGG {
 	private Map<String, ObjectVariablePattern> sourcePatterns;
 	private Map<String, ObjectVariablePattern> targetPatterns;
 	private Map<String, CorrVariablePattern> corrPatterns;
-	
-	// TODO improve the use of maps, currently the arbitrary access to them makes merge confusing
-	// TODO think about correctness of the flatten operation for singular rules
-	// TODO extend cleanup to Rules, not only ObjectVariablePatterns [necessary?]
+
+	// TODO implement exceptions for invalid refinements
+	// TODO implement warnings for nonsensical refinements
+	// TODO implement merge of attribute conditions
 	
 	/**
 	 * Produces a flattened {@linkplain TripleGraphGrammarFile} from a given non-flattened TripleGraphGrammarFile.
@@ -34,7 +34,6 @@ public class EditorTGGtoFlattenedTGG {
 		
 		superRuleMap = new HashMap<Set<Rule>, Rule>();
 		rules.stream()
-//		  	 .filter(r -> !r.isAbstractRule()) // abstract rules are removed when flattening
 		  	 .forEach(r -> superRuleMap.put(this.findSuperRules(r), r));
 		
 		Set<Rule> newRules = superRuleMap.keySet().stream()
@@ -77,21 +76,22 @@ public class EditorTGGtoFlattenedTGG {
 	}
 	
 	private Rule merge(Set<Rule> rules) {
-		Rule mergedRule = null;
+		Rule mergedRule = TggFactory.eINSTANCE.createRule();
+		Rule ruleToMerge = superRuleMap.get(rules);
+		
+		mergedRule.setAbstractRule(ruleToMerge.isAbstractRule());
+		mergedRule.setKernel(ruleToMerge.getKernel());
+		mergedRule.setName(ruleToMerge.getName());
+		mergedRule.setSchema(ruleToMerge.getSchema());
+		mergedRule.getImports().addAll(ruleToMerge.getImports());
+		mergedRule.getUsing().addAll(ruleToMerge.getUsing());
 		
 		// create "co-product" of the rules in mergedRule
 		for (Rule r : rules) {
-			if (mergedRule == null) {
-				mergedRule = EcoreUtil.copy(r);
-				// mergedRule.setAbstractRule(false);
-				mergedRule.setName(superRuleMap.get(rules).getName());
-				mergedRule.getSupertypes().clear();
-			} else {
-				mergedRule.getSourcePatterns().addAll(EcoreUtil.copyAll(r.getSourcePatterns()));
-				mergedRule.getTargetPatterns().addAll(EcoreUtil.copyAll(r.getTargetPatterns()));
-				mergedRule.getCorrespondencePatterns().addAll(EcoreUtil.copyAll(r.getCorrespondencePatterns()));
-				mergedRule.getAttrConditions().addAll(EcoreUtil.copyAll(r.getAttrConditions()));
-			}
+			mergedRule.getSourcePatterns().addAll(EcoreUtil.copyAll(r.getSourcePatterns()));
+			mergedRule.getTargetPatterns().addAll(EcoreUtil.copyAll(r.getTargetPatterns()));
+			mergedRule.getCorrespondencePatterns().addAll(EcoreUtil.copyAll(r.getCorrespondencePatterns()));
+			mergedRule.getAttrConditions().addAll(EcoreUtil.copyAll(r.getAttrConditions()));
 		}
 		
 		// "glue" by finding equivalence classes of patterns and merging each class into one pattern
@@ -219,18 +219,20 @@ public class EditorTGGtoFlattenedTGG {
 	}
 	
 	private void cleanupReferences(Rule rule) {
-		Map<String, ObjectVariablePattern> objectPatterns = new HashMap<String, ObjectVariablePattern>();
-		objectPatterns.putAll(this.sourcePatterns);
-		objectPatterns.putAll(this.targetPatterns);
-		
-			// CorrespondenceVariablePatterns
+		cleanupCorrespondenceVariablePatternReferences(rule);
+		cleanupLinkVariablePatternReferences(rule);
+		cleanupAttributeExpressionReferences(rule);
+	}
+	
+	private void cleanupCorrespondenceVariablePatternReferences(Rule rule) {
 		rule.getCorrespondencePatterns().stream()
-							            .forEach(c -> {
-							            	c.setSource(this.sourcePatterns.get(c.getSource().getName()));
-							            	c.setTarget(this.targetPatterns.get(c.getTarget().getName()));
-							            });
-
-			// LinkVariablePatterns
+								        .forEach(c -> {
+								        	c.setSource(this.sourcePatterns.get(c.getSource().getName()));
+								        	c.setTarget(this.targetPatterns.get(c.getTarget().getName()));
+								        });
+	}
+	
+	private void cleanupLinkVariablePatternReferences(Rule rule) {
 		rule.getSourcePatterns().stream()
 								.flatMap(s -> s.getLinkVariablePatterns().stream())
 								.forEach(l -> l.setTarget(this.sourcePatterns.get(l.getTarget().getName())));
@@ -238,42 +240,46 @@ public class EditorTGGtoFlattenedTGG {
 		rule.getTargetPatterns().stream()
 								.flatMap(s -> s.getLinkVariablePatterns().stream())
 								.forEach(l -> l.setTarget(this.targetPatterns.get(l.getTarget().getName())));
+	}
+	
+	private void cleanupAttributeExpressionReferences(Rule rule) {
+		Map<String, ObjectVariablePattern> objectPatterns = new HashMap<String, ObjectVariablePattern>();
+		objectPatterns.putAll(this.sourcePatterns);
+		objectPatterns.putAll(this.targetPatterns);
 		
-			// AttributeExpressions
 		rule.getAttrConditions().stream()
 								.flatMap(a -> a.getValues().stream())
 								.filter(v -> v instanceof AttributeExpression)
 								.forEach(a -> ((AttributeExpression)a).setObjectVar(objectPatterns.get(((AttributeExpression)a)
 																								  .getObjectVar().getName())));
-		
+
 		rule.getSourcePatterns().stream()
 								.flatMap(s -> s.getAttributeAssignments().stream())
 								.map(a -> a.getValueExp())
 								.filter(v -> v instanceof AttributeExpression)
 								.forEach(a -> ((AttributeExpression)a).setObjectVar(objectPatterns.get(((AttributeExpression)a)
 																								  .getObjectVar().getName())));
-		
+
 		rule.getTargetPatterns().stream()
 								.flatMap(s -> s.getAttributeAssignments().stream())
 								.map(a -> a.getValueExp())
 								.filter(v -> v instanceof AttributeExpression)
 								.forEach(a -> ((AttributeExpression)a).setObjectVar(objectPatterns.get(((AttributeExpression)a)
 																								  .getObjectVar().getName())));
-		
+
 		rule.getSourcePatterns().stream()
-								.flatMap(s -> s.getAttributeConstraints().stream())
-								.map(a -> a.getValueExp())
-								.filter(v -> v instanceof AttributeExpression)
-								.forEach(a -> ((AttributeExpression)a).setObjectVar(objectPatterns.get(((AttributeExpression)a)
-																								  .getObjectVar().getName())));
-		
-		rule.getTargetPatterns().stream()
 								.flatMap(s -> s.getAttributeConstraints().stream())
 								.map(a -> a.getValueExp())
 								.filter(v -> v instanceof AttributeExpression)
 								.forEach(a -> ((AttributeExpression)a).setObjectVar(objectPatterns.get(((AttributeExpression)a)
 																								  .getObjectVar().getName())));
 
+		rule.getTargetPatterns().stream()
+								.flatMap(s -> s.getAttributeConstraints().stream())
+								.map(a -> a.getValueExp())
+								.filter(v -> v instanceof AttributeExpression)
+								.forEach(a -> ((AttributeExpression)a).setObjectVar(objectPatterns.get(((AttributeExpression)a)
+																								  .getObjectVar().getName())));
 	}
 
 }

@@ -116,7 +116,6 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 	}
 	
 	private TripleGraphGrammarFile flatten(TripleGraphGrammarFile file) {
-		// TODO
 		return new EditorTGGtoFlattenedTGG().flatten(file);
 	}
 
