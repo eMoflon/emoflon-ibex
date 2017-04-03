@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Families:FamilyRegister
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:Families="platform:/plugin/Families/model/Families.ecore"
+    xsi:schemaLocation="platform:/plugin/Families/model/Families.ecore ../../Families/model/Families.ecore">
+  <families
+      name="Vader">
+    <father
+        name="Darth"/>
+  </families>
+</Families:FamilyRegister>

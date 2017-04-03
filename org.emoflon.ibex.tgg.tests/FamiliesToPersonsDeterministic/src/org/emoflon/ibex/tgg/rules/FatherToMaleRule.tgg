@@ -1,0 +1,40 @@
+#using FamiliesToPersonsDeterministic.*
+#using AttrCondDefLibrary.*
+
+#abstract #rule FatherToMaleRule #with FamiliesToPersonsDeterministic
+
+#source { 
+	fr:FamilyRegister {
+		++ -families->f
+	}
+	
+	++ f:Family {
+		++ -father->father
+	}
+	
+	++ father:FamilyMember
+}
+
+#target {
+	pr:PersonRegister {
+		++ -persons->p
+	}
+	
+	++ p:Male
+}
+
+#correspondence {
+	f2p:RegisterToRegister {
+		#src->fr
+		#trg->pr
+	}
+	
+	++ m2p:MemberToPerson {
+		#src->father
+		#trg->p
+	}
+}
+
+#attributeConditions {
+	ownConcat(" ", father.name, f.name, p.name)
+}

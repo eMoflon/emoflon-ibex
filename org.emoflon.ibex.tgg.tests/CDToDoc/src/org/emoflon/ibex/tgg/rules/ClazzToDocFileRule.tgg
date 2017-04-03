@@ -1,0 +1,38 @@
+#using CDToDoc.*
+#using AttrCondDefLibrary.*
+
+#rule ClazzToDocFileRule #with CDToDoc
+
+#source { 
+	p1:Package{
+		++-clazzs->c1
+	}
+	
+	++c1:Clazz {
+		generateDoc := true
+	}
+} 
+
+#target {
+	
+	f1:Folder{
+		++-files->f2
+	}
+	 
+	++f2:DocFile
+} 
+
+#correspondence {
+	p1f1:PackageToFolder{
+		#src->p1
+		#trg->f1
+	}
+	++c1f2:ClazzToFile{
+		#src->c1
+		#trg->f2
+	}
+}
+
+#attributeConditions {
+	eq_string(c1.name, f2.name)
+}

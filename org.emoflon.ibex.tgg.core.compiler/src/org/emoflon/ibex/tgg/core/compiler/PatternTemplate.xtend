@@ -7,7 +7,6 @@ import language.TGGRuleElement
 import language.TGGRuleNode
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.EReference
-import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ConsistencyPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.nacs.ProtocolNACsPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.RulePartPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.SearchEdgePattern
@@ -15,6 +14,7 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECTracki
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECPattern
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECHelper
 import org.emoflon.ibex.tgg.core.compiler.pattern.Pattern
+import org.emoflon.ibex.tgg.core.compiler.pattern.protocol.ProtocolPattern
 
 class PatternTemplate {
 
@@ -181,7 +181,7 @@ class PatternTemplate {
 		'''
 	}
 
-	def generateConsistencyPattern(ConsistencyPattern pattern) {
+	def generateConsistencyPattern(ProtocolPattern pattern) {
 		return '''
 			pattern «pattern.getName»(«FOR e : pattern.getSignatureElements SEPARATOR ", "»«e.name»:«typeOf(e)»«ENDFOR»){
 				«FOR pi : pattern.positiveInvocations»

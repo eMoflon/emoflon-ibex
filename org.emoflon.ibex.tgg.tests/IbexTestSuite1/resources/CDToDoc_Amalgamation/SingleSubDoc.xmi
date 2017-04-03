@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Doc:Folder
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:Doc="platform:/plugin/Doc/model/Doc.ecore"
+    xsi:schemaLocation="platform:/plugin/Doc/model/Doc.ecore ../../../Doc/model/Doc.ecore"
+    name="root">
+  <files xsi:type="Doc:DocFile"
+      name="super"/>
+  <files xsi:type="Doc:DocFile"
+      name="sub"
+      allSuperRefs="//@files.0"
+      superRef="//@files.0"/>
+</Doc:Folder>

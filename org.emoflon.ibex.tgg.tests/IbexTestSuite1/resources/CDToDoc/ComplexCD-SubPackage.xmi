@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CD:Package
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:CD="platform:/plugin/CD/model/CD.ecore"
+    xsi:schemaLocation="platform:/plugin/CD/model/CD.ecore ../../../CD/model/CD.ecore"
+    name="root"
+    index="1"
+    pEnum="FIRST_ENUM">
+  <clazzs name="rootClazz"/>
+  <packages
+      name="sub2"
+      index="2">
+    <clazzs
+        name="subClazz1"/>
+    <clazzs
+        name="subClazz2"/>
+    <clazzs
+        name="subClazz3"/>
+  </packages>
+</CD:Package>

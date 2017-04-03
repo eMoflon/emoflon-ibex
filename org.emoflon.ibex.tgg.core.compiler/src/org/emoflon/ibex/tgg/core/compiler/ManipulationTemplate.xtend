@@ -4,7 +4,7 @@ import language.TGG
 
 class ManipulationTemplate {
 
-	def getManipulationCode(TGG tgg) {
+	def getManipulationCode(TGG tgg, String projectName) {
 
 		val suffixes = #{PatternSuffixes.PROTOCOL, PatternSuffixes.FWD, PatternSuffixes.BWD, PatternSuffixes.MODELGEN, PatternSuffixes.CC}
 
@@ -30,6 +30,8 @@ class ManipulationTemplate {
 				import java.util.Collections
 				import org.apache.log4j.Level
 				import org.emoflon.ibex.tgg.common.*
+				import org.emoflon.ibex.tgg.operational.csp.constraints.factories.«projectName»AttrCondDefLibrary
+				
 				
 				«FOR rule : tgg.rules»
 					«FOR suffix : suffixes»
@@ -55,6 +57,8 @@ class ManipulationTemplate {
 					new(ResourceSet set, TGGRuntimeUtil tggRuntimeUtil) {
 						this.resource = resource
 						this.tggRuntimeUtil = tggRuntimeUtil
+						tggRuntimeUtil.getCSPProvider().registerFactory(new «projectName»AttrCondDefLibrary());
+						
 						// Create EMF scope and EMF IncQuery engine based on the resource
 						val scope = new EMFScope(set)
 						engine = ViatraQueryEngine.on(scope);

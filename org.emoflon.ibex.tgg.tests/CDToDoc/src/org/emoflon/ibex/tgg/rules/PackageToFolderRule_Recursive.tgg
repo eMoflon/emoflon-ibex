@@ -9,8 +9,7 @@
 	}
 	
 	++p2:Package {
-		index := 1
-		pEnum := enum::PackageEnum::SECOND_ENUM
+		
 	}
 }
 
@@ -37,5 +36,6 @@
 }
 
 #attributeConditions {
-	uppercase(p2.name, f2.name)
+	eq_string(p2.name, f2.name)
+	add_int(p1.index, 1, p2.index)
 }

@@ -58,7 +58,7 @@
 	// Note:  Separator should be occur only once in Result
 	concat(separator:EString, leftWord:EString, rightWord:EString, result:EString) {
 		#sync: [B B B B], [B B B F], [B B F B], [B F F B], [B F B B]
-		#gen: [B B B B] , [B B B F], [B B F B], [B F F B], [B F B B], [B F F F], [B F B F], [B B F F]
+		#gen: [B B B B] , [B B B F], [B B F B], [B F F B], [B F B B], [B F B F], [B B F F]
 	}
 
 	// Semantics: VariableString is set to DefaultString if it is free (FB).

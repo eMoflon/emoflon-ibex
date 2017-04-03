@@ -15,10 +15,18 @@
 #correspondence {
 	RegisterToRegister {
 		#src->FamilyRegister
-		#trg->PersonsRegister
+		#trg->PersonRegister
+	}
+	
+	MemberToPerson {
+		#src->FamilyMember
+		#trg->Person
 	}
 }
 
 #attributeConditions {
-	
+	#userDefined ownConcat(separator:EString, leftWord:EString, rightWord:EString, result:EString) {
+		#sync: [B B B B], [B B B F], [B B F B], [B F F B], [B F B B]
+		#gen: [B B B B] , [B B B F], [B B F B], [B F F B], [B F B B], [B F B F], [B B F F], [B F F F]
+	}
 }

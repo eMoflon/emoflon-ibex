@@ -19,8 +19,8 @@ import language.csp.definition.TGGAttributeConstraintDefinition;
 
 public class AttrCondDefLibraryProvider {
 	private static final String ATTR_COND_DEF_LIBRARY_PATH = "src/org/emoflon/ibex/tgg/csp/lib/AttrCondDefLibrary.tgg";
-	private static final String USER_ATTR_COND_DEF_LIBRARY_PATH = "src/org/emoflon/ibex/tgg/csp/lib/UserAttrCondDefLibrary.tgg";
-	private static final String USER_ATTR_COND_DEF_FACTORY_PATH = "src/org/emoflon/ibex/tgg/operational/csp/constraints/factories/UserDefinedRuntimeTGGAttrConstraintFactory.java";
+//	private static final String USER_ATTR_COND_DEF_LIBRARY_PATH = "src/org/emoflon/ibex/tgg/csp/lib/UserAttrCondDefLibrary.tgg";
+	private static final String USER_ATTR_COND_DEF_FACTORY_PATH = "src/org/emoflon/ibex/tgg/operational/csp/constraints/factories/";
 	private static final String USER_ATTR_CONDS_PATH = "src/org/emoflon/ibex/tgg/operational/csp/constraints/custom/";
 
 	public static void syncAttrCondDefLibrary(IProject project) throws CoreException, IOException {
@@ -40,8 +40,9 @@ public class AttrCondDefLibraryProvider {
 	}
 
 	public static void userAttrCondDefFactory(IProject project, Collection<String> userDefConstraints) throws CoreException, IOException {
-		String path = USER_ATTR_COND_DEF_FACTORY_PATH;
-		String userLib = DefaultFilesHelper.generateUserRuntimeAttrCondFactory(userDefConstraints);
+		String modProjectName = project.getName().replaceAll(java.util.regex.Pattern.quote("."), "_");
+		String path = USER_ATTR_COND_DEF_FACTORY_PATH + modProjectName + "AttrCondDefLibrary.java";
+		String userLib = DefaultFilesHelper.generateUserRuntimeAttrCondFactory(modProjectName, userDefConstraints);
 		IPath pathToLib = new Path(path);
 		addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
 	}

@@ -11,4 +11,9 @@ Require-Bundle: Benchmarx;bundle-version="1.0.0",
  org.eclipse.emf.ecore.xmi;bundle-version="2.12.0",
  org.emoflon.ibex.tgg.core.language;bundle-version="1.0.0",
  org.emoflon.ibex.tgg.core.runtime;bundle-version="1.0.0",
- org.moflon.core.utilities
+ org.moflon.core.utilities,
+ CD;bundle-version="0.1.0",
+ CDToDoc;bundle-version="1.0.0",
+ Doc;bundle-version="0.1.0"
+Import-Package: org.benchmarx.cd.core,
+ org.benchmarx.doc.core

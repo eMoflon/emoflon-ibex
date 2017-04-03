@@ -100,7 +100,7 @@ public class ManipulationUtil {
 				}
 				if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
 					TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
-					newObj.eSet(attrExpr.getAttribute(), tee.getLiteral());
+					newObj.eSet(attrExpr.getAttribute(), tee.getEenum().getEEnumLiteral(tee.getLiteral().getValue()));
 					continue;
 				}
 				if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {

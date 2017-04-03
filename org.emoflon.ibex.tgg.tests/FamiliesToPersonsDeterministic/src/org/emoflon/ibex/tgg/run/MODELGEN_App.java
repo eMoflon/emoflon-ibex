@@ -9,7 +9,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.operational.*;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -40,9 +39,8 @@ public class MODELGEN_App {
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
 		stop.setMaxSrcCount(1000);
 		TGGRuntimeUtil tggRuntime = new MODELGEN(tgg, s, c, t, p, stop);
-		tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
-		Transformation transformation = new Transformation(rs, tggRuntime);						
+		FamiliesToPersonsDeterministicTransformation transformation = new FamiliesToPersonsDeterministicTransformation(rs, tggRuntime);						
 		transformation.execute();
 		
 		tggRuntime.run();

@@ -205,7 +205,7 @@ class DefaultFilesHelper {
 		'''
 	}
 
-	static def generateUserRuntimeAttrCondFactory(Collection<String> userDefConstraints) {
+	static def generateUserRuntimeAttrCondFactory(String projectName, Collection<String> userDefConstraints) {
 		return '''
 			package org.emoflon.ibex.tgg.operational.csp.constraints.factories;
 			
@@ -220,12 +220,12 @@ class DefaultFilesHelper {
 				import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«UserAttrCondHelper.getFileName(constraint)»;
 			«ENDFOR»
 			
-			public class UserDefinedRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
+			public class «projectName»AttrCondDefLibrary extends RuntimeTGGAttrConstraintFactory {
 			
 				private Collection<String> constraints; 
 				private Map<String, Supplier<RuntimeTGGAttributeConstraint>> creators;
 				
-				public UserDefinedRuntimeTGGAttrConstraintFactory() {
+				public «projectName»AttrCondDefLibrary() {
 					initialize();
 				}
 				
@@ -306,7 +306,6 @@ class DefaultFilesHelper {
 			import org.eclipse.emf.ecore.resource.ResourceSet;
 			import org.emoflon.ibex.tgg.operational.*;
 			import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 			import org.moflon.core.utilities.eMoflonEMFUtil;
 			
 			import language.LanguagePackage;
