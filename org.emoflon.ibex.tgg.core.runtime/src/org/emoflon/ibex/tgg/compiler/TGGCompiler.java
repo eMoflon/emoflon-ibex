@@ -26,7 +26,6 @@ import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcProtocolAndDECP
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgContextPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.DECPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.DECTrackingContainer;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
 
@@ -46,8 +45,9 @@ public class TGGCompiler {
 	public TGGCompiler(TGG tgg) {
 		this.tgg = tgg;
 		
-		// initialise DECTrackingContainer which is responsible to hold information needed for DEC generation such as which patterns belongs to which rule
-		// or what's the mapping of signature elements for the calls to external patterns
+		// initialise DECTrackingContainer that contains information for DEC
+		// generation such as which patterns belongs to which rule or the
+		// mapping of signature elements for the calls to external patterns
 		decTC = new DECTrackingContainer(ruleToPatterns);
 	}
 	

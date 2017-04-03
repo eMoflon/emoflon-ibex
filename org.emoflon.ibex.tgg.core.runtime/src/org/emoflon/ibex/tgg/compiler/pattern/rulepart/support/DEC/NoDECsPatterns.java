@@ -1,14 +1,13 @@
 package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.xtext.xbase.lib.Pair;
+import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
@@ -137,7 +136,7 @@ public class NoDECsPatterns extends RulePartPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_NO_DECs_" + domain.getName();
+		return PatternSuffixes.NO_DEC(domain);
 	}
 
 	public boolean isEmpty() {

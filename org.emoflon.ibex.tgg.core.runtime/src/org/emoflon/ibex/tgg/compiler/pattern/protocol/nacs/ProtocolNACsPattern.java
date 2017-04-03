@@ -1,10 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs;
 
-import java.util.Collection;
-
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 
-import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
