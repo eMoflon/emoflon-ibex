@@ -57,9 +57,7 @@ public class SYNC_App extends SYNC {
 	
 	@Override
 	public boolean isPatternRelevant(String patternName) {
-		return patternName.endsWith(PatternSuffixes.BWD) 
-			|| patternName.endsWith(PatternSuffixes.FWD)
-			|| patternName.endsWith(PatternSuffixes.WHOLE)
-			|| patternName.endsWith(PatternSuffixes.PROTOCOL);
+		return patternName.endsWith(PatternSuffixes.FWD) || 
+			   patternName.endsWith(PatternSuffixes.BWD);
 	}
 }

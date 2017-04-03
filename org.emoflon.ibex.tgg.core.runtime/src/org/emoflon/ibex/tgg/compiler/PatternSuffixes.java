@@ -15,6 +15,10 @@ import language.DomainType;
  * can never be translated caused by applying a certain rule (thus violating
  * DEC).
  * 
+ * Our synchronisation "protocol" is an extra model that provides markers for a
+ * model triple. If all elements are marked (connected to protocol nodes) in
+ * this manner then it is consistent.
+ * 
  * @author anthony.anjorin
  */
 public class PatternSuffixes {
@@ -93,22 +97,22 @@ public class PatternSuffixes {
 	public static final String BWD = SEP + "BWD";
 	
 	/**
-	 * TODO [Erhan]: What is this used for?
-	 * A pattern that calls for the Whole pattern + consists of
-	 * protocol nodes to check if created/translated elements have already been
-	 * translated
+	 * Matches of these patterns are collected as soon as a TGG rule has been
+	 * successfully applied. Used to react to broken matches in the revoke phase
+	 * of synchronisation, and also to start-up after loading the model triple
+	 * and its protocol.
 	 */
 	public static final String PROTOCOL = SEP + "PROTOCOL";
 
 	/**
-	 * TODO [Erhan]: What is this used for? A pattern that consists of the whole
-	 * tgg rule as a pattern
+	 * Used as part of PROTOCOL patterns.
 	 */
 	public static final String WHOLE = SEP + "WHOLE";
 	
 	/**
-	 * TODO [Erhan]: What is this used for? This suffix indicates a pattern that
-	 * is used to find consistency relations between two models
+	 * Used for consistency checking. Represents the context for creating
+	 * potential correspondence links between existing source and target
+	 * fragments.
 	 */
 	public static final String CC = SEP + "CC";
 
@@ -130,4 +134,4 @@ public class PatternSuffixes {
 		return name.substring(0, name.indexOf(SEP));
 	}
 
-}
+} 
