@@ -39,6 +39,10 @@ public abstract class IbexPattern {
 
 	protected Collection<TGGRuleEdge> bodyEdges;
 
+	protected IbexPattern() {
+		
+	}
+	
 	public IbexPattern(TGGRule rule) {
 		this.rule = rule;
 		initialize();

@@ -40,6 +40,8 @@ public class PatternSuffixes {
 	
 	/** Contains the context of the corr component of the pattern */
 	public static final String CORR_CONTEXT = SEP + "CONTEXT_CORR";
+
+	public static final String CONSTRAINT = SEP + "CONSTRAINT";
 	
 	/** 
 	 * Contains the entire context of the original TGG rule.  

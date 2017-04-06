@@ -18,7 +18,9 @@ import org.emoflon.ibex.tgg.compiler.pattern.rulepart.BWDPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.CCPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.FWDPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.MODELGENPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.WholeRulePattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.ConstraintPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcContextPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcPattern;
@@ -29,11 +31,15 @@ import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECP
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.DECTrackingContainer;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
 
+import language.BindingType;
 import language.DomainType;
 import language.TGG;
 import language.TGGRule;
+import language.TGGRuleElement;
+import language.TGGRuleNode;
 
 public class TGGCompiler {
+	
 
 	private List<IbexPattern> markedPattern = new ArrayList<>();
 	private Map<TGGRule, Collection<IbexPattern>> ruleToPatterns = new LinkedHashMap<>();
@@ -117,6 +123,7 @@ public class TGGCompiler {
 			modelgen.getPositiveInvocations().add(srcContext);
 			modelgen.getPositiveInvocations().add(trgContext);
 			modelgen.getPositiveInvocations().add(corrContext);
+			addPatternInvocationsForConstraints(patterns, modelgen);
 
 			WholeRulePattern whole = new WholeRulePattern(rule);
 			patterns.add(whole);
@@ -169,6 +176,32 @@ public class TGGCompiler {
 		markedPattern.add(localProtocolTrgMarkedPattern);
 		markedPattern.add(signProtocolSrcMarkedPattern);
 		markedPattern.add(signProtocolTrgMarkedPattern);
+	}
+	
+	private void addPatternInvocationsForConstraints(Collection<IbexPattern> patterns, RulePartPattern pattern) {
+		TGGRule rule = pattern.getRule();
+		
+		//FIXME certain examples work, other, similar ones throw errors, either "Join failed" or "Resource not contained"
+		
+		rule.getEdges().stream()
+					   .filter(e -> e.getType().getUpperBound() == 1 
+					   		   && e.getBindingType() == BindingType.CREATE
+					   		   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
+					   .forEach(e -> {
+						   Collection<TGGRuleElement> signatureElements = new ArrayList<TGGRuleElement>();
+						   Collection<TGGRuleElement> bodyElements = new ArrayList<TGGRuleElement>();
+						   
+						   TGGRuleNode src = e.getSrcNode();
+						   TGGRuleNode trg = e.getTrgNode();
+						   
+						   signatureElements.add(src);
+						   bodyElements.add(trg);
+						   bodyElements.add(e);
+						   
+						   ConstraintPattern constraint = new ConstraintPattern(rule, signatureElements, bodyElements);
+						   patterns.add(constraint);
+						   pattern.getNegativeInvocations().add(constraint);
+					    });
 	}
 
 }
