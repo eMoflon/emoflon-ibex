@@ -21,6 +21,7 @@ import language.basic.expressions.TGGAttributeExpression;
 import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGLiteralExpression;
 import language.inplaceAttributes.TGGAttributeConstraintOperators;
+import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
 /**
@@ -84,16 +85,19 @@ public class ManipulationUtil {
 		greenNodes.stream().forEach(n -> {comatch.put(n.getName(), createNode(match, n, nodeResource));});
 	}
 
-	//changed from for each construct to collection.stream() construct for consistency
 	public static Collection<RuntimeEdge> createEdges(IPatternMatch match, HashMap<String, EObject> comatch,
 			Collection<TGGRuleEdge> greenEdges, boolean createEMFEdgesAsWell) {
 		return greenEdges.stream().map(e -> {
-			EObject src = getVariableByName(e.getSrcNode().getName(), comatch, match);
-			EObject trg = getVariableByName(e.getTrgNode().getName(), comatch, match);
-			if (createEMFEdgesAsWell)
-				createEMFEdge(e, src,trg);
-			return new RuntimeEdge(src, trg, e.getType());
+			return mapToRuntimeEdge(e, match, comatch, createEMFEdgesAsWell);
 		}).collect(Collectors.toList());
+	}
+	
+	private static RuntimeEdge mapToRuntimeEdge(TGGRuleEdge edge, IPatternMatch match, HashMap<String, EObject> comatch, boolean createEMFEdgesAsWell){
+		EObject src = getVariableByName(edge.getSrcNode().getName(), comatch, match);
+		EObject trg = getVariableByName(edge.getTrgNode().getName(), comatch, match);
+		if (createEMFEdgesAsWell)
+			createEMFEdge(edge, src,trg);
+		return new RuntimeEdge(src, trg, edge.getType());
 	}
 
 	//changed from for each construct to collection.stream() construct for consistency
@@ -150,27 +154,31 @@ public class ManipulationUtil {
 	private static EObject createNode(IPatternMatch match, TGGRuleNode node, Resource resource) {
 		EObject newObj = createNodeByTGGRuleNode(node);
 
-		// apply inplace attribute assignments
-		node.getAttrExpr().stream().filter(attrExpr -> attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)).forEach(attrExpr -> {
-			if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
-				TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
-				newObj.eSet(attrExpr.getAttribute(),
-						String2EPrimitive.convertString(attrExpr.getAttribute().getEType(), tle.getValue()));
-			}
-			else if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
-				TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
-				newObj.eSet(attrExpr.getAttribute(), tee.getEenum().getEEnumLiteral(tee.getLiteral().getValue()));
-			}
-			else if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
-				TGGAttributeExpression tae = (TGGAttributeExpression) attrExpr.getValueExpr();
-				EObject obj = (EObject) match.get(tae.getObjectVar().getName());
-				newObj.eSet(attrExpr.getAttribute(), obj.eGet(tae.getAttribute()));
-			}
+		node.getAttrExpr().stream().filter(attrExpr -> attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL))
+			.forEach(attrExpr -> {
+			applyInplaceAttributeAssignments(attrExpr, newObj, match);
 		});
 		resource.getContents().add(newObj);
 		return newObj;
 	}
 
+	private static void applyInplaceAttributeAssignments(TGGInplaceAttributeExpression attrExpr, EObject eObject, IPatternMatch match){
+		if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
+			TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
+			eObject.eSet(attrExpr.getAttribute(),
+					String2EPrimitive.convertString(attrExpr.getAttribute().getEType(), tle.getValue()));
+		}
+		else if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
+			TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
+			eObject.eSet(attrExpr.getAttribute(), tee.getEenum().getEEnumLiteral(tee.getLiteral().getValue()));
+		}
+		else if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
+			TGGAttributeExpression tae = (TGGAttributeExpression) attrExpr.getValueExpr();
+			EObject obj = (EObject) match.get(tae.getObjectVar().getName());
+			eObject.eSet(attrExpr.getAttribute(), obj.eGet(tae.getAttribute()));
+		}
+	}
+	
 	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {
 		EObject corr = createNode(null, node, corrR);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
