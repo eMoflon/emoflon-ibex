@@ -7,7 +7,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -36,7 +35,7 @@ public class ManipulationUtil {
 	/**
 	 * this is the function which will create the Nodes of a TGG, if you want another node creation, this function must be changed
 	 */
-	private static Function<EClass, EObject> nodeCreationFun = getDefaultNodeCreationFun();
+	private static Function<TGGRuleNode, EObject> nodeCreationFun = getDefaultNodeCreationFun();
 
 	/**
 	 * this is the function which will create the Edges of a TGG, if you want another edge creation, this function must be changed
@@ -47,7 +46,7 @@ public class ManipulationUtil {
 	 * This will change the creation of nodes
 	 * @param fun the function which is changing the Creation
 	 */
-	public static void setNodeCreationFun(Function<EClass, EObject> fun){
+	public static void setNodeCreationFun(Function<TGGRuleNode, EObject> fun){
 		nodeCreationFun = fun;
 	}
 	
@@ -55,19 +54,19 @@ public class ManipulationUtil {
 	 * Returns the default node creation function
 	 * @return the default node creation function
 	 */
-	public static Function<EClass, EObject> getDefaultNodeCreationFun(){
-		return EcoreUtil::create;
+	public static Function<TGGRuleNode, EObject> getDefaultNodeCreationFun(){
+		return node -> {return EcoreUtil.create(node.getType());};
 	}
 	
 	/**
 	 * This is the creation of a node, if a new creation function is set and fails it uses the default creation function
-	 * @param type the Type of the Node
+	 * @param node the Type of the Node
 	 * @return a new Node
 	 */
-	private static EObject createNodeByType(EClass type){
-		EObject obj = nodeCreationFun.apply(type);
+	private static EObject createNodeByTGGRuleNode(TGGRuleNode node){
+		EObject obj = nodeCreationFun.apply(node);
 		if(obj == null){
-			return getDefaultNodeCreationFun().apply(type);
+			return getDefaultNodeCreationFun().apply(node);
 		} else return obj;
 	}
 	
@@ -149,7 +148,7 @@ public class ManipulationUtil {
 
 	//changed from for each construct to collection.stream() construct for consistency and changed Node creation
 	private static EObject createNode(IPatternMatch match, TGGRuleNode node, Resource resource) {
-		EObject newObj = createNodeByType(node.getType());
+		EObject newObj = createNodeByTGGRuleNode(node);
 
 		// apply inplace attribute assignments
 		node.getAttrExpr().stream().filter(attrExpr -> attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)).forEach(attrExpr -> {
