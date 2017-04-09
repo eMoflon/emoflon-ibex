@@ -2,8 +2,10 @@ package org.emoflon.ibex.tgg.compiler.pattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import language.TGGRule;
@@ -19,12 +21,16 @@ public abstract class IbexPattern {
 	/**
 	 * each positive pattern invocation for a pattern pat corresponds to the following text find pat(<<signature elements of pat separated with ",">>);
 	 */
-	protected Collection<IbexPattern> positiveInvocations = new ArrayList<>();
+	private Collection<IbexPattern> positiveInvocations = new ArrayList<>();
 
 	/**
 	 * each negative pattern invocation for a pattern pat corresponds to the following text neg find pat(<<signature elements of pat separated with ",">>);
 	 */
-	protected Collection<IbexPattern> negativeInvocations = new ArrayList<>();
+	private Collection<IbexPattern> negativeInvocations = new ArrayList<>();
+	
+	private Map<IbexPattern, Map<TGGRuleElement, TGGRuleElement>> invocationVariableMapping = new HashMap<>();
+	private Map<IbexPattern, Map<TGGRuleElement, TGGRuleElement>> inverseInvocationVariableMapping = new HashMap<>();
+	private Map<IbexPattern, Collection<TGGRuleElement>> invocationUnmappedVariables = new HashMap<>();
 
 	/**
 	 * each signature element e of a pattern corresponds to a parameter:
@@ -35,9 +41,9 @@ public abstract class IbexPattern {
 	 */
 	// protected Collection<TGGRuleElement> signatureElements;
 
-	protected Collection<TGGRuleNode> bodyNodes;
+	private Collection<TGGRuleNode> bodyNodes;
 
-	protected Collection<TGGRuleEdge> bodyEdges;
+	private Collection<TGGRuleEdge> bodyEdges;
 
 	public IbexPattern(TGGRule rule) {
 		this.rule = rule;
@@ -63,7 +69,6 @@ public abstract class IbexPattern {
 	private Collection<TGGRuleNode> calculateBodyNodes(Collection<TGGRuleNode> signatureElements) {
 		ArrayList<TGGRuleNode> result = new ArrayList<>();
 		signatureElements.stream().filter(e -> isRelevantForBody(e)).forEach(e -> result.add((TGGRuleNode) e));
-		;
 		return result;
 	}
 
@@ -106,9 +111,56 @@ public abstract class IbexPattern {
 	public Collection<IbexPattern> getPositiveInvocations() {
 		return positiveInvocations;
 	}
+	
+	public void addTGGPositiveInvocation(IbexPattern pattern) {
+		positiveInvocations.add(pattern);
+		addVariableMapping(pattern);
+	}
+	
+	public void addCustomPositiveInvocation(IbexPattern pattern, Map<TGGRuleElement, TGGRuleElement> mapping) {
+		positiveInvocations.add(pattern);
+		addVariableMapping(pattern, mapping);
+	}
 
 	public Collection<IbexPattern> getNegativeInvocations() {
 		return negativeInvocations;
+	}
+	
+	public void addTGGNegativeInvocation(IbexPattern pattern) {
+		negativeInvocations.add(pattern);
+		addVariableMapping(pattern);
+	}
+	
+	public void addCustomNegativeInvocation(IbexPattern pattern, Map<TGGRuleElement, TGGRuleElement> mapping) {
+		negativeInvocations.add(pattern);
+		addVariableMapping(pattern, mapping);
+	}
+	
+	/**
+	 * This methods adds a standard tgg mapping based on the names in both this and the invoked pattern
+	 * @param invocationPattern
+	 */
+	protected void addVariableMapping(IbexPattern invocationPattern) {
+		addVariableMapping(invocationPattern, InvocationHelper.getTGGVariableMapping(this, invocationPattern));
+	}
+	
+	protected void addVariableMapping(IbexPattern invocationPattern, Map<TGGRuleElement, TGGRuleElement> mapping) {
+		invocationVariableMapping.put(invocationPattern, mapping);
+		createInverseMapping(invocationPattern);
+	}
+	
+	private void createInverseMapping(IbexPattern invocationPattern) {
+		Map<TGGRuleElement, TGGRuleElement> inverseMapping = new HashMap<>();
+		inverseInvocationVariableMapping.put(invocationPattern, inverseMapping);
+		invocationVariableMapping.get(invocationPattern).keySet().stream().forEach(k -> inverseMapping.put(invocationVariableMapping.get(invocationPattern).get(k), k));
+	}
+	
+	public TGGRuleElement getMappedRuleElement(IbexPattern invokedPattern, TGGRuleElement mappedElement) {
+		return inverseInvocationVariableMapping.get(invokedPattern).get(mappedElement);
+	}
+	
+	public Collection<TGGRuleElement> getUnmappedRuleElements(IbexPattern invokedPattern) {
+		return invocationUnmappedVariables.get(invokedPattern);
 	}
 
 	public boolean ignored() {

@@ -1,15 +1,23 @@
 package org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs;
 
+import java.util.List;
+
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
 
 import language.DomainType;
 import language.TGGRule;
 
 public class SrcProtocolNACsPattern extends ProtocolNACsPattern {
 
+	public SrcProtocolNACsPattern(TGGRule rule, List<MarkedPattern> markedPatterns) {
+		super(rule, markedPatterns);
+	}
+	
 	public SrcProtocolNACsPattern(TGGRule rule) {
 		super(rule);
 	}
+
 
 	@Override
 	protected String getPatternNameSuffix() {

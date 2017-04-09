@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC;
 
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 
@@ -14,25 +15,39 @@ public class DECPattern extends RulePartPattern {
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
-	private DECTrackingContainer decTC;
+	private DECTrackingHelper decTC;
 	private SearchEdgePattern sep;
 
-	public DECPattern(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, DECTrackingContainer decTC) {
+	public DECPattern(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, DECTrackingHelper decTC) {
 		super(rule);
 		this.entryPoint = entryPoint;
 		this.decTC = decTC;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
-		initialize();
+		
+		createSearchEdgePattern();
+		addDECAsBodyNode();
+		createInvocation();
 	}
 
-	protected SearchEdgePattern createSearchEdgePattern(TGGRule rule, TGGRuleNode n, EReference eType, EdgeDirection eDirection, DECTrackingContainer decTC) {
+	private void createSearchEdgePattern() {
 		if (sep != null)
 			throw new RuntimeException("SearchEdgePattern found. Generating this pattern twice is a bad idea!");
 		
-		sep = new SearchEdgePattern(rule, n, eType, eDirection);
-		getPositiveInvocations().add(sep);
+		sep = new SearchEdgePattern(rule, entryPoint, edgeType, eDirection);
 		decTC.getRuleToPatternsMap().get(rule).add(sep);
+		decTC.addEntryAndDec(this, entryPoint.getName(), DECHelper.getDECNode(sep.getRule()).getName());
+	}
+	
+	private void addDECAsBodyNode() {
+		getBodyNodes().add(EcoreUtil.copy(DECHelper.getDECNode(sep.getRule())));
+	}
+
+	private void createInvocation() {
+		addTGGPositiveInvocation(sep);
+	}
+	
+	protected SearchEdgePattern getSearchEdgePattern() {
 		return sep;
 	}
 
@@ -48,7 +63,7 @@ public class DECPattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
+		return DECHelper.isDECNode(n);
 	}
 	
 	@Override

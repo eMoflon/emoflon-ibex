@@ -26,16 +26,16 @@ import language.TGGRuleNode;
 public class NoDECsPatterns extends RulePartPattern {
 
 	private boolean decDetected = false;
-	private DECTrackingContainer decTC;
+	private DECTrackingHelper decTC;
 	private DomainType domain;
 
-	public NoDECsPatterns(TGGRule rule, DECTrackingContainer decTC, DomainType domain) {
+	public NoDECsPatterns(TGGRule rule, DECTrackingHelper decTC, DomainType domain) {
 		super(rule);
 		this.decTC = decTC;
 		this.domain = domain;
 		createDECEntries(rule, domain);
 		initialize();
-		getPositiveInvocations().add(decTC.getRuleToPatternsMap().get(rule).stream().filter(p -> domain == DomainType.SRC ? p instanceof SrcPattern : p instanceof TrgPattern).findFirst().get());
+		addTGGPositiveInvocation(decTC.getRuleToPatternsMap().get(rule).stream().filter(p -> domain == DomainType.SRC ? p instanceof SrcPattern : p instanceof TrgPattern).findFirst().get());
 	}
 
 	/**
@@ -76,8 +76,6 @@ public class NoDECsPatterns extends RulePartPattern {
 
 					// initialise DECpattern and register the entryNodeName and DECNodeName for the signature mapping
 					DECPattern decPattern = new DECPattern(rule, n, eType, eDirection, decTC);
-					SearchEdgePattern sep = decPattern.createSearchEdgePattern(rule, n, eType, eDirection, decTC);
-					decTC.addEntryAndDec(decPattern, n.getName(), DECHelper.getDECNode(sep.getRule()).getName());
 
 					// check if the edges are represented and translated elsewhere and register signature mapping (todo: clean this up a bit)
 					List<TGGRule> rules = tgg.getRules().stream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection, true, domain).getLeft() > 0).collect(Collectors.toList());
@@ -99,15 +97,16 @@ public class NoDECsPatterns extends RulePartPattern {
 						default:
 							throw new RuntimeException("DECPatterns: Not defined for anything else than SRC or TRG patterns!");
 						}
-
-						decPattern.getNegativeInvocations().add(pattern);
+						
+						IbexPattern localProtocolPattern = decTC.getLocalProtocolPattern(decPattern, pattern, n.getName(), eType.getName(), eDirection);
+						decPattern.addCustomNegativeInvocation(localProtocolPattern, decTC.getMapping(decPattern, localProtocolPattern));
 					}
 
 					// if any decpattern was created which has at least one negative invocation, we'll add it to this pattern
 					// a negative invocation means here that we were able to find another rule that translated the edge
 					// which might remain untranslated if we apply the current rule
 					// we also register the pattern so that it is found when we generate the code and initialize the search pattern
-					getNegativeInvocations().add(decPattern);
+					addTGGNegativeInvocation(decPattern);
 					decTC.getRuleToPatternsMap().get(rule).add(decPattern);
 				}
 			}
