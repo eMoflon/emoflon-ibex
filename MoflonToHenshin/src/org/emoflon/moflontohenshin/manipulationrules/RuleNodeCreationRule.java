@@ -1,0 +1,25 @@
+package org.emoflon.moflontohenshin.manipulationrules;
+
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.henshin.model.HenshinFactory;
+import org.eclipse.emf.henshin.model.Rule;
+
+import language.TGGRuleNode;
+
+public class RuleNodeCreationRule extends NodeCreationRule {
+
+	@Override
+	protected Class<?> getClassForNodeCreation() {
+		return Rule.class;
+	}
+
+	@Override
+	public EObject create(TGGRuleNode node) {
+		Rule rule = HenshinFactory.eINSTANCE.createRule(node.getName());
+		rule.getLhs();
+		rule.getRhs();
+		
+		return rule;
+	}
+
+}
