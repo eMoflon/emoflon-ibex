@@ -123,7 +123,7 @@ public class TGGCompiler {
 			modelgen.addTGGPositiveInvocation(srcContext);
 			modelgen.addTGGPositiveInvocation(trgContext);
 			modelgen.addTGGPositiveInvocation(corrContext);
-			addPatternInvocationsForConstraints(patterns, modelgen);
+			addPatternInvocationsForMultiplicityConstraints(patterns, modelgen);
 
 			WholeRulePattern whole = new WholeRulePattern(rule);
 			patterns.add(whole);
@@ -178,7 +178,16 @@ public class TGGCompiler {
 		markedPatterns.add(signProtocolTrgMarkedPattern);
 	}
 	
-	private void addPatternInvocationsForConstraints(Collection<IbexPattern> patterns, RulePartPattern pattern) {
+	/**
+	 * This method augments a rule pattern with negative invocations to deal with 0..1 multiplicities.
+	 * For every created edge in the pattern that has a 0..1 multiplicity, a negative invocation
+	 * is added which ensures that the multiplicity is not violated by applying the rule.
+	 * 
+	 * @param patterns The collection of all patterns for the current rule. 
+	 * 		  The patterns created for the negative invocations are added here.
+	 * @param pattern The pattern to augment with negative invocations.
+	 */
+	private void addPatternInvocationsForMultiplicityConstraints(Collection<IbexPattern> patterns, RulePartPattern pattern) {
 		TGGRule rule = pattern.getRule();
 		
 		//FIXME certain examples work, other, similar ones throw errors, either "Join failed" or "Resource not contained"
@@ -200,7 +209,7 @@ public class TGGCompiler {
 						   
 						   ConstraintPattern constraint = new ConstraintPattern(rule, signatureElements, bodyElements);
 						   patterns.add(constraint);
-						   pattern.getNegativeInvocations().add(constraint);
+						   pattern.addTGGNegativeInvocation(constraint);
 					    });
 	}
 
