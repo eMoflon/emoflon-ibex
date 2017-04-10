@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.ui.ide.visualisation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoFlattenedTGG;
+import org.gervarro.democles.specification.emf.Pattern;
 import org.gervarro.democles.specification.emf.PatternBody;
 import org.moflon.ide.visualisation.dot.language.ToggleRefinementHandler;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
@@ -27,31 +29,38 @@ import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider;
 public class IbexDiagramTextProvider implements DiagramTextProvider {
 
 	@Override
-	public String getDiagramText(IEditorPart editor) {
+	public String getDiagramText(IEditorPart editor){
+		return PlantUMLGenerator.wrapInTags(getDiagramBody(editor));
+	}
+	
+	private String getDiagramBody(IEditorPart editor) {
 		return maybeVisualisePattern(editor).orElse(
+			   maybeVisualisePatternBody(editor).orElse(
 			   maybeVisualiseTGGRule(editor).orElse(
 			   maybeVisualiseMetamodel(editor).orElse(
 			   maybeVisualiseModel(editor).orElse(
-			   PlantUMLGenerator.emptyDiagram()))));
+			   PlantUMLGenerator.emptyDiagram())))));
 	}
 
 	private Optional<String> maybeVisualiseModel(IEditorPart editor) {
 		return Optional.of(editor)
-				.flatMap(maybeCast(EcoreEditor.class))
-				.map(EcoreEditor::getSelection)
-				.flatMap(maybeCast(IStructuredSelection.class))
-				.map(IStructuredSelection::toList)
+				.flatMap(this::multiSelectionInEcoreEditor)
 				.map(this::determineObjectsAndLinksToVisualise)
 				.map(p -> p.getLeft().isEmpty()? null : p) 
 				.map(p -> PlantUMLGenerator.visualiseModelElements(p.getLeft(), p.getRight()));
 	}
 
-	private Optional<String> maybeVisualiseMetamodel(IEditorPart editor) {
+	private Optional<List> multiSelectionInEcoreEditor(IEditorPart editor){
 		return Optional.of(editor)
 				.flatMap(maybeCast(EcoreEditor.class))
 				.map(EcoreEditor::getSelection)
 				.flatMap(maybeCast(IStructuredSelection.class))
-				.map(IStructuredSelection::toList)
+				.map(IStructuredSelection::toList);
+	}
+	
+	private Optional<String> maybeVisualiseMetamodel(IEditorPart editor) {
+		return Optional.of(editor)
+				.flatMap(this::multiSelectionInEcoreEditor)
 				.map(this::determineClassesAndRefsToVisualise)
 				.map(p -> p.getLeft().isEmpty()? null : p)
 				.map(p -> PlantUMLGenerator.visualiseEcoreElements(p.getLeft(), p.getRight()));
@@ -119,16 +128,36 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 		return new EditorTGGtoFlattenedTGG().flatten(file);
 	}
 
-	private Optional<String> maybeVisualisePattern(IEditorPart editor) {
+	private Optional<String> maybeVisualisePatternBody(IEditorPart editor) {
+		return Optional.of(editor)
+				.flatMap(this::selectionInEcoreEditor)
+				.flatMap(maybeCast(PatternBody.class))
+				.map(b -> PlantUMLGenerator.visualisePatternBody(b, "0\\"));
+	}
+	
+	private Optional<Object> selectionInEcoreEditor(IEditorPart editor){
 		return Optional.of(editor)
 				.flatMap(maybeCast(EcoreEditor.class))
 				.map(EcoreEditor::getSelection)
 				.flatMap(maybeCast(TreeSelection.class))
-				.map(TreeSelection::getFirstElement)
-				.flatMap(maybeCast(PatternBody.class))
-				.map(PlantUMLGenerator::visualisePatternBody);
+				.map(TreeSelection::getFirstElement);
+	}
+	
+	private Optional<String> maybeVisualisePattern(IEditorPart editor) {
+		return Optional.of(editor)
+				.flatMap(this::selectionInEcoreEditor)
+				.flatMap(maybeCast(Pattern.class))
+				.flatMap(this::patternHasExactlyOneBody)					
+				.map(p -> PlantUMLGenerator.visualisePatternBody(p.getBodies().get(0), "0\\"));
 	}
 
+	private Optional<Pattern> patternHasExactlyOneBody(Pattern p){
+		if(p.getBodies().size() != 1) 
+			return Optional.empty();
+		else
+			return Optional.of(p);
+	}
+	
 	@Override
 	public boolean supportsEditor(IEditorPart editor) {
 		return editor instanceof EcoreEditor;
