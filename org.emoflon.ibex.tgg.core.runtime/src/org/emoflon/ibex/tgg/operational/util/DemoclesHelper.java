@@ -99,8 +99,8 @@ public class DemoclesHelper implements MatchEventListener {
 	// Factories
 	private final SpecificationFactory factory = SpecificationFactory.eINSTANCE;
 	private final EMFTypeFactory emfTypeFactory = EMFTypeFactory.eINSTANCE;
-	
-	private List<IbexPattern> markedPatterns;
+
+	private List<MarkedPattern> markedPatterns;
 
 	public DemoclesHelper(ResourceSet rs, OperationalStrategy app, TGG tgg, boolean debug) throws IOException {
 		this.rs = rs;
@@ -126,16 +126,16 @@ public class DemoclesHelper implements MatchEventListener {
 		// Build the pattern matchers in 2 phases
 		// 1) EMF-based to EMF-independent transformation
 
-		final Collection<DefaultPattern> internalPatterns = patterns.stream()
-				.map(patternBuilder::build)
-				.collect(Collectors.toList());
-		
-		// 2) EMF-independent to pattern matcher runtime (i.e., Rete network) transformation
+		final Collection<DefaultPattern> internalPatterns = patterns.stream().map(patternBuilder::build).collect(Collectors.toList());
+
+		// 2) EMF-independent to pattern matcher runtime (i.e., Rete network)
+		// transformation
 		retePatternMatcherModule.build(internalPatterns.toArray(new DefaultPattern[internalPatterns.size()]));
 
 		retePatternMatcherModule.getSession().setAutoCommitMode(false);
 
-		if(debug) printReteNetwork();
+		if (debug)
+			printReteNetwork();
 
 		// Attach match listener to pattern matchers
 		retrievePatternMatchers();
@@ -143,8 +143,9 @@ public class DemoclesHelper implements MatchEventListener {
 
 		// Install model event listeners on the resource set
 		NotificationModule.installNotificationAdapter(rs, emfNativeOperationModule);
-		
-		if (debug) saveDemoclesPatterns();
+
+		if (debug)
+			saveDemoclesPatterns();
 	}
 
 	private void printReteNetwork() {
@@ -172,7 +173,7 @@ public class DemoclesHelper implements MatchEventListener {
 		TGGCompiler compiler = new TGGCompiler(tgg);
 		compiler.preparePatterns();
 		markedPatterns = compiler.getMarkedPatterns();
-		
+
 		for (TGGRule r : compiler.getRuleToPatternMap().keySet()) {
 			for (IbexPattern pattern : compiler.getRuleToPatternMap().get(r)) {
 				if (patternIsNotEmpty(pattern) && app.isPatternRelevant(pattern.getName()))
@@ -205,7 +206,7 @@ public class DemoclesHelper implements MatchEventListener {
 		// Pattern invocations
 		for (IbexPattern inv : ibexPattern.getPositiveInvocations()) {
 			if (patternIsNotEmpty(inv)) {
-				PatternInvocationConstraint invCon = createInvocationConstraint(inv, true, nodeToVar);
+				PatternInvocationConstraint invCon = createInvocationConstraint(ibexPattern, inv, true, nodeToVar);
 				if (!invCon.getParameters().isEmpty())
 					constraints.add(invCon);
 			}
@@ -213,66 +214,9 @@ public class DemoclesHelper implements MatchEventListener {
 
 		for (IbexPattern inv : ibexPattern.getNegativeInvocations()) {
 			if (patternIsNotEmpty(inv)) {
-				PatternInvocationConstraint invCon = createInvocationConstraint(inv, false, nodeToVar);
+				PatternInvocationConstraint invCon = createInvocationConstraint(ibexPattern, inv, false, nodeToVar);
 				if (!invCon.getParameters().isEmpty())
 					constraints.add(invCon);
-			}
-		}
-
-		if (ibexPattern instanceof SrcProtocolAndDECPattern) {
-			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
-				TGGRuleNode node = (TGGRuleNode) el;
-				if (node.getBindingType().equals(BindingType.CONTEXT) && !node.getDomainType().equals(DomainType.CORR)) {
-					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(DomainType.SRC, true), true, null, nodeToVar.get(node));
-					if (!invCon.getParameters().isEmpty())
-						constraints.add(invCon);
-				}
-			}
-		}
-
-		if (ibexPattern instanceof TrgProtocolAndDECPattern) {
-			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
-				TGGRuleNode node = (TGGRuleNode) el;
-				if (node.getBindingType().equals(BindingType.CONTEXT) && !node.getDomainType().equals(DomainType.CORR)) {
-					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(node.getDomainType(), true), true, null, nodeToVar.get(node));
-					if (!invCon.getParameters().isEmpty())
-						constraints.add(invCon);
-				}
-			}
-		}
-
-		if (ibexPattern instanceof SrcProtocolNACsPattern) {
-			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
-				TGGRuleNode node = (TGGRuleNode) el;
-				if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
-					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(node.getDomainType(), true), false, null, nodeToVar.get(node));
-					if (!invCon.getParameters().isEmpty())
-						constraints.add(invCon);
-				}
-			}
-		}
-
-		if (ibexPattern instanceof TrgProtocolNACsPattern) {
-			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
-				TGGRuleNode node = (TGGRuleNode) el;
-				if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
-					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(node.getDomainType(), true), false, null, nodeToVar.get(node));
-					if (!invCon.getParameters().isEmpty())
-						constraints.add(invCon);
-				}
-			}
-		}
-
-		if (ibexPattern instanceof ConsistencyPattern) {
-			for (TGGRuleElement el : ibexPattern.getSignatureElements()) {
-				TGGRuleNode node = (TGGRuleNode) el;
-				if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
-					TGGRuleNode protocolNode = (TGGRuleNode) ibexPattern.getSignatureElements().stream().filter(e -> ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).findAny().get();
-					EMFVariable protocol = nodeToVar.get(protocolNode);
-					PatternInvocationConstraint invCon = createMarkedPatternCall(getMarkedPattern(node.getDomainType(), false), true, protocol, nodeToVar.get(node));
-					if (!invCon.getParameters().isEmpty())
-						constraints.add(invCon);
-				}
 			}
 		}
 
@@ -338,25 +282,26 @@ public class DemoclesHelper implements MatchEventListener {
 		// add new variables as nodes
 		locals.addAll(dAttrHelper.getEMFVariables());
 
-		// reset attribute helper. Do it here before the recursive call of this method
+		// reset attribute helper. Do it here before the recursive call of this
+		// method
 		dAttrHelper.clearAll();
 
 		// Edges as constraints
-		if(!(ibexPattern instanceof MarkedPattern && ((MarkedPattern) ibexPattern).isLocal()))
-		for (TGGRuleEdge edge : ibexPattern.getBodyEdges()) {
-			Reference ref = emfTypeFactory.createReference();
-			ref.setEModelElement(edge.getType());
+		if (!(ibexPattern instanceof MarkedPattern && ((MarkedPattern) ibexPattern).isLocal()))
+			for (TGGRuleEdge edge : ibexPattern.getBodyEdges()) {
+				Reference ref = emfTypeFactory.createReference();
+				ref.setEModelElement(edge.getType());
 
-			ConstraintParameter from = factory.createConstraintParameter();
-			from.setReference(nodeToVar.get(edge.getSrcNode()));
-			ref.getParameters().add(from);
+				ConstraintParameter from = factory.createConstraintParameter();
+				from.setReference(nodeToVar.get(edge.getSrcNode()));
+				ref.getParameters().add(from);
 
-			ConstraintParameter to = factory.createConstraintParameter();
-			to.setReference(nodeToVar.get(edge.getTrgNode()));
-			ref.getParameters().add(to);
+				ConstraintParameter to = factory.createConstraintParameter();
+				to.setReference(nodeToVar.get(edge.getTrgNode()));
+				ref.getParameters().add(to);
 
-			constraints.add(ref);
-		}
+				constraints.add(ref);
+			}
 
 		// Handle Corrs
 		for (TGGRuleCorr corr : ibexPattern.getBodyCorrNodes()) {
@@ -386,22 +331,19 @@ public class DemoclesHelper implements MatchEventListener {
 
 			constraints.add(trgRef);
 		}
-		
+
 		return constraints;
 	}
 
-	private PatternInvocationConstraint createInvocationConstraint(IbexPattern inv, boolean isTrue, Map<TGGRuleNode, EMFVariable> nodeToVar) {
+	private PatternInvocationConstraint createInvocationConstraint(IbexPattern root, IbexPattern inv, boolean isTrue, Map<TGGRuleNode, EMFVariable> nodeToVar) {
 		PatternInvocationConstraint invCon = factory.createPatternInvocationConstraint();
 		invCon.setPositive(isTrue);
 		invCon.setInvokedPattern(ibexToDemocles(inv));
 		for (TGGRuleElement element : inv.getSignatureElements()) {
-			if (nodeToVar.containsKey(element)) {
-				ConstraintParameter parameter = factory.createConstraintParameter();
-				invCon.getParameters().add(parameter);
-				parameter.setReference(nodeToVar.get(element));
-			}
+			ConstraintParameter parameter = factory.createConstraintParameter();
+			invCon.getParameters().add(parameter);
+			parameter.setReference(nodeToVar.get(root.getMappedRuleElement(inv, element)));
 		}
-
 		return invCon;
 	}
 

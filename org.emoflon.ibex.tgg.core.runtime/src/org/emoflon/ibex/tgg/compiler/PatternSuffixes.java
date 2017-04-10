@@ -56,10 +56,23 @@ public class PatternSuffixes {
 	public static final String SRC_PROTOCOL_NACS = SEP + "PROTOCOL_NACS_SRC";
 	
 	/**
+	 * Same meaning as SRC_PROTOCOL_NACS but this pattern is generated with a minor amount of signature elements.
+	 * The intention is to be able to call SRC_PROTOCOL_NACS without generating to many local variables in the calling pattern
+	 */
+	public static final String LOCAL_SRC_PROTOCOL_NACS = SEP + "LOCAL_PROTOCOL_NACS_SRC";
+	
+	/**
 	 * Forbid this pattern to ensure that all target elements created by the original
 	 * rule have not yet been translated (marked)
 	 */
 	public static final String TRG_PROTOCOL_NACS = SEP + "PROTOCOL_NACS_TRG";
+	
+	/**
+	 * Same meaning as TRG_PROTOCOL_NACS but this pattern is generated with a minor amount of signature elements.
+	 * The intention is to be able to call TRG_PROTOCOL_NACS without generating to many local variables in the calling pattern
+	 */
+	public static final String LOCAL_TRG_PROTOCOL_NACS = SEP + "LOCAL_PROTOCOL_NACS_TRG";
+	
 	
 	/**
 	 * Used to check that all source context elements of the original rule are
