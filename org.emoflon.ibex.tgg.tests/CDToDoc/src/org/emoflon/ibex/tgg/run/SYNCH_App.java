@@ -1,17 +1,24 @@
 package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
+import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.emoflon.ibex.tgg.operational.*;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
+import CD.CDFactory;
+import CD.CDPackage;
 import language.LanguagePackage;
 import language.TGG;
 import runtime.RuntimePackage;
@@ -40,9 +47,8 @@ public class SYNCH_App {
 		long tic = System.currentTimeMillis();
 		TGGRuntimeUtil tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p);
 		tggRuntime.setMode(OperationMode.FWD);
-		tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
-		Transformation transformation = new Transformation(rs, tggRuntime);						
+		CDToDocTransformation transformation = new CDToDocTransformation(rs, tggRuntime);						
 		transformation.execute();
 		
 		tggRuntime.run();

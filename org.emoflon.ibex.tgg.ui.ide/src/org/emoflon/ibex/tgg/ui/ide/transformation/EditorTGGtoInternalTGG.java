@@ -109,6 +109,14 @@ public class EditorTGGtoInternalTGG {
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
 
+		// register complements links for multi amalgamation
+		for (Rule xtextRule : xtextTGG.getRules()) {
+			TGGRule rule = (TGGRule) xtextToTGG.get(xtextRule);
+			if(xtextRule.getKernel() != null) {
+				rule.setComplements((TGGRule) xtextToTGG.get(xtextRule.getKernel()));
+			}
+		}
+		
 		tgg = addOppositeEdges(tgg);
 		tgg = sortTGGAttributeConstraints(tgg);
 

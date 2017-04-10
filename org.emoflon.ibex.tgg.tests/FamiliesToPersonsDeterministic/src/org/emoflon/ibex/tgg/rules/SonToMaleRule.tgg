@@ -1,0 +1,40 @@
+#using FamiliesToPersonsDeterministic.*
+#using AttrCondDefLibrary.*
+
+#abstract #rule SonToMaleRule #with FamiliesToPersonsDeterministic
+
+#source { 
+	f:Family {
+		-father->father
+		++ -sons->son
+	}
+	
+	father:FamilyMember
+	++ son:FamilyMember
+}
+
+#target {
+	pr:PersonRegister {
+		-persons->fp
+		++ -persons->p
+	}
+	fp: Male
+	
+	++ p:Male
+}
+
+#correspondence {
+	fa2p:MemberToPerson {
+		#src->father
+		#trg->fp
+	}
+	
+	++ f2p:MemberToPerson {
+		#src->son
+		#trg->p
+	}
+}
+
+#attributeConditions {
+	
+}

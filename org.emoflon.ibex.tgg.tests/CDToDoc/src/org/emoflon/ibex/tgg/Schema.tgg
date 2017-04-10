@@ -1,6 +1,6 @@
 // Add imports here
-#import "platform:/resource/CDToDoc/domains/CD.ecore"
-#import "platform:/resource/CDToDoc/domains/Doc.ecore"
+#import "platform:/plugin/CD/model/CD.ecore"
+#import "platform:/plugin/Doc/model/Doc.ecore"
 
 #schema CDToDoc
 	
@@ -32,5 +32,11 @@
 	#userDefined uppercase(a: EString, b: EString) {
 		#sync: [B B], [B F], [F B]
 		#gen:  [B B], [B F], [F B], [F F]
+	}
+	
+	// Semantics: summand1 + summand2 == result (where + is addition for Numbers)
+	#userDefined add_int(summand1:EInt, summand2:EInt, result:EInt) {
+		#sync: [B B B], [B B F], [B F B], [F B B]
+		#gen: [B B B], [B B F], [B F B], [F B B], [F F B], [F B F], [B F F]
 	}
 }

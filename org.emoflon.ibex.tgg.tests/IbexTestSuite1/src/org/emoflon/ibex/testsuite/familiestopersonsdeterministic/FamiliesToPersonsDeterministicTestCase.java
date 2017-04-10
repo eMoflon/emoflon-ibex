@@ -6,19 +6,17 @@ import java.util.Collection;
 import org.benchmarx.BXTool;
 import org.benchmarx.BenchmarxUtil;
 import org.benchmarx.Comparator;
-import org.benchmarx.families.core.FamiliesComparator;
+import org.benchmarx.families.core.FamilyComparator;
 import org.benchmarx.families.core.FamilyHelper;
-import org.benchmarx.persons.core.PersonHelper;
-import org.benchmarx.persons.core.PersonsComparator;
+import org.benchmarx.persons.core.PersonComparator;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import Families.FamiliesPackage;
 import Families.FamilyRegister;
 import Persons.PersonRegister;
-import Persons.PersonsPackage;
 
 @RunWith(Parameterized.class)
 public abstract class FamiliesToPersonsDeterministicTestCase {
@@ -28,16 +26,20 @@ public abstract class FamiliesToPersonsDeterministicTestCase {
 	protected Comparator<PersonRegister> personsComparator;
 	protected BenchmarxUtil<FamilyRegister, PersonRegister, NoDecisions> util;
 	protected FamilyHelper helperFamily;
-	protected PersonHelper helperPerson;
 
 	@Before
 	public void initialise() {
 		// Initialise all helpers
-		familiesComparator = new FamiliesComparator();
-		personsComparator = new PersonsComparator();
+		familiesComparator = new FamilyComparator();
+		personsComparator = new PersonComparator();
 		util = new BenchmarxUtil<>(tool);
 		helperFamily = new FamilyHelper();
-		helperPerson = new PersonHelper();
+		util.setFolder("FamiliesToPersonsDeterministic");
+	}
+	
+	@After
+	public void finalize() {
+		tool.disposeSynchronisationDialogue();
 	}
 
 	@Parameters

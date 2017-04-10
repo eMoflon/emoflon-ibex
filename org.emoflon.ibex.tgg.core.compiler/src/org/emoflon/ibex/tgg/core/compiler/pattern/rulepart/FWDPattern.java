@@ -40,7 +40,7 @@ public class FWDPattern extends RulePartPattern {
 	@Override
 	public boolean ignored() {
 		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
-				.noneMatch(e -> e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CREATE);
+				.noneMatch(e -> e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CREATE) && rule.getComplements() == null;
 	}
 	
 	@Override

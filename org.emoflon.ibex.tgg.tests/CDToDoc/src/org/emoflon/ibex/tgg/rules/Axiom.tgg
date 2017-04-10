@@ -7,7 +7,6 @@
 	++ p:Package {
 		name:="root"
 		index:=1
-		pEnum:=enum::PackageEnum::SECOND_ENUM
 	}
 }
 

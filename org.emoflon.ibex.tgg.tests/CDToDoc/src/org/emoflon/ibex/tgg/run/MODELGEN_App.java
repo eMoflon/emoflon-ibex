@@ -9,9 +9,10 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.operational.*;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
+import CD.CDPackage;
+import Doc.DocPackage;
 import language.LanguagePackage;
 import language.TGG;
 import runtime.RuntimePackage;
@@ -40,9 +41,8 @@ public class MODELGEN_App {
 		MODELGENStopCriterion stop = new MODELGENStopCriterion();
 		stop.setMaxSrcCount(1000);
 		TGGRuntimeUtil tggRuntime = new MODELGEN(tgg, s, c, t, p, stop);
-		tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
 		
-		Transformation transformation = new Transformation(rs, tggRuntime);						
+		CDToDocTransformation transformation = new CDToDocTransformation(rs, tggRuntime);						
 		transformation.execute();
 		
 		tggRuntime.run();
@@ -71,6 +71,9 @@ public class MODELGEN_App {
 		Registry.INSTANCE.put(corr.getURI().toString(), corr);
 		Registry.INSTANCE.put("platform:/resource/CDToDoc/model/CDToDoc.ecore", pcorr);
 		Registry.INSTANCE.put("platform:/plugin/CDToDoc/model/CDToDoc.ecore", pcorr);
+		
+		CDPackage.eINSTANCE.getName();
+		DocPackage.eINSTANCE.getName();
 		
 		// TODO: Uncomment the following lines and register source and target metamodels
 		// Add mappings for all other required dependencies

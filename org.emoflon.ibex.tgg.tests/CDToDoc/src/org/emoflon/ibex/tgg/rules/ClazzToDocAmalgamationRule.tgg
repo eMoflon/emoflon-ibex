@@ -1,0 +1,211 @@
+#using CDToDoc.*
+#using AttrCondDefLibrary.*
+
+#rule ClazzToDocAmalgamationRule #with CDToDoc
+
+#source { 
+	p1:Package{
+		-clazzs->subClazz
+		-clazzs->superClazz
+	}
+	
+	subClazz:Clazz {
+		++ -superClazz->superClazz
+	}
+	superClazz:Clazz
+} 
+
+#target {
+	
+	f1:Folder{
+		-files->subFile
+		-files->superFile
+	}
+	 
+	subFile:DocFile {
+		++ -allSuperRefs->superFile
+		++ -superRef->superFile
+	}
+	superFile:DocFile 
+} 
+
+#correspondence {
+	p2f1:PackageToFolder{
+		#src->p1
+		#trg->f1
+	}
+	c2f1:ClazzToFile{
+		#src->subClazz
+		#trg->subFile
+	}
+	c2f2:ClazzToFile{
+		#src->superClazz
+		#trg->superFile
+	}
+}
+
+#attributeConditions {
+}
+
+#using CDToDoc.*
+#using AttrCondDefLibrary.*
+
+#rule ClazzToDocAmalgamationDirectTransitiveMultiRule #complements ClazzToDocAmalgamationRule #with CDToDoc
+
+#source { 
+	p1:Package{
+		-clazzs->subClazz
+		-clazzs->superClazz
+	}
+	
+	subClazz:Clazz {
+		-superClazz->superClazz
+	}
+	superClazz:Clazz
+} 
+
+#target {
+	
+	f1:Folder{
+		-files->subFile
+		-files->superFile
+		-files->supsupFile
+	}
+	 
+	subFile:DocFile {
+		-allSuperRefs->superFile
+		++ -allSuperRefs->supsupFile
+	}
+	superFile:DocFile {
+		-allSuperRefs->supsupFile
+	}
+	supsupFile:DocFile
+} 
+
+#correspondence {
+	p2f1:PackageToFolder{
+		#src->p1
+		#trg->f1
+	}
+	c2f1:ClazzToFile{
+		#src->subClazz
+		#trg->subFile
+	}
+	c2f2:ClazzToFile{
+		#src->superClazz
+		#trg->superFile
+	}
+}
+
+#attributeConditions {
+}
+
+#using CDToDoc.*
+#using AttrCondDefLibrary.*
+
+#rule ClazzToDocAmalgamationDirectBackwardMultiRule #complements ClazzToDocAmalgamationRule #with CDToDoc
+
+#source { 
+	p1:Package{
+		-clazzs->subClazz
+		-clazzs->superClazz
+	}
+	
+	subClazz:Clazz {
+		-superClazz->superClazz
+	}
+	superClazz:Clazz
+} 
+
+#target {
+	
+	f1:Folder{
+		-files->subsubFile
+		-files->subFile
+		-files->superFile
+	}
+	 
+	subsubFile:DocFile {
+		-allSuperRefs-> subFile
+		++ -allSuperRefs->superFile
+	}
+	subFile:DocFile {
+		-allSuperRefs->superFile
+	}
+	superFile:DocFile 
+} 
+
+#correspondence {
+	p2f1:PackageToFolder{
+		#src->p1
+		#trg->f1
+	}
+	c2f1:ClazzToFile{
+		#src->subClazz
+		#trg->subFile
+	}
+	c2f2:ClazzToFile{
+		#src->superClazz
+		#trg->superFile
+	}
+}
+
+#attributeConditions {
+}
+
+#using CDToDoc.*
+#using AttrCondDefLibrary.*
+
+#rule ClazzToDocAmalgamationDirectTransitiveBackwardMultiRule #complements ClazzToDocAmalgamationRule #with CDToDoc
+
+#source { 
+	p1:Package{
+		-clazzs->subClazz
+		-clazzs->superClazz
+	}
+	
+	subClazz:Clazz {
+		-superClazz->superClazz
+	}
+	superClazz:Clazz
+} 
+
+#target {
+	
+	f1:Folder{
+		-files->subsubFile
+		-files->subFile
+		-files->superFile
+		-files->supsupFile
+	}
+	 
+	subsubFile:DocFile {
+		-allSuperRefs-> subFile
+		++ -allSuperRefs->supsupFile
+	}
+	subFile:DocFile {
+		-allSuperRefs->superFile
+	}
+	superFile:DocFile {
+		-allSuperRefs->supsupFile
+	}
+	supsupFile:DocFile 
+} 
+
+#correspondence {
+	p2f1:PackageToFolder{
+		#src->p1
+		#trg->f1
+	}
+	c2f1:ClazzToFile{
+		#src->subClazz
+		#trg->subFile
+	}
+	c2f2:ClazzToFile{
+		#src->superClazz
+		#trg->superFile
+	}
+}
+
+#attributeConditions {
+}

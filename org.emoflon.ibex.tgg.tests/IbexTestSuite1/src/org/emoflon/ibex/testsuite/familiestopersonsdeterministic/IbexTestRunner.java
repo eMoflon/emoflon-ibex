@@ -4,18 +4,16 @@ import java.util.function.Consumer;
 
 import org.benchmarx.BXToolForEMF;
 import org.benchmarx.Configurator;
-import org.benchmarx.families.core.FamiliesComparator;
-import org.benchmarx.persons.core.PersonsComparator;
+import org.benchmarx.families.core.FamilyComparator;
+import org.benchmarx.persons.core.PersonComparator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.tgg.operational.FWD;
 import org.emoflon.ibex.tgg.operational.OperationMode;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
-import org.emoflon.ibex.tgg.run.Transformation;
+import org.emoflon.ibex.tgg.run.FamiliesToPersonsDeterministicTransformation;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import Families.FamiliesFactory;
@@ -32,16 +30,17 @@ public class IbexTestRunner extends BXToolForEMF<FamilyRegister, PersonRegister,
 	private static final String MODEL_FOLDER = "../FamiliesToPersonsDeterministic/model";
 	private Resource s;
 	private Resource t;
+	private TGGRuntimeUtil tggRuntime;
+	private FamiliesToPersonsDeterministicTransformation transformation;
 	
 	public IbexTestRunner() {
-		super(new FamiliesComparator(), new PersonsComparator());
+		super(new FamilyComparator(), new PersonComparator());
+		registerMetamodels();
 	}
 
 	@Override
 	public void initiateSynchronisationDialogue() {
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
-		registerMetamodels(rs);
-		
 		Resource tggR = rs.getResource(URI.createFileURI(MODEL_FOLDER + "/FamiliesToPersonsDeterministic.tgg.xmi"), true);
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		
@@ -54,24 +53,25 @@ public class IbexTestRunner extends BXToolForEMF<FamilyRegister, PersonRegister,
 		FamilyRegister freg = FamiliesFactory.eINSTANCE.createFamilyRegister();
 		s.getContents().add(freg);
 		
-		TGGRuntimeUtil tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p);
+		tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p);
 		tggRuntime.setMode(OperationMode.FWD);
-		Transformation transformation = new Transformation(rs, tggRuntime);						
-		transformation.execute();		
+		transformation = new FamiliesToPersonsDeterministicTransformation(rs, tggRuntime);	
+		transformation.execute();
 		tggRuntime.run();
-		transformation.dispose();
 	}
 
 	@Override
 	public void performAndPropagateTargetEdit(Consumer<PersonRegister> edit) {
-		// TODO Auto-generated method stub
-		
+		tggRuntime.setMode(OperationMode.BWD);
+		edit.accept((PersonRegister) t.getContents().get(0));
+		tggRuntime.run();
 	}
 
 	@Override
 	public void performAndPropagateSourceEdit(Consumer<FamilyRegister> edit) {
-		// TODO Auto-generated method stub
-		
+		tggRuntime.setMode(OperationMode.FWD);
+		edit.accept((FamilyRegister) s.getContents().get(0));
+		tggRuntime.run();
 	}
 
 	@Override
@@ -89,7 +89,9 @@ public class IbexTestRunner extends BXToolForEMF<FamilyRegister, PersonRegister,
 	}
 
 
-	private void registerMetamodels(ResourceSet rs){
+	private void registerMetamodels(){
+		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
+
 		// Register internals
 		LanguagePackage.eINSTANCE.getName();
 		RuntimePackage.eINSTANCE.getName();
@@ -104,5 +106,28 @@ public class IbexTestRunner extends BXToolForEMF<FamilyRegister, PersonRegister,
 		// Add mappings for all other required dependencies
 		FamiliesPackage.eINSTANCE.getName();
 		PersonsPackage.eINSTANCE.getName();
+	}
+
+	@Override
+	public void performIdleTargetEdit(Consumer<PersonRegister> edit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void performIdleSourceEdit(Consumer<FamilyRegister> edit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveModels(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void disposeSynchronisationDialogue() {
+		transformation.dispose();		
 	}
 }

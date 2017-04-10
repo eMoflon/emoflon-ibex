@@ -8,13 +8,13 @@
 }
 
 #target {
-	++ personsRegister:PersonsRegister
+	++ personRegister:PersonRegister
 }
 
 #correspondence {
 	++ roots:RegisterToRegister {
 		#src->familyRegister
-		#trg->personsRegister
+		#trg->personRegister
 	}
 }
 
