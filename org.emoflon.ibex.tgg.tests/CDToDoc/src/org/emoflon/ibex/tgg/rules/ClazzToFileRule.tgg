@@ -8,7 +8,9 @@
 		++-clazzs->c1
 	}
 	
-	++c1:Clazz
+	++c1:Clazz {
+		generateDoc:=false
+	}
 } 
 
 #target {
