@@ -30,17 +30,23 @@ public class NoDECsPatterns extends RulePartPattern {
 	private DECTrackingContainer decTC;
 	private DomainType domain;
 
+	public static final DECStrategy decStrategy = DECStrategy.DYNAMIC;
+
 	public NoDECsPatterns(TGGRule rule, DECTrackingContainer decTC, DomainType domain) {
 		super(rule);
 		this.decTC = decTC;
 		this.domain = domain;
-		createDECEntries(rule, domain);
+		if (decStrategy != DECStrategy.NONE)
+			createDECEntries(rule, domain);
 		initialize();
-		getPositiveInvocations().add(decTC.getRuleToPatternsMap().get(rule).stream().filter(p -> domain == DomainType.SRC ? p instanceof SrcPattern : p instanceof TrgPattern).findFirst().get());
+		getPositiveInvocations().add(decTC.getRuleToPatternsMap().get(rule).stream()
+				.filter(p -> domain == DomainType.SRC ? p instanceof SrcPattern : p instanceof TrgPattern).findFirst()
+				.get());
 	}
 
 	/**
-	 * This method creates DEC entries for each rule node if some edge has been detected that may have to be translated by some other rule application
+	 * This method creates DEC entries for each rule node if some edge has been
+	 * detected that may have to be translated by some other rule application
 	 * 
 	 * @param rule
 	 */
@@ -52,11 +58,13 @@ public class NoDECsPatterns extends RulePartPattern {
 			if (!n.getBindingType().equals(BindingType.CREATE))
 				continue;
 
-			// we don't care about correspondence nodes and generate DECs only for the current domain (SRC or TRG)
+			// we don't care about correspondence nodes and generate DECs only
+			// for the current domain (SRC or TRG)
 			if (!n.getDomainType().equals(domain) || n.getDomainType().equals(DomainType.CORR))
 				continue;
 
-			// check if edge type occurs in our current rule for the given entry point,
+			// check if edge type occurs in our current rule for the given entry
+			// point,
 			// if not -> search if some other rule might translate such an edge
 			for (EReference eType : DECHelper.extractEReferences(nodeClass)) {
 				for (EdgeDirection eDirection : EdgeDirection.values()) {
@@ -67,7 +75,8 @@ public class NoDECsPatterns extends RulePartPattern {
 						continue;
 
 					int numOfEdges = DECHelper.countEdgeInRule(rule, n, eType, eDirection, false, domain).getLeft();
-					// if the edge has any multiplicity or there is no edge representation at all in this rule, else continue
+					// if the edge has any multiplicity or there is no edge
+					// representation at all in this rule, else continue
 					if (eType.getUpperBound() == 1 && numOfEdges == 1)
 						continue;
 
@@ -75,44 +84,65 @@ public class NoDECsPatterns extends RulePartPattern {
 					if (!DECHelper.isEdgeInTGG(tgg, eType, eDirection, false, domain))
 						continue;
 
-					// initialise DECpattern and register the entryNodeName and DECNodeName for the signature mapping
+					// initialise DECpattern and register the entryNodeName and
+					// DECNodeName for the signature mapping
 					DECPattern decPattern = new DECPattern(rule, n, eType, eDirection, decTC);
 					SearchEdgePattern sep = decPattern.createSearchEdgePattern(rule, n, eType, eDirection, decTC);
 					decTC.addEntryAndDec(decPattern, n.getName(), DECHelper.getDECNode(sep.getRule()).getName());
 
-					// check if the edges are represented and translated elsewhere and register signature mapping (todo: clean this up a bit)
-					List<TGGRule> rules = tgg.getRules().stream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection, true, domain).getLeft() > 0).collect(Collectors.toList());
-					rules.stream().map(r -> Pair.of(r, DECHelper.countEdgeInRule(r, eType, eDirection, true, domain)))
-							.forEach(p -> decTC.addToSignatureMapping(decPattern, p.getKey().getName(), p.getValue().getMiddle().getName(), p.getValue().getRight().getName()));
+					// check if the edges are represented and translated
+					// elsewhere
+					List<TGGRule> rules = tgg.getRules().stream()
+							.filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection, true, domain).getLeft() > 0)
+							.collect(Collectors.toList());
 
-					// find src or trg pattern already generated for the found rules
-					for (TGGRule filteredRule : rules) {
-						Collection<Pattern> patterns = decTC.getRuleToPatternsMap().get(filteredRule);
-
-						Pattern pattern = null;
-						switch (n.getDomainType()) {
-						case SRC:
-							pattern = patterns.stream().filter(p -> p instanceof SrcProtocolNACsPattern).findFirst().get();
-							break;
-						case TRG:
-							pattern = patterns.stream().filter(p -> p instanceof TrgProtocolNACsPattern).findFirst().get();
-							break;
-						default:
-							throw new RuntimeException("DECPatterns: Not defined for anything else than SRC or TRG patterns!");
-						}
-
-						decPattern.getNegativeInvocations().add(pattern);
+					// generate pattern invocations to rules which could
+					// translate the edge (only needed for the dynamic DEC-check)
+					if (decStrategy == DECStrategy.DYNAMIC) {
+						generatePatternInvocationsToCandidateRules(domain, n, eType, eDirection, decPattern, rules);
 					}
 
-					// if any decpattern was created which has at least one negative invocation, we'll add it to this pattern
-					// a negative invocation means here that we were able to find another rule that translated the edge
-					// which might remain untranslated if we apply the current rule
-					// we also register the pattern so that it is found when we generate the code and initialize the search pattern
-					getNegativeInvocations().add(decPattern);
-					decTC.getRuleToPatternsMap().get(rule).add(decPattern);
-					decDetected = true;
+					// a decPattern is relevant if 
+					// (i) we check everything dynamically
+					// or (ii) we only check statically and there was no other rule which would translate the edge
+					if (decStrategy == DECStrategy.DYNAMIC
+							|| (decStrategy == DECStrategy.STATIC && rules.size() == 0)) {
+						getNegativeInvocations().add(decPattern);
+						decTC.getRuleToPatternsMap().get(rule).add(decPattern);
+						decDetected = true;
+					}
 				}
 			}
+		}
+	}
+
+	private void generatePatternInvocationsToCandidateRules(DomainType domain, TGGRuleNode n, EReference eType,
+			EdgeDirection eDirection, DECPattern decPattern, List<TGGRule> rules) {
+
+		// TODO: clean up this code and comment on important parts
+		rules.stream().map(r -> Pair.of(r, DECHelper.countEdgeInRule(r, eType, eDirection, true, domain)))
+				.forEach(p -> decTC.addToSignatureMapping(decPattern, p.getKey().getName(),
+						p.getValue().getMiddle().getName(), p.getValue().getRight().getName()));
+
+		// find src or trg pattern already generated for the
+		// found
+		// rules
+		for (TGGRule filteredRule : rules) {
+			Collection<Pattern> patterns = decTC.getRuleToPatternsMap().get(filteredRule);
+
+			Pattern pattern = null;
+			switch (n.getDomainType()) {
+			case SRC:
+				pattern = patterns.stream().filter(p -> p instanceof SrcProtocolNACsPattern).findFirst().get();
+				break;
+			case TRG:
+				pattern = patterns.stream().filter(p -> p instanceof TrgProtocolNACsPattern).findFirst().get();
+				break;
+			default:
+				throw new RuntimeException("DECPatterns: Not defined for anything else than SRC or TRG patterns!");
+			}
+
+			decPattern.getNegativeInvocations().add(pattern);
 		}
 	}
 
