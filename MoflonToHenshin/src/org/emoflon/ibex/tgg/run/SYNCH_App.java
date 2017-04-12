@@ -3,10 +3,13 @@ package org.emoflon.ibex.tgg.run;
 import java.io.IOException;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.henshin.model.HenshinFactory;
 import org.eclipse.emf.henshin.model.HenshinPackage;
 import org.eclipse.emf.henshin.model.resource.HenshinResourceSet;
@@ -25,11 +28,13 @@ public class SYNCH_App {
 	public static void main(String[] args) throws IOException {
 		//BasicConfigurator.configure();
 				
-		ResourceSet rs = new HenshinResourceSet();//eMoflonEMFUtil.createDefaultResourceSet();
+		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
 		registerMetamodels(rs);
 		SingletonFactory.createInstance();
 		Resource tggR = rs.getResource(URI.createFileURI("model/MoflonToHenshin.tgg.xmi"), true);
+		EcoreUtil.resolveAll(tggR);
 		TGG tgg = (TGG) tggR.getContents().get(0);
+		EcoreUtil.resolveAll(tgg);
 		
 		// create your resources 
 		Resource s = rs.createResource(URI.createFileURI("instances/testTGG.xmi"));
@@ -37,14 +42,25 @@ public class SYNCH_App {
 		Resource c = rs.createResource(URI.createFileURI("instances/corr_gen.xmi"));
 		Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
 		
+
+		
+
 		// load the resources containing your input 
 		s.load(null);
+		
+		EcoreUtil.resolveAll(s);
+		
+		TGG source = (TGG) tggR.getContents().get(0);
+		EClassifier testUnresolve = EClass.class.cast(source.getCorr().getEClassifiers().get(0)).getEReferences().get(0).getEType();
+		EcoreUtil.resolveAll(testUnresolve);
 		
 		System.out.println("Starting SYNCH");
 		long tic = System.currentTimeMillis();
 		TGGRuntimeUtil tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p);
 		tggRuntime.setMode(OperationMode.FWD);
 		tggRuntime.getCSPProvider().registerFactory(new MoflonToHenshinAttrCondDefLibrary());
+		
+		
 		
 		MoflonToHenshinTransformation transformation = new MoflonToHenshinTransformation(rs, tggRuntime);						
 		transformation.execute();
@@ -73,10 +89,15 @@ public class SYNCH_App {
 		Registry.INSTANCE.put(corr.getURI().toString(), corr);
 		Registry.INSTANCE.put("platform:/resource/MoflonToHenshin/model/MoflonToHenshin.ecore", pcorr);
 		Registry.INSTANCE.put("platform:/plugin/MoflonToHenshin/model/MoflonToHenshin.ecore", pcorr);
-		//EPackage henshinPackage = HenshinPackage.eINSTANCE;
-		//Registry.INSTANCE.put(henshinPackage.eResource().getURI().toFileString(), henshinPackage);
+		EPackage henshinPackage = HenshinPackage.eINSTANCE;
+		Registry.INSTANCE.put(henshinPackage.eResource().getURI().toFileString(), henshinPackage);
+		EPackage tggEPackage = LanguagePackage.eINSTANCE;
+		Registry.INSTANCE.put(tggEPackage.eResource().getURI().toFileString(), tggEPackage);
 		
-		// SourcePackage.eInstance.getName();
-		// TargetPackage.eInstance.getName();
+		//rs.getResource(URI.createURI("/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore", true), true);
+//		 SourcePackage.eInstance.getName();
+//		 TargetPackage.eInstance.getName();
+		
+		EcoreUtil.resolveAll(rs);
 	}
 }
