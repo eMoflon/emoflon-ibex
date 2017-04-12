@@ -38,6 +38,7 @@ import org.moflon.tgg.mosl.tgg.TggPackage
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
 import org.moflon.codegen.eclipse.CodeGeneratorPlugin
 import org.moflon.ide.mosl.core.scoping.MoflonScope
+import org.moflon.ide.mosl.core.scoping.ScopeProviderHelper
 
 /**
  * This class contains custom scoping description.
@@ -52,7 +53,7 @@ class TGGScopeProvider extends AbstractDeclarativeScopeProvider {
 	override getScope(EObject context, EReference reference) {
 		
 		/* Scopes in Rule */
-		try{
+		try{			
 			if (is_attr_of_ov(context, reference))
 				return attr_must_be_of_ov(context)
 			
@@ -200,10 +201,30 @@ class TGGScopeProvider extends AbstractDeclarativeScopeProvider {
 	
 	
 	def type_of_param_must_be_edatatype(EObject object) {
-		var eClassifiers = EcorePackage.eINSTANCE.getEClassifiers()
+		
+		var eClassifiers = EcorePackage.eINSTANCE.getEClassifiers()		
 		var edata = (EcoreUtil.getObjectsByType(eClassifiers, EcorePackage.Literals.EDATA_TYPE) as Object) as Collection<EDataType>
+		var schema = getSchema(object)
+		if(schema != null){
+			val set = new ResourceSetImpl()
+			schema.imports.map[u | set.getResource(URI.createURI(u.name), true)]
+			var helper = new ScopeProviderHelper<EPackage>(set)
+			edata.addAll(helper.getAllEData(schema))
+			
+		}
 		return Scopes.scopeFor(edata)
 	}
+	
+	def Schema getSchema(EObject context){
+		if(context==null)
+			return null
+		else if(context instanceof Schema)
+			return context
+		else if(context instanceof TripleGraphGrammarFile)
+			return context.schema
+		else
+			return getSchema(context.eContainer)
+	}	
 	
 	def is_type_of_corr_ov(EObject context, EReference reference) {
 		context instanceof CorrVariablePattern && reference == TggPackage.Literals.CORR_VARIABLE_PATTERN__TYPE
