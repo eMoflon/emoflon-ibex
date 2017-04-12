@@ -5,3 +5,4 @@
 /model/*.xmi
 !/**/.keep*
 /src/org/moflon/tgg/mosl/csp
+/xtend-gen/
