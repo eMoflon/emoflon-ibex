@@ -95,7 +95,7 @@ public class MarkedPattern extends IbexPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return (localProtocol ? PatternSuffixes.LOCAL_MARKED : "") + "_" + domain.getName();
+		return (localProtocol ? PatternSuffixes.LOCAL_MARKED : "") + PatternSuffixes.SEP + domain.getName();
 	}
 	
 	@Override

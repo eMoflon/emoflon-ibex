@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC;
 
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 
 import language.TGGRule;
@@ -41,15 +42,12 @@ public class SearchEdgePattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForSignature(TGGRuleElement e) {
-//		if(e instanceof TGGRuleNode && DECHelper.isDECNodE((TGGRuleNode) e))
-//			return false;
-		
 		return true;
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_" + entryPoint.getName() +"_" + edgeType.getName() + "_" + eDirection.name().toLowerCase() +  "_SearchEdge_" + entryPoint.getDomainType().getName();
+		return PatternSuffixes.SEP + entryPoint.getName() +"_" + edgeType.getName() + "_" + eDirection.name().toLowerCase() +  "_SearchEdge_" + entryPoint.getDomainType().getName();
 	}
 
 }

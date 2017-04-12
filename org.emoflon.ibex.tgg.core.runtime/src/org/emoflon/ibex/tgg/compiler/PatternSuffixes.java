@@ -88,7 +88,7 @@ public class PatternSuffixes {
 	 * These patterns are used to enforce DEC in a domain
 	 */
 	public static String NO_DEC(DomainType domain) {
-		return SEP + "_NO_DECs_" + domain.getName();
+		return SEP + "NO_DECs_" + domain.getName();
 	}	
 	
 	/**
