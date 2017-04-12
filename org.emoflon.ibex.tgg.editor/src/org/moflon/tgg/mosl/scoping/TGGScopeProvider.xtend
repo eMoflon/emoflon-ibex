@@ -146,15 +146,13 @@ class TGGScopeProvider extends AbstractDeclarativeScopeProvider {
 	}
 	
 	def is_attr_of_ov(EObject context, EReference reference) {
-		context instanceof ObjectVariablePattern && (reference == TggPackage.Literals.ATTRIBUTE_ASSIGNMENT__ATTRIBUTE 
-			|| reference == TggPackage.Literals.ATTRIBUTE_CONSTRAINT__ATTRIBUTE
-		)
+		context instanceof ObjectVariablePattern && reference == TggPackage.Literals.ABSTRACT_ATTRIBUTE__ATTRIBUTE 
 	}
 	def is_attr_of_attr_assignment(EObject context, EReference reference) {
-		context instanceof AttributeAssignment && reference == TggPackage.Literals.ATTRIBUTE_ASSIGNMENT__ATTRIBUTE
+		context instanceof AttributeAssignment && reference == TggPackage.Literals.ABSTRACT_ATTRIBUTE__ATTRIBUTE
 	}
 	def is_attr_of_attr_constraint(EObject context, EReference reference) {
-		context instanceof AttributeConstraint && reference == TggPackage.Literals.ATTRIBUTE_CONSTRAINT__ATTRIBUTE
+		context instanceof AttributeConstraint && reference == TggPackage.Literals.ABSTRACT_ATTRIBUTE__ATTRIBUTE
 	}
 	def is_attr_of_attr_expression(EObject context, EReference reference) {
 		context instanceof AttributeExpression && reference == TggPackage.Literals.ATTRIBUTE_EXPRESSION__ATTRIBUTE

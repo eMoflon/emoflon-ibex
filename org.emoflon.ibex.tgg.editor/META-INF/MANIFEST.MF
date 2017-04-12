@@ -35,6 +35,7 @@ Export-Package:
  org.moflon.tgg.mosl.generator,
  org.moflon.tgg.mosl.parser.antlr,
  org.moflon.tgg.mosl.parser.antlr.internal,
+ org.moflon.tgg.mosl.postvalidation,
  org.moflon.tgg.mosl.scoping,
  org.moflon.tgg.mosl.serializer,
  org.moflon.tgg.mosl.services,

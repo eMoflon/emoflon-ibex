@@ -40,6 +40,7 @@ import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.WorkspaceHelper;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.defaults.RunFileHelper;
+import org.moflon.tgg.mosl.postvalidation.TGGPostValidator;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.Rule;
@@ -213,8 +214,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 			EObject tggFile = ruleRes.getContents().get(0);
 			if (tggFile instanceof TripleGraphGrammarFile) {
-				TripleGraphGrammarFile tggFileWithRules = (TripleGraphGrammarFile) tggFile;
-				return new ArrayList<Rule>(tggFileWithRules.getRules());
+				return TGGPostValidator.getInstance().getResolvedRules(resourceSet, tggFile);
 			}
 		}
 
