@@ -22,11 +22,6 @@
 	import org.emoflon.ibex.tgg.operational.csp.constraints.factories.MoflonToHenshinAttrCondDefLibrary
 	
 	
-	import org.emoflon.ibex.tgg.abstracttggruletohenshinrulerule.AbstractTGGRuleToHenshinRuleRule_FWDMatcher
-	import org.emoflon.ibex.tgg.abstracttggruletohenshinrulerule.AbstractTGGRuleToHenshinRuleRule_PROTOCOLMatcher
-	import org.emoflon.ibex.tgg.abstracttggruletohenshinrulerule.AbstractTGGRuleToHenshinRuleRule_MODELGENMatcher
-	import org.emoflon.ibex.tgg.abstracttggruletohenshinrulerule.AbstractTGGRuleToHenshinRuleRule_BWDMatcher
-	import org.emoflon.ibex.tgg.abstracttggruletohenshinrulerule.AbstractTGGRuleToHenshinRuleRule_CCMatcher
 	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderule.CreateTGGNodeToCreateHenshinNodeRule_FWDMatcher
 	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderule.CreateTGGNodeToCreateHenshinNodeRule_PROTOCOLMatcher
 	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderule.CreateTGGNodeToCreateHenshinNodeRule_MODELGENMatcher
@@ -105,9 +100,6 @@
 		
 		private def getSynch() {
 			new EventDrivenTransformationRuleGroup(
-				getAbstractTGGRuleToHenshinRuleRule_FWD(),
-				getAbstractTGGRuleToHenshinRuleRule_BWD(),
-				getAbstractTGGRuleToHenshinRuleRule_PROTOCOL(), 
 				getCreateTGGNodeToCreateHenshinNodeRule_FWD(),
 				getCreateTGGNodeToCreateHenshinNodeRule_BWD(),
 				getCreateTGGNodeToCreateHenshinNodeRule_PROTOCOL(), 
@@ -122,7 +114,6 @@
 		
 		private def get_MODELGEN(){
 			new EventDrivenTransformationRuleGroup(
-				getAbstractTGGRuleToHenshinRuleRule_MODELGEN(), 
 				getCreateTGGNodeToCreateHenshinNodeRule_MODELGEN(), 
 				getTGGRuleToHenshinRuleRule_MODELGEN(), 
 				getTGGToModuleRule_MODELGEN()
@@ -131,7 +122,6 @@
 		
 		private def get_CC(){
 			new EventDrivenTransformationRuleGroup(
-				getAbstractTGGRuleToHenshinRuleRule_CC(), 
 				getCreateTGGNodeToCreateHenshinNodeRule_CC(), 
 				getTGGRuleToHenshinRuleRule_CC(), 
 				getTGGToModuleRule_CC()
@@ -139,16 +129,6 @@
 		}
 			
 		
-		private def getAbstractTGGRuleToHenshinRuleRule_FWD() {
-			createRule.name("AbstractTGGRuleToHenshinRuleRule_FWD").precondition(AbstractTGGRuleToHenshinRuleRule_FWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("AbstractTGGRuleToHenshinRuleRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRule_FWD() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_FWD").precondition(CreateTGGNodeToCreateHenshinNodeRule_FWDMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
@@ -180,15 +160,6 @@
 				).build
 		}
 		
-		private def getAbstractTGGRuleToHenshinRuleRule_PROTOCOL() {
-			createRule.name("AbstractTGGRuleToHenshinRuleRule_PROTOCOL").precondition(AbstractTGGRuleToHenshinRuleRule_PROTOCOLMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) []
-				.action(CRUDActivationStateEnum.DELETED)[
-				tggRuntimeUtil.addBrokenMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRule_PROTOCOL() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_PROTOCOL").precondition(CreateTGGNodeToCreateHenshinNodeRule_PROTOCOLMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) []
@@ -217,16 +188,6 @@
 				).build
 		}
 		
-		private def getAbstractTGGRuleToHenshinRuleRule_MODELGEN() {
-			createRule.name("AbstractTGGRuleToHenshinRuleRule_MODELGEN").precondition(AbstractTGGRuleToHenshinRuleRule_MODELGENMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("AbstractTGGRuleToHenshinRuleRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRule_MODELGEN() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_MODELGEN").precondition(CreateTGGNodeToCreateHenshinNodeRule_MODELGENMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
@@ -258,16 +219,6 @@
 				).build
 		}
 		
-		private def getAbstractTGGRuleToHenshinRuleRule_BWD() {
-			createRule.name("AbstractTGGRuleToHenshinRuleRule_BWD").precondition(AbstractTGGRuleToHenshinRuleRule_BWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("AbstractTGGRuleToHenshinRuleRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRule_BWD() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_BWD").precondition(CreateTGGNodeToCreateHenshinNodeRule_BWDMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
@@ -299,16 +250,6 @@
 				).build
 		}
 		
-		private def getAbstractTGGRuleToHenshinRuleRule_CC() {
-			createRule.name("AbstractTGGRuleToHenshinRuleRule_CC").precondition(AbstractTGGRuleToHenshinRuleRule_CCMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("AbstractTGGRuleToHenshinRuleRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRule_CC() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_CC").precondition(CreateTGGNodeToCreateHenshinNodeRule_CCMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [

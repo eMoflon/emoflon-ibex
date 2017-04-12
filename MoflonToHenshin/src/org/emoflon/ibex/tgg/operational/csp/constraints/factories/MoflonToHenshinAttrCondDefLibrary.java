@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.function.Supplier;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 
+import org.emoflon.ibex.tgg.operational.csp.constraints.custom.UserDefined_setCreateAttribute;
+import org.emoflon.ibex.tgg.operational.csp.constraints.custom.UserDefined_setContextAttribute;
+import org.emoflon.ibex.tgg.operational.csp.constraints.custom.UserDefined_setNegativeAttribute;
 
 public class MoflonToHenshinAttrCondDefLibrary extends RuntimeTGGAttrConstraintFactory {
 
@@ -19,6 +22,9 @@ public class MoflonToHenshinAttrCondDefLibrary extends RuntimeTGGAttrConstraintF
 	
 	private void initialize() {
 		creators = new HashMap<>();
+		creators.put("setCreateAttribute", () -> new UserDefined_setCreateAttribute());
+		creators.put("setContextAttribute", () -> new UserDefined_setContextAttribute());
+		creators.put("setNegativeAttribute", () -> new UserDefined_setNegativeAttribute());
 		
 		constraints = new HashSet<String>();
 		constraints.addAll(creators.keySet());
