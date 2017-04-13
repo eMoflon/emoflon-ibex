@@ -1,0 +1,23 @@
+#using org.moflon.tggtomoflon.*
+#using AttrCondDefLibrary.*
+
+#rule TGGToModuleRule #with MoflonToHenshin
+
+#source { 
+	++ tTgg : TGG
+}
+
+#target {
+	++ hModule : Module
+}
+
+#correspondence {
+  ++ tggToModule : MoflonToHenshin.TGGToModule {
+  	#src->tTgg
+  	#trg->hModule
+  }
+}
+
+#attributeConditions {
+	
+}
