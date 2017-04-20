@@ -34,13 +34,13 @@ import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.tgg.core.compiler.TGGCompiler;
+import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoFlattenedTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoInternalTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.TGGProject;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.WorkspaceHelper;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.defaults.RunFileHelper;
-import org.moflon.tgg.mosl.postvalidation.TGGPostValidator;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.Rule;
@@ -61,6 +61,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 	private static final String RUN_FOLDER = SRC_FOLDER + "/org/emoflon/ibex/tgg/run";
 	private static final String MODEL_FOLDER = "model";
 	private static final String MODEL_PATTERNS_FOLDER = MODEL_FOLDER + "/patterns";
+	private static final String EDITOR_FLATTENED_MODEL_EXTENSION = "_flattened.editor.xmi";
 	private static final String APPLICATION = "Application";
 	private static final String JAVA_EXTENSION = ".java";
 
@@ -123,12 +124,32 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 	private void generateFiles() {
 		generateEditorModel().ifPresent(editorModel -> 
-		generateInternalModels(editorModel).ifPresent(internalModel -> {
-		generatePatterns(internalModel);
-		generateXtendManipulationCode(internalModel);
-		generateAttrCondLibsAndStubs(internalModel);
-		generateRunFiles();}));
+		{
+			generateFlattenedEditorModel(editorModel);
+			generateInternalModels(editorModel).ifPresent(internalModel -> 
+			{
+				generatePatterns(internalModel);
+				generateXtendManipulationCode(internalModel);
+				generateAttrCondLibsAndStubs(internalModel);
+				generateRunFiles();
+			});
+		});
 	}
+	
+	private void generateFlattenedEditorModel(TripleGraphGrammarFile editorModel) {
+		EditorTGGtoFlattenedTGG flattener = new EditorTGGtoFlattenedTGG();
+		TripleGraphGrammarFile flattenedTGG = flattener.flatten(editorModel);
+
+		try {
+			ResourceSet rs = editorModel.eResource().getResourceSet();
+			saveModelInProject(MODEL_FOLDER, getProject().getName() + EDITOR_FLATTENED_MODEL_EXTENSION, rs, flattenedTGG);
+		} catch (IOException e) {
+			LogUtils.error(logger, e);
+		}
+}
+	
+	
+	
 	
 	private void generateRunFiles() {
 		try {
@@ -214,7 +235,8 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 			EObject tggFile = ruleRes.getContents().get(0);
 			if (tggFile instanceof TripleGraphGrammarFile) {
-				return TGGPostValidator.getInstance().getResolvedRules(resourceSet, tggFile);
+				TripleGraphGrammarFile tggFileWithRules = (TripleGraphGrammarFile) tggFile;
+				return new ArrayList<Rule>(tggFileWithRules.getRules());
 			}
 		}
 

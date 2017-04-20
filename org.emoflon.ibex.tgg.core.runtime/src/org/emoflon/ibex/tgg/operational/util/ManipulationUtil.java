@@ -52,6 +52,14 @@ public class ManipulationUtil {
 	}
 	
 	/**
+	 * This will change the creation of edges
+	 * @param fun the function which is changing the Creation
+	 */
+	public static void setEdgeCreationFun(Function<EObject, Function<EObject, Consumer<EReference>>> fun){
+		edgeCreationFun = fun;
+	}
+	
+	/**
 	 * Returns the default node creation function
 	 * @return the default node creation function
 	 */
