@@ -21,9 +21,13 @@
 		++ - rhs -> rhs
 	}
 	
-	++ lhs : Graph
+	++ lhs : Graph{
+		name := "LHS"
+	}
 	
-	++ rhs : Graph
+	++ rhs : Graph{
+		name := "RHS"
+	}
 	
 }
 
@@ -40,5 +44,5 @@
 }
 
 #attributeConditions {
-	
+	eq_string(tTggRule.name, hRule.name)
 }

@@ -1,58 +1,17 @@
 <?xml version="1.0" encoding="ASCII"?>
-<org.emoflon.ibex.tgg.core.language:TGG xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/" name="MoflonToHenshin">
-  <src href="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore/#/"/>
+<org.emoflon.ibex.tgg.core.language:TGG
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/"
+    name="MoflonToHenshin">
+  <src href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/"/>
   <trg href="http://www.eclipse.org/emf/2011/Henshin#/"/>
-  <corr href="platform:/resource/MoflonToHenshin/model/MoflonToHenshin.ecore#/"/>
+  <corr href="../model/MoflonToHenshin.ecore#/"/>
   <rules name="TGGRuleToHenshinRuleRule">
-    <nodes name="tTgg" outgoingEdges="//@rules.0/@edges.0" incomingCorrsSource="//@rules.0/@nodes.6">
-      <type href="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore/#//TGG"/>
+    <nodes name="tTgg"
+        bindingType="CREATE">
+      <type
+          href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG"/>
     </nodes>
-    <nodes name="tTggRule" bindingType="CREATE" incomingEdges="//@rules.0/@edges.0" incomingCorrsSource="//@rules.0/@nodes.7">
-      <type href="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore/#//TGGRule"/>
-    </nodes>
-    <nodes name="hModule" domainType="TRG" outgoingEdges="//@rules.0/@edges.1" incomingCorrsTarget="//@rules.0/@nodes.6">
-      <type href="http://www.eclipse.org/emf/2011/Henshin#//Module"/>
-    </nodes>
-    <nodes name="hRule" domainType="TRG" bindingType="CREATE" incomingEdges="//@rules.0/@edges.1" outgoingEdges="//@rules.0/@edges.2 //@rules.0/@edges.3" incomingCorrsTarget="//@rules.0/@nodes.7">
-      <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule"/>
-    </nodes>
-    <nodes name="lhs" domainType="TRG" bindingType="CREATE" incomingEdges="//@rules.0/@edges.2">
-      <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
-    </nodes>
-    <nodes name="rhs" domainType="TRG" bindingType="CREATE" incomingEdges="//@rules.0/@edges.3">
-      <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
-    </nodes>
-    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="tggToModule" domainType="CORR" source="//@rules.0/@nodes.0" target="//@rules.0/@nodes.2">
-      <type href="platform:/resource/MoflonToHenshin/model/MoflonToHenshin.ecore#//TGGToModule"/>
-    </nodes>
-    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="tggRuleToHenshinRule" domainType="CORR" bindingType="CREATE" source="//@rules.0/@nodes.1" target="//@rules.0/@nodes.3">
-      <type href="platform:/resource/MoflonToHenshin/model/MoflonToHenshin.ecore#//TGGRuleToHenshinRule"/>
-    </nodes>
-    <edges name="tTgg__rules__tTggRule_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.0/@nodes.0" trgNode="//@rules.0/@nodes.1">
-      <type href="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore/#//TGG/rules"/>
-    </edges>
-    <edges name="hModule__units__hRule_eMoflonEdge" domainType="TRG" bindingType="CREATE" srcNode="//@rules.0/@nodes.2" trgNode="//@rules.0/@nodes.3">
-      <type href="http://www.eclipse.org/emf/2011/Henshin#//Module/units"/>
-    </edges>
-    <edges name="hRule__lhs__lhs_eMoflonEdge" domainType="TRG" bindingType="CREATE" srcNode="//@rules.0/@nodes.3" trgNode="//@rules.0/@nodes.4">
-      <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/lhs"/>
-    </edges>
-    <edges name="hRule__rhs__rhs_eMoflonEdge" domainType="TRG" bindingType="CREATE" srcNode="//@rules.0/@nodes.3" trgNode="//@rules.0/@nodes.5">
-      <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/rhs"/>
-    </edges>
-    <attributeConditionLibrary/>
   </rules>
-  <rules name="TGGToModuleRule">
-    <nodes name="tTgg" bindingType="CREATE" incomingCorrsSource="//@rules.1/@nodes.2">
-      <type href="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore/#//TGG"/>
-    </nodes>
-    <nodes name="hModule" domainType="TRG" bindingType="CREATE" incomingCorrsTarget="//@rules.1/@nodes.2">
-      <type href="http://www.eclipse.org/emf/2011/Henshin#//Module"/>
-    </nodes>
-    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="tggToModule" domainType="CORR" bindingType="CREATE" source="//@rules.1/@nodes.0" target="//@rules.1/@nodes.1">
-      <type href="platform:/resource/MoflonToHenshin/model/MoflonToHenshin.ecore#//TGGToModule"/>
-    </nodes>
-    <attributeConditionLibrary/>
-  </rules>
-  <attributeConstraintDefinitionLibrary/>
 </org.emoflon.ibex.tgg.core.language:TGG>

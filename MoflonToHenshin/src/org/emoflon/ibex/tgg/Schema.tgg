@@ -1,4 +1,4 @@
-#import "platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore/"
+#import "platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore"
 #import "http://www.eclipse.org/emf/2011/Henshin"
 
 // Add imports here
@@ -30,10 +30,20 @@
 }
 
 #attributeConditions {
-//	#userDefined setCreateAttribute(binding : BindingType){
-//		#sync: [F], [B]
-//		#gen: [F], [B]
-//	}
+	#userDefined setCreateAttribute(binding : BindingType){
+		#sync: [F], [B]
+		#gen: [F], [B]
+	}
+	
+	#userDefined setContextAttribute(binding : BindingType){
+		#sync: [F], [B]
+		#gen: [F], [B]
+	}
+	
+	#userDefined setNegativeAttribute(binding : BindingType){
+		#sync: [F], [B]
+		#gen: [F], [B]
+	}
 }
 
 
