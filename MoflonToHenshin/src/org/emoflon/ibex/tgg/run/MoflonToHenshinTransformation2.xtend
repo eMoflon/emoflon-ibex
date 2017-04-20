@@ -27,31 +27,11 @@
 	import org.emoflon.ibex.tgg.contexttggnodetocontexthenshinnoderule.ContextTGGNodeToContextHenshinNodeRule_MODELGENMatcher
 	import org.emoflon.ibex.tgg.contexttggnodetocontexthenshinnoderule.ContextTGGNodeToContextHenshinNodeRule_BWDMatcher
 	import org.emoflon.ibex.tgg.contexttggnodetocontexthenshinnoderule.ContextTGGNodeToContextHenshinNodeRule_CCMatcher
-	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderule.CreateTGGNodeToCreateHenshinNodeRule_FWDMatcher
-	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderule.CreateTGGNodeToCreateHenshinNodeRule_PROTOCOLMatcher
-	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderule.CreateTGGNodeToCreateHenshinNodeRule_MODELGENMatcher
-	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderule.CreateTGGNodeToCreateHenshinNodeRule_BWDMatcher
-	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderule.CreateTGGNodeToCreateHenshinNodeRule_CCMatcher
 	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderuleplain.CreateTGGNodeToCreateHenshinNodeRulePlain_FWDMatcher
 	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderuleplain.CreateTGGNodeToCreateHenshinNodeRulePlain_PROTOCOLMatcher
 	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderuleplain.CreateTGGNodeToCreateHenshinNodeRulePlain_MODELGENMatcher
 	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderuleplain.CreateTGGNodeToCreateHenshinNodeRulePlain_BWDMatcher
 	import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderuleplain.CreateTGGNodeToCreateHenshinNodeRulePlain_CCMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodeabstractrule.NACTGGNodeToNACHenshinNodeAbstractRule_FWDMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodeabstractrule.NACTGGNodeToNACHenshinNodeAbstractRule_PROTOCOLMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodeabstractrule.NACTGGNodeToNACHenshinNodeAbstractRule_MODELGENMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodeabstractrule.NACTGGNodeToNACHenshinNodeAbstractRule_BWDMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodeabstractrule.NACTGGNodeToNACHenshinNodeAbstractRule_CCMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodewithoutotherformularule.NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_FWDMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodewithoutotherformularule.NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_PROTOCOLMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodewithoutotherformularule.NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_MODELGENMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodewithoutotherformularule.NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_BWDMatcher
-	import org.emoflon.ibex.tgg.nactggnodetonachenshinnodewithoutotherformularule.NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_CCMatcher
-	import org.emoflon.ibex.tgg.tggruletohenshinrulecontextabstractrule.TGGRuleToHenshinRuleContextAbstractRule_FWDMatcher
-	import org.emoflon.ibex.tgg.tggruletohenshinrulecontextabstractrule.TGGRuleToHenshinRuleContextAbstractRule_PROTOCOLMatcher
-	import org.emoflon.ibex.tgg.tggruletohenshinrulecontextabstractrule.TGGRuleToHenshinRuleContextAbstractRule_MODELGENMatcher
-	import org.emoflon.ibex.tgg.tggruletohenshinrulecontextabstractrule.TGGRuleToHenshinRuleContextAbstractRule_BWDMatcher
-	import org.emoflon.ibex.tgg.tggruletohenshinrulecontextabstractrule.TGGRuleToHenshinRuleContextAbstractRule_CCMatcher
 	import org.emoflon.ibex.tgg.tggruletohenshinrulerule.TGGRuleToHenshinRuleRule_FWDMatcher
 	import org.emoflon.ibex.tgg.tggruletohenshinrulerule.TGGRuleToHenshinRuleRule_PROTOCOLMatcher
 	import org.emoflon.ibex.tgg.tggruletohenshinrulerule.TGGRuleToHenshinRuleRule_MODELGENMatcher
@@ -62,8 +42,9 @@
 	import org.emoflon.ibex.tgg.tggtomodulerule.TGGToModuleRule_MODELGENMatcher
 	import org.emoflon.ibex.tgg.tggtomodulerule.TGGToModuleRule_BWDMatcher
 	import org.emoflon.ibex.tgg.tggtomodulerule.TGGToModuleRule_CCMatcher
-	
-	class MoflonToHenshinTransformation{	
+import org.emoflon.ibex.tgg.createtggnodetocreatehenshinnoderuleplain.CreateTGGNodeToCreateHenshinNodeRulePlain_SRCMatcher
+
+class MoflonToHenshinTransformation2 {	
 		
 		
 		/* Transformation-related extensions */
@@ -125,24 +106,13 @@
 		
 		private def getSynch() {
 			new EventDrivenTransformationRuleGroup(
+				getCreateTGGNodeToCreateHenshinNodeRulePlain_SRC(),
 				getContextTGGNodeToContextHenshinNodeRule_FWD(),
 				getContextTGGNodeToContextHenshinNodeRule_BWD(),
 				getContextTGGNodeToContextHenshinNodeRule_PROTOCOL(), 
-				getCreateTGGNodeToCreateHenshinNodeRule_FWD(),
-				getCreateTGGNodeToCreateHenshinNodeRule_BWD(),
-				getCreateTGGNodeToCreateHenshinNodeRule_PROTOCOL(), 
 				getCreateTGGNodeToCreateHenshinNodeRulePlain_FWD(),
 				getCreateTGGNodeToCreateHenshinNodeRulePlain_BWD(),
 				getCreateTGGNodeToCreateHenshinNodeRulePlain_PROTOCOL(), 
-				getNACTGGNodeToNACHenshinNodeAbstractRule_FWD(),
-				getNACTGGNodeToNACHenshinNodeAbstractRule_BWD(),
-				getNACTGGNodeToNACHenshinNodeAbstractRule_PROTOCOL(), 
-				getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_FWD(),
-				getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_BWD(),
-				getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_PROTOCOL(), 
-				getTGGRuleToHenshinRuleContextAbstractRule_FWD(),
-				getTGGRuleToHenshinRuleContextAbstractRule_BWD(),
-				getTGGRuleToHenshinRuleContextAbstractRule_PROTOCOL(), 
 				getTGGRuleToHenshinRuleRule_FWD(),
 				getTGGRuleToHenshinRuleRule_BWD(),
 				getTGGRuleToHenshinRuleRule_PROTOCOL(), 
@@ -152,14 +122,22 @@
 				)
 		}
 		
+		private def getCreateTGGNodeToCreateHenshinNodeRulePlain_SRC() {
+			createRule.name("CreateTGGNodeToCreateHenshinNodeRulePlain_SRC").precondition(CreateTGGNodeToCreateHenshinNodeRulePlain_SRCMatcher.querySpecification
+			).action(
+				CRUDActivationStateEnum.CREATED) [
+				         tggRuntimeUtil.addOperationalRuleMatch("CreateTGGNodeToCreateHenshinNodeRulePlain", it)
+				].action(CRUDActivationStateEnum.DELETED)[
+				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
+			.addLifeCycle(				
+				Lifecycles.getDefault(false, true)
+				).build
+		}
+		
 		private def get_MODELGEN(){
 			new EventDrivenTransformationRuleGroup(
 				getContextTGGNodeToContextHenshinNodeRule_MODELGEN(), 
-				getCreateTGGNodeToCreateHenshinNodeRule_MODELGEN(), 
 				getCreateTGGNodeToCreateHenshinNodeRulePlain_MODELGEN(), 
-				getNACTGGNodeToNACHenshinNodeAbstractRule_MODELGEN(), 
-				getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_MODELGEN(), 
-				getTGGRuleToHenshinRuleContextAbstractRule_MODELGEN(), 
 				getTGGRuleToHenshinRuleRule_MODELGEN(), 
 				getTGGToModuleRule_MODELGEN()
 			 )
@@ -168,11 +146,7 @@
 		private def get_CC(){
 			new EventDrivenTransformationRuleGroup(
 				getContextTGGNodeToContextHenshinNodeRule_CC(), 
-				getCreateTGGNodeToCreateHenshinNodeRule_CC(), 
 				getCreateTGGNodeToCreateHenshinNodeRulePlain_CC(), 
-				getNACTGGNodeToNACHenshinNodeAbstractRule_CC(), 
-				getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_CC(), 
-				getTGGRuleToHenshinRuleContextAbstractRule_CC(), 
 				getTGGRuleToHenshinRuleRule_CC(), 
 				getTGGToModuleRule_CC()
 			)
@@ -189,50 +163,10 @@
 				Lifecycles.getDefault(false, true)
 				).build
 		}
-		private def getCreateTGGNodeToCreateHenshinNodeRule_FWD() {
-			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_FWD").precondition(CreateTGGNodeToCreateHenshinNodeRule_FWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("CreateTGGNodeToCreateHenshinNodeRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRulePlain_FWD() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRulePlain_FWD").precondition(CreateTGGNodeToCreateHenshinNodeRulePlain_FWDMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
 				         tggRuntimeUtil.addOperationalRuleMatch("CreateTGGNodeToCreateHenshinNodeRulePlain", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodeToNACHenshinNodeAbstractRule_FWD() {
-			createRule.name("NACTGGNodeToNACHenshinNodeAbstractRule_FWD").precondition(NACTGGNodeToNACHenshinNodeAbstractRule_FWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("NACTGGNodeToNACHenshinNodeAbstractRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_FWD() {
-			createRule.name("NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_FWD").precondition(NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_FWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getTGGRuleToHenshinRuleContextAbstractRule_FWD() {
-			createRule.name("TGGRuleToHenshinRuleContextAbstractRule_FWD").precondition(TGGRuleToHenshinRuleContextAbstractRule_FWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("TGGRuleToHenshinRuleContextAbstractRule", it)
 				].action(CRUDActivationStateEnum.DELETED)[
 				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
 			.addLifeCycle(				
@@ -269,44 +203,8 @@
 				Lifecycles.getDefault(false, true)
 				).build
 		}
-		private def getCreateTGGNodeToCreateHenshinNodeRule_PROTOCOL() {
-			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_PROTOCOL").precondition(CreateTGGNodeToCreateHenshinNodeRule_PROTOCOLMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) []
-				.action(CRUDActivationStateEnum.DELETED)[
-				tggRuntimeUtil.addBrokenMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRulePlain_PROTOCOL() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRulePlain_PROTOCOL").precondition(CreateTGGNodeToCreateHenshinNodeRulePlain_PROTOCOLMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) []
-				.action(CRUDActivationStateEnum.DELETED)[
-				tggRuntimeUtil.addBrokenMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodeToNACHenshinNodeAbstractRule_PROTOCOL() {
-			createRule.name("NACTGGNodeToNACHenshinNodeAbstractRule_PROTOCOL").precondition(NACTGGNodeToNACHenshinNodeAbstractRule_PROTOCOLMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) []
-				.action(CRUDActivationStateEnum.DELETED)[
-				tggRuntimeUtil.addBrokenMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_PROTOCOL() {
-			createRule.name("NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_PROTOCOL").precondition(NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_PROTOCOLMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) []
-				.action(CRUDActivationStateEnum.DELETED)[
-				tggRuntimeUtil.addBrokenMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getTGGRuleToHenshinRuleContextAbstractRule_PROTOCOL() {
-			createRule.name("TGGRuleToHenshinRuleContextAbstractRule_PROTOCOL").precondition(TGGRuleToHenshinRuleContextAbstractRule_PROTOCOLMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) []
 				.action(CRUDActivationStateEnum.DELETED)[
 				tggRuntimeUtil.addBrokenMatch(it)]
@@ -343,50 +241,10 @@
 				Lifecycles.getDefault(false, true)
 				).build
 		}
-		private def getCreateTGGNodeToCreateHenshinNodeRule_MODELGEN() {
-			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_MODELGEN").precondition(CreateTGGNodeToCreateHenshinNodeRule_MODELGENMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("CreateTGGNodeToCreateHenshinNodeRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRulePlain_MODELGEN() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRulePlain_MODELGEN").precondition(CreateTGGNodeToCreateHenshinNodeRulePlain_MODELGENMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
 				         tggRuntimeUtil.addOperationalRuleMatch("CreateTGGNodeToCreateHenshinNodeRulePlain", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodeToNACHenshinNodeAbstractRule_MODELGEN() {
-			createRule.name("NACTGGNodeToNACHenshinNodeAbstractRule_MODELGEN").precondition(NACTGGNodeToNACHenshinNodeAbstractRule_MODELGENMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("NACTGGNodeToNACHenshinNodeAbstractRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_MODELGEN() {
-			createRule.name("NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_MODELGEN").precondition(NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_MODELGENMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getTGGRuleToHenshinRuleContextAbstractRule_MODELGEN() {
-			createRule.name("TGGRuleToHenshinRuleContextAbstractRule_MODELGEN").precondition(TGGRuleToHenshinRuleContextAbstractRule_MODELGENMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("TGGRuleToHenshinRuleContextAbstractRule", it)
 				].action(CRUDActivationStateEnum.DELETED)[
 				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
 			.addLifeCycle(				
@@ -424,50 +282,10 @@
 				Lifecycles.getDefault(false, true)
 				).build
 		}
-		private def getCreateTGGNodeToCreateHenshinNodeRule_BWD() {
-			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_BWD").precondition(CreateTGGNodeToCreateHenshinNodeRule_BWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("CreateTGGNodeToCreateHenshinNodeRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRulePlain_BWD() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRulePlain_BWD").precondition(CreateTGGNodeToCreateHenshinNodeRulePlain_BWDMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
 				         tggRuntimeUtil.addOperationalRuleMatch("CreateTGGNodeToCreateHenshinNodeRulePlain", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodeToNACHenshinNodeAbstractRule_BWD() {
-			createRule.name("NACTGGNodeToNACHenshinNodeAbstractRule_BWD").precondition(NACTGGNodeToNACHenshinNodeAbstractRule_BWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("NACTGGNodeToNACHenshinNodeAbstractRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_BWD() {
-			createRule.name("NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_BWD").precondition(NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_BWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getTGGRuleToHenshinRuleContextAbstractRule_BWD() {
-			createRule.name("TGGRuleToHenshinRuleContextAbstractRule_BWD").precondition(TGGRuleToHenshinRuleContextAbstractRule_BWDMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("TGGRuleToHenshinRuleContextAbstractRule", it)
 				].action(CRUDActivationStateEnum.DELETED)[
 				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
 			.addLifeCycle(				
@@ -505,50 +323,10 @@
 				Lifecycles.getDefault(false, true)
 				).build
 		}
-		private def getCreateTGGNodeToCreateHenshinNodeRule_CC() {
-			createRule.name("CreateTGGNodeToCreateHenshinNodeRule_CC").precondition(CreateTGGNodeToCreateHenshinNodeRule_CCMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("CreateTGGNodeToCreateHenshinNodeRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
 		private def getCreateTGGNodeToCreateHenshinNodeRulePlain_CC() {
 			createRule.name("CreateTGGNodeToCreateHenshinNodeRulePlain_CC").precondition(CreateTGGNodeToCreateHenshinNodeRulePlain_CCMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
 				         tggRuntimeUtil.addOperationalRuleMatch("CreateTGGNodeToCreateHenshinNodeRulePlain", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodeToNACHenshinNodeAbstractRule_CC() {
-			createRule.name("NACTGGNodeToNACHenshinNodeAbstractRule_CC").precondition(NACTGGNodeToNACHenshinNodeAbstractRule_CCMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("NACTGGNodeToNACHenshinNodeAbstractRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_CC() {
-			createRule.name("NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_CC").precondition(NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_CCMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule", it)
-				].action(CRUDActivationStateEnum.DELETED)[
-				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
-			.addLifeCycle(				
-				Lifecycles.getDefault(false, true)
-				).build
-		}
-		private def getTGGRuleToHenshinRuleContextAbstractRule_CC() {
-			createRule.name("TGGRuleToHenshinRuleContextAbstractRule_CC").precondition(TGGRuleToHenshinRuleContextAbstractRule_CCMatcher.querySpecification).action(
-				CRUDActivationStateEnum.CREATED) [
-				         tggRuntimeUtil.addOperationalRuleMatch("TGGRuleToHenshinRuleContextAbstractRule", it)
 				].action(CRUDActivationStateEnum.DELETED)[
 				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
 			.addLifeCycle(				

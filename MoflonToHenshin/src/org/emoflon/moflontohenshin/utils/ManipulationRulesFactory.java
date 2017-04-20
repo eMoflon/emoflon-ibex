@@ -1,19 +1,19 @@
 package org.emoflon.moflontohenshin.utils;
 
 import org.emoflon.moflontohenshin.ManipulationHelper;
-import org.emoflon.moflontohenshin.manipulationrules.RuleNodeCreationRule;
+import org.emoflon.moflontohenshin.manipulationrules.noderules.RuleNodeCreationRule;
 
-public class SingletonFactory {
+public class ManipulationRulesFactory {
 	
-	private static SingletonFactory instance;
+	private static ManipulationRulesFactory instance;
 	
-	private SingletonFactory(){
+	private ManipulationRulesFactory(){
 		createAllInstances();
 	}
 	
-	public static void createInstance(){
+	public static void createInstances(){
 		if(instance == null)
-			instance = new SingletonFactory();
+			instance = new ManipulationRulesFactory();
 	}
 	
 	private void createAllInstances(){

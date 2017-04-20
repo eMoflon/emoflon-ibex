@@ -1,7 +1,7 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#rule CreateTGGNodeToCreateHenshinNodeRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
+#abstract #rule CreateTGGNodeToCreateHenshinNodeRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
 
 #source { 
 	 tTggRule : TGGRule{
@@ -35,4 +35,5 @@
 
 #attributeConditions {
 	setCreateAttribute(tTGGNode.bindingType)
+	eq_string(tTGGNode.name, hCreatedNode.name)
 }
