@@ -268,7 +268,7 @@ public class EditorTGGtoInternalTGG {
 	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes,
 			TGGRuleNode node, AttributeConstraint constraint) {
 		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
-		tiae.setAttribute(node.getType().getEAttributes().stream()
+		tiae.setAttribute(node.getType().getEAllAttributes().stream()
 				.filter(attr -> attr.getName().equals(constraint.getAttribute().getName())).findFirst().get());
 		tiae.setValueExpr(createExpression(constraint.getValueExp()));
 		tiae.setOperator(convertOperator(constraint.getOp()));
@@ -278,7 +278,7 @@ public class EditorTGGtoInternalTGG {
 	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes,
 			TGGRuleNode node, AttributeAssignment assignment) {
 		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
-		tiae.setAttribute(node.getType().getEAttributes().stream()
+		tiae.setAttribute(node.getType().getEAllAttributes().stream()
 				.filter(attr -> attr.getName().equals(assignment.getAttribute().getName())).findFirst().get());
 		tiae.setValueExpr(createExpression(assignment.getValueExp()));
 		tiae.setOperator(TGGAttributeConstraintOperators.EQUAL);
