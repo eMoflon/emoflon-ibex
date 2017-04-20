@@ -206,3 +206,7 @@ NamedElements:
 NamePattern:
 	CorrVariablePattern | ObjectVariablePattern
 ;
+
+AbstractAttribute:
+	AttributeConstraint | AttributeAssignment
+;

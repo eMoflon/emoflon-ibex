@@ -1,13 +1,9 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#rule CreateTGGNodeToCreateHenshinNodeRule #with MoflonToHenshin
+#abstract #rule CreateTGGNodeToCreateHenshinNodeRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
 
 #source { 
-	tTgg : TGG{
-		 - rules -> tTggRule
-	}
-	
 	 tTggRule : TGGRule{
 		++ - nodes -> tTGGNode 
 	}
@@ -18,10 +14,6 @@
 }
 
 #target {
-	hModule : Module {
-		 - units -> hRule
-	}
-	
 	 hRule : Rule{
 		 - rhs -> rhs
 	}
@@ -35,16 +27,6 @@
 }
 
 #correspondence {
-  tggToModule : MoflonToHenshin.TGGToModule {
-  	#src->tTgg
-  	#trg->hModule
-  }
-  
-   tggRuleToHenshinRule : MoflonToHenshin.TGGRuleToHenshinRule {
-  	#src->tTggRule
-  	#trg->hRule
-  }
-	
 	++ tggNodeToHenshinNode : TGGNodeToHenshinNode {
 		#src->tTGGNode
 		#trg->hCreatedNode
@@ -53,4 +35,5 @@
 
 #attributeConditions {
 	setCreateAttribute(tTGGNode.bindingType)
+	eq_string(tTGGNode.name, hCreatedNode.name)
 }

@@ -72,7 +72,7 @@ class TGGFormatter extends AbstractFormatter2 {
 
 	def private void attributeFormat(EObject attribute, extension IFormattableDocument document){
 		attribute.surround[newLine];
-		attribute.regionFor.feature(ATTRIBUTE_CONSTRAINT__OP).surround[noSpace]
+		attribute.regionFor.feature(ABSTRACT_ATTRIBUTE__OP).surround[noSpace]
 	}
 
 	def private void corrFormat(EObject corr, extension IFormattableDocument document){

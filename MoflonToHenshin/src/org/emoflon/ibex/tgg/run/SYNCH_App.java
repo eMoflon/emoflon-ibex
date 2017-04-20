@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.henshin.model.HenshinFactory;
 import org.eclipse.emf.henshin.model.HenshinPackage;
@@ -16,7 +17,7 @@ import org.eclipse.emf.henshin.model.resource.HenshinResourceSet;
 import org.emoflon.ibex.tgg.operational.*;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.MoflonToHenshinAttrCondDefLibrary;
-import org.emoflon.moflontohenshin.utils.SingletonFactory;
+import org.emoflon.moflontohenshin.utils.ManipulationRulesFactory;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -30,7 +31,7 @@ public class SYNCH_App {
 				
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
 		registerMetamodels(rs);
-		SingletonFactory.createInstance();
+		ManipulationRulesFactory.createInstances();
 		Resource tggR = rs.getResource(URI.createFileURI("model/MoflonToHenshin.tgg.xmi"), true);
 		EcoreUtil.resolveAll(tggR);
 		TGG tgg = (TGG) tggR.getContents().get(0);
@@ -62,7 +63,7 @@ public class SYNCH_App {
 		
 		
 		
-		MoflonToHenshinTransformation transformation = new MoflonToHenshinTransformation(rs, tggRuntime);						
+		MoflonToHenshinTransformation2 transformation = new MoflonToHenshinTransformation2(rs, tggRuntime);						
 		transformation.execute();
 		
 		tggRuntime.run();
@@ -74,6 +75,7 @@ public class SYNCH_App {
 	 
 	 	c.save(null);
 	 	p.save(null);
+	 	t.save(null);
 	}
 		
 	
@@ -81,6 +83,7 @@ public class SYNCH_App {
 		// Register internals
 		LanguagePackage.eINSTANCE.getName();
 		RuntimePackage.eINSTANCE.getName();
+		HenshinPackage.eINSTANCE.getName();
 
 		
 		// Add mapping for correspondence metamodel
@@ -89,15 +92,10 @@ public class SYNCH_App {
 		Registry.INSTANCE.put(corr.getURI().toString(), corr);
 		Registry.INSTANCE.put("platform:/resource/MoflonToHenshin/model/MoflonToHenshin.ecore", pcorr);
 		Registry.INSTANCE.put("platform:/plugin/MoflonToHenshin/model/MoflonToHenshin.ecore", pcorr);
-		EPackage henshinPackage = HenshinPackage.eINSTANCE;
-		Registry.INSTANCE.put(henshinPackage.eResource().getURI().toFileString(), henshinPackage);
+//		EPackage henshinPackage = HenshinPackage.eINSTANCE;
+//		Registry.INSTANCE.put(henshinPackage.eResource().getURI().toFileString(), henshinPackage);
 		EPackage tggEPackage = LanguagePackage.eINSTANCE;
-		Registry.INSTANCE.put(tggEPackage.eResource().getURI().toFileString(), tggEPackage);
-		
-		//rs.getResource(URI.createURI("/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore", true), true);
-//		 SourcePackage.eInstance.getName();
-//		 TargetPackage.eInstance.getName();
-		
+		Registry.INSTANCE.put("platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore", tggEPackage);		
 		EcoreUtil.resolveAll(rs);
 	}
 }

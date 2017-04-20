@@ -1,0 +1,65 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule CreateTGGNodeToCreateHenshinNodeRulePlain #with MoflonToHenshin
+
+#source {
+	tTgg:TGG{
+		- rules -> tTggRule
+	}
+
+	tTggRule:TGGRule{
+		++ - nodes -> tTGGNode
+	}
+
+	++tTGGNode:TGGRuleNode{
+
+	}
+}
+
+#target {
+	hModule:Module {
+		- units -> hRule
+	}
+
+	hRule:Rule{
+		- rhs -> rhs
+		- lhs -> lhs
+		- mappings -> mapping
+	}
+
+	lhs:Graph
+
+	mapping:Mapping
+
+	rhs:Graph{
+		++ - nodes -> hCreatedNode
+	}
+
+	++hCreatedNode:Node
+}
+
+#correspondence {
+	tggToModule :MoflonToHenshin.TGGToModule {
+		#src->tTgg
+		#trg->hModule
+	}
+
+	tggRuleToHenshinRule :MoflonToHenshin.TGGRuleToHenshinRule {
+		#src->tTggRule
+		#trg->hRule
+	}
+
+	++ tggNodeToHenshinNode :TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hCreatedNode
+	}
+}
+
+#attributeConditions {
+	//setCreateAttribute(tTGGNode.bindingType)
+
+	//eq_string(tTGGNode.name, hCreatedNode.name)
+}
+
+
