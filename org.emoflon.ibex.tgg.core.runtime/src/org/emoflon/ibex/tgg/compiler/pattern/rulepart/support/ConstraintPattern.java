@@ -1,11 +1,9 @@
 package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support;
 
-import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;

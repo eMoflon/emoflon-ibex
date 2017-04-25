@@ -25,6 +25,7 @@ import org.emoflon.ibex.tgg.compiler.pattern.protocol.ConsistencyPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.ConstraintPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcProtocolAndDECPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECPattern;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
@@ -340,7 +341,7 @@ public class DemoclesHelper implements MatchEventListener {
 		}
 
 		// Force injective matches through unequals-constraints
-		if (ibexPattern instanceof RulePartPattern)
+		if (ibexPattern instanceof ConstraintPattern)
 			forceInjectiveMatchesForPattern((RulePartPattern)ibexPattern, body, nodeToVar);
 		
 
