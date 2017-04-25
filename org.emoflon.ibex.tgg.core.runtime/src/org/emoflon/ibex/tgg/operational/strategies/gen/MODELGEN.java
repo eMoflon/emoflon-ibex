@@ -71,7 +71,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 		
 		IMatch match = operationalMatchContainer.getNextRandom();
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		if(stopCriterion.dont(ruleName))
+		if(stopCriterion.dont(ruleName)) //TODO rule refinement: matches of abstract rules must be removed
 			removeOperationalRuleMatch(match);
 		else if (processOperationalRuleMatch(ruleName, match))
 			updateStopCriterion(ruleName);
