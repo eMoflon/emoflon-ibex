@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.ConsistencyPattern;
@@ -31,12 +32,7 @@ import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECP
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.DECTrackingHelper;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
 
-import language.BindingType;
-import language.DomainType;
-import language.TGG;
-import language.TGGRule;
-import language.TGGRuleElement;
-import language.TGGRuleNode;
+import language.*;
 
 public class TGGCompiler {
 	
@@ -190,23 +186,34 @@ public class TGGCompiler {
 	private void addPatternInvocationsForMultiplicityConstraints(Collection<IbexPattern> patterns, RulePartPattern pattern) {
 		TGGRule rule = pattern.getRule();
 		
-		//FIXME certain examples work, other, similar ones throw errors, either "Join failed" or "Resource not contained"
-		
 		rule.getEdges().stream()
-					   .filter(e -> e.getType().getUpperBound() == 1 
+					   .filter(e -> e.getType().getUpperBound() > 0
 					   		   && e.getBindingType() == BindingType.CREATE
 					   		   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
 					   .forEach(e -> {
 						   Collection<TGGRuleElement> signatureElements = new ArrayList<TGGRuleElement>();
 						   Collection<TGGRuleElement> bodyElements = new ArrayList<TGGRuleElement>();
-						   
+
 						   TGGRuleNode src = e.getSrcNode();
-						   TGGRuleNode trg = e.getTrgNode();
-						   
 						   signatureElements.add(src);
-						   bodyElements.add(trg);
-						   bodyElements.add(e);
 						   
+						   if (e.getTrgNode().getBindingType() == BindingType.CONTEXT)
+					   		   signatureElements.add(e.getTrgNode());
+						   else if (e.getTrgNode().getBindingType() == BindingType.NEGATIVE)
+					   		   throw new IllegalArgumentException("TGG invalid: CREATE edge connected to a NEGATIVE node");
+						   
+						   
+						   for (int i = 1; i <= e.getType().getUpperBound(); i++) {
+							   TGGRuleNode trg = EcoreUtil.copy(e.getTrgNode());
+							   TGGRuleEdge edge = EcoreUtil.copy(e);
+							   trg.setName(trg.getName()+i);
+							   edge.setSrcNode(src);
+							   edge.setTrgNode(trg);
+							   
+							   bodyElements.add(trg);
+							   bodyElements.add(edge);
+						   }
+
 						   ConstraintPattern constraint = new ConstraintPattern(rule, signatureElements, bodyElements);
 						   patterns.add(constraint);
 						   pattern.addTGGNegativeInvocation(constraint);
