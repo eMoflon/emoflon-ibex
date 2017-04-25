@@ -2,8 +2,10 @@ package org.emoflon.ibex.tgg.operational.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,6 +67,9 @@ import org.gervarro.democles.specification.emf.constraint.RelationalTypeModule;
 import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFTypeFactory;
 import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFVariable;
 import org.gervarro.democles.specification.emf.constraint.emf.emf.Reference;
+import org.gervarro.democles.specification.emf.constraint.relational.RelationalConstraint;
+import org.gervarro.democles.specification.emf.constraint.relational.RelationalConstraintFactory;
+import org.gervarro.democles.specification.emf.constraint.relational.Unequal;
 import org.gervarro.democles.specification.impl.DefaultPattern;
 import org.gervarro.democles.specification.impl.DefaultPatternBody;
 import org.gervarro.democles.specification.impl.DefaultPatternFactory;
@@ -86,7 +91,7 @@ public class DemoclesHelper implements MatchEventListener {
 
 	private ResourceSet rs;
 	private Collection<Pattern> patterns;
-	private HashMap<IDataFrame, IMatch> matches;
+	private HashMap<IDataFrame, Collection<IMatch>> matches;
 	private RetePatternMatcherModule retePatternMatcherModule;
 	private EMFPatternBuilder<DefaultPattern, DefaultPatternBody> patternBuilder;
 	private Collection<RetePattern> patternMatchers;
@@ -99,6 +104,7 @@ public class DemoclesHelper implements MatchEventListener {
 	// Factories
 	private final SpecificationFactory factory = SpecificationFactory.eINSTANCE;
 	private final EMFTypeFactory emfTypeFactory = EMFTypeFactory.eINSTANCE;
+	private final RelationalConstraintFactory rcFactory = RelationalConstraintFactory.eINSTANCE;
 
 	private List<MarkedPattern> markedPatterns;
 
@@ -332,7 +338,39 @@ public class DemoclesHelper implements MatchEventListener {
 			constraints.add(trgRef);
 		}
 
+		// Force injective matches through unequals-constraints
+		forceInjectiveMatchesForPattern(ibexPattern, body, nodeToVar);
+		
+
 		return constraints;
+	}
+	
+	private void forceInjectiveMatchesForPattern(IbexPattern ibexPattern, PatternBody body, Map<TGGRuleNode, EMFVariable> nodeToVar) {
+		Collection<TGGRuleNode> nodes = new HashSet<TGGRuleNode>(ibexPattern.getBodyNodes());
+		nodes.addAll(ibexPattern.getSignatureElements().stream()
+													   .map(e -> (TGGRuleNode)e)
+													   .collect(Collectors.toList()));
+		Collection<TGGRuleNode> processedNodes = new HashSet<TGGRuleNode>();
+		
+		for (TGGRuleNode n : nodes) {
+			processedNodes.add(n);
+			for (TGGRuleNode m : nodes) {
+				if (!processedNodes.contains(m)
+						&& (n.getType().isSuperTypeOf(m.getType())
+								|| m.getType().isSuperTypeOf(n.getType()))) {
+					RelationalConstraint unequal = rcFactory.createUnequal();
+					
+					ConstraintParameter pn = factory.createConstraintParameter();
+					ConstraintParameter pm = factory.createConstraintParameter();
+					unequal.getParameters().add(pn);
+					unequal.getParameters().add(pm);
+					pn.setReference(nodeToVar.get(n));
+					pm.setReference(nodeToVar.get(m));
+	
+					body.getConstraints().add(unequal);
+				}
+			}
+		};
 	}
 
 	private PatternInvocationConstraint createInvocationConstraint(IbexPattern root, IbexPattern inv, boolean isTrue, Map<TGGRuleNode, EMFVariable> nodeToVar) {
@@ -435,17 +473,35 @@ public class DemoclesHelper implements MatchEventListener {
 
 		p.ifPresent(pattern -> {
 			// React to create
-			if (type.contentEquals(MatchEvent.INSERT)) {
+			if (type.contentEquals(MatchEvent.INSERT) 
+					&& (!matches.keySet().contains(frame)
+							|| matches.get(frame).stream().allMatch(m -> !m.patternName().equals(pattern.getName())))) {
 				IMatch match = new IbexMatch(frame, pattern);
-				matches.put(frame, match);
+				if (matches.keySet().contains(frame)) {
+					matches.get(frame).add(match);
+				} else {
+					matches.put(frame, new ArrayList<IMatch>(Arrays.asList(match)));
+				}
 				// FIXME [anjorin] Better way of accessing rule name.
 				app.addOperationalRuleMatch(PatternSuffixes.removeSuffix(pattern.getName()), match);
 			}
 
 			// React to delete
 			if (type.equals(MatchEvent.DELETE)) {
-				app.removeOperationalRuleMatch(matches.get(frame));
-				matches.remove(frame);
+				Collection<IMatch> matchList = matches.get(frame);
+				Optional<IMatch> match = matchList == null ? Optional.empty() : 
+										 matchList.stream()
+						 						  .filter(m -> m.patternName().equals(pattern.getName()))
+						 						  .findAny();
+				
+				match.ifPresent(m -> {
+					app.removeOperationalRuleMatch(m);
+					if (matches.get(frame).size() > 1) {
+						matches.get(frame).remove(m);
+					} else {
+						matches.remove(frame);
+					}
+				});
 			}
 		});
 	}
