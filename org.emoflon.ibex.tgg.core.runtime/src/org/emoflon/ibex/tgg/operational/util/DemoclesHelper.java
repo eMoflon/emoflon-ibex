@@ -24,6 +24,7 @@ import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.ConsistencyPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcProtocolAndDECPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECPattern;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
@@ -339,38 +340,26 @@ public class DemoclesHelper implements MatchEventListener {
 		}
 
 		// Force injective matches through unequals-constraints
-		forceInjectiveMatchesForPattern(ibexPattern, body, nodeToVar);
+		if (ibexPattern instanceof RulePartPattern)
+			forceInjectiveMatchesForPattern((RulePartPattern)ibexPattern, body, nodeToVar);
 		
 
 		return constraints;
 	}
 	
-	private void forceInjectiveMatchesForPattern(IbexPattern ibexPattern, PatternBody body, Map<TGGRuleNode, EMFVariable> nodeToVar) {
-		Collection<TGGRuleNode> nodes = new HashSet<TGGRuleNode>(ibexPattern.getBodyNodes());
-		nodes.addAll(ibexPattern.getSignatureElements().stream()
-													   .map(e -> (TGGRuleNode)e)
-													   .collect(Collectors.toList()));
-		Collection<TGGRuleNode> processedNodes = new HashSet<TGGRuleNode>();
-		
-		for (TGGRuleNode n : nodes) {
-			processedNodes.add(n);
-			for (TGGRuleNode m : nodes) {
-				if (!processedNodes.contains(m)
-						&& (n.getType().isSuperTypeOf(m.getType())
-								|| m.getType().isSuperTypeOf(n.getType()))) {
-					RelationalConstraint unequal = rcFactory.createUnequal();
-					
-					ConstraintParameter pn = factory.createConstraintParameter();
-					ConstraintParameter pm = factory.createConstraintParameter();
-					unequal.getParameters().add(pn);
-					unequal.getParameters().add(pm);
-					pn.setReference(nodeToVar.get(n));
-					pm.setReference(nodeToVar.get(m));
-	
-					body.getConstraints().add(unequal);
-				}
-			}
-		};
+	private void forceInjectiveMatchesForPattern(RulePartPattern pattern, PatternBody body, Map<TGGRuleNode, EMFVariable> nodeToVar) {
+		pattern.getInjectivityChecks().stream().forEach(pair -> {
+			RelationalConstraint unequal = rcFactory.createUnequal();
+			
+			ConstraintParameter p1 = factory.createConstraintParameter();
+			ConstraintParameter p2 = factory.createConstraintParameter();
+			unequal.getParameters().add(p1);
+			unequal.getParameters().add(p2);
+			p1.setReference(nodeToVar.get(pair.getLeft()));
+			p2.setReference(nodeToVar.get(pair.getRight()));
+
+			body.getConstraints().add(unequal);
+		});
 	}
 
 	private PatternInvocationConstraint createInvocationConstraint(IbexPattern root, IbexPattern inv, boolean isTrue, Map<TGGRuleNode, EMFVariable> nodeToVar) {
