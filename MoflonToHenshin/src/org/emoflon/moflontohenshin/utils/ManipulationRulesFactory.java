@@ -1,6 +1,7 @@
 package org.emoflon.moflontohenshin.utils;
 
 import org.emoflon.moflontohenshin.ManipulationHelper;
+import org.emoflon.moflontohenshin.manipulationrules.noderules.DontCreateLHSRHS;
 import org.emoflon.moflontohenshin.manipulationrules.noderules.RuleNodeCreationRule;
 
 public class ManipulationRulesFactory {
@@ -23,5 +24,6 @@ public class ManipulationRulesFactory {
 	
 	private void createAllCreationRules(){
 		new RuleNodeCreationRule();
+		new DontCreateLHSRHS();
 	}
 }

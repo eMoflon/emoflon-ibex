@@ -63,7 +63,7 @@ public class SYNCH_App {
 		
 		
 		
-		MoflonToHenshinTransformation2 transformation = new MoflonToHenshinTransformation2(rs, tggRuntime);						
+		MoflonToHenshinTransformation transformation = new MoflonToHenshinTransformation(rs, tggRuntime);						
 		transformation.execute();
 		
 		tggRuntime.run();

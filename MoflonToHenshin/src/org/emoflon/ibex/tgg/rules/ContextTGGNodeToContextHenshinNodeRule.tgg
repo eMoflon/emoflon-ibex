@@ -3,54 +3,58 @@
 
 #rule ContextTGGNodeToContextHenshinNodeRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
 
-#source { 
-	 tTggRule : TGGRule{
-		++ - nodes -> tTGGNode 
+#source {
+	tTggRule:TGGRule{
+		++ - nodes -> tTGGNode
 	}
-	
-	++ tTGGNode : TGGRuleNode{
-		//bindingType := enum::BindingType::CREATE
+
+	++tTGGNode:TGGRuleNode{
+		bindingType:=enum::BindingType::CONTEXT
 	}
 }
 
 #target {
-	 hRule : Rule{
-		 - rhs -> rhs
-		 - lhs -> lhs
+	hRule:Rule{
+		- rhs -> rhs
+		- lhs -> lhs
+		++ - mappings -> mapping
 	}
-	
-	lhs : Graph{
+
+	lhs:Graph{
 		++ - nodes -> hLHSNodeNode
 	}
-	
-	++ hLHSNodeNode : Node
-	
-	 rhs : Graph{
-	 	++ - nodes -> hRHSNodeNode
-	 }
-	 
-	++ hRHSNodeNode : Node
-	
-	mapping : Mapping {
+
+	++hLHSNodeNode:Node
+
+	rhs:Graph{
+		++ - nodes -> hRHSNodeNode
+	}
+
+	++hRHSNodeNode:Node
+
+	++mapping:Mapping {
 		++ - origin -> hLHSNodeNode
 		++ - image -> hRHSNodeNode
 	}
 }
 
 #correspondence {
-	++ tggNodeToLHSHenshinNode : TGGNodeToHenshinNode {
+	++ tggNodeToLHSHenshinNode :TGGNodeToHenshinNode {
 		#src->tTGGNode
 		#trg->hLHSNodeNode
 	}
-	
-	++ tggNodeToRHSHenshinNode : TGGNodeToHenshinNode {
+
+	++ tggNodeToRHSHenshinNode :TGGNodeToHenshinNode {
 		#src->tTGGNode
 		#trg->hRHSNodeNode
 	}
 }
 
 #attributeConditions {
-	setContextAttribute(tTGGNode.bindingType)
+	// setContextAttribute(tTGGNode.bindingType)
 	eq_string(tTGGNode.name, hLHSNodeNode.name)
+
 	eq_string(tTGGNode.name, hRHSNodeNode.name)
 }
+
+

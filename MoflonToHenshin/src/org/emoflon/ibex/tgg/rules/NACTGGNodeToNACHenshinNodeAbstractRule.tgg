@@ -9,7 +9,7 @@
 	}
 	
 	++ tTGGNode : TGGRuleNode{
-		//bindingType := enum::BindingType::CREATE
+		bindingType := enum::BindingType::NEGATIVE
 	}
 }
 
@@ -43,6 +43,6 @@
 }
 
 #attributeConditions {
-	setNegativeAttribute(tTGGNode.bindingType)
+	//setNegativeAttribute(tTGGNode.bindingType)
 	eq_string(tTGGNode.name, hNACNode.name)
 }
