@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support;
 
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
-import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 import java.util.ArrayList;
 import java.util.Collection;
