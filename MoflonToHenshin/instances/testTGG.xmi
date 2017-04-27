@@ -3,13 +3,12 @@
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/"
-    name="MoflonToHenshin">
+    name="FooToBar">
   <src href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/"/>
   <trg href="http://www.eclipse.org/emf/2011/Henshin#/"/>
   <corr href="../model/MoflonToHenshin.ecore#/"/>
-  <rules name="TGGRuleToHenshinRuleRule">
-    <nodes name="tTgg"
-        bindingType="CREATE">
+  <rules name="FooToBarRule">
+    <nodes name="foo">
       <type
           href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG"/>
     </nodes>

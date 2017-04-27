@@ -1,7 +1,7 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#abstract #rule NACTGGNodeToNACHenshinNodeAbstractRule #with MoflonToHenshin
+#abstract #rule NACTGGNodeToNACHenshinNodeAbstractRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
 
 #source { 
 	 tTggRule : TGGRule{

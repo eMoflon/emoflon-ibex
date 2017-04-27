@@ -8,9 +8,13 @@
 		++ - nodes -> tTGGNode 
 	}
 	
+	
 	++ tTGGNode : TGGRuleNode{
 		bindingType := enum::BindingType::CREATE
 	}
+	
+	
+	
 }
 
 #target {

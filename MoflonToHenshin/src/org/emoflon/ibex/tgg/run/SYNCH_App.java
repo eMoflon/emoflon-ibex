@@ -33,6 +33,8 @@ public class SYNCH_App {
 		registerMetamodels(rs);
 		ManipulationRulesFactory.createInstances();
 		Resource tggR = rs.getResource(URI.createFileURI("model/MoflonToHenshin.tgg.xmi"), true);
+		rs = eMoflonEMFUtil.createDefaultResourceSet();
+		registerMetamodels(rs);
 		EcoreUtil.resolveAll(tggR);
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		EcoreUtil.resolveAll(tgg);

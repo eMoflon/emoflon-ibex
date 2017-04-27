@@ -19,7 +19,6 @@
 	++ hRule : Rule{
 		++ - lhs -> lhs
 		++ - rhs -> rhs
-		++ - mappings -> mapping
 	}
 	
 	++ lhs : Graph{
@@ -30,7 +29,6 @@
 		name := "RHS"
 	}
 	
-	++ mapping : Mapping
 	
 }
 
