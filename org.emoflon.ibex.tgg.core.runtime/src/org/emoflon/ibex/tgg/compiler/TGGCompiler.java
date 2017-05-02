@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
@@ -185,6 +186,7 @@ public class TGGCompiler {
 	 */
 	private void addPatternInvocationsForMultiplicityConstraints(Collection<IbexPattern> patterns, RulePartPattern pattern) {
 		TGGRule rule = pattern.getRule();
+		Resource constraintResource = rule.eResource();
 		
 		rule.getEdges().stream()
 					   .filter(e -> e.getType().getUpperBound() > 0
@@ -202,10 +204,12 @@ public class TGGCompiler {
 						   else if (e.getTrgNode().getBindingType() == BindingType.NEGATIVE)
 					   		   throw new IllegalArgumentException("TGG invalid: CREATE edge connected to a NEGATIVE node");
 						   
-						   
 						   for (int i = 1; i <= e.getType().getUpperBound(); i++) {
 							   TGGRuleNode trg = EcoreUtil.copy(e.getTrgNode());
 							   TGGRuleEdge edge = EcoreUtil.copy(e);
+							   constraintResource.getContents().add(trg);
+							   constraintResource.getContents().add(edge);
+							   
 							   trg.setName(trg.getName()+i);
 							   edge.setSrcNode(src);
 							   edge.setTrgNode(trg);
