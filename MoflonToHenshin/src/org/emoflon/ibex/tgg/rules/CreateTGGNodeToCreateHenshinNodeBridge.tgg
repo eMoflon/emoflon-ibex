@@ -1,0 +1,45 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule CreateTGGNodeToCreateHenshinNodeBridge #with MoflonToHenshin
+
+#source { 
+	 tTggRule : TGGRule{
+		++ - nodes -> tTGGNode 
+	}
+	
+	
+	tTGGNode : TGGRuleNode{
+		bindingType == enum::BindingType::CREATE
+	}	
+}
+
+#target {
+	 hRule : Rule{
+		 - rhs -> rhs
+	}
+	
+	
+	 rhs : Graph{
+	 	++ - nodes -> hCreatedNode
+	 }
+	 
+	 hCreatedNode : Node 
+}
+
+#correspondence {
+	tggNodeToHenshinNode : TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hCreatedNode
+	}
+	
+	tggRuleToHenshinRule : TGGRuleToHenshinRule {
+		#src->tTggRule
+		#trg->hRule
+	}
+}
+
+#attributeConditions {
+	//setCreateAttribute(tTGGNode.bindingType)
+	eq_string(tTGGNode.name, hCreatedNode.name)
+}

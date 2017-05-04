@@ -1,0 +1,34 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule ContextTGGEdgeToContextHenshinEdgeIsland #with MoflonToHenshin
+
+#source {
+	++tTGGEdge:TGGRuleEdge{
+		bindingType:=enum::BindingType::CONTEXT
+	}
+}
+
+#target {
+	++hRhsEdge:Edge
+
+	++hLhsEdge:Edge
+}
+
+#correspondence {
+	++ lhsTggEdgeToHenshinEdge :TGGEdgeToHenshinEdge {
+		#src->tTGGEdge
+		#trg->hLhsEdge
+	}
+
+	++ rhsTggEdgeToHenshinEdge :TGGEdgeToHenshinEdge {
+		#src->tTGGEdge
+		#trg->hRhsEdge
+	}
+}
+
+#attributeConditions {
+	
+}
+
+

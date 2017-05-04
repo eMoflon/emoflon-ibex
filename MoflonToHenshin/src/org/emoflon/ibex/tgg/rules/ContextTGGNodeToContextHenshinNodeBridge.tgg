@@ -1,0 +1,64 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule ContextTGGNodeToContextHenshinNodeBridge #with MoflonToHenshin
+
+#source {
+	tTggRule:TGGRule{
+		++ - nodes -> tTGGNode
+	}
+
+	tTGGNode:TGGRuleNode{
+		bindingType == enum::BindingType::CONTEXT
+	}
+}
+
+#target {
+	hRule:Rule{
+		- rhs -> rhs
+		- lhs -> lhs
+		++ - mappings -> mapping
+	}
+
+	lhs:Graph{
+		++ - nodes -> hLHSNodeNode
+	}
+
+	hLHSNodeNode:Node
+
+	rhs:Graph{
+		++ - nodes -> hRHSNodeNode
+	}
+
+	hRHSNodeNode:Node
+
+	mapping:Mapping {
+		 - origin -> hLHSNodeNode
+		 - image -> hRHSNodeNode
+	}
+}
+
+#correspondence {
+	tggNodeToLHSHenshinNode :TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hLHSNodeNode
+	}
+
+	tggNodeToRHSHenshinNode :TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hRHSNodeNode
+	}
+	
+	tggRuleToHenshinRule :TGGRuleToHenshinRule {
+		#src->tTggRule
+		#trg->hRule
+	}
+}
+
+#attributeConditions {
+	eq_string(tTGGNode.name, hLHSNodeNode.name)
+
+	eq_string(tTGGNode.name, hRHSNodeNode.name)
+}
+
+

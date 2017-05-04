@@ -1,32 +1,15 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#rule CreateTGGNodeToCreateHenshinNodeRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
+#rule CreateTGGNodeToCreateHenshinNodeIsland #with MoflonToHenshin
 
 #source { 
-	 tTggRule : TGGRule{
-		++ - nodes -> tTGGNode 
-	}
-	
-	
 	++ tTGGNode : TGGRuleNode{
 		bindingType := enum::BindingType::CREATE
-	}
-	
-	
-	
+	}	
 }
 
-#target {
-	 hRule : Rule{
-		 - rhs -> rhs
-	}
-	
-	
-	 rhs : Graph{
-	 	++ - nodes -> hCreatedNode
-	 }
-	 
+#target {	 
 	++ hCreatedNode : Node 
 }
 
