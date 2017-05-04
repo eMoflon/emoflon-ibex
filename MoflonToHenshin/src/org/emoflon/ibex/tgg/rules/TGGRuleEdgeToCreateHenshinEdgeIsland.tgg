@@ -1,0 +1,27 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule TGGRuleEdgeToCreateHenshinEdgeIsland  #with MoflonToHenshin
+
+#source { 
+		
+	++ tTGGEdge : TGGRuleEdge{
+		bindingType := enum::BindingType::CREATE
+	}
+	
+}
+
+#target {
+	 ++ hRhsEdge : Edge 
+}
+
+#correspondence {	
+	++ rhsTggEdgeToHenshinEdge : TGGEdgeToHenshinEdge {
+		#src->tTGGEdge
+		#trg->hRhsEdge
+	}
+}
+
+#attributeConditions {
+	
+}

@@ -1,0 +1,34 @@
+#using org.moflon.tggtomoflon.*
+#using AttrCondDefLibrary.*
+
+#rule TGGRuleToHenshinRuleIsland #with MoflonToHenshin
+
+#source { 	
+	++ tTggRule : TGGRule
+}
+
+#target {	
+	++ hRule : Rule{
+		++ - lhs -> lhs
+		++ - rhs -> rhs
+	}
+	
+	++ lhs : Graph{
+		name := "LHS"
+	}
+	
+	++ rhs : Graph{
+		name := "RHS"
+	}	
+}
+
+#correspondence {  
+  ++ tggRuleToHenshinRule : MoflonToHenshin.TGGRuleToHenshinRule {
+  	#src->tTggRule
+  	#trg->hRule
+  }
+}
+
+#attributeConditions {
+	eq_string(tTggRule.name, hRule.name)
+}

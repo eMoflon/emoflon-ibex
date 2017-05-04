@@ -1,7 +1,7 @@
 #using org.moflon.tggtomoflon.*
 #using AttrCondDefLibrary.*
 
-#rule TGGToModuleRule #with MoflonToHenshin
+#rule TGGToModuleIsland #with MoflonToHenshin
 
 #source { 
 	++ tTgg : TGG

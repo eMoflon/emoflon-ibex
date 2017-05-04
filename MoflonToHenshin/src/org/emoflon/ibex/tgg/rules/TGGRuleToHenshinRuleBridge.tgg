@@ -1,14 +1,14 @@
 #using org.moflon.tggtomoflon.*
 #using AttrCondDefLibrary.*
 
-#rule TGGRuleToHenshinRuleRule #with MoflonToHenshin
+#rule TGGRuleToHenshinRuleBridge #with MoflonToHenshin
 
 #source { 
 	tTgg : TGG{
 		++ - rules -> tTggRule
 	}
 	
-	++ tTggRule : TGGRule
+	 tTggRule : TGGRule
 }
 
 #target {
@@ -16,19 +16,7 @@
 		++ - units -> hRule
 	}
 	
-	++ hRule : Rule{
-		++ - lhs -> lhs
-		++ - rhs -> rhs
-	}
-	
-	++ lhs : Graph{
-		name := "LHS"
-	}
-	
-	++ rhs : Graph{
-		name := "RHS"
-	}
-	
+	 hRule : Rule
 	
 }
 
@@ -38,7 +26,7 @@
   	#trg->hModule
   }
   
-  ++ tggRuleToHenshinRule : MoflonToHenshin.TGGRuleToHenshinRule {
+  tggRuleToHenshinRule : MoflonToHenshin.TGGRuleToHenshinRule {
   	#src->tTggRule
   	#trg->hRule
   }

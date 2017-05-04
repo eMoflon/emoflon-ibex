@@ -1,12 +1,9 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#abstract #rule ContextTGGNodeToContextHenshinNodeRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
+#rule ContextTGGNodeToContextHenshinNodeIsland #with MoflonToHenshin
 
 #source {
-	tTggRule:TGGRule{
-		++ - nodes -> tTGGNode
-	}
 
 	++tTGGNode:TGGRuleNode{
 		bindingType:=enum::BindingType::CONTEXT
@@ -14,21 +11,7 @@
 }
 
 #target {
-	hRule:Rule{
-		- rhs -> rhs
-		- lhs -> lhs
-		++ - mappings -> mapping
-	}
-
-	lhs:Graph{
-		++ - nodes -> hLHSNodeNode
-	}
-
 	++hLHSNodeNode:Node
-
-	rhs:Graph{
-		++ - nodes -> hRHSNodeNode
-	}
 
 	++hRHSNodeNode:Node
 
