@@ -1,7 +1,7 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#rule TGGRuleEdgeToCreateHenshinEdgeBridge  #with MoflonToHenshin
+#rule CreateTGGRuleEdgeToCreateHenshinEdgeBridge  #with MoflonToHenshin
 
 #source { 
 	 tTggRule : TGGRule{
