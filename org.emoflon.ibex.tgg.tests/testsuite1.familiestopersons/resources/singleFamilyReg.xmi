@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="ASCII"?>
+<Families:FamilyRegister
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:Families="platform:/plugin/Families/model/Families.ecore"/>
