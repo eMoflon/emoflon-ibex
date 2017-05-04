@@ -39,11 +39,28 @@ public class EditorTGGtoFlattenedTGG {
 		Set<Rule> newRules = superRuleMap.keySet().stream()
 								  				  .map(this::merge)
 								  				  .collect(Collectors.toSet());
+		
+		Set<String> kernelNames = new HashSet<>();
+		
+		newRules.stream().filter(rule -> rule.getKernel() != null).forEach(rule -> fixKernel(rule, newRules, kernelNames));
 		rules.clear();
-		rules.addAll(newRules.stream().filter(rule->!rule.isAbstractRule()).collect(Collectors.toSet()));
+		rules.addAll(newRules.stream().filter(rule->!rule.isAbstractRule() || kernelNames.contains(rule.getName())).collect(Collectors.toSet()));
 		
 		
 		return flattened;
+	}
+	
+	/**
+	 * fixes amalgamation by updating the kernel
+	 * @param rule the current Rule which has a kernel
+	 * @param rules the current Set rules
+	 * @param kernelNames the names of the the rules which are kernels
+	 */
+	private void fixKernel(Rule rule, Collection<Rule> rules, Set<String> kernelNames){
+		String kernelName = rule.getKernel().getName();
+		Rule newKernel = rules.stream().filter(r -> r.getName().compareTo(kernelName)==0).findFirst().get();
+		rule.setKernel(newKernel);
+		kernelNames.add(kernelName);
 	}
 	
 	/**

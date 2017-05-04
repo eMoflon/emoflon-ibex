@@ -143,6 +143,7 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
+			return editorModel;
 		}
 		return flattenedTGG;
 	}
