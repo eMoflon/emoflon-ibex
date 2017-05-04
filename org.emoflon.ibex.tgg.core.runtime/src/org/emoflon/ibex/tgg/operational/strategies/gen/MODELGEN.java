@@ -30,12 +30,12 @@ public abstract class MODELGEN extends OperationalStrategy {
 		super(projectName, workspacePath, debug);
 	}
 	
-	protected void setStopCriterion(MODELGENStopCriterion stop) {
+	public void setStopCriterion(MODELGENStopCriterion stop) {
 		this.stopCriterion = stop;
 	}
 
 	@Override
-	protected void saveModels() throws IOException {
+	public void saveModels() throws IOException {
 		s.save(null);
 	 	t.save(null);
 	 	c.save(null);
@@ -43,7 +43,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	@Override
-	protected void loadModels() throws IOException {
+	public void loadModels() throws IOException {
 		s = createResource(projectPath + "/instances/src.xmi");
 		t = createResource(projectPath + "/instances/trg.xmi");
 		c = createResource(projectPath + "/instances/corr.xmi");
@@ -98,7 +98,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 	
 	@Override
-	protected void run() throws IOException {
+	public void run() throws IOException {
 		collectMatchesForAxioms();
 		super.run();
 	}
