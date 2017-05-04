@@ -1,311 +1,38 @@
 <?xml version="1.0" encoding="ASCII"?>
 <henshin:Module xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:henshin="http://www.eclipse.org/emf/2011/Henshin">
-  <units xsi:type="henshin:Rule" name="Axiom">
-    <lhs name="LHS">
-      <nodes name="superFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="superClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="subClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="supsupFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="superClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="subFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-    </lhs>
-    <rhs name="RHS">
-      <nodes name="superFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="p">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="p2">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="superClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="subClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="supsupFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="superClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="subFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-    </rhs>
-    <mappings origin="//@units.0/@lhs/@nodes.0" image="//@units.0/@rhs/@nodes.0"/>
-    <mappings origin="//@units.0/@lhs/@nodes.1" image="//@units.0/@rhs/@nodes.2"/>
-    <mappings origin="//@units.0/@lhs/@nodes.2" image="//@units.0/@rhs/@nodes.4"/>
-    <mappings origin="//@units.0/@lhs/@nodes.3" image="//@units.0/@rhs/@nodes.5"/>
-    <mappings origin="//@units.0/@lhs/@nodes.4" image="//@units.0/@rhs/@nodes.6"/>
-    <mappings origin="//@units.0/@lhs/@nodes.5" image="//@units.0/@rhs/@nodes.7"/>
-    <mappings origin="//@units.0/@lhs/@nodes.6" image="//@units.0/@rhs/@nodes.8"/>
-    <mappings origin="//@units.0/@lhs/@nodes.7" image="//@units.0/@rhs/@nodes.9"/>
-  </units>
-  <units xsi:type="henshin:Rule" name="ClazzToDocAmalgamationDirectBackwardMultiRule">
-    <lhs name="LHS">
-      <nodes name="subClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="subsubFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="subFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-    </lhs>
-    <rhs name="RHS">
-      <nodes name="subClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="f">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="subsubFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="f2">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="subFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="f2">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//File"/>
-      </nodes>
-    </rhs>
-    <mappings origin="//@units.1/@lhs/@nodes.0" image="//@units.1/@rhs/@nodes.0"/>
-    <mappings origin="//@units.1/@lhs/@nodes.1" image="//@units.1/@rhs/@nodes.2"/>
-    <mappings origin="//@units.1/@lhs/@nodes.2" image="//@units.1/@rhs/@nodes.3"/>
-    <mappings origin="//@units.1/@lhs/@nodes.3" image="//@units.1/@rhs/@nodes.4"/>
-    <mappings origin="//@units.1/@lhs/@nodes.4" image="//@units.1/@rhs/@nodes.6"/>
-  </units>
-  <units xsi:type="henshin:Rule" name="PackageToFolderRule_Recursive">
-    <lhs name="LHS">
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-    </lhs>
-    <rhs name="RHS">
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-    </rhs>
-    <mappings origin="//@units.2/@lhs/@nodes.0" image="//@units.2/@rhs/@nodes.0"/>
-    <mappings origin="//@units.2/@lhs/@nodes.1" image="//@units.2/@rhs/@nodes.1"/>
-  </units>
-  <units xsi:type="henshin:Rule" name="ClazzToDocAmalgamationDirectTransitiveMultiRule">
-    <lhs name="LHS">
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="superFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="superClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-    </lhs>
-    <rhs name="RHS">
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="c1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="superFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="superClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-    </rhs>
-    <mappings origin="//@units.3/@lhs/@nodes.0" image="//@units.3/@rhs/@nodes.0"/>
-    <mappings origin="//@units.3/@lhs/@nodes.1" image="//@units.3/@rhs/@nodes.2"/>
-    <mappings origin="//@units.3/@lhs/@nodes.2" image="//@units.3/@rhs/@nodes.3"/>
-    <mappings origin="//@units.3/@lhs/@nodes.3" image="//@units.3/@rhs/@nodes.4"/>
-    <mappings origin="//@units.3/@lhs/@nodes.4" image="//@units.3/@rhs/@nodes.5"/>
-    <mappings origin="//@units.3/@lhs/@nodes.5" image="//@units.3/@rhs/@nodes.6"/>
-    <mappings origin="//@units.3/@lhs/@nodes.6" image="//@units.3/@rhs/@nodes.7"/>
-  </units>
-  <units xsi:type="henshin:Rule" name="ClazzToFileRule">
-    <lhs name="LHS">
-      <nodes name="subFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="subsubFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="subClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-    </lhs>
-    <rhs name="RHS">
-      <nodes name="subFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="subsubFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="f2">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="subClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-    </rhs>
-    <mappings origin="//@units.4/@lhs/@nodes.0" image="//@units.4/@rhs/@nodes.0"/>
-    <mappings origin="//@units.4/@lhs/@nodes.1" image="//@units.4/@rhs/@nodes.1"/>
-    <mappings origin="//@units.4/@lhs/@nodes.2" image="//@units.4/@rhs/@nodes.3"/>
-  </units>
-  <units xsi:type="henshin:Rule" name="ClazzToDocAmalgamationDirectTransitiveBackwardMultiRule">
-    <lhs name="LHS">
-      <nodes name="supsupFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="superClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="subClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="superFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="subFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-    </lhs>
-    <rhs name="RHS">
-      <nodes name="supsupFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="superClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="subClazz">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="superFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="subFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-      <nodes name="f1">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//Folder"/>
-      </nodes>
-      <nodes name="p1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Package"/>
-      </nodes>
-    </rhs>
-    <mappings origin="//@units.5/@lhs/@nodes.0" image="//@units.5/@rhs/@nodes.0"/>
-    <mappings origin="//@units.5/@lhs/@nodes.1" image="//@units.5/@rhs/@nodes.1"/>
-    <mappings origin="//@units.5/@lhs/@nodes.2" image="//@units.5/@rhs/@nodes.2"/>
-    <mappings origin="//@units.5/@lhs/@nodes.3" image="//@units.5/@rhs/@nodes.3"/>
-    <mappings origin="//@units.5/@lhs/@nodes.4" image="//@units.5/@rhs/@nodes.4"/>
-    <mappings origin="//@units.5/@lhs/@nodes.5" image="//@units.5/@rhs/@nodes.5"/>
-    <mappings origin="//@units.5/@lhs/@nodes.6" image="//@units.5/@rhs/@nodes.6"/>
-    <mappings origin="//@units.5/@lhs/@nodes.7" image="//@units.5/@rhs/@nodes.7"/>
-  </units>
-  <units xsi:type="henshin:Rule" name="ClazzToDocFileRule">
-    <lhs name="LHS">
-      <nodes name="superFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-    </lhs>
-    <rhs name="RHS">
-      <nodes name="c1">
-        <type href="platform:/plugin/CD/model/CD.ecore#//Clazz"/>
-      </nodes>
-      <nodes name="superFile">
-        <type href="platform:/plugin/Doc/model/Doc.ecore#//DocFile"/>
-      </nodes>
-    </rhs>
-    <mappings origin="//@units.6/@lhs/@nodes.0" image="//@units.6/@rhs/@nodes.1"/>
-  </units>
-  <units xsi:type="henshin:Rule" name="ClazzToDocAmalgamationRule">
+  <units xsi:type="henshin:Rule" name="TGGRuleToHenshinRuleRule">
     <lhs name="LHS"/>
-    <rhs name="RHS"/>
+    <rhs name="RHS">
+      <nodes name="tTggRule" incoming="//@units.0/@rhs/@edges.0">
+        <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule"/>
+      </nodes>
+      <nodes name="hModule" outgoing="//@units.0/@rhs/@edges.1">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Module"/>
+      </nodes>
+      <nodes name="lhs" incoming="//@units.0/@rhs/@edges.3">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
+      </nodes>
+      <nodes name="tTgg" outgoing="//@units.0/@rhs/@edges.0">
+        <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG"/>
+      </nodes>
+      <nodes name="rhs" incoming="//@units.0/@rhs/@edges.2">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
+      </nodes>
+      <nodes name="hRule" incoming="//@units.0/@rhs/@edges.1" outgoing="//@units.0/@rhs/@edges.2 //@units.0/@rhs/@edges.3">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule"/>
+      </nodes>
+      <edges source="//@units.0/@rhs/@nodes.3" target="//@units.0/@rhs/@nodes.0">
+        <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/rules"/>
+      </edges>
+      <edges source="//@units.0/@rhs/@nodes.1" target="//@units.0/@rhs/@nodes.5">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Module/units"/>
+      </edges>
+      <edges source="//@units.0/@rhs/@nodes.5" target="//@units.0/@rhs/@nodes.4">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/rhs"/>
+      </edges>
+      <edges source="//@units.0/@rhs/@nodes.5" target="//@units.0/@rhs/@nodes.2">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/lhs"/>
+      </edges>
+    </rhs>
   </units>
 </henshin:Module>

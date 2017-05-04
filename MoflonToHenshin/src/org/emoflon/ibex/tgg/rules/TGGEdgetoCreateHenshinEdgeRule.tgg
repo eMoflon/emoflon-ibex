@@ -1,0 +1,22 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule TGGEdgetoCreateHenshinEdgeRule #extends TGGRuleNodeToCreateHenshinNodeContextAbstractRule #with MoflonToHenshin
+
+#source { 
+	++ tTGGEdge : TGGRuleEdge{
+		bindingType := enum::BindingType::CREATE
+	}
+}
+
+#target {
+	
+}
+
+#correspondence {
+	
+}
+
+#attributeConditions {
+	
+}

@@ -28,6 +28,11 @@
 		#src->TGGRuleNode
 		#trg->Node
 	}
+	
+	TGGEdgeToHenshinEdge{
+		#src->TGGRuleEdge
+		#trg->Edge
+	}
 }
 
 #attributeConditions {
