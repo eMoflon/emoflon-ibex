@@ -55,12 +55,17 @@ public class ScopeProviderHelper <E extends EObject> {
 	}
 	
 	private <T extends EObject> T loadScopeObject(URI uri, Class<T> clazz){
-		Resource res=resourceSet.getResource(uri, false);
-		if(res == null){
-			res = resourceSet.createResource(uri);
+		Resource res = null;
+		try {
+			res = resourceSet.getResource(uri, true);
+		} catch (Exception e) {
+			if (res == null) {
+				res = resourceSet.createResource(uri);
+			}
 		}
 		T scopingRoot = null;
-		if(res.getContents().size()<0)
+		if(res.getContents().size()>0)
+
 			scopingRoot = clazz.cast(res.getContents().get(0));
 		return scopingRoot;
 	}

@@ -1,0 +1,48 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#abstract #rule NACTGGNodeToNACHenshinNodeAbstractRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
+
+#source { 
+	 tTggRule : TGGRule{
+		++ - nodes -> tTGGNode 
+	}
+	
+	++ tTGGNode : TGGRuleNode{
+		bindingType := enum::BindingType::NEGATIVE
+	}
+}
+
+#target {
+	 hRule : Rule{
+		 - lhs -> lhs
+	}	
+	
+	 lhs : Graph{
+	 	
+	 }
+	 
+	 ++ hNot : Not{
+	 	++ - child -> hNac
+	 }
+	 
+	 ++ hGraph : Graph
+	 
+	 ++ hNac : NestedCondition {
+	 	++ - conclusion -> hGraph
+	 }
+	 
+	++ hNACNode : Node 
+}
+
+#correspondence {
+	++ tggNodeToHenshinNode : TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hNACNode
+	}
+}
+
+#attributeConditions {
+	//setNegativeAttribute(tTGGNode.bindingType)
+	eq_string(tTGGNode.name, hNACNode.name)
+}

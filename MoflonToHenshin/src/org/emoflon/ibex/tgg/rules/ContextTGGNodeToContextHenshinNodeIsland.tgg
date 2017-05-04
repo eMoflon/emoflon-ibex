@@ -1,0 +1,43 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule ContextTGGNodeToContextHenshinNodeIsland #with MoflonToHenshin
+
+#source {
+
+	++tTGGNode:TGGRuleNode{
+		bindingType:=enum::BindingType::CONTEXT
+	}
+}
+
+#target {
+	++hLHSNodeNode:Node
+
+	++hRHSNodeNode:Node
+
+	++mapping:Mapping {
+		++ - origin -> hLHSNodeNode
+		++ - image -> hRHSNodeNode
+	}
+}
+
+#correspondence {
+	++ tggNodeToLHSHenshinNode :TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hLHSNodeNode
+	}
+
+	++ tggNodeToRHSHenshinNode :TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hRHSNodeNode
+	}
+}
+
+#attributeConditions {
+	// setContextAttribute(tTGGNode.bindingType)
+	eq_string(tTGGNode.name, hLHSNodeNode.name)
+
+	eq_string(tTGGNode.name, hRHSNodeNode.name)
+}
+
+

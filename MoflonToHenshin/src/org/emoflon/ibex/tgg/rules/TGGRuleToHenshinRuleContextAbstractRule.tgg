@@ -1,0 +1,46 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#abstract #rule TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
+
+#source {
+	tTgg:TGG{
+		- rules -> tTggRule
+	}
+
+	tTggRule:TGGRule
+}
+
+#target {
+	hModule:Module {
+		- units -> hRule
+	}
+
+	hRule:Rule{
+		- rhs -> rhs
+		- lhs -> lhs
+	}
+
+	lhs:Graph
+
+	rhs:Graph
+
+}
+
+#correspondence {
+	tggToModule :MoflonToHenshin.TGGToModule {
+		#src->tTgg
+		#trg->hModule
+	}
+
+	tggRuleToHenshinRule :MoflonToHenshin.TGGRuleToHenshinRule {
+		#src->tTggRule
+		#trg->hRule
+	}
+}
+
+#attributeConditions {
+	
+}
+
+

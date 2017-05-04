@@ -1,0 +1,77 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule ContextTGGNodeToCreateHenshinNodeRulePlain #with MoflonToHenshin
+
+#source {
+	tTgg:TGG{
+		- rules -> tTggRule
+	}
+
+	tTggRule:TGGRule{
+		++ - nodes -> tTGGNode
+	}
+
+	++tTGGNode:TGGRuleNode{
+		bindingType := enum::BindingType::CONTEXT
+	}
+}
+
+#target {
+	hModule:Module {
+		- units -> hRule
+	}
+
+	hRule:Rule{
+		- rhs -> rhs
+		- lhs -> lhs
+		++ - mappings -> mapping
+	}
+
+	lhs:Graph{
+		++ - nodes -> hLHSNodeNode
+	}
+
+	++hLHSNodeNode:Node
+
+	rhs:Graph{
+		++ - nodes -> hRHSNodeNode
+	}
+
+	++hRHSNodeNode:Node
+
+	++mapping:Mapping {
+		++ - origin -> hLHSNodeNode
+		++ - image -> hRHSNodeNode
+	}
+}
+
+#correspondence {
+	tggToModule :MoflonToHenshin.TGGToModule {
+		#src->tTgg
+		#trg->hModule
+	}
+
+	tggRuleToHenshinRule :MoflonToHenshin.TGGRuleToHenshinRule {
+		#src->tTggRule
+		#trg->hRule
+	}
+
+	++ tggNodeToLHSHenshinNode :TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hLHSNodeNode
+	}
+
+	++ tggNodeToRHSHenshinNode :TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hRHSNodeNode
+	}
+}
+
+#attributeConditions {
+	eq_string(tTGGNode.name, hLHSNodeNode.name)
+
+	eq_string(tTGGNode.name, hRHSNodeNode.name)
+}
+
+

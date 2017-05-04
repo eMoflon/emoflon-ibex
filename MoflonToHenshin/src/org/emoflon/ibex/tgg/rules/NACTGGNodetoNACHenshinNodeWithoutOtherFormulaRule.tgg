@@ -1,0 +1,27 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule #extends NACTGGNodeToNACHenshinNodeAbstractRule  #with MoflonToHenshin
+
+#source { 
+	
+}
+
+#target {
+	lhs : Graph{
+		- formula -> otherFormula
+		++ -formula -> hNot
+	}
+	
+	!otherFormula : Formula
+	
+	++ hNot : Not
+}
+
+#correspondence {
+	
+}
+
+#attributeConditions {
+	
+}
