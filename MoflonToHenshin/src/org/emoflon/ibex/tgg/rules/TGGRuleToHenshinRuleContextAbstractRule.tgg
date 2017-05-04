@@ -19,14 +19,12 @@
 	hRule:Rule{
 		- rhs -> rhs
 		- lhs -> lhs
-		- mappings -> mapping
 	}
 
 	lhs:Graph
 
 	rhs:Graph
 
-	mapping:Mapping
 }
 
 #correspondence {

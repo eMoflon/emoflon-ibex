@@ -1,7 +1,7 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#abstract #rule NACTGGNodeToNACHenshinNodeAbstractRule #with MoflonToHenshin
+#abstract #rule NACTGGNodeToNACHenshinNodeAbstractRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
 
 #source { 
 	 tTggRule : TGGRule{
@@ -9,7 +9,7 @@
 	}
 	
 	++ tTGGNode : TGGRuleNode{
-		//bindingType := enum::BindingType::CREATE
+		bindingType := enum::BindingType::NEGATIVE
 	}
 }
 
@@ -43,6 +43,6 @@
 }
 
 #attributeConditions {
-	setNegativeAttribute(tTGGNode.bindingType)
+	//setNegativeAttribute(tTGGNode.bindingType)
 	eq_string(tTGGNode.name, hNACNode.name)
 }

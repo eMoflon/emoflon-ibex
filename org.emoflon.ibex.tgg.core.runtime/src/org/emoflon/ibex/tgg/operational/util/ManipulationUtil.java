@@ -44,6 +44,12 @@ public class ManipulationUtil {
 	private static Function<EObject, Function<EObject, Consumer<EReference>>> edgeCreationFun = getDefaultEdgeCreationFun();
 	
 	/**
+	 * this is the function which will crate the Correspondence of a TGG, if you want another correspondence creation, this function must be changed
+	 */
+	private static Function<TGGRuleNode, Function<EObject, Function<EObject, Function<Resource, EObject>>>> corrCreationFun = getDefaultCorrCreationFun();
+	
+	
+	/**
 	 * This will change the creation of nodes
 	 * @param fun the function which is changing the Creation
 	 */
@@ -60,11 +66,27 @@ public class ManipulationUtil {
 	}
 	
 	/**
+	 * This will change the creation of nodes
+	 * @param fun the function which is changing the Creation
+	 */
+	public static void setCorrCreationFun(Function<TGGRuleNode, Function<EObject, Function<EObject, Function<Resource, EObject>>>> fun){
+		corrCreationFun = fun;
+	}
+	
+	/**
 	 * Returns the default node creation function
 	 * @return the default node creation function
 	 */
 	public static Function<TGGRuleNode, EObject> getDefaultNodeCreationFun(){
 		return node -> {return EcoreUtil.create(node.getType());};
+	}
+	
+	/**
+	 * Returns the default Correspondence creation function
+	 * @return the default Correspondence creation function
+	 */
+	public static Function<TGGRuleNode, Function<EObject, Function<EObject, Function<Resource, EObject>>>> getDefaultCorrCreationFun(){
+		return node -> src -> trg -> corrR -> createCorr(node, src, trg, corrR); 
 	}
 	
 	/**
@@ -112,8 +134,8 @@ public class ManipulationUtil {
 	public static void createCorrs(IPatternMatch match, HashMap<String, EObject> comatch,
 			Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		greenCorrs.stream().forEach(c -> {
-			comatch.put(c.getName(), createCorr(c, getVariableByName(c.getSource().getName(), comatch, match),
-					getVariableByName(c.getTarget().getName(), comatch, match), corrR));
+			comatch.put(c.getName(), corrCreationFun.apply(c).apply(getVariableByName(c.getSource().getName(), comatch, match))
+					.apply(getVariableByName(c.getTarget().getName(), comatch, match)).apply(corrR));
 		});
 	}
 

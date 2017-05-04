@@ -40,7 +40,8 @@ public class EditorTGGtoFlattenedTGG {
 								  				  .map(this::merge)
 								  				  .collect(Collectors.toSet());
 		rules.clear();
-		rules.addAll(newRules);
+		rules.addAll(newRules.stream().filter(rule->!rule.isAbstractRule()).collect(Collectors.toSet()));
+		
 		
 		return flattened;
 	}

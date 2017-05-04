@@ -33,6 +33,8 @@ public class SYNCH_App {
 		registerMetamodels(rs);
 		ManipulationRulesFactory.createInstances();
 		Resource tggR = rs.getResource(URI.createFileURI("model/MoflonToHenshin.tgg.xmi"), true);
+		rs = eMoflonEMFUtil.createDefaultResourceSet();
+		registerMetamodels(rs);
 		EcoreUtil.resolveAll(tggR);
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		EcoreUtil.resolveAll(tgg);
@@ -63,7 +65,7 @@ public class SYNCH_App {
 		
 		
 		
-		MoflonToHenshinTransformation2 transformation = new MoflonToHenshinTransformation2(rs, tggRuntime);						
+		MoflonToHenshinTransformation transformation = new MoflonToHenshinTransformation(rs, tggRuntime);						
 		transformation.execute();
 		
 		tggRuntime.run();

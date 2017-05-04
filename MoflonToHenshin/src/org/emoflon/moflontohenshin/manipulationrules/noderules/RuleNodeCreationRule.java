@@ -17,9 +17,8 @@ public class RuleNodeCreationRule extends NodeCreationRule {
 	@Override
 	public EObject forceCreation(TGGRuleNode node) {
 		Rule rule = HenshinFactory.eINSTANCE.createRule(node.getName());
-		rule.getLhs();
-		rule.getRhs();
-		
+		rule.getMappings();
+		rule.getMultiMappings();		
 		return rule;
 	}
 
