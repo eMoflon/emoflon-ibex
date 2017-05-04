@@ -65,9 +65,11 @@ public class ScopeProviderHelper <E extends EObject> {
 		}
 		T scopingRoot = null;
 		if(res.getContents().size()>0)
+
 			scopingRoot = clazz.cast(res.getContents().get(0));
 		return scopingRoot;
 	}
+	
 	
 	public IScope createScope(List<URI> uris, Class<E> clazz, Class<EClass> type){
 		List<EClass> candidates=null;
