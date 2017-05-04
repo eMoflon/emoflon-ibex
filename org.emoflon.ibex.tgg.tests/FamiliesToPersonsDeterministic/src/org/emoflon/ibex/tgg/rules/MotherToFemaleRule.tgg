@@ -1,7 +1,7 @@
 #using FamiliesToPersonsDeterministic.*
 #using AttrCondDefLibrary.*
 
-#abstract #rule MotherToFemale #with FamiliesToPersonsDeterministic
+#rule MotherToFemale #with FamiliesToPersonsDeterministic
 
 #source { 
 	fr:FamilyRegister {
