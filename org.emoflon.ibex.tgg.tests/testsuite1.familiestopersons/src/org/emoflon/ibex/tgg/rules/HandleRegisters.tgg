@@ -1,0 +1,22 @@
+#using familiestopersons.*
+#using AttrCondDefLibrary.*
+
+#rule HandleRegisters #with familiestopersons
+
+#source { 
+	++ fr:FamilyRegister
+}
+
+#target {
+	++ pr:PersonRegister
+}
+
+#correspondence {
+	++ roots:RegisterToRegister {
+		#src->fr
+		#trg->pr
+	}
+}
+
+#attributeConditions {
+}

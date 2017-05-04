@@ -1,0 +1,24 @@
+// Add imports here
+#import "platform:/resource/Families/model/Families.ecore"
+#import "platform:/resource/Persons/model/Persons.ecore"
+
+#schema familiestopersons
+	
+#source {
+	Families
+}
+
+#target { 
+	Persons
+} 
+
+#correspondence {
+	RegisterToRegister {
+		#src->FamilyRegister
+		#trg->PersonRegister
+	}
+}
+
+#attributeConditions {
+	
+}

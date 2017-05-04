@@ -102,15 +102,15 @@ public abstract class OperationalStrategy {
 		operationalMatchContainer.removeMatch(match);
 	}
 	
-	abstract protected void saveModels() throws IOException;
+	abstract public void saveModels() throws IOException;
 	
-	abstract protected void loadModels() throws IOException;
+	abstract public void loadModels() throws IOException;
 	
 	protected void initialiseEngine(boolean debug) throws IOException {
 		engine = new DemoclesHelper(rs, this, tgg, debug);		
 	}
 
-	protected void terminate() throws IOException {
+	public void terminate() throws IOException {
 		engine.terminate();
 	}
 	
@@ -163,7 +163,7 @@ public abstract class OperationalStrategy {
 		return res;
 	}
 	
-	protected void run() throws IOException {
+	public void run() throws IOException {
 		do {
 			engine.updateMatches();
 		} while(processBrokenMatches());
@@ -446,6 +446,22 @@ public abstract class OperationalStrategy {
 		return edge;
 	}
 
+	public TGG getTGG(){
+		return tgg;
+	}
+	
+	public ResourceSet getResourceSet(){
+		return rs;
+	}
+	
+	public Resource getSourceResource(){
+		return s;
+	}
+	
+	public Resource getTargetResource(){
+		return t;
+	}
+	
 	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
 		return runtimeConstraintProvider;
 	}
