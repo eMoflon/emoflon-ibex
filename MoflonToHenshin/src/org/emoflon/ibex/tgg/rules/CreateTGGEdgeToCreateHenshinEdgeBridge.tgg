@@ -1,0 +1,72 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule CreateTGGEdgeToCreateHenshinEdgeBridge  #with MoflonToHenshin
+
+#source { 
+	 tTggRule : TGGRule{
+	 	 - nodes -> tSrcTGGNode 
+		 - nodes -> tTrgTGGNode 
+		++ - edges -> tTGGEdge
+	}
+	
+	tSrcTGGNode : TGGRuleNode{
+		++ - outgoingEdges -> tTGGEdge
+	}
+	
+	tTrgTGGNode : TGGRuleNode{
+		++ - incomingEdges -> tTGGEdge
+	}
+	
+	tTGGEdge : TGGRuleEdge	{
+		bindingType == enum::BindingType::CREATE
+	}
+	
+}
+
+#target {
+	hRule:Rule{
+		- rhs -> rhs
+	}
+	
+	 rhs : Graph{
+	 	 - nodes -> hRhsSrcNode
+	 	 - nodes -> hRhsTrgNode
+	  ++ - edges -> hRhsEdge
+	 }
+	 hRhsSrcNode : Node{
+	 	++ - outgoing -> hRhsEdge
+	 }
+	 
+	 hRhsTrgNode : Node{
+	 	++ - incoming -> hRhsEdge
+	 }
+	 
+	 hRhsEdge : Edge 
+}
+
+#correspondence {
+	rhsTggSrcNodeToHenshinNode : TGGNodeToHenshinNode {
+		#src->tSrcTGGNode
+		#trg->hRhsSrcNode
+	}
+	
+	rhsTggTrgNodeToHenshinNode : TGGNodeToHenshinNode {
+		#src->tTrgTGGNode
+		#trg->hRhsTrgNode
+	}
+	
+	rhsTggEdgeToHenshinEdge : TGGEdgeToHenshinEdge {
+		#src->tTGGEdge
+		#trg->hRhsEdge
+	}
+	
+	tggRuleToHenshinRule : TGGRuleToHenshinRule {
+		#src->tTggRule
+		#trg->hRule
+	}
+}
+
+#attributeConditions {
+	
+}

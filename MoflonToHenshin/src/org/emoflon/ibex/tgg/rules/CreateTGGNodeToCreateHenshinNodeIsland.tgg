@@ -1,0 +1,26 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule CreateTGGNodeToCreateHenshinNodeIsland #with MoflonToHenshin
+
+#source { 
+	++ tTGGNode : TGGRuleNode{
+		bindingType := enum::BindingType::CREATE
+	}	
+}
+
+#target {	 
+	++ hCreatedNode : Node 
+}
+
+#correspondence {
+	++ tggNodeToHenshinNode : TGGNodeToHenshinNode {
+		#src->tTGGNode
+		#trg->hCreatedNode
+	}
+}
+
+#attributeConditions {
+	//setCreateAttribute(tTGGNode.bindingType)
+	eq_string(tTGGNode.name, hCreatedNode.name)
+}

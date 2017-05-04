@@ -22,54 +22,42 @@ public class CONSISTENCY_CHECK_App {
 
 	public static void main(String[] args) throws IOException {
 		
-        List<String> newList = new ArrayList<String>();
-        
-        newList.add("Das ist ein");
-        newList.add("AMOK");
-        newList.add("BLA?");
-        
-        java.util.Collections.sort(newList);
-        
-        for(String s : newList) {
-            System.out.println(s);
-        }
-		
 		//BasicConfigurator.configure();
 				
-//		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
-//		registerMetamodels(rs);
-//		
-//		Resource tggR = rs.getResource(URI.createFileURI("model/CDToDoc.tgg.xmi"), true);
-//		TGG tgg = (TGG) tggR.getContents().get(0);
-//		
-//		// create your resources 
-//		Resource s = rs.createResource(URI.createFileURI("instances/src_gen.xmi"));
-//		Resource t = rs.createResource(URI.createFileURI("instances/trg_gen.xmi"));
-//		Resource c = rs.createResource(URI.createFileURI("instances/corr_gen.xmi"));
-//		Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
-//		
-//		// load the resources containing your input 
-//		s.load(null);
-//		t.load(null);
-//		
-//		System.out.println("Starting CONSISTENCY_CHECK");
-//		long tic = System.currentTimeMillis();
-//		TGGRuntimeUtil tggRuntime = new CC(tgg, s, c, t, p);
-//		
-//		CDToDocTransformation transformation = new CDToDocTransformation(rs, tggRuntime);						
-//		transformation.execute();
-//		
-//		tggRuntime.run();
-//		
-//		transformation.dispose();
-//		
-//		long toc = System.currentTimeMillis();
-//		System.out.println("Completed CONSISTENCY_CHECK in: " + (toc-tic) + " ms");
-//	 
-//	 	s.save(null);
-//	 	t.save(null);
-//	 	c.save(null);
-//	 	p.save(null);
+		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
+		registerMetamodels(rs);
+		
+		Resource tggR = rs.getResource(URI.createFileURI("model/CDToDoc.tgg.xmi"), true);
+		TGG tgg = (TGG) tggR.getContents().get(0);
+		
+		// create your resources 
+		Resource s = rs.createResource(URI.createFileURI("instances/src_gen.xmi"));
+		Resource t = rs.createResource(URI.createFileURI("instances/trg_gen.xmi"));
+		Resource c = rs.createResource(URI.createFileURI("instances/corr_gen.xmi"));
+		Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
+		
+		// load the resources containing your input 
+		s.load(null);
+		t.load(null);
+		
+		System.out.println("Starting CONSISTENCY_CHECK");
+		long tic = System.currentTimeMillis();
+		TGGRuntimeUtil tggRuntime = new CC(tgg, s, c, t, p);
+		
+		CDToDocTransformation transformation = new CDToDocTransformation(rs, tggRuntime);						
+		transformation.execute();
+		
+		tggRuntime.run();
+		
+		transformation.dispose();
+		
+		long toc = System.currentTimeMillis();
+		System.out.println("Completed CONSISTENCY_CHECK in: " + (toc-tic) + " ms");
+	 
+	 	s.save(null);
+	 	t.save(null);
+	 	c.save(null);
+	 	p.save(null);
 	}
 		
 	

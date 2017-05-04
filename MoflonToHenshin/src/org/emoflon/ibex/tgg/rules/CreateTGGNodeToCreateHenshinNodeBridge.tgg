@@ -1,16 +1,17 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#abstract #rule CreateTGGNodeToCreateHenshinNodeRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
+#rule CreateTGGNodeToCreateHenshinNodeBridge #with MoflonToHenshin
 
 #source { 
 	 tTggRule : TGGRule{
 		++ - nodes -> tTGGNode 
 	}
 	
-	++ tTGGNode : TGGRuleNode{
-		//bindingType := enum::BindingType::CREATE
-	}
+	
+	tTGGNode : TGGRuleNode{
+		bindingType == enum::BindingType::CREATE
+	}	
 }
 
 #target {
@@ -23,17 +24,22 @@
 	 	++ - nodes -> hCreatedNode
 	 }
 	 
-	++ hCreatedNode : Node 
+	 hCreatedNode : Node 
 }
 
 #correspondence {
-	++ tggNodeToHenshinNode : TGGNodeToHenshinNode {
+	tggNodeToHenshinNode : TGGNodeToHenshinNode {
 		#src->tTGGNode
 		#trg->hCreatedNode
+	}
+	
+	tggRuleToHenshinRule : TGGRuleToHenshinRule {
+		#src->tTggRule
+		#trg->hRule
 	}
 }
 
 #attributeConditions {
-	setCreateAttribute(tTGGNode.bindingType)
+	//setCreateAttribute(tTGGNode.bindingType)
 	eq_string(tTGGNode.name, hCreatedNode.name)
 }

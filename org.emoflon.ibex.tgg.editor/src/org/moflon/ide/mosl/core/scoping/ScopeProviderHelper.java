@@ -55,10 +55,21 @@ public class ScopeProviderHelper <E extends EObject> {
 	}
 	
 	private <T extends EObject> T loadScopeObject(URI uri, Class<T> clazz){
-		Resource res=resourceSet.getResource(uri, true);
-		T scopingRoot = clazz.cast(res.getContents().get(0));
+		Resource res = null;
+		try {
+			res = resourceSet.getResource(uri, true);
+		} catch (Exception e) {
+			if (res == null) {
+				res = resourceSet.createResource(uri);
+			}
+		}
+		T scopingRoot = null;
+		if(res.getContents().size()>0)
+
+			scopingRoot = clazz.cast(res.getContents().get(0));
 		return scopingRoot;
 	}
+	
 	
 	public IScope createScope(List<URI> uris, Class<E> clazz, Class<EClass> type){
 		List<EClass> candidates=null;
@@ -82,6 +93,9 @@ public class ScopeProviderHelper <E extends EObject> {
 	
 	private Collection<EDataType> getObjectFromURIString(String uriString){
 		EPackage ePackage = loadScopeObject(URI.createURI(uriString, true), EPackage.class);
-		return EcoreUtil2.getAllContentsOfType(ePackage, EDataType.class);
+		if(ePackage != null)
+			return EcoreUtil2.getAllContentsOfType(ePackage, EDataType.class);
+		else
+			return new ArrayList<>();
 	}
 }
