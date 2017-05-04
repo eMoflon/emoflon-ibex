@@ -42,6 +42,11 @@
 	import org.emoflon.ibex.tgg.tggtomodulerule.TGGToModuleRule_MODELGENMatcher
 	import org.emoflon.ibex.tgg.tggtomodulerule.TGGToModuleRule_BWDMatcher
 	import org.emoflon.ibex.tgg.tggtomodulerule.TGGToModuleRule_CCMatcher
+	import org.emoflon.ibex.tgg.tggedgetocontexthenshinedgerule.TGGEdgeToContextHenshinEdgeRule_FWDMatcher
+	import org.emoflon.ibex.tgg.tggedgetocontexthenshinedgerule.TGGEdgeToContextHenshinEdgeRule_PROTOCOLMatcher
+	import org.emoflon.ibex.tgg.tggedgetocontexthenshinedgerule.TGGEdgeToContextHenshinEdgeRule_MODELGENMatcher
+	import org.emoflon.ibex.tgg.tggedgetocontexthenshinedgerule.TGGEdgeToContextHenshinEdgeRule_BWDMatcher
+	import org.emoflon.ibex.tgg.tggedgetocontexthenshinedgerule.TGGEdgeToContextHenshinEdgeRule_CCMatcher
 	import org.emoflon.ibex.tgg.tggedgetocreatehenshinedgerule.TGGEdgetoCreateHenshinEdgeRule_FWDMatcher
 	import org.emoflon.ibex.tgg.tggedgetocreatehenshinedgerule.TGGEdgetoCreateHenshinEdgeRule_PROTOCOLMatcher
 	import org.emoflon.ibex.tgg.tggedgetocreatehenshinedgerule.TGGEdgetoCreateHenshinEdgeRule_MODELGENMatcher
@@ -127,6 +132,9 @@
 				getTGGToModuleRule_FWD(),
 				getTGGToModuleRule_BWD(),
 				getTGGToModuleRule_PROTOCOL(), 
+				getTGGEdgeToContextHenshinEdgeRule_FWD(),
+				getTGGEdgeToContextHenshinEdgeRule_BWD(),
+				getTGGEdgeToContextHenshinEdgeRule_PROTOCOL(), 
 				getTGGEdgetoCreateHenshinEdgeRule_FWD(),
 				getTGGEdgetoCreateHenshinEdgeRule_BWD(),
 				getTGGEdgetoCreateHenshinEdgeRule_PROTOCOL(), 
@@ -142,6 +150,7 @@
 				getContextTGGNodeToCreateHenshinNodeRulePlain_MODELGEN(), 
 				getTGGRuleToHenshinRuleRule_MODELGEN(), 
 				getTGGToModuleRule_MODELGEN(), 
+				getTGGEdgeToContextHenshinEdgeRule_MODELGEN(), 
 				getTGGEdgetoCreateHenshinEdgeRule_MODELGEN(), 
 				getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_MODELGEN()
 			 )
@@ -153,6 +162,7 @@
 				getContextTGGNodeToCreateHenshinNodeRulePlain_CC(), 
 				getTGGRuleToHenshinRuleRule_CC(), 
 				getTGGToModuleRule_CC(), 
+				getTGGEdgeToContextHenshinEdgeRule_CC(), 
 				getTGGEdgetoCreateHenshinEdgeRule_CC(), 
 				getNACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule_CC()
 			)
@@ -193,6 +203,16 @@
 			createRule.name("TGGToModuleRule_FWD").precondition(TGGToModuleRule_FWDMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
 				         tggRuntimeUtil.addOperationalRuleMatch("TGGToModuleRule", it)
+				].action(CRUDActivationStateEnum.DELETED)[
+				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
+			.addLifeCycle(				
+				Lifecycles.getDefault(false, true)
+				).build
+		}
+		private def getTGGEdgeToContextHenshinEdgeRule_FWD() {
+			createRule.name("TGGEdgeToContextHenshinEdgeRule_FWD").precondition(TGGEdgeToContextHenshinEdgeRule_FWDMatcher.querySpecification).action(
+				CRUDActivationStateEnum.CREATED) [
+				         tggRuntimeUtil.addOperationalRuleMatch("TGGEdgeToContextHenshinEdgeRule", it)
 				].action(CRUDActivationStateEnum.DELETED)[
 				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
 			.addLifeCycle(				
@@ -256,6 +276,15 @@
 				Lifecycles.getDefault(false, true)
 				).build
 		}
+		private def getTGGEdgeToContextHenshinEdgeRule_PROTOCOL() {
+			createRule.name("TGGEdgeToContextHenshinEdgeRule_PROTOCOL").precondition(TGGEdgeToContextHenshinEdgeRule_PROTOCOLMatcher.querySpecification).action(
+				CRUDActivationStateEnum.CREATED) []
+				.action(CRUDActivationStateEnum.DELETED)[
+				tggRuntimeUtil.addBrokenMatch(it)]
+			.addLifeCycle(				
+				Lifecycles.getDefault(false, true)
+				).build
+		}
 		private def getTGGEdgetoCreateHenshinEdgeRule_PROTOCOL() {
 			createRule.name("TGGEdgetoCreateHenshinEdgeRule_PROTOCOL").precondition(TGGEdgetoCreateHenshinEdgeRule_PROTOCOLMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) []
@@ -309,6 +338,16 @@
 			createRule.name("TGGToModuleRule_MODELGEN").precondition(TGGToModuleRule_MODELGENMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
 				         tggRuntimeUtil.addOperationalRuleMatch("TGGToModuleRule", it)
+				].action(CRUDActivationStateEnum.DELETED)[
+				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
+			.addLifeCycle(				
+				Lifecycles.getDefault(false, true)
+				).build
+		}
+		private def getTGGEdgeToContextHenshinEdgeRule_MODELGEN() {
+			createRule.name("TGGEdgeToContextHenshinEdgeRule_MODELGEN").precondition(TGGEdgeToContextHenshinEdgeRule_MODELGENMatcher.querySpecification).action(
+				CRUDActivationStateEnum.CREATED) [
+				         tggRuntimeUtil.addOperationalRuleMatch("TGGEdgeToContextHenshinEdgeRule", it)
 				].action(CRUDActivationStateEnum.DELETED)[
 				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
 			.addLifeCycle(				
@@ -376,6 +415,16 @@
 				Lifecycles.getDefault(false, true)
 				).build
 		}
+		private def getTGGEdgeToContextHenshinEdgeRule_BWD() {
+			createRule.name("TGGEdgeToContextHenshinEdgeRule_BWD").precondition(TGGEdgeToContextHenshinEdgeRule_BWDMatcher.querySpecification).action(
+				CRUDActivationStateEnum.CREATED) [
+				         tggRuntimeUtil.addOperationalRuleMatch("TGGEdgeToContextHenshinEdgeRule", it)
+				].action(CRUDActivationStateEnum.DELETED)[
+				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
+			.addLifeCycle(				
+				Lifecycles.getDefault(false, true)
+				).build
+		}
 		private def getTGGEdgetoCreateHenshinEdgeRule_BWD() {
 			createRule.name("TGGEdgetoCreateHenshinEdgeRule_BWD").precondition(TGGEdgetoCreateHenshinEdgeRule_BWDMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
@@ -431,6 +480,16 @@
 			createRule.name("TGGToModuleRule_CC").precondition(TGGToModuleRule_CCMatcher.querySpecification).action(
 				CRUDActivationStateEnum.CREATED) [
 				         tggRuntimeUtil.addOperationalRuleMatch("TGGToModuleRule", it)
+				].action(CRUDActivationStateEnum.DELETED)[
+				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
+			.addLifeCycle(				
+				Lifecycles.getDefault(false, true)
+				).build
+		}
+		private def getTGGEdgeToContextHenshinEdgeRule_CC() {
+			createRule.name("TGGEdgeToContextHenshinEdgeRule_CC").precondition(TGGEdgeToContextHenshinEdgeRule_CCMatcher.querySpecification).action(
+				CRUDActivationStateEnum.CREATED) [
+				         tggRuntimeUtil.addOperationalRuleMatch("TGGEdgeToContextHenshinEdgeRule", it)
 				].action(CRUDActivationStateEnum.DELETED)[
 				         tggRuntimeUtil.removeOperationalRuleMatch(it)]
 			.addLifeCycle(				

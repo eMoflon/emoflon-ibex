@@ -1,7 +1,7 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#abstract #rule TGGRuleNodeToCreateHenshinNodeContextAbstractRule #extends TGGRuleToHenshinRuleContextAbstractRule #with MoflonToHenshin
+#abstract #rule TGGRuleNodeToCreateHenshinNodeContextAbstractRule  #with MoflonToHenshin
 
 #source { 
 	 tTggRule : TGGRule{
@@ -22,11 +22,6 @@
 }
 
 #target {
-	 hRule : Rule{
-		 - rhs -> rhs
-	}
-	
-	
 	 rhs : Graph{
 	 	 - nodes -> hRhsSrcNode
 	 	 - nodes -> hRhsTrgNode
