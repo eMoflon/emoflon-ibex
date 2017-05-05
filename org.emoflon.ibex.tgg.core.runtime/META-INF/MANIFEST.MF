@@ -69,8 +69,7 @@ Require-Bundle: org.eclipse.emf.ecore,
  com.google.guava,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
- org.eclipse.xtend.lib.macro,
- net.sourceforge.plantuml.eclipse
+ org.eclipse.xtend.lib.macro
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
