@@ -37,7 +37,7 @@ public class SYNC_App extends SYNC {
 	}
 
 	@Override
-	protected void saveModels() throws IOException {
+	public void saveModels() throws IOException {
 		s.save(null);
 	 	t.save(null);
 	 	c.save(null);
@@ -45,7 +45,7 @@ public class SYNC_App extends SYNC {
 	}
 
 	@Override
-	protected void loadModels() throws IOException {
+	public void loadModels() throws IOException {
 		s = loadResource(projectPath + "/instances/src.xmi");
 
 		t = createResource(projectPath + "/instances/trg.xmi");

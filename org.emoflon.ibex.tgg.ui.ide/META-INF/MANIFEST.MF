@@ -22,7 +22,6 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.gervarro.eclipse.workspace.autosetup;bundle-version="[1.0.0,2.0.0)",
  org.apache.log4j;bundle-version="1.2.15",
  org.eclipse.core.runtime,
- org.moflon.ide.core;bundle-version="2.1.0",
  org.emoflon.ibex.tgg.editor,
  org.eclipse.core.commands,
  org.eclipse.jface,
@@ -40,8 +39,7 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
- org.gervarro.democles.specification.emf;bundle-version="3.0.0",
- org.moflon.ide.visualization.dot.language;bundle-version="2.1.0"
+ org.gervarro.democles.specification.emf;bundle-version="3.0.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

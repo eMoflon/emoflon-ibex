@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.presentation.EcoreEditor;
 import org.eclipse.emf.ecore.util.EContentsEList;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
@@ -21,7 +22,6 @@ import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoFlattenedTGG;
 import org.gervarro.democles.specification.emf.Pattern;
 import org.gervarro.democles.specification.emf.PatternBody;
-import org.moflon.ide.visualisation.dot.language.ToggleRefinementHandler;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider;
@@ -29,7 +29,7 @@ import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider;
 public class IbexDiagramTextProvider implements DiagramTextProvider {
 
 	@Override
-	public String getDiagramText(IEditorPart editor){
+	public String getDiagramText(IEditorPart editor, ISelection selection){
 		return PlantUMLGenerator.wrapInTags(getDiagramBody(editor));
 	}
 	
@@ -118,10 +118,11 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	private TripleGraphGrammarFile flattenIfRequested(TripleGraphGrammarFile file){
-		if(ToggleRefinementHandler.flattenRefinements())
-			return flatten(file);
-			
-		return file;
+		//FIXME[anjorin]: Add a view extension to enable this configurable option
+		// For the moment, we always display the flattened TGG file.
+		/* if(ToggleRefinementHandler.flattenRefinements()) return flatten(file); */
+		
+		return flatten(file);
 	}
 	
 	private TripleGraphGrammarFile flatten(TripleGraphGrammarFile file) {
@@ -160,7 +161,7 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 	
 	@Override
 	public boolean supportsEditor(IEditorPart editor) {
-		return editor instanceof EcoreEditor;
+		return true;
 	}
 
 	private <T> Function<Object, Optional<T>> maybeCast(Class<T> type){
@@ -171,5 +172,10 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 				return Optional.empty();
 			}
 		};
+	}
+
+	@Override
+	public boolean supportsSelection(ISelection selection) {
+		return true;
 	}
 }
