@@ -356,6 +356,7 @@ public class EditorTGGtoInternalTGG {
 
 		corrModel.setName(xtextTGG.getSchema().getName());
 		corrModel.setNsPrefix(xtextTGG.getSchema().getName());
+		// FIXME: This makes it impossible to have schema != project name
 		corrModel.setNsURI("platform:/resource/" + corrModel.getName() + "/model/" + corrModel.getName() + ".ecore");
 
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {

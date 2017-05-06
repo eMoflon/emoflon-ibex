@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 
@@ -42,6 +43,24 @@ public abstract class SYNC extends OperationalStrategy {
 	@Override
 	protected void wrapUp() {
 		
+	}
+	
+	@Override
+	public void saveModels() throws IOException {
+		s.save(null);
+	 	t.save(null);
+	 	c.save(null);
+	 	p.save(null);
+	}
+	
+	@Override
+	public void loadModels() throws IOException {
+		s = loadResource(projectPath + "/instances/src.xmi");
+		t = loadResource(projectPath + "/instances/trg.xmi");
+		c = loadResource(projectPath + "/instances/corr.xmi");
+		p = loadResource(projectPath + "/instances/protocol.xmi");
+		
+		EcoreUtil.resolveAll(rs);
 	}
 	
 	protected void forward() throws IOException {
