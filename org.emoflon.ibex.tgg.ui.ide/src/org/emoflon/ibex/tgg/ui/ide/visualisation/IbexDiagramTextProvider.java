@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -28,9 +29,16 @@ import net.sourceforge.plantuml.eclipse.utils.DiagramTextProvider;
 
 public class IbexDiagramTextProvider implements DiagramTextProvider {
 
+	Logger logger = Logger.getLogger(IbexDiagramTextProvider.class);
+	
 	@Override
 	public String getDiagramText(IEditorPart editor, ISelection selection){
-		return PlantUMLGenerator.wrapInTags(getDiagramBody(editor));
+		try {
+			return PlantUMLGenerator.wrapInTags(getDiagramBody(editor));
+		} catch (Exception e) {
+			logger.error("Unable to visualise current selection.");
+			return PlantUMLGenerator.wrapInTags(PlantUMLGenerator.emptyDiagram());
+		}
 	}
 	
 	private String getDiagramBody(IEditorPart editor) {
