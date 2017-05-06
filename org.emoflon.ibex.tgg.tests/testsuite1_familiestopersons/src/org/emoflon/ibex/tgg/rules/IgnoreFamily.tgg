@@ -1,7 +1,7 @@
 #using familiestopersons.*
 #using AttrCondDefLibrary.*
 
-#rule IgnoreFamily #with familiestopersons
+#rule IgnoreFamily #with testsuite1_familiestopersons
 
 #source { 
 	fr:FamilyRegister {
@@ -18,7 +18,7 @@
 }
 
 #correspondence {
-	fr2pr:RegisterToRegister
+	fr2pr:testsuite1_familiestopersons.RegisterToRegister
 	{
 		#src->fr
 		#trg->pr

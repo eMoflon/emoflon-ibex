@@ -107,7 +107,7 @@ public abstract class OperationalStrategy {
 	abstract public void loadModels() throws IOException;
 	
 	protected void initialiseEngine(boolean debug) throws IOException {
-		engine = new DemoclesHelper(rs, this, tgg, debug);		
+		engine = new DemoclesHelper(rs, this, tgg, projectPath, debug);		
 	}
 
 	public void terminate() throws IOException {

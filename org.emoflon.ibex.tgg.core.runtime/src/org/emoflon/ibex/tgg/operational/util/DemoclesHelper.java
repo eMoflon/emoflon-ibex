@@ -102,6 +102,7 @@ public class DemoclesHelper implements MatchEventListener {
 	private HashMap<IbexPattern, Pattern> patternMap;
 	private boolean debug;
 	private DemoclesAttributeHelper dAttrHelper;
+	private String projectPath;
 
 	// Factories
 	private final SpecificationFactory factory = SpecificationFactory.eINSTANCE;
@@ -110,7 +111,7 @@ public class DemoclesHelper implements MatchEventListener {
 
 	private List<MarkedPattern> markedPatterns;
 
-	public DemoclesHelper(ResourceSet rs, OperationalStrategy app, TGG tgg, boolean debug) throws IOException {
+	public DemoclesHelper(ResourceSet rs, OperationalStrategy app, TGG tgg, String projectPath, boolean debug) throws IOException {
 		this.rs = rs;
 		patterns = new ArrayList<>();
 		matches = new HashMap<>();
@@ -120,7 +121,8 @@ public class DemoclesHelper implements MatchEventListener {
 		patternMap = new HashMap<>();
 		this.debug = debug;
 		this.dAttrHelper = new DemoclesAttributeHelper();
-
+		this.projectPath = projectPath;
+		
 		init();
 	}
 
@@ -167,7 +169,7 @@ public class DemoclesHelper implements MatchEventListener {
 	}
 
 	private void saveDemoclesPatterns() {
-		Resource r = rs.createResource(URI.createPlatformResourceURI(tgg.getName() + "/patterns.xmi", true));
+		Resource r = rs.createResource(URI.createPlatformResourceURI(projectPath + "/debug/patterns.xmi", true));
 		r.getContents().addAll(patterns);
 		try {
 			r.save(null);
