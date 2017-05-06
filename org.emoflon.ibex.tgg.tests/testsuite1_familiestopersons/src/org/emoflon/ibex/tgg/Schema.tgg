@@ -2,7 +2,7 @@
 #import "platform:/resource/Families/model/Families.ecore"
 #import "platform:/resource/Persons/model/Persons.ecore"
 
-#schema familiestopersons
+#schema testsuite1_familiestopersons
 	
 #source {
 	Families

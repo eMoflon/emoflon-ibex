@@ -30,7 +30,7 @@ public class ModelGenTestCase {
 	
 	@Before
 	public void createGenerator() throws IOException {
-		generator = new MODELGEN_App("testsuite1.familiestopersons", "./../", false);
+		generator = new MODELGEN_App("testsuite1_familiestopersons", "./../", false);
 		stop = new MODELGENStopCriterion(generator.getTGG());
 		familiesComp = new FamiliesComparator();
 		personsComp = new PersonsComparator();

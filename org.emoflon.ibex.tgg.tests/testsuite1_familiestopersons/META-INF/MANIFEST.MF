@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: testsuite1.familiestopersons;singleton:=true
+Bundle-SymbolicName: testsuite1_familiestopersons;singleton:=true
 Bundle-Name: testsuite1.familiestopersons
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore.xmi,
