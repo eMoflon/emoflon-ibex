@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bookmarks>
-   <site url="http://gervarro.org/democles/integration-0.5.0/" selected="true" name="Democles"/>
-   <site url="http://gervarro.org/democles/advanced/integration-0.5.0/" selected="true" name="Democles Advanced"/>
-   <site url="http://files.idi.ntnu.no/publish/plantuml/repository/" selected="true" name="PlantUML"/>
+   	<site url="http://gervarro.org/democles/integration-0.5.0/" selected="true" name="Democles"/>
+   	<site url="http://gervarro.org/democles/advanced/integration-0.5.0/" selected="true" name="Democles Advanced"/>
+   	<site url="http://files.idi.ntnu.no/publish/plantuml/repository/" selected="true" name="PlantUML"/>
+	<site url="http://www.kermeta.org/k2/update/" selected="true" name="Kermeta"/>
+   	<site url="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/" selected="true" name="Xtext"/>
 </bookmarks>
