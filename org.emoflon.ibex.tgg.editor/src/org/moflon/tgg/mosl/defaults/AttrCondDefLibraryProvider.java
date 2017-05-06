@@ -1,6 +1,6 @@
 package org.moflon.tgg.mosl.defaults;
 
-import static org.moflon.core.utilities.WorkspaceHelper.addAllFoldersAndFile;
+import static org.moflon.util.WorkspaceHelper.addAllFoldersAndFile;
 
 import java.io.File;
 import java.io.IOException;

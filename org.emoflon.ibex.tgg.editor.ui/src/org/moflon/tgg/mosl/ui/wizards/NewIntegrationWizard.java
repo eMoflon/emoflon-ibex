@@ -1,7 +1,7 @@
 package org.moflon.tgg.mosl.ui.wizards;
 
-import static org.moflon.core.utilities.WorkspaceHelper.addAllFolders;
-import static org.moflon.core.utilities.WorkspaceHelper.addAllFoldersAndFile;
+import static org.moflon.util.WorkspaceHelper.addAllFolders;
+import static org.moflon.util.WorkspaceHelper.addAllFoldersAndFile;
 
 import java.io.IOException;
 
@@ -13,13 +13,14 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.ui.INewWizard;
 import org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGNature;
-import org.moflon.core.utilities.LogUtils;
-import org.moflon.core.utilities.WorkspaceHelper;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.defaults.DefaultFilesHelper;
+import org.moflon.util.LogUtils;
+import org.moflon.util.WorkspaceHelper;
 
-public class NewIntegrationWizard extends AbstractMoflonWizard {
+public class NewIntegrationWizard extends AbstractMoflonWizard implements INewWizard {
 	protected AbstractMoflonProjectInfoPage projectInfo;
 
 	private static final Logger logger = Logger.getLogger(NewIntegrationWizard.class);

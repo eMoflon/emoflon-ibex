@@ -6,7 +6,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.emoflon.ibex.tgg.ui.ide.admin.AbstractCommandHandler;
 import org.emoflon.ibex.tgg.ui.ide.admin.IbexWorkspaceUtil;
-import org.moflon.core.utilities.LogUtils;
+import org.moflon.util.LogUtils;
 
 public class NewTGGRuleHandler extends AbstractCommandHandler {
 	@Override
@@ -16,7 +16,7 @@ public class NewTGGRuleHandler extends AbstractCommandHandler {
 		try {
 			IbexWorkspaceUtil.openWizard(NewTGGRuleWizard.NEW_TGG_RULE_WIZARD_ID, window);
 		} catch (final Exception e) {
-         LogUtils.error(logger, e, "Unable to open 'new TGG rule' wizard", e);
+			LogUtils.error(logger, e, "Unable to open 'new TGG rule' wizard", e);
 		}
 
 		return null;

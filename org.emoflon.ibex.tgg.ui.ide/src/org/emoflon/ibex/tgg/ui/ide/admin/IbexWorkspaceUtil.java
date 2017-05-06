@@ -19,7 +19,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
-import org.moflon.core.utilities.LogUtils;
+import org.moflon.util.LogUtils;
 
 public class IbexWorkspaceUtil {
 	

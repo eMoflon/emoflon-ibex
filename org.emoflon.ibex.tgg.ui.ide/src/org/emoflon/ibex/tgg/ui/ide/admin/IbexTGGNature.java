@@ -20,12 +20,12 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.PlatformUI;
-import org.moflon.core.utilities.LogUtils;
-import org.moflon.core.utilities.WorkspaceHelper;
-import org.moflon.util.plugins.BuildPropertiesFileBuilder;
-import org.moflon.util.plugins.manifest.ManifestFileUpdater;
-import org.moflon.util.plugins.manifest.ManifestFileUpdater.AttributeUpdatePolicy;
-import org.moflon.util.plugins.manifest.PluginManifestConstants;
+import org.emoflon.ibex.tgg.ui.ide.admin.plugins.BuildPropertiesFileBuilder;
+import org.emoflon.ibex.tgg.ui.ide.admin.plugins.ManifestFileUpdater;
+import org.emoflon.ibex.tgg.ui.ide.admin.plugins.ManifestFileUpdater.AttributeUpdatePolicy;
+import org.moflon.util.LogUtils;
+import org.moflon.util.WorkspaceHelper;
+import org.emoflon.ibex.tgg.ui.ide.admin.plugins.PluginManifestConstants;
 
 public class IbexTGGNature implements IProjectNature {
 	public static final String IBEX_TGG_NATURE_ID  = "org.emoflon.ibex.tgg.ui.ide.nature";

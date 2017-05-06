@@ -17,13 +17,38 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.core.commands,
- org.moflon.core.utilities,
- org.eclipse.emf.mwe2.launch
-Import-Package: language.basic,
- language.csp.definition,
- org.apache.log4j
+ org.eclipse.emf.mwe2.launch,
+ org.eclipse.jdt.core;bundle-version="3.12.3",
+ org.eclipse.jdt.ui;bundle-version="3.12.2",
+ org.eclipse.pde.core;bundle-version="3.11.1",
+ org.emoflon.ibex.tgg.core.language,
+ org.emoflon.ibex.tgg.core.runtime;bundle-version="1.0.0",
+ org.apache.log4j;bundle-version="1.2.15"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: 
+Bundle-ClassPath: .antlr-generator-3.2.0-patch.jar,.
+Export-Package: antlr,
+ antlr.ASdebug,
+ antlr.actions.cpp,
+ antlr.actions.csharp,
+ antlr.actions.java,
+ antlr.actions.python,
+ antlr.build,
+ antlr.collections,
+ antlr.collections.impl,
+ antlr.debug,
+ antlr.debug.misc,
+ antlr.preprocessor,
+ de.itemis.xtext.antlr.toolrunner,
+ org.antlr,
+ org.antlr.analysis,
+ org.antlr.codegen,
+ org.antlr.grammar.v2,
+ org.antlr.grammar.v3,
+ org.antlr.misc,
+ org.antlr.stringtemplate,
+ org.antlr.stringtemplate.language,
+ org.antlr.stringtemplate.misc,
+ org.antlr.tool,
  org.moflon.ide.mosl.core.scoping,
  org.moflon.tgg.mosl,
  org.moflon.tgg.mosl.defaults,
@@ -38,7 +63,5 @@ Export-Package:
  org.moflon.tgg.mosl.tgg,
  org.moflon.tgg.mosl.tgg.impl,
  org.moflon.tgg.mosl.tgg.util,
- org.moflon.tgg.mosl.validation
-Bundle-ClassPath: .antlr-generator-3.2.0-patch.jar,
- .
-
+ org.moflon.tgg.mosl.validation,
+ org.moflon.util

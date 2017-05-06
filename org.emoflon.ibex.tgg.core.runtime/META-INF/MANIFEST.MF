@@ -1,5 +1,40 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.emoflon.ibex.tgg.core.runtime;singleton:=true
+Bundle-Name: org.emoflon.ibex.tgg.core.runtime
+Bundle-Version: 1.0
+Require-Bundle: org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.emf.common,
+ org.emoflon.ibex.tgg.core.language,
+ org.gervarro.democles.common;bundle-version="[3.0.0,4.0.0)",
+ org.gervarro.democles.specification.emf;bundle-version="[3.0.0,4.0.0)",
+ org.gervarro.util;bundle-version="[1.0.0,2.0.0)",
+ org.gervarro.notification;bundle-version="[1.0.0,2.0.0)",
+ org.gervarro.plan.dynprog;bundle-version="[1.0.1,2.0.0)",
+ org.gervarro.democles.emf;bundle-version="[2.1.0,3.0.0)",
+ org.gervarro.democles.interpreter;bundle-version="[1.0.0,2.0.0)",
+ org.gervarro.democles.interpreter.emf;bundle-version="[1.0.0,2.0.0)",
+ org.gervarro.democles.interpreter.incremental;bundle-version="[1.0.0,2.0.0)",
+ org.gervarro.democles.interpreter.incremental.emf;bundle-version="[1.0.0,2.0.0)",
+ org.gervarro.democles.notification.emf;bundle-version="[1.0.0,2.0.0)",
+ org.gervarro.democles.interpreter.lightning;bundle-version="[1.0.0,2.0.0)",
+ org.gervarro.democles.plan;bundle-version="[3.0.0,4.0.0)",
+ org.gervarro.democles.plan.emf;bundle-version="[1.0.0,2.0.0)",
+ org.gervarro.democles.plan.incremental.leaf;bundle-version="[1.0.0,2.0.0)",
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro,
+ org.apache.log4j;bundle-version="1.2.15"
+Bundle-ManifestVersion: 2
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: TU Darmstadt
+Bundle-ClassPath: lib/trove-3.1a1.jar,
+ lib/commons-io-2.5.jar,
+ lib/commons-lang3-3.5.jar,
+ lib/gurobi.jar,
+ .
 Export-Package: gnu.trove,
  gnu.trove.decorator,
  gnu.trove.function,
@@ -24,8 +59,28 @@ Export-Package: gnu.trove,
  gnu.trove.stack.array,
  gnu.trove.strategy,
  gurobi,
+ org.apache.commons.io,
+ org.apache.commons.io.comparator,
+ org.apache.commons.io.filefilter,
+ org.apache.commons.io.input,
+ org.apache.commons.io.monitor,
+ org.apache.commons.io.output,
+ org.apache.commons.io.serialization,
+ org.apache.commons.lang3,
+ org.apache.commons.lang3.builder,
+ org.apache.commons.lang3.concurrent,
+ org.apache.commons.lang3.event,
+ org.apache.commons.lang3.exception,
+ org.apache.commons.lang3.math,
+ org.apache.commons.lang3.mutable,
+ org.apache.commons.lang3.reflect,
+ org.apache.commons.lang3.text,
+ org.apache.commons.lang3.text.translate,
+ org.apache.commons.lang3.time,
+ org.apache.commons.lang3.tuple,
  org.emoflon.ibex.tgg.compiler,
  org.emoflon.ibex.tgg.compiler.pattern,
+ org.emoflon.ibex.tgg.compiler.pattern.common,
  org.emoflon.ibex.tgg.compiler.pattern.protocol,
  org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs,
  org.emoflon.ibex.tgg.compiler.pattern.rulepart,
@@ -44,35 +99,4 @@ Export-Package: gnu.trove,
  runtime,
  runtime.impl,
  runtime.util
-Bundle-Name: org.emoflon.ibex.tgg.core.runtime
-Bundle-Version: 1.0
-Require-Bundle: org.eclipse.emf.ecore,
- org.eclipse.emf.ecore.xmi,
- org.moflon.core.utilities,
- org.eclipse.emf.common,
- org.emoflon.ibex.tgg.core.language,
- org.gervarro.democles.common;bundle-version="[3.0.0,4.0.0)",
- org.gervarro.democles.specification.emf;bundle-version="[3.0.0,4.0.0)",
- org.gervarro.util;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.notification;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.plan.dynprog;bundle-version="[1.0.1,2.0.0)",
- org.gervarro.democles.emf;bundle-version="[2.1.0,3.0.0)",
- org.gervarro.democles.interpreter;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.democles.interpreter.emf;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.democles.interpreter.incremental;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.democles.interpreter.incremental.emf;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.democles.notification.emf;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.democles.interpreter.lightning;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.democles.plan;bundle-version="[3.0.0,4.0.0)",
- org.gervarro.democles.plan.emf;bundle-version="[1.0.0,2.0.0)",
- org.gervarro.democles.plan.incremental.leaf;bundle-version="[1.0.0,2.0.0)",
- com.google.guava,
- org.eclipse.xtext.xbase.lib,
- org.eclipse.xtend.lib,
- org.eclipse.xtend.lib.macro
-Bundle-ManifestVersion: 2
-Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: TU Darmstadt
-Bundle-ClassPath: lib/gurobi.jar,lib/trove-3.1a1.jar,.
 
