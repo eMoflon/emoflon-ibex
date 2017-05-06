@@ -27,7 +27,6 @@ public class TestAxiom extends ModelGenTestCase {
 		stop.setMaxRuleCount("HandleRegisters", 3);
 		stop.setMaxRuleCount("IgnoreFamily", 0);
 		runGenerator(stop);
-		generator.saveModels();
 		assertPostcondition("multipleFamilyReg", "multiplePersonReg");
 	}
 }

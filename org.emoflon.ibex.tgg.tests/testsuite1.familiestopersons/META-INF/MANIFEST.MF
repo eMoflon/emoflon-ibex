@@ -2,14 +2,10 @@ Manifest-Version: 1.0
 Bundle-SymbolicName: testsuite1.familiestopersons;singleton:=true
 Bundle-Name: testsuite1.familiestopersons
 Bundle-Version: 1.0
-Require-Bundle: org.emoflon.ibex.tgg.core.runtime,
- org.emoflon.ibex.tgg.core.language,
- org.moflon.core.utilities,
- org.eclipse.emf.ecore.xmi,
+Require-Bundle: org.eclipse.emf.ecore.xmi,
  org.gervarro.democles.common,
  org.gervarro.democles.specification.emf,
  org.gervarro.democles.interpreter,
- org.gervarro.democles.codegen.emf,
  org.gervarro.democles.emf,
  org.gervarro.democles.interpreter.emf,
  org.gervarro.democles.interpreter.incremental,
@@ -25,7 +21,10 @@ Require-Bundle: org.emoflon.ibex.tgg.core.runtime,
  Families;bundle-version="1.0.0",
  Persons;bundle-version="1.0.0",
  org.junit,
- Benchmarx;bundle-version="1.0.0"
+ Benchmarx;bundle-version="1.0.0",
+ org.emoflon.ibex.tgg.core.language;bundle-version="1.0.0",
+ org.apache.log4j;bundle-version="1.2.15",
+ org.emoflon.ibex.tgg.core.runtime;bundle-version="1.0.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

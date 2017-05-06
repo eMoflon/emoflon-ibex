@@ -1,6 +1,6 @@
 package org.moflon.tgg.mosl.ui.wizards;
 
-import static org.moflon.core.utilities.WorkspaceHelper.addAllFoldersAndFile;
+import static org.moflon.util.WorkspaceHelper.addAllFoldersAndFile;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;

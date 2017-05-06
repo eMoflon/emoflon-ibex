@@ -36,13 +36,13 @@ import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoFlattenedTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoInternalTGG;
 import org.emoflon.ibex.tgg.ui.ide.transformation.TGGProject;
-import org.moflon.core.utilities.LogUtils;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.defaults.RunFileHelper;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
+import org.moflon.util.LogUtils;
 
 import language.csp.definition.TGGAttributeConstraintDefinition;
 

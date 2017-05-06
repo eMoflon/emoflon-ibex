@@ -1,9 +1,9 @@
 
 package org.moflon.tgg.mosl.defaults
 
-import org.moflon.core.utilities.MoflonUtil
 import java.util.Collection
 import language.csp.definition.TGGAttributeConstraintDefinition
+import org.moflon.util.MoflonUtil
 
 class DefaultFilesHelper {
 

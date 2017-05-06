@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGPlugin;
-import org.moflon.core.utilities.LogUtils;
+import org.moflon.util.LogUtils;
 
 public class NewTGGRuleProjectInfoPage extends WizardPage
 {
@@ -62,7 +62,7 @@ public class NewTGGRuleProjectInfoPage extends WizardPage
    private void setProjectAndRuleLocation()
    {
       IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-      ISelection selection = window.getSelectionService().getSelection("org.eclipse.jdt.ui.PackageExplorer");
+      ISelection selection = window.getSelectionService().getSelection("org.eclipse.sirius.ui.tools.views.model.explorer");
       if (selection instanceof ITreeSelection)
       {
          ITreeSelection structuredSelection = (ITreeSelection) selection;
@@ -177,7 +177,7 @@ public class NewTGGRuleProjectInfoPage extends WizardPage
 
    public IResource getRuleLocation()
    {
-      return ruleLocation.get();
+      return ruleLocation.orElseThrow(() -> new IllegalStateException("Please choose a folder so I know where to put the new rule!"));
    }
 
    private Optional<IResource> determineLocationForNewRuleInProject(Object selectedElement)
@@ -204,7 +204,7 @@ public class NewTGGRuleProjectInfoPage extends WizardPage
 
    public String getSchema()
    {
-      return schema.get();
+      return schema.orElse("schema");
    }
 
    private final void updateStatus(final String message)
