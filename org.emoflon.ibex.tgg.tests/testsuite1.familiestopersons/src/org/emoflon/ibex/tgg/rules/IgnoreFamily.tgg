@@ -1,0 +1,30 @@
+#using familiestopersons.*
+#using AttrCondDefLibrary.*
+
+#rule IgnoreFamily #with familiestopersons
+
+#source { 
+	fr:FamilyRegister {
+	 	++ -families->f
+	}
+	
+	++ f:Family {
+		name := "Test"
+	}
+}
+
+#target {
+	pr:PersonRegister
+}
+
+#correspondence {
+	fr2pr:RegisterToRegister
+	{
+		#src->fr
+		#trg->pr
+	}
+}
+
+#attributeConditions {
+	
+}
