@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ASCII"?>
-<Persons:PersonRegister
+<SimplePersons:PersonRegister
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:Persons="platform:/plugin/Persons/model/Persons.ecore">
-  <persons xsi:type="Persons:Male"/>
-  <persons xsi:type="Persons:Male"/>
-</Persons:PersonRegister>
+    xmlns:SimplePersons="platform:/resources/SimplePersons/model/SimplePersons.ecore">
+  <persons xsi:type="SimplePersons:Male"
+      name="father"/>
+</SimplePersons:PersonRegister>

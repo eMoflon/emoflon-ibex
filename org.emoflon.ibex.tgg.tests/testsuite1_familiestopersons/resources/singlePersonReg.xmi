@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="ASCII"?>
-<Persons:PersonRegister xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:Persons="platform:/plugin/Persons/model/Persons.ecore"/>
+<SimplePersons:PersonRegister xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:SimplePersons="platform:/resource/SimplePersons/model/SimplePersons.ecore"/>

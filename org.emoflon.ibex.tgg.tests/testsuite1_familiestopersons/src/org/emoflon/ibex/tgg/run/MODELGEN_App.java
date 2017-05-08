@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 
-import Families.impl.FamiliesPackageImpl;
-import Persons.impl.PersonsPackageImpl;
+import SimpleFamilies.impl.SimpleFamiliesPackageImpl;
+import SimplePersons.impl.SimplePersonsPackageImpl;
 
 public class MODELGEN_App extends MODELGEN {
 
@@ -14,8 +14,8 @@ public class MODELGEN_App extends MODELGEN {
 	}
 
 	protected void registerUserMetamodels() throws IOException {
-		rs.getPackageRegistry().put("platform:/resource/Families/model/Families.ecore", FamiliesPackageImpl.init());
-		rs.getPackageRegistry().put("platform:/resource/Persons/model/Persons.ecore", PersonsPackageImpl.init());
+		rs.getPackageRegistry().put("platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore", SimpleFamiliesPackageImpl.init());
+		rs.getPackageRegistry().put("platform:/resource/SimplePersons/model/SimplePersons.ecore", SimplePersonsPackageImpl.init());
 		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 	}
 }
