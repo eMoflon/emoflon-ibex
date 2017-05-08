@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ASCII"?>
+<Persons:PersonRegister
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:Persons="platform:/plugin/Persons/model/Persons.ecore">
+  <persons xsi:type="Persons:Male"
+      name="father"/>
+  <persons xsi:type="Persons:Female"
+      name="mother"/>
+  <persons xsi:type="Persons:Male"
+      name="son"/>
+  <persons xsi:type="Persons:Male"
+      name="son"/>
+  <persons xsi:type="Persons:Male"
+      name="son"/>
+  <persons xsi:type="Persons:Female"
+      name="daughter"/>
+  <persons xsi:type="Persons:Female"
+      name="daughter"/>
+  <persons xsi:type="Persons:Female"
+      name="daughter"/>
+</Persons:PersonRegister>

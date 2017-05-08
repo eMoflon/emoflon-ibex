@@ -32,6 +32,14 @@ public class ModelGenTestCase {
 	public void createGenerator() throws IOException {
 		generator = new MODELGEN_App("testsuite1_familiestopersons", "./../", false);
 		stop = new MODELGENStopCriterion(generator.getTGG());
+		
+		stop.setMaxRuleCount("HandleRegisters", 0);
+		stop.setMaxRuleCount("IgnoreFamily", 0);
+		stop.setMaxRuleCount("FatherToMale", 0);
+		stop.setMaxRuleCount("MotherToFemale", 0);
+		stop.setMaxRuleCount("DaughterToFemale", 0);
+		stop.setMaxRuleCount("SonToMale", 0);
+		
 		familiesComp = new FamiliesComparator();
 		personsComp = new PersonsComparator();
 	}

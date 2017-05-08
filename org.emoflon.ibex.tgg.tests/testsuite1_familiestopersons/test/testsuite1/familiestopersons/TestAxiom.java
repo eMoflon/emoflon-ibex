@@ -9,7 +9,6 @@ public class TestAxiom extends ModelGenTestCase {
 	@Test
 	public void testOneRoot() throws IOException {
 		stop.setMaxRuleCount("HandleRegisters", 1);
-		stop.setMaxRuleCount("IgnoreFamily", 0);
 		runGenerator(stop);
 		assertPostcondition("singleFamilyReg", "singlePersonReg");
 	}
@@ -25,7 +24,6 @@ public class TestAxiom extends ModelGenTestCase {
 	@Test
 	public void testMultipleRoots() throws IOException {
 		stop.setMaxRuleCount("HandleRegisters", 3);
-		stop.setMaxRuleCount("IgnoreFamily", 0);
 		runGenerator(stop);
 		assertPostcondition("multipleFamilyReg", "multiplePersonReg");
 	}
