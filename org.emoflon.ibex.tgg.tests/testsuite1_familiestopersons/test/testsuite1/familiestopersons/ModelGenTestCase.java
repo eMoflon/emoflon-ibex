@@ -40,6 +40,7 @@ public class ModelGenTestCase {
 		stop.setMaxRuleCount("DaughterToFemale", 0);
 		stop.setMaxRuleCount("SonToMale", 0);
 		stop.setMaxRuleCount("FatherToNothing", 0);
+		stop.setMaxRuleCount("FatherAndMale", 0);
 		
 		familiesComp = new FamiliesComparator();
 		personsComp = new PersonsComparator();

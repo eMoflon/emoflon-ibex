@@ -1,4 +1,4 @@
-#using familiestopersons.*
+#using testsuite1_familiestopersons.*
 #using AttrCondDefLibrary.*
 
 #rule FatherToNothing #with testsuite1_familiestopersons
@@ -22,7 +22,7 @@
 }
 
 #correspondence {
-	roots:testsuite1_familiestopersons.RegisterToRegister {
+	roots:RegisterToRegister {
 		#src->fr
 		#trg->pr
 	}

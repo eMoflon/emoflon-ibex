@@ -42,4 +42,20 @@ public class TestMultiplicities extends ModelGenTestCase {
 		assertPostcondition("singleFatherFamilies", "singlePersonReg");
 	}
 
+	@Test
+	public void testZeroToNMultiplicityWithManyFamilies() throws IOException {
+		stop.setMaxRuleCount("HandleRegisters", 1);
+		stop.setMaxRuleCount("IgnoreFamily", 8);
+		runGenerator(stop);
+		assertPostcondition("singleFamilyRegAndFiveFamilies", "singlePersonReg");
+	}
+
+	@Test
+	public void testZeroToNMultiplicityWithFewFamilies() throws IOException {
+		stop.setMaxRuleCount("HandleRegisters", 1);
+		stop.setMaxRuleCount("IgnoreFamily", 2);
+		runGenerator(stop);
+		assertPostcondition("singleFamilyRegAndTwoFamilies", "singlePersonReg");
+	}
+
 }

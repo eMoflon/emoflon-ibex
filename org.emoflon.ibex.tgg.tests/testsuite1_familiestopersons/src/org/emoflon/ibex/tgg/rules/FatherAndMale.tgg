@@ -1,7 +1,7 @@
 #using testsuite1_familiestopersons.*
 #using AttrCondDefLibrary.*
 
-#rule FatherToMale #with testsuite1_familiestopersons
+#rule FatherAndMale #with testsuite1_familiestopersons
 
 #source { 
 	fr:FamilyRegister {
@@ -28,15 +28,7 @@
 }
 
 #correspondence {
-	roots:RegisterToRegister {
-		#src->fr
-		#trg->pr
-	}
 	
-	++ memberToPerson:FamilyMemberToPerson {
-		#src->father
-		#trg->p
-	}
 }
 
 #attributeConditions {

@@ -1,4 +1,4 @@
-#using familiestopersons.*
+#using testsuite1_familiestopersons.*
 #using AttrCondDefLibrary.*
 
 #rule SonToMale #with testsuite1_familiestopersons
@@ -28,12 +28,12 @@
 }
 
 #correspondence {
-	roots:testsuite1_familiestopersons.RegisterToRegister {
+	roots:RegisterToRegister {
 		#src->fr
 		#trg->pr
 	}
 	
-	++ memberToPerson:testsuite1_familiestopersons.FamilyMemberToPerson {
+	++ memberToPerson:FamilyMemberToPerson {
 		#src->son
 		#trg->p
 	}
