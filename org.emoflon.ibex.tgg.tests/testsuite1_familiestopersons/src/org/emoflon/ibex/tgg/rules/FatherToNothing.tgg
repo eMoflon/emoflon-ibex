@@ -1,0 +1,32 @@
+#using familiestopersons.*
+#using AttrCondDefLibrary.*
+
+#rule FatherToNothing #with testsuite1_familiestopersons
+
+#source { 
+	fr:FamilyRegister {
+		-families->f
+	}
+	
+	f:Family {
+		++ -father->father
+	}
+	
+	++ father:FamilyMember {
+		name := "father"
+	}
+}
+
+#target {
+	pr:PersonRegister
+}
+
+#correspondence {
+	roots:testsuite1_familiestopersons.RegisterToRegister {
+		#src->fr
+		#trg->pr
+	}
+}
+
+#attributeConditions {
+}
