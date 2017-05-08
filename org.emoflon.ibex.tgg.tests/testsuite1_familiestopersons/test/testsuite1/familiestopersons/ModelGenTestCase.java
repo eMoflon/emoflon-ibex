@@ -14,8 +14,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import Families.FamilyRegister;
-import Persons.PersonRegister;
+import SimpleFamilies.FamilyRegister;
+import SimplePersons.PersonRegister;
 
 public class ModelGenTestCase {
 	protected MODELGEN_App generator;
@@ -54,6 +54,9 @@ public class ModelGenTestCase {
 	protected void assertPostcondition(String src, String trg) {
 		Resource srcExp = EMFUtil.loadExpectedResource(src, generator.getResourceSet());
 		Resource trgExp = EMFUtil.loadExpectedResource(trg, generator.getResourceSet());
+		
+		Assert.assertNotEquals("Resource is empty", 0, srcExp.getContents().size());
+		Assert.assertNotEquals("Resource is empty", 0, trgExp.getContents().size());
 
 		Assert.assertEquals(srcExp.getContents().size(), generator.getSourceResource().getContents().size());
 		for (int i = 0; i < srcExp.getContents().size(); i++) {

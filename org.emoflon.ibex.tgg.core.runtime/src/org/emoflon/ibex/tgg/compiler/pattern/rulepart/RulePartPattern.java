@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.compiler.pattern.rulepart;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,8 +28,12 @@ public abstract class RulePartPattern extends IbexPattern {
 		List<TGGRuleNode> nodes = new ArrayList<TGGRuleNode>(this.getBodyNodes());
 		nodes.addAll(this.getSignatureElements().stream()
 												.filter(e -> e instanceof TGGRuleNode)
-												.map(e -> (TGGRuleNode)e)
+												.map(TGGRuleNode.class::cast)
 												.collect(Collectors.toList()));
+		
+		// Remove duplicates
+		nodes = nodes.stream().distinct().collect(Collectors.toList());
+		
 		Collection<Pair<TGGRuleNode, TGGRuleNode>> injectivityCheckPairs = new ArrayList<>();
 		for(int i = 0; i < nodes.size(); i++){
 			for(int j = i+1; j < nodes.size(); j++){
@@ -43,6 +46,7 @@ public abstract class RulePartPattern extends IbexPattern {
 				}
 			}
 		}
+		
 		return injectivityCheckPairs;
 	}
 	

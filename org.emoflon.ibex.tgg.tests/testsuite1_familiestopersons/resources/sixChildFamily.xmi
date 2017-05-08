@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="ASCII"?>
-<Families:FamilyRegister
+<SimpleFamilies:FamilyRegister
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
-    xmlns:Families="platform:/plugin/Families/model/Families.ecore">
-  <families>
+    xmlns:SimpleFamilies="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore">
+  <families
+      name="Test">
     <father
         name="father"/>
     <mother
@@ -18,4 +19,4 @@
     <daughters
         name="daughter"/>
   </families>
-</Families:FamilyRegister>
+</SimpleFamilies:FamilyRegister>

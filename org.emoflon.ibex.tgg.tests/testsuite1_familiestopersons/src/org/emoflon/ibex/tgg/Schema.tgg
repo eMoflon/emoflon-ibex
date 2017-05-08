@@ -1,16 +1,16 @@
 // Add imports here
-#import "platform:/resource/Families/model/Families.ecore"
-#import "platform:/resource/Persons/model/Persons.ecore"
+#import "platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore"
+#import "platform:/resource/SimplePersons/model/SimplePersons.ecore"
 
 #schema testsuite1_familiestopersons
-	
+
 #source {
-	Families
+	SimpleFamilies
 }
 
-#target { 
-	Persons
-} 
+#target {
+	SimplePersons
+}
 
 #correspondence {
 	RegisterToRegister {

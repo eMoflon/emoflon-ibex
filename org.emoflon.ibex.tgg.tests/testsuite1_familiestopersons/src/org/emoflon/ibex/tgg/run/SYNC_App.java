@@ -7,8 +7,9 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
-import Families.impl.FamiliesPackageImpl;
-import Persons.impl.PersonsPackageImpl;
+import SimpleFamilies.impl.SimpleFamiliesPackageImpl;
+import SimplePersons.impl.SimplePersonsPackageImpl;
+
 
 public class SYNC_App extends SYNC {
 
@@ -32,17 +33,17 @@ public class SYNC_App extends SYNC {
 	}
 	
 	protected void registerUserMetamodels() throws IOException {
-		rs.getPackageRegistry().put("platform:/resource/Families/model/Families.ecore", FamiliesPackageImpl.init());
-		rs.getPackageRegistry().put("platform:/resource/Persons/model/Persons.ecore", PersonsPackageImpl.init());
+		rs.getPackageRegistry().put("platform:/resource/Families/model/Families.ecore", SimpleFamiliesPackageImpl.init());
+		rs.getPackageRegistry().put("platform:/resource/Persons/model/Persons.ecore", SimplePersonsPackageImpl.init());
 		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 	}
 
 	@Override
 	public void loadModels() throws IOException {
 		s = loadResource(projectPath + "/instances/src.xmi");
-		t = loadResource(projectPath + "/instances/trg.xmi");
-		c = loadResource(projectPath + "/instances/corr.xmi");
-		p = loadResource(projectPath + "/instances/protocol.xmi");
+		t = createResource(projectPath + "/instances/trg.xmi");
+		c = createResource(projectPath + "/instances/corr.xmi");
+		p = createResource(projectPath + "/instances/protocol.xmi");
 		
 		EcoreUtil.resolveAll(rs);
 	}
