@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,13 +20,7 @@ import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.protocol.ConsistencyPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.ConstraintPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcProtocolAndDECPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECPattern;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.gervarro.democles.common.DataFrame;
 import org.gervarro.democles.common.IDataFrame;
@@ -71,13 +64,11 @@ import org.gervarro.democles.specification.emf.constraint.emf.emf.EMFVariable;
 import org.gervarro.democles.specification.emf.constraint.emf.emf.Reference;
 import org.gervarro.democles.specification.emf.constraint.relational.RelationalConstraint;
 import org.gervarro.democles.specification.emf.constraint.relational.RelationalConstraintFactory;
-import org.gervarro.democles.specification.emf.constraint.relational.Unequal;
 import org.gervarro.democles.specification.impl.DefaultPattern;
 import org.gervarro.democles.specification.impl.DefaultPatternBody;
 import org.gervarro.democles.specification.impl.DefaultPatternFactory;
 import org.gervarro.democles.specification.impl.PatternInvocationConstraintModule;
 
-import language.BindingType;
 import language.DomainType;
 import language.TGG;
 import language.TGGRule;
@@ -85,7 +76,6 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
 
 public class DemoclesHelper implements MatchEventListener {
 
@@ -141,21 +131,17 @@ public class DemoclesHelper implements MatchEventListener {
 		// 2) EMF-independent to pattern matcher runtime (i.e., Rete network)
 		// transformation
 		retePatternMatcherModule.build(internalPatterns.toArray(new DefaultPattern[internalPatterns.size()]));
-
+		if (debug) saveDemoclesPatterns();
+		
 		retePatternMatcherModule.getSession().setAutoCommitMode(false);
-
-		if (debug)
-			printReteNetwork();
-
+		if (debug) printReteNetwork();
+		
 		// Attach match listener to pattern matchers
 		retrievePatternMatchers();
 		patternMatchers.forEach(pm -> pm.addEventListener(this));
 
 		// Install model event listeners on the resource set
 		NotificationModule.installNotificationAdapter(rs, emfNativeOperationModule);
-
-		if (debug)
-			saveDemoclesPatterns();
 	}
 
 	private void printReteNetwork() {
@@ -343,10 +329,9 @@ public class DemoclesHelper implements MatchEventListener {
 		}
 
 		// Force injective matches through unequals-constraints
-		if (ibexPattern instanceof ConstraintPattern)
+		if (ibexPattern instanceof RulePartPattern)
 			forceInjectiveMatchesForPattern((RulePartPattern)ibexPattern, body, nodeToVar);
 		
-
 		return constraints;
 	}
 	
