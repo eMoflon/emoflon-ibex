@@ -69,7 +69,7 @@ public class TGGRuntimeUtil {
 		this.trgR = trgR;
 		this.protocolR = protocolR;
 		this.strategy = getStrategy();
-		this.operationalMatchContainer = new MatchContainer(tgg);
+		this.operationalMatchContainer = new MatchContainer();
 	}
 
 	public void run() {
