@@ -23,6 +23,9 @@ public class TestZeroToOneMultiplicities extends ModelGenTestCase {
 	/**
 	 * Tests if the generated NAC for a 0..1 multiplicity prohibits
 	 * the application of the FatherToMale rule when necessary.
+	 * 
+	 * Currently, this test works sometimes, while it encounters a "join-failed"
+	 * runtime-exception at other times.
 	 * @throws IOException
 	 */
 	@Test
@@ -53,6 +56,10 @@ public class TestZeroToOneMultiplicities extends ModelGenTestCase {
 	 * Tests if the generated NAC for a 0..1 multiplicity prohibits
 	 * the application of the FatherToMale rule when necessary.
 	 * Does not create Persons in the target model.
+	 * 
+	 * Currently, this test works sometimes, while it encounters a "join-failed"
+	 * runtime-exception at other times.
+	 * 
 	 * @throws IOException
 	 */
 	@Test

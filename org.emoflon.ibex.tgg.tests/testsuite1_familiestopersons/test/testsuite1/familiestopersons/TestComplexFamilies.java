@@ -19,7 +19,7 @@ public class TestComplexFamilies extends ModelGenTestCase {
 	}
 
 	@Test
-	public void testFourFamiliesWithSixteenChildren() throws IOException {
+	public void testFamilyWithSixteenChildren() throws IOException {
 		stop.setMaxRuleCount("HandleRegisters", 1);
 		stop.setMaxRuleCount("IgnoreFamily", 1);
 		stop.setMaxRuleCount("FatherToMale", 1);
@@ -31,7 +31,7 @@ public class TestComplexFamilies extends ModelGenTestCase {
 	}
 
 	@Test
-	public void testFourFamiliesWithSixtyChildren() throws IOException {
+	public void testFamilyWithSixtyChildren() throws IOException {
 		stop.setMaxRuleCount("HandleRegisters", 1);
 		stop.setMaxRuleCount("IgnoreFamily", 1);
 		stop.setMaxRuleCount("FatherToMale", 1);
