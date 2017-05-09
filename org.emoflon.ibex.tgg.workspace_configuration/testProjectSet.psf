@@ -2,8 +2,9 @@
 <psf version="2.0">
 <provider id="org.eclipse.egit.core.GitProvider">
 <project reference="1.0,https://github.com/eMoflon/benchmarx.git,master,core/Benchmarx"/>
-<project reference="1.0,https://github.com/eMoflon/benchmarx.git,master,examples/familiestopersons/metamodels/Families"/>
-<project reference="1.0,https://github.com/eMoflon/benchmarx.git,master,examples/familiestopersons/metamodels/Persons"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-ibex.git,master,org.emoflon.ibex.tgg.workspace_configuration"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-ibex.git,master,org.emoflon.ibex.tgg.tests/SimpleFamilies"/>
+<project reference="1.0,https://github.com/eMoflon/emoflon-ibex.git,master,org.emoflon.ibex.tgg.tests/SimplePersons"/>
 <project reference="1.0,https://github.com/eMoflon/emoflon-ibex.git,master,org.emoflon.ibex.tgg.tests/testsuite1_familiestopersons"/>
 </provider>
 </psf>
