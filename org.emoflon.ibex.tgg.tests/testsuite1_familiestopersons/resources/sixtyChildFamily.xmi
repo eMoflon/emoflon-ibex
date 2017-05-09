@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="ASCII"?>
+<SimpleFamilies:FamilyRegister
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:SimpleFamilies="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore">
+  <families
+      name="Test">
+    <father
+        name="father"/>
+    <mother
+        name="mother"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <sons name="son"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+    <daughters
+        name="daughter"/>
+  </families>
+</SimpleFamilies:FamilyRegister>
