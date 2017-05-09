@@ -1,0 +1,20 @@
+#using testsuite1_familiestopersons.*
+#using AttrCondDefLibrary.*
+
+#rule CreateFather #with testsuite1_familiestopersons
+
+#source { 
+	
+	++ father:FamilyMember {
+		name := "father"
+	}
+}
+
+#target {
+}
+
+#correspondence {
+}
+
+#attributeConditions {
+}

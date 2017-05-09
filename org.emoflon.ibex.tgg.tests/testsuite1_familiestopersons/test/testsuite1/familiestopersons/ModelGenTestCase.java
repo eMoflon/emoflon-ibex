@@ -41,6 +41,11 @@ public class ModelGenTestCase {
 		stop.setMaxRuleCount("SonToMale", 0);
 		stop.setMaxRuleCount("FatherToNothing", 0);
 		stop.setMaxRuleCount("FatherAndMale", 0);
+		stop.setMaxRuleCount("IgnoreTwoFamilies", 0);
+		stop.setMaxRuleCount("CreateFourthFamily", 0);
+		stop.setMaxRuleCount("CreateFourthAndFifthFamily", 0);
+		stop.setMaxRuleCount("CreateFather", 0);
+		stop.setMaxRuleCount("ConnectFather", 0);
 		
 		familiesComp = new FamiliesComparator();
 		personsComp = new PersonsComparator();
@@ -53,20 +58,31 @@ public class ModelGenTestCase {
 	}
 
 	protected void assertPostcondition(String src, String trg) {
+		assertPostconditionOnSrc(src);
+		assertPostconditionOnTrg(trg);
+	}
+
+	protected void assertPostconditionOnSrc(String src) {
 		Resource srcExp = EMFUtil.loadExpectedResource(src, generator.getResourceSet());
-		Resource trgExp = EMFUtil.loadExpectedResource(trg, generator.getResourceSet());
 		
 		Assert.assertNotEquals("Resource is empty", 0, srcExp.getContents().size());
-		Assert.assertNotEquals("Resource is empty", 0, trgExp.getContents().size());
-
+		
 		Assert.assertEquals(srcExp.getContents().size(), generator.getSourceResource().getContents().size());
 		for (int i = 0; i < srcExp.getContents().size(); i++) {
 			familiesComp.assertEquals((FamilyRegister)srcExp.getContents().get(i), 
 					                  (FamilyRegister)generator.getSourceResource().getContents().get(i));
 		}
+	}
+
+	protected void assertPostconditionOnTrg(String trg) {
+		Resource trgExp = EMFUtil.loadExpectedResource(trg, generator.getResourceSet());
+		
+		Assert.assertNotEquals("Resource is empty", 0, trgExp.getContents().size());
+		
+		Assert.assertEquals(trgExp.getContents().size(), generator.getTargetResource().getContents().size());
 		for (int i = 0; i < trgExp.getContents().size(); i++) {
 			personsComp.assertEquals((PersonRegister)trgExp.getContents().get(i), 
-					                 (PersonRegister)generator.getTargetResource().getContents().get(i));
+					                  (PersonRegister)generator.getTargetResource().getContents().get(i));
 		}
 	}
 }
