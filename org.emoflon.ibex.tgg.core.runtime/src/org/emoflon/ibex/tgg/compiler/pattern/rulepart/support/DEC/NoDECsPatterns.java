@@ -25,15 +25,18 @@ import language.TGGRuleNode;
 
 public class NoDECsPatterns extends RulePartPattern {
 
-	private boolean decDetected = false;
+
 	private DECTrackingHelper decTC;
 	private DomainType domain;
+	
+	private DECStrategy strategy = DECStrategy.NONE;
 
 	public NoDECsPatterns(TGGRule rule, DECTrackingHelper decTC, DomainType domain) {
 		super(rule);
 		this.decTC = decTC;
 		this.domain = domain;
-		createDECEntries(rule, domain);
+		if(strategy != DECStrategy.NONE)
+			createDECEntries(rule, domain);
 		initialize();
 		addTGGPositiveInvocation(decTC.getRuleToPatternsMap().get(rule).stream().filter(p -> domain == DomainType.SRC ? p instanceof SrcPattern : p instanceof TrgPattern).findFirst().get());
 	}
@@ -82,32 +85,33 @@ public class NoDECsPatterns extends RulePartPattern {
 					rules.stream().map(r -> Pair.of(r, DECHelper.countEdgeInRule(r, eType, eDirection, true, domain)))
 							.forEach(p -> decTC.addToSignatureMapping(decPattern, p.getKey().getName(), p.getValue().getMiddle().getName(), p.getValue().getRight().getName()));
 
-					// find src or trg pattern already generated for the found rules
-					for (TGGRule filteredRule : rules) {
-						Collection<IbexPattern> patterns = decTC.getRuleToPatternsMap().get(filteredRule);
+					if(strategy == DECStrategy.FILTER_NACS_AND_PACS){
+						// find src or trg pattern already generated for the found rules
+						for (TGGRule filteredRule : rules) {
+							Collection<IbexPattern> patterns = decTC.getRuleToPatternsMap().get(filteredRule);
 
-						IbexPattern pattern = null;
-						switch (n.getDomainType()) {
-						case SRC:
-							pattern = patterns.stream().filter(p -> p instanceof SrcProtocolNACsPattern).findFirst().get();
-							break;
-						case TRG:
-							pattern = patterns.stream().filter(p -> p instanceof TrgProtocolNACsPattern).findFirst().get();
-							break;
-						default:
-							throw new RuntimeException("DECPatterns: Not defined for anything else than SRC or TRG patterns!");
+							IbexPattern pattern = null;
+							switch (n.getDomainType()) {
+							case SRC:
+								pattern = patterns.stream().filter(p -> p instanceof SrcProtocolNACsPattern).findFirst().get();
+								break;
+							case TRG:
+								pattern = patterns.stream().filter(p -> p instanceof TrgProtocolNACsPattern).findFirst().get();
+								break;
+							default:
+								throw new RuntimeException("DECPatterns: Not defined for anything else than SRC or TRG patterns!");
+							}
+							
+							IbexPattern localProtocolPattern = decTC.getLocalProtocolPattern(decPattern, pattern, n.getName(), eType.getName(), eDirection);
+							decPattern.addCustomNegativeInvocation(localProtocolPattern, decTC.getMapping(decPattern, localProtocolPattern));
 						}
-						
-						IbexPattern localProtocolPattern = decTC.getLocalProtocolPattern(decPattern, pattern, n.getName(), eType.getName(), eDirection);
-						decPattern.addCustomNegativeInvocation(localProtocolPattern, decTC.getMapping(decPattern, localProtocolPattern));
 					}
-
-					// if any decpattern was created which has at least one negative invocation, we'll add it to this pattern
-					// a negative invocation means here that we were able to find another rule that translated the edge
-					// which might remain untranslated if we apply the current rule
-					// we also register the pattern so that it is found when we generate the code and initialize the search pattern
-					addTGGNegativeInvocation(decPattern);
-					decTC.getRuleToPatternsMap().get(rule).add(decPattern);
+		
+					if(strategy == DECStrategy.FILTER_NACS_AND_PACS || (strategy == DECStrategy.FILTER_NACS && rules.size() == 0)){
+						addTGGNegativeInvocation(decPattern);
+						decTC.getRuleToPatternsMap().get(rule).add(decPattern);
+					}
+					
 				}
 			}
 		}
