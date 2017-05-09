@@ -11,6 +11,8 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TCustomHashMap;
 import gnu.trove.map.hash.THashMap;
@@ -34,6 +36,7 @@ public class CC extends TGGRuntimeUtil {
 
 	private int idCounter = 1;
 	TIntObjectHashMap<IPatternMatch> idToMatch = new TIntObjectHashMap<>();
+	TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 
 	TIntIntHashMap weights = new TIntIntHashMap();
 
@@ -53,10 +56,13 @@ public class CC extends TGGRuntimeUtil {
 	@Override
 	protected void finalize() {
 		for(int v : chooseTGGRuleApplications()){
+			IPatternMatch match = idToMatch.get(v < 0 ? -v : v);
+			HashMap<String, EObject> comatch = matchToCoMatch.get(match);
 			if(v < 0){
-				IPatternMatch match = idToMatch.get(-v);
-				HashMap<String, EObject> comatch = matchToCoMatch.get(match);
 				comatch.values().forEach(corr -> corr.eResource().getContents().remove(corr));
+			}
+			else{
+				super.prepareProtocol(matchIdToRuleName.get(v), match, comatch);
 			}
 		}
 		super.finalize();
@@ -76,6 +82,7 @@ public class CC extends TGGRuntimeUtil {
 	protected void prepareProtocol(String ruleName, IPatternMatch match, HashMap<String, EObject> comatch) {
 
 		idToMatch.put(idCounter, match);
+		matchIdToRuleName.put(idCounter, ruleName);
 
 		int weight = ruleInfos.getGreenSrcEdges(ruleName).size() + ruleInfos.getGreenSrcNodes(ruleName).size()
 				+ ruleInfos.getGreenTrgEdges(ruleName).size() + ruleInfos.getGreenTrgNodes(ruleName).size();
