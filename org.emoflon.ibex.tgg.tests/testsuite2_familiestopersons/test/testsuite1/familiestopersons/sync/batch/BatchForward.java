@@ -29,17 +29,15 @@ public class BatchForward extends SyncTestCase {
 	}
 	
 	/**
-	 * <b>Test</b> for name change of an empty family, i.e, a family without any family members.<br/>
-	 * <b>Expect</b> no change in the persons model.<br/>
-	 * <b>Features</b>: fwd, fixed
+	 * <b>Features</b>: fwd
 	 */
 	@Test
-	public void testFamilyNameChangeOfEmpty()
+	public void testMotherToFemale()
 	{
 		// No precondition!
 		//------------
-		tool.performAndPropagateSourceEdit(helperFamily::createTestFamily);
-		tool.performAndPropagateSourceEdit(helperFamily::createMotherInSingleTestFamily);
+		tool.performAndPropagateSourceEdit(util.execute(helperFamily::createTestFamily)
+											   .andThen(helperFamily::createMotherInSingleTestFamily));
 		//------------
 		util.assertPostcondition("singleFamilyWithMother", "singlePersonRegisterWithFemalePerson");
 	}

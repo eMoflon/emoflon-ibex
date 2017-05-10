@@ -36,8 +36,7 @@ public abstract class SYNC extends OperationalStrategy {
 	@Override
 	public boolean isPatternRelevant(String patternName) {
 		return patternName.endsWith(PatternSuffixes.BWD) 
-			|| patternName.endsWith(PatternSuffixes.FWD)
-			|| patternName.endsWith(PatternSuffixes.WHOLE);
+			|| patternName.endsWith(PatternSuffixes.FWD);
 	}
 
 	@Override

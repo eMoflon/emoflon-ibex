@@ -28,15 +28,14 @@ import SimplePersons.PersonRegister;
  * 
  * @author anthony anjorin
  */
-public class EMoflonSimpleFamiliesToPersons extends BXToolForEMF<FamilyRegister, PersonRegister, Decisions>   {
+public class IbexSimpleFamiliesToPersons extends BXToolForEMF<FamilyRegister, PersonRegister, Decisions>   {
 	
-	private static final String RESULTPATH = "results/emoflon";
+	private static final String RESULTPATH = "results/ibex";
 	
 	private SYNC synchroniser;
 	
-	public EMoflonSimpleFamiliesToPersons() throws IOException {
+	public IbexSimpleFamiliesToPersons() {
 		super(new FamiliesComparator(), new PersonsComparator());
-		synchroniser = new SYNC_App("testsuite1_familiestopersons", "./../", true);
 	}
 	
 	@Override
@@ -46,9 +45,10 @@ public class EMoflonSimpleFamiliesToPersons extends BXToolForEMF<FamilyRegister,
 	
 	@Override
 	public void initiateSynchronisationDialogue() {
-		FamilyRegister reg = SimpleFamiliesFactory.eINSTANCE.createFamilyRegister();
-		synchroniser.getSourceResource().getContents().add(reg);
 		try {
+			synchroniser = new SYNC_App("testsuite2_familiestopersons", "./../", true);
+			FamilyRegister reg = SimpleFamiliesFactory.eINSTANCE.createFamilyRegister();
+			synchroniser.getSourceResource().getContents().add(reg);
 			synchroniser.forward();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -130,5 +130,15 @@ public class EMoflonSimpleFamiliesToPersons extends BXToolForEMF<FamilyRegister,
 	@Override
 	public void performIdleSourceEdit(Consumer<FamilyRegister> edit) {
 		performAndPropagateSourceEdit(edit);
+	}
+	
+	@Override
+	public void terminateSynchronisationDialogue() {
+		try {
+			//synchroniser.saveModels();
+			synchroniser.terminate();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

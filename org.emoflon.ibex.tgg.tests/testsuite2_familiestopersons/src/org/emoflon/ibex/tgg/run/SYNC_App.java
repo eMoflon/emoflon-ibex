@@ -20,7 +20,7 @@ public class SYNC_App extends SYNC {
 	public static void main(String[] args) throws IOException {
 		BasicConfigurator.configure();
 
-		SYNC_App sync = new SYNC_App("testsuite1_familiestopersons", "./../", true);
+		SYNC_App sync = new SYNC_App("testsuite2_familiestopersons", "./../", true);
 		
 		logger.info("Starting SYNC");
 		long tic = System.currentTimeMillis();
@@ -40,6 +40,7 @@ public class SYNC_App extends SYNC {
 
 	@Override
 	public void loadModels() throws IOException {
+//		s = loadResource(projectPath + "/instances/src.xmi");
 		s = createResource(projectPath + "/instances/src.xmi");
 		t = createResource(projectPath + "/instances/trg.xmi");
 		c = createResource(projectPath + "/instances/corr.xmi");
@@ -49,8 +50,11 @@ public class SYNC_App extends SYNC {
 	}
 	
 	@Override
-	public boolean isPatternRelevant(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD);
+	public void saveModels() throws IOException {
+//		s.save(null);
+	 	t.save(null);
+	 	c.save(null);
+	 	p.save(null);
 	}
 }
 

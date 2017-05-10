@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.log4j.BasicConfigurator;
 import org.benchmarx.BXTool;
 import org.benchmarx.emf.Comparator;
 import org.benchmarx.families.core.FamiliesComparator;
@@ -34,6 +35,8 @@ public abstract class SyncTestCase {
 	
 	@Before
 	public void initialise() {
+		BasicConfigurator.configure();
+		
 		// Make sure packages are registered
 		SimpleFamiliesPackage.eINSTANCE.getName();
 		SimplePersonsPackage.eINSTANCE.getName();
@@ -57,7 +60,7 @@ public abstract class SyncTestCase {
 	@Parameters
 	public static Collection<BXTool<FamilyRegister, PersonRegister, Decisions>> tools() throws IOException {
 		return Arrays.asList(
-				new EMoflonSimpleFamiliesToPersons()
+				new IbexSimpleFamiliesToPersons()
 			);
 	}
 	

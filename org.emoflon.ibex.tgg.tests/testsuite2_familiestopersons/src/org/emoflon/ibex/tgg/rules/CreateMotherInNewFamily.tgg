@@ -1,0 +1,40 @@
+#using testsuite2_familiestopersons.*
+#using AttrCondDefLibrary.*
+
+#rule CreateMotherInNewFamily #with testsuite2_familiestopersons
+
+#source { 
+	reg:FamilyRegister {
+		++ -families->family
+	}	
+	
+	++ family:Family {
+		++-mother->m
+	}
+	
+	++ m:FamilyMember
+}
+
+#target {
+	preg:PersonRegister {
+		++ -persons->p
+	}
+	
+	++ p:Female
+}
+
+#correspondence {
+	reg2reg:RegisterToRegister{
+		#src->reg
+		#trg->preg
+	}
+	
+	++ m2p:FamilyMemberToPerson {
+		#src->m
+		#trg->p
+	}
+}
+
+#attributeConditions {
+	
+}

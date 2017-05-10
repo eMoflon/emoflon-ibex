@@ -1,0 +1,22 @@
+#using testsuite2_familiestopersons.*
+#using AttrCondDefLibrary.*
+
+#rule HandleRegisters #with testsuite2_familiestopersons
+
+#source { 
+	++ fr:FamilyRegister
+}
+
+#target {
+	++ pr:PersonRegister
+} 
+
+#correspondence {
+	++ roots:RegisterToRegister {
+		#src->fr
+		#trg->pr
+	}
+}
+
+#attributeConditions {
+}

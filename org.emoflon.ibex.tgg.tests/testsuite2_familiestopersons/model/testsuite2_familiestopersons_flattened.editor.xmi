@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ASCII"?>
+<tgg:TripleGraphGrammarFile xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:tgg="http://www.moflon.org/ide/tgg/mosl/TGG">
+  <schema name="testsuite2_familiestopersons">
+    <imports name="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore"/>
+    <imports name="platform:/resource/SimplePersons/model/SimplePersons.ecore"/>
+    <sourceTypes href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#/"/>
+    <targetTypes href="platform:/resource/SimplePersons/model/SimplePersons.ecore#/"/>
+    <correspondenceTypes name="RegisterToRegister">
+      <source href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+      <target href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </correspondenceTypes>
+    <correspondenceTypes name="FamilyMemberToPerson">
+      <source href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+      <target href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person"/>
+    </correspondenceTypes>
+  </schema>
+  <rules name="CreateMotherInNewFamily" schema="//@schema">
+    <using importedNamespace="testsuite2_familiestopersons.*"/>
+    <using importedNamespace="AttrCondDefLibrary.*"/>
+    <sourcePatterns name="reg">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+      <linkVariablePatterns target="//@rules.0/@sourcePatterns.1">
+        <op value="++"/>
+        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
+      </linkVariablePatterns>
+    </sourcePatterns>
+    <sourcePatterns name="family">
+      <op value="++"/>
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
+      <linkVariablePatterns target="//@rules.0/@sourcePatterns.2">
+        <op value="++"/>
+        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/mother"/>
+      </linkVariablePatterns>
+    </sourcePatterns>
+    <sourcePatterns name="m">
+      <op value="++"/>
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+    </sourcePatterns>
+    <targetPatterns name="preg">
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+      <linkVariablePatterns target="//@rules.0/@targetPatterns.1">
+        <op value="++"/>
+        <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister/persons"/>
+      </linkVariablePatterns>
+    </targetPatterns>
+    <targetPatterns name="p">
+      <op value="++"/>
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Female"/>
+    </targetPatterns>
+    <correspondencePatterns name="reg2reg" type="//@schema/@correspondenceTypes.0" source="//@rules.0/@sourcePatterns.0" target="//@rules.0/@targetPatterns.0"/>
+    <correspondencePatterns name="m2p" type="//@schema/@correspondenceTypes.1" source="//@rules.0/@sourcePatterns.2" target="//@rules.0/@targetPatterns.1">
+      <op value="++"/>
+    </correspondencePatterns>
+  </rules>
+  <rules name="HandleRegisters" schema="//@schema">
+    <using importedNamespace="testsuite2_familiestopersons.*"/>
+    <using importedNamespace="AttrCondDefLibrary.*"/>
+    <sourcePatterns name="fr">
+      <op value="++"/>
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </sourcePatterns>
+    <targetPatterns name="pr">
+      <op value="++"/>
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </targetPatterns>
+    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.1/@sourcePatterns.0" target="//@rules.1/@targetPatterns.0">
+      <op value="++"/>
+    </correspondencePatterns>
+  </rules>
+</tgg:TripleGraphGrammarFile>

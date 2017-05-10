@@ -1,0 +1,29 @@
+// Add imports here
+#import "platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore"
+#import "platform:/resource/SimplePersons/model/SimplePersons.ecore"
+
+#schema testsuite2_familiestopersons
+
+#source {
+	SimpleFamilies
+}
+
+#target {
+	SimplePersons
+}
+
+#correspondence {
+	RegisterToRegister {
+		#src->FamilyRegister
+		#trg->PersonRegister
+	}
+	
+	FamilyMemberToPerson {
+		#src->FamilyMember
+		#trg->Person
+	}
+}
+
+#attributeConditions {
+	
+}
