@@ -14,8 +14,11 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.run.SYNC_App;
 
 import SimpleFamilies.FamilyRegister;
+import SimpleFamilies.SimpleFamiliesFactory;
 import SimplePersons.PersonRegister;
 
 /**
@@ -29,8 +32,11 @@ public class EMoflonSimpleFamiliesToPersons extends BXToolForEMF<FamilyRegister,
 	
 	private static final String RESULTPATH = "results/emoflon";
 	
-	public EMoflonSimpleFamiliesToPersons() {
+	private SYNC synchroniser;
+	
+	public EMoflonSimpleFamiliesToPersons() throws IOException {
 		super(new FamiliesComparator(), new PersonsComparator());
+		synchroniser = new SYNC_App("testsuite1_familiestopersons", "./../", true);
 	}
 	
 	@Override
@@ -40,34 +46,56 @@ public class EMoflonSimpleFamiliesToPersons extends BXToolForEMF<FamilyRegister,
 	
 	@Override
 	public void initiateSynchronisationDialogue() {
-		// TODO
+		FamilyRegister reg = SimpleFamiliesFactory.eINSTANCE.createFamilyRegister();
+		synchroniser.getSourceResource().getContents().add(reg);
+		try {
+			synchroniser.forward();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void performAndPropagateTargetEdit(Consumer<PersonRegister> edit) {
-		// TODO
+		edit.accept(getPersonRegister());
+		try {
+			synchroniser.backward();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private PersonRegister getPersonRegister() {
+		return (PersonRegister) synchroniser.getTargetResource().getContents().get(0);
 	}
 
 	@Override
 	public void performAndPropagateSourceEdit(Consumer<FamilyRegister> edit) {
-		// TODO
+		edit.accept(getFamilyRegister());
+		try {
+			synchroniser.forward();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private FamilyRegister getFamilyRegister() {
+		return (FamilyRegister) synchroniser.getSourceResource().getContents().get(0);
 	}
 
 	@Override
 	public FamilyRegister getSourceModel() {
-		// TODO
-		return null;
+		return getFamilyRegister();
 	} 
 
 	@Override
 	public PersonRegister getTargetModel() {
-		// TODO
-		return null;
+		return getPersonRegister();
 	}
 
 	@Override
 	public void setConfigurator(Configurator<Decisions> configurator) {
-		// TODO
+		// No configuration for now
 	}
 	
 	@Override

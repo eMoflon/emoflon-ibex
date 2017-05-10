@@ -1,5 +1,6 @@
 package testsuite1.familiestopersons.sync;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -54,7 +55,7 @@ public abstract class SyncTestCase {
 	}
 	
 	@Parameters
-	public static Collection<BXTool<FamilyRegister, PersonRegister, Decisions>> tools() {
+	public static Collection<BXTool<FamilyRegister, PersonRegister, Decisions>> tools() throws IOException {
 		return Arrays.asList(
 				new EMoflonSimpleFamiliesToPersons()
 			);
