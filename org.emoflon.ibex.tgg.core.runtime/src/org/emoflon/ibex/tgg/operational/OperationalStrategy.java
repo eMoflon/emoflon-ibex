@@ -246,6 +246,8 @@ public abstract class OperationalStrategy {
 			prepareProtocol(ruleName, match, comatch);
 		}
 
+		logger.debug("Successfully applied: " + match.patternName());
+		
 		return true;
 	}
 
