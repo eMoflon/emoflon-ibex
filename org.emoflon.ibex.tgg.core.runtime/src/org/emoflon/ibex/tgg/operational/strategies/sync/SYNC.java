@@ -63,12 +63,12 @@ public abstract class SYNC extends OperationalStrategy {
 		EcoreUtil.resolveAll(rs);
 	}
 	
-	protected void forward() throws IOException {
+	public void forward() throws IOException {
 		strategy = new FWD_Strategy();
 		run();
 	}
 	
-	protected void backward() throws IOException {
+	public void backward() throws IOException {
 		strategy = new BWD_Strategy();
 		run();
 	}

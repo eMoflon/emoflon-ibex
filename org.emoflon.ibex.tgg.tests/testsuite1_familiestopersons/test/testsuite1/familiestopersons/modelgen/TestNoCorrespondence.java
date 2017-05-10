@@ -1,4 +1,4 @@
-package testsuite1.familiestopersons;
+package testsuite1.familiestopersons.modelgen;
 
 import java.io.IOException;
 

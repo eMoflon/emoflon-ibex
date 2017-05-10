@@ -38,7 +38,7 @@ public interface SimplePersonsPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_URI = "platform:/resources/SimplePersons/model/SimplePersons.ecore";
+	String eNS_URI = "platform:/resource/SimplePersons/model/SimplePersons.ecore";
 
 	/**
 	 * The package namespace name.

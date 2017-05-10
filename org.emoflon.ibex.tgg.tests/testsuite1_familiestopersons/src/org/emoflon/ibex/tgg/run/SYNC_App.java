@@ -40,7 +40,7 @@ public class SYNC_App extends SYNC {
 
 	@Override
 	public void loadModels() throws IOException {
-		s = loadResource(projectPath + "/instances/src.xmi");
+		s = createResource(projectPath + "/instances/src.xmi");
 		t = createResource(projectPath + "/instances/trg.xmi");
 		c = createResource(projectPath + "/instances/corr.xmi");
 		p = createResource(projectPath + "/instances/protocol.xmi");
