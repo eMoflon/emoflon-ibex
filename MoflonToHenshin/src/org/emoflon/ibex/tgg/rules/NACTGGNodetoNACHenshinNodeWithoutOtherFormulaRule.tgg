@@ -1,7 +1,7 @@
 #using MoflonToHenshin.*
 #using AttrCondDefLibrary.*
 
-#rule NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule #extends NACTGGNodeToNACHenshinNodeAbstractRule  #with MoflonToHenshin
+#abstract #rule NACTGGNodetoNACHenshinNodeWithoutOtherFormulaRule #extends NACTGGNodeToNACHenshinNodeAbstractRule  #with MoflonToHenshin
 
 #source { 
 	

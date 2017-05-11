@@ -69,22 +69,27 @@ public class TGGCompiler {
 	}
 
 	private void fillImportAliasTables(TGG tgg) {
-		aliasToEPackageUri.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
+		aliasToEPackageUri.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#/");
 		epackageToAlias.put(RuntimePackage.eINSTANCE, "dep_ibex");
 
-		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
+		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore#/");
 		epackageToAlias.put(EcorePackage.eINSTANCE, "dep_ecore");
 
 		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage())
-				.forEachOrdered(p -> {
-					if (!epackageToAlias.containsKey(p)) {
-						String alias = "dep_" + ++packageCounter;
-						aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
-						epackageToAlias.put(p, alias);
-					}
-				});
+				.forEachOrdered(this::createAlias);
 	}
 
+	private void createAlias(EPackage p){
+		if (!epackageToAlias.containsKey(p)) {
+			String alias = "dep_" + ++packageCounter;
+//			if(p.getESuperPackage() == null)
+//				aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
+//			else
+				aliasToEPackageUri.put(alias, p.getNsURI());
+			epackageToAlias.put(p, alias);
+		}
+	}
+	
 	public void preparePatterns() {
 		for (TGGRule rule : tgg.getRules()) {
 			Collection<Pattern> patterns = new ArrayList<>();
