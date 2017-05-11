@@ -2,6 +2,7 @@
 #import "http://www.eclipse.org/emf/2011/Henshin"
 
 
+
 // Add imports here
 #schema MoflonToHenshin
 
@@ -32,6 +33,16 @@
 	TGGEdgeToHenshinEdge{
 		#src->TGGRuleEdge
 		#trg->Edge
+	}
+	
+	TGGExpressionToHenshinParameter{
+		#src->TGGExpression
+		#trg->Parameter
+	}
+	
+	TGGInplaceAttributeExpressionToHenshinAttribute{
+		#src->TGGInplaceAttributeExpression
+		#trg->Attribute
 	}
 }
 
