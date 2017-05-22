@@ -25,7 +25,7 @@ public class SetDefaultString extends RuntimeTGGAttributeConstraint {
 		case "FF":
 
 			var_0.bindToValue(generateValue(var_0.getType()));
-			var_1.bindToValue(generateValue(var_1.getType()));
+			var_1.bindToValue(var_0.getValue());
 			setSatisfied(true);
 			return;
 
