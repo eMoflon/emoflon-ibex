@@ -84,15 +84,15 @@ class PatternTemplate {
 					«injectivityCheckPair.left.name» != «injectivityCheckPair.right.name»;
 				«ENDFOR»
 				«FOR edge : pattern.getBodyEdges»
-					«edge.srcNode.type.name».«edge.type.name»(«edge.srcNode.name», «edge.trgNode.name»);
+					«typeOf(edge.srcNode)».«edge.type.name»(«edge.srcNode.name», «edge.trgNode.name»);
 				«ENDFOR»			
 				«FOR node : pattern.bodySrcTrgNodes»
-					«node.type.name»(«node.name»);
+					«typeOf(node)»(«node.name»);
 					«FOR attrExpr : node.attrExpr»
 						«IF InplaceAttribute2ViatraCheck.simpleExpression(attrExpr)»
-							«node.type.name».«attrExpr.attribute.name»(«node.name», «InplaceAttribute2ViatraCheck.extractViatraEqualCheck(attrExpr)»);
+							«typeOf(node)».«attrExpr.attribute.name»(«node.name», «InplaceAttribute2ViatraCheck.extractViatraEqualCheck(attrExpr)»);
 						«ELSE»
-							«node.type.name».«attrExpr.attribute.name»(«node.name», «node.name»_«attrExpr.attribute.name»_emoflonAttr);
+							«typeOf(node)».«attrExpr.attribute.name»(«node.name», «node.name»_«attrExpr.attribute.name»_emoflonAttr);
 							«IF !InplaceAttribute2ViatraCheck.isENUMExpr(attrExpr)»
 								check («InplaceAttribute2ViatraCheck.extractViatraCheck(node.name + "_" + attrExpr.attribute.name + "_emoflonAttr", attrExpr)»);
 							«ELSE»
@@ -102,8 +102,8 @@ class PatternTemplate {
 					«ENDFOR»	
 				«ENDFOR»			
 				«FOR corr : pattern.bodyCorrNodes»
-					«corr.type.name».source(«corr.name»,«corr.source.name»);
-					«corr.type.name».target(«corr.name»,«corr.target.name»);
+					«typeOf(corr)».source(«corr.name»,«corr.source.name»);
+					«typeOf(corr)».target(«corr.name»,«corr.target.name»);
 				«ENDFOR»
 				«FOR pi : pattern.positiveInvocations»
 					find «pi.getName»(«FOR e : pi.signatureElements SEPARATOR ", "»«e.name»«ENDFOR»);
@@ -143,10 +143,10 @@ class PatternTemplate {
 					«injectivityCheckPair.left.name» != «injectivityCheckPair.right.name»;
 				«ENDFOR»
 				«FOR edge : pattern.getBodyEdges»
-					«edge.srcNode.type.name».«edge.type.name»(«edge.srcNode.name», «edge.trgNode.name»);
+					«typeOf(edge.srcNode)».«edge.type.name»(«edge.srcNode.name», «edge.trgNode.name»);
 				«ENDFOR»			
 				«FOR node : pattern.bodySrcTrgNodes»
-					«node.type.name»(«node.name»);
+					«typeOf(node)»(«node.name»);
 				«ENDFOR»
 				check(true);
 			}
