@@ -312,6 +312,8 @@ class DefaultFilesHelper {
 			import language.TGG;
 			import runtime.RuntimePackage;
 			
+			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.«projectName»AttrCondDefLibrary;
+			
 			public class «fileName» {
 			
 				public static void main(String[] args) throws IOException {
@@ -335,7 +337,7 @@ class DefaultFilesHelper {
 					System.out.println("Starting «mode.name»");
 					long tic = System.currentTimeMillis();
 					«RunFileHelper.getCreator(mode)»
-					tggRuntime.getCSPProvider().registerFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
+					tggRuntime.getCSPProvider().registerFactory(new «projectName»AttrCondDefLibrary());
 					
 					«projectName»Transformation transformation = new «projectName»Transformation(rs, tggRuntime);						
 					transformation.execute();
