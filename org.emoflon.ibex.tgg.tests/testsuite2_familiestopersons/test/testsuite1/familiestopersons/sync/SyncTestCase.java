@@ -14,6 +14,7 @@ import org.benchmarx.persons.core.SimplePersonsHelper;
 import org.benchmarx.util.BenchmarxUtil;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -33,9 +34,13 @@ public abstract class SyncTestCase {
 	protected SimpleFamiliesHelper helperFamily;
 	protected SimplePersonsHelper helperPerson;
 	
+	@BeforeClass
+	public static void setup(){		
+		BasicConfigurator.configure();
+	}
+	
 	@Before
 	public void initialise() {
-		BasicConfigurator.configure();
 		
 		// Make sure packages are registered
 		SimpleFamiliesPackage.eINSTANCE.getName();
