@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.ui.ide.transformation;
+package org.emoflon.ibex.tgg.core.transformation;
 
 import org.eclipse.emf.ecore.EPackage;
 

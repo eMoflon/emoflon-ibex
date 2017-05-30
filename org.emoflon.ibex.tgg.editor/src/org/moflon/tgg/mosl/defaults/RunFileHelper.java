@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
 public class RunFileHelper {
-	private static final String RUN_FILE_PATH = "src/org/emoflon/ibex/tgg/run/";
+	public static final String RUN_FILE_PATH = "src/org/emoflon/ibex/tgg/run/";
 	private IProject project;
 	
 	public RunFileHelper(IProject project) {
@@ -21,11 +21,23 @@ public class RunFileHelper {
 	}
 	
 	public void createFiles() throws CoreException, IOException {
-			createDefaultFile("MODELGEN_App", DefaultFilesHelper::generateModelGenFile);
-			createDefaultFile("SYNC_App", DefaultFilesHelper::generateSyncAppFile);
+		// FIXME [extract GUI component] Extract to extension point
+//		createDefaultFile("MODELGEN_App", DefaultFilesHelper::generateModelGenFile);
+//		createDefaultFile("SYNC_App", DefaultFilesHelper::generateSyncAppFile);
+		// Should now be handled by compiler.defaults.DefaultFilesHelper
 	}
 
-	private void createDefaultFile(String fileName, BiFunction<String, String, String> generator) throws CoreException {
+	/**
+	 * Creates a new file as {@link RunFileHelper}.RUN_FILE_PATH + fileName + ".java"
+	 * 
+	 * @param fileName
+	 *            The name of the file to be generated
+	 * @param generator
+	 *            A bi-function used to generate the string content of the new file of the form: (project name, file name) -> file
+	 *            contents
+	 * @throws CoreException
+	 */
+	public void createDefaultFile(String fileName, BiFunction<String, String, String> generator) throws CoreException {
 		String path = RUN_FILE_PATH + fileName + ".java";
 		IPath pathToFile = new Path(path);
 		IFile file = project.getFile(pathToFile);

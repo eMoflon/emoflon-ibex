@@ -126,7 +126,7 @@ public class IbexDiagramTextProvider implements DiagramTextProvider {
 	}
 
 	private TripleGraphGrammarFile flattenIfRequested(TripleGraphGrammarFile file){
-		//FIXME[anjorin]: Add a view extension to enable this configurable option
+		//TODO[anjorin]: Add a view extension to enable this configurable option
 		// For the moment, we always display the flattened TGG file.
 		/* if(ToggleRefinementHandler.flattenRefinements()) return flatten(file); */
 		

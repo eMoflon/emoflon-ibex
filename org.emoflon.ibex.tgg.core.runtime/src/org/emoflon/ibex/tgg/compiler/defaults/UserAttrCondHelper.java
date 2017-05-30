@@ -1,4 +1,4 @@
-package org.moflon.tgg.mosl.defaults;
+package org.emoflon.ibex.tgg.compiler.defaults;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

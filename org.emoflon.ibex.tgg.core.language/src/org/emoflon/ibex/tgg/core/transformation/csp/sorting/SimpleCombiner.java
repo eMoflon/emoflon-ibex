@@ -18,50 +18,31 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.ibex.tgg.ui.ide.transformation.csp.sorting;
+package org.emoflon.ibex.tgg.core.transformation.csp.sorting;
 
-public class Chain<T> {
-	private final Chain<T> next;
-	private final T value;
+import language.csp.TGGAttributeConstraint;
+import org.gervarro.democles.common.Combiner;
 
-	public Chain(T element) {
-		this(element, null);
+public class SimpleCombiner implements Combiner<SimpleCombiner, TGGAttributeConstraint> {
+	private final Chain<TGGAttributeConstraint> last;
+	
+	public SimpleCombiner() {
+		this.last = null;
 	}
 	
-	Chain(T value, Chain<T> next) {
-		this.value = value;
-		this.next = next;
+	private SimpleCombiner(final SimpleCombiner src, final TGGAttributeConstraint second) {
+		this.last = new Chain<TGGAttributeConstraint>(second, src.last);
+	}
+	
+	public final SimpleCombiner combine(final TGGAttributeConstraint second) {
+		return new SimpleCombiner(this, second);
 	}
 
-	final Chain<T> copy() {
-		return copyAndMerge(null);
+	public final boolean hasSameOrigin(TGGAttributeConstraint operation) {
+		return last != null && last.getValue() == operation;
 	}
 	
-	final Chain<T> copyAndMerge(Chain<T> otherChain) {
-		if (next != null) {
-			return new Chain<T>(value, next.copyAndMerge(otherChain));
-		} else {
-			return new Chain<T>(value, otherChain);
-		}
+	public final Chain<TGGAttributeConstraint> getRoot() {
+		return last;
 	}
-	
-	final Chain<T> reverseCopy() {
-		return reverseCopy(null);
-	}
-	
-	private final Chain<T> reverseCopy(Chain<T> reverseTail) {
-		if (next != null) {
-			return next.reverseCopy(new Chain<T>(value, reverseTail));
-		} else {
-			return new Chain<T>(value, reverseTail);
-		}
-	}
-	
-    public final T getValue() {
-    	return value;
-    }
-    
-    public final Chain<T> getNext() {
-    	return next;
-    }
 }

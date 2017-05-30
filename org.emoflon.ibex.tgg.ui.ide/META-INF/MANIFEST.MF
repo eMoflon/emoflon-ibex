@@ -2,13 +2,10 @@ Manifest-Version: 1.0
 Bundle-SymbolicName: org.emoflon.ibex.tgg.ui.ide;singleton:=true
 Bundle-Name: org.emoflon.ibex.tgg.ui.ide
 Bundle-Version: 1.0.0.qualifier
-Require-Bundle: org.emoflon.ibex.tgg.core.language;bundle-version="1.0.0",
- org.emoflon.ibex.tgg.core.runtime;bundle-version="1.0.0",
- org.eclipse.emf.ecore,
+Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
  org.apache.log4j;bundle-version="1.2.15",
  org.eclipse.core.runtime,
- org.emoflon.ibex.tgg.editor,
  org.eclipse.core.commands,
  org.eclipse.jface,
  org.eclipse.ui.workbench,
@@ -25,18 +22,16 @@ Require-Bundle: org.emoflon.ibex.tgg.core.language;bundle-version="1.0.0",
  org.gervarro.democles.specification.emf;bundle-version="3.0.0",
  org.eclipse.pde.core;bundle-version="3.11.1",
  org.eclipse.jdt.ui;bundle-version="3.12.2",
- org.eclipse.emf.codegen.ecore;bundle-version="2.12.0"
+ org.eclipse.emf.codegen.ecore;bundle-version="2.12.0",
+ org.emoflon.ibex.tgg.editor
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGPlugin
 Bundle-Vendor: TU Darmstadt
-Bundle-ClassPath: lib/javabdd-1.0b2.jar,
- lib/democles.jar,
- .
+Bundle-ClassPath: .
 Export-Package: org.emoflon.ibex.tgg.ui.ide.admin,
  org.emoflon.ibex.tgg.ui.ide.admin.plugins,
  org.emoflon.ibex.tgg.ui.ide.transformation,
- org.emoflon.ibex.tgg.ui.ide.transformation.csp.sorting,
  org.emoflon.ibex.tgg.ui.ide.visualisation
 

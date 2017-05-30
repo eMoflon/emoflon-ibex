@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
@@ -34,8 +33,6 @@ import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoFlattenedTGG;
-import org.emoflon.ibex.tgg.ui.ide.transformation.EditorTGGtoInternalTGG;
-import org.emoflon.ibex.tgg.ui.ide.transformation.TGGProject;
 import org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider;
 import org.moflon.tgg.mosl.defaults.RunFileHelper;
 import org.moflon.tgg.mosl.tgg.AttrCond;
@@ -44,21 +41,18 @@ import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 import org.moflon.util.LogUtils;
 
-import language.csp.definition.TGGAttributeConstraintDefinition;
-
 public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResourceDeltaVisitor {
-	private static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
-	private static final String ECORE_FILE_EXTENSION = ".ecore";
-	private static final String TGG_FILE_EXTENSION = ".tgg";
-	private static final String EDITOR_MODEL_EXTENSION = ".editor.xmi";
-	private static final String EDITOR_FLATTENED_MODEL_EXTENSION = "_flattened.editor.xmi";
-	private static final String SRC_FOLDER = "src";
-	private static final String MODEL_FOLDER = "model";
+	public static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
+	public static final String ECORE_FILE_EXTENSION = ".ecore";
+	public static final String TGG_FILE_EXTENSION = ".tgg";
+	public static final String EDITOR_MODEL_EXTENSION = ".editor.xmi";
+	public static final String EDITOR_FLATTENED_MODEL_EXTENSION = "_flattened.editor.xmi";
+	public static final String SRC_FOLDER = "src";
+	public static final String MODEL_FOLDER = "model";
 
 	public static final Logger logger = Logger.getLogger(IbexTGGBuilder.class);
 
 	private boolean buildIsNecessary = false;
-	private Optional<TGGProject> tggProject = Optional.empty();
 	
 	@Override
 	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
@@ -94,11 +88,9 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		generateEditorModel().ifPresent(editorModel -> 
 		{
 			generateFlattenedEditorModel(editorModel);
-			generateInternalModels(editorModel).ifPresent(internalModel -> 
-			{
-				generateAttrCondLibsAndStubs(internalModel);
-				generateRunFiles();
-			});
+			generateInternalModels(editorModel);
+			generateAttrCondLibsAndStubs();
+			generateRunFiles();
 		});
 	}
 	
@@ -108,7 +100,8 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 
 		try {
 			ResourceSet rs = editorModel.eResource().getResourceSet();
-			saveModelInProject(MODEL_FOLDER, getProject().getName() + EDITOR_FLATTENED_MODEL_EXTENSION, rs, flattenedTGG);
+			IFile tggFile = getProject().getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(getProject().getName() + EDITOR_FLATTENED_MODEL_EXTENSION);
+			saveModelInProject(tggFile, rs, flattenedTGG);
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}
@@ -122,13 +115,11 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		}
 	}
 
-	private void generateAttrCondLibsAndStubs(TGGProject internalModel) {
-		Collection<TGGAttributeConstraintDefinition> userAttrCondDefs = internalModel.getTggModel().getAttributeConstraintDefinitionLibrary().getTggAttributeConstraintDefinitions().stream().filter(ac -> ac.isUserDefined()).collect(Collectors.toList());
-		Collection<String> userAttrCondNames = userAttrCondDefs.stream().map(udc -> udc.getName()).collect(Collectors.toList());
+	private void generateAttrCondLibsAndStubs() {
 		try {
 			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(getProject());
-			AttrCondDefLibraryProvider.userAttrCondDefFactory(getProject(), userAttrCondNames);
-			AttrCondDefLibraryProvider.userAttrCondDefStubs(getProject(), userAttrCondDefs);
+			//FIXME [extract GUI component] Call generateAttrCondLibsAndStubs from extension point
+			// Should now be handled by org.emoflon.ibex.tgg.compiler.defaults.AttrCondDefLibraryProvider
 		} catch (CoreException | IOException e) {
 			LogUtils.error(logger, e);
 		}
@@ -144,7 +135,8 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 					TripleGraphGrammarFile xtextParsedTGG = (TripleGraphGrammarFile) schemaResource.getContents().get(0);
 					loadAllRulesToTGGFile(xtextParsedTGG, resourceSet, getProject().getFolder(SRC_FOLDER));
 					addAttrCondDefLibraryReferencesToSchema(xtextParsedTGG);
-					saveModelInProject(MODEL_FOLDER, getProject().getName() + EDITOR_MODEL_EXTENSION, resourceSet, xtextParsedTGG);
+					IFile editorFile = getProject().getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(getProject().getName() + EDITOR_MODEL_EXTENSION);
+					saveModelInProject(editorFile, resourceSet, xtextParsedTGG);
 					return Optional.of(xtextParsedTGG);
 				}
 			}
@@ -211,26 +203,13 @@ public class IbexTGGBuilder extends IncrementalProjectBuilder implements IResour
 		return schemaResource;
 	}
 
-	private Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG) {
-		EditorTGGtoInternalTGG converter = new EditorTGGtoInternalTGG();
-		tggProject = Optional.of(converter.convertXtextTGG(xtextParsedTGG));
-
-		tggProject.ifPresent(p -> {
-			try {
-				ResourceSet rs = xtextParsedTGG.eResource().getResourceSet();
-				saveModelInProject(MODEL_FOLDER, getProject().getName() + ECORE_FILE_EXTENSION, rs, p.getCorrPackage());
-				saveModelInProject(MODEL_FOLDER, getProject().getName() + INTERNAL_TGG_MODEL_EXTENSION, rs, p.getTggModel());
-			} catch (IOException e) {
-				LogUtils.error(logger, e);
-			}
-		});
-
-		return tggProject;
+	private void generateInternalModels(TripleGraphGrammarFile xtextParsedTGG) {
+		//FIXME [extract GUI component] Delegate to extension point
+		// Should now be handled by core.transformation.EditorTGGtoInternalTGG.generateInternalModels(TripleGraphGrammarFile, IProject)
 	}
 
-	private void saveModelInProject(String folder, String fileName, ResourceSet rs, EObject model) throws IOException {
-		IFile file = getProject().getFolder(folder).getFile(fileName);
-		URI uri = URI.createPlatformResourceURI(getProject().getName() + "/" + file.getProjectRelativePath().toString(), true);
+	public static void saveModelInProject(IFile file, ResourceSet rs, EObject model) throws IOException {
+		URI uri = URI.createPlatformResourceURI(file.getProject().getName() + "/" + file.getProjectRelativePath().toString(), true);
 		Resource resource = rs.createResource(uri);
 		resource.getContents().add(model);
 		Map<Object, Object> options = ((XMLResource) resource).getDefaultSaveOptions();

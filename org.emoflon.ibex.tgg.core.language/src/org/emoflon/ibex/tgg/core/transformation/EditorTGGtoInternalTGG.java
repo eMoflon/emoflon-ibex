@@ -1,27 +1,28 @@
-package org.emoflon.ibex.tgg.ui.ide.transformation;
+package org.emoflon.ibex.tgg.core.transformation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
-import org.eclipse.xtext.parser.antlr.UnorderedGroupHelper.Collector;
-import org.emoflon.ibex.tgg.ui.ide.transformation.csp.sorting.CSPSearchPlanMode;
-import org.emoflon.ibex.tgg.ui.ide.transformation.csp.sorting.SearchPlanAction;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.emoflon.ibex.tgg.core.transformation.csp.sorting.CSPSearchPlanMode;
+import org.emoflon.ibex.tgg.core.transformation.csp.sorting.SearchPlanAction;
+import org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGBuilder;
 import org.moflon.tgg.mosl.tgg.Adornment;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
@@ -41,6 +42,8 @@ import org.moflon.tgg.mosl.tgg.Param;
 import org.moflon.tgg.mosl.tgg.ParamValue;
 import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
+import org.moflon.util.LogUtils;
+
 
 import language.BindingType;
 import language.DomainType;
@@ -50,9 +53,6 @@ import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.inplaceAttributes.InplaceAttributesFactory;
-import language.inplaceAttributes.TGGAttributeConstraintOperators;
-import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import language.basic.expressions.ExpressionsFactory;
 import language.basic.expressions.TGGAttributeExpression;
 import language.basic.expressions.TGGEnumExpression;
@@ -68,6 +68,9 @@ import language.csp.definition.TGGAttributeConstraintAdornment;
 import language.csp.definition.TGGAttributeConstraintDefinition;
 import language.csp.definition.TGGAttributeConstraintDefinitionLibrary;
 import language.csp.definition.TGGAttributeConstraintParameterDefinition;
+import language.inplaceAttributes.InplaceAttributesFactory;
+import language.inplaceAttributes.TGGAttributeConstraintOperators;
+import language.inplaceAttributes.TGGInplaceAttributeExpression;
 
 public class EditorTGGtoInternalTGG {
 
@@ -75,12 +78,30 @@ public class EditorTGGtoInternalTGG {
 	private LanguageFactory tggFactory = LanguageFactory.eINSTANCE;
 	private HashMap<EObject, EObject> xtextToTGG = new HashMap<>();
 	private HashMap<EObject, EObject> tggToXtext = new HashMap<>();
+	
+	private static final Logger logger = Logger.getLogger(EditorTGGtoInternalTGG.class);
 
 	public TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG) {
 		EPackage corrPackage = createCorrModel(xtextTGG);
 		TGG tgg = createTGG(xtextTGG);
 		tgg.setCorr(corrPackage);
 		return new TGGProject(corrPackage, tgg);
+	}
+	
+	public void generateInternalModels(TripleGraphGrammarFile xtextParsedTGG, IProject project) {
+		Optional<TGGProject> tggProject = Optional.of(convertXtextTGG(xtextParsedTGG));
+
+		tggProject.ifPresent(p -> {
+			try {
+				ResourceSet rs = xtextParsedTGG.eResource().getResourceSet();
+				IFile corrFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.ECORE_FILE_EXTENSION);
+				IbexTGGBuilder.saveModelInProject(corrFile, rs, p.getCorrPackage());
+				IFile tggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.INTERNAL_TGG_MODEL_EXTENSION);
+				IbexTGGBuilder.saveModelInProject(tggFile, rs, p.getTggModel());
+			} catch (IOException e) {
+				LogUtils.error(logger, e);
+			}
+		});
 	}
 
 	private TGG createTGG(TripleGraphGrammarFile xtextTGG) {
@@ -309,7 +330,6 @@ public class EditorTGGtoInternalTGG {
 		return null;
 	}
 
-	// TODO!
 	private TGGAttributeConstraintOperators convertOperator(String operator) {
 		switch (operator) {
 		case "==":
@@ -356,7 +376,7 @@ public class EditorTGGtoInternalTGG {
 
 		corrModel.setName(xtextTGG.getSchema().getName());
 		corrModel.setNsPrefix(xtextTGG.getSchema().getName());
-		// FIXME: This makes it impossible to have schema != project name
+		// TODO: This makes it impossible to have schema != project name
 		corrModel.setNsURI("platform:/resource/" + corrModel.getName() + "/model/" + corrModel.getName() + ".ecore");
 
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {

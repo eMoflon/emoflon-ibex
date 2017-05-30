@@ -1,29 +1,38 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.emoflon.ibex.tgg.core.language;singleton:=tru
  e
-Export-Package: language.util,
- language.impl,
- language,
- language.inplaceAttributes.util,
- language.csp.impl,
- language.csp.util,
- language.inplaceAttributes.impl,
- language.inplaceAttributes,
- language.csp,
- language.basic.impl,
- language.basic.util,
- language.basic.expressions.util,
- language.basic.expressions.impl,
+Export-Package: language,
  language.basic,
  language.basic.expressions,
- language.csp.definition.util,
+ language.basic.expressions.impl,
+ language.basic.expressions.util,
+ language.basic.impl,
+ language.basic.util,
+ language.csp,
+ language.csp.definition,
  language.csp.definition.impl,
- language.csp.definition
+ language.csp.definition.util,
+ language.csp.impl,
+ language.csp.util,
+ language.impl,
+ language.inplaceAttributes,
+ language.inplaceAttributes.impl,
+ language.inplaceAttributes.util,
+ language.util,
+ org.emoflon.ibex.tgg.core.transformation
 Bundle-Name: org.emoflon.ibex.tgg.core.language
 Bundle-Version: 1.0
-Require-Bundle: org.eclipse.emf.ecore,
- org.eclipse.emf.ecore.xmi
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: TU Darmstadt
+Require-Bundle: org.eclipse.emf.ecore,
+ com.google.guava;bundle-version="15.0.0",
+ org.emoflon.ibex.tgg.editor;bundle-version="1.0.0",
+ org.emoflon.ibex.tgg.ui.ide,
+ org.eclipse.core.resources,
+ org.apache.log4j,
+ org.eclipse.core.runtime;bundle-version="3.12.0"
+Bundle-ClassPath: lib/democles.jar,
+ lib/javabdd-1.0b2.jar,
+ .
