@@ -461,7 +461,7 @@ public class DemoclesHelper implements MatchEventListener {
 				} else {
 					matches.put(frame, new ArrayList<IMatch>(Arrays.asList(match)));
 				}
-				// FIXME [anjorin] Better way of accessing rule name.
+				// TODO [anjorin] Better way of accessing rule name.
 				app.addOperationalRuleMatch(PatternSuffixes.removeSuffix(pattern.getName()), match);
 			}
 

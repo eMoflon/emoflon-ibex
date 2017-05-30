@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.ui.ide.transformation.csp.sorting;
+package org.emoflon.ibex.tgg.core.transformation.csp.sorting;
 
 import java.io.IOException;
 import java.io.OutputStream;

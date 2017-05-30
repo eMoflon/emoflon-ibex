@@ -7,7 +7,7 @@
 	fr:FamilyRegister {
 		-families->f
 	}
-	
+	 
 	f:Family {
 		++ -father->father
 	}

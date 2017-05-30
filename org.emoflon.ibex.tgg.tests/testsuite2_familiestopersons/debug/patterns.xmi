@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:emf="http://gervarro.org/democles/constraint/emf.ecore" xmlns:specification="http://gervarro.org/democles/specification.ecore">
+  <specification:Pattern name="MarkedPattern__SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="protocol">
+      <eClassifier xsi:type="ecore:EClass" href="../../../plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="checkedObject">
+      <eClassifier xsi:type="ecore:EClass" href="http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="emf:Reference">
+        <parameters reference="/0/@symbolicParameters.0"/>
+        <parameters reference="/0/@symbolicParameters.1"/>
+        <eModelElement xsi:type="ecore:EReference" href="../../../plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/createdSrc"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="MarkedPattern__LOCAL_MARKED__SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="checkedObject">
+      <eClassifier xsi:type="ecore:EClass" href="http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    </symbolicParameters>
+    <bodies>
+      <localVariables xsi:type="emf:EMFVariable" name="protocol">
+        <eClassifier xsi:type="ecore:EClass" href="../../../plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication"/>
+      </localVariables>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="MarkedPattern__SRC">
+        <parameters reference="/1/@bodies.0/@localVariables.0"/>
+        <parameters reference="/1/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__CONTEXT_SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <bodies/>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="family">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="m">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="emf:Reference">
+        <parameters reference="/3/@symbolicParameters.0"/>
+        <parameters reference="/3/@symbolicParameters.1"/>
+        <eModelElement xsi:type="ecore:EReference" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
+      </constraints>
+      <constraints xsi:type="emf:Reference">
+        <parameters reference="/3/@symbolicParameters.1"/>
+        <parameters reference="/3/@symbolicParameters.2"/>
+        <eModelElement xsi:type="ecore:EReference" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//Family/mother"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__CONTEXT_SRC">
+        <parameters reference="/3/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__PROTOCOL_NACS_SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="family">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="m">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__SRC">
+        <parameters reference="/4/@symbolicParameters.0"/>
+        <parameters reference="/4/@symbolicParameters.1"/>
+        <parameters reference="/4/@symbolicParameters.2"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" invokedPattern="MarkedPattern__LOCAL_MARKED__SRC">
+        <parameters reference="/4/@symbolicParameters.2"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" invokedPattern="MarkedPattern__LOCAL_MARKED__SRC">
+        <parameters reference="/4/@symbolicParameters.2"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__NO_DECs_SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="family">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="m">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__SRC">
+        <parameters reference="/5/@symbolicParameters.0"/>
+        <parameters reference="/5/@symbolicParameters.1"/>
+        <parameters reference="/5/@symbolicParameters.2"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__PROTOCOL_DEC_SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="family">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="m">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="MarkedPattern__LOCAL_MARKED__SRC">
+        <parameters reference="/6/@symbolicParameters.0"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__PROTOCOL_NACS_SRC">
+        <parameters reference="/6/@symbolicParameters.0"/>
+        <parameters reference="/6/@symbolicParameters.1"/>
+        <parameters reference="/6/@symbolicParameters.2"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__NO_DECs_SRC">
+        <parameters reference="/6/@symbolicParameters.0"/>
+        <parameters reference="/6/@symbolicParameters.1"/>
+        <parameters reference="/6/@symbolicParameters.2"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__CONTEXT_CORR">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="preg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg2reg">
+      <eClassifier xsi:type="ecore:EClass" href="../model/testsuite2_familiestopersons.ecore#//RegisterToRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="emf:Reference">
+        <parameters reference="/7/@symbolicParameters.2"/>
+        <parameters reference="/7/@symbolicParameters.0"/>
+        <eModelElement xsi:type="ecore:EReference" href="../model/testsuite2_familiestopersons.ecore#//RegisterToRegister/source"/>
+      </constraints>
+      <constraints xsi:type="emf:Reference">
+        <parameters reference="/7/@symbolicParameters.2"/>
+        <parameters reference="/7/@symbolicParameters.1"/>
+        <eModelElement xsi:type="ecore:EReference" href="../model/testsuite2_familiestopersons.ecore#//RegisterToRegister/target"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__CONTEXT_TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="preg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <bodies/>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__FWD">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="family">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="m">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="preg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg2reg">
+      <eClassifier xsi:type="ecore:EClass" href="../model/testsuite2_familiestopersons.ecore#//RegisterToRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__PROTOCOL_DEC_SRC">
+        <parameters reference="/9/@symbolicParameters.0"/>
+        <parameters reference="/9/@symbolicParameters.1"/>
+        <parameters reference="/9/@symbolicParameters.2"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__CONTEXT_CORR">
+        <parameters reference="/9/@symbolicParameters.0"/>
+        <parameters reference="/9/@symbolicParameters.3"/>
+        <parameters reference="/9/@symbolicParameters.4"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__CONTEXT_TRG">
+        <parameters reference="/9/@symbolicParameters.3"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="MarkedPattern__TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="protocol">
+      <eClassifier xsi:type="ecore:EClass" href="../../../plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="checkedObject">
+      <eClassifier xsi:type="ecore:EClass" href="http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="emf:Reference">
+        <parameters reference="/10/@symbolicParameters.0"/>
+        <parameters reference="/10/@symbolicParameters.1"/>
+        <eModelElement xsi:type="ecore:EReference" href="../../../plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/createdTrg"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="MarkedPattern__LOCAL_MARKED__TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="checkedObject">
+      <eClassifier xsi:type="ecore:EClass" href="http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    </symbolicParameters>
+    <bodies>
+      <localVariables xsi:type="emf:EMFVariable" name="protocol">
+        <eClassifier xsi:type="ecore:EClass" href="../../../plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication"/>
+      </localVariables>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="MarkedPattern__TRG">
+        <parameters reference="/11/@bodies.0/@localVariables.0"/>
+        <parameters reference="/11/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="preg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="p">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//Female"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="emf:Reference">
+        <parameters reference="/12/@symbolicParameters.0"/>
+        <parameters reference="/12/@symbolicParameters.1"/>
+        <eModelElement xsi:type="ecore:EReference" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister/persons"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__CONTEXT_TRG">
+        <parameters reference="/12/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__PROTOCOL_NACS_TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="preg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="p">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//Female"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__TRG">
+        <parameters reference="/13/@symbolicParameters.0"/>
+        <parameters reference="/13/@symbolicParameters.1"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" invokedPattern="MarkedPattern__LOCAL_MARKED__TRG">
+        <parameters reference="/13/@symbolicParameters.1"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__NO_DECs_TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="preg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="p">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//Female"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__TRG">
+        <parameters reference="/14/@symbolicParameters.0"/>
+        <parameters reference="/14/@symbolicParameters.1"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__PROTOCOL_DEC_TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="preg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="p">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//Female"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="MarkedPattern__LOCAL_MARKED__TRG">
+        <parameters reference="/15/@symbolicParameters.0"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__PROTOCOL_NACS_TRG">
+        <parameters reference="/15/@symbolicParameters.0"/>
+        <parameters reference="/15/@symbolicParameters.1"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__NO_DECs_TRG">
+        <parameters reference="/15/@symbolicParameters.0"/>
+        <parameters reference="/15/@symbolicParameters.1"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="CreateMotherInNewFamily__BWD">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="preg">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="p">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//Female"/>
+    </symbolicParameters>
+    <symbolicParameters xsi:type="emf:EMFVariable" name="reg2reg">
+      <eClassifier xsi:type="ecore:EClass" href="../model/testsuite2_familiestopersons.ecore#//RegisterToRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__PROTOCOL_DEC_TRG">
+        <parameters reference="/16/@symbolicParameters.1"/>
+        <parameters reference="/16/@symbolicParameters.2"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__CONTEXT_CORR">
+        <parameters reference="/16/@symbolicParameters.0"/>
+        <parameters reference="/16/@symbolicParameters.1"/>
+        <parameters reference="/16/@symbolicParameters.3"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="CreateMotherInNewFamily__CONTEXT_SRC">
+        <parameters reference="/16/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="fr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <bodies/>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__PROTOCOL_NACS_SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="fr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__SRC">
+        <parameters reference="/18/@symbolicParameters.0"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" invokedPattern="MarkedPattern__LOCAL_MARKED__SRC">
+        <parameters reference="/18/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__NO_DECs_SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="fr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__SRC">
+        <parameters reference="/19/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__PROTOCOL_DEC_SRC">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="fr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__PROTOCOL_NACS_SRC">
+        <parameters reference="/20/@symbolicParameters.0"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__NO_DECs_SRC">
+        <parameters reference="/20/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__FWD">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="fr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__PROTOCOL_DEC_SRC">
+        <parameters reference="/21/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="pr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <bodies/>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__PROTOCOL_NACS_TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="pr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__TRG">
+        <parameters reference="/23/@symbolicParameters.0"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" invokedPattern="MarkedPattern__LOCAL_MARKED__TRG">
+        <parameters reference="/23/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__NO_DECs_TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="pr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__TRG">
+        <parameters reference="/24/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__PROTOCOL_DEC_TRG">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="pr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__PROTOCOL_NACS_TRG">
+        <parameters reference="/25/@symbolicParameters.0"/>
+      </constraints>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__NO_DECs_TRG">
+        <parameters reference="/25/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+  <specification:Pattern name="HandleRegisters__BWD">
+    <symbolicParameters xsi:type="emf:EMFVariable" name="pr">
+      <eClassifier xsi:type="ecore:EClass" href="../../SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </symbolicParameters>
+    <bodies>
+      <constraints xsi:type="specification:PatternInvocationConstraint" positive="true" invokedPattern="HandleRegisters__PROTOCOL_DEC_TRG">
+        <parameters reference="/26/@symbolicParameters.0"/>
+      </constraints>
+    </bodies>
+  </specification:Pattern>
+</xmi:XMI>
