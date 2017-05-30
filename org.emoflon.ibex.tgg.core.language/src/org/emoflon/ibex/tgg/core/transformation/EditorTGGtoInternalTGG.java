@@ -88,7 +88,7 @@ public class EditorTGGtoInternalTGG {
 		return new TGGProject(corrPackage, tgg);
 	}
 	
-	public void generateInternalModels(TripleGraphGrammarFile xtextParsedTGG, IProject project) {
+	public Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG, IProject project) {
 		Optional<TGGProject> tggProject = Optional.of(convertXtextTGG(xtextParsedTGG));
 
 		tggProject.ifPresent(p -> {
@@ -102,6 +102,8 @@ public class EditorTGGtoInternalTGG {
 				LogUtils.error(logger, e);
 			}
 		});
+		
+		return tggProject;
 	}
 
 	private TGG createTGG(TripleGraphGrammarFile xtextTGG) {

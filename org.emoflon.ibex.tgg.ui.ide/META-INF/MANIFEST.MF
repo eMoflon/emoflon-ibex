@@ -23,7 +23,8 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.pde.core;bundle-version="3.11.1",
  org.eclipse.jdt.ui;bundle-version="3.12.2",
  org.eclipse.emf.codegen.ecore;bundle-version="2.12.0",
- org.emoflon.ibex.tgg.editor
+ org.emoflon.ibex.tgg.editor,
+ org.eclipse.e4.core.di;bundle-version="1.6.1"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
