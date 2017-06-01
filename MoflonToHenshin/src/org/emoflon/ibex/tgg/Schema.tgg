@@ -44,6 +44,11 @@
 		#src->TGGInplaceAttributeExpression
 		#trg->Attribute
 	}
+	
+	TGGInplaceAttributeExpressionToHenshinParameter{
+		#src->TGGInplaceAttributeExpression
+		#trg->Parameter
+	}
 }
 
 #attributeConditions {

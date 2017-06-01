@@ -1,11 +1,9 @@
 package org.emoflon.ibex.tgg.core.compiler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,13 +28,11 @@ import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.SrcProtocolNA
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.TrgContextPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.TrgPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.TrgProtocolNACsAndDECPattern;
-import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECHelper;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECPattern;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.DECTrackingContainer;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
 import org.emoflon.ibex.tgg.core.compiler.pattern.rulepart.support.DEC.SearchEdgePattern;
 
-import language.BindingType;
 import language.DomainType;
 import language.TGG;
 import language.TGGRule;
@@ -69,10 +65,10 @@ public class TGGCompiler {
 	}
 
 	private void fillImportAliasTables(TGG tgg) {
-		aliasToEPackageUri.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#/");
+		aliasToEPackageUri.put("dep_ibex", "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore");
 		epackageToAlias.put(RuntimePackage.eINSTANCE, "dep_ibex");
 
-		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore#/");
+		aliasToEPackageUri.put("dep_ecore", "http://www.eclipse.org/emf/2002/Ecore");
 		epackageToAlias.put(EcorePackage.eINSTANCE, "dep_ecore");
 
 		tgg.getRules().stream().flatMap(r -> r.getNodes().stream()).map(n -> n.getType().getEPackage())
@@ -82,10 +78,7 @@ public class TGGCompiler {
 	private void createAlias(EPackage p){
 		if (!epackageToAlias.containsKey(p)) {
 			String alias = "dep_" + ++packageCounter;
-//			if(p.getESuperPackage() == null)
-//				aliasToEPackageUri.put(alias, p.eResource().getURI().toString());
-//			else
-				aliasToEPackageUri.put(alias, p.getNsURI());
+			aliasToEPackageUri.put(alias, p.getNsURI());
 			epackageToAlias.put(p, alias);
 		}
 	}
