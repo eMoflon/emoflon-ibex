@@ -1,0 +1,34 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule AttributeAssignmentToSetAttributeIsland #with MoflonToHenshin
+
+#source {
+	tAttributeInplace:TGGInplaceAttributeExpression{
+		operator:=enum::TGGAttributeConstraintOperators::EQUAL
+	}
+}
+
+#target {
+	++hAttribute:Attribute
+
+	hParameter:Parameter
+}
+
+#correspondence {
+	++ tGGAttributeToHenshinAttribute :TGGInplaceAttributeExpressionToHenshinAttribute{
+		#src->tAttributeInplace
+		#trg->hAttribute
+	}
+
+	tggAttributeToHenshinParameter :TGGInplaceAttributeExpressionToHenshinParameter{
+		#src->tAttributeInplace
+		#trg->hParameter
+	}
+}
+
+#attributeConditions {
+ eq_string(hParameter.name, hAttribute.value)
+}
+
+

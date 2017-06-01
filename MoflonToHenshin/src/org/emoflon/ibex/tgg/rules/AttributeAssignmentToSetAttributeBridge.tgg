@@ -1,0 +1,64 @@
+#using MoflonToHenshin.*
+#using AttrCondDefLibrary.*
+
+#rule AttributeAssignmentToSetAttributeBridge #with MoflonToHenshin
+
+#source {
+	tRule : TGGRule{
+		- nodes -> tNode
+	}
+	
+	tNode : TGGRuleNode{
+		++ - attrExpr -> tAttributeInplace
+	}	
+	
+	tAttributeInplace : TGGInplaceAttributeExpression{
+		operator := enum::TGGAttributeConstraintOperators::EQUAL
+	}
+}
+
+#target {
+	hRule : Rule{
+		- rhs -> hRhs
+		++ - parameters -> hParameter
+	}
+	
+	hRhs : Graph{
+		- nodes -> hNode
+	}
+	
+	hNode : Node{
+		++ - attributes -> hAttribute
+	}
+	
+	hAttribute : Attribute
+	
+	hParameter : Parameter
+	
+}
+
+#correspondence {
+	 tGGAttributeToHenshinAttribute : TGGInplaceAttributeExpressionToHenshinAttribute{
+		#src->tAttributeInplace
+		#trg->hAttribute
+	}
+	
+	tGGRuleToHenshinRule : TGGRuleToHenshinRule {
+		#src->tRule
+		#trg->hRule
+	}
+	
+	tGGNodeToHenshinNode : TGGNodeToHenshinNode{
+		#src->tNode
+		#trg->hNode
+	}
+	
+	tggAttributeToHenshinParameter : TGGInplaceAttributeExpressionToHenshinParameter{
+		#src->tAttributeInplace
+		#trg->hParameter
+	}
+}
+
+#attributeConditions {
+	
+}

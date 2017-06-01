@@ -1,12 +1,18 @@
 package org.emoflon.ibex.tgg.operational.util;
 
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.Enumerator;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -184,12 +190,19 @@ public class ManipulationUtil {
 	private static EObject createNode(IPatternMatch match, TGGRuleNode node, Resource resource) {
 		EObject newObj = createNodeByTGGRuleNode(node);
 
-		node.getAttrExpr().stream().filter(attrExpr -> attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL))
+		node.getAttrExpr().stream().filter(attrExpr -> findCorrectAttributeAssignment(attrExpr, newObj))
 			.forEach(attrExpr -> {
 			applyInplaceAttributeAssignments(attrExpr, newObj, match);
 		});
 		resource.getContents().add(newObj);
 		return newObj;
+	}
+	
+	private static boolean findCorrectAttributeAssignment(TGGInplaceAttributeExpression attrExpr, EObject eObject){
+		TGGAttributeConstraintOperators equalOP = TGGAttributeConstraintOperators.EQUAL;
+		EAttribute eAttribute = attrExpr.getAttribute();
+		EClass type = eObject.eClass();
+		return attrExpr.getOperator().equals(equalOP) && type.getEAllAttributes().contains(eAttribute);
 	}
 
 	private static void applyInplaceAttributeAssignments(TGGInplaceAttributeExpression attrExpr, EObject eObject, IPatternMatch match){
@@ -199,14 +212,20 @@ public class ManipulationUtil {
 					String2EPrimitive.convertString(attrExpr.getAttribute().getEType(), tle.getValue()));
 		}
 		else if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
-			TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
-			eObject.eSet(attrExpr.getAttribute(), tee.getEenum().getEEnumLiteral(tee.getLiteral().getValue()));
+			TGGEnumExpression tee = TGGEnumExpression.class.cast(attrExpr.getValueExpr());
+			applyTGGEnumExpression(tee, tee.getEenum(), tee.getLiteral(), eObject, attrExpr.getAttribute());
+			
 		}
 		else if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
 			TGGAttributeExpression tae = (TGGAttributeExpression) attrExpr.getValueExpr();
 			EObject obj = (EObject) match.get(tae.getObjectVar().getName());
 			eObject.eSet(attrExpr.getAttribute(), obj.eGet(tae.getAttribute()));
 		}
+	}
+	
+	private static void applyTGGEnumExpression(TGGEnumExpression tee, EEnum eEnum, EEnumLiteral literal, EObject eObject, EAttribute eAttribute) {
+		Enumerator enumerator = literal.getInstance();		
+		eObject.eSet(eAttribute, enumerator);		
 	}
 	
 	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {
