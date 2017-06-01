@@ -7,6 +7,7 @@ import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import language.TGG;
@@ -18,54 +19,41 @@ import language.TGGRule;
  * maintains matches that are reported by the pattern matcher
  */
 public class MatchContainer {
+	
 
-	private TObjectIntMap<String> ruleNameToId;
-	private TIntObjectMap<String> idToRuleName;
 
-	private TObjectIntMap<IPatternMatch> matchToRuleNameID;
+	private THashMap<IPatternMatch, String> matchToRuleName;
 
 	private Random random;
 
-	protected MatchContainer(TGG tgg) {
-		this.ruleNameToId = new TObjectIntHashMap<>(tgg.getRules().size());
-		this.idToRuleName = new TIntObjectHashMap<>(tgg.getRules().size());
-		this.matchToRuleNameID = new TObjectIntHashMap<>();
+	protected MatchContainer() {
+		this.matchToRuleName = new THashMap<>();
 		this.random = new Random();
-		assignIDsToRuleNames(tgg);
-	}
-
-	private void assignIDsToRuleNames(TGG tgg) {
-		int id = 0;
-		for (TGGRule rule : tgg.getRules()) {
-			ruleNameToId.put(rule.getName(), id);
-			idToRuleName.put(id, rule.getName());
-			id++;
-		}
 	}
 
 	protected void addMatch(String ruleName, IPatternMatch match) {
-		matchToRuleNameID.put(match, ruleNameToId.get(ruleName));
+		matchToRuleName.put(match, ruleName);
 	}
 
 	protected void removeMatch(IPatternMatch match) {
-		if (matchToRuleNameID.containsKey(match))
-			matchToRuleNameID.remove(match);
+		if (matchToRuleName.containsKey(match))
+			matchToRuleName.remove(match);
 	}
 
 	protected IPatternMatch getNext() {
-		return (IPatternMatch) matchToRuleNameID.keySet().iterator().next();
+		return (IPatternMatch) matchToRuleName.keySet().iterator().next();
 	}
 
 	protected IPatternMatch getNextRandom() {
-		return matchToRuleNameID.keySet().stream().findAny().get();
+		return matchToRuleName.keySet().stream().findAny().get();
 	}
 
 	protected boolean isEmpty() {
-		return matchToRuleNameID.isEmpty();
+		return matchToRuleName.isEmpty();
 	}
 
 	protected String getRuleName(IPatternMatch match) {
-		return idToRuleName.get(matchToRuleNameID.get(match));
+		return matchToRuleName.get(match);
 	}
 
 }
