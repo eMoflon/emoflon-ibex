@@ -9,15 +9,15 @@
 
 #target {	
 	++ hRule : Rule{
-		++ - lhs -> lhs
-		++ - rhs -> rhs
+		++ - lhs -> hLhs
+		++ - rhs -> hRhs
 	}
 	
-	++ lhs : Graph{
+	++ hLhs : Graph{
 		name := "LHS"
 	}
 	
-	++ rhs : Graph{
+	++ hRhs : Graph{
 		name := "RHS"
 	}	
 }
