@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.sun.xml.internal.txw2.output.StreamSerializer;
 
 import language.BindingType;
 import language.DomainType;
@@ -28,7 +31,9 @@ public class RuleInfos {
 	protected HashMap<String, Collection<TGGRuleEdge>> blackSrcEdges = new LinkedHashMap<>();
 	protected HashMap<String, Collection<TGGRuleEdge>> blackTrgEdges = new LinkedHashMap<>();
 	protected HashMap<String, Collection<TGGRuleCorr>> blackCorrNodes = new LinkedHashMap<>();
-
+	
+	protected HashMap<String, HashMap<String, DomainType>> domainTypes = new HashMap<>();
+	
 	protected HashMap<String, TGGAttributeConstraintLibrary> rule2constraintLibrary = new LinkedHashMap<>();
 
 	public RuleInfos(TGG tgg) {
@@ -86,6 +91,12 @@ public class RuleInfos {
 				r.getNodes().stream()
 						.filter(e -> e.getBindingType() == BindingType.CONTEXT && e.getDomainType() == DomainType.CORR)
 						.map(n -> (TGGRuleCorr) n).collect(Collectors.toCollection(LinkedHashSet::new)));
+		
+		HashMap<String, DomainType> domainTypesOfTheNodes = new HashMap<>();
+		r.getNodes().forEach(n -> domainTypesOfTheNodes.put(n.getName(), n.getDomainType()));
+		domainTypes.put(ruleName, domainTypesOfTheNodes);
+		
+
 	}
 
 	protected Collection<TGGRuleNode> getGreenSrcNodes(String ruleName) {
@@ -130,5 +141,10 @@ public class RuleInfos {
 	
 	protected TGGAttributeConstraintLibrary getRuleCSPConstraintLibrary(String ruleName){
 		return rule2constraintLibrary.get(ruleName);
+	}
+
+	
+	protected DomainType getDomainType(String ruleName, String nodeName){
+		return domainTypes.get(ruleName).get(nodeName);
 	}
 }

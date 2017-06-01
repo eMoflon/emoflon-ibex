@@ -2,10 +2,12 @@ package org.emoflon.ibex.tgg.operational;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -20,6 +22,7 @@ import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
+import language.DomainType;
 import language.TGG;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -62,6 +65,8 @@ public class TGGRuntimeUtil {
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 	protected THashMap<TGGRuleApplication, IPatternMatch> brokenRuleApplications = new THashMap<>();
 
+	boolean domainCheckNecessary = false;
+	
 	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		ruleInfos = new RuleInfos(tgg);
 		this.srcR = srcR;
@@ -69,7 +74,8 @@ public class TGGRuntimeUtil {
 		this.trgR = trgR;
 		this.protocolR = protocolR;
 		this.strategy = getStrategy();
-		this.operationalMatchContainer = new MatchContainer(tgg);
+		this.operationalMatchContainer = new MatchContainer();
+		this.domainCheckNecessary = isDomainCheckNecessary(tgg);
 	}
 
 	public void run() {
@@ -80,8 +86,12 @@ public class TGGRuntimeUtil {
 
 	// methods for reacting to occurring matches of operational rules
 	public void addOperationalRuleMatch(String ruleName, IPatternMatch match) {
-		operationalMatchContainer.addMatch(ruleName, match);
+		
+		if(matchedNodesConformToTheirDomains(ruleName, match))
+			operationalMatchContainer.addMatch(ruleName, match);
 	}
+
+
 
 	public void removeOperationalRuleMatch(IPatternMatch match) {
 		operationalMatchContainer.removeMatch(match);
@@ -161,7 +171,7 @@ public class TGGRuntimeUtil {
 		protocolR.getContents().add(ra);
 
 		ra.setName(ruleName);
-		ra.setFinal(strategy == OperationStrategy.PROTOCOL_NACS);
+		ra.setFinal(true);
 
 		fillProtocolInfo(ruleInfos.getGreenSrcNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedSrc(),
 				createdElements, match);
@@ -379,6 +389,26 @@ public class TGGRuntimeUtil {
 
 	public OperationStrategy getStrategy() {
 		return OperationStrategy.PROTOCOL_NACS;
+	}
+	
+	private boolean isDomainCheckNecessary(TGG tgg) {
+		HashSet<EPackage> intersectionOfSrcAndTrg = new HashSet<>(tgg.getSrc());
+		intersectionOfSrcAndTrg.retainAll(tgg.getTrg());
+		return intersectionOfSrcAndTrg.size() > 0;
+	}
+	
+	private boolean matchedNodesConformToTheirDomains(String ruleName, IPatternMatch match) {
+		if(!domainCheckNecessary)
+			return true;
+		for(String nodeName : match.parameterNames()){
+			EObject node = (EObject) match.get(nodeName);
+			DomainType domainOfTheNode = ruleInfos.getDomainType(ruleName, nodeName);
+			if(domainOfTheNode == DomainType.SRC && node.eResource() != srcR)
+				return false;
+			if(domainOfTheNode == DomainType.TRG && node.eResource() != trgR)
+				return false;
+		}
+		return true;
 	}
 
 }

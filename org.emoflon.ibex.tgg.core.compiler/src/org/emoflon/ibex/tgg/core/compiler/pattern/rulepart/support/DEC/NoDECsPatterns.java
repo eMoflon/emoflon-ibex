@@ -30,7 +30,7 @@ public class NoDECsPatterns extends RulePartPattern {
 	private DECTrackingContainer decTC;
 	private DomainType domain;
 
-	public static final DECStrategy decStrategy = DECStrategy.DYNAMIC;
+	public static final DECStrategy decStrategy = DECStrategy.STATIC;
 
 	public NoDECsPatterns(TGGRule rule, DECTrackingContainer decTC, DomainType domain) {
 		super(rule);
