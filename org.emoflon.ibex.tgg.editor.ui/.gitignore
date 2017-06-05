@@ -1,4 +1,0 @@
-/bin
-/xtend-gen/*
-/src-gen/*
-!/**/.keep*

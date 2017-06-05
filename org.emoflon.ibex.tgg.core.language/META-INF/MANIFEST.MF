@@ -29,7 +29,7 @@ Bundle-Vendor: TU Darmstadt
 Require-Bundle: org.eclipse.emf.ecore,
  com.google.guava;bundle-version="15.0.0",
  org.emoflon.ibex.tgg.editor;bundle-version="1.0.0",
- org.emoflon.ibex.tgg.ui.ide,
+ org.emoflon.ibex.tgg.ide,
  org.eclipse.core.resources,
  org.apache.log4j,
  org.eclipse.core.runtime;bundle-version="3.12.0"

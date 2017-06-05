@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<templates>
-<template id="t1" autoinsert="false" context="org.moflon.tgg.mosl.TGG.Import" deleted="false" description="Format for importing eMoflon projects" enabled="true" name="eMoflon import">#import "platform:/plugin/${projectName}/model/${projectName}.ecore"</template>
-</templates>
