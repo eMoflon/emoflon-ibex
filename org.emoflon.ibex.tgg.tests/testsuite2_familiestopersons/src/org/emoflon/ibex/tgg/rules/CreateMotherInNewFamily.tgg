@@ -12,7 +12,9 @@
 		++-mother->m
 	}
 	
-	++ m:FamilyMember
+	++ m:FamilyMember {
+		name := "mother"
+	}
 }
 
 #target {
