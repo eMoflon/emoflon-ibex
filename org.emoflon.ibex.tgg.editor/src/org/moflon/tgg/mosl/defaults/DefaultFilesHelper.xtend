@@ -297,6 +297,7 @@ class DefaultFilesHelper {
 		return '''
 			package org.emoflon.ibex.tgg.run;
 			
+			import java.io.File;
 			import java.io.IOException;
 			
 			import org.eclipse.emf.common.util.URI;
@@ -326,10 +327,10 @@ class DefaultFilesHelper {
 					TGG tgg = (TGG) tggR.getContents().get(0);
 					
 					// create your resources 
-					Resource s = rs.createResource(URI.createFileURI("instances/src_gen.xmi"));
-					Resource t = rs.createResource(URI.createFileURI("instances/trg_gen.xmi"));
-					Resource c = rs.createResource(URI.createFileURI("instances/corr_gen.xmi"));
-					Resource p = rs.createResource(URI.createFileURI("instances/protocol_gen.xmi"));
+					Resource s = rs.createResource(URI.createFileURI(new File("instances/src_gen.xmi").getAbsolutePath()));
+					Resource t = rs.createResource(URI.createFileURI(new File("instances/trg_gen.xmi").getAbsolutePath()));
+					Resource c = rs.createResource(URI.createFileURI(new File("instances/corr_gen.xmi").getAbsolutePath()));
+					Resource p = rs.createResource(URI.createFileURI(new File("instances/protocol_gen.xmi").getAbsolutePath()));
 					
 					// load the resources containing your input 
 					«RunFileHelper.getLoadCall(mode)»
