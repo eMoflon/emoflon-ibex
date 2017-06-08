@@ -6,7 +6,7 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>org.emoflon.ibex.tgg.ui.ide.builder</name>
+			<name>org.emoflon.ibex.tgg.ide.builder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
@@ -32,7 +32,7 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.emoflon.ibex.tgg.ui.ide.nature</nature>
+		<nature>org.emoflon.ibex.tgg.ide.nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
