@@ -1,6 +1,7 @@
 package testsuite1.familiestopersons.sync;
 
 import org.benchmarx.BXTool;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import SimpleFamilies.FamilyRegister;
@@ -15,7 +16,7 @@ public class AlignmentBased extends SyncTestCase {
 		super(tool);
 	}
 	
-	@Test
+	@Ignore
 	public void testRenameMother()
 	{
 		// No precondition!
