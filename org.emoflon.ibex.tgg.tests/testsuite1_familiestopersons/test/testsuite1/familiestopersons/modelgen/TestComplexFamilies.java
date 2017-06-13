@@ -6,6 +6,10 @@ import org.junit.Test;
 
 public class TestComplexFamilies extends ModelGenTestCase {
 	
+	public TestComplexFamilies(boolean flatten) {
+		super(flatten);
+	}
+	
 	@Test
 	public void testFamilyWithSixChildren() throws IOException {
 		stop.setMaxRuleCount("HandleRegisters", 1);

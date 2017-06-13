@@ -6,6 +6,10 @@ import org.junit.Test;
 
 public class TestAxiom extends ModelGenTestCase {
 	
+	public TestAxiom(boolean flatten) {
+		super(flatten);
+	}
+	
 	@Test
 	public void testOneRoot() throws IOException {
 		stop.setMaxRuleCount("HandleRegisters", 1);

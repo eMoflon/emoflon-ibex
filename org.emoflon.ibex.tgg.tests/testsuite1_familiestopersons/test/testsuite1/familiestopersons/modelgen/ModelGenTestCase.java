@@ -1,8 +1,11 @@
 package testsuite1.familiestopersons.modelgen;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.log4j.BasicConfigurator;
+import org.benchmarx.BXTool;
 import org.benchmarx.emf.Comparator;
 import org.benchmarx.families.core.FamiliesComparator;
 import org.benchmarx.persons.core.PersonsComparator;
@@ -13,15 +16,24 @@ import org.emoflon.ibex.tgg.run.MODELGEN_App;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import SimpleFamilies.FamilyRegister;
 import SimplePersons.PersonRegister;
 
-public class ModelGenTestCase {
+@RunWith(Parameterized.class)
+public abstract class ModelGenTestCase {
 	protected MODELGEN_App generator;
 	protected Comparator<FamilyRegister> familiesComp;
 	protected Comparator<PersonRegister> personsComp;
 	protected MODELGENStopCriterion stop;
+	protected boolean flatten;
+	
+	protected ModelGenTestCase(Boolean flatten) {
+		this.flatten = flatten;
+	}
 	
 	@BeforeClass
 	public static void init() {
@@ -30,11 +42,12 @@ public class ModelGenTestCase {
 	
 	@Before
 	public void createGenerator() throws IOException {
-		generator = new MODELGEN_App("testsuite1_familiestopersons", "./../", false);
+		generator = new MODELGEN_App("testsuite1_familiestopersons", "./../", flatten, false);
 		stop = new MODELGENStopCriterion(generator.getTGG());
 		
 		stop.setMaxRuleCount("HandleRegisters", 0);
 		stop.setMaxRuleCount("IgnoreFamily", 0);
+		stop.setMaxRuleCount("FamilyMemberToPerson", 0);
 		stop.setMaxRuleCount("FatherToMale", 0);
 		stop.setMaxRuleCount("MotherToFemale", 0);
 		stop.setMaxRuleCount("DaughterToFemale", 0);
@@ -84,5 +97,11 @@ public class ModelGenTestCase {
 			personsComp.assertEquals((PersonRegister)trgExp.getContents().get(i), 
 					                  (PersonRegister)generator.getTargetResource().getContents().get(i));
 		}
+	}
+	
+
+	@Parameters
+	public static Collection<Boolean> flattening() throws IOException {
+		return Arrays.asList(true, false);
 	}
 }

@@ -6,6 +6,10 @@ import org.junit.Test;
 
 public class TestZeroToNMultiplicities extends ModelGenTestCase {
 	
+	public TestZeroToNMultiplicities(boolean flatten) {
+		super(flatten);
+	}
+	
 	/**
 	 * Tests if the generated NAC for a 0..n multiplicity does not prohibit
 	 * the application of the IgnoreFamily rule unnecessarily.

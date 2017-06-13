@@ -6,6 +6,10 @@ import org.junit.Test;
 
 public class TestZeroToOneMultiplicities extends ModelGenTestCase {
 	
+	public TestZeroToOneMultiplicities(boolean flatten) {
+		super(flatten);
+	}
+	
 	/**
 	 * Tests if the generated NAC for a 0..1 multiplicity does not prohibit
 	 * the application of the FatherToMale rule unnecessarily.

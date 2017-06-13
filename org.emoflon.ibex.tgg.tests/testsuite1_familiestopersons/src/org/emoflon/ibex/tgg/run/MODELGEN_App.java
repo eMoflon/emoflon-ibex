@@ -13,6 +13,10 @@ public class MODELGEN_App extends MODELGEN {
 		super(projectName, workspacePath, debug);
 	}
 
+	public MODELGEN_App(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
+		super(projectName, workspacePath, flatten, debug);
+	}
+
 	protected void registerUserMetamodels() throws IOException {
 		rs.getPackageRegistry().put("platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore", SimpleFamiliesPackageImpl.init());
 		rs.getPackageRegistry().put("platform:/resource/SimplePersons/model/SimplePersons.ecore", SimplePersonsPackageImpl.init());
