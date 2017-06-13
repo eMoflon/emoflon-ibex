@@ -139,6 +139,13 @@ public class EditorTGGtoInternalTGG {
 
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
+		
+        // translate rule refinement
+        for (TGGRule tggRule : tgg.getRules()) {
+            tggRule.getRefines().addAll(((Rule)tggToXtext.get(tggRule)).getSupertypes().stream()
+                                                                 .map(r -> (TGGRule)xtextToTGG.get(r))
+                                                                 .collect(Collectors.toList()));
+        }
 
 		tgg = addOppositeEdges(tgg);
 		tgg = sortTGGAttributeConstraints(tgg);
