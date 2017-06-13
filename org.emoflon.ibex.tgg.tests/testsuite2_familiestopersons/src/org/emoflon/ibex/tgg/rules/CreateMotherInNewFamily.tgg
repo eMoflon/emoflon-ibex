@@ -9,12 +9,11 @@
 	}	
 	
 	++ family:Family {
+		name := "Test"
 		++-mother->m
 	}
 	
-	++ m:FamilyMember {
-		name := "mother"
-	}
+	++ m:FamilyMember
 }
 
 #target {
@@ -22,9 +21,7 @@
 		++ -persons->p
 	}
 	
-	++ p:Female {
-		name := "mother"
-	}
+	++ p:Female
 }
 
 #correspondence {
@@ -40,5 +37,5 @@
 }
 
 #attributeConditions {
-	
+	 eq_string(p.name, m.name)
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ASCII"?>
+<SimpleFamilies:FamilyRegister xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:SimpleFamilies="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore">
+  <families name="Test">
+    <mother name="Theresa"/>
+    <daughters name="Maria"/>
+    <daughters name="Magdalena"/>
+  </families>
+</SimpleFamilies:FamilyRegister>

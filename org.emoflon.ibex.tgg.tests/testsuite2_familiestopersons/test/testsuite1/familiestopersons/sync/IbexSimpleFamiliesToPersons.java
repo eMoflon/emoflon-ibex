@@ -135,7 +135,7 @@ public class IbexSimpleFamiliesToPersons extends BXToolForEMF<FamilyRegister, Pe
 	@Override
 	public void terminateSynchronisationDialogue() {
 		try {
-			//synchroniser.saveModels();
+			saveModels("results");
 			synchroniser.terminate();
 		} catch (IOException e) {
 			e.printStackTrace();
