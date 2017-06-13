@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<tgg:TripleGraphGrammarFile xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:tgg="http://www.moflon.org/ide/tgg/mosl/TGG">
+<tgg:TripleGraphGrammarFile xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tgg="http://www.moflon.org/ide/tgg/mosl/TGG">
   <schema name="testsuite2_familiestopersons">
     <imports name="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore"/>
     <imports name="platform:/resource/SimplePersons/model/SimplePersons.ecore"/>
@@ -35,6 +35,10 @@
     <sourcePatterns name="m">
       <op value="++"/>
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+      <attributeAssignments op=":=">
+        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
+        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;mother&quot;"/>
+      </attributeAssignments>
     </sourcePatterns>
     <targetPatterns name="preg">
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
@@ -46,6 +50,10 @@
     <targetPatterns name="p">
       <op value="++"/>
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Female"/>
+      <attributeAssignments op=":=">
+        <attribute href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person/name"/>
+        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;mother&quot;"/>
+      </attributeAssignments>
     </targetPatterns>
     <correspondencePatterns name="reg2reg" type="//@schema/@correspondenceTypes.0" source="//@rules.0/@sourcePatterns.0" target="//@rules.0/@targetPatterns.0"/>
     <correspondencePatterns name="m2p" type="//@schema/@correspondenceTypes.1" source="//@rules.0/@sourcePatterns.2" target="//@rules.0/@targetPatterns.1">

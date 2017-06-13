@@ -1,42 +1,25 @@
 #using testsuite1_familiestopersons.*
 #using AttrCondDefLibrary.*
 
-#rule SonToMale #with testsuite1_familiestopersons
+#rule SonToMale #extends FamilyMemberToPerson #with testsuite1_familiestopersons
 
 #source { 
-	fr:FamilyRegister {
-		-families->f
-	}
-	
 	f:Family {
-		++ -sons->son
+		++ -sons->fm
 	}
 	
-	++ son:FamilyMember {
+	++ fm:FamilyMember {
 		name := "son"
 	}
 }
 
 #target {
-	pr:PersonRegister {
-		++ -persons->p
-	}
-	
 	++ p:Male {
 		name := "son"
 	}
 }
 
 #correspondence {
-	roots:RegisterToRegister {
-		#src->fr
-		#trg->pr
-	}
-	
-	++ memberToPerson:FamilyMemberToPerson {
-		#src->son
-		#trg->p
-	}
 }
 
 #attributeConditions {

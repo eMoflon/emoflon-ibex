@@ -1,31 +1,11 @@
 #using testsuite1_familiestopersons.*
 #using AttrCondDefLibrary.*
 
-#rule CreateFourthAndFifthFamily #with testsuite1_familiestopersons
+#rule CreateFourthAndFifthFamily #extends CreateFourthFamily #with testsuite1_familiestopersons
 
 #source { 
 	fr:FamilyRegister {
-	 	-families->f1
-	 	-families->f2
-	 	-families->f3
-	 	++ -families->f4
 	 	++ -families->f5
-	}
-	
-	f1:Family {
-		name := "Test"
-	}
-	
-	f2:Family {
-		name := "Test"
-	}
-	
-	f3:Family {
-		name := "Test"
-	}
-	
-	++ f4:Family {
-		name := "Test"
 	}
 	
 	++ f5:Family {
@@ -34,15 +14,9 @@
 }
 
 #target {
-	pr:PersonRegister
 }
 
 #correspondence {
-	fr2pr:RegisterToRegister
-	{
-		#src->fr
-		#trg->pr
-	}
 }
 
 #attributeConditions {
