@@ -1,52 +1,133 @@
 <?xml version="1.0" encoding="ASCII"?>
-<org.emoflon.ibex.tgg.core.language:TGG xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/" name="testsuite2_familiestopersons">
+<org.emoflon.ibex.tgg.core.language:TGG xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/" xmlns:org.emoflon.ibex.tgg.core.language.misc.expressions="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions" name="testsuite2_familiestopersons">
   <src href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#/"/>
   <trg href="platform:/resource/SimplePersons/model/SimplePersons.ecore#/"/>
   <corr href="platform:/resource/testsuite2_familiestopersons/model/testsuite2_familiestopersons.ecore#/"/>
-  <rules name="CreateMotherInNewFamily">
-    <nodes name="reg" outgoingEdges="//@rules.0/@edges.0" incomingCorrsSource="//@rules.0/@nodes.5">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
-    </nodes>
-    <nodes name="family" bindingType="CREATE" incomingEdges="//@rules.0/@edges.0" outgoingEdges="//@rules.0/@edges.1">
+  <rules name="CreateDaughterInExistingFamily">
+    <nodes name="f" outgoingEdges="//@rules.0/@edges.0">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
     </nodes>
-    <nodes name="m" bindingType="CREATE" incomingEdges="//@rules.0/@edges.1" incomingCorrsSource="//@rules.0/@nodes.6">
+    <nodes name="m" bindingType="CREATE" incomingEdges="//@rules.0/@edges.0" incomingCorrsSource="//@rules.0/@nodes.4">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
     </nodes>
-    <nodes name="preg" domainType="TRG" outgoingEdges="//@rules.0/@edges.2" incomingCorrsTarget="//@rules.0/@nodes.5">
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
-    </nodes>
-    <nodes name="p" domainType="TRG" bindingType="CREATE" incomingEdges="//@rules.0/@edges.2" incomingCorrsTarget="//@rules.0/@nodes.6">
+    <nodes name="p" domainType="TRG" bindingType="CREATE" incomingEdges="//@rules.0/@edges.1" incomingCorrsTarget="//@rules.0/@nodes.4">
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Female"/>
     </nodes>
-    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="reg2reg" domainType="CORR" source="//@rules.0/@nodes.0" target="//@rules.0/@nodes.3">
-      <type href="platform:/resource/testsuite2_familiestopersons/model/testsuite2_familiestopersons.ecore#//RegisterToRegister"/>
-    </nodes>
-    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="m2p" domainType="CORR" bindingType="CREATE" source="//@rules.0/@nodes.2" target="//@rules.0/@nodes.4">
-      <type href="platform:/resource/testsuite2_familiestopersons/model/testsuite2_familiestopersons.ecore#//FamilyMemberToPerson"/>
-    </nodes>
-    <edges name="reg__families__family_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.0/@nodes.0" trgNode="//@rules.0/@nodes.1">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-    </edges>
-    <edges name="family__mother__m_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.0/@nodes.1" trgNode="//@rules.0/@nodes.2">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/mother"/>
-    </edges>
-    <edges name="preg__persons__p_eMoflonEdge" domainType="TRG" bindingType="CREATE" srcNode="//@rules.0/@nodes.3" trgNode="//@rules.0/@nodes.4">
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister/persons"/>
-    </edges>
-    <attributeConditionLibrary/>
-  </rules>
-  <rules name="HandleRegisters">
-    <nodes name="fr" bindingType="CREATE" incomingCorrsSource="//@rules.1/@nodes.2">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
-    </nodes>
-    <nodes name="pr" domainType="TRG" bindingType="CREATE" incomingCorrsTarget="//@rules.1/@nodes.2">
+    <nodes name="preg" domainType="TRG" outgoingEdges="//@rules.0/@edges.1">
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
     </nodes>
-    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="roots" domainType="CORR" bindingType="CREATE" source="//@rules.1/@nodes.0" target="//@rules.1/@nodes.1">
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="p2m" domainType="CORR" bindingType="CREATE" source="//@rules.0/@nodes.1" target="//@rules.0/@nodes.2">
+      <type href="platform:/resource/testsuite2_familiestopersons/model/testsuite2_familiestopersons.ecore#//FamilyMemberToPerson"/>
+    </nodes>
+    <edges name="f__daughters__m_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.0/@nodes.0" trgNode="//@rules.0/@nodes.1">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/daughters"/>
+    </edges>
+    <edges name="preg__persons__p_eMoflonEdge" domainType="TRG" bindingType="CREATE" srcNode="//@rules.0/@nodes.3" trgNode="//@rules.0/@nodes.2">
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister/persons"/>
+    </edges>
+    <attributeConditionLibrary sorted_BWD="//@rules.0/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_FWD="//@rules.0/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_CC="//@rules.0/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_MODELGEN="//@rules.0/@attributeConditionLibrary/@tggAttributeConstraints.0">
+      <tggAttributeConstraints definition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0" parameters="//@rules.0/@attributeConditionLibrary/@parameterValues.0 //@rules.0/@attributeConditionLibrary/@parameterValues.1"/>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.0" objectVar="//@rules.0/@nodes.1">
+        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
+      </parameterValues>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.1" objectVar="//@rules.0/@nodes.2">
+        <attribute href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person/name"/>
+      </parameterValues>
+    </attributeConditionLibrary>
+  </rules>
+  <rules name="CreateMotherInNewFamily">
+    <nodes name="family" bindingType="CREATE" incomingEdges="//@rules.1/@edges.1" outgoingEdges="//@rules.1/@edges.0">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
+      <attrExpr>
+        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
+        <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
+      </attrExpr>
+    </nodes>
+    <nodes name="m" bindingType="CREATE" incomingEdges="//@rules.1/@edges.0" incomingCorrsSource="//@rules.1/@nodes.5">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+    </nodes>
+    <nodes name="reg" outgoingEdges="//@rules.1/@edges.1" incomingCorrsSource="//@rules.1/@nodes.6">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </nodes>
+    <nodes name="p" domainType="TRG" bindingType="CREATE" incomingEdges="//@rules.1/@edges.2" incomingCorrsTarget="//@rules.1/@nodes.5">
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Female"/>
+    </nodes>
+    <nodes name="preg" domainType="TRG" outgoingEdges="//@rules.1/@edges.2" incomingCorrsTarget="//@rules.1/@nodes.6">
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="m2p" domainType="CORR" bindingType="CREATE" source="//@rules.1/@nodes.1" target="//@rules.1/@nodes.3">
+      <type href="platform:/resource/testsuite2_familiestopersons/model/testsuite2_familiestopersons.ecore#//FamilyMemberToPerson"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="reg2reg" domainType="CORR" source="//@rules.1/@nodes.2" target="//@rules.1/@nodes.4">
+      <type href="platform:/resource/testsuite2_familiestopersons/model/testsuite2_familiestopersons.ecore#//RegisterToRegister"/>
+    </nodes>
+    <edges name="family__mother__m_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.1/@nodes.0" trgNode="//@rules.1/@nodes.1">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/mother"/>
+    </edges>
+    <edges name="reg__families__family_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.1/@nodes.2" trgNode="//@rules.1/@nodes.0">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
+    </edges>
+    <edges name="preg__persons__p_eMoflonEdge" domainType="TRG" bindingType="CREATE" srcNode="//@rules.1/@nodes.4" trgNode="//@rules.1/@nodes.3">
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister/persons"/>
+    </edges>
+    <attributeConditionLibrary sorted_BWD="//@rules.1/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_FWD="//@rules.1/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_CC="//@rules.1/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_MODELGEN="//@rules.1/@attributeConditionLibrary/@tggAttributeConstraints.0">
+      <tggAttributeConstraints definition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0" parameters="//@rules.1/@attributeConditionLibrary/@parameterValues.0 //@rules.1/@attributeConditionLibrary/@parameterValues.1"/>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.0" objectVar="//@rules.1/@nodes.3">
+        <attribute href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person/name"/>
+      </parameterValues>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.1" objectVar="//@rules.1/@nodes.1">
+        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
+      </parameterValues>
+    </attributeConditionLibrary>
+  </rules>
+  <rules name="HandleRegisters">
+    <nodes name="fr" bindingType="CREATE" incomingCorrsSource="//@rules.2/@nodes.2">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
+    </nodes>
+    <nodes name="pr" domainType="TRG" bindingType="CREATE" incomingCorrsTarget="//@rules.2/@nodes.2">
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="roots" domainType="CORR" bindingType="CREATE" source="//@rules.2/@nodes.0" target="//@rules.2/@nodes.1">
       <type href="platform:/resource/testsuite2_familiestopersons/model/testsuite2_familiestopersons.ecore#//RegisterToRegister"/>
     </nodes>
     <attributeConditionLibrary/>
   </rules>
-  <attributeConstraintDefinitionLibrary/>
+  <attributeConstraintDefinitionLibrary>
+    <tggAttributeConstraintDefinitions name="eq_string" userDefined="false">
+      <parameterDefinitions name="a">
+        <type href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      </parameterDefinitions>
+      <parameterDefinitions name="b">
+        <type href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      </parameterDefinitions>
+      <syncAdornments>
+        <value>B</value>
+        <value>B</value>
+      </syncAdornments>
+      <syncAdornments>
+        <value>B</value>
+        <value>F</value>
+      </syncAdornments>
+      <syncAdornments>
+        <value>F</value>
+        <value>B</value>
+      </syncAdornments>
+      <genAdornments>
+        <value>B</value>
+        <value>B</value>
+      </genAdornments>
+      <genAdornments>
+        <value>B</value>
+        <value>F</value>
+      </genAdornments>
+      <genAdornments>
+        <value>F</value>
+        <value>B</value>
+      </genAdornments>
+      <genAdornments>
+        <value>F</value>
+        <value>F</value>
+      </genAdornments>
+    </tggAttributeConstraintDefinitions>
+  </attributeConstraintDefinitionLibrary>
 </org.emoflon.ibex.tgg.core.language:TGG>
