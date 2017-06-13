@@ -8,10 +8,12 @@ public class TGGProject {
 
 	private EPackage corrPackage;
 	private TGG tggModel;
+	private TGG flattenedTggModel;
 	
-	public TGGProject(EPackage corrPackage, TGG tggModel){
+	public TGGProject(EPackage corrPackage, TGG tggModel, TGG flattenedTggModel){
 		this.corrPackage = corrPackage;
 		this.tggModel = tggModel;
+		this.flattenedTggModel = flattenedTggModel;
 	}
 	
 	public EPackage getCorrPackage() {
@@ -20,6 +22,10 @@ public class TGGProject {
 
 	public TGG getTggModel() {
 		return tggModel;
+	}
+
+	public TGG getFlattenedTggModel() {
+		return flattenedTggModel;
 	}
 
 }

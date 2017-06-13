@@ -78,18 +78,21 @@ public class EditorTGGtoInternalTGG {
 	private LanguageFactory tggFactory = LanguageFactory.eINSTANCE;
 	private HashMap<EObject, EObject> xtextToTGG = new HashMap<>();
 	private HashMap<EObject, EObject> tggToXtext = new HashMap<>();
+	private HashMap<String, EObject> xTextCorrToCorrClass = new HashMap<>();
 	
 	private static final Logger logger = Logger.getLogger(EditorTGGtoInternalTGG.class);
 
-	public TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG) {
+	public TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG, TripleGraphGrammarFile flattenedXtextTGG) {
 		EPackage corrPackage = createCorrModel(xtextTGG);
 		TGG tgg = createTGG(xtextTGG);
+		TGG flattenedTgg = createTGG(flattenedXtextTGG);
 		tgg.setCorr(corrPackage);
-		return new TGGProject(corrPackage, tgg);
+		flattenedTgg.setCorr(corrPackage);
+		return new TGGProject(corrPackage, tgg, flattenedTgg);
 	}
 	
-	public Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG, IProject project) {
-		Optional<TGGProject> tggProject = Optional.of(convertXtextTGG(xtextParsedTGG));
+	public Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG, TripleGraphGrammarFile flattenedXtextParsedTGG, IProject project) {
+		Optional<TGGProject> tggProject = Optional.of(convertXtextTGG(xtextParsedTGG, flattenedXtextParsedTGG));
 
 		tggProject.ifPresent(p -> {
 			try {
@@ -98,6 +101,8 @@ public class EditorTGGtoInternalTGG {
 				IbexTGGBuilder.saveModelInProject(corrFile, rs, p.getCorrPackage());
 				IFile tggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.INTERNAL_TGG_MODEL_EXTENSION);
 				IbexTGGBuilder.saveModelInProject(tggFile, rs, p.getTggModel());
+				IFile flattenedTggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.INTERNAL_TGG_FLATTENED_MODEL_EXTENSION);
+				IbexTGGBuilder.saveModelInProject(flattenedTggFile, rs, p.getFlattenedTggModel());
 			} catch (IOException e) {
 				LogUtils.error(logger, e);
 			}
@@ -107,6 +112,9 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private TGG createTGG(TripleGraphGrammarFile xtextTGG) {
+		xtextToTGG = new HashMap<>();
+		tggToXtext = new HashMap<>();
+		
 		TGG tgg = tggFactory.createTGG();
 		tgg.setName(xtextTGG.getSchema().getName());
 		tgg.getSrc().addAll(xtextTGG.getSchema().getSourceTypes());
@@ -250,7 +258,7 @@ public class EditorTGGtoInternalTGG {
 		for (CorrVariablePattern cv : corrOVs) {
 			TGGRuleCorr corrNode = tggFactory.createTGGRuleCorr();
 			corrNode.setName(cv.getName());
-			corrNode.setType((EClass) xtextToTGG.get(cv.getType()));
+			corrNode.setType((EClass) xTextCorrToCorrClass.get(cv.getType().getName()));
 			corrNode.setBindingType(getBindingType(cv.getOp()));
 			corrNode.setDomainType(DomainType.CORR);
 			corrNode.setSource((TGGRuleNode) xtextToTGG.get(cv.getSource()));
@@ -412,8 +420,8 @@ public class EditorTGGtoInternalTGG {
 		trgRef.setUpperBound(1);
 		trgRef.setEType(ct.getTarget());
 		corrClass.getEStructuralFeatures().add(trgRef);
-
-		map(ct, corrClass);
+		
+		xTextCorrToCorrClass.put(ct.getName(), corrClass);
 
 		return corrClass;
 	}
