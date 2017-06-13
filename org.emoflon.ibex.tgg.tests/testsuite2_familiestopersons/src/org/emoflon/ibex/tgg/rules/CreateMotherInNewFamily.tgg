@@ -22,7 +22,9 @@
 		++ -persons->p
 	}
 	
-	++ p:Female
+	++ p:Female {
+		name := "mother"
+	}
 }
 
 #correspondence {

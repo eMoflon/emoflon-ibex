@@ -41,7 +41,6 @@ public abstract class SyncTestCase {
 	
 	@Before
 	public void initialise() {
-		
 		// Make sure packages are registered
 		SimpleFamiliesPackage.eINSTANCE.getName();
 		SimplePersonsPackage.eINSTANCE.getName();
