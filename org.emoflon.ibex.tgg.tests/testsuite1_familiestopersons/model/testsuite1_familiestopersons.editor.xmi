@@ -14,48 +14,12 @@
       <target href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person"/>
     </correspondenceTypes>
   </schema>
-  <rules name="ConnectFather" schema="//@schema">
+  <rules name="ConnectFather" supertypes="//@rules.7" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
     <using importedNamespace="AttrCondDefLibrary.*"/>
-    <sourcePatterns name="fr">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
-      <linkVariablePatterns target="//@rules.0/@sourcePatterns.1">
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-      </linkVariablePatterns>
-    </sourcePatterns>
-    <sourcePatterns name="f">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <linkVariablePatterns target="//@rules.0/@sourcePatterns.2">
-        <op value="++"/>
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/father"/>
-      </linkVariablePatterns>
-    </sourcePatterns>
-    <sourcePatterns name="father">
+    <sourcePatterns name="fm">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;father&quot;"/>
-      </attributeAssignments>
     </sourcePatterns>
-    <targetPatterns name="pr">
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
-      <linkVariablePatterns target="//@rules.0/@targetPatterns.1">
-        <op value="++"/>
-        <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister/persons"/>
-      </linkVariablePatterns>
-    </targetPatterns>
-    <targetPatterns name="p">
-      <op value="++"/>
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Male"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;father&quot;"/>
-      </attributeAssignments>
-    </targetPatterns>
-    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.0/@sourcePatterns.0" target="//@rules.0/@targetPatterns.0"/>
-    <correspondencePatterns name="memberToPerson" type="//@schema/@correspondenceTypes.1" source="//@rules.0/@sourcePatterns.2" target="//@rules.0/@targetPatterns.1">
-      <op value="++"/>
-    </correspondencePatterns>
   </rules>
   <rules name="CreateFather" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
@@ -69,57 +33,15 @@
       </attributeAssignments>
     </sourcePatterns>
   </rules>
-  <rules name="CreateFourthAndFifthFamily" schema="//@schema">
+  <rules name="CreateFourthAndFifthFamily" supertypes="//@rules.3" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
     <using importedNamespace="AttrCondDefLibrary.*"/>
     <sourcePatterns name="fr">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
       <linkVariablePatterns target="//@rules.2/@sourcePatterns.1">
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-      </linkVariablePatterns>
-      <linkVariablePatterns target="//@rules.2/@sourcePatterns.2">
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-      </linkVariablePatterns>
-      <linkVariablePatterns target="//@rules.2/@sourcePatterns.3">
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-      </linkVariablePatterns>
-      <linkVariablePatterns target="//@rules.2/@sourcePatterns.4">
         <op value="++"/>
         <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
       </linkVariablePatterns>
-      <linkVariablePatterns target="//@rules.2/@sourcePatterns.5">
-        <op value="++"/>
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-      </linkVariablePatterns>
-    </sourcePatterns>
-    <sourcePatterns name="f1">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;Test&quot;"/>
-      </attributeAssignments>
-    </sourcePatterns>
-    <sourcePatterns name="f2">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;Test&quot;"/>
-      </attributeAssignments>
-    </sourcePatterns>
-    <sourcePatterns name="f3">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;Test&quot;"/>
-      </attributeAssignments>
-    </sourcePatterns>
-    <sourcePatterns name="f4">
-      <op value="++"/>
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;Test&quot;"/>
-      </attributeAssignments>
     </sourcePatterns>
     <sourcePatterns name="f5">
       <op value="++"/>
@@ -129,10 +51,6 @@
         <valueExp xsi:type="tgg:LiteralExpression" value="&quot;Test&quot;"/>
       </attributeAssignments>
     </sourcePatterns>
-    <targetPatterns name="pr">
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
-    </targetPatterns>
-    <correspondencePatterns name="fr2pr" type="//@schema/@correspondenceTypes.0" source="//@rules.2/@sourcePatterns.0" target="//@rules.2/@targetPatterns.0"/>
   </rules>
   <rules name="CreateFourthFamily" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
@@ -187,23 +105,17 @@
     </targetPatterns>
     <correspondencePatterns name="fr2pr" type="//@schema/@correspondenceTypes.0" source="//@rules.3/@sourcePatterns.0" target="//@rules.3/@targetPatterns.0"/>
   </rules>
-  <rules name="DaughterToFemale" schema="//@schema">
+  <rules name="DaughterToFemale" supertypes="//@rules.5" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
     <using importedNamespace="AttrCondDefLibrary.*"/>
-    <sourcePatterns name="fr">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
-      <linkVariablePatterns target="//@rules.4/@sourcePatterns.1">
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-      </linkVariablePatterns>
-    </sourcePatterns>
     <sourcePatterns name="f">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <linkVariablePatterns target="//@rules.4/@sourcePatterns.2">
+      <linkVariablePatterns target="//@rules.4/@sourcePatterns.1">
         <op value="++"/>
         <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/daughters"/>
       </linkVariablePatterns>
     </sourcePatterns>
-    <sourcePatterns name="daughter">
+    <sourcePatterns name="fm">
       <op value="++"/>
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
       <attributeAssignments op=":=">
@@ -211,13 +123,6 @@
         <valueExp xsi:type="tgg:LiteralExpression" value="&quot;daughter&quot;"/>
       </attributeAssignments>
     </sourcePatterns>
-    <targetPatterns name="pr">
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
-      <linkVariablePatterns target="//@rules.4/@targetPatterns.1">
-        <op value="++"/>
-        <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister/persons"/>
-      </linkVariablePatterns>
-    </targetPatterns>
     <targetPatterns name="p">
       <op value="++"/>
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Female"/>
@@ -226,12 +131,8 @@
         <valueExp xsi:type="tgg:LiteralExpression" value="&quot;daughter&quot;"/>
       </attributeAssignments>
     </targetPatterns>
-    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.4/@sourcePatterns.0" target="//@rules.4/@targetPatterns.0"/>
-    <correspondencePatterns name="memberToPerson" type="//@schema/@correspondenceTypes.1" source="//@rules.4/@sourcePatterns.2" target="//@rules.4/@targetPatterns.1">
-      <op value="++"/>
-    </correspondencePatterns>
   </rules>
-  <rules name="FatherAndMale" schema="//@schema">
+  <rules name="FamilyMemberToPerson" abstractRule="true" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
     <using importedNamespace="AttrCondDefLibrary.*"/>
     <sourcePatterns name="fr">
@@ -242,18 +143,10 @@
     </sourcePatterns>
     <sourcePatterns name="f">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <linkVariablePatterns target="//@rules.5/@sourcePatterns.2">
-        <op value="++"/>
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/father"/>
-      </linkVariablePatterns>
     </sourcePatterns>
-    <sourcePatterns name="father">
+    <sourcePatterns name="fm">
       <op value="++"/>
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;father&quot;"/>
-      </attributeAssignments>
     </sourcePatterns>
     <targetPatterns name="pr">
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
@@ -264,14 +157,14 @@
     </targetPatterns>
     <targetPatterns name="p">
       <op value="++"/>
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Male"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;father&quot;"/>
-      </attributeAssignments>
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person"/>
     </targetPatterns>
+    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.5/@sourcePatterns.0" target="//@rules.5/@targetPatterns.0"/>
+    <correspondencePatterns name="memberToPerson" type="//@schema/@correspondenceTypes.1" source="//@rules.5/@sourcePatterns.2" target="//@rules.5/@targetPatterns.1">
+      <op value="++"/>
+    </correspondencePatterns>
   </rules>
-  <rules name="FatherToMale" schema="//@schema">
+  <rules name="FatherAndMale" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
     <using importedNamespace="AttrCondDefLibrary.*"/>
     <sourcePatterns name="fr">
@@ -310,23 +203,46 @@
         <valueExp xsi:type="tgg:LiteralExpression" value="&quot;father&quot;"/>
       </attributeAssignments>
     </targetPatterns>
-    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.6/@sourcePatterns.0" target="//@rules.6/@targetPatterns.0"/>
-    <correspondencePatterns name="memberToPerson" type="//@schema/@correspondenceTypes.1" source="//@rules.6/@sourcePatterns.2" target="//@rules.6/@targetPatterns.1">
+  </rules>
+  <rules name="FatherToMale" supertypes="//@rules.5" schema="//@schema">
+    <using importedNamespace="testsuite1_familiestopersons.*"/>
+    <using importedNamespace="AttrCondDefLibrary.*"/>
+    <sourcePatterns name="f">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
+      <linkVariablePatterns target="//@rules.7/@sourcePatterns.1">
+        <op value="++"/>
+        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/father"/>
+      </linkVariablePatterns>
+    </sourcePatterns>
+    <sourcePatterns name="fm">
       <op value="++"/>
-    </correspondencePatterns>
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
+      <attributeAssignments op=":=">
+        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
+        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;father&quot;"/>
+      </attributeAssignments>
+    </sourcePatterns>
+    <targetPatterns name="p">
+      <op value="++"/>
+      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Male"/>
+      <attributeAssignments op=":=">
+        <attribute href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person/name"/>
+        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;father&quot;"/>
+      </attributeAssignments>
+    </targetPatterns>
   </rules>
   <rules name="FatherToNothing" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
     <using importedNamespace="AttrCondDefLibrary.*"/>
     <sourcePatterns name="fr">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
-      <linkVariablePatterns target="//@rules.7/@sourcePatterns.1">
+      <linkVariablePatterns target="//@rules.8/@sourcePatterns.1">
         <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
       </linkVariablePatterns>
     </sourcePatterns>
     <sourcePatterns name="f">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <linkVariablePatterns target="//@rules.7/@sourcePatterns.2">
+      <linkVariablePatterns target="//@rules.8/@sourcePatterns.2">
         <op value="++"/>
         <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/father"/>
       </linkVariablePatterns>
@@ -342,7 +258,7 @@
     <targetPatterns name="pr">
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
     </targetPatterns>
-    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.7/@sourcePatterns.0" target="//@rules.7/@targetPatterns.0"/>
+    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.8/@sourcePatterns.0" target="//@rules.8/@targetPatterns.0"/>
   </rules>
   <rules name="HandleRegisters" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
@@ -355,7 +271,7 @@
       <op value="++"/>
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
     </targetPatterns>
-    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.8/@sourcePatterns.0" target="//@rules.8/@targetPatterns.0">
+    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.9/@sourcePatterns.0" target="//@rules.9/@targetPatterns.0">
       <op value="++"/>
     </correspondencePatterns>
   </rules>
@@ -364,47 +280,12 @@
     <using importedNamespace="AttrCondDefLibrary.*"/>
     <sourcePatterns name="fr">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
-      <linkVariablePatterns target="//@rules.9/@sourcePatterns.1">
+      <linkVariablePatterns target="//@rules.10/@sourcePatterns.1">
         <op value="++"/>
         <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
       </linkVariablePatterns>
     </sourcePatterns>
     <sourcePatterns name="f">
-      <op value="++"/>
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;Test&quot;"/>
-      </attributeAssignments>
-    </sourcePatterns>
-    <targetPatterns name="pr">
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
-    </targetPatterns>
-    <correspondencePatterns name="fr2pr" type="//@schema/@correspondenceTypes.0" source="//@rules.9/@sourcePatterns.0" target="//@rules.9/@targetPatterns.0"/>
-  </rules>
-  <rules name="IgnoreTwoFamilies" schema="//@schema">
-    <using importedNamespace="testsuite1_familiestopersons.*"/>
-    <using importedNamespace="AttrCondDefLibrary.*"/>
-    <sourcePatterns name="fr">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
-      <linkVariablePatterns target="//@rules.10/@sourcePatterns.1">
-        <op value="++"/>
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-      </linkVariablePatterns>
-      <linkVariablePatterns target="//@rules.10/@sourcePatterns.2">
-        <op value="++"/>
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-      </linkVariablePatterns>
-    </sourcePatterns>
-    <sourcePatterns name="f1">
-      <op value="++"/>
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;Test&quot;"/>
-      </attributeAssignments>
-    </sourcePatterns>
-    <sourcePatterns name="f2">
       <op value="++"/>
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attributeAssignments op=":=">
@@ -417,23 +298,36 @@
     </targetPatterns>
     <correspondencePatterns name="fr2pr" type="//@schema/@correspondenceTypes.0" source="//@rules.10/@sourcePatterns.0" target="//@rules.10/@targetPatterns.0"/>
   </rules>
-  <rules name="MotherToFemale" schema="//@schema">
+  <rules name="IgnoreTwoFamilies" supertypes="//@rules.10" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
     <using importedNamespace="AttrCondDefLibrary.*"/>
     <sourcePatterns name="fr">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
       <linkVariablePatterns target="//@rules.11/@sourcePatterns.1">
+        <op value="++"/>
         <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
       </linkVariablePatterns>
     </sourcePatterns>
+    <sourcePatterns name="f2">
+      <op value="++"/>
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
+      <attributeAssignments op=":=">
+        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
+        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;Test&quot;"/>
+      </attributeAssignments>
+    </sourcePatterns>
+  </rules>
+  <rules name="MotherToFemale" supertypes="//@rules.5" schema="//@schema">
+    <using importedNamespace="testsuite1_familiestopersons.*"/>
+    <using importedNamespace="AttrCondDefLibrary.*"/>
     <sourcePatterns name="f">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <linkVariablePatterns target="//@rules.11/@sourcePatterns.2">
+      <linkVariablePatterns target="//@rules.12/@sourcePatterns.1">
         <op value="++"/>
         <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/mother"/>
       </linkVariablePatterns>
     </sourcePatterns>
-    <sourcePatterns name="mother">
+    <sourcePatterns name="fm">
       <op value="++"/>
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
       <attributeAssignments op=":=">
@@ -441,13 +335,6 @@
         <valueExp xsi:type="tgg:LiteralExpression" value="&quot;mother&quot;"/>
       </attributeAssignments>
     </sourcePatterns>
-    <targetPatterns name="pr">
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
-      <linkVariablePatterns target="//@rules.11/@targetPatterns.1">
-        <op value="++"/>
-        <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister/persons"/>
-      </linkVariablePatterns>
-    </targetPatterns>
     <targetPatterns name="p">
       <op value="++"/>
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Female"/>
@@ -456,28 +343,18 @@
         <valueExp xsi:type="tgg:LiteralExpression" value="&quot;mother&quot;"/>
       </attributeAssignments>
     </targetPatterns>
-    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.11/@sourcePatterns.0" target="//@rules.11/@targetPatterns.0"/>
-    <correspondencePatterns name="memberToPerson" type="//@schema/@correspondenceTypes.1" source="//@rules.11/@sourcePatterns.2" target="//@rules.11/@targetPatterns.1">
-      <op value="++"/>
-    </correspondencePatterns>
   </rules>
-  <rules name="SonToMale" schema="//@schema">
+  <rules name="SonToMale" supertypes="//@rules.5" schema="//@schema">
     <using importedNamespace="testsuite1_familiestopersons.*"/>
     <using importedNamespace="AttrCondDefLibrary.*"/>
-    <sourcePatterns name="fr">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister"/>
-      <linkVariablePatterns target="//@rules.12/@sourcePatterns.1">
-        <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-      </linkVariablePatterns>
-    </sourcePatterns>
     <sourcePatterns name="f">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
-      <linkVariablePatterns target="//@rules.12/@sourcePatterns.2">
+      <linkVariablePatterns target="//@rules.13/@sourcePatterns.1">
         <op value="++"/>
         <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/sons"/>
       </linkVariablePatterns>
     </sourcePatterns>
-    <sourcePatterns name="son">
+    <sourcePatterns name="fm">
       <op value="++"/>
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
       <attributeAssignments op=":=">
@@ -485,13 +362,6 @@
         <valueExp xsi:type="tgg:LiteralExpression" value="&quot;son&quot;"/>
       </attributeAssignments>
     </sourcePatterns>
-    <targetPatterns name="pr">
-      <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
-      <linkVariablePatterns target="//@rules.12/@targetPatterns.1">
-        <op value="++"/>
-        <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister/persons"/>
-      </linkVariablePatterns>
-    </targetPatterns>
     <targetPatterns name="p">
       <op value="++"/>
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Male"/>
@@ -500,9 +370,5 @@
         <valueExp xsi:type="tgg:LiteralExpression" value="&quot;son&quot;"/>
       </attributeAssignments>
     </targetPatterns>
-    <correspondencePatterns name="roots" type="//@schema/@correspondenceTypes.0" source="//@rules.12/@sourcePatterns.0" target="//@rules.12/@targetPatterns.0"/>
-    <correspondencePatterns name="memberToPerson" type="//@schema/@correspondenceTypes.1" source="//@rules.12/@sourcePatterns.2" target="//@rules.12/@targetPatterns.1">
-      <op value="++"/>
-    </correspondencePatterns>
   </rules>
 </tgg:TripleGraphGrammarFile>

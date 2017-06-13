@@ -55,35 +55,35 @@
     <attributeConditionLibrary/>
   </rules>
   <rules name="CreateFourthAndFifthFamily">
-    <nodes name="f1" incomingEdges="//@rules.2/@edges.0">
+    <nodes name="f1" incomingEdges="//@rules.2/@edges.1">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
         <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
       </attrExpr>
     </nodes>
-    <nodes name="f2" incomingEdges="//@rules.2/@edges.1">
+    <nodes name="f2" incomingEdges="//@rules.2/@edges.2">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
         <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
       </attrExpr>
     </nodes>
-    <nodes name="f3" incomingEdges="//@rules.2/@edges.2">
+    <nodes name="f3" incomingEdges="//@rules.2/@edges.3">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
         <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
       </attrExpr>
     </nodes>
-    <nodes name="f4" bindingType="CREATE" incomingEdges="//@rules.2/@edges.3">
+    <nodes name="f4" bindingType="CREATE" incomingEdges="//@rules.2/@edges.4">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
         <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
       </attrExpr>
     </nodes>
-    <nodes name="f5" bindingType="CREATE" incomingEdges="//@rules.2/@edges.4">
+    <nodes name="f5" bindingType="CREATE" incomingEdges="//@rules.2/@edges.0">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
@@ -99,6 +99,9 @@
     <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="fr2pr" domainType="CORR" source="//@rules.2/@nodes.5" target="//@rules.2/@nodes.6">
       <type href="platform:/resource/testsuite1_familiestopersons/model/testsuite1_familiestopersons.ecore#//RegisterToRegister"/>
     </nodes>
+    <edges name="fr__families__f5_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.2/@nodes.5" trgNode="//@rules.2/@nodes.4">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
+    </edges>
     <edges name="fr__families__f1_eMoflonEdge" srcNode="//@rules.2/@nodes.5" trgNode="//@rules.2/@nodes.0">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
     </edges>
@@ -109,9 +112,6 @@
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
     </edges>
     <edges name="fr__families__f4_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.2/@nodes.5" trgNode="//@rules.2/@nodes.3">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-    </edges>
-    <edges name="fr__families__f5_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.2/@nodes.5" trgNode="//@rules.2/@nodes.4">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
     </edges>
     <attributeConditionLibrary/>
@@ -378,14 +378,14 @@
     <attributeConditionLibrary/>
   </rules>
   <rules name="IgnoreTwoFamilies">
-    <nodes name="f" bindingType="CREATE" incomingEdges="//@rules.11/@edges.1">
+    <nodes name="f" bindingType="CREATE" incomingEdges="//@rules.11/@edges.0">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
         <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
       </attrExpr>
     </nodes>
-    <nodes name="f2" bindingType="CREATE" incomingEdges="//@rules.11/@edges.0">
+    <nodes name="f2" bindingType="CREATE" incomingEdges="//@rules.11/@edges.1">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
@@ -401,10 +401,10 @@
     <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="fr2pr" domainType="CORR" source="//@rules.11/@nodes.2" target="//@rules.11/@nodes.3">
       <type href="platform:/resource/testsuite1_familiestopersons/model/testsuite1_familiestopersons.ecore#//RegisterToRegister"/>
     </nodes>
-    <edges name="fr__families__f2_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.11/@nodes.2" trgNode="//@rules.11/@nodes.1">
+    <edges name="fr__families__f_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.11/@nodes.2" trgNode="//@rules.11/@nodes.0">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
     </edges>
-    <edges name="fr__families__f_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.11/@nodes.2" trgNode="//@rules.11/@nodes.0">
+    <edges name="fr__families__f2_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.11/@nodes.2" trgNode="//@rules.11/@nodes.1">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
     </edges>
     <attributeConditionLibrary/>
