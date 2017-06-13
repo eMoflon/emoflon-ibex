@@ -1,12 +1,12 @@
-package testsuite1.familiestopersons.sync.batch;
+package testsuite1.familiestopersons.sync;
 
 import org.benchmarx.BXTool;
 import org.junit.Test;
 
 import SimpleFamilies.FamilyRegister;
 import SimplePersons.PersonRegister;
-import testsuite1.familiestopersons.sync.Decisions;
-import testsuite1.familiestopersons.sync.SyncTestCase;
+import testsuite1.familiestopersons.util.Decisions;
+import testsuite1.familiestopersons.util.SyncTestCase;
 
 
 public class Batch extends SyncTestCase {
@@ -50,7 +50,7 @@ public class Batch extends SyncTestCase {
 	{
 		// No precondition!
 		//------------
-		tool.performAndPropagateTargetEdit(helperPerson::createMotherAsFemale);
+		tool.performAndPropagateTargetEdit(r -> helperPerson.createMotherAsFemale(r, "mother"));
 		//------------
 		util.assertPostcondition("singleFamilyWithMother", "singlePersonRegisterWithFemalePerson");
 	}

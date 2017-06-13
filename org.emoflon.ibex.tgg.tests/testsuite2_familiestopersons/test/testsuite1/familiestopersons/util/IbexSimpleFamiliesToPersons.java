@@ -1,4 +1,4 @@
-package testsuite1.familiestopersons.sync;
+package testsuite1.familiestopersons.util;
 
 import java.io.IOException;
 import java.util.function.Consumer;
