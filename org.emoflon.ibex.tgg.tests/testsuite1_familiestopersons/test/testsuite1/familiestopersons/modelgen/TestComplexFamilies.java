@@ -46,4 +46,16 @@ public class TestComplexFamilies extends ModelGenTestCase {
 		assertPostcondition("sixtyChildFamily", "thirtyFemaleThirtyMalePersons");
 	}
 
+	@Test
+	public void testFiveFamiliesWithSixtyChildren() throws IOException {
+		stop.setMaxRuleCount("HandleRegisters", 1);
+		stop.setMaxRuleCount("IgnoreFamily", 1);
+		stop.setMaxRuleCount("FatherToMale", 10);
+		stop.setMaxRuleCount("MotherToFemale", 10);
+		stop.setMaxRuleCount("DaughterToFemale", 300);
+		stop.setMaxRuleCount("SonToMale", 300);
+		runGenerator(stop);
+		assertPostcondition("sixhundredChildFamily", "sixhundredMaleAndFemalePersons");
+	}
+
 }
