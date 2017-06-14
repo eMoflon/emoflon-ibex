@@ -47,9 +47,11 @@ public abstract class ModelGenTestCase {
 		
 		stop.setMaxRuleCount("HandleRegisters", 0);
 		stop.setMaxRuleCount("IgnoreFamily", 0);
-		stop.setMaxRuleCount("FamilyMemberToPerson", 0);
+		stop.setMaxRuleCount("FamilyMemberToPerson", 0); //test, if this is still necessary
+		stop.setMaxRuleCount("ExistingFamilyToPerson", 0);
 		stop.setMaxRuleCount("FatherToMale", 0);
 		stop.setMaxRuleCount("MotherToFemale", 0);
+		stop.setMaxRuleCount("NewFamilyDaughterToFemale", 0);
 		stop.setMaxRuleCount("DaughterToFemale", 0);
 		stop.setMaxRuleCount("SonToMale", 0);
 		stop.setMaxRuleCount("FatherToNothing", 0);
@@ -65,9 +67,11 @@ public abstract class ModelGenTestCase {
 	}
 
 	protected void runGenerator(MODELGENStopCriterion stop) throws IOException {
+//		long startTime = System.nanoTime();
 		generator.setStopCriterion(stop); 
 		generator.run();
 		generator.terminate();
+//		System.out.println((System.nanoTime() - startTime)/1000000.0);
 	}
 
 	protected void assertPostcondition(String src, String trg) {

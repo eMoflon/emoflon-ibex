@@ -1,22 +1,12 @@
 #using testsuite1_familiestopersons.*
 #using AttrCondDefLibrary.*
 
-#rule DaughterToFemale #extends FamilyMemberToPerson #with testsuite1_familiestopersons
+#rule DaughterToFemale #extends NewFamilyDaughterToFemale, ExistingFamilyToPerson #with testsuite1_familiestopersons
 
 #source { 
-	f:Family {
-		++ -daughters->fm
-	}
-	
-	++ fm:FamilyMember {
-		name := "daughter"
-	}
 }
 
 #target {
-	++ p:Female {
-		name := "daughter"
-	}
 }
 
 #correspondence {
