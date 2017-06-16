@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.log4j.BasicConfigurator;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import SimpleFamilies.impl.SimpleFamiliesPackageImpl;
@@ -32,15 +31,8 @@ public class SYNC_App extends SYNC {
 		sync.terminate();
 	}
 	
-	protected void registerUserMetamodels() throws IOException {
-		rs.getPackageRegistry().put("platform:/resource/Families/model/Families.ecore", SimpleFamiliesPackageImpl.init());
-		rs.getPackageRegistry().put("platform:/resource/Persons/model/Persons.ecore", SimplePersonsPackageImpl.init());
-		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
-	}
-
 	@Override
 	public void loadModels() throws IOException {
-//		s = loadResource(projectPath + "/instances/src.xmi");
 		s = createResource(projectPath + "/instances/src.xmi");
 		t = createResource(projectPath + "/instances/trg.xmi");
 		c = createResource(projectPath + "/instances/corr.xmi");
@@ -50,11 +42,10 @@ public class SYNC_App extends SYNC {
 	}
 	
 	@Override
-	public void saveModels() throws IOException {
-//		s.save(null);
-	 	t.save(null);
-	 	c.save(null);
-	 	p.save(null);
+	protected void registerUserMetamodels() throws IOException {
+		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
+		rs.getPackageRegistry().put("platform:/resource/Families/model/Families.ecore", SimpleFamiliesPackageImpl.init());
+		rs.getPackageRegistry().put("platform:/resource/Persons/model/Persons.ecore", SimplePersonsPackageImpl.init());
 	}
 }
 

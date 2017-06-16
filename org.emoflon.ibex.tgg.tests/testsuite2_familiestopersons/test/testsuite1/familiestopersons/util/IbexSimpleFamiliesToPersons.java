@@ -1,4 +1,4 @@
-package testsuite1.familiestopersons.sync;
+package testsuite1.familiestopersons.util;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -135,7 +135,8 @@ public class IbexSimpleFamiliesToPersons extends BXToolForEMF<FamilyRegister, Pe
 	@Override
 	public void terminateSynchronisationDialogue() {
 		try {
-			//synchroniser.saveModels();
+			synchroniser.saveModels();
+			saveModels("results");
 			synchroniser.terminate();
 		} catch (IOException e) {
 			e.printStackTrace();
