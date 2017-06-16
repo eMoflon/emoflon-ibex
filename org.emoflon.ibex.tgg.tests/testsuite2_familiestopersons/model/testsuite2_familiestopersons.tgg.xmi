@@ -48,20 +48,12 @@
     </nodes>
     <nodes name="m" bindingType="CREATE" incomingEdges="//@rules.1/@edges.1" incomingCorrsSource="//@rules.1/@nodes.6">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
-      <attrExpr>
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
-        <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;mother&quot;"/>
-      </attrExpr>
     </nodes>
     <nodes name="preg" domainType="TRG" outgoingEdges="//@rules.1/@edges.2" incomingCorrsTarget="//@rules.1/@nodes.5">
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
     </nodes>
     <nodes name="p" domainType="TRG" bindingType="CREATE" incomingEdges="//@rules.1/@edges.2" incomingCorrsTarget="//@rules.1/@nodes.6">
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Female"/>
-      <attrExpr>
-        <attribute href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person/name"/>
-        <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;mother&quot;"/>
-      </attrExpr>
     </nodes>
     <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="reg2reg" domainType="CORR" source="//@rules.1/@nodes.0" target="//@rules.1/@nodes.3">
       <type href="platform:/resource/testsuite2_familiestopersons/model/testsuite2_familiestopersons.ecore#//RegisterToRegister"/>

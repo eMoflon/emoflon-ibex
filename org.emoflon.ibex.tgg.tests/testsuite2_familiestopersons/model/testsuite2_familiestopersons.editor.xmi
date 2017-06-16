@@ -112,10 +112,6 @@
     <sourcePatterns name="m">
       <op value="++"/>
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;mother&quot;"/>
-      </attributeAssignments>
     </sourcePatterns>
     <targetPatterns name="preg">
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//PersonRegister"/>
@@ -127,10 +123,6 @@
     <targetPatterns name="p">
       <op value="++"/>
       <type href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Female"/>
-      <attributeAssignments op=":=">
-        <attribute href="platform:/resource/SimplePersons/model/SimplePersons.ecore#//Person/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;mother&quot;"/>
-      </attributeAssignments>
     </targetPatterns>
     <correspondencePatterns name="reg2reg" type="//@schema/@correspondenceTypes.0" source="//@rules.1/@sourcePatterns.0" target="//@rules.1/@targetPatterns.0"/>
     <correspondencePatterns name="m2p" type="//@schema/@correspondenceTypes.1" source="//@rules.1/@sourcePatterns.2" target="//@rules.1/@targetPatterns.1">
