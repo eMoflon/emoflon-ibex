@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?><plugin>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="runtime.RuntimePackage" genModel="model/Runtime.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore"/>
+  </extension>
+  <extension
+        point="org.emoflon.ibex.tgg.ide.IbexTGGBuilderExtension">
+     <builder_extension
+           class="org.emoflon.ibex.tgg.compiler.defaults.IbexBuilderExtension"></builder_extension>
+  </extension>
+</plugin>
