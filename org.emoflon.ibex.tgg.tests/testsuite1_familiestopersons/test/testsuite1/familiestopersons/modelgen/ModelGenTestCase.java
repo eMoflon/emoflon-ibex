@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.log4j.BasicConfigurator;
-import org.benchmarx.BXTool;
 import org.benchmarx.emf.Comparator;
 import org.benchmarx.families.core.FamiliesComparator;
 import org.benchmarx.persons.core.PersonsComparator;
@@ -13,6 +12,7 @@ import org.benchmarx.util.EMFUtil;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
 import org.emoflon.ibex.tgg.run.MODELGEN_App;
+import org.emoflon.ibex.tgg.runtime.engine.DemoclesEngine;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -43,6 +43,7 @@ public abstract class ModelGenTestCase {
 	@Before
 	public void createGenerator() throws IOException {
 		generator = new MODELGEN_App("testsuite1_familiestopersons", "./../", flatten, false);
+		generator.registerPatternMatchingEngine(new DemoclesEngine());
 		stop = new MODELGENStopCriterion(generator.getTGG());
 		
 		stop.setMaxRuleCount("HandleRegisters", 0);
