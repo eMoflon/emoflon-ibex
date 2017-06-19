@@ -1,14 +1,21 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: ClassInheritanceHierarchy;singleton:=true
 Export-Package: ClassInheritanceHierarchy,
+ ClassInheritanceHierarchy.impl,
  ClassInheritanceHierarchy.util,
- ClassInheritanceHierarchy.impl
+ org.benchmarx.classInheritanceHierarchy.core
 Bundle-Name: ClassInheritanceHierarchy
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
- org.moflon.core.utilities
+ Benchmarx;bundle-version="1.0.0",
+ org.junit;bundle-version="4.12.0",
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: TU Darmstadt
+

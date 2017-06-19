@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Database:DB
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:Database="platform:/plugin/Database/model/Database.ecore"
+    xsi:schemaLocation="platform:/plugin/Database/model/Database.ecore ../model/Database.ecore"
+    title="database">
+  <tables/>
+  <tables heading="table2">
+    <columns
+        name="col1"/>
+  </tables>
+  <tables heading="table1">
+    <columns
+        name="col2"/>
+    <columns/>
+    <columns
+        name="col1"/>
+  </tables>
+</Database:DB>
