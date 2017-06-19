@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="ASCII"?>
+<org.emoflon.ibex.tgg.core.language:TGG xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/" name="testsuite1_ClassInhHier2DB">
+  <corr href="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore#/"/>
+  <attributeConstraintDefinitionLibrary/>
+</org.emoflon.ibex.tgg.core.language:TGG>

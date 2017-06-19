@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    name="testsuite1_ClassInhHier2DB" nsURI="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore"
+    nsPrefix="testsuite1_ClassInhHier2DB"/>

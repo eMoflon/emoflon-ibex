@@ -1,0 +1,19 @@
+// Add imports here
+
+#schema testsuite1_ClassInhHier2DB
+	
+#source {
+	
+}
+
+#target { 
+	
+} 
+
+#correspondence {
+	
+}
+
+#attributeConditions {
+	
+}
