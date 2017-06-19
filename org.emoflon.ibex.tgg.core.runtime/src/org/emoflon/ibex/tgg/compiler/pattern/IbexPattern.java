@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,15 +22,15 @@ public abstract class IbexPattern {
 	/**
 	 * each positive pattern invocation for a pattern pat corresponds to the following text find pat(<<signature elements of pat separated with ",">>);
 	 */
-	private Collection<IbexPattern> positiveInvocations = new ArrayList<>();
+	private Collection<IbexPattern> positiveInvocations = new HashSet<>();
 
 	/**
 	 * each negative pattern invocation for a pattern pat corresponds to the following text neg find pat(<<signature elements of pat separated with ",">>);
 	 */
-	private Collection<IbexPattern> negativeInvocations = new ArrayList<>();
+	private Collection<IbexPattern> negativeInvocations = new HashSet<>();
 	
-	private Map<IbexPattern, Map<TGGRuleElement, TGGRuleElement>> invocationVariableMapping = new HashMap<>();
-	private Map<IbexPattern, Map<TGGRuleElement, TGGRuleElement>> inverseInvocationVariableMapping = new HashMap<>();
+	private Map<IbexPattern, Collection<Map<TGGRuleElement, TGGRuleElement>>> invocationVariableMappings = new HashMap<>();
+	private Map<IbexPattern, Collection<Map<TGGRuleElement, TGGRuleElement>>> inverseInvocationVariableMappings = new HashMap<>();
 	private Map<IbexPattern, Collection<TGGRuleElement>> invocationUnmappedVariables = new HashMap<>();
 
 	/**
@@ -149,18 +150,20 @@ public abstract class IbexPattern {
 	}
 	
 	protected void addVariableMapping(IbexPattern invocationPattern, Map<TGGRuleElement, TGGRuleElement> mapping) {
-		invocationVariableMapping.put(invocationPattern, mapping);
-		createInverseMapping(invocationPattern);
+		invocationVariableMappings.putIfAbsent(invocationPattern, new ArrayList<>());
+		invocationVariableMappings.get(invocationPattern).add(mapping);
+		createInverseMapping(invocationPattern, mapping);
 	}
 	
-	private void createInverseMapping(IbexPattern invocationPattern) {
+	private void createInverseMapping(IbexPattern invocationPattern, Map<TGGRuleElement, TGGRuleElement> mapping) {
 		Map<TGGRuleElement, TGGRuleElement> inverseMapping = new HashMap<>();
-		inverseInvocationVariableMapping.put(invocationPattern, inverseMapping);
-		invocationVariableMapping.get(invocationPattern).keySet().stream().forEach(k -> inverseMapping.put(invocationVariableMapping.get(invocationPattern).get(k), k));
+		mapping.keySet().stream().forEach(k -> inverseMapping.put(mapping.get(k), k));
+		inverseInvocationVariableMappings.putIfAbsent(invocationPattern, new ArrayList<>());
+		inverseInvocationVariableMappings.get(invocationPattern).add(inverseMapping);
 	}
 	
-	public TGGRuleElement getMappedRuleElement(IbexPattern invokedPattern, TGGRuleElement mappedElement) {
-		return inverseInvocationVariableMapping.get(invokedPattern).get(mappedElement);
+	public List<TGGRuleElement> getMappedRuleElement(IbexPattern invokedPattern, TGGRuleElement mappedElement) {
+		return inverseInvocationVariableMappings.get(invokedPattern).stream().map(e -> e.get(mappedElement)).collect(Collectors.toList());
 	}
 	
 	public Collection<TGGRuleElement> getUnmappedRuleElements(IbexPattern invokedPattern) {
