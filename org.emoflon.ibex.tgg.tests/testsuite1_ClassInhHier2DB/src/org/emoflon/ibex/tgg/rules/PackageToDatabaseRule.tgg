@@ -6,7 +6,7 @@
 #source {
 	++classpackage:ClassPackage
 }
-
+ 
 #target {
 	++db:DB
 }

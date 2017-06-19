@@ -4,5 +4,8 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.5.jar"/>
+	<classpathentry kind="lib" path="lib/Ibex.jar"/>
+	<classpathentry kind="lib" path="lib/trove-3.1a1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -11,7 +11,7 @@
 	classpackage:ClassPackage
 	clazz:Clazz {
 		- package->classpackage
-	}
+	} 
 }
 
 #target {

@@ -3,8 +3,13 @@ package org.emoflon.ibex.tgg.run;
 import java.io.IOException;
 
 import org.apache.log4j.BasicConfigurator;
+import org.eclipse.emf.common.util.URI;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
+
+import ClassInheritanceHierarchy.ClassInheritanceHierarchyPackage;
+import ClassInheritanceHierarchy.impl.ClassInheritanceHierarchyPackageImpl;
+import Database.impl.DatabasePackageImpl;
 
 public class MODELGEN_App extends MODELGEN {
 
@@ -36,8 +41,11 @@ public class MODELGEN_App extends MODELGEN {
 	}
 
 	protected void registerUserMetamodels() throws IOException {
-		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
+		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/plugin/ClassInheritanceHierarchy/"), URI.createURI("platform:/resource/ClassInheritanceHierarchy/"));
+		rs.getURIConverter().getURIMap().put(URI.createURI("platform:/plugin/Database/"), URI.createURI("platform:/resource/Database/"));
+		rs.getPackageRegistry().put("platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore", ClassInheritanceHierarchyPackageImpl.init());
+		rs.getPackageRegistry().put("platform:/resource/Database/model/Database.ecore", DatabasePackageImpl.init());
 		
-		//FIXME load and register source and target metamodels
+		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 	}
 }
