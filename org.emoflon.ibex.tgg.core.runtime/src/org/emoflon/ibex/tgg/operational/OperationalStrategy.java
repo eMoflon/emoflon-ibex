@@ -170,6 +170,7 @@ public abstract class OperationalStrategy {
 	protected Resource loadResource(String workspaceRelativePath) throws IOException {
 		Resource res = createResource(workspaceRelativePath);
 		res.load(null);
+		EcoreUtil.resolveAll(res);
 		return res;
 	}
 

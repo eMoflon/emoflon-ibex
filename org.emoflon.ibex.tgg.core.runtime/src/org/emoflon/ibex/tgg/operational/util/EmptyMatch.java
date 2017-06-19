@@ -17,7 +17,8 @@ public class EmptyMatch implements IMatch {
 
 	@Override
 	public EObject get(String name) {
-		throw new IllegalArgumentException("This is an empty match!");
+//		throw new IllegalArgumentException("This is an empty match!");
+		return null; //FIXME Use an Optional
 	}
 
 	@Override
