@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ASCII"?>
+<Database:DB xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:Database="platform:/plugin/Database/model/Database.ecore#/" title="Foo">
+  <tables heading="SuperClass">
+    <columns name="attr of super class"/>
+    <columns name="attr of subclass"/>
+    <columns name="yet another attr of subclass"/>
+  </tables>
+  <tables heading="Another Super Class">
+    <columns name="attr"/>
+  </tables>
+</Database:DB>

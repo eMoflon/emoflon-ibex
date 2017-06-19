@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ASCII"?>
+<ClassInheritanceHierarchy:ClassPackage
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:ClassInheritanceHierarchy="platform:/plugin/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#/"
+    name="root">
+  <classes name="entity1">
+    <attributes
+        name="first"/>
+    <attributes
+        name="second"/>
+    <attributes
+        name="third"/>
+  </classes>
+  <classes name="entity2">
+    <attributes
+        name="fourth"/>
+  </classes>
+</ClassInheritanceHierarchy:ClassPackage>

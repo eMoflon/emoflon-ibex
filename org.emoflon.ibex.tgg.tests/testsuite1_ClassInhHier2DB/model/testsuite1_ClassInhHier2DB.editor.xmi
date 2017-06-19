@@ -1,4 +1,193 @@
 <?xml version="1.0" encoding="ASCII"?>
-<tgg:TripleGraphGrammarFile xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:tgg="http://www.moflon.org/ide/tgg/mosl/TGG">
-  <schema name="testsuite1_ClassInhHier2DB"/>
+<tgg:TripleGraphGrammarFile xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tgg="http://www.moflon.org/ide/tgg/mosl/TGG">
+  <schema name="testsuite1_ClassInhHier2DB">
+    <imports name="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore"/>
+    <imports name="platform:/resource/Database/model/Database.ecore"/>
+    <sourceTypes href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#/"/>
+    <targetTypes href="platform:/resource/Database/model/Database.ecore#/"/>
+    <correspondenceTypes name="PackageToDatabase">
+      <source href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//ClassPackage"/>
+      <target href="platform:/resource/Database/model/Database.ecore#//DB"/>
+    </correspondenceTypes>
+    <correspondenceTypes name="ClazzToTable">
+      <source href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz"/>
+      <target href="platform:/resource/Database/model/Database.ecore#//Table"/>
+    </correspondenceTypes>
+    <correspondenceTypes name="AttributeToColumn">
+      <source href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Attribute"/>
+      <target href="platform:/resource/Database/model/Database.ecore#//Column"/>
+    </correspondenceTypes>
+    <attributeCondDefs href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|15"/>
+    <attributeCondDefs href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|15"/>
+    <attributeCondDefs href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|6"/>
+  </schema>
+  <rules name="AttributeToColumnRule">
+    <using importedNamespace="testsuite1_ClassInhHier2DB.*"/>
+    <using importedNamespace="AttrCondDefLibrary.*"/>
+    <schema href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|0"/>
+    <sourcePatterns name="clazz">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|1"/>
+      <linkVariablePatterns>
+        <op value="++"/>
+        <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|2"/>
+        <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|3"/>
+      </linkVariablePatterns>
+    </sourcePatterns>
+    <sourcePatterns name="attribute">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|4"/>
+    </sourcePatterns>
+    <targetPatterns name="column">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|5"/>
+    </targetPatterns>
+    <targetPatterns name="table">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|6"/>
+      <linkVariablePatterns>
+        <op value="++"/>
+        <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|7"/>
+        <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|8"/>
+      </linkVariablePatterns>
+    </targetPatterns>
+    <correspondencePatterns name="clazzToTable">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|9"/>
+      <source href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|10"/>
+      <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|11"/>
+    </correspondencePatterns>
+    <correspondencePatterns name="attributeToColumn">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|12"/>
+      <source href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|13"/>
+      <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|14"/>
+    </correspondencePatterns>
+    <attrConditions>
+      <name href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|15"/>
+      <values xsi:type="tgg:AttributeExpression" objectVar="//@rules.0/@sourcePatterns.1">
+        <attribute href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|17"/>
+      </values>
+      <values xsi:type="tgg:AttributeExpression" objectVar="//@rules.0/@targetPatterns.0">
+        <attribute href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|19"/>
+      </values>
+    </attrConditions>
+  </rules>
+  <rules name="ClassToTableRule">
+    <using importedNamespace="testsuite1_ClassInhHier2DB.*"/>
+    <using importedNamespace="AttrCondDefLibrary.*"/>
+    <schema href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|0"/>
+    <sourcePatterns name="classpackage">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|1"/>
+    </sourcePatterns>
+    <sourcePatterns name="clazz">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|2"/>
+      <linkVariablePatterns>
+        <op value="++"/>
+        <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|3"/>
+        <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|4"/>
+      </linkVariablePatterns>
+    </sourcePatterns>
+    <targetPatterns name="db">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|5"/>
+      <linkVariablePatterns>
+        <op value="++"/>
+        <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|6"/>
+        <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|7"/>
+      </linkVariablePatterns>
+    </targetPatterns>
+    <targetPatterns name="table">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|8"/>
+    </targetPatterns>
+    <correspondencePatterns name="packageToDatabase">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|9"/>
+      <source href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|10"/>
+      <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|11"/>
+    </correspondencePatterns>
+    <correspondencePatterns name="clazzToTable">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|12"/>
+      <source href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|13"/>
+      <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|14"/>
+    </correspondencePatterns>
+    <attrConditions>
+      <name href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|15"/>
+      <values xsi:type="tgg:AttributeExpression" objectVar="//@rules.1/@sourcePatterns.1">
+        <attribute href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|17"/>
+      </values>
+      <values xsi:type="tgg:AttributeExpression" objectVar="//@rules.1/@targetPatterns.1">
+        <attribute href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|19"/>
+      </values>
+    </attrConditions>
+  </rules>
+  <rules name="PackageToDatabaseRule">
+    <using importedNamespace="testsuite1_ClassInhHier2DB.*"/>
+    <using importedNamespace="AttrCondDefLibrary.*"/>
+    <schema href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|0"/>
+    <sourcePatterns name="classpackage">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|1"/>
+    </sourcePatterns>
+    <targetPatterns name="db">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|2"/>
+    </targetPatterns>
+    <correspondencePatterns name="packageToDatabase">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|3"/>
+      <source href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|4"/>
+      <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|5"/>
+    </correspondencePatterns>
+    <attrConditions>
+      <name href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|6"/>
+      <values xsi:type="tgg:AttributeExpression" objectVar="//@rules.2/@sourcePatterns.0">
+        <attribute href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|8"/>
+      </values>
+      <values xsi:type="tgg:AttributeExpression" objectVar="//@rules.2/@targetPatterns.0">
+        <attribute href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|10"/>
+      </values>
+    </attrConditions>
+  </rules>
+  <rules name="SubClassToTable">
+    <using importedNamespace="testsuite1_ClassInhHier2DB.*"/>
+    <using importedNamespace="AttrCondDefLibrary.*"/>
+    <schema href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|0"/>
+    <sourcePatterns name="subClazz">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|1"/>
+      <linkVariablePatterns>
+        <op value="++"/>
+        <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|2"/>
+        <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|3"/>
+      </linkVariablePatterns>
+      <linkVariablePatterns>
+        <op value="++"/>
+        <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|4"/>
+        <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|5"/>
+      </linkVariablePatterns>
+    </sourcePatterns>
+    <sourcePatterns name="classpackage">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|6"/>
+    </sourcePatterns>
+    <sourcePatterns name="clazz">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|7"/>
+      <linkVariablePatterns>
+        <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|8"/>
+        <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|9"/>
+      </linkVariablePatterns>
+    </sourcePatterns>
+    <targetPatterns name="table">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|10"/>
+    </targetPatterns>
+    <correspondencePatterns name="clazzToTable">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|11"/>
+      <source href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|12"/>
+      <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|13"/>
+    </correspondencePatterns>
+    <correspondencePatterns name="subClazzToTable">
+      <op value="++"/>
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|14"/>
+      <source href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|15"/>
+      <target href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/SubClassToTable.tgg#|16"/>
+    </correspondencePatterns>
+  </rules>
 </tgg:TripleGraphGrammarFile>

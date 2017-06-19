@@ -1,0 +1,33 @@
+#using testsuite1_ClassInhHier2DB.*
+#using AttrCondDefLibrary.*
+
+#rule AttributeToColumnRule #with testsuite1_ClassInhHier2DB
+
+#source {
+	clazz:ClassInheritanceHierarchy.Clazz {
+		++ - attributes->attribute
+	}
+	++attribute:ClassInheritanceHierarchy.Attribute
+}
+
+#target {
+	++column:Database.Column
+	table:Database.Table {
+		++ - columns->column
+	}
+}
+
+#correspondence {
+	clazzToTable :ClazzToTable {
+		#src->clazz
+		#trg->table
+	}
+	++ attributeToColumn :AttributeToColumn {
+		#src->attribute
+		#trg->column
+	}
+}
+
+#attributeConditions {
+	eq_string(attribute.name, column.name)
+}

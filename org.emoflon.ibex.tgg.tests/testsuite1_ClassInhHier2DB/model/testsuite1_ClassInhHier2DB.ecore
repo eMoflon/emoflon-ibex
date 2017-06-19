@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    name="testsuite1_ClassInhHier2DB" nsURI="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore"
-    nsPrefix="testsuite1_ClassInhHier2DB"/>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="testsuite1_ClassInhHier2DB" nsURI="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore"
+    nsPrefix="testsuite1_ClassInhHier2DB">
+  <eClassifiers xsi:type="ecore:EClass" name="PackageToDatabase">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//ClassPackage"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/Database/model/Database.ecore#//DB"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ClazzToTable">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/Database/model/Database.ecore#//Table"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AttributeToColumn">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Attribute"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/Database/model/Database.ecore#//Column"/>
+  </eClassifiers>
+</ecore:EPackage>

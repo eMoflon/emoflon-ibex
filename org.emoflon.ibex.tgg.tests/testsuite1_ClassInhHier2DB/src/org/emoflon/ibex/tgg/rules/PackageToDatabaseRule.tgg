@@ -1,0 +1,23 @@
+#using testsuite1_ClassInhHier2DB.*
+#using AttrCondDefLibrary.*
+
+#rule PackageToDatabaseRule #with testsuite1_ClassInhHier2DB
+
+#source {
+	++classpackage:ClassInheritanceHierarchy.ClassPackage
+}
+
+#target {
+	++db:Database.DB
+}
+
+#correspondence {
+	++ packageToDatabase :PackageToDatabase {
+		#src->classpackage
+		#trg->db
+	}
+}
+
+#attributeConditions {
+	eq_string(classpackage.name, db.title)
+}

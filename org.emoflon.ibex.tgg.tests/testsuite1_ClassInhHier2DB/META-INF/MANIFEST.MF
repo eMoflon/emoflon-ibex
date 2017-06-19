@@ -20,7 +20,12 @@ Require-Bundle: org.emoflon.ibex.tgg.core.runtime,
  org.gervarro.democles.plan.incremental.leaf,
  org.gervarro.util,
  org.gervarro.notification,
- org.gervarro.plan.dynprog
+ org.gervarro.plan.dynprog,
+ org.junit;bundle-version="4.12.0",
+ Benchmarx;bundle-version="1.0.0",
+ ClassInheritanceHierarchy;bundle-version="1.0.0",
+ Database;bundle-version="1.0.0",
+ org.emoflon.ibex.tgg.runtime.democles;bundle-version="1.0.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

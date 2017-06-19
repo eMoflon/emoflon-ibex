@@ -1,0 +1,30 @@
+#using testsuite1_ClassInhHier2DB.*
+#using AttrCondDefLibrary.*
+
+#rule SubClassToTable #with testsuite1_ClassInhHier2DB
+
+#source {
+	++subClazz:ClassInheritanceHierarchy.Clazz {
+		++ - superClass->clazz
+		++ - package->classpackage
+	}
+	classpackage:ClassInheritanceHierarchy.ClassPackage
+	clazz:ClassInheritanceHierarchy.Clazz {
+		- package->classpackage
+	}
+}
+
+#target {
+	table:Database.Table
+}
+
+#correspondence {
+	clazzToTable :ClazzToTable {
+		#src->clazz
+		#trg->table
+	}
+	++ subClazzToTable :ClazzToTable {
+		#src->subClazz
+		#trg->table
+	}
+}

@@ -1,19 +1,31 @@
-// Add imports here
+#import "platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore"
+#import "platform:/resource/Database/model/Database.ecore"
 
 #schema testsuite1_ClassInhHier2DB
 	
+
 #source {
-	
+	ClassInheritanceHierarchy
 }
 
-#target { 
-	
-} 
+#target {
+	Database
+}
 
 #correspondence {
-	
+	PackageToDatabase {
+		#src->ClassInheritanceHierarchy.ClassPackage
+		#trg->Database.DB
+	}
+	ClazzToTable {
+		#src->ClassInheritanceHierarchy.Clazz
+		#trg->Database.Table
+	}
+	AttributeToColumn {
+		#src->ClassInheritanceHierarchy.Attribute
+		#trg->Database.Column
+	}
 }
 
 #attributeConditions {
-	
 }

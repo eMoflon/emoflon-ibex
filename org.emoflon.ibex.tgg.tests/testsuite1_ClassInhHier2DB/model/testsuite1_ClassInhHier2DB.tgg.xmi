@@ -1,5 +1,179 @@
 <?xml version="1.0" encoding="ASCII"?>
-<org.emoflon.ibex.tgg.core.language:TGG xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/" name="testsuite1_ClassInhHier2DB">
+<org.emoflon.ibex.tgg.core.language:TGG xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/" xmlns:org.emoflon.ibex.tgg.core.language.misc.expressions="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions" name="testsuite1_ClassInhHier2DB">
+  <src href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#/"/>
+  <trg href="platform:/resource/Database/model/Database.ecore#/"/>
   <corr href="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore#/"/>
-  <attributeConstraintDefinitionLibrary/>
+  <rules name="AttributeToColumnRule">
+    <nodes name="clazz" incomingEdges="//@rules.0/@edges.2" outgoingEdges="//@rules.0/@edges.0" incomingCorrsSource="//@rules.0/@nodes.4">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz"/>
+    </nodes>
+    <nodes name="attribute" bindingType="CREATE" incomingEdges="//@rules.0/@edges.0" outgoingEdges="//@rules.0/@edges.2" incomingCorrsSource="//@rules.0/@nodes.5">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Attribute"/>
+    </nodes>
+    <nodes name="column" domainType="TRG" bindingType="CREATE" incomingEdges="//@rules.0/@edges.1" incomingCorrsTarget="//@rules.0/@nodes.5">
+      <type href="platform:/resource/Database/model/Database.ecore#//Column"/>
+    </nodes>
+    <nodes name="table" domainType="TRG" outgoingEdges="//@rules.0/@edges.1" incomingCorrsTarget="//@rules.0/@nodes.4">
+      <type href="platform:/resource/Database/model/Database.ecore#//Table"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="clazzToTable" domainType="CORR" source="//@rules.0/@nodes.0" target="//@rules.0/@nodes.3">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore#//ClazzToTable"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="attributeToColumn" domainType="CORR" bindingType="CREATE" source="//@rules.0/@nodes.1" target="//@rules.0/@nodes.2">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore#//AttributeToColumn"/>
+    </nodes>
+    <edges name="clazz__attributes__attribute_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.0/@nodes.0" trgNode="//@rules.0/@nodes.1">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz/attributes"/>
+    </edges>
+    <edges name="table__columns__column_eMoflonEdge" domainType="TRG" bindingType="CREATE" srcNode="//@rules.0/@nodes.3" trgNode="//@rules.0/@nodes.2">
+      <type href="platform:/resource/Database/model/Database.ecore#//Table/columns"/>
+    </edges>
+    <edges name="attribute__clazz__clazz_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.0/@nodes.1" trgNode="//@rules.0/@nodes.0">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Attribute/clazz"/>
+    </edges>
+    <attributeConditionLibrary sorted_BWD="//@rules.0/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_FWD="//@rules.0/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_CC="//@rules.0/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_MODELGEN="//@rules.0/@attributeConditionLibrary/@tggAttributeConstraints.0">
+      <tggAttributeConstraints definition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0" parameters="//@rules.0/@attributeConditionLibrary/@parameterValues.0 //@rules.0/@attributeConditionLibrary/@parameterValues.1"/>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.0" objectVar="//@rules.0/@nodes.1">
+        <attribute href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//NamedElement/name"/>
+      </parameterValues>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.1" objectVar="//@rules.0/@nodes.2">
+        <attribute href="platform:/resource/Database/model/Database.ecore#//Column/name"/>
+      </parameterValues>
+    </attributeConditionLibrary>
+  </rules>
+  <rules name="ClassToTableRule">
+    <nodes name="classpackage" incomingEdges="//@rules.1/@edges.0" outgoingEdges="//@rules.1/@edges.2" incomingCorrsSource="//@rules.1/@nodes.4">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//ClassPackage"/>
+    </nodes>
+    <nodes name="clazz" bindingType="CREATE" incomingEdges="//@rules.1/@edges.2" outgoingEdges="//@rules.1/@edges.0" incomingCorrsSource="//@rules.1/@nodes.5">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz"/>
+    </nodes>
+    <nodes name="db" domainType="TRG" outgoingEdges="//@rules.1/@edges.1" incomingCorrsTarget="//@rules.1/@nodes.4">
+      <type href="platform:/resource/Database/model/Database.ecore#//DB"/>
+    </nodes>
+    <nodes name="table" domainType="TRG" bindingType="CREATE" incomingEdges="//@rules.1/@edges.1" incomingCorrsTarget="//@rules.1/@nodes.5">
+      <type href="platform:/resource/Database/model/Database.ecore#//Table"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="packageToDatabase" domainType="CORR" source="//@rules.1/@nodes.0" target="//@rules.1/@nodes.2">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore#//PackageToDatabase"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="clazzToTable" domainType="CORR" bindingType="CREATE" source="//@rules.1/@nodes.1" target="//@rules.1/@nodes.3">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore#//ClazzToTable"/>
+    </nodes>
+    <edges name="clazz__package__classpackage_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.1/@nodes.1" trgNode="//@rules.1/@nodes.0">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz/package"/>
+    </edges>
+    <edges name="db__tables__table_eMoflonEdge" domainType="TRG" bindingType="CREATE" srcNode="//@rules.1/@nodes.2" trgNode="//@rules.1/@nodes.3">
+      <type href="platform:/resource/Database/model/Database.ecore#//DB/tables"/>
+    </edges>
+    <edges name="classpackage__classes__clazz_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.1/@nodes.0" trgNode="//@rules.1/@nodes.1">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//ClassPackage/classes"/>
+    </edges>
+    <attributeConditionLibrary sorted_BWD="//@rules.1/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_FWD="//@rules.1/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_CC="//@rules.1/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_MODELGEN="//@rules.1/@attributeConditionLibrary/@tggAttributeConstraints.0">
+      <tggAttributeConstraints definition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0" parameters="//@rules.1/@attributeConditionLibrary/@parameterValues.0 //@rules.1/@attributeConditionLibrary/@parameterValues.1"/>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.0" objectVar="//@rules.1/@nodes.1">
+        <attribute href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//NamedElement/name"/>
+      </parameterValues>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.1" objectVar="//@rules.1/@nodes.3">
+        <attribute href="platform:/resource/Database/model/Database.ecore#//Table/heading"/>
+      </parameterValues>
+    </attributeConditionLibrary>
+  </rules>
+  <rules name="PackageToDatabaseRule">
+    <nodes name="classpackage" bindingType="CREATE" incomingCorrsSource="//@rules.2/@nodes.2">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//ClassPackage"/>
+    </nodes>
+    <nodes name="db" domainType="TRG" bindingType="CREATE" incomingCorrsTarget="//@rules.2/@nodes.2">
+      <type href="platform:/resource/Database/model/Database.ecore#//DB"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="packageToDatabase" domainType="CORR" bindingType="CREATE" source="//@rules.2/@nodes.0" target="//@rules.2/@nodes.1">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore#//PackageToDatabase"/>
+    </nodes>
+    <attributeConditionLibrary sorted_BWD="//@rules.2/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_FWD="//@rules.2/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_CC="//@rules.2/@attributeConditionLibrary/@tggAttributeConstraints.0" sorted_MODELGEN="//@rules.2/@attributeConditionLibrary/@tggAttributeConstraints.0">
+      <tggAttributeConstraints definition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0" parameters="//@rules.2/@attributeConditionLibrary/@parameterValues.0 //@rules.2/@attributeConditionLibrary/@parameterValues.1"/>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.0" objectVar="//@rules.2/@nodes.0">
+        <attribute href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//NamedElement/name"/>
+      </parameterValues>
+      <parameterValues xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGAttributeExpression" parameterDefinition="//@attributeConstraintDefinitionLibrary/@tggAttributeConstraintDefinitions.0/@parameterDefinitions.1" objectVar="//@rules.2/@nodes.1">
+        <attribute href="platform:/resource/Database/model/Database.ecore#//DB/title"/>
+      </parameterValues>
+    </attributeConditionLibrary>
+  </rules>
+  <rules name="SubClassToTable">
+    <nodes name="subClazz" bindingType="CREATE" incomingEdges="//@rules.3/@edges.3 //@rules.3/@edges.4" outgoingEdges="//@rules.3/@edges.0 //@rules.3/@edges.1" incomingCorrsSource="//@rules.3/@nodes.5">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz"/>
+    </nodes>
+    <nodes name="classpackage" incomingEdges="//@rules.3/@edges.1 //@rules.3/@edges.2" outgoingEdges="//@rules.3/@edges.4 //@rules.3/@edges.5">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//ClassPackage"/>
+    </nodes>
+    <nodes name="clazz" incomingEdges="//@rules.3/@edges.0 //@rules.3/@edges.5" outgoingEdges="//@rules.3/@edges.2 //@rules.3/@edges.3" incomingCorrsSource="//@rules.3/@nodes.4">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz"/>
+    </nodes>
+    <nodes name="table" domainType="TRG" incomingCorrsTarget="//@rules.3/@nodes.4 //@rules.3/@nodes.5">
+      <type href="platform:/resource/Database/model/Database.ecore#//Table"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="clazzToTable" domainType="CORR" source="//@rules.3/@nodes.2" target="//@rules.3/@nodes.3">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore#//ClazzToTable"/>
+    </nodes>
+    <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="subClazzToTable" domainType="CORR" bindingType="CREATE" source="//@rules.3/@nodes.0" target="//@rules.3/@nodes.3">
+      <type href="platform:/resource/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.ecore#//ClazzToTable"/>
+    </nodes>
+    <edges name="subClazz__superClass__clazz_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.3/@nodes.0" trgNode="//@rules.3/@nodes.2">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz/superClass"/>
+    </edges>
+    <edges name="subClazz__package__classpackage_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.3/@nodes.0" trgNode="//@rules.3/@nodes.1">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz/package"/>
+    </edges>
+    <edges name="clazz__package__classpackage_eMoflonEdge" srcNode="//@rules.3/@nodes.2" trgNode="//@rules.3/@nodes.1">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz/package"/>
+    </edges>
+    <edges name="clazz__subClass__subClazz_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.3/@nodes.2" trgNode="//@rules.3/@nodes.0">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Clazz/subClass"/>
+    </edges>
+    <edges name="classpackage__classes__subClazz_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.3/@nodes.1" trgNode="//@rules.3/@nodes.0">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//ClassPackage/classes"/>
+    </edges>
+    <edges name="classpackage__classes__clazz_eMoflonEdge" srcNode="//@rules.3/@nodes.1" trgNode="//@rules.3/@nodes.2">
+      <type href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//ClassPackage/classes"/>
+    </edges>
+    <attributeConditionLibrary/>
+  </rules>
+  <attributeConstraintDefinitionLibrary>
+    <tggAttributeConstraintDefinitions name="eq_string" userDefined="false">
+      <parameterDefinitions name="a">
+        <type href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      </parameterDefinitions>
+      <parameterDefinitions name="b">
+        <type href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      </parameterDefinitions>
+      <syncAdornments>
+        <value>B</value>
+        <value>B</value>
+      </syncAdornments>
+      <syncAdornments>
+        <value>B</value>
+        <value>F</value>
+      </syncAdornments>
+      <syncAdornments>
+        <value>F</value>
+        <value>B</value>
+      </syncAdornments>
+      <genAdornments>
+        <value>B</value>
+        <value>B</value>
+      </genAdornments>
+      <genAdornments>
+        <value>B</value>
+        <value>F</value>
+      </genAdornments>
+      <genAdornments>
+        <value>F</value>
+        <value>B</value>
+      </genAdornments>
+      <genAdornments>
+        <value>F</value>
+        <value>F</value>
+      </genAdornments>
+    </tggAttributeConstraintDefinitions>
+  </attributeConstraintDefinitionLibrary>
 </org.emoflon.ibex.tgg.core.language:TGG>

@@ -1,0 +1,34 @@
+#using testsuite1_ClassInhHier2DB.*
+#using AttrCondDefLibrary.*
+
+#rule ClassToTableRule #with testsuite1_ClassInhHier2DB
+
+
+#source {
+	classpackage:ClassInheritanceHierarchy.ClassPackage
+	++clazz:ClassInheritanceHierarchy.Clazz {
+		++ - package->classpackage
+	}
+}
+
+#target {
+	db:Database.DB {
+		++ - tables->table
+	}
+	++table:Database.Table
+}
+
+#correspondence {
+	packageToDatabase :PackageToDatabase {
+		#src->classpackage
+		#trg->db
+	}
+	++ clazzToTable :ClazzToTable {
+		#src->clazz
+		#trg->table
+	}
+}
+
+#attributeConditions {
+	eq_string(clazz.name, table.heading)
+}
