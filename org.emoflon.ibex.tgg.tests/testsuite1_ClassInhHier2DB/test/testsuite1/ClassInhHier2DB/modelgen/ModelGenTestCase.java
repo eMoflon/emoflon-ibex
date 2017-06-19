@@ -42,7 +42,7 @@ public abstract class ModelGenTestCase {
 	
 	@Before
 	public void createGenerator() throws IOException {
-		generator = new MODELGEN_App("testsuite1_familiestopersons", "./../", flatten, false);
+		generator = new MODELGEN_App("testsuite1_ClassInhHier2DB", "./../", flatten, false);
 		generator.registerPatternMatchingEngine(new DemoclesEngine());
 		stop = new MODELGENStopCriterion(generator.getTGG());
 		
@@ -95,6 +95,6 @@ public abstract class ModelGenTestCase {
 
 	@Parameters
 	public static Collection<Boolean> flattening() throws IOException {
-		return Arrays.asList(true, false);
+		return Arrays.asList(false, true);
 	}
 }

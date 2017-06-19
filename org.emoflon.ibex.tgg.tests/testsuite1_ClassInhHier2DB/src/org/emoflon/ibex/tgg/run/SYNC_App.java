@@ -11,7 +11,7 @@ public class SYNC_App extends SYNC {
 			}
 
 	public SYNC_App(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
-		super(projectName, workspacePath, flatten, debug);
+		super(projectName, workspacePath, debug);
 	}
 
 	public static void main(String[] args) throws IOException {

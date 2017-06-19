@@ -17,9 +17,42 @@
       <source href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//Attribute"/>
       <target href="platform:/resource/Database/model/Database.ecore#//Column"/>
     </correspondenceTypes>
-    <attributeCondDefs href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|15"/>
-    <attributeCondDefs href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|15"/>
-    <attributeCondDefs href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|6"/>
+    <attributeCondDefs name="eq_string">
+      <params paramName="a">
+        <type href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      </params>
+      <params paramName="b">
+        <type href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      </params>
+      <allowedSyncAdornments>
+        <value>B</value>
+        <value>B</value>
+      </allowedSyncAdornments>
+      <allowedSyncAdornments>
+        <value>B</value>
+        <value>F</value>
+      </allowedSyncAdornments>
+      <allowedSyncAdornments>
+        <value>F</value>
+        <value>B</value>
+      </allowedSyncAdornments>
+      <allowedGenAdornments>
+        <value>B</value>
+        <value>B</value>
+      </allowedGenAdornments>
+      <allowedGenAdornments>
+        <value>B</value>
+        <value>F</value>
+      </allowedGenAdornments>
+      <allowedGenAdornments>
+        <value>F</value>
+        <value>B</value>
+      </allowedGenAdornments>
+      <allowedGenAdornments>
+        <value>F</value>
+        <value>F</value>
+      </allowedGenAdornments>
+    </attributeCondDefs>
   </schema>
   <rules name="AttributeToColumnRule" schema="//@schema">
     <using importedNamespace="testsuite1_ClassInhHier2DB.*"/>
@@ -50,8 +83,7 @@
       <op value="++"/>
     </correspondencePatterns>
     <correspondencePatterns name="clazzToTable" type="//@schema/@correspondenceTypes.1" source="//@rules.0/@sourcePatterns.1" target="//@rules.0/@targetPatterns.1"/>
-    <attrConditions>
-      <name href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/AttributeToColumnRule.tgg#|15"/>
+    <attrConditions name="//@schema/@attributeCondDefs.0">
       <values xsi:type="tgg:AttributeExpression" objectVar="//@rules.0/@sourcePatterns.0">
         <attribute href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//NamedElement/name"/>
       </values>
@@ -89,8 +121,7 @@
       <op value="++"/>
     </correspondencePatterns>
     <correspondencePatterns name="packageToDatabase" type="//@schema/@correspondenceTypes.0" source="//@rules.1/@sourcePatterns.0" target="//@rules.1/@targetPatterns.0"/>
-    <attrConditions>
-      <name href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/ClassToTableRule.tgg#|15"/>
+    <attrConditions name="//@schema/@attributeCondDefs.0">
       <values xsi:type="tgg:AttributeExpression" objectVar="//@rules.1/@sourcePatterns.1">
         <attribute href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//NamedElement/name"/>
       </values>
@@ -113,8 +144,7 @@
     <correspondencePatterns name="packageToDatabase" type="//@schema/@correspondenceTypes.0" source="//@rules.2/@sourcePatterns.0" target="//@rules.2/@targetPatterns.0">
       <op value="++"/>
     </correspondencePatterns>
-    <attrConditions>
-      <name href="platform:/resource/testsuite1_ClassInhHier2DB/src/org/emoflon/ibex/tgg/rules/PackageToDatabaseRule.tgg#|6"/>
+    <attrConditions name="//@schema/@attributeCondDefs.0">
       <values xsi:type="tgg:AttributeExpression" objectVar="//@rules.2/@sourcePatterns.0">
         <attribute href="platform:/resource/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore#//NamedElement/name"/>
       </values>
