@@ -5,25 +5,25 @@
 
 
 #source {
-	classpackage:ClassInheritanceHierarchy.ClassPackage
-	++clazz:ClassInheritanceHierarchy.Clazz {
+	classpackage:ClassPackage
+	++clazz:Clazz {
 		++ - package->classpackage
 	}
 }
 
 #target {
-	db:Database.DB {
+	db:DB {
 		++ - tables->table
 	}
-	++table:Database.Table
+	++table:Table
 }
 
 #correspondence {
-	packageToDatabase :PackageToDatabase {
+	packageToDatabase:PackageToDatabase {
 		#src->classpackage
 		#trg->db
 	}
-	++ clazzToTable :ClazzToTable {
+	++ clazzToTable:ClazzToTable {
 		#src->clazz
 		#trg->table
 	}

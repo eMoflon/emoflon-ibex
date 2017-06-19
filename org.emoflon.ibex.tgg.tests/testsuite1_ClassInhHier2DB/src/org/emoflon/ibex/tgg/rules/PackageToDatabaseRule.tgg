@@ -4,15 +4,15 @@
 #rule PackageToDatabaseRule #with testsuite1_ClassInhHier2DB
 
 #source {
-	++classpackage:ClassInheritanceHierarchy.ClassPackage
+	++classpackage:ClassPackage
 }
 
 #target {
-	++db:Database.DB
+	++db:DB
 }
 
 #correspondence {
-	++ packageToDatabase :PackageToDatabase {
+	++ packageToDatabase:PackageToDatabase {
 		#src->classpackage
 		#trg->db
 	}

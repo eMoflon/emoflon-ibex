@@ -4,26 +4,26 @@
 #rule SubClassToTable #with testsuite1_ClassInhHier2DB
 
 #source {
-	++subClazz:ClassInheritanceHierarchy.Clazz {
+	++subClazz:Clazz {
 		++ - superClass->clazz
 		++ - package->classpackage
 	}
-	classpackage:ClassInheritanceHierarchy.ClassPackage
-	clazz:ClassInheritanceHierarchy.Clazz {
+	classpackage:ClassPackage
+	clazz:Clazz {
 		- package->classpackage
 	}
 }
 
 #target {
-	table:Database.Table
+	table:Table
 }
 
 #correspondence {
-	clazzToTable :ClazzToTable {
+	clazzToTable:ClazzToTable {
 		#src->clazz
 		#trg->table
 	}
-	++ subClazzToTable :ClazzToTable {
+	++ subClazzToTable:ClazzToTable {
 		#src->subClazz
 		#trg->table
 	}

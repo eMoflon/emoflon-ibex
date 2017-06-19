@@ -4,25 +4,25 @@
 #rule AttributeToColumnRule #with testsuite1_ClassInhHier2DB
 
 #source {
-	clazz:ClassInheritanceHierarchy.Clazz {
+	clazz:Clazz {
 		++ - attributes->attribute
 	}
-	++attribute:ClassInheritanceHierarchy.Attribute
+	++attribute:Attribute
 }
 
 #target {
-	++column:Database.Column
-	table:Database.Table {
+	++column:Column
+	table:Table {
 		++ - columns->column
 	}
 }
 
 #correspondence {
-	clazzToTable :ClazzToTable {
+	clazzToTable:ClazzToTable {
 		#src->clazz
 		#trg->table
 	}
-	++ attributeToColumn :AttributeToColumn {
+	++ attributeToColumn:AttributeToColumn {
 		#src->attribute
 		#trg->column
 	}

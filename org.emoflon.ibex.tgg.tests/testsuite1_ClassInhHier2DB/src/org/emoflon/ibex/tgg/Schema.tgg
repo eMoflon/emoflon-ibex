@@ -14,16 +14,16 @@
 
 #correspondence {
 	PackageToDatabase {
-		#src->ClassInheritanceHierarchy.ClassPackage
-		#trg->Database.DB
+		#src->ClassPackage
+		#trg->DB
 	}
 	ClazzToTable {
-		#src->ClassInheritanceHierarchy.Clazz
-		#trg->Database.Table
+		#src->Clazz
+		#trg->Table
 	}
 	AttributeToColumn {
-		#src->ClassInheritanceHierarchy.Attribute
-		#trg->Database.Column
+		#src->Attribute
+		#trg->Column
 	}
 }
 
