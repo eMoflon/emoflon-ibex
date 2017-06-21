@@ -39,6 +39,7 @@ public abstract class CC extends OperationalStrategy {
 
 	private int idCounter = 1;
 	TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
+	TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 
 	TIntIntHashMap weights = new TIntIntHashMap();
 
@@ -93,10 +94,13 @@ public abstract class CC extends OperationalStrategy {
 	@Override
 	protected void wrapUp() {
 		for(int v : chooseTGGRuleApplications()){
+			IMatch match = idToMatch.get(-v);
+			HashMap<String, EObject> comatch = matchToCoMatch.get(match);
 			if(v < 0){
-				IMatch match = idToMatch.get(-v);
-				HashMap<String, EObject> comatch = matchToCoMatch.get(match);
 				comatch.values().forEach(EcoreUtil::delete);
+			}
+			else{
+				super.prepareProtocol(matchIdToRuleName.get(v), match, comatch);
 			}
 		}
 	}
@@ -120,6 +124,7 @@ public abstract class CC extends OperationalStrategy {
 	protected void prepareProtocol(String ruleName, IMatch match, HashMap<String, EObject> comatch) {
 
 		idToMatch.put(idCounter, match);
+		matchIdToRuleName.put(idCounter, ruleName);
 
 		int weight = ruleInfos.getGreenSrcEdges(ruleName).size() + ruleInfos.getGreenSrcNodes(ruleName).size()
 				+ ruleInfos.getGreenTrgEdges(ruleName).size() + ruleInfos.getGreenTrgNodes(ruleName).size();
