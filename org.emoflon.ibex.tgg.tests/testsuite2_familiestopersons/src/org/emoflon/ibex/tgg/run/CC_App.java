@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.BasicConfigurator;
 import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
+import org.emoflon.ibex.tgg.runtime.engine.DemoclesEngine;
 
 import SimpleFamilies.impl.SimpleFamiliesPackageImpl;
 import SimplePersons.impl.SimplePersonsPackageImpl;
@@ -12,10 +13,12 @@ public class CC_App extends CC {
 
 	public CC_App(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
+		registerPatternMatchingEngine(new DemoclesEngine());
 	}
 
 	public CC_App(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
 		super(projectName, workspacePath, flatten, debug);
+		registerPatternMatchingEngine(new DemoclesEngine());
 	}
 
 	public static void main(String[] args) throws IOException {

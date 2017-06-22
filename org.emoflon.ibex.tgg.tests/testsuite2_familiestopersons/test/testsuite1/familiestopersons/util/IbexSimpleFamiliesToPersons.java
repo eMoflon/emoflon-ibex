@@ -48,7 +48,6 @@ public class IbexSimpleFamiliesToPersons extends BXToolForEMF<FamilyRegister, Pe
 	public void initiateSynchronisationDialogue() {
 		try {
 			synchroniser = new SYNC_App("testsuite2_familiestopersons", "./../", true);
-			synchroniser.registerPatternMatchingEngine(new DemoclesEngine());
 			FamilyRegister reg = SimpleFamiliesFactory.eINSTANCE.createFamilyRegister();
 			synchroniser.getSourceResource().getContents().add(reg);
 			synchroniser.forward();

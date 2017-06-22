@@ -1,3 +1,4 @@
+
 package testsuite1.familiestopersons.modelgen;
 
 import java.io.IOException;
@@ -43,7 +44,6 @@ public abstract class ModelGenTestCase {
 	@Before
 	public void createGenerator() throws IOException {
 		generator = new MODELGEN_App("testsuite1_familiestopersons", "./../", flatten, false);
-		generator.registerPatternMatchingEngine(new DemoclesEngine());
 		stop = new MODELGENStopCriterion(generator.getTGG());
 		
 		stop.setMaxRuleCount("HandleRegisters", 0);
