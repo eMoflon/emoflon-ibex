@@ -45,9 +45,11 @@ public class SYNC_App extends SYNC {
 	
 	@Override
 	protected void registerUserMetamodels() throws IOException {
-		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 		rs.getPackageRegistry().put("platform:/resource/Families/model/Families.ecore", SimpleFamiliesPackageImpl.init());
 		rs.getPackageRegistry().put("platform:/resource/Persons/model/Persons.ecore", SimplePersonsPackageImpl.init());
+		
+		// Register correspondence metamodel last
+		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 	}
 }
 

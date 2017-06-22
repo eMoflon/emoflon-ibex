@@ -16,8 +16,10 @@ public class MODELGEN_App extends MODELGEN {
 	}
 
 	protected void registerUserMetamodels() throws IOException {
-		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 		rs.getPackageRegistry().put("platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore", SimpleFamiliesPackageImpl.init());
 		rs.getPackageRegistry().put("platform:/resource/SimplePersons/model/SimplePersons.ecore", SimplePersonsPackageImpl.init());
+
+		// Register correspondence metamodel last
+		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 	}
 }

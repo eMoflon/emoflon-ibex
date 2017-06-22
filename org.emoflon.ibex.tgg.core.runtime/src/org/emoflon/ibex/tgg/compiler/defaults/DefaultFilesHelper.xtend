@@ -135,9 +135,10 @@ class DefaultFilesHelper {
 			}
 		
 			protected void registerUserMetamodels() throws IOException {
-				loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
-				
 				//FIXME load and register source and target metamodels
+				
+				// Register correspondence metamodel last
+				loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 			}
 		}
 		'''
@@ -178,9 +179,10 @@ class DefaultFilesHelper {
 			
 				@Override
 				protected void registerUserMetamodels() throws IOException {
-					loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
-					
 					//FIXME load and register source and target metamodels
+					
+					// Register correspondence metamodel last
+					loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 				}
 			}
 
@@ -221,10 +223,11 @@ class DefaultFilesHelper {
 					}
 			
 				@Override
-				protected void registerUserMetamodels() throws IOException {
-					loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
-					
+				protected void registerUserMetamodels() throws IOException {					
 					//FIXME load and register source and target metamodels
+					
+					// Register correspondence metamodel last
+					loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 				}
 			}
 
