@@ -37,11 +37,10 @@ public class CC_App extends CC {
 		}
 
 	@Override
-	protected void registerUserMetamodels() throws IOException {
-		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
-		
+	protected void registerUserMetamodels() throws IOException {		
 		rs.getPackageRegistry().put("platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore", SimpleFamiliesPackageImpl.init());
 		rs.getPackageRegistry().put("platform:/resource/SimplePersons/model/SimplePersons.ecore", SimplePersonsPackageImpl.init());
+		loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
 	}
 }
 
