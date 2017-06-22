@@ -97,7 +97,7 @@ public abstract class CC extends OperationalStrategy {
 	@Override
 	protected void wrapUp() {
 		for (int v : chooseTGGRuleApplications()) {
-			IMatch match = idToMatch.get(-v);
+			IMatch match = idToMatch.get(v < 0 ? -v : v);
 			HashMap<String, EObject> comatch = matchToCoMatch.get(match);
 			if (v < 0) {
 				comatch.values().forEach(EcoreUtil::delete);

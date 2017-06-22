@@ -30,7 +30,7 @@ public class ConsistencyReporter {
 	public void init(Resource src, Resource trg, Resource protocol, RuleInfos ruleInfos) {
 		this.ruleInfos = ruleInfos;
 		inconsistentSrcNodes = extractInconsistentNodes(src, protocol, Domain.SRC);
-		inconsistentTrgNodes = extractInconsistentNodes(src, protocol, Domain.TRG);
+		inconsistentTrgNodes = extractInconsistentNodes(trg, protocol, Domain.TRG);
 		inconsistentSrcEdges = extractInconsistentEdges(src, protocol, Domain.SRC);
 		inconsistentTrgEdges = extractInconsistentEdges(trg, protocol, Domain.TRG);
 	}
