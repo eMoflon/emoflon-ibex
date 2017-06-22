@@ -29,6 +29,9 @@ public class RuntimeEdge {
 	}
 
 
-
+	@Override
+	public String toString() {
+		return src.toString() + " --" + ref.getName() + "-> " + trg.toString(); 
+	}
 
 }

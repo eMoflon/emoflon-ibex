@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -34,7 +35,7 @@ import language.csp.TGGAttributeConstraintLibrary;
 import runtime.TGGRuleApplication;
 
 public abstract class CC extends OperationalStrategy {
-	
+
 	private int nameCounter = 0;
 
 	private int idCounter = 1;
@@ -52,14 +53,16 @@ public abstract class CC extends OperationalStrategy {
 	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
+	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
+
 	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
 	}
-	
+
 	public CC(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
 		super(projectName, workspacePath, flatten, debug);
 	}
-	
+
 	@Override
 	protected boolean manipulateSrc() {
 		return false;
@@ -69,52 +72,52 @@ public abstract class CC extends OperationalStrategy {
 	protected boolean manipulateTrg() {
 		return false;
 	}
-	
+
 	@Override
 	public void loadModels() throws IOException {
 		s = loadResource(projectPath + "/instances/src.xmi");
 		t = loadResource(projectPath + "/instances/trg.xmi");
 		c = createResource(projectPath + "/instances/corr.xmi");
 		p = createResource(projectPath + "/instances/protocol.xmi");
-		
+
 		EcoreUtil.resolveAll(rs);
 	}
-	
+
 	@Override
 	public void saveModels() throws IOException {
 		c.save(null);
-	 	p.save(null);
+		p.save(null);
 	}
-	
+
 	@Override
 	public boolean isPatternRelevant(String patternName) {
 		return patternName.endsWith(PatternSuffixes.CC);
 	}
-	
+
 	@Override
 	protected void wrapUp() {
-		for(int v : chooseTGGRuleApplications()){
+		for (int v : chooseTGGRuleApplications()) {
 			IMatch match = idToMatch.get(-v);
 			HashMap<String, EObject> comatch = matchToCoMatch.get(match);
-			if(v < 0){
+			if (v < 0) {
 				comatch.values().forEach(EcoreUtil::delete);
-			}
-			else{
+			} else {
 				super.prepareProtocol(matchIdToRuleName.get(v), match, comatch);
 			}
 		}
+		consistencyReporter.init(s, t, p, ruleInfos);
 	}
 
 	@Override
-	protected boolean allContextElementsalreadyProcessed(IMatch match, String ruleName) {		
+	protected boolean allContextElementsalreadyProcessed(IMatch match, String ruleName) {
 		return true;
 	}
-	
+
 	@Override
 	protected boolean someElementsAlreadyProcessed(String ruleName, IMatch match) {
 		return false;
 	}
-	
+
 	@Override
 	protected void setIsRuleApplicationFinal(TGGRuleApplication ra) {
 		ra.setFinal(false);
@@ -180,16 +183,14 @@ public abstract class CC extends OperationalStrategy {
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getGreenEdges(IMatch match, HashMap<String, EObject> comatch,
-			String ruleName) {
+	private THashSet<RuntimeEdge> getGreenEdges(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
 		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenSrcEdges(ruleName), false));
 		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenTrgEdges(ruleName), false));
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getBlackEdges(IMatch match, HashMap<String, EObject> comatch,
-			String ruleName) {
+	private THashSet<RuntimeEdge> getBlackEdges(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
 		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getBlackSrcEdges(ruleName), false));
 		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getBlackTrgEdges(ruleName), false));
@@ -285,7 +286,7 @@ public abstract class CC extends OperationalStrategy {
 	private void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 
 		for (int v : idToMatch.keySet().toArray()) {
-			
+
 			THashSet<EObject> contextNodes = matchToContextNodes.get(v);
 			for (EObject node : contextNodes) {
 				GRBLinExpr expr = new GRBLinExpr();
@@ -355,4 +356,48 @@ public abstract class CC extends OperationalStrategy {
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
 		return library.getSorted_CC();
 	}
+
+	public boolean modelsAreConsistent() {
+		return getInconsistentSrcNodes().size() + getInconsistentTrgNodes().size() + getInconsistentSrcEdges().size()
+				+ getInconsistentTrgEdges().size() == 0;
+	}
+
+	public Collection<EObject> getInconsistentSrcNodes() {
+		return consistencyReporter.getInconsistentSrcNodes();
+	}
+
+	public Collection<EObject> getInconsistentTrgNodes() {
+		return consistencyReporter.getInconsistentTrgNodes();
+	}
+
+	public Collection<RuntimeEdge> getInconsistentSrcEdges() {
+		return consistencyReporter.getInconsistentSrcEdges();
+	}
+
+	public Collection<RuntimeEdge> getInconsistentTrgEdges() {
+		return consistencyReporter.getInconsistentTrgEdges();
+	}
+
+	public String generateConsistencyReport() {
+		String result = "";
+		if (modelsAreConsistent())
+			result += "Your models are consistent";
+		else {
+			result += "Your models are inconsistent. Following elements are not part of a consistent triple:";
+			result += "\n" + "Source nodes:" + "\n";
+			result += String.join("\n",
+					getInconsistentSrcNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
+			result += "\n" + "Source edges:" + "\n";
+			result += String.join("\n",
+					getInconsistentSrcEdges().stream().map(n -> n.toString()).collect(Collectors.toSet()));
+			result += "\n" + "Target nodes:" + "\n";
+			result += String.join("\n",
+					getInconsistentTrgNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
+			result += "\n" + "Target edges:" + "\n";
+			result += String.join("\n",
+					getInconsistentTrgEdges().stream().map(n -> n.toString()).collect(Collectors.toSet()));
+		}
+		return result;
+	}
+
 }
