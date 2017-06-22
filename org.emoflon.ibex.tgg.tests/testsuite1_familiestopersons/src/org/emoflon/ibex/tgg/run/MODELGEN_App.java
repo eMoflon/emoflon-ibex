@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
+import org.emoflon.ibex.tgg.runtime.engine.DemoclesEngine;
 
 import SimpleFamilies.impl.SimpleFamiliesPackageImpl;
 import SimplePersons.impl.SimplePersonsPackageImpl;
@@ -12,10 +13,12 @@ public class MODELGEN_App extends MODELGEN {
 
 	public MODELGEN_App(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
+		registerPatternMatchingEngine(new DemoclesEngine());
 	}
 
 	public MODELGEN_App(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
 		super(projectName, workspacePath, flatten, debug);
+		registerPatternMatchingEngine(new DemoclesEngine());
 	}
 	
 	public static void main(String[] args) throws IOException {
