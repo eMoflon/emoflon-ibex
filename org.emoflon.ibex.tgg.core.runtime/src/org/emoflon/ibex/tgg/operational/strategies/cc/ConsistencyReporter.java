@@ -86,7 +86,7 @@ public class ConsistencyReporter {
 						for (EObject edgeTrg : getResultCollection) {
 							edges.add(new RuntimeEdge(node, edgeTrg, ref));
 						}
-					} else {
+					} else if (getterResult instanceof EObject) {
 						edges.add(new RuntimeEdge(node, (EObject) getterResult, ref));
 					}
 				}

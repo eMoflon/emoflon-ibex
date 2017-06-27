@@ -102,6 +102,7 @@ public class TGGCompiler {
 			CorrContextPattern corrContext = new CorrContextPattern(rule);
 			patterns.add(corrContext);
 
+			//TODO [fstolte]: add invocation for refinement, change CCPattern so that it is able to receive dummyNodes
 			CCPattern cc = new CCPattern(rule);
 			patterns.add(cc);
 			cc.addTGGPositiveInvocation(src);

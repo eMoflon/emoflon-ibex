@@ -51,6 +51,6 @@ public abstract class CCTestCase {
 	
 	@Parameters
 	public static Collection<Boolean> flattening() throws IOException {
-		return Arrays.asList(true, false);
+		return Arrays.asList(true);
 	}
 }
