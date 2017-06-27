@@ -104,6 +104,8 @@ public class TGGCompiler {
 
 			//TODO [fstolte]: add invocation for refinement, change CCPattern so that it is able to receive dummyNodes
 			CCPattern cc = new CCPattern(rule);
+			// add dummy nodes to CCPattern that are necessary for pattern invocation to patterns of super-rule
+			addDummyNodes(cc);
 			patterns.add(cc);
 			cc.addTGGPositiveInvocation(src);
 			cc.addTGGPositiveInvocation(trg);
@@ -157,6 +159,15 @@ public class TGGCompiler {
 				   			   .forEach(p -> p.getRule().getRefines().stream()
 				   					   								 .flatMap(r -> ruleToPatterns.get(r).stream())
 				   					   								 .filter(pattern -> pattern instanceof MODELGENNoNACsPattern)
+				   					   								 .forEach(r -> p.addTGGPositiveInvocation(r)));
+		
+      // add pattern invocations to CCPatterns for rule refinement
+		ruleToPatterns.values().stream()
+				   			   .flatMap(p -> p.stream())
+				   			   .filter(p -> p instanceof CCPattern)
+				   			   .forEach(p -> p.getRule().getRefines().stream()
+				   					   								 .flatMap(r -> ruleToPatterns.get(r).stream())
+				   					   								 .filter(pattern -> pattern instanceof CCPattern)
 				   					   								 .forEach(r -> p.addTGGPositiveInvocation(r)));
 
 
@@ -214,7 +225,7 @@ public class TGGCompiler {
 													   .findAny().get();
 		
 		flattenedRule.getNodes().stream()
-								.filter(n -> n.getBindingType() == BindingType.CONTEXT)
+								.filter(n -> pattern.isRelevantForSignature(n))
 								.filter(n -> !pattern.getSignatureElements().stream()
 										  									.anyMatch(sigNode -> sigNode.getName().equals(n.getName())))
 								.forEach(n -> {

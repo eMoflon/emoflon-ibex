@@ -17,7 +17,7 @@ public class SrcContextPattern extends RulePartPattern {
 	}
 
 	@Override
-	protected boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleElement e) {
 		return e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CONTEXT;
 	}
 

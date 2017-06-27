@@ -45,7 +45,7 @@ public abstract class ProtocolNACsPattern extends IbexPattern {
 	abstract protected String getPatternNameSuffix();
 
 	@Override
-	protected boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleElement e) {
 		return e.getDomainType() == getInputDomainType();
 	}
 

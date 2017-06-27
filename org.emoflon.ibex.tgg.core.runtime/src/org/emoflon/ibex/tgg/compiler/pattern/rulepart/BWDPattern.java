@@ -18,7 +18,7 @@ public class BWDPattern extends RulePartPattern {
 	}
 
 	@Override
-	protected boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleElement e) {
 		return e.getDomainType() == DomainType.TRG || e.getBindingType() == BindingType.CONTEXT;
 	}
 

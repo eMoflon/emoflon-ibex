@@ -71,7 +71,7 @@ public class ConsistencyPattern extends IbexPattern {
 	}
 	
 	@Override
-	protected boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleElement e) {
 		return true;
 	}
 	

@@ -133,7 +133,7 @@ public class NoDECsPatterns extends RulePartPattern {
 	}
 
 	@Override
-	protected boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleElement e) {
 		return e.getDomainType() == domain;
 	}
 

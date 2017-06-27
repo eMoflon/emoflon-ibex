@@ -21,7 +21,7 @@ public class MODELGENPattern extends RulePartPattern {
 	}
 
 	@Override
-	protected boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleElement e) {
 		return e.getBindingType() == BindingType.CONTEXT;
 	}
 

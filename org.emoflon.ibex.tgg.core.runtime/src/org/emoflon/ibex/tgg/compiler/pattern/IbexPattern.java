@@ -101,7 +101,7 @@ public abstract class IbexPattern {
 		return bodyEdges;
 	}
 
-	protected abstract boolean isRelevantForSignature(TGGRuleElement e);
+	public abstract boolean isRelevantForSignature(TGGRuleElement e);
 
 	public String getName() {
 		return rule.getName() + getPatternNameSuffix();

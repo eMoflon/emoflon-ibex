@@ -42,7 +42,7 @@ public abstract class LocalProtocolNACsPattern extends IbexPattern {
 	}
 	
 	@Override
-	protected boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleElement e) {
 		return mappedElements != null && mappedElements.contains(e);
 	}
 

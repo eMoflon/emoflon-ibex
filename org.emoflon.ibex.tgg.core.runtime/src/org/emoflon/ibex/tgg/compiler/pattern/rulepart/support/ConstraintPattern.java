@@ -61,7 +61,7 @@ public class ConstraintPattern extends RulePartPattern {
 	}
 
 	@Override
-	protected boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleElement e) {
 		return this.signatureElements.contains(e);
 	}
 

@@ -88,7 +88,7 @@ public class MarkedPattern extends IbexPattern {
 	}
 
 	@Override
-	protected boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleElement e) {
 		return localProtocol ? !(e.getName().equals(PROTOCOL_NAME)) : true;
 	}
 
