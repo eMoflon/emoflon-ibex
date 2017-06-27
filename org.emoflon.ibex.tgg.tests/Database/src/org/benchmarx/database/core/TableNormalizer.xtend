@@ -28,7 +28,7 @@ class TableNormalizer implements Comparator<Table>{
 	def stringify(Table tables) {
 		return '''
 		Table {
-			heading = "«tables.heading»",
+			heading = "table",
 			columns = [
 			«val List<Column> sortedList = new ArrayList<Column>(tables.columns)»
 			«columnNormalizer.normalize(sortedList)»

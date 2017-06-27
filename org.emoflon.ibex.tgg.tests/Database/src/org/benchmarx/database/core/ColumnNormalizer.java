@@ -17,7 +17,7 @@ public class ColumnNormalizer implements Comparator<Column>{
 		if (column.getName() == null)
 			return "";
 		else
-			return column.getName();
+			return "column";
 	}
 
 	public void normalize(List<Column> columns){

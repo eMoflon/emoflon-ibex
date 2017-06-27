@@ -23,7 +23,7 @@ class ClassInheritanceHierarchyComparator implements Comparator<ClassPackage> {
 	def stringify(ClassPackage classPackage) {
 		return '''
 		ClassPackage {
-			name = "«classPackage.name»",
+			name = "classPackage",
 			classes = [
 			«val List<Clazz> sortedList = new ArrayList<Clazz>(classPackage.classes)»
 			«clazzNormalizer.normalize(sortedList)»

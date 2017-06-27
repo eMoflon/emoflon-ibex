@@ -24,8 +24,8 @@ class ClazzNormalizer implements Comparator<Clazz> {
 	def String stringify(Clazz clazz) {
 		'''
 		Clazz {
-			name = "«clazz.name»",
-			superClass = "«IF clazz.superClass !== null»«clazz.superClass.name»«ENDIF»",
+			name = "clazz",
+			superClass = "«IF clazz.superClass !== null»superclass«ENDIF»",
 			attributes = [
 			«val List<Attribute> sortedList = new ArrayList<Attribute>(clazz.attributes)»
 			«attributeNormalizer.normalize(sortedList)»

@@ -31,19 +31,15 @@ public class ClazzNormalizer implements Comparator<Clazz> {
     _builder.append("Clazz {");
     _builder.newLine();
     _builder.append("\t");
-    _builder.append("name = \"");
-    String _name = clazz.getName();
-    _builder.append(_name, "\t");
-    _builder.append("\",");
-    _builder.newLineIfNotEmpty();
+    _builder.append("name = \"clazz\",");
+    _builder.newLine();
     _builder.append("\t");
     _builder.append("superClass = \"");
     {
       Clazz _superClass = clazz.getSuperClass();
       boolean _tripleNotEquals = (_superClass != null);
       if (_tripleNotEquals) {
-        String _name_1 = clazz.getSuperClass().getName();
-        _builder.append(_name_1, "\t");
+        _builder.append("superclass");
       }
     }
     _builder.append("\",");

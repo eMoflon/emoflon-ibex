@@ -17,7 +17,7 @@ public class AttributeNormalizer implements Comparator<Attribute>{
 	}
 	
 	public String stringify(Attribute attribute) {
-		return attribute.getName()+": "+attribute.getType();
+		return "attribute: attributeType";
 	}
 
 	public void normalize(List<Attribute> attributes){

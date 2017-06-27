@@ -35,11 +35,8 @@ public class TableNormalizer implements Comparator<Table> {
     _builder.append("Table {");
     _builder.newLine();
     _builder.append("\t");
-    _builder.append("heading = \"");
-    String _heading = tables.getHeading();
-    _builder.append(_heading, "\t");
-    _builder.append("\",");
-    _builder.newLineIfNotEmpty();
+    _builder.append("heading = \"table\",");
+    _builder.newLine();
     _builder.append("\t");
     _builder.append("columns = [");
     _builder.newLine();

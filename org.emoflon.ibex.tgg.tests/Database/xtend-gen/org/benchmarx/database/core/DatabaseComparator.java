@@ -30,11 +30,8 @@ public class DatabaseComparator implements Comparator<DB> {
     _builder.append("DB {");
     _builder.newLine();
     _builder.append("\t");
-    _builder.append("title = \"");
-    String _title = db.getTitle();
-    _builder.append(_title, "\t");
-    _builder.append("\",");
-    _builder.newLineIfNotEmpty();
+    _builder.append("title = \"database\",");
+    _builder.newLine();
     _builder.append("\t");
     _builder.append("tables = [");
     _builder.newLine();

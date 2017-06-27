@@ -30,11 +30,8 @@ public class ClassInheritanceHierarchyComparator implements Comparator<ClassPack
     _builder.append("ClassPackage {");
     _builder.newLine();
     _builder.append("\t");
-    _builder.append("name = \"");
-    String _name = classPackage.getName();
-    _builder.append(_name, "\t");
-    _builder.append("\",");
-    _builder.newLineIfNotEmpty();
+    _builder.append("name = \"classPackage\",");
+    _builder.newLine();
     _builder.append("\t");
     _builder.append("classes = [");
     _builder.newLine();

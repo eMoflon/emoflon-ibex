@@ -23,7 +23,7 @@ class DatabaseComparator implements Comparator<DB> {
 	def stringify(DB db) {
 		return '''
 		DB {
-			title = "«db.title»",
+			title = "database",
 			tables = [
 			«val List<Table> sortedList = new ArrayList<Table>(db.tables)»
 			«tableNormalizer.normalize(sortedList)»
