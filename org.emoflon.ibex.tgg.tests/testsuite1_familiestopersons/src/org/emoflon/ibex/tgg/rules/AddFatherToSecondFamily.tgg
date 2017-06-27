@@ -1,0 +1,39 @@
+#using testsuite1_familiestopersons.*
+#using AttrCondDefLibrary.*
+
+#rule AddFatherToSecondFamily #extends FatherToMale #with testsuite1_familiestopersons
+
+#source { 
+	fr:FamilyRegister {
+		-families->f2
+	}
+	
+	f:Family {
+		-father->fm
+	}
+	f2:Family {
+		++ -father->fm
+	}
+	
+	fm:FamilyMember {
+		name := "DoubleFather"
+	}
+}
+
+#target {
+	pr:PersonRegister {
+		-persons->p
+	}
+	
+	p:Male
+}
+
+#correspondence {	
+	memberToPerson:FamilyMemberToPerson {
+		#src->fm
+		#trg->p
+	}
+}
+
+#attributeConditions {
+}

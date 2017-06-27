@@ -62,6 +62,7 @@ public abstract class ModelGenTestCase {
 		stop.setMaxRuleCount("CreateFourthAndFifthFamily", 0);
 		stop.setMaxRuleCount("CreateFather", 0);
 		stop.setMaxRuleCount("ConnectFather", 0);
+		stop.setMaxRuleCount("AddFatherToSecondFamily", 0);
 		
 		familiesComp = new FamiliesComparator();
 		personsComp = new PersonsComparator();

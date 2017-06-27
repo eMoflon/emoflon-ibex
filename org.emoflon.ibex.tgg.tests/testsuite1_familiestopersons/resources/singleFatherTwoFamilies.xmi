@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ASCII"?>
+<SimpleFamilies:FamilyRegister
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:SimpleFamilies="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore">
+  <families
+      name="Test">
+    <father
+        name="father"/>
+  </families>
+  <families
+      name="Test"/>
+</SimpleFamilies:FamilyRegister>
