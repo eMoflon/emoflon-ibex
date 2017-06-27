@@ -1,4 +1,4 @@
-package testsuite1.familiestopersons.cc;
+package testsuite1.ClassInhHier2DB.cc;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ public abstract class CCTestCase {
 	}
 	
 	public void createGenerator(String srcInstance, String trgInstance) throws IOException {
-		generator = new CC_App("testsuite1_familiestopersons", "./../", flatten, false, srcInstance, trgInstance);
+		generator = new CC_App("testsuite1_ClassInhHier2DB", "./../", flatten, false, srcInstance, trgInstance);
 	}
 
 	protected void runGenerator() throws IOException {
