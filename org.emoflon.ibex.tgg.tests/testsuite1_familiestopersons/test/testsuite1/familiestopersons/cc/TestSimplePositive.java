@@ -31,11 +31,4 @@ public class TestSimplePositive extends CCTestCase {
 		assert generator.modelsAreConsistent();
 	}
 	
-	@Test
-	public void testSixtyChildrenToPersons() throws IOException {
-		createGenerator("sixtyChildFamily", "thirtyFemaleThirtyMalePersons");
-		runGenerator();
-		assert generator.modelsAreConsistent();
-	}
-	
 }

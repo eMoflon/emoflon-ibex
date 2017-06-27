@@ -34,11 +34,11 @@
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
       <attributeAssignments op=":=">
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;father&quot;"/>
+        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;DoubleFather&quot;"/>
       </attributeAssignments>
       <attributeAssignments op=":=">
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
-        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;DoubleFather&quot;"/>
+        <valueExp xsi:type="tgg:LiteralExpression" value="&quot;father&quot;"/>
       </attributeAssignments>
     </sourcePatterns>
     <sourcePatterns name="fr">
