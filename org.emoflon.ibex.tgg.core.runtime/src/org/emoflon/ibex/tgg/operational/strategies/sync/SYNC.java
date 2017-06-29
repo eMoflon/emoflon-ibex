@@ -17,6 +17,10 @@ public abstract class SYNC extends OperationalStrategy {
 	public SYNC(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
 	}
+	
+	public SYNC(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
+		super(projectName, workspacePath, flatten, debug);
+	}
 
 	@Override
 	protected boolean manipulateSrc() {
