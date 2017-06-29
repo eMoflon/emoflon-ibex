@@ -8,3 +8,5 @@ org.emoflon.ibex.tgg.tests/testsuite2_familiestopersons/debug/patterns.xmi
 org.emoflon.ibex.tgg.tests/testsuite2_familiestopersons/instances/protocol.xmi
 
 org.emoflon.ibex.tgg.tests/testsuite2_familiestopersons/instances/trg.xmi
+
+*.log
