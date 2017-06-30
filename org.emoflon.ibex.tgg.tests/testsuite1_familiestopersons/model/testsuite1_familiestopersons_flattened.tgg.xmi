@@ -14,11 +14,11 @@
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
-        <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;DoubleFather&quot;"/>
+        <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;father&quot;"/>
       </attrExpr>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyMember/name"/>
-        <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;father&quot;"/>
+        <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;DoubleFather&quot;"/>
       </attrExpr>
     </nodes>
     <nodes name="fr" outgoingEdges="//@rules.0/@edges.2 //@rules.0/@edges.3" incomingCorrsSource="//@rules.0/@nodes.7">
@@ -109,35 +109,35 @@
     <attributeConditionLibrary/>
   </rules>
   <rules name="CreateFourthAndFifthFamily">
-    <nodes name="f1" incomingEdges="//@rules.3/@edges.0">
+    <nodes name="f1" incomingEdges="//@rules.3/@edges.1">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
         <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
       </attrExpr>
     </nodes>
-    <nodes name="f2" incomingEdges="//@rules.3/@edges.1">
+    <nodes name="f2" incomingEdges="//@rules.3/@edges.2">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
         <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
       </attrExpr>
     </nodes>
-    <nodes name="f3" incomingEdges="//@rules.3/@edges.2">
+    <nodes name="f3" incomingEdges="//@rules.3/@edges.3">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
         <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
       </attrExpr>
     </nodes>
-    <nodes name="f4" bindingType="CREATE" incomingEdges="//@rules.3/@edges.3">
+    <nodes name="f4" bindingType="CREATE" incomingEdges="//@rules.3/@edges.4">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
         <valueExpr xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression" value="&quot;Test&quot;"/>
       </attrExpr>
     </nodes>
-    <nodes name="f5" bindingType="CREATE" incomingEdges="//@rules.3/@edges.4">
+    <nodes name="f5" bindingType="CREATE" incomingEdges="//@rules.3/@edges.0">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family"/>
       <attrExpr>
         <attribute href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//Family/name"/>
@@ -153,6 +153,9 @@
     <nodes xsi:type="org.emoflon.ibex.tgg.core.language:TGGRuleCorr" name="fr2pr" domainType="CORR" source="//@rules.3/@nodes.5" target="//@rules.3/@nodes.6">
       <type href="platform:/resource/testsuite1_familiestopersons/model/testsuite1_familiestopersons.ecore#//RegisterToRegister"/>
     </nodes>
+    <edges name="fr__families__f5_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.3/@nodes.5" trgNode="//@rules.3/@nodes.4">
+      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
+    </edges>
     <edges name="fr__families__f1_eMoflonEdge" srcNode="//@rules.3/@nodes.5" trgNode="//@rules.3/@nodes.0">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
     </edges>
@@ -163,9 +166,6 @@
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
     </edges>
     <edges name="fr__families__f4_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.3/@nodes.5" trgNode="//@rules.3/@nodes.3">
-      <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
-    </edges>
-    <edges name="fr__families__f5_eMoflonEdge" bindingType="CREATE" srcNode="//@rules.3/@nodes.5" trgNode="//@rules.3/@nodes.4">
       <type href="platform:/resource/SimpleFamilies/model/SimpleFamilies.ecore#//FamilyRegister/families"/>
     </edges>
     <attributeConditionLibrary/>

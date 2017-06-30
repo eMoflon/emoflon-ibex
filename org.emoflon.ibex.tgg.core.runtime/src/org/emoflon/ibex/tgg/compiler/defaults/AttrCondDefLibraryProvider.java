@@ -25,7 +25,7 @@ public class AttrCondDefLibraryProvider {
 
 	public static void userAttrCondDefFactory(IProject project, Collection<String> userDefConstraints) throws CoreException, IOException {
 		String path = USER_ATTR_COND_DEF_FACTORY_PATH;
-		String userLib = DefaultFilesHelper.generateUserRuntimeAttrCondFactory(userDefConstraints);
+		String userLib = DefaultFilesGenerator.generateUserRuntimeAttrCondFactory(userDefConstraints);
 		IPath pathToLib = new Path(path);
 		addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
 	}
@@ -33,7 +33,7 @@ public class AttrCondDefLibraryProvider {
 	public static void userAttrCondDefStubs(IProject project, Collection<TGGAttributeConstraintDefinition> userDefConstraints) throws CoreException, IOException {
 		for(TGGAttributeConstraintDefinition tacd : userDefConstraints) {
 			String path = USER_ATTR_CONDS_PATH + UserAttrCondHelper.getFileName(tacd.getName()) + ".java";
-			String userLib = DefaultFilesHelper.generateUserAttrCondDefStub(tacd);
+			String userLib = DefaultFilesGenerator.generateUserAttrCondDefStub(tacd);
 			IPath pathToLib = new Path(path);
 			IFile userAttrLibFile = project.getFile(pathToLib);
 			if (!userAttrLibFile.exists()) {

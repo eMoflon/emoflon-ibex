@@ -11,11 +11,6 @@ import SimplePersons.impl.SimplePersonsPackageImpl;
 
 public class MODELGEN_App extends MODELGEN {
 
-	public MODELGEN_App(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug);
-		registerPatternMatchingEngine(new DemoclesEngine());
-	}
-
 	public MODELGEN_App(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
 		super(projectName, workspacePath, flatten, debug);
 		registerPatternMatchingEngine(new DemoclesEngine());

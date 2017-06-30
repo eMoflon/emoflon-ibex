@@ -80,10 +80,6 @@ public abstract class OperationalStrategy {
 		this.flatten = flatten;
 	}
 	
-	public OperationalStrategy(String projectName, String workspacePath, boolean debug) throws IOException {
-		this(projectName, workspacePath, false, debug);
-	}
-	
 	public void registerPatternMatchingEngine(PatternMatchingEngine engine) throws IOException {
 		this.engine = engine;
 		createAndPrepareResourceSet(workspacePath);

@@ -11,11 +11,6 @@ import SimplePersons.impl.SimplePersonsPackageImpl;
 
 public class CC_App extends CC {
 
-	public CC_App(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug);
-		registerPatternMatchingEngine(new DemoclesEngine());
-	}
-
 	public CC_App(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
 		super(projectName, workspacePath, flatten, debug);
 		registerPatternMatchingEngine(new DemoclesEngine());
@@ -24,7 +19,7 @@ public class CC_App extends CC {
 	public static void main(String[] args) throws IOException {
 			BasicConfigurator.configure();
 	
-			CC_App cc = new CC_App("testsuite2_familiestopersons", "./../", true);
+			CC_App cc = new CC_App("testsuite2_familiestopersons", "./../", false, true);
 			
 			logger.info("Starting CC");
 			long tic = System.currentTimeMillis();

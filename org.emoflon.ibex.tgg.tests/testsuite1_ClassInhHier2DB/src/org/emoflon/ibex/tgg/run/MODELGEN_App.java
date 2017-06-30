@@ -7,15 +7,10 @@ import org.eclipse.emf.common.util.URI;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
 
-import ClassInheritanceHierarchy.ClassInheritanceHierarchyPackage;
 import ClassInheritanceHierarchy.impl.ClassInheritanceHierarchyPackageImpl;
 import Database.impl.DatabasePackageImpl;
 
 public class MODELGEN_App extends MODELGEN {
-
-	public MODELGEN_App(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug);
-	}
 
 	public MODELGEN_App(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
 		super(projectName, workspacePath, flatten, debug);
@@ -24,7 +19,7 @@ public class MODELGEN_App extends MODELGEN {
 	public static void main(String[] args) throws IOException {
 		BasicConfigurator.configure();
 
-		MODELGEN_App generator = new MODELGEN_App("testsuite1_ClassInhHier2DB", "./../", false);
+		MODELGEN_App generator = new MODELGEN_App("testsuite1_ClassInhHier2DB", "./../", false, false);
 
 		MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
 		stop.setTimeOutInMS(1000);
