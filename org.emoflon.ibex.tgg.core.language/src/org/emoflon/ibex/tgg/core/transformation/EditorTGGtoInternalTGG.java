@@ -22,7 +22,7 @@ import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.core.transformation.csp.sorting.CSPSearchPlanMode;
 import org.emoflon.ibex.tgg.core.transformation.csp.sorting.SearchPlanAction;
-import org.emoflon.ibex.tgg.ui.ide.admin.IbexTGGBuilder;
+import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
 import org.moflon.tgg.mosl.tgg.Adornment;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
