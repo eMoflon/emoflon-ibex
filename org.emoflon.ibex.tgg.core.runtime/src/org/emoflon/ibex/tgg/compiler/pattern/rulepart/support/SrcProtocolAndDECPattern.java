@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 
 import language.DomainType;
 import language.TGGRule;

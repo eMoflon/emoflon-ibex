@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
@@ -36,7 +35,13 @@ import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECP
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.DECTrackingHelper;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
 
-import language.*;
+import language.BindingType;
+import language.DomainType;
+import language.TGG;
+import language.TGGRule;
+import language.TGGRuleEdge;
+import language.TGGRuleElement;
+import language.TGGRuleNode;
 
 public class TGGCompiler {
 	
@@ -174,24 +179,25 @@ public class TGGCompiler {
 
 		// add no DEC patterns to Src- and TrgPattern, respectively and register them
 		for (TGGRule rule : tgg.getRules()) {
-			NoDECsPatterns srcNoDecPatterns = new NoDECsPatterns(rule, decTC, DomainType.SRC);
-			NoDECsPatterns trgNoDecPatterns = new NoDECsPatterns(rule, decTC, DomainType.TRG);
-
-			
-			//FIXME:  Are these checks for isEmpty() necessary or even wrong/dangerous??
 			//FIXME:  CC patterns should invoke NoDEC patterns as well
-			
-			if (!srcNoDecPatterns.isEmpty()) {
-				ruleToPatterns.get(rule).add(srcNoDecPatterns);
-				ruleToPatterns.get(rule).stream().filter(r -> r instanceof SrcProtocolAndDECPattern).forEach(r -> r.addTGGPositiveInvocation(srcNoDecPatterns));
-			}
-			if (!trgNoDecPatterns.isEmpty()) {
-				ruleToPatterns.get(rule).add(trgNoDecPatterns);
-				ruleToPatterns.get(rule).stream().filter(r -> r instanceof TrgProtocolAndDECPattern).forEach(r -> r.addTGGPositiveInvocation(trgNoDecPatterns));
-			}
+			addFilterACs(rule, DomainType.SRC, SrcProtocolAndDECPattern.class);
+			addFilterACs(rule, DomainType.TRG, TrgProtocolAndDECPattern.class);
 		}
 	}
 	
+	private void addFilterACs(TGGRule rule, DomainType domain, Class<?> type) {
+		List<IbexPattern> relevantPatterns = ruleToPatterns.get(rule)
+			.stream()
+			.filter(p -> type.isInstance(p))
+			.collect(Collectors.toList());
+		
+		if(relevantPatterns.isEmpty()) return;
+		
+		NoDECsPatterns filterACPatterns = new NoDECsPatterns(rule, decTC, domain);
+		ruleToPatterns.get(rule).add(filterACPatterns);
+		relevantPatterns.forEach(p -> p.addTGGPositiveInvocation(filterACPatterns));
+	}
+
 	public List<MarkedPattern> getMarkedPatterns() {
 		return markedPatterns;
 	}
