@@ -2,6 +2,7 @@ package testsuite1.ClassInhHier2DB.modelgen;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SyncInstancesTest extends ModelGenTestCase {
@@ -11,12 +12,39 @@ public class SyncInstancesTest extends ModelGenTestCase {
 	}
 	
 	@Test
-	public void testAttributeToColumn_BWD() throws IOException {
+	public void testPackageToDatabase() throws IOException {
+		stop.setMaxRuleCount("PackageToDatabaseRule", 1);
+		runGenerator(stop);
+		assertPostcondition("in/PackageToDatabase_FWD", "expected/PackageToDatabase_FWD");
+	}
+	
+	@Test
+	@Ignore("Waiting for fix for issue #10 on emoflon-ibex-democles")
+	public void testClassToTable() throws IOException {
 		stop.setMaxRuleCount("PackageToDatabaseRule", 1);
 		stop.setMaxRuleCount("ClassToTableRule", 1);
-//		stop.setMaxRuleCount("AttributeToColumnRule", 2);
 		runGenerator(stop);
-		assertPostcondition("expected/AttributeToColumn_BWD", "in/AttributeToColumn_BWD");
+		assertPostcondition("in/ClassToTable_FWD", "expected/ClassToTable_FWD");
+	}
+	
+	@Test
+	@Ignore("Waiting for fix for issue #10 on emoflon-ibex-democles")
+	public void testAttributeToColumn() throws IOException {
+		stop.setMaxRuleCount("PackageToDatabaseRule", 1);
+		stop.setMaxRuleCount("ClassToTableRule", 1);
+		stop.setMaxRuleCount("AttributeToColumnRule", 2);
+		runGenerator(stop);
+		assertPostcondition("in/AttributeToColumn_FWD", "expected/AttributeToColumn_FWD");
+	}
+	
+	@Test
+	@Ignore("Waiting for fix for issue #10 on emoflon-ibex-democles")
+	public void testSubClassToTable() throws IOException {
+		stop.setMaxRuleCount("PackageToDatabaseRule", 1);
+		stop.setMaxRuleCount("ClassToTableRule", 1);
+		stop.setMaxRuleCount("SubClassToTable", 1);
+		runGenerator(stop);
+		assertPostcondition("in/SubClassToTable_FWD", "expected/SubClassToTable_FWD");
 	}
 
 }
