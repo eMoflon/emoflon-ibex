@@ -2,6 +2,7 @@ package testsuite1.familiestopersons.modelgen;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestContainmentConstraints extends ModelGenTestCase {
@@ -33,6 +34,7 @@ public class TestContainmentConstraints extends ModelGenTestCase {
 	 * @throws IOException
 	 */
 	@Test
+	@Ignore("Waiting for fix for issue #11 on emoflon-ibex-democles")
 	public void testContainmentConstraintForDifferentContainmentReference() throws IOException {
 		stop.setMaxRuleCount("HandleRegisters", 1);
 		stop.setMaxRuleCount("IgnoreFamily", 1);

@@ -33,7 +33,7 @@ public class DECHelper {
 	}
 
 	protected static Triple<Integer, TGGRuleNode, TGGRuleNode> countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
-		return rule.getNodes().stream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection, findRescuePattern, mode)).max((t1, t2) -> Integer.compare(t1.getLeft(),  t2.getLeft())).get();
+		return rule.getNodes().stream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection, findRescuePattern, mode)).max((t1, t2) -> Integer.compare(t1.getLeft(),  t2.getLeft())).orElseGet(() -> new Triple<Integer, TGGRuleNode, TGGRuleNode>(0, null, null));
 	}
 
 	// TODO can be merged into the upper method
