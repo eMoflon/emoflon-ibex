@@ -52,6 +52,7 @@ public class PatternFactory {
 		this.rule = rule;
 		this.compiler = compiler;
 		patterns = new LinkedHashMap<>();
+		markedPatterns = new ArrayList<>();
 		createMarkedPatterns();
 	}
 
@@ -206,7 +207,7 @@ public class PatternFactory {
 	}
 
 	public IbexPattern createMODELGENNoNACsPattern() {
-		return createPattern(MODELGENNoNACsPattern.class, () -> new MODELGENNoNACsPattern(rule, this));
+		return createPattern(MODELGENNoNACsPattern.class, () -> new MODELGENNoNACsPattern(rule, compiler.getFlattenedVersionOfRule(rule), this));
 	}
 
 	public IbexPattern createSrcContextPattern() {

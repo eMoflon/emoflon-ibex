@@ -17,9 +17,9 @@ public class MODELGENNoNACsPattern extends RulePartPattern {
 	
 	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
 
-	public MODELGENNoNACsPattern(TGGRule rule, PatternFactory factory) {
+	public MODELGENNoNACsPattern(TGGRule rule, TGGRule flattenedRule, PatternFactory factory) {
 		super(rule);
-		signatureElements = getSignatureElements(getRule());
+		signatureElements = getSignatureElements(flattenedRule);
 		
 		// Create pattern network
 		addTGGPositiveInvocation(factory.createSrcContextPattern());
