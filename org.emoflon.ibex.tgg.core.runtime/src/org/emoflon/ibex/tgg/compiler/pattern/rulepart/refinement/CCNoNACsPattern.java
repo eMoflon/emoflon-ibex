@@ -27,7 +27,7 @@ public class CCNoNACsPattern extends CCPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.MODELGEN_NO_NACS;
+		return PatternSuffixes.CC_NO_NACS;
 	}
 	
 	@Override
