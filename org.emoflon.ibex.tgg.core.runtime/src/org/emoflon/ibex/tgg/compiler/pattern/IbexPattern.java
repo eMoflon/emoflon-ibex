@@ -56,7 +56,6 @@ public abstract class IbexPattern {
 	}
 
 	protected void initialize() {
-		// signatureElements = getSignatureElements(rule);
 		bodyNodes = calculateBodyNodes(rule.getNodes());
 		bodyEdges = calculateBodyEdges(rule.getEdges());
 	}
@@ -134,6 +133,11 @@ public abstract class IbexPattern {
 	public void addTGGNegativeInvocation(IbexPattern pattern) {
 		negativeInvocations.add(pattern);
 		addVariableMapping(pattern);
+	}
+		
+	public void addTGGNegativeInvocations(Collection<IbexPattern> patterns){
+		for (IbexPattern n : patterns)
+			addTGGNegativeInvocation(n);
 	}
 	
 	public void addCustomNegativeInvocation(IbexPattern pattern, Map<TGGRuleElement, TGGRuleElement> mapping) {

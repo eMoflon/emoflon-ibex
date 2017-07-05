@@ -8,6 +8,7 @@ import java.util.Map;
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.InvocationHelper;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
 
 import language.BindingType;
@@ -28,10 +29,13 @@ public class ConsistencyPattern extends IbexPattern {
 
 	private TGGRuleNode protocolNode;
 	
-	public ConsistencyPattern(TGGRule rule, List<MarkedPattern> markedPatterns) {
+	public ConsistencyPattern(TGGRule rule, PatternFactory factory, List<MarkedPattern> markedPatterns) {
 		super(rule);
 		addProtocolNode();
+		
+		// Create pattern network
 		createMarkedInvocations(markedPatterns);
+		addTGGPositiveInvocation(factory.createWholeRulePattern());
 	}
 	
 	public void addProtocolNode() {

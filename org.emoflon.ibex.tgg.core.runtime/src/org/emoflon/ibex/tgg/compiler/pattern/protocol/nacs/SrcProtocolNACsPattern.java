@@ -12,8 +12,13 @@ public class SrcProtocolNACsPattern extends ProtocolNACsPattern {
 
 	public SrcProtocolNACsPattern(TGGRule rule, List<MarkedPattern> markedPatterns) {
 		super(rule, markedPatterns);
+		
+//		SrcProtocolNACsPattern srcProtocolNACs = new SrcProtocolNACsPattern(rule, markedPatterns);
+//		patterns.add(srcProtocolNACs);
+//		srcProtocolNACs.addTGGPositiveInvocation(src);
 	}
 	
+	// FIXME:  Why this?
 	public SrcProtocolNACsPattern(TGGRule rule) {
 		super(rule);
 	}
