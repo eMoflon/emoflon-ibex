@@ -1,9 +1,10 @@
-package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support;
+package org.emoflon.ibex.tgg.compiler.pattern.rulepart.refinement;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 
 import language.BindingType;
@@ -16,9 +17,17 @@ public class MODELGENNoNACsPattern extends RulePartPattern {
 	
 	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
 
-	public MODELGENNoNACsPattern(TGGRule rule) {
+	public MODELGENNoNACsPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		signatureElements = getSignatureElements(getRule());
+		
+		// Create pattern network
+		addTGGPositiveInvocation(factory.createSrcContextPattern());
+		addTGGPositiveInvocation(factory.createCorrContextPattern());
+		addTGGPositiveInvocation(factory.createTrgContextPattern());
+		
+		for (TGGRule superRule : rule.getRefines())
+			addTGGPositiveInvocation(factory.getFactory(superRule).createMODELGENNoNACsPattern());
 	}
 
 	@Override

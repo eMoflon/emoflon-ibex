@@ -21,6 +21,9 @@ import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 import language.TGGRule;
 import language.TGGRuleElement;
 
+// DECTrackingContainer that contains information for DEC
+// generation such as which patterns belongs to which rule or the
+// mapping of signature elements for the calls to external patterns		
 public class DECTrackingHelper {
 
 	private Map<TGGRule, Collection<IbexPattern>> ruleToPatterns;
