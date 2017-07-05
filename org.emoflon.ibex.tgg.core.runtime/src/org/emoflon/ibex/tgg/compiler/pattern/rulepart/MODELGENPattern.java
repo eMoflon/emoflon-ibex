@@ -29,6 +29,7 @@ public class MODELGENPattern extends RulePartPattern {
 		addTGGPositiveInvocation(factory.createSrcContextPattern());
 		addTGGPositiveInvocation(factory.createCorrContextPattern());
 		addTGGPositiveInvocation(factory.createTrgContextPattern());
+		
 		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints(this));
 		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints(this));
 	}

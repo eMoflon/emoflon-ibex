@@ -16,6 +16,7 @@ public class TrgProtocolAndDECPattern extends ProtocolAndDECPattern {
 		
 		// Create pattern network
 		addTGGPositiveInvocation(factory.createTrgProtocolNACsPattern());
+		//addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.TRG));
 	}
 
 	@Override

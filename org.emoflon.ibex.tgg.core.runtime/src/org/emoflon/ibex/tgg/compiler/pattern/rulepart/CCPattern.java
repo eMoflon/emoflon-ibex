@@ -31,6 +31,9 @@ public class CCPattern extends RulePartPattern {
 		addTGGPositiveInvocation(factory.createSrcPattern());
 		addTGGPositiveInvocation(factory.createTrgPattern());
 		addTGGPositiveInvocation(factory.createCorrContextPattern());
+		
+		//addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.SRC));
+		//addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.TRG));
 	}
 
 	@Override

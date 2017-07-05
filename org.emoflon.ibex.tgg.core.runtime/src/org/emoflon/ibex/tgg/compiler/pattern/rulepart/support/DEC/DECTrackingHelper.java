@@ -10,31 +10,24 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.InvocationHelper;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.LocalSrcProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.LocalTrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
-
-import language.TGGRule;
 import language.TGGRuleElement;
 
 // DECTrackingContainer that contains information for DEC
 // generation such as which patterns belongs to which rule or the
 // mapping of signature elements for the calls to external patterns		
 public class DECTrackingHelper {
-
-	private Map<TGGRule, Collection<IbexPattern>> ruleToPatterns;
 	private Map<IbexPattern, Collection<Triple<String, String, IbexPattern>>> localProtocolMapping;
 
 	// Map<DecPattern, Map<RuleName, Pair<entryPointName, DECNodeName>>>
 	private Map<DECPattern, Map<String, Pair<String, String>>> signatureMapping;
 	private Map<DECPattern, Pair<String, String>> entryAndDecMap;
 
-	public DECTrackingHelper(Map<TGGRule, Collection<IbexPattern>> ruleToPatterns) {
-		this.ruleToPatterns = ruleToPatterns;
+	public DECTrackingHelper() {
 		this.signatureMapping = new HashMap<>();
 		this.entryAndDecMap = new HashMap<>();
 		this.localProtocolMapping = new HashMap<>();
@@ -75,10 +68,6 @@ public class DECTrackingHelper {
 		addLocalProtocolMapping(globalProtocolPattern, entryName, edgeName, direction, localProtocolPattern);
 
 		return localProtocolPattern;
-	}
-
-	public Map<TGGRule, Collection<IbexPattern>> getRuleToPatternsMap() {
-		return ruleToPatterns;
 	}
 
 	public void addToSignatureMapping(DECPattern pattern, String ruleName, String entryPointName, String DECNodeName) {

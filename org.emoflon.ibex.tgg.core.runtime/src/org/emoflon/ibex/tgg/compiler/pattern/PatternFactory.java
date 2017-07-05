@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.ConsistencyPattern;
@@ -36,6 +37,7 @@ import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcProtocolAndDECP
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgContextPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
 
 import language.BindingType;
 import language.DomainType;
@@ -282,5 +284,9 @@ public class PatternFactory {
 
 	public PatternFactory getFactory(TGGRule superRule) {
 		return compiler.getFactory(superRule);
+	}
+
+	public IbexPattern createNoDECsPatterns(DomainType domain) {
+		return createPattern(rule.getName() + PatternSuffixes.NO_DEC(domain), () -> new NoDECsPatterns(rule, domain, this));
 	}
 }
