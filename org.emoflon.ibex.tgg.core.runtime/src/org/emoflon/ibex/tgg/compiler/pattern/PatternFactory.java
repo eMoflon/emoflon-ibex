@@ -24,6 +24,8 @@ import org.emoflon.ibex.tgg.compiler.pattern.rulepart.FWDPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.MODELGENPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.WholeRulePattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.refinement.CCNoNACsPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.refinement.CCPatternWithRefinements;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.refinement.MODELGENNoNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.refinement.MODELGENPatternWithRefinements;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.ConstraintPattern;
@@ -205,11 +207,7 @@ public class PatternFactory {
 	public IbexPattern createMODELGENPattern() {
 		return createPattern(MODELGENPattern.class, () -> new MODELGENPattern(rule, this));
 	}
-
-	public IbexPattern createMODELGENNoNACsPattern() {
-		return createPattern(MODELGENNoNACsPattern.class, () -> new MODELGENNoNACsPattern(rule, compiler.getFlattenedVersionOfRule(rule), this));
-	}
-
+	
 	public IbexPattern createSrcContextPattern() {
 		return createPattern(SrcContextPattern.class, () -> new SrcContextPattern(rule));
 	}
@@ -270,9 +268,16 @@ public class PatternFactory {
 		return createPattern(MODELGENPatternWithRefinements.class, () -> new MODELGENPatternWithRefinements(rule, compiler.getFlattenedVersionOfRule(rule), this));
 	}
 
-	public void createCCPatternWithRefinement() {
-		// TODO Auto-generated method stub
-		
+	public IbexPattern createMODELGENNoNACsPattern() {
+		return createPattern(MODELGENNoNACsPattern.class, () -> new MODELGENNoNACsPattern(rule, compiler.getFlattenedVersionOfRule(rule), this));
+	}
+
+	public IbexPattern createCCPatternWithRefinement() {
+		return createPattern(CCPatternWithRefinements.class, () -> new CCPatternWithRefinements(rule, compiler.getFlattenedVersionOfRule(rule), this));
+	}
+	
+	public IbexPattern createCCNoNACsPattern() {
+		return createPattern(CCNoNACsPattern.class, () -> new CCNoNACsPattern(rule, compiler.getFlattenedVersionOfRule(rule), this));
 	}
 
 	public PatternFactory getFactory(TGGRule superRule) {

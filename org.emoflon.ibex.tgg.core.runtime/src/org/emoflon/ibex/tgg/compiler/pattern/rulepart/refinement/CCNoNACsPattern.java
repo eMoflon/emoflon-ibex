@@ -2,14 +2,14 @@ package org.emoflon.ibex.tgg.compiler.pattern.rulepart.refinement;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.MODELGENPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.CCPattern;
 
 import language.TGGRule;
 import language.TGGRuleNode;
 
-public class MODELGENNoNACsPattern extends MODELGENPattern {
+public class CCNoNACsPattern extends CCPattern {
 
-	public MODELGENNoNACsPattern(TGGRule rule, TGGRule flattenedRule, PatternFactory factory) {
+	public CCNoNACsPattern(TGGRule rule, TGGRule flattenedRule, PatternFactory factory) {
 		super(flattenedRule, factory);
 		
 		createPatternNetwork();
@@ -17,12 +17,12 @@ public class MODELGENNoNACsPattern extends MODELGENPattern {
 	
 	@Override
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.createSrcContextPattern());
+		addTGGPositiveInvocation(factory.createSrcPattern());
+		addTGGPositiveInvocation(factory.createTrgPattern());
 		addTGGPositiveInvocation(factory.createCorrContextPattern());
-		addTGGPositiveInvocation(factory.createTrgContextPattern());
 
 		for (TGGRule superRule : rule.getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).createMODELGENNoNACsPattern());
+			addTGGPositiveInvocation(factory.getFactory(superRule).createCCNoNACsPattern());
 	}
 
 	@Override
