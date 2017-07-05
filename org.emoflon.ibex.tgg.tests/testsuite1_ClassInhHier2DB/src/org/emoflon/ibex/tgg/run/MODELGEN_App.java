@@ -21,7 +21,7 @@ public class MODELGEN_App extends MODELGEN {
 
 		MODELGEN_App generator = new MODELGEN_App("testsuite1_ClassInhHier2DB", "./../", false, false);
 
-		MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
+		MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 		stop.setTimeOutInMS(1000);
 		generator.setStopCriterion(stop);
 

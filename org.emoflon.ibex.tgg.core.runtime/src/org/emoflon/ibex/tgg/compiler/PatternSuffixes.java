@@ -139,6 +139,12 @@ public class PatternSuffixes {
 	 */
 	public static final String CC = SEP + "CC";
 
+	/** 
+	 * Contains the original TGG rule except for created corr-nodes
+	 * and invocations to the corresponding patterns of super-rules.
+	 */	
+	public static final String CC_NO_NACS = SEP + "CC_NO_NACS";
+
 	/**
 	 * This suffix indicates a marked pattern with a local protocol node, i.e.,
 	 * the protocol node is not in the signature of the pattern. Such a pattern

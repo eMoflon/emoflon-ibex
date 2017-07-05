@@ -1,12 +1,11 @@
 package org.emoflon.ibex.tgg.operational;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
-
-import language.TGG;
+import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
 public interface PatternMatchingEngine {
 	public void registerInternalMetamodels();
-	public void initialise(ResourceSet rs, OperationalStrategy operationalStrategy, TGG tgg, TGG flattenedTgg, String projectPath, boolean debug);
+	public void initialise(ResourceSet rs, OperationalStrategy operationalStrategy, IbexOptions options);
 	public ResourceSet createAndPrepareResourceSet(String workspacePath);
 	public void updateMatches();
 	public void terminate();

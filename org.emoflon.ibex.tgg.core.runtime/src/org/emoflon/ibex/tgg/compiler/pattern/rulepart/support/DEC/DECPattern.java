@@ -35,7 +35,8 @@ public class DECPattern extends RulePartPattern {
 			throw new RuntimeException("SearchEdgePattern found. Generating this pattern twice is a bad idea!");
 		
 		sep = new SearchEdgePattern(rule, entryPoint, edgeType, eDirection);
-		decTC.getRuleToPatternsMap().get(rule).add(sep);
+		//FIXME [Anjorin]
+		//decTC.getRuleToPatternsMap().get(rule).add(sep);
 		decTC.addEntryAndDec(this, entryPoint.getName(), DECHelper.getDECNode(sep.getRule()).getName());
 	}
 	

@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.compiler.pattern.rulepart;
 import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
 
 import language.BindingType;
 import language.DomainType;
@@ -13,8 +14,13 @@ import language.TGGRuleNode;
 
 public class BWDPattern extends RulePartPattern {
 
-	public BWDPattern(TGGRule rule) {
+	public BWDPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
+
+		// Create pattern network
+		addTGGPositiveInvocation(factory.createTrgProtocolAndDECPattern());
+		addTGGPositiveInvocation(factory.createCorrContextPattern());
+		addTGGPositiveInvocation(factory.createSrcContextPattern());
 	}
 
 	@Override

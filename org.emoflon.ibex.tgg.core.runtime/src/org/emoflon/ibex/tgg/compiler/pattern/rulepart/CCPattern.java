@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
 
 import language.BindingType;
 import language.DomainType;
@@ -13,13 +14,26 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class CCPattern extends RulePartPattern {
-	
+
+	protected PatternFactory factory;
 	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
 
 
-	public CCPattern(TGGRule rule) {
+	public CCPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
+		this.factory = factory;
 		signatureElements = getSignatureElements(getRule());
+		
+		createPatternNetwork();
+	}
+
+	protected void createPatternNetwork() {
+		addTGGPositiveInvocation(factory.createSrcPattern());
+		addTGGPositiveInvocation(factory.createTrgPattern());
+		addTGGPositiveInvocation(factory.createCorrContextPattern());
+		
+		//addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.SRC));
+		//addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.TRG));
 	}
 
 	@Override

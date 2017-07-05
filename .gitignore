@@ -10,3 +10,25 @@ org.emoflon.ibex.tgg.tests/testsuite2_familiestopersons/instances/protocol.xmi
 org.emoflon.ibex.tgg.tests/testsuite2_familiestopersons/instances/trg.xmi
 
 *.log
+
+org.emoflon.ibex.tgg.tests/testsuite2_familiestopersons/model/testsuite2_familiestopersons.editor.xmi
+
+org.emoflon.ibex.tgg.tests/testsuite2_familiestopersons/model/testsuite2_familiestopersons_flattened.editor.xmi
+
+org.emoflon.ibex.tgg.tests/testsuite2_familiestopersons/model/testsuite2_familiestopersons_flattened.editor.xmi
+
+org.emoflon.ibex.tgg.tests/testsuite1_familiestopersons/model/testsuite1_familiestopersons.editor.xmi
+
+org.emoflon.ibex.tgg.tests/testsuite1_familiestopersons/model/testsuite1_familiestopersons_flattened.tgg.xmi
+
+org.emoflon.ibex.tgg.tests/testsuite1_familiestopersons/model/testsuite1_familiestopersons_flattened.editor.xmi
+
+org.emoflon.ibex.tgg.tests/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB.editor.xmi
+
+org.emoflon.ibex.tgg.tests/testsuite1_ClassInhHier2DB/model/testsuite1_ClassInhHier2DB_flattened.editor.xmi
+
+org.emoflon.ibex.tgg.tests/testsuite1_ClassInhHier2DB/debug/patterns.xmi
+
+*.xtendbin
+
+org.emoflon.ibex.tgg.tests/ClassInheritanceHierarchy/xtend-gen/org/benchmarx/classInheritanceHierarchy/core/.ClassInheritanceHierarchyComparator.xtendbin
