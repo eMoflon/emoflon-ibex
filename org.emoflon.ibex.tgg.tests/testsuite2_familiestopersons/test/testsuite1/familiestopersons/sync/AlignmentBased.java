@@ -16,7 +16,7 @@ public class AlignmentBased extends SyncTestCase {
 		super(tool);
 	}
 	
-	@Ignore
+	@Ignore("Not yet implemented")
 	public void testRenameMother()
 	{
 		// No precondition!

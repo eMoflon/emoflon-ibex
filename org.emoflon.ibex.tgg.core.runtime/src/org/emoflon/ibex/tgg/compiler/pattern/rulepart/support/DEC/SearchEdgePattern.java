@@ -47,6 +47,10 @@ public class SearchEdgePattern extends RulePartPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
+		return getPatternNameSuffix(entryPoint, edgeType, eDirection);
+	}
+
+	public static String getPatternNameSuffix(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
 		return PatternSuffixes.SEP + entryPoint.getName() +"_" + edgeType.getName() + "_" + eDirection.name().toLowerCase() +  "_SearchEdge_" + entryPoint.getDomainType().getName();
 	}
 

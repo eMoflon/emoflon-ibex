@@ -1,23 +1,18 @@
 package org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs;
 
-import java.util.Collection;
-
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.EdgeDirection;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
 
 import language.DomainType;
 import language.TGGRule;
-import language.TGGRuleEdge;
-import language.TGGRuleElement;
-import language.TGGRuleNode;
 
 public class LocalTrgProtocolNACsPattern extends LocalProtocolNACsPattern {
-
-	public LocalTrgProtocolNACsPattern(IbexPattern globalTrgProtocolPattern, Collection<TGGRuleElement> mappedElements) {
-		super(globalTrgProtocolPattern, mappedElements);
-	}
 	
+	public LocalTrgProtocolNACsPattern(TGGRule rule, IbexPattern premise, PatternFactory factory) {
+		super(factory.createTrgProtocolNACsPattern(), premise);
+	}
+
 	@Override
 	protected String getPatternNameSuffix() {
 		return PatternSuffixes.LOCAL_TRG_PROTOCOL_NACS;

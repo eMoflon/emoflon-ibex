@@ -13,10 +13,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.LocalSrcProtocolNACsPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.LocalTrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.BWDPattern;
@@ -37,7 +38,10 @@ import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcProtocolAndDECP
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgContextPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgProtocolAndDECPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.DECPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.NoDECsPatterns;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC.SearchEdgePattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -201,9 +205,14 @@ public class PatternFactory {
         return negativePatterns;
 	}
 	
-	private <T extends IbexPattern> IbexPattern createPattern(Object key, Supplier<T> creator){
-		patterns.computeIfAbsent(key, (k) -> creator.get());
-		return patterns.get(key);
+	@SuppressWarnings("unchecked")
+	private <T extends IbexPattern> T createPattern(Object key, Supplier<T> creator){
+		T p = (T) patterns.computeIfAbsent(key, (k) -> creator.get());
+		
+		if(p == null)
+			throw new IllegalStateException("Created pattern is null!");
+		
+		return p;
 	}
 
 	public IbexPattern createMODELGENPattern() {
@@ -259,11 +268,11 @@ public class PatternFactory {
 	}
 
 	public IbexPattern createSrcProtocolNACsPattern() {
-		return createPattern(SrcProtocolNACsPattern.class, () -> new SrcProtocolNACsPattern(rule));
+		return createPattern(SrcProtocolNACsPattern.class, () -> new SrcProtocolNACsPattern(rule, markedPatterns, this));
 	}
 
 	public IbexPattern createTrgProtocolNACsPattern() {
-		return createPattern(TrgProtocolNACsPattern.class, () -> new TrgProtocolNACsPattern(rule));
+		return createPattern(TrgProtocolNACsPattern.class, () -> new TrgProtocolNACsPattern(rule, markedPatterns, this));
 	}
 
 	public IbexPattern createMODELGENPatternWithRefinement() {
@@ -287,6 +296,22 @@ public class PatternFactory {
 	}
 
 	public IbexPattern createNoDECsPatterns(DomainType domain) {
-		return createPattern(rule.getName() + PatternSuffixes.NO_DEC(domain), () -> new NoDECsPatterns(rule, domain, this));
+		return createPattern(rule.getName() + NoDECsPatterns.getPatternNameSuffix(domain), () -> new NoDECsPatterns(rule, domain, this));
+	}
+
+	public IbexPattern createDECPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, Collection<TGGRule> savingRules) {
+		return createPattern(rule.getName() + DECPattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new DECPattern(rule, entryPoint, edgeType, eDirection, savingRules, this));
+	}
+
+	public IbexPattern createSearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
+		return createPattern(rule.getName() + SearchEdgePattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new SearchEdgePattern(rule, entryPoint, edgeType, eDirection));
+	}
+
+	public LocalSrcProtocolNACsPattern createLocalSrcProtocolNACsPattern(IbexPattern premise) {
+		return createPattern(LocalSrcProtocolNACsPattern.class, () -> new LocalSrcProtocolNACsPattern(rule, premise, this));
+	}
+
+	public LocalTrgProtocolNACsPattern createLocalTrgProtocolNACsPattern(IbexPattern premise) {
+		return createPattern(LocalTrgProtocolNACsPattern.class, () -> new LocalTrgProtocolNACsPattern(rule, premise, this));
 	}
 }

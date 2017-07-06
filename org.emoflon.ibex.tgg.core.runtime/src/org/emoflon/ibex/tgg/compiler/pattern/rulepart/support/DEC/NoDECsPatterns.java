@@ -1,20 +1,13 @@
 package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.xtext.xbase.lib.Pair;
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
-import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.SrcProtocolNACsPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.TrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.SrcPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.TrgPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -33,10 +26,12 @@ public class NoDECsPatterns extends RulePartPattern {
 		super(rule);
 		this.factory = factory;
 		this.domain = domain;
-		
-		if(strategy != DECStrategy.NONE)
-			createDECEntries(rule, domain);
+
 		initialize();
+		
+		// Create pattern network
+		if(strategy != DECStrategy.NONE)
+			addDECPatternsAsTGGNegativeInvocations(rule, domain);
 		
 		switch (domain) {
 		case SRC:
@@ -52,79 +47,66 @@ public class NoDECsPatterns extends RulePartPattern {
 		}
 	}
 
-	/**
-	 * This method creates DEC entries for each rule node if some edge has been detected that may have to be translated by some other rule application
-	 * 
-	 * @param rule
-	 */
-	private void createDECEntries(TGGRule rule, DomainType domain) {
-		// FIXME [Anjorin]
-//		for (TGGRuleNode n : rule.getNodes()) {
-//			EClass nodeClass = n.getType();
-//
-//			// entry nodes have to have create binding type
-//			if (!n.getBindingType().equals(BindingType.CREATE))
-//				continue;
-//
-//			// we don't care about correspondence nodes and generate DECs only for the current domain (SRC or TRG)
-//			if (!n.getDomainType().equals(domain) || n.getDomainType().equals(DomainType.CORR))
-//				continue;
-//
-//			// check if edge type occurs in our current rule for the given entry point,
-//			// if not -> search if some other rule might translate such an edge
-//			for (EReference eType : DECHelper.extractEReferences(nodeClass)) {
-//				for (EdgeDirection eDirection : EdgeDirection.values()) {
-//					TGG tgg = (TGG) rule.eContainer();
-//
-//					// check type
-//					if (!DECHelper.getType(eType, eDirection).equals(n.getType()))
-//						continue;
-//
-//					int numOfEdges = DECHelper.countEdgeInRule(rule, n, eType, eDirection, false, domain).getLeft();
-//					// if the edge has any multiplicity or there is no edge representation at all in this rule, else continue
-//					if (eType.getUpperBound() == 1 && numOfEdges == 1)
-//						continue;
-//
-//					// if edge is handled in no rule at all
-//					if (!DECHelper.isEdgeInTGG(tgg, eType, eDirection, false, domain))
-//						continue;
-//
-//					// initialise DECpattern and register the entryNodeName and DECNodeName for the signature mapping
-//					DECPattern decPattern = new DECPattern(rule, n, eType, eDirection, decTC);
-//
-//					// check if the edges are represented and translated elsewhere and register signature mapping (todo: clean this up a bit)
-//					List<TGGRule> rules = tgg.getRules().stream().filter(r -> DECHelper.countEdgeInRule(r, eType, eDirection, true, domain).getLeft() > 0).collect(Collectors.toList());
-//					rules.stream().map(r -> Pair.of(r, DECHelper.countEdgeInRule(r, eType, eDirection, true, domain)))
-//							.forEach(p -> decTC.addToSignatureMapping(decPattern, p.getKey().getName(), p.getValue().getMiddle().getName(), p.getValue().getRight().getName()));
-//
-//					if(strategy == DECStrategy.FILTER_NACS_AND_PACS){
-//						// find src or trg pattern already generated for the found rules
-//						for (TGGRule filteredRule : rules) {
-//							IbexPattern pattern = null;
-//							switch (n.getDomainType()) {
-//							case SRC:
-//								pattern = factory.getFactory(filteredRule).createSrcProtocolNACsPattern();
-//								break;
-//							case TRG:
-//								pattern = factory.getFactory(filteredRule).createTrgProtocolNACsPattern();
-//								break;
-//							default:
-//								throw new RuntimeException("DECPatterns: Not defined for anything else than SRC or TRG patterns!");
-//							}
-//							
-//							IbexPattern localProtocolPattern = decTC.getLocalProtocolPattern(decPattern, pattern, n.getName(), eType.getName(), eDirection);
-//							decPattern.addCustomNegativeInvocation(localProtocolPattern, decTC.getMapping(decPattern, localProtocolPattern));
-//						}
-//					}
-//		
-//					if(strategy == DECStrategy.FILTER_NACS_AND_PACS || (strategy == DECStrategy.FILTER_NACS && rules.size() == 0)){
-//						addTGGNegativeInvocation(decPattern);
-//						decTC.getRuleToPatternsMap().get(rule).add(decPattern);
-//					}
-//					
-//				}
-//			}
-//		}
+	private void addDECPatternsAsTGGNegativeInvocations(TGGRule rule, DomainType domain) {
+		for (TGGRuleNode n : rule.getNodes()) {
+			EClass nodeClass = n.getType();
+
+			if (nodeIsNotTranslatedByThisRule(n)) continue;
+			if (nodeIsNotRelevant(domain, n)) continue;
+
+			// Create DECPatterns as negative children in the network
+			for (EReference eType : DECHelper.extractEReferences(nodeClass)) {
+				for (EdgeDirection eDirection : EdgeDirection.values()) {
+					TGG tgg = (TGG) rule.eContainer();
+
+					if (typeDoesNotFitToDirection(n, eType, eDirection)) continue;
+					if (onlyPossibleEdgeIsAlreadyTranslatedInRule(n, eType, eDirection)) continue;
+					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg)) continue;
+		
+					if(filterACIsRequired(domain, eType, eDirection, tgg))
+						addTGGNegativeInvocation(factory.createDECPattern(n, eType, eDirection, determineSavingRules(domain, eType, eDirection, tgg)));					
+				}
+			}
+		}
+	}
+
+	private boolean filterACIsRequired(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
+		return strategy == DECStrategy.FILTER_NACS_AND_PACS || (strategy == DECStrategy.FILTER_NACS && thereIsNoSavingRule(domain, eType, eDirection, tgg));
+	}
+
+	private boolean thereIsNoSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
+		return determineSavingRules(domain, eType, eDirection, tgg).isEmpty();
+	}
+
+	private boolean edgeIsNeverTranslatedInTGG(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
+		return !DECHelper.isEdgeInTGG(tgg, eType, eDirection, false, domain);
+	}
+
+	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
+		int numOfEdges = DECHelper.countEdgeInRule(rule, n, eType, eDirection, false, domain).getLeft();
+		return eType.getUpperBound() == 1 && numOfEdges == 1;
+	}
+
+	private boolean typeDoesNotFitToDirection(TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
+		return !DECHelper.getType(eType, eDirection).equals(n.getType());
+	}
+
+	private boolean nodeIsNotTranslatedByThisRule(TGGRuleNode n) {
+		return !n.getBindingType().equals(BindingType.CREATE);
+	}
+
+	private boolean nodeIsNotRelevant(DomainType domain, TGGRuleNode n) {
+		return !n.getDomainType().equals(domain) || n.getDomainType().equals(DomainType.CORR);
+	}
+
+	private List<TGGRule> determineSavingRules(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
+		return tgg.getRules().stream()
+				.filter(r -> isSavingRule(domain, eType, eDirection, r))
+				.collect(Collectors.toList());
+	}
+
+	private boolean isSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGGRule r) {
+		return DECHelper.countEdgeInRule(r, eType, eDirection, true, domain).getLeft() > 0;
 	}
 
 	@Override
@@ -149,6 +131,10 @@ public class NoDECsPatterns extends RulePartPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
+		return getPatternNameSuffix(domain);
+	}
+	
+	public static String getPatternNameSuffix(DomainType domain){
 		return PatternSuffixes.NO_DEC(domain);
 	}
 

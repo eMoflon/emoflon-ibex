@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs;
 import java.util.List;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.pattern.common.MarkedPattern;
 
 import language.DomainType;
@@ -10,19 +11,12 @@ import language.TGGRule;
 
 public class SrcProtocolNACsPattern extends ProtocolNACsPattern {
 
-	public SrcProtocolNACsPattern(TGGRule rule, List<MarkedPattern> markedPatterns) {
+	public SrcProtocolNACsPattern(TGGRule rule, List<MarkedPattern> markedPatterns, PatternFactory factory) {
 		super(rule, markedPatterns);
 		
-//		SrcProtocolNACsPattern srcProtocolNACs = new SrcProtocolNACsPattern(rule, markedPatterns);
-//		patterns.add(srcProtocolNACs);
-//		srcProtocolNACs.addTGGPositiveInvocation(src);
+		// Create pattern network
+		addTGGPositiveInvocation(factory.createSrcPattern());
 	}
-	
-	// FIXME:  Why this?
-	public SrcProtocolNACsPattern(TGGRule rule) {
-		super(rule);
-	}
-
 
 	@Override
 	protected String getPatternNameSuffix() {
