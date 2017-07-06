@@ -56,6 +56,7 @@ public class PatternFactory {
 	private TGGCompiler compiler;
 	private static List<MarkedPattern> markedPatterns = createMarkedPatterns();
 	
+
 	public PatternFactory(TGGRule rule, TGGCompiler compiler) {
 		this.rule = rule;
 		this.compiler = compiler;
@@ -315,5 +316,9 @@ public class PatternFactory {
 
 	public LocalTrgProtocolNACsPattern createLocalTrgProtocolNACsPattern(IbexPattern premise) {
 		return createPattern(LocalTrgProtocolNACsPattern.class, () -> new LocalTrgProtocolNACsPattern(rule, premise, this));
+	}
+	
+	public static List<MarkedPattern> getMarkedPatterns() {
+		return markedPatterns;
 	}
 }
