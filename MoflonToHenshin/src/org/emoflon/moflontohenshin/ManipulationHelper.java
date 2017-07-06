@@ -3,13 +3,17 @@ package org.emoflon.moflontohenshin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.moflontohenshin.manipulationrules.corrrules.CorrCreationRule;
 import org.emoflon.moflontohenshin.manipulationrules.edgerules.EdgeCreationRule;
 import org.emoflon.moflontohenshin.manipulationrules.noderules.NodeCreationRule;
+import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.TGGRuleNode;
 
@@ -31,10 +35,18 @@ public class ManipulationHelper {
 		corrCreationRules.add(rule);
 	}
 	
+	private String getPluginID(ResourceSet rs){
+		Resource corr = rs.getResource(URI.createFileURI("model/MoflonToHenshin.ecore"), true);
+		EPackage pcorr = (EPackage) corr.getContents().get(0);
+		return pcorr.getNsPrefix();
+	}
+	
 	public ManipulationHelper(){
-		ManipulationUtil.setNodeCreationFun(this::createNode);
-		ManipulationUtil.setEdgeCreationFun(src -> trg -> ref -> createEdge(src, trg, ref));
-		ManipulationUtil.setCorrCreationFun(node -> src -> trg -> corrR -> createCorrNode(node, src, trg, corrR));
+		String pluginID = getPluginID(eMoflonEMFUtil.createDefaultResourceSet());
+		
+		ManipulationUtil.getInstance().addNodeCreationFun(this::createNode, pluginID);
+		ManipulationUtil.getInstance().addEdgeCreationFun(src -> trg -> ref -> createEdge(src, trg, ref), pluginID);
+		ManipulationUtil.getInstance().addCorrCreationFun(node -> src -> trg -> corrR -> createCorrNode(node, src, trg, corrR), pluginID);
 	}
 	
 	private EObject createNode(TGGRuleNode node){
@@ -43,7 +55,7 @@ public class ManipulationHelper {
 				return rule.forceCreation(node);
 		}
 		
-		return ManipulationUtil.getDefaultNodeCreationFun().apply(node);
+		return ManipulationUtil.getInstance().defaultCreateNode(node);
 	}
 	
 	private void createEdge(EObject src, EObject trg, EReference ref){
@@ -53,8 +65,7 @@ public class ManipulationHelper {
 				return;
 			}
 		}
-		
-		ManipulationUtil.getDefaultEdgeCreationFun().apply(src).apply(trg).accept(ref);
+		ManipulationUtil.getInstance().defaultCreateEdge(src, trg, ref);
 	}
 	
 	private EObject createCorrNode(TGGRuleNode node, EObject src, EObject trg, Resource corrR){
@@ -62,7 +73,8 @@ public class ManipulationHelper {
 			if(rule.needsForcedCreation(node, src, trg, corrR))
 				return rule.forceCreation(node, src, trg, corrR);
 		}
-		return ManipulationUtil.getDefaultCorrCreationFun().apply(node).apply(src).apply(trg).apply(corrR);
+		return ManipulationUtil.getInstance().defaultCreateCorr(node, src, trg, corrR);
+		//return ManipulationUtil.getDefaultCorrCreationFun().apply(node).apply(src).apply(trg).apply(corrR);
 	}
 	
 	

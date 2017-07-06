@@ -21,7 +21,7 @@ public class TGGInplaceAttributeExpressionToHenshinParameterRule extends TGGInpl
 		this.setVarName(srcInplaceAE, trgParameter::setName);
 		trgParameter.setType(type.getEType());		
 		
-		return ManipulationUtil.getDefaultCorrCreationFun().apply(node).apply(src).apply(trg).apply(corrR);
+		return ManipulationUtil.getInstance().defaultCreateCorr(node, src, trg, corrR);
 	}
 
 	@Override

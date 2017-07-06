@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.run;
 
 import java.io.IOException;
 
+import org.eclipse.core.internal.runtime.Activator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -18,6 +19,7 @@ import org.emoflon.ibex.tgg.operational.*;
 import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.MoflonToHenshinAttrCondDefLibrary;
 import org.emoflon.moflontohenshin.utils.ManipulationRulesFactory;
+import org.moflon.core.utilities.WorkspaceHelper;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.LanguagePackage;
@@ -30,7 +32,7 @@ public class SYNCH_App {
 		//BasicConfigurator.configure();
 				
 		ResourceSet rs = eMoflonEMFUtil.createDefaultResourceSet();
-		registerMetamodels(rs);
+		String pluginID = registerMetamodels(rs);
 		ManipulationRulesFactory.createInstances();
 		Resource tggR = rs.getResource(URI.createFileURI("model/MoflonToHenshin.tgg.xmi"), true);
 		rs = eMoflonEMFUtil.createDefaultResourceSet();
@@ -38,6 +40,8 @@ public class SYNCH_App {
 		EcoreUtil.resolveAll(tggR);
 		TGG tgg = (TGG) tggR.getContents().get(0);
 		EcoreUtil.resolveAll(tgg);
+		
+		
 		
 		// create your resources 
 		Resource s = rs.createResource(URI.createFileURI("instances/testTGG.xmi"));
@@ -59,7 +63,7 @@ public class SYNCH_App {
 		
 		System.out.println("Starting SYNCH");
 		long tic = System.currentTimeMillis();
-		TGGRuntimeUtil tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p);
+		TGGRuntimeUtil tggRuntime = new TGGRuntimeUtil(tgg, s, c, t, p, pluginID);
 		tggRuntime.setMode(OperationMode.FWD);
 		tggRuntime.getCSPProvider().registerFactory(new MoflonToHenshinAttrCondDefLibrary());
 		
@@ -81,7 +85,7 @@ public class SYNCH_App {
 	}
 		
 	
-	private static void registerMetamodels(ResourceSet rs){
+	private static String registerMetamodels(ResourceSet rs){
 		// Register internals
 		LanguagePackage.eINSTANCE.getName();
 		RuntimePackage.eINSTANCE.getName();
@@ -99,5 +103,6 @@ public class SYNCH_App {
 		EPackage tggEPackage = LanguagePackage.eINSTANCE;
 		Registry.INSTANCE.put("platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore", tggEPackage);		
 		EcoreUtil.resolveAll(rs);
+		return pcorr.getNsPrefix();
 	}
 }
