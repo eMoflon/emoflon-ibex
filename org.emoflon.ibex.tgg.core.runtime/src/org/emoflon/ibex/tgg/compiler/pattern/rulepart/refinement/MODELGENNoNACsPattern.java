@@ -10,9 +10,7 @@ import language.TGGRuleNode;
 public class MODELGENNoNACsPattern extends MODELGENPattern {
 
 	public MODELGENNoNACsPattern(TGGRule rule, TGGRule flattenedRule, PatternFactory factory) {
-		super(flattenedRule, factory);
-		
-		createPatternNetwork();
+		super(flattenedRule, factory);		
 	}
 	
 	@Override
