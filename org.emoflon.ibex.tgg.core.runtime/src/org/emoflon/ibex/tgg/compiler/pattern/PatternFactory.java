@@ -54,21 +54,21 @@ public class PatternFactory {
 	private TGGRule rule;
 	private Map<Object, IbexPattern> patterns;
 	private TGGCompiler compiler;
-	private List<MarkedPattern> markedPatterns;
+	private static List<MarkedPattern> markedPatterns = createMarkedPatterns();
 	
 	public PatternFactory(TGGRule rule, TGGCompiler compiler) {
 		this.rule = rule;
 		this.compiler = compiler;
 		patterns = new LinkedHashMap<>();
-		markedPatterns = new ArrayList<>();
-		createMarkedPatterns();
 	}
 
 	public Collection<IbexPattern> getPatterns() {
 		return Collections.unmodifiableCollection(patterns.values());
 	}
 	
-	private void createMarkedPatterns() {
+	private static List<MarkedPattern> createMarkedPatterns() {
+		List<MarkedPattern> markedPatterns = new ArrayList<>();
+		
 		MarkedPattern signProtocolSrcMarkedPattern = new MarkedPattern(DomainType.SRC, false);
 		MarkedPattern signProtocolTrgMarkedPattern = new MarkedPattern(DomainType.TRG, false);
 		MarkedPattern localProtocolSrcMarkedPattern = new MarkedPattern(signProtocolSrcMarkedPattern, DomainType.SRC, true);
@@ -81,6 +81,8 @@ public class PatternFactory {
 		markedPatterns.add(localProtocolTrgMarkedPattern);
 		markedPatterns.add(signProtocolSrcMarkedPattern);
 		markedPatterns.add(signProtocolTrgMarkedPattern);
+		
+		return markedPatterns;
 	}
 	
 	/**
