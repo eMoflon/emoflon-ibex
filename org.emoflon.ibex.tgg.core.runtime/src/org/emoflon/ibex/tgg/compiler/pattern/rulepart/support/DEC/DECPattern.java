@@ -1,8 +1,17 @@
 package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support.DEC;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.LocalProtocolNACsPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.LocalSrcProtocolNACsPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.protocol.nacs.LocalTrgProtocolNACsPattern;
 import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
 
 import language.TGGRule;
@@ -15,41 +24,47 @@ public class DECPattern extends RulePartPattern {
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
-	private DECTrackingHelper decTC;
-	private SearchEdgePattern sep;
+	private IbexPattern premise;
 
-	public DECPattern(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, DECTrackingHelper decTC) {
+	public DECPattern(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, Collection<TGGRule> savingRules, PatternFactory factory) {
 		super(rule);
 		this.entryPoint = entryPoint;
-		this.decTC = decTC;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
-		
-		createSearchEdgePattern();
+
+		premise = factory.createSearchEdgePattern(entryPoint, edgeType, eDirection);
 		addDECAsBodyNode();
-		createInvocation();
-	}
-
-	private void createSearchEdgePattern() {
-		if (sep != null)
-			throw new RuntimeException("SearchEdgePattern found. Generating this pattern twice is a bad idea!");
 		
-		sep = new SearchEdgePattern(rule, entryPoint, edgeType, eDirection);
-		//FIXME [Anjorin]
-		//decTC.getRuleToPatternsMap().get(rule).add(sep);
-		decTC.addEntryAndDec(this, entryPoint.getName(), DECHelper.getDECNode(sep.getRule()).getName());
+		// Create pattern network
+		addTGGPositiveInvocation(premise);		
+		
+		for (TGGRule savingRule : savingRules) {
+			switch (entryPoint.getDomainType()) {
+			case SRC:
+			{
+				LocalSrcProtocolNACsPattern conclusion = factory.getFactory(savingRule).createLocalSrcProtocolNACsPattern(premise);
+				addCustomNegativeInvocation(conclusion, createMappingToLocalPattern(conclusion));
+				break;
+			}
+			case TRG:
+			{
+				LocalTrgProtocolNACsPattern conclusion = factory.getFactory(savingRule).createLocalTrgProtocolNACsPattern(premise);
+				addCustomNegativeInvocation(conclusion, createMappingToLocalPattern(conclusion));
+				break;
+			}
+			default:
+				throw new IllegalStateException("DECPatterns: Not defined for anything else than SRC or TRG patterns!");
+			}
+		}
 	}
 	
-	private void addDECAsBodyNode() {
-		getBodyNodes().add(EcoreUtil.copy(DECHelper.getDECNode(sep.getRule())));
+	private Map<TGGRuleElement, TGGRuleElement> createMappingToLocalPattern(LocalProtocolNACsPattern conclusion) {
+		// FIXME[Anjorin] How should conclusion be invoked from this?
+		return Collections.EMPTY_MAP;
 	}
 
-	private void createInvocation() {
-		addTGGPositiveInvocation(sep);
-	}
-	
-	protected SearchEdgePattern getSearchEdgePattern() {
-		return sep;
+	private void addDECAsBodyNode() {
+		getBodyNodes().add(EcoreUtil.copy(DECHelper.getDECNode(rule)));
 	}
 
 	@Override
@@ -69,14 +84,15 @@ public class DECPattern extends RulePartPattern {
 	
 	@Override
 	public boolean isRelevantForSignature(TGGRuleElement e) {
-		if (sep == null)
-			throw new RuntimeException("No SearchEdgePattern found. Please generate one first before calculating the signature!");
-		
-		return sep.getSignatureElements().stream().filter(element -> element.getName().equals(e.getName())).count() != 0;
+		return premise.getSignatureElements().stream().filter(element -> element.getName().equals(e.getName())).count() != 0;
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
+		return getPatternNameSuffix(entryPoint, edgeType, eDirection);
+	}
+	
+	public static String getPatternNameSuffix(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection){
 		return PatternSuffixes.SEP + entryPoint.getName() + "_" + edgeType.getName() + "_" + eDirection.toString().toLowerCase() + "_DEC_" + entryPoint.getDomainType().getName();
 	}
 

@@ -26,7 +26,7 @@ public class TGGCompiler {
 
 	public void preparePatterns() {	
 		if (options.useFlattenedTGG()) {
-			for (TGGRule rule : options.flattenedTGG().getRules()) {
+			for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
 				PatternFactory factory = getFactory(rule);
 
 				// Model generation
@@ -43,7 +43,7 @@ public class TGGCompiler {
 				ruleToPatterns.put(rule, factory.getPatterns());
 			}
 		} else {
-			for (TGGRule rule : options.tgg().getRules()) {
+			for (TGGRule rule : options.getConcreteTGGRules()) {
 				PatternFactory factory = getFactory(rule);
 				
 				// Model generation

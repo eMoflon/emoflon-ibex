@@ -16,7 +16,7 @@ public class SrcProtocolAndDECPattern extends ProtocolAndDECPattern {
 		
 		// Create pattern network
 		addTGGPositiveInvocation(factory.createSrcProtocolNACsPattern());
-		//addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.SRC));
+		addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.SRC));
 	}
 
 	@Override

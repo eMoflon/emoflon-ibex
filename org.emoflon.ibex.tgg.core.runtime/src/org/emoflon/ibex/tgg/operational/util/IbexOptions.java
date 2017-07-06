@@ -1,6 +1,10 @@
 package org.emoflon.ibex.tgg.operational.util;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import language.TGG;
+import language.TGGRule;
 
 public class IbexOptions {
 	private boolean debug;
@@ -53,5 +57,19 @@ public class IbexOptions {
 	
 	public TGG flattenedTGG(){
 		return flattenedTGG;
+	}
+
+	public Collection<TGGRule> getFlattenedConcreteTGGRules() {
+		return flattenedTGG.getRules()
+				.stream()
+				.filter(r -> !r.isAbstract())
+				.collect(Collectors.toList());
+	}
+
+	public Collection<TGGRule> getConcreteTGGRules() {
+		return tgg.getRules()
+				.stream()
+				.filter(r -> !r.isAbstract())
+				.collect(Collectors.toList());
 	}
 }
