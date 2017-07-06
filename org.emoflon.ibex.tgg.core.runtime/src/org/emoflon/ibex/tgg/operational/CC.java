@@ -5,14 +5,10 @@ import java.util.HashMap;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
-
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TCustomHashMap;
 import gnu.trove.map.hash.THashMap;
@@ -49,9 +45,14 @@ public class CC extends TGGRuntimeUtil {
 	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
+	public CC(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, String pluginID) {
+		super(tgg, srcR, corrR, trgR, protocolR, pluginID);
+	}
+	
 	public CC(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		super(tgg, srcR, corrR, trgR, protocolR);
 	}
+	
 	
 	@Override
 	protected void finalize() {
@@ -133,7 +134,7 @@ public class CC extends TGGRuntimeUtil {
 			Collection<? extends TGGRuleNode> specNodes) {
 		THashSet<EObject> result = new THashSet<>();
 		specNodes.forEach(n -> {
-			result.add(ManipulationUtil.getVariableByName(n.getName(), comatch, match));
+			result.add(ManipulationUtil.getInstance().getVariableByName(n.getName(), comatch, match));
 		});
 		return result;
 	}
@@ -141,16 +142,16 @@ public class CC extends TGGRuntimeUtil {
 	private THashSet<RuntimeEdge> getGreenEdges(IPatternMatch match, HashMap<String, EObject> comatch,
 			String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenSrcEdges(ruleName), false));
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenTrgEdges(ruleName), false));
+		result.addAll(ManipulationUtil.getInstance().createEdges(match, comatch, ruleInfos.getGreenSrcEdges(ruleName), false, this.isManipulated, this.currentPluginID));
+		result.addAll(ManipulationUtil.getInstance().createEdges(match, comatch, ruleInfos.getGreenTrgEdges(ruleName), false, this.isManipulated, this.currentPluginID));
 		return result;
 	}
 
 	private THashSet<RuntimeEdge> getBlackEdges(IPatternMatch match, HashMap<String, EObject> comatch,
 			String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getBlackSrcEdges(ruleName), false));
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getBlackTrgEdges(ruleName), false));
+		result.addAll(ManipulationUtil.getInstance().createEdges(match, comatch, ruleInfos.getBlackSrcEdges(ruleName), false, this.isManipulated, this.currentPluginID));
+		result.addAll(ManipulationUtil.getInstance().createEdges(match, comatch, ruleInfos.getBlackTrgEdges(ruleName), false, this.isManipulated, this.currentPluginID));
 		return result;
 	}
 
