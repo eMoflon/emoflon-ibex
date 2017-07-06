@@ -8,7 +8,6 @@ import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.operational.*;
-import org.emoflon.ibex.tgg.operational.TGGRuntimeUtil;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.MoflonToHenshinAttrCondDefLibrary;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 

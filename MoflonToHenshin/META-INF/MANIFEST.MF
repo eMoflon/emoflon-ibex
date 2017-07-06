@@ -19,6 +19,7 @@ Require-Bundle: org.eclipse.viatra.transformation.runtime.emf,
  org.emoflon.ibex.tgg.core.language,
  org.moflon.core.utilities,
  org.eclipse.emf.henshin.model;bundle-version="1.4.0",
- org.eclipse.emf.ecore.xmi;bundle-version="2.12.0"
+ org.eclipse.emf.ecore.xmi;bundle-version="2.12.0",
+ org.eclipse.core.runtime;bundle-version="3.12.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

@@ -2,10 +2,7 @@ package org.emoflon.ibex.tgg.operational;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.viatra.query.runtime.api.IPatternMatch;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
-
 import language.TGG;
-import runtime.TGGRuleApplication;
 
 /**
  * Different than other TGGRuntimeUtil subtypes, MODELGEN
@@ -22,6 +19,12 @@ public class MODELGEN extends TGGRuntimeUtil {
 
 	private MODELGENStopCriterion stopCriterion;
 
+	public MODELGEN(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR,
+			MODELGENStopCriterion stopCriterion,String pluginID) {
+		super(tgg, srcR, corrR, trgR, protocolR, pluginID);
+		this.stopCriterion = stopCriterion;
+	}
+	
 	public MODELGEN(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR,
 			MODELGENStopCriterion stopCriterion) {
 		super(tgg, srcR, corrR, trgR, protocolR);

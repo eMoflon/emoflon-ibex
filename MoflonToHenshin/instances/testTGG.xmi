@@ -2,7 +2,9 @@
 <org.emoflon.ibex.tgg.core.language:TGG
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
-    xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:org.emoflon.ibex.tgg.core.language="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore"
+    xmlns:org.emoflon.ibex.tgg.core.language.misc.expressions="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions"
     name="MoflonToHenshin">
   <src href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/"/>
   <trg href="http://www.eclipse.org/emf/2011/Henshin#/"/>
@@ -36,6 +38,13 @@
         incomingEdges="//@rules.0/@edges.2">
       <type
           href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
+      <attrExpr>
+        <attribute
+            href="http://www.eclipse.org/emf/2002/Ecore#//ENamedElement/name"/>
+        <valueExpr
+            xsi:type="org.emoflon.ibex.tgg.core.language.misc.expressions:TGGLiteralExpression"
+            value="&quot;LHS&quot;"/>
+      </attrExpr>
     </nodes>
     <nodes name="rhs"
         domainType="TRG"

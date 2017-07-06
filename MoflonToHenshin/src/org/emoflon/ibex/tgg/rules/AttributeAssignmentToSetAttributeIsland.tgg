@@ -4,7 +4,7 @@
 #rule AttributeAssignmentToSetAttributeIsland #with MoflonToHenshin
 
 #source {
-	tAttributeInplace:TGGInplaceAttributeExpression{
+	++tAttributeInplace:TGGInplaceAttributeExpression{
 		operator:=enum::TGGAttributeConstraintOperators::EQUAL
 	}
 }
@@ -12,7 +12,9 @@
 #target {
 	++hAttribute:Attribute
 
-	hParameter:Parameter
+	++ hParameter : Parameter{
+		kind := enum::ParameterKind::IN
+	}
 }
 
 #correspondence {
@@ -21,14 +23,14 @@
 		#trg->hAttribute
 	}
 
-	tggAttributeToHenshinParameter :TGGInplaceAttributeExpressionToHenshinParameter{
+	++ tggAttributeToHenshinParameter :TGGInplaceAttributeExpressionToHenshinParameter{
 		#src->tAttributeInplace
 		#trg->hParameter
 	}
 }
 
 #attributeConditions {
- eq_string(hParameter.name, hAttribute.value)
+
 }
 
 

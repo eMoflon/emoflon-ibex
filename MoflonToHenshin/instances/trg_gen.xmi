@@ -1,68 +1,74 @@
 <?xml version="1.0" encoding="ASCII"?>
-<henshin:Module xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:henshin="http://www.eclipse.org/emf/2011/Henshin">
+<henshin:Module xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:henshin="http://www.eclipse.org/emf/2011/Henshin">
   <units xsi:type="henshin:Rule" name="TGGRuleToHenshinRuleRule">
+    <parameters name="name_0_Var" kind="IN">
+      <type xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </parameters>
     <lhs name="LHS">
-      <nodes name="hRule" incoming="//@units.0/@lhs/@edges.3" outgoing="//@units.0/@lhs/@edges.1 //@units.0/@lhs/@edges.2">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule"/>
+      <nodes name="rhs" incoming="//@units.0/@lhs/@edges.2">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
       </nodes>
-      <nodes name="hModule" outgoing="//@units.0/@lhs/@edges.3">
+      <nodes name="hModule" outgoing="//@units.0/@lhs/@edges.0">
         <type href="http://www.eclipse.org/emf/2011/Henshin#//Module"/>
       </nodes>
-      <nodes name="tTgg" outgoing="//@units.0/@lhs/@edges.0">
+      <nodes name="lhs" incoming="//@units.0/@lhs/@edges.1">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
+      </nodes>
+      <nodes name="tTgg" outgoing="//@units.0/@lhs/@edges.3">
         <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG"/>
       </nodes>
-      <nodes name="rhs" incoming="//@units.0/@lhs/@edges.1">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
+      <nodes name="hRule" incoming="//@units.0/@lhs/@edges.0" outgoing="//@units.0/@lhs/@edges.1 //@units.0/@lhs/@edges.2">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule"/>
       </nodes>
-      <nodes name="tTggRule" incoming="//@units.0/@lhs/@edges.0">
+      <nodes name="tTggRule" incoming="//@units.0/@lhs/@edges.3">
         <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule"/>
       </nodes>
-      <nodes name="lhs" incoming="//@units.0/@lhs/@edges.2">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
-      </nodes>
-      <edges source="//@units.0/@lhs/@nodes.2" target="//@units.0/@lhs/@nodes.4">
-        <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/rules"/>
+      <edges source="//@units.0/@lhs/@nodes.1" target="//@units.0/@lhs/@nodes.4">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Module/units"/>
       </edges>
-      <edges source="//@units.0/@lhs/@nodes.0" target="//@units.0/@lhs/@nodes.3">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/rhs"/>
-      </edges>
-      <edges source="//@units.0/@lhs/@nodes.0" target="//@units.0/@lhs/@nodes.5">
+      <edges source="//@units.0/@lhs/@nodes.4" target="//@units.0/@lhs/@nodes.2">
         <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/lhs"/>
       </edges>
-      <edges source="//@units.0/@lhs/@nodes.1" target="//@units.0/@lhs/@nodes.0">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Module/units"/>
+      <edges source="//@units.0/@lhs/@nodes.4" target="//@units.0/@lhs/@nodes.0">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/rhs"/>
+      </edges>
+      <edges source="//@units.0/@lhs/@nodes.3" target="//@units.0/@lhs/@nodes.5">
+        <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/rules"/>
       </edges>
     </lhs>
     <rhs name="RHS">
-      <nodes name="hRule" incoming="//@units.0/@rhs/@edges.3" outgoing="//@units.0/@rhs/@edges.1 //@units.0/@rhs/@edges.2">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule"/>
+      <nodes name="rhs" incoming="//@units.0/@rhs/@edges.2">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
       </nodes>
-      <nodes name="hModule" outgoing="//@units.0/@rhs/@edges.3">
+      <nodes name="hModule" outgoing="//@units.0/@rhs/@edges.0">
         <type href="http://www.eclipse.org/emf/2011/Henshin#//Module"/>
       </nodes>
-      <nodes name="tTgg" outgoing="//@units.0/@rhs/@edges.0">
+      <nodes name="lhs" incoming="//@units.0/@rhs/@edges.1">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
+        <attributes value="name_0_Var">
+          <type href="http://www.eclipse.org/emf/2002/Ecore#//ENamedElement/name"/>
+        </attributes>
+      </nodes>
+      <nodes name="tTgg" outgoing="//@units.0/@rhs/@edges.3">
         <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG"/>
       </nodes>
-      <nodes name="rhs" incoming="//@units.0/@rhs/@edges.1">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
+      <nodes name="hRule" incoming="//@units.0/@rhs/@edges.0" outgoing="//@units.0/@rhs/@edges.1 //@units.0/@rhs/@edges.2">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule"/>
       </nodes>
-      <nodes name="tTggRule" incoming="//@units.0/@rhs/@edges.0">
+      <nodes name="tTggRule" incoming="//@units.0/@rhs/@edges.3">
         <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule"/>
       </nodes>
-      <nodes name="lhs" incoming="//@units.0/@rhs/@edges.2">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Graph"/>
-      </nodes>
-      <edges source="//@units.0/@rhs/@nodes.2" target="//@units.0/@rhs/@nodes.4">
-        <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/rules"/>
+      <edges source="//@units.0/@rhs/@nodes.1" target="//@units.0/@rhs/@nodes.4">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Module/units"/>
       </edges>
-      <edges source="//@units.0/@rhs/@nodes.0" target="//@units.0/@rhs/@nodes.3">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/rhs"/>
-      </edges>
-      <edges source="//@units.0/@rhs/@nodes.0" target="//@units.0/@rhs/@nodes.5">
+      <edges source="//@units.0/@rhs/@nodes.4" target="//@units.0/@rhs/@nodes.2">
         <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/lhs"/>
       </edges>
-      <edges source="//@units.0/@rhs/@nodes.1" target="//@units.0/@rhs/@nodes.0">
-        <type href="http://www.eclipse.org/emf/2011/Henshin#//Module/units"/>
+      <edges source="//@units.0/@rhs/@nodes.4" target="//@units.0/@rhs/@nodes.0">
+        <type href="http://www.eclipse.org/emf/2011/Henshin#//Rule/rhs"/>
+      </edges>
+      <edges source="//@units.0/@rhs/@nodes.3" target="//@units.0/@rhs/@nodes.5">
+        <type href="../../../plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/rules"/>
       </edges>
     </rhs>
     <mappings origin="//@units.0/@lhs/@nodes.0" image="//@units.0/@rhs/@nodes.0"/>

@@ -1,45 +1,93 @@
 <?xml version="1.0" encoding="ASCII"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:MoflonToHenshin="platform:/plugin/MoflonToHenshin/model/MoflonToHenshin.ecore">
-  <MoflonToHenshin:TGGEdgeToHenshinEdge>
-    <source href="instances/testTGG.xmi#//@rules.0/@edges.2"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@edges.2"/>
-  </MoflonToHenshin:TGGEdgeToHenshinEdge>
-  <MoflonToHenshin:TGGEdgeToHenshinEdge>
-    <source href="instances/testTGG.xmi#//@rules.0/@edges.2"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@edges.2"/>
-  </MoflonToHenshin:TGGEdgeToHenshinEdge>
   <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.1"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.4"/>
-  </MoflonToHenshin:TGGNodeToHenshinNode>
-  <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.1"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.4"/>
-  </MoflonToHenshin:TGGNodeToHenshinNode>
-  <MoflonToHenshin:TGGEdgeToHenshinEdge>
-    <source href="instances/testTGG.xmi#//@rules.0/@edges.3"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@edges.1"/>
-  </MoflonToHenshin:TGGEdgeToHenshinEdge>
-  <MoflonToHenshin:TGGEdgeToHenshinEdge>
-    <source href="instances/testTGG.xmi#//@rules.0/@edges.3"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@edges.1"/>
-  </MoflonToHenshin:TGGEdgeToHenshinEdge>
-  <MoflonToHenshin:TGGEdgeToHenshinEdge>
-    <source href="instances/testTGG.xmi#//@rules.0/@edges.0"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@edges.0"/>
-  </MoflonToHenshin:TGGEdgeToHenshinEdge>
-  <MoflonToHenshin:TGGEdgeToHenshinEdge>
-    <source href="instances/testTGG.xmi#//@rules.0/@edges.0"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@edges.0"/>
-  </MoflonToHenshin:TGGEdgeToHenshinEdge>
-  <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.3"/>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.5"/>
     <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.0"/>
   </MoflonToHenshin:TGGNodeToHenshinNode>
   <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.3"/>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.5"/>
     <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.0"/>
   </MoflonToHenshin:TGGNodeToHenshinNode>
+  <MoflonToHenshin:TGGInplaceAttributeExpressionToHenshinAttribute>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.4/@attrExpr.0"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.2/@attributes.0"/>
+  </MoflonToHenshin:TGGInplaceAttributeExpressionToHenshinAttribute>
+  <MoflonToHenshin:TGGInplaceAttributeExpressionToHenshinParameter>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.4/@attrExpr.0"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@parameters.0"/>
+  </MoflonToHenshin:TGGInplaceAttributeExpressionToHenshinParameter>
+  <MoflonToHenshin:TGGToModule>
+    <source href="instances/testTGG.xmi#/"/>
+    <target href="instances/trg_gen.xmi#/"/>
+  </MoflonToHenshin:TGGToModule>
+  <MoflonToHenshin:TGGEdgeToHenshinEdge>
+    <source href="instances/testTGG.xmi#//@rules.0/@edges.3"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@edges.2"/>
+  </MoflonToHenshin:TGGEdgeToHenshinEdge>
+  <MoflonToHenshin:TGGEdgeToHenshinEdge>
+    <source href="instances/testTGG.xmi#//@rules.0/@edges.3"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@edges.2"/>
+  </MoflonToHenshin:TGGEdgeToHenshinEdge>
+  <MoflonToHenshin:TGGNodeToHenshinNode>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.1"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.5"/>
+  </MoflonToHenshin:TGGNodeToHenshinNode>
+  <MoflonToHenshin:TGGNodeToHenshinNode>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.1"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.5"/>
+  </MoflonToHenshin:TGGNodeToHenshinNode>
+  <MoflonToHenshin:TGGNodeToHenshinNode>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.3"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.4"/>
+  </MoflonToHenshin:TGGNodeToHenshinNode>
+  <MoflonToHenshin:TGGNodeToHenshinNode>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.3"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.4"/>
+  </MoflonToHenshin:TGGNodeToHenshinNode>
+  <MoflonToHenshin:TGGNodeToHenshinNode>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.0"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.3"/>
+  </MoflonToHenshin:TGGNodeToHenshinNode>
+  <MoflonToHenshin:TGGNodeToHenshinNode>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.0"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.3"/>
+  </MoflonToHenshin:TGGNodeToHenshinNode>
+  <MoflonToHenshin:TGGNodeToHenshinNode>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.4"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.2"/>
+  </MoflonToHenshin:TGGNodeToHenshinNode>
+  <MoflonToHenshin:TGGNodeToHenshinNode>
+    <source href="instances/testTGG.xmi#//@rules.0/@nodes.4"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.2"/>
+  </MoflonToHenshin:TGGNodeToHenshinNode>
+  <MoflonToHenshin:TGGEdgeToHenshinEdge>
+    <source href="instances/testTGG.xmi#//@rules.0/@edges.0"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@edges.3"/>
+  </MoflonToHenshin:TGGEdgeToHenshinEdge>
+  <MoflonToHenshin:TGGEdgeToHenshinEdge>
+    <source href="instances/testTGG.xmi#//@rules.0/@edges.0"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@edges.3"/>
+  </MoflonToHenshin:TGGEdgeToHenshinEdge>
+  <MoflonToHenshin:TGGEdgeToHenshinEdge>
+    <source href="instances/testTGG.xmi#//@rules.0/@edges.2"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@edges.1"/>
+  </MoflonToHenshin:TGGEdgeToHenshinEdge>
+  <MoflonToHenshin:TGGEdgeToHenshinEdge>
+    <source href="instances/testTGG.xmi#//@rules.0/@edges.2"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@edges.1"/>
+  </MoflonToHenshin:TGGEdgeToHenshinEdge>
+  <MoflonToHenshin:TGGEdgeToHenshinEdge>
+    <source href="instances/testTGG.xmi#//@rules.0/@edges.1"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@edges.0"/>
+  </MoflonToHenshin:TGGEdgeToHenshinEdge>
+  <MoflonToHenshin:TGGEdgeToHenshinEdge>
+    <source href="instances/testTGG.xmi#//@rules.0/@edges.1"/>
+    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@edges.0"/>
+  </MoflonToHenshin:TGGEdgeToHenshinEdge>
+  <MoflonToHenshin:TGGRuleToHenshinRule>
+    <source href="instances/testTGG.xmi#//@rules.0"/>
+    <target href="instances/trg_gen.xmi#//@units.0"/>
+  </MoflonToHenshin:TGGRuleToHenshinRule>
   <MoflonToHenshin:TGGNodeToHenshinNode>
     <source href="instances/testTGG.xmi#//@rules.0/@nodes.2"/>
     <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.1"/>
@@ -48,44 +96,4 @@
     <source href="instances/testTGG.xmi#//@rules.0/@nodes.2"/>
     <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.1"/>
   </MoflonToHenshin:TGGNodeToHenshinNode>
-  <MoflonToHenshin:TGGRuleToHenshinRule>
-    <source href="instances/testTGG.xmi#//@rules.0"/>
-    <target href="instances/trg_gen.xmi#//@units.0"/>
-  </MoflonToHenshin:TGGRuleToHenshinRule>
-  <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.5"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.3"/>
-  </MoflonToHenshin:TGGNodeToHenshinNode>
-  <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.5"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.3"/>
-  </MoflonToHenshin:TGGNodeToHenshinNode>
-  <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.0"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.2"/>
-  </MoflonToHenshin:TGGNodeToHenshinNode>
-  <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.0"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.2"/>
-  </MoflonToHenshin:TGGNodeToHenshinNode>
-  <MoflonToHenshin:TGGEdgeToHenshinEdge>
-    <source href="instances/testTGG.xmi#//@rules.0/@edges.1"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@edges.3"/>
-  </MoflonToHenshin:TGGEdgeToHenshinEdge>
-  <MoflonToHenshin:TGGEdgeToHenshinEdge>
-    <source href="instances/testTGG.xmi#//@rules.0/@edges.1"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@edges.3"/>
-  </MoflonToHenshin:TGGEdgeToHenshinEdge>
-  <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.4"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@rhs/@nodes.5"/>
-  </MoflonToHenshin:TGGNodeToHenshinNode>
-  <MoflonToHenshin:TGGNodeToHenshinNode>
-    <source href="instances/testTGG.xmi#//@rules.0/@nodes.4"/>
-    <target href="instances/trg_gen.xmi#//@units.0/@lhs/@nodes.5"/>
-  </MoflonToHenshin:TGGNodeToHenshinNode>
-  <MoflonToHenshin:TGGToModule>
-    <source href="instances/testTGG.xmi#/"/>
-    <target href="instances/trg_gen.xmi#/"/>
-  </MoflonToHenshin:TGGToModule>
 </xmi:XMI>

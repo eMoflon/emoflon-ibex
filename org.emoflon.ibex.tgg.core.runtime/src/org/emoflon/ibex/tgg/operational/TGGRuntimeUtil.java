@@ -61,12 +61,26 @@ public class TGGRuntimeUtil {
 
 	private OperationStrategy strategy;
 	private OperationMode mode;
-
+	protected String currentPluginID=null;
+	protected boolean isManipulated;
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 	protected THashMap<TGGRuleApplication, IPatternMatch> brokenRuleApplications = new THashMap<>();
 
 	boolean domainCheckNecessary = false;
 	
+	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR, String pluginID) {
+		ruleInfos = new RuleInfos(tgg);
+		this.srcR = srcR;
+		this.corrR = corrR;
+		this.trgR = trgR;
+		this.protocolR = protocolR;
+		this.isManipulated = true;
+		this.currentPluginID = pluginID;
+		this.strategy = getStrategy();
+		this.operationalMatchContainer = new MatchContainer();
+		this.domainCheckNecessary = isDomainCheckNecessary(tgg);
+	}
+
 	public TGGRuntimeUtil(TGG tgg, Resource srcR, Resource corrR, Resource trgR, Resource protocolR) {
 		ruleInfos = new RuleInfos(tgg);
 		this.srcR = srcR;
@@ -76,8 +90,9 @@ public class TGGRuntimeUtil {
 		this.strategy = getStrategy();
 		this.operationalMatchContainer = new MatchContainer();
 		this.domainCheckNecessary = isDomainCheckNecessary(tgg);
+		this.isManipulated = false;
 	}
-
+	
 	public void run() {
 		processBrokenMatches();
 		processOperationalRuleMatches();
@@ -137,21 +152,21 @@ public class TGGRuntimeUtil {
 		HashMap<String, EObject> comatch = new HashMap<>();
 
 		if (manipulateSrc()) {
-			ManipulationUtil.createNonCorrNodes(match, comatch, ruleInfos.getGreenSrcNodes(ruleName), srcR);
+			ManipulationUtil.getInstance().createNonCorrNodes(match, comatch, ruleInfos.getGreenSrcNodes(ruleName), srcR, this.isManipulated, this.currentPluginID);
 		}
-		Collection<RuntimeEdge> srcEdges = ManipulationUtil.createEdges(match, comatch,
-				ruleInfos.getGreenSrcEdges(ruleName), manipulateSrc());
+		Collection<RuntimeEdge> srcEdges = ManipulationUtil.getInstance().createEdges(match, comatch,
+				ruleInfos.getGreenSrcEdges(ruleName), manipulateSrc(), this.isManipulated, this.currentPluginID);
 
 		if (manipulateTrg()) {
-			ManipulationUtil.createNonCorrNodes(match, comatch, ruleInfos.getGreenTrgNodes(ruleName), trgR);
+			ManipulationUtil.getInstance().createNonCorrNodes(match, comatch, ruleInfos.getGreenTrgNodes(ruleName), trgR, this.isManipulated, this.currentPluginID);
 		}
-		Collection<RuntimeEdge> trgEdges = ManipulationUtil.createEdges(match, comatch,
-				ruleInfos.getGreenTrgEdges(ruleName), manipulateTrg());
+		Collection<RuntimeEdge> trgEdges = ManipulationUtil.getInstance().createEdges(match, comatch,
+				ruleInfos.getGreenTrgEdges(ruleName), manipulateTrg(), this.isManipulated, this.currentPluginID);
 
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
 		applyCSPValues(comatch, cspValues);
 
-		ManipulationUtil.createCorrs(match, comatch, ruleInfos.getGreenCorrNodes(ruleName), corrR);
+		ManipulationUtil.getInstance().createCorrs(match, comatch, ruleInfos.getGreenCorrNodes(ruleName), corrR, this.isManipulated, this.currentPluginID);
 
 		markedEdges.addAll(srcEdges);
 		markedEdges.addAll(trgEdges);
@@ -190,7 +205,7 @@ public class TGGRuntimeUtil {
 			EStructuralFeature feature, HashMap<String, EObject> createdElements, IPatternMatch match) {
 		ruleInfos.forEach(e -> {
 			((EList) protocol.eGet(feature))
-					.add(ManipulationUtil.getVariableByName(e.getName(), createdElements, match));
+					.add(ManipulationUtil.getInstance().getVariableByName(e.getName(), createdElements, match));
 		});
 	}
 
@@ -321,7 +336,7 @@ public class TGGRuntimeUtil {
 			RuntimeEdge runtimeEdge = getRuntimeEdge(match, se);
 			markedEdges.remove(runtimeEdge);
 			if (delete)
-				ManipulationUtil.deleteEdge(runtimeEdge.getSrc(), runtimeEdge.getTrg(), runtimeEdge.getRef());
+				ManipulationUtil.getInstance().deleteEdge(runtimeEdge.getSrc(), runtimeEdge.getTrg(), runtimeEdge.getRef());
 		});
 	}
 
@@ -333,7 +348,7 @@ public class TGGRuntimeUtil {
 
 	private void revokeNodes(Collection<EObject> nodes, boolean delete) {
 		if (delete)
-			ManipulationUtil.deleteNodes(new THashSet<>(nodes));
+			ManipulationUtil.getInstance().deleteNodes(new THashSet<>(nodes));
 	}
 
 	private RuntimeEdge getRuntimeEdge(IPatternMatch match, TGGRuleEdge specificationEdge) {
