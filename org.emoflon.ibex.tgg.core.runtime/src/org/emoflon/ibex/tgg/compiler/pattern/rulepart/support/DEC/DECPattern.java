@@ -64,7 +64,7 @@ public class DECPattern extends RulePartPattern {
 	}
 
 	private void addDECAsBodyNode() {
-		getBodyNodes().add(EcoreUtil.copy(DECHelper.getDECNode(rule)));
+		getBodyNodes().add(EcoreUtil.copy(DECHelper.getDECNode(premise.getRule())));
 	}
 
 	@Override
