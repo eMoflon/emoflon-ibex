@@ -12,15 +12,15 @@
 	}
 	
 	f1:Family {
-		name := "Test"
+		name == "Test"
 	}
 	
 	f2:Family {
-		name := "Test"
+		name == "Test"
 	}
 	
 	f3:Family {
-		name := "Test"
+		name == "Test"
 	}
 	
 	++ f4:Family {

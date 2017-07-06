@@ -23,6 +23,7 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttr
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
@@ -46,16 +47,12 @@ public abstract class OperationalStrategy {
 
 	protected final static Logger logger = Logger.getLogger(OperationalStrategy.class);
 	protected final URI base;
-	protected final String projectPath;
 
 	protected ResourceSet rs;
 	protected Resource s;
 	protected Resource t;
 	protected Resource c;
 	protected Resource p;
-	
-	protected TGG tgg;
-	protected TGG flattenedTgg;
 		
 	protected RuleInfos ruleInfos;
 	protected MatchContainer operationalMatchContainer;
@@ -66,27 +63,30 @@ public abstract class OperationalStrategy {
 	protected THashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new THashMap<>();
 	
 	protected String workspacePath;
+	protected String projectPath;
 	
-	public boolean debug;
-	protected boolean flatten;
+	protected IbexOptions options;
 	
 	private PatternMatchingEngine engine;
 
-	public OperationalStrategy(String projectName, String workspacePath, boolean flatten, boolean debug) {
-		this.debug = debug;
-		this.projectPath = projectName;
+	public OperationalStrategy(String projectPath, String workspacePath, boolean flatten, boolean debug) {
 		base = URI.createPlatformResourceURI("/", true);
 		this.workspacePath = workspacePath;
-		this.flatten = flatten;
+		this.projectPath = projectPath;
+		
+		options = new IbexOptions();
+		options.debug(debug);
+		options.useFlattenedTGG(flatten);
+		options.projectPath(projectPath);
 	}
 	
 	public void registerPatternMatchingEngine(PatternMatchingEngine engine) throws IOException {
 		this.engine = engine;
-		createAndPrepareResourceSet(workspacePath);
+		createAndPrepareResourceSet();
 		registerInternalMetamodels(); 
 		registerUserMetamodels();
-		loadTGG(flatten);
-		initialiseEngine(debug);
+		loadTGG();
+		initialiseEngine();
 		loadModels();
 	}
 	
@@ -113,29 +113,26 @@ public abstract class OperationalStrategy {
 	
 	abstract public void loadModels() throws IOException;
 	
-	protected void initialiseEngine(boolean debug) throws IOException {
-		engine.initialise(rs, this, tgg, flattenedTgg, projectPath, debug);		
+	protected void initialiseEngine() throws IOException {
+		engine.initialise(rs, this, options);		
 	}
 
 	public void terminate() throws IOException {
 		engine.terminate();
 	}
 	
-	protected void loadTGG(boolean flatten) throws IOException {
+	protected void loadTGG() throws IOException {
 		Resource res = loadResource(projectPath + "/model/" + projectPath + ".tgg.xmi");
 		Resource flattenedRes = loadResource(projectPath + "/model/" + projectPath + "_flattened.tgg.xmi");
-		if (flatten) {
-			tgg = (TGG) flattenedRes.getContents().get(0);
-		} else {
-			tgg = (TGG) res.getContents().get(0);
-		}
-		flattenedTgg = (TGG) flattenedRes.getContents().get(0);
+		
+		options.tgg((TGG) res.getContents().get(0));
+		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
 		
 		rs.getResources().remove(res);
 		rs.getResources().remove(flattenedRes);
 		
-		ruleInfos = new RuleInfos(flattenedTgg);
-		this.operationalMatchContainer = new MatchContainer(tgg);
+		ruleInfos = new RuleInfos(options.flattenedTGG());
+		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG());
 	}
 
 	/**
@@ -143,7 +140,7 @@ public abstract class OperationalStrategy {
 	 * plugin:/resource/ -> file:/to/workspace/root/
 	 * @throws IOException
 	 */
-	protected void createAndPrepareResourceSet(String workspacePath) {		
+	protected void createAndPrepareResourceSet() {		
 		rs = engine.createAndPrepareResourceSet(workspacePath);
 	}
 
@@ -262,7 +259,7 @@ public abstract class OperationalStrategy {
 			prepareProtocol(ruleName, match, comatch);
 		}
 
-		if (debug) logger.debug("Successfully applied: " + match.patternName());
+		if (options.debug()) logger.debug("Successfully applied: " + match.patternName());
 		
 		return true;
 	}
@@ -463,10 +460,6 @@ public abstract class OperationalStrategy {
 		RuntimeEdge edge = new RuntimeEdge(src, trg, ref);
 		return edge;
 	}
-
-	public TGG getTGG(){
-		return tgg;
-	}
 	
 	public ResourceSet getResourceSet(){
 		return rs;
@@ -511,4 +504,8 @@ public abstract class OperationalStrategy {
 	abstract protected void wrapUp();
 
 	abstract public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library);
+	
+	public TGG getTGG(){
+		return options.tgg();
+	}
 }

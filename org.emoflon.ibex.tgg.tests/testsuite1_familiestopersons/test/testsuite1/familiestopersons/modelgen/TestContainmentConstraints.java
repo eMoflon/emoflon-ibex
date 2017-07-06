@@ -13,9 +13,8 @@ public class TestContainmentConstraints extends ModelGenTestCase {
 	
 	/**
 	 * Tests if the generated NAC for the containment of the FamilyMember
-	 * correctly prevents the application of AddFatherToSecondFamily.
-	 * If the rule is applied, the name of the FamilyMember will change,
-	 * thereby making the comparison fail.
+	 * correctly prevents the application of ReplaceFatherWithSon.
+	 * If the rule is applied, a son is added to one family which makes the comparison fail.
 	 * @throws IOException
 	 */
 	@Test
@@ -23,7 +22,7 @@ public class TestContainmentConstraints extends ModelGenTestCase {
 		stop.setMaxRuleCount("HandleRegisters", 1);
 		stop.setMaxRuleCount("IgnoreFamily", 2);
 		stop.setMaxRuleCount("FatherToMale", 1);
-		stop.setMaxRuleCount("AddFatherToSecondFamily", 1);
+		stop.setMaxRuleCount("ReplaceFatherWithSon", 1);
 		runGenerator(stop);
 		assertPostcondition("singleFatherTwoFamilies", "singleMalePersonReg");
 	}

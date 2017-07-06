@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
 
 import language.BindingType;
 import language.TGGRule;
@@ -13,11 +14,24 @@ import language.TGGRuleNode;
 
 public class MODELGENPattern extends RulePartPattern {
 	
+	protected PatternFactory factory;
 	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
 
-	public MODELGENPattern(TGGRule rule) {
+	public MODELGENPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
+		this.factory = factory;
 		signatureElements = getSignatureElements(getRule());
+		
+		createPatternNetwork();
+	}
+
+	protected void createPatternNetwork() {
+		addTGGPositiveInvocation(factory.createSrcContextPattern());
+		addTGGPositiveInvocation(factory.createCorrContextPattern());
+		addTGGPositiveInvocation(factory.createTrgContextPattern());
+		
+		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints(this));
+		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints(this));
 	}
 
 	@Override

@@ -1,49 +1,33 @@
-package org.emoflon.ibex.tgg.compiler.pattern.rulepart.support;
-
-import java.util.Collection;
-import java.util.HashSet;
+package org.emoflon.ibex.tgg.compiler.pattern.rulepart.refinement;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.pattern.rulepart.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.pattern.rulepart.MODELGENPattern;
 
-import language.BindingType;
 import language.TGGRule;
-import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class MODELGENNoNACsPattern extends RulePartPattern {
+public class MODELGENNoNACsPattern extends MODELGENPattern {
+
+	public MODELGENNoNACsPattern(TGGRule rule, TGGRule flattenedRule, PatternFactory factory) {
+		super(flattenedRule, factory);
+		
+		createPatternNetwork();
+	}
 	
-	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
-
-	public MODELGENNoNACsPattern(TGGRule rule) {
-		super(rule);
-		signatureElements = getSignatureElements(getRule());
-	}
-
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getBindingType() == BindingType.CONTEXT;
-	}
+	protected void createPatternNetwork() {
+		addTGGPositiveInvocation(factory.createSrcContextPattern());
+		addTGGPositiveInvocation(factory.createCorrContextPattern());
+		addTGGPositiveInvocation(factory.createTrgContextPattern());
 
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
+		for (TGGRule superRule : rule.getRefines())
+			addTGGPositiveInvocation(factory.getFactory(superRule).createMODELGENNoNACsPattern());
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
 		return PatternSuffixes.MODELGEN_NO_NACS;
-	}
-
-	@Override
-	public Collection<TGGRuleElement> getSignatureElements() {
-		return signatureElements;
 	}
 	
 	@Override

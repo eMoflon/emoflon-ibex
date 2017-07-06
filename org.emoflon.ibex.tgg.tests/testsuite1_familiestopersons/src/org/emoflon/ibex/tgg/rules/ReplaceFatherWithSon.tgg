@@ -1,7 +1,7 @@
 #using testsuite1_familiestopersons.*
 #using AttrCondDefLibrary.*
 
-#rule AddFatherToSecondFamily #extends FatherToMale #with testsuite1_familiestopersons
+#rule ReplaceFatherWithSon #extends FatherToMale #with testsuite1_familiestopersons
 
 #source { 
 	fr:FamilyRegister {
@@ -10,13 +10,17 @@
 	
 	f:Family {
 		-father->fm
+		++ -sons->son
+		
 	}
 	f2:Family {
 		++ -father->fm
 	}
 	
-	fm:FamilyMember {
-		name := "DoubleFather"
+	fm:FamilyMember
+	
+	++ son:FamilyMember {
+		name := "son"
 	}
 }
 

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.pattern.rulepart;
 
 import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
 
 import language.BindingType;
 import language.DomainType;
@@ -11,8 +12,13 @@ import language.TGGRuleNode;
 
 public class WholeRulePattern extends RulePartPattern {
 
-	public WholeRulePattern(TGGRule rule) {
+	public WholeRulePattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
+		
+		// Create pattern network
+		addTGGPositiveInvocation(factory.createSrcPattern());
+		addTGGPositiveInvocation(factory.createTrgPattern());
+		addTGGPositiveInvocation(factory.createCorrContextPattern());
 	}
 
 	@Override
