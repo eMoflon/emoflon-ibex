@@ -7,13 +7,16 @@ import java.util.Map;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.cc.refinement.CCPatternWithRefinements;
+import org.emoflon.ibex.tgg.compiler.patterns.cc.refinement.CCWithRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.MODELGENPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.refinement.MODELGENPatternWithRefinements;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.refinement.MODELGENWithRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.refinement.BWDWithRefinementsPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.refinement.ConsistencyWithRefinementsPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.refinement.FWDWithRefinementsPattern;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
 import language.TGGRule;
@@ -56,13 +59,15 @@ public class TGGCompiler {
 				PatternFactory factory = getFactory(rule);
 				
 				// Model generation
-				factory.create(MODELGENPatternWithRefinements.class);
+				factory.create(MODELGENWithRefinementsPattern.class);
 
 				// Consistency checking
-				factory.create(CCPatternWithRefinements.class);
+				factory.create(CCWithRefinementsPattern.class);
 
 				// Synchronisation
-				// TODO[FStolte] Not yet implemented
+				factory.create(FWDWithRefinementsPattern.class);
+				factory.create(BWDWithRefinementsPattern.class);
+				factory.create(ConsistencyWithRefinementsPattern.class);
 				
 				ruleToPatterns.put(rule, factory.getPatterns());
 			}

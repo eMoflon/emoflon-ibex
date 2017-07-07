@@ -29,8 +29,20 @@ public class PatternSuffixes {
 	/** Contains the entire source component of the pattern */
 	public static final String SRC = SEP + "SRC";
 	
+	/**
+	 * Contains the entire source of the original TGG rule
+	 * and invocations to the corresponding patterns of super-rules.
+	 */
+	public static final String SRC_REFINEMENT_INVOCATIONS = SEP + "SRC_REFINEMENT_INVOCATIONS";
+	
 	/** Contains the entire target component of the pattern */
 	public static final String TRG = SEP + "TRG";
+
+	/**
+	 * Contains the entire target of the original TGG rule
+	 * and invocations to the corresponding patterns of super-rules.
+	 */
+	public static final String TRG_REFINEMENT_INVOCATIONS = SEP + "TRG_REFINEMENT_INVOCATIONS";
 	
 	/** Contains the context of the source component of the pattern */
 	public static final String SRC_CONTEXT = SEP + "CONTEXT_SRC";
@@ -45,10 +57,10 @@ public class PatternSuffixes {
 	public static final String CONSTRAINT = SEP + "CONSTRAINT";
 
 	/** 
-	 * Contains the entire context of the original TGG rule and invocations to
-	 * the corresponding patterns of super-rules.
+	 * Contains the entire context of the original TGG rule
+	 * and invocations to the corresponding patterns of super-rules.
 	 */	
-	public static final String MODELGEN_NO_NACS = SEP + "MODELGEN_NO_NACS";
+	public static final String MODELGEN_REFINEMENT_INVOCATIONS = SEP + "MODELGEN_REFINEMENT_INVOCATIONS";
 
 	/** 
 	 * Contains the entire context of the original TGG rule together with
@@ -109,6 +121,13 @@ public class PatternSuffixes {
 	 * not already marked.
 	 */
 	public static final String FWD = SEP + "FWD";
+
+
+	/**
+	 * Contains the entire corr-context and target-context of the original TGG rule
+	 * and invocations to the corresponding patterns of super-rules.
+	 */
+	public static final String FWD_REFINEMENT_INVOCATIONS= SEP + "FWD_REFINEMENT_INVOCATIONS";
 	
 	/**
 	 * If this pattern matches, then the corresponding TGG backward rule is
@@ -118,6 +137,12 @@ public class PatternSuffixes {
 	 * not already marked.
 	 */
 	public static final String BWD = SEP + "BWD";
+
+	/**
+	 * Contains the entire corr-context and source-context of the original TGG rule
+	 * and invocations to the corresponding patterns of super-rules.
+	 */
+	public static final String BWD_REFINEMENT_INVOCATIONS= SEP + "BWD_REFINEMENT_INVOCATIONS";
 	
 	/**
 	 * Matches of these patterns are collected as soon as a TGG rule has been
@@ -139,11 +164,11 @@ public class PatternSuffixes {
 	 */
 	public static final String CC = SEP + "CC";
 
-	/** 
-	 * Contains the original TGG rule except for created corr-nodes
+	/**
+	 * Contains the entire original TGG rule except for the created corr-elements
 	 * and invocations to the corresponding patterns of super-rules.
-	 */	
-	public static final String CC_NO_NACS = SEP + "CC_NO_NACS";
+	 */
+	public static final String CC_REFINEMENT_INVOCATIONS = SEP + "CC_REFINEMENT_INVOCATIONS";
 
 	/**
 	 * This suffix indicates a marked pattern with a local protocol node, i.e.,
