@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,9 +18,9 @@ import org.emoflon.ibex.tgg.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.compiler.patterns.common.ConstraintPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.SearchEdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTranslationStatePattern;
@@ -44,9 +43,13 @@ public class PatternFactory {
 	public PatternFactory(TGGRule rule, TGGCompiler compiler) {
 		this.rule = rule;
 		this.compiler = compiler;
-		patterns = new LinkedHashMap<>();
+		patterns = new HashMap<>();
 	}
 
+	public Map<Object, IbexPattern> getPatternMap(){
+		return patterns;
+	}
+	
 	public Collection<IbexPattern> getPatterns() {
 		return Collections.unmodifiableCollection(patterns.values());
 	}

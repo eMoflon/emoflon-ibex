@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.refinement;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TranslationACPattern;
 
 import language.DomainType;

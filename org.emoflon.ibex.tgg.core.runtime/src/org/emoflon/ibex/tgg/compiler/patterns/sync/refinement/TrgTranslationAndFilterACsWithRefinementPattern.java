@@ -17,6 +17,6 @@ public class TrgTranslationAndFilterACsWithRefinementPattern extends TrgTranslat
 		addTGGPositiveInvocation(factory.create(TrgTranslationACWithRefinementsPattern.class));
 		
 		if(PatternFactory.strategy != FilterACStrategy.NONE)
-			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
+			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
 	}
 }
