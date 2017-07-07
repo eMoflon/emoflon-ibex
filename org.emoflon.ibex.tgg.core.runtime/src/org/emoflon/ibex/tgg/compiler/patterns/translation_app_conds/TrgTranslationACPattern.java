@@ -9,7 +9,7 @@ import language.DomainType;
 public class TrgTranslationACPattern extends TranslationACPattern {
 
 	public TrgTranslationACPattern(PatternFactory factory) {
-		super(factory.getRule());
+		super(factory.getFlattenedVersionOfRule());
 		
 		// Create pattern network
 		addTGGPositiveInvocation(factory.create(TrgPattern.class));

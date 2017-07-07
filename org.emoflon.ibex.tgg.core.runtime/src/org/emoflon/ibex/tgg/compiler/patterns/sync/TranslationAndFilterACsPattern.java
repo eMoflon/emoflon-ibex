@@ -1,12 +1,10 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTranslationStatePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TranslationACPattern;
 
 import language.BindingType;
@@ -19,10 +17,10 @@ public abstract class TranslationAndFilterACsPattern extends TranslationACPatter
 
 	public TranslationAndFilterACsPattern(TGGRule rule) {
 		super(rule);
-		createMarkedInvocations(PatternFactory.getMarkedPatterns());
 	}
 
-	private void createMarkedInvocations(Collection<CheckTranslationStatePattern> markedPatterns) {
+	@Override
+	protected void createMarkedInvocations() {
 		for (TGGRuleElement el : getSignatureElements()) {
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (node.getBindingType().equals(BindingType.CONTEXT) && !node.getDomainType().equals(DomainType.CORR)) {

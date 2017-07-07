@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
@@ -16,16 +15,12 @@ import language.TGGRuleNode;
 
 public abstract class TranslationACPattern extends IbexPattern {
 
-	public TranslationACPattern(TGGRule rule, List<CheckTranslationStatePattern> markedPatterns) {
-		super(rule);
-		createMarkedInvocations(markedPatterns);
-	}
-	
 	public TranslationACPattern(TGGRule rule) {
 		super(rule);
+		createMarkedInvocations();
 	}
 
-	private void createMarkedInvocations(List<CheckTranslationStatePattern> markedPatterns) {
+	protected void createMarkedInvocations() {
 		for (TGGRuleElement el : getSignatureElements()) {
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {

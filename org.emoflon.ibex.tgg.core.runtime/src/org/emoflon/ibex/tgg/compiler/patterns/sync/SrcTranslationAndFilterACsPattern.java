@@ -8,11 +8,16 @@ import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.SrcTranslati
 import language.DomainType;
 
 public class SrcTranslationAndFilterACsPattern extends TranslationAndFilterACsPattern {
+	protected PatternFactory factory;
 
 	public SrcTranslationAndFilterACsPattern(PatternFactory factory) {
-		super(factory.getRule());
+		super(factory.getFlattenedVersionOfRule());
+		this.factory = factory;
 		
-		// Create pattern network
+		createPatternNetwork();
+	}
+	
+	protected void createPatternNetwork() {
 		addTGGPositiveInvocation(factory.create(SrcTranslationACPattern.class));
 		
 		if(PatternFactory.strategy != FilterACStrategy.NONE)
