@@ -6,15 +6,15 @@ import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
 import language.DomainType;
 
-public class CCPatternWithRefinements extends CCPattern {
+public class CCWithRefinementsPattern extends CCPattern {
 	
-	public CCPatternWithRefinements(PatternFactory factory) {
+	public CCWithRefinementsPattern(PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule(), factory);
 	}
 	
 	@Override
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(CCNoNACsPattern.class));
+		addTGGPositiveInvocation(factory.create(CCForRefinementInvocationsPattern.class));
 		
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));

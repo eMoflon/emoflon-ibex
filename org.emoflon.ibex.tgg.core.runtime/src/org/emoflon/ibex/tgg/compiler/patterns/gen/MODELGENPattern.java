@@ -22,7 +22,7 @@ public class MODELGENPattern extends RulePartPattern {
 	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
 
 	public MODELGENPattern(PatternFactory factory) {
-		this(factory.getRule(), factory);
+		this(factory.getRule(), factory); 
 	}
 	
 	protected MODELGENPattern(TGGRule rule, PatternFactory factory) {

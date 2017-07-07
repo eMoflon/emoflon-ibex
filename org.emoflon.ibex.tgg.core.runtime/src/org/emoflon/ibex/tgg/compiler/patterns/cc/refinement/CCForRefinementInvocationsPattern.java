@@ -1,34 +1,34 @@
-package org.emoflon.ibex.tgg.compiler.patterns.gen.refinement;
+package org.emoflon.ibex.tgg.compiler.patterns.cc.refinement;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.MODELGENPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
 import language.TGGRule;
 import language.TGGRuleNode;
 
-public class MODELGENNoNACsPattern extends MODELGENPattern {
+public class CCForRefinementInvocationsPattern extends CCPattern {
 
-	public MODELGENNoNACsPattern(PatternFactory factory) {
+	public CCForRefinementInvocationsPattern(PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule(), factory);		
 	}
 	
 	@Override
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));
+		addTGGPositiveInvocation(factory.create(SrcPattern.class));
+		addTGGPositiveInvocation(factory.create(TrgPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
-		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(MODELGENNoNACsPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(superRule).create(CCForRefinementInvocationsPattern.class));
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.MODELGEN_NO_NACS;
+		return PatternSuffixes.CC_REFINEMENT_INVOCATIONS;
 	}
 	
 	@Override
