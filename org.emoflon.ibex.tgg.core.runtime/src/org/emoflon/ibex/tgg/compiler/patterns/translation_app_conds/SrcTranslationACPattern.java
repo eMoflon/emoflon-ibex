@@ -17,7 +17,7 @@ public class SrcTranslationACPattern extends TranslationACPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.SRC_PROTOCOL_NACS;
+		return PatternSuffixes.SRC_TRANSLATION_NACS;
 	}
 
 	@Override

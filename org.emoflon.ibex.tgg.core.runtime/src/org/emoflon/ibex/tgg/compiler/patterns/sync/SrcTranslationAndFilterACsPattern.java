@@ -21,7 +21,7 @@ public class SrcTranslationAndFilterACsPattern extends TranslationAndFilterACsPa
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.PROTOCOL_DEC_SRC;
+		return PatternSuffixes.TRANSLATION_FILTER_AC_SRC;
 	}
 
 	@Override

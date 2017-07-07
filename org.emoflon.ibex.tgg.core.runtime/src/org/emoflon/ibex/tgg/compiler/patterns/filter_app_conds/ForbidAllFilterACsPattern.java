@@ -134,7 +134,7 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 	}
 	
 	public static String getPatternNameSuffix(DomainType domain){
-		return PatternSuffixes.NO_DEC(domain);
+		return PatternSuffixes.NO_FILTER_ACs(domain);
 	}
 
 	public boolean isEmpty() {

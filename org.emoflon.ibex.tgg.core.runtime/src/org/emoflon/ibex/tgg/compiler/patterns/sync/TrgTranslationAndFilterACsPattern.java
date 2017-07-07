@@ -21,7 +21,7 @@ public class TrgTranslationAndFilterACsPattern extends TranslationAndFilterACsPa
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.PROTOCOL_DEC_TRG;
+		return PatternSuffixes.TRANSLATION_FILTER_AC_TRG;
 	}
 
 	@Override

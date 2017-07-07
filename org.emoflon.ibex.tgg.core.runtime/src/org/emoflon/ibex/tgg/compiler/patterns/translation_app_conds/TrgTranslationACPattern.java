@@ -17,7 +17,7 @@ public class TrgTranslationACPattern extends TranslationACPattern {
 	
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.TRG_PROTOCOL_NACS;
+		return PatternSuffixes.TRG_TRANSLATION_NACS;
 	}
 
 	@Override

@@ -85,7 +85,7 @@ public class ConsistencyPattern extends IbexPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.PROTOCOL;
+		return PatternSuffixes.CONSISTENCY;
 	}
 
 	public String getProtocolNodeName() {

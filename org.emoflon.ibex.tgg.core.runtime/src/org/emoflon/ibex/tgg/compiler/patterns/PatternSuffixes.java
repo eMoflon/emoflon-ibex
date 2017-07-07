@@ -5,7 +5,7 @@ import language.DomainType;
 /**
  * All suffixes used to distinguish the different patterns based on their names.
  * 
- * The context of a pattern is is the part of the pattern that consists of the
+ * The context of a pattern is the part of the pattern that consists of the
  * context elements of the original TGG rule.
  * 
  * The source/target/corr components of a pattern are the parts of the pattern
@@ -61,44 +61,44 @@ public class PatternSuffixes {
 	 * Forbid this pattern to ensure that all source elements created by the original
 	 * rule have not yet been translated (marked)
 	 */
-	public static final String SRC_PROTOCOL_NACS = SEP + "PROTOCOL_NACS_SRC";
+	public static final String SRC_TRANSLATION_NACS = SEP + "TRANSLATION_NACS_SRC";
 	
 	/**
 	 * Same meaning as SRC_PROTOCOL_NACS but this pattern is generated with a minor amount of signature elements.
 	 * The intention is to be able to call SRC_PROTOCOL_NACS without generating to many local variables in the calling pattern
 	 */
-	public static final String LOCAL_SRC_PROTOCOL_NACS = SEP + "LOCAL_PROTOCOL_NACS_SRC";
+	public static final String LOCAL_SRC_TRANSLATION_NACS = SEP + "LOCAL_TRANSLATION_NACS_SRC";
 	
 	/**
 	 * Forbid this pattern to ensure that all target elements created by the original
 	 * rule have not yet been translated (marked)
 	 */
-	public static final String TRG_PROTOCOL_NACS = SEP + "PROTOCOL_NACS_TRG";
+	public static final String TRG_TRANSLATION_NACS = SEP + "TRANSLATION_NACS_TRG";
 	
 	/**
 	 * Same meaning as TRG_PROTOCOL_NACS but this pattern is generated with a minor amount of signature elements.
 	 * The intention is to be able to call TRG_PROTOCOL_NACS without generating to many local variables in the calling pattern
 	 */
-	public static final String LOCAL_TRG_PROTOCOL_NACS = SEP + "LOCAL_PROTOCOL_NACS_TRG";
+	public static final String LOCAL_TRG_TRANSLATION_NACS = SEP + "LOCAL_TRANSLATION_NACS_TRG";
 	
 	
 	/**
 	 * Used to check that all source context elements of the original rule are
 	 * marked and that DEC is not violated.
 	 */
-	public static final String PROTOCOL_DEC_SRC = SEP + "PROTOCOL_DEC_SRC";
+	public static final String TRANSLATION_FILTER_AC_SRC = SEP + "TRANSLATION_FILTER_AC_SRC";
 
 	/**
 	 * Used to check that all target context elements of the original rule are
 	 * marked and that DEC is not violated.
 	 */
-	public static final String PROTOCOL_DEC_TRG = SEP + "PROTOCOL_DEC_TRG";
+	public static final String TRANSLATION_FILTER_AC_TRG = SEP + "TRANSLATION_FILTER_AC_TRG";
 	
 	/**
 	 * These patterns are used to enforce DEC in a domain
 	 */
-	public static String NO_DEC(DomainType domain) {
-		return SEP + "NO_DECs_" + domain.getName();
+	public static String NO_FILTER_ACs(DomainType domain) {
+		return SEP + "NO_FILTER_ACs_" + domain.getName();
 	}	
 	
 	/**
@@ -125,7 +125,7 @@ public class PatternSuffixes {
 	 * of synchronisation, and also to start-up after loading the model triple
 	 * and its protocol.
 	 */
-	public static final String PROTOCOL = SEP + "PROTOCOL";
+	public static final String CONSISTENCY = SEP + "CONSISTENCY";
 
 	/**
 	 * Used as part of PROTOCOL patterns.

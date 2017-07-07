@@ -204,7 +204,7 @@ public abstract class OperationalStrategy {
 	}
 
 	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {
-		if(match.patternName().endsWith(PatternSuffixes.PROTOCOL))
+		if(match.patternName().endsWith(PatternSuffixes.CONSISTENCY))
 			return false;
 		
 		if (match.patternName().endsWith(PatternSuffixes.FWD) && !markingSrc())
