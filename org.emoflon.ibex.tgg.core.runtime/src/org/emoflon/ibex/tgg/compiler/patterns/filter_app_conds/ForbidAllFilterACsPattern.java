@@ -24,13 +24,16 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 	private PatternFactory factory;
 
 	public ForbidAllFilterACsPattern(DomainType domain, PatternFactory factory) {
-		super(factory.getRule());
+		super(factory.getFlattenedVersionOfRule());
 		this.factory = factory;
 		this.domain = domain;
 
 		initialize();
 		
-		// Create pattern network
+		createPatternNetwork();
+	}
+	
+	protected void createPatternNetwork() {
 		addDECPatternsAsTGGNegativeInvocations(rule, domain);
 		
 		switch (domain) {
@@ -64,7 +67,7 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg)) continue;
 		
 					if(thereIsNoSavingRule(domain, eType, eDirection, tgg))
-						addTGGNegativeInvocation(factory.createDECPattern(n, eType, eDirection, determineSavingRules(domain, eType, eDirection, tgg)));					
+						addTGGNegativeInvocation(factory.createFilterACPattern(n, eType, eDirection, determineSavingRules(domain, eType, eDirection, tgg)));					
 				}
 			}
 		}

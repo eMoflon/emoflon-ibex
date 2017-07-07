@@ -22,7 +22,7 @@ public class CCNoNACsPattern extends CCPattern {
 		addTGGPositiveInvocation(factory.create(TrgPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 
-		for (TGGRule superRule : rule.getRefines())
+		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(CCNoNACsPattern.class));
 	}
 

@@ -22,7 +22,7 @@ public class MODELGENNoNACsPattern extends MODELGENPattern {
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 
-		for (TGGRule superRule : rule.getRefines())
+		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(MODELGENNoNACsPattern.class));
 	}
 

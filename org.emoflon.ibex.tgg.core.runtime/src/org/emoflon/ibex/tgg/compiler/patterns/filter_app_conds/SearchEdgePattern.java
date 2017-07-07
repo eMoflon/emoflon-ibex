@@ -16,7 +16,7 @@ public class SearchEdgePattern extends RulePartPattern {
 	private EdgeDirection eDirection;
 
 	public SearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, PatternFactory factory) {
-		super(FilterACHelper.createCheckEdgeRule(factory.getRule(), entryPoint, edgeType, eDirection));
+		super(FilterACHelper.createCheckEdgeRule(factory.getFlattenedVersionOfRule(), entryPoint, edgeType, eDirection));
 		this.entryPoint = entryPoint;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;

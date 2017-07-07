@@ -16,7 +16,7 @@ public class SrcTranslationAndFilterACsPattern extends TranslationAndFilterACsPa
 		addTGGPositiveInvocation(factory.create(SrcTranslationACPattern.class));
 		
 		if(PatternFactory.strategy != FilterACStrategy.NONE)
-			addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.SRC));
+			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 	}
 
 	@Override

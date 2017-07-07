@@ -39,7 +39,7 @@ public class PatternFactory {
 	private TGGCompiler compiler;
 	private static final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
 	
-	public static final FilterACStrategy strategy = FilterACStrategy.NONE;
+	public static final FilterACStrategy strategy = FilterACStrategy.FILTER_NACS;
 
 	public PatternFactory(TGGRule rule, TGGCompiler compiler) {
 		this.rule = rule;
@@ -223,6 +223,7 @@ public class PatternFactory {
 				return Optional.of(c.getConstructor(PatternFactory.class).newInstance(this));
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
 				return Optional.empty();
 			}
 		});
@@ -244,11 +245,11 @@ public class PatternFactory {
 
 	/**********  Specific Pattern Creation Methods ************/	
 	
-	public IbexPattern createNoDECsPatterns(DomainType domain) {
+	public IbexPattern createFilterACPatterns(DomainType domain) {
 		return createPattern(rule.getName() + ForbidAllFilterACsPattern.getPatternNameSuffix(domain), () -> new ForbidAllFilterACsPattern(domain, this));
 	}
 
-	public IbexPattern createDECPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, Collection<TGGRule> savingRules) {
+	public IbexPattern createFilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, Collection<TGGRule> savingRules) {
 		return createPattern(rule.getName() + FilterACPattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new FilterACPattern(entryPoint, edgeType, eDirection, savingRules, this));
 	}
 

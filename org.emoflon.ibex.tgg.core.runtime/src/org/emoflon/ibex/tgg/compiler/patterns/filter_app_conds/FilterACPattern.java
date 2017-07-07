@@ -22,7 +22,7 @@ public class FilterACPattern extends RulePartPattern {
 	private IbexPattern premise;
 
 	public FilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, Collection<TGGRule> savingRules, PatternFactory factory) {
-		super(factory.getRule());
+		super(factory.getFlattenedVersionOfRule());
 		this.entryPoint = entryPoint;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;

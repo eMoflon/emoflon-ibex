@@ -42,8 +42,8 @@ public class CCPattern extends RulePartPattern {
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
-			addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.SRC));
-			addTGGPositiveInvocation(factory.createNoDECsPatterns(DomainType.TRG));
+			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
+			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
 		}
 	}
 
