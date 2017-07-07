@@ -5,8 +5,15 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.compiler.patterns.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.cc.refinement.CCPatternWithRefinements;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.MODELGENPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.refinement.MODELGENPatternWithRefinements;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDPattern;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
 import language.TGGRule;
@@ -32,15 +39,15 @@ public class TGGCompiler {
 				PatternFactory factory = getFactory(rule);
 
 				// Model generation
-				factory.createMODELGENPattern();
+				factory.create(MODELGENPattern.class);
 
 				// Consistency checking
-				factory.createCCPattern();
+				factory.create(CCPattern.class);
 
 				// Synchronisation
-				factory.createFWDPattern();
-				factory.createBWDPattern();
-				factory.createConsistencyPattern();
+				factory.create(FWDPattern.class);
+				factory.create(BWDPattern.class);
+				factory.create(ConsistencyPattern.class);
 
 				ruleToPatterns.put(rule, factory.getPatterns());
 			}
@@ -49,10 +56,10 @@ public class TGGCompiler {
 				PatternFactory factory = getFactory(rule);
 				
 				// Model generation
-				factory.createMODELGENPatternWithRefinement();
+				factory.create(MODELGENPatternWithRefinements.class);
 
 				// Consistency checking
-				factory.createCCPatternWithRefinement();
+				factory.create(CCPatternWithRefinements.class);
 
 				// Synchronisation
 				// TODO[FStolte] Not yet implemented

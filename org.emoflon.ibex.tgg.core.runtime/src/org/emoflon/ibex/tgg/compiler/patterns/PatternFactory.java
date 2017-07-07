@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,39 +9,22 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
-import org.emoflon.ibex.tgg.compiler.patterns.common.MarkedPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.protocol.ConsistencyPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.protocol.nacs.SrcProtocolNACsPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.protocol.nacs.TrgProtocolNACsPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.BWDPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.CCPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.FWDPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.MODELGENPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.RulePartPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.WholeRulePattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.refinement.CCNoNACsPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.refinement.CCPatternWithRefinements;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.refinement.MODELGENNoNACsPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.refinement.MODELGENPatternWithRefinements;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.ConstraintPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.CorrContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.SrcContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.SrcPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.SrcProtocolAndDECPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.TrgContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.TrgPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.TrgProtocolAndDECPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.DEC.DECPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.DEC.DECStrategy;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.DEC.EdgeDirection;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.DEC.NoDECsPatterns;
-import org.emoflon.ibex.tgg.compiler.patterns.rulepart.support.DEC.SearchEdgePattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.ConstraintPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.SearchEdgePattern;
+import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTranslationStatePattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -53,9 +37,9 @@ public class PatternFactory {
 	private TGGRule rule;
 	private Map<Object, IbexPattern> patterns;
 	private TGGCompiler compiler;
-	private static final List<MarkedPattern> markedPatterns = createMarkedPatterns();
+	private static final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
 	
-	public static final DECStrategy strategy = DECStrategy.NONE;
+	public static final FilterACStrategy strategy = FilterACStrategy.NONE;
 
 	public PatternFactory(TGGRule rule, TGGCompiler compiler) {
 		this.rule = rule;
@@ -67,13 +51,13 @@ public class PatternFactory {
 		return Collections.unmodifiableCollection(patterns.values());
 	}
 	
-	private static List<MarkedPattern> createMarkedPatterns() {
-		List<MarkedPattern> markedPatterns = new ArrayList<>();
+	private static Collection<CheckTranslationStatePattern> createMarkedPatterns() {
+		List<CheckTranslationStatePattern> markedPatterns = new ArrayList<>();
 		
-		MarkedPattern signProtocolSrcMarkedPattern = new MarkedPattern(DomainType.SRC, false);
-		MarkedPattern signProtocolTrgMarkedPattern = new MarkedPattern(DomainType.TRG, false);
-		MarkedPattern localProtocolSrcMarkedPattern = new MarkedPattern(signProtocolSrcMarkedPattern, DomainType.SRC, true);
-		MarkedPattern localProtocolTrgMarkedPattern = new MarkedPattern(signProtocolTrgMarkedPattern, DomainType.TRG, true);
+		CheckTranslationStatePattern signProtocolSrcMarkedPattern = new CheckTranslationStatePattern(DomainType.SRC, false);
+		CheckTranslationStatePattern signProtocolTrgMarkedPattern = new CheckTranslationStatePattern(DomainType.TRG, false);
+		CheckTranslationStatePattern localProtocolSrcMarkedPattern = new CheckTranslationStatePattern(signProtocolSrcMarkedPattern, DomainType.SRC, true);
+		CheckTranslationStatePattern localProtocolTrgMarkedPattern = new CheckTranslationStatePattern(signProtocolTrgMarkedPattern, DomainType.TRG, true);
 		
 		localProtocolSrcMarkedPattern.addTGGPositiveInvocation(signProtocolSrcMarkedPattern);
 		localProtocolTrgMarkedPattern.addTGGPositiveInvocation(signProtocolTrgMarkedPattern);
@@ -83,7 +67,18 @@ public class PatternFactory {
 		markedPatterns.add(signProtocolSrcMarkedPattern);
 		markedPatterns.add(signProtocolTrgMarkedPattern);
 		
+		return Collections.unmodifiableCollection(markedPatterns);
+	}
+	
+	public static Collection<CheckTranslationStatePattern> getMarkedPatterns() {
 		return markedPatterns;
+	}
+	
+	public static IbexPattern getMarkedPattern(DomainType domain, boolean local) {
+		return markedPatterns.stream()
+							 .filter(p -> p.getDomain().equals(domain) && (p.isLocal() == local))
+							 .findFirst()
+							 .get();
 	}
 	
 	/**
@@ -207,117 +202,57 @@ public class PatternFactory {
         
         return negativePatterns;
 	}
+		
+	public PatternFactory getFactory(TGGRule superRule) {
+		return compiler.getFactory(superRule);
+	}
+	
+	public TGGRule getRule() {
+		return rule;
+	}
+	
+	public TGGRule getFlattenedVersionOfRule() {
+		return compiler.getFlattenedVersionOfRule(rule);
+	}
+	
+	/**********  Generic Pattern Creation Methods ************/
+	
+	public <T extends IbexPattern> T create(Class<T> c) {
+		return tryToCreatePattern(c, () -> {
+			try {
+				return Optional.of(c.getConstructor(PatternFactory.class).newInstance(this));
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				return Optional.empty();
+			}
+		});
+	}
 	
 	@SuppressWarnings("unchecked")
-	private <T extends IbexPattern> T createPattern(Object key, Supplier<T> creator){
-		T p = (T) patterns.computeIfAbsent(key, (k) -> creator.get());
+	private <T extends IbexPattern> T tryToCreatePattern(Object key, Supplier<Optional<T>> creator){
+		T p = (T) patterns.computeIfAbsent(key, (k) -> creator.get().orElseThrow(() -> new IllegalStateException("Unable to create pattern")));
 		
 		if(p == null)
 			throw new IllegalStateException("Created pattern is null!");
 		
 		return p;
 	}
-
-	public IbexPattern createMODELGENPattern() {
-		return createPattern(MODELGENPattern.class, () -> new MODELGENPattern(rule, this));
-	}
 	
-	public IbexPattern createSrcContextPattern() {
-		return createPattern(SrcContextPattern.class, () -> new SrcContextPattern(rule));
-	}
+	private <T extends IbexPattern> T createPattern(Object key, Supplier<T> creator){
+		return tryToCreatePattern(key, () -> Optional.of(creator.get()));
+	} 
 
-	public IbexPattern createCorrContextPattern() {
-		return createPattern(CorrContextPattern.class, () -> new CorrContextPattern(rule));
-	}
-
-	public IbexPattern createTrgContextPattern() {
-		return createPattern(TrgContextPattern.class, () -> new TrgContextPattern(rule));
-	}
-
-	public IbexPattern createCCPattern() {
-		return createPattern(CCPattern.class, () -> new CCPattern(rule, this));
-	}
-
-	public IbexPattern createSrcPattern() {
-		return createPattern(SrcPattern.class, () -> new SrcPattern(rule, this));
-	}
-
-	public IbexPattern createTrgPattern() {
-		return createPattern(TrgPattern.class, () -> new TrgPattern(rule, this));
-	}
-
-	public IbexPattern createFWDPattern() {
-		return createPattern(FWDPattern.class, () -> new FWDPattern(rule, this));
-	}
-
-	public IbexPattern createBWDPattern() {
-		return createPattern(BWDPattern.class, () -> new BWDPattern(rule, this));
-	}
-
-	public IbexPattern createConsistencyPattern() {
-		return createPattern(ConsistencyPattern.class, () -> new ConsistencyPattern(rule, this));
-	}
-
-	public IbexPattern createSrcProtocolAndDECPattern() {
-		return createPattern(SrcProtocolAndDECPattern.class, () -> new SrcProtocolAndDECPattern(rule, this));
-	}
-
-	public IbexPattern createTrgProtocolAndDECPattern() {
-		return createPattern(TrgProtocolAndDECPattern.class, () -> new TrgProtocolAndDECPattern(rule, this, markedPatterns));
-	}
-
-	public IbexPattern createWholeRulePattern() {
-		return createPattern(WholeRulePattern.class, () -> new WholeRulePattern(rule, this));
-	}
-
-	public IbexPattern createSrcProtocolNACsPattern() {
-		return createPattern(SrcProtocolNACsPattern.class, () -> new SrcProtocolNACsPattern(rule, markedPatterns, this));
-	}
-
-	public IbexPattern createTrgProtocolNACsPattern() {
-		return createPattern(TrgProtocolNACsPattern.class, () -> new TrgProtocolNACsPattern(rule, markedPatterns, this));
-	}
-
-	public IbexPattern createMODELGENPatternWithRefinement() {
-		return createPattern(MODELGENPatternWithRefinements.class, () -> new MODELGENPatternWithRefinements(rule, compiler.getFlattenedVersionOfRule(rule), this));
-	}
-
-	public IbexPattern createMODELGENNoNACsPattern() {
-		return createPattern(MODELGENNoNACsPattern.class, () -> new MODELGENNoNACsPattern(rule, compiler.getFlattenedVersionOfRule(rule), this));
-	}
-
-	public IbexPattern createCCPatternWithRefinement() {
-		return createPattern(CCPatternWithRefinements.class, () -> new CCPatternWithRefinements(rule, compiler.getFlattenedVersionOfRule(rule), this));
-	}
+	/**********  Specific Pattern Creation Methods ************/	
 	
-	public IbexPattern createCCNoNACsPattern() {
-		return createPattern(CCNoNACsPattern.class, () -> new CCNoNACsPattern(rule, compiler.getFlattenedVersionOfRule(rule), this));
-	}
-
-	public PatternFactory getFactory(TGGRule superRule) {
-		return compiler.getFactory(superRule);
-	}
-
 	public IbexPattern createNoDECsPatterns(DomainType domain) {
-		return createPattern(rule.getName() + NoDECsPatterns.getPatternNameSuffix(domain), () -> new NoDECsPatterns(rule, domain, this));
+		return createPattern(rule.getName() + ForbidAllFilterACsPattern.getPatternNameSuffix(domain), () -> new ForbidAllFilterACsPattern(domain, this));
 	}
 
 	public IbexPattern createDECPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, Collection<TGGRule> savingRules) {
-		return createPattern(rule.getName() + DECPattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new DECPattern(rule, entryPoint, edgeType, eDirection, savingRules, this));
+		return createPattern(rule.getName() + FilterACPattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new FilterACPattern(entryPoint, edgeType, eDirection, savingRules, this));
 	}
 
 	public IbexPattern createSearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
-		return createPattern(rule.getName() + SearchEdgePattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new SearchEdgePattern(rule, entryPoint, edgeType, eDirection));
-	}
-	
-	public static List<MarkedPattern> getMarkedPatterns() {
-		return markedPatterns;
-	}
-	
-	public static IbexPattern getMarkedPattern(DomainType domain, boolean local) {
-		return markedPatterns.stream()
-							 .filter(p -> p.getDomain().equals(domain) && (p.isLocal() == local))
-							 .findFirst()
-							 .get();
+		return createPattern(rule.getName() + SearchEdgePattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new SearchEdgePattern(entryPoint, edgeType, eDirection, this));
 	}
 }
