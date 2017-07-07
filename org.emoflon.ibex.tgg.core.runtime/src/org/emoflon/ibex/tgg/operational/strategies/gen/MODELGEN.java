@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.util.EmptyMatch;
 import org.emoflon.ibex.tgg.operational.util.IMatch;

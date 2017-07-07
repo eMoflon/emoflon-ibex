@@ -1,27 +1,29 @@
 package org.emoflon.ibex.tgg.compiler;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.compiler.pattern.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.pattern.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
 import language.TGGRule;
 
 public class TGGCompiler {	
-	private Map<TGGRule, Collection<IbexPattern>> ruleToPatterns = new LinkedHashMap<>();
+	private Map<TGGRule, Collection<IbexPattern>> ruleToPatterns;
 	private IbexOptions options;
 	private Map<TGGRule, PatternFactory> factories;
 		
 	public TGGCompiler(IbexOptions options) {
 		this.options = options;
 		factories = new LinkedHashMap<>();
+		ruleToPatterns = new LinkedHashMap<>();
 	}
 	
 	public Map<TGGRule, Collection<IbexPattern>> getRuleToPatternMap(){
-		return ruleToPatterns;
+		return Collections.unmodifiableMap(ruleToPatterns);
 	}
 
 	public void preparePatterns() {	
