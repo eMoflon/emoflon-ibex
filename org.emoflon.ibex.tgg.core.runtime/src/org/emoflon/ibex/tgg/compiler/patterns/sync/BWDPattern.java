@@ -10,16 +10,26 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
 
 import language.BindingType;
 import language.DomainType;
+import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class BWDPattern extends RulePartPattern {
+	protected PatternFactory factory;
 
 	public BWDPattern(PatternFactory factory) {
-		super(factory.getRule());
+		this(factory.getRule(), factory);
+	}
 
-		// Create pattern network
+	public BWDPattern(TGGRule rule, PatternFactory factory) {
+		super(rule);
+		this.factory = factory;
+		
+		createPatternNetwork();
+	}
+	
+	protected void createPatternNetwork() {
 		addTGGPositiveInvocation(factory.create(TrgTranslationAndFilterACsPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));

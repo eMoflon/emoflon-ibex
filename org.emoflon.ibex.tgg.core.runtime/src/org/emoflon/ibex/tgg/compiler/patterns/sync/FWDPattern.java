@@ -7,20 +7,31 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.refinement.SrcTranslationAndFilterACsWithRefinementPattern;
 
 import language.BindingType;
 import language.DomainType;
+import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class FWDPattern extends RulePartPattern {
+	protected PatternFactory factory;
 
 	public FWDPattern(PatternFactory factory) {
-		super(factory.getRule());
+		this(factory.getRule(), factory);
+	}
+
+	public FWDPattern(TGGRule rule, PatternFactory factory) {
+		super(rule);
+		this.factory = factory;
 		
-		// Create pattern network
-		addTGGPositiveInvocation(factory.create(SrcTranslationAndFilterACsPattern.class));
+		createPatternNetwork();
+	}
+	
+	protected void createPatternNetwork() {
+		addTGGPositiveInvocation(factory.create(SrcTranslationAndFilterACsWithRefinementPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 	}

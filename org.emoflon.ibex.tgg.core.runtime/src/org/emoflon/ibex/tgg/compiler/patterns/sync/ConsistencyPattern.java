@@ -12,6 +12,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTransla
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
+import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -23,14 +24,22 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
 public class ConsistencyPattern extends IbexPattern {
-
+	protected PatternFactory factory;
 	private TGGRuleNode protocolNode;
 	
 	public ConsistencyPattern(PatternFactory factory) {
-		super(factory.getRule());
+		this(factory.getRule(), factory);
+	}
+	
+	public ConsistencyPattern(TGGRule rule, PatternFactory factory) {
+		super(rule);
+		this.factory = factory;
 		addProtocolNode();
 		
-		// Create pattern network
+		createPatternNetwork();
+	}
+	
+	protected void createPatternNetwork() {
 		createMarkedInvocations(PatternFactory.getMarkedPatterns());
 		addTGGPositiveInvocation(factory.create(WholeRulePattern.class));
 	}

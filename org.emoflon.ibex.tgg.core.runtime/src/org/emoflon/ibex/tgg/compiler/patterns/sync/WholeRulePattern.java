@@ -5,20 +5,31 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
 import language.BindingType;
 import language.DomainType;
+import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class WholeRulePattern extends RulePartPattern {
+	protected PatternFactory factory;
 
 	public WholeRulePattern(PatternFactory factory) {
-		super(factory.getRule());
+		this(factory.getRule(), factory);
+	}
+
+	public WholeRulePattern(TGGRule rule, PatternFactory factory) {
+		super(rule);
+		this.factory = factory;
 		
-		// Create pattern network
+		createPatternNetwork();
+	}
+	
+	protected void createPatternNetwork() {
 		addTGGPositiveInvocation(factory.create(SrcPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
