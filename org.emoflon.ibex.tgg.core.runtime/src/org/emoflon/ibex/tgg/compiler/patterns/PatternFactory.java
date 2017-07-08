@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -34,7 +34,7 @@ import language.TGGRuleNode;
 
 public class PatternFactory {
 	private TGGRule rule;
-	private Map<Object, IbexPattern> patterns;
+	private Map<String, IbexPattern> patterns;
 	private TGGCompiler compiler;
 	private static final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
 	
@@ -43,10 +43,10 @@ public class PatternFactory {
 	public PatternFactory(TGGRule rule, TGGCompiler compiler) {
 		this.rule = rule;
 		this.compiler = compiler;
-		patterns = new HashMap<>();
+		patterns = new LinkedHashMap<>();
 	}
 
-	public Map<Object, IbexPattern> getPatternMap(){
+	public Map<String, IbexPattern> getPatternMap(){
 		return patterns;
 	}
 	
@@ -220,31 +220,30 @@ public class PatternFactory {
 	
 	/**********  Generic Pattern Creation Methods ************/
 	
-	public <T extends IbexPattern> T create(Class<T> c) {
-		return tryToCreatePattern(c, () -> {
+	public IbexPattern create(Class<?> c) {
+		return createPattern(c.getName(), () -> {
 			try {
-				return Optional.of(c.getConstructor(PatternFactory.class).newInstance(this));
+				return (IbexPattern) c.getConstructor(PatternFactory.class).newInstance(this);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
-				return Optional.empty();
+				return null;
 			}
 		});
 	}
 	
-	@SuppressWarnings("unchecked")
-	private <T extends IbexPattern> T tryToCreatePattern(Object key, Supplier<Optional<T>> creator){
-		T p = (T) patterns.computeIfAbsent(key, (k) -> creator.get().orElseThrow(() -> new IllegalStateException("Unable to create pattern")));
+	private IbexPattern createPattern(String key, Supplier<IbexPattern> creator){		
+		if (!patterns.containsKey(key)) {
+			IbexPattern newValue = creator.get();
+			if (newValue != null)
+				patterns.put(key, newValue);
+		}
 		
-		if(p == null)
-			throw new IllegalStateException("Created pattern is null!");
+		if(!patterns.containsKey(key))
+			throw new IllegalStateException("Pattern could not be added: " + key + " => " + patterns.get(key));
 		
-		return p;
+		return patterns.get(key);
 	}
-	
-	private <T extends IbexPattern> T createPattern(Object key, Supplier<T> creator){
-		return tryToCreatePattern(key, () -> Optional.of(creator.get()));
-	} 
 
 	/**********  Specific Pattern Creation Methods ************/	
 	
