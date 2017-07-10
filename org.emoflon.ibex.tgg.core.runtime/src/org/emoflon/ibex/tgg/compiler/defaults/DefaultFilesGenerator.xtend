@@ -136,7 +136,7 @@ class DefaultFilesGenerator {
 			'''
 			«fileName» generator = new «fileName»("«projectName»", "./../", false, false);
 			
-			MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.tgg);
+			MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 			stop.setTimeOutInMS(1000);
 			generator.setStopCriterion(stop);
 			
