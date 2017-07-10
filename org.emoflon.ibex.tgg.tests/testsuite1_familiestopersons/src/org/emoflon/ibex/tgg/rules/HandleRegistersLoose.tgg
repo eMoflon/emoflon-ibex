@@ -1,7 +1,7 @@
 #using testsuite1_familiestopersons.*
 #using AttrCondDefLibrary.*
 
-#rule HandleRegisters #with testsuite1_familiestopersons
+#rule HandleRegistersLoose #with testsuite1_familiestopersons
 
 #source { 
 	++ fr:FamilyRegister
@@ -12,10 +12,6 @@
 }
 
 #correspondence {
-	++ roots:RegisterToRegister {
-		#src->fr
-		#trg->pr
-	}
 }
 
 #attributeConditions {

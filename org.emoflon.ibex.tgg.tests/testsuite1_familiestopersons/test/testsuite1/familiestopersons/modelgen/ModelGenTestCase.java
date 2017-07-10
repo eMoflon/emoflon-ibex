@@ -23,6 +23,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import SimpleFamilies.FamilyRegister;
 import SimplePersons.PersonRegister;
+import language.TGGRule;
 
 @RunWith(Parameterized.class)
 public abstract class ModelGenTestCase {
@@ -46,23 +47,12 @@ public abstract class ModelGenTestCase {
 		generator = new MODELGEN_App("testsuite1_familiestopersons", "./../", flatten, false);
 		stop = new MODELGENStopCriterion(generator.getTGG());
 		
-		stop.setMaxRuleCount("HandleRegisters", 0);
-		stop.setMaxRuleCount("IgnoreFamily", 0);
-		stop.setMaxRuleCount("FamilyMemberToPerson", 0); //test, if this is still necessary
-		stop.setMaxRuleCount("ExistingFamilyToPerson", 0);
-		stop.setMaxRuleCount("FatherToMale", 0);
-		stop.setMaxRuleCount("MotherToFemale", 0);
-		stop.setMaxRuleCount("NewFamilyDaughterToFemale", 0);
-		stop.setMaxRuleCount("DaughterToFemale", 0);
-		stop.setMaxRuleCount("SonToMale", 0);
-		stop.setMaxRuleCount("FatherToNothing", 0);
-		stop.setMaxRuleCount("FatherAndMale", 0);
-		stop.setMaxRuleCount("IgnoreTwoFamilies", 0);
-		stop.setMaxRuleCount("CreateFourthFamily", 0);
-		stop.setMaxRuleCount("CreateFourthAndFifthFamily", 0);
-		stop.setMaxRuleCount("CreateFather", 0);
-		stop.setMaxRuleCount("ConnectFather", 0);
-		stop.setMaxRuleCount("ReplaceFatherWithSon", 0);
+		for (TGGRule rule : generator.getTGG().getRules()) {
+			stop.setMaxRuleCount(rule.getName(), 0);
+		}
+		
+		//TODO [fstolte]: refactor tests: one sub-folder in resources per test class
+		// distinguish Persons and Families instances
 		
 		familiesComp = new FamiliesComparator();
 		personsComp = new PersonsComparator();
