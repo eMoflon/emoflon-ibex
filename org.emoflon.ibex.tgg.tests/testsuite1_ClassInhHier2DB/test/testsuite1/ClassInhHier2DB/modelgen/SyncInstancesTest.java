@@ -19,7 +19,6 @@ public class SyncInstancesTest extends ModelGenTestCase {
 	}
 	
 	@Test
-	@Ignore("Waiting for fix for issue #10 on emoflon-ibex-democles")
 	public void testClassToTable() throws IOException {
 		stop.setMaxRuleCount("PackageToDatabaseRule", 1);
 		stop.setMaxRuleCount("ClassToTableRule", 1);
@@ -28,7 +27,6 @@ public class SyncInstancesTest extends ModelGenTestCase {
 	}
 	
 	@Test
-	@Ignore("Waiting for fix for issue #10 on emoflon-ibex-democles")
 	public void testAttributeToColumn() throws IOException {
 		stop.setMaxRuleCount("PackageToDatabaseRule", 1);
 		stop.setMaxRuleCount("ClassToTableRule", 1);
@@ -38,7 +36,6 @@ public class SyncInstancesTest extends ModelGenTestCase {
 	}
 	
 	@Test
-	@Ignore("Waiting for fix for issue #10 on emoflon-ibex-democles")
 	public void testSubClassToTable() throws IOException {
 		stop.setMaxRuleCount("PackageToDatabaseRule", 1);
 		stop.setMaxRuleCount("ClassToTableRule", 1);
