@@ -386,22 +386,11 @@ public abstract class OperationalStrategy {
 		return true;
 	}
 
-	// methods for reacting to broken matches of src/trg patterns
+	/***** Methods for reacting to broken matches of consistency patterns ******/
 
 	public void addBrokenMatch(IMatch match) {
 		TGGRuleApplication ra = (TGGRuleApplication) match.get("eMoflon_ProtocolNode");
-		// does the broken match really belong to the rule application?
-		if (isCompatibleWith(ra, match))
-			brokenRuleApplications.put(ra, match);
-	}
-
-	private boolean isCompatibleWith(TGGRuleApplication ra, IMatch match) {
-		for (String name : match.parameterNames()) {
-			if (!name.equals("eMoflon_ProtocolNode"))
-				if (match.get(name) != ra.getNodeMappings().get(name))
-					return false;
-		}
-		return true;
+		brokenRuleApplications.put(ra, match);
 	}
 
 	protected boolean processBrokenMatches() {
