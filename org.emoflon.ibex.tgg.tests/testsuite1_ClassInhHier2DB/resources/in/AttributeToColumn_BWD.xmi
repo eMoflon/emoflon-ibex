@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="ASCII"?>
-<Database:DB xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:Database="platform:/plugin/Database/model/Database.ecore#/" title="P">
-  <tables heading="C">
-    <columns name="A1"/>
-    <columns name="A2"/>
-  </tables>
-</Database:DB>

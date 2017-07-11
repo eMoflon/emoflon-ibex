@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?eclipse version="3.0"?><plugin>
-  <extension point="org.eclipse.emf.ecore.generated_package">
-    <package class="ClassInheritanceHierarchy.ClassInheritanceHierarchyPackage" genModel="model/ClassInheritanceHierarchy.genmodel" uri="platform:/plugin/ClassInheritanceHierarchy/model/ClassInheritanceHierarchy.ecore"/>
-  </extension>
-</plugin>

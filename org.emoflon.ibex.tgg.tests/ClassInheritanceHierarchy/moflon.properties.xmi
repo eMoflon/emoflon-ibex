@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="ASCII"?>
-<org.moflon.core.propertycontainer:MoflonPropertiesContainer xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.moflon.core.propertycontainer="platform:/plugin/org.moflon.core.propertycontainer/model/Propertycontainer.ecore" projectName="ClassInheritanceHierarchy">
-  <dependencies value="platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore"/>
-  <metaModelProject MetaModelProjectName="TGGTestSuite"/>
-  <replaceGenModel/>
-  <sdmCodegeneratorHandlerId/>
-</org.moflon.core.propertycontainer:MoflonPropertiesContainer>
