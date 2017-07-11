@@ -53,7 +53,7 @@ public abstract class OperationalStrategy {
 	protected Resource t;
 	protected Resource c;
 	protected Resource p;
-		
+
 	protected RuleInfos ruleInfos;
 	protected MatchContainer operationalMatchContainer;
 
@@ -61,37 +61,37 @@ public abstract class OperationalStrategy {
 
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 	protected THashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new THashMap<>();
-	
+
 	protected String workspacePath;
 	protected String projectPath;
-	
+
 	protected IbexOptions options;
-	
+
 	private PatternMatchingEngine engine;
 
 	public OperationalStrategy(String projectPath, String workspacePath, boolean flatten, boolean debug) {
 		base = URI.createPlatformResourceURI("/", true);
 		this.workspacePath = workspacePath;
 		this.projectPath = projectPath;
-		
+
 		options = new IbexOptions();
 		options.debug(debug);
 		options.useFlattenedTGG(flatten);
 		options.projectPath(projectPath);
 	}
-	
+
 	public void registerPatternMatchingEngine(PatternMatchingEngine engine) throws IOException {
 		this.engine = engine;
 		createAndPrepareResourceSet();
-		registerInternalMetamodels(); 
+		registerInternalMetamodels();
 		registerUserMetamodels();
 		loadTGG();
 		initialiseEngine();
 		loadModels();
 	}
-	
+
 	protected abstract void registerUserMetamodels() throws IOException;
-	
+
 	/**
 	 * Decide if matches of this pattern should be watched and notified by the
 	 * pattern matcher
@@ -108,39 +108,40 @@ public abstract class OperationalStrategy {
 	public void removeOperationalRuleMatch(IMatch match) {
 		operationalMatchContainer.removeMatch(match);
 	}
-	
+
 	abstract public void saveModels() throws IOException;
-	
+
 	abstract public void loadModels() throws IOException;
-	
+
 	protected void initialiseEngine() throws IOException {
-		engine.initialise(rs, this, options);		
+		engine.initialise(rs, this, options);
 	}
 
 	public void terminate() throws IOException {
 		engine.terminate();
 	}
-	
+
 	protected void loadTGG() throws IOException {
 		Resource res = loadResource(projectPath + "/model/" + projectPath + ".tgg.xmi");
 		Resource flattenedRes = loadResource(projectPath + "/model/" + projectPath + "_flattened.tgg.xmi");
-		
+
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-		
+
 		rs.getResources().remove(res);
 		rs.getResources().remove(flattenedRes);
-		
+
 		ruleInfos = new RuleInfos(options.flattenedTGG());
 		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG());
 	}
 
 	/**
-	 * Set mappings before loading the metamodel resources
-	 * plugin:/resource/ -> file:/to/workspace/root/
+	 * Set mappings before loading the metamodel resources plugin:/resource/ ->
+	 * file:/to/workspace/root/
+	 * 
 	 * @throws IOException
 	 */
-	protected void createAndPrepareResourceSet() {		
+	protected void createAndPrepareResourceSet() {
 		rs = engine.createAndPrepareResourceSet(workspacePath);
 	}
 
@@ -153,7 +154,7 @@ public abstract class OperationalStrategy {
 		RuntimePackageImpl.init();
 	}
 
-	protected void loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException{
+	protected void loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
 		Resource res = loadResource(workspaceRelativePath);
 		EPackage pack = (EPackage) res.getContents().get(0);
 		rs.getPackageRegistry().put(res.getURI().toString(), pack);
@@ -172,47 +173,47 @@ public abstract class OperationalStrategy {
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
 	}
-	
+
 	public void run() throws IOException {
 		do {
 			engine.updateMatches();
-		} while(processBrokenMatches());
-		
+		} while (processBrokenMatches());
+
 		do {
 			engine.updateMatches();
-		} while(processOperationalRuleMatches());
-		
+		} while (processOneOperationalRuleMatch());
+
 		wrapUp();
 	}
-	
-	protected boolean processOperationalRuleMatches() {
-		if(operationalMatchContainer.isEmpty())
+
+	protected boolean processOneOperationalRuleMatch() {
+		if (operationalMatchContainer.isEmpty())
 			return false;
-		
-		processAllMatches();
-		
+
+		processOneArbitraryMatch();
+
 		return true;
 	}
 
-	private void processAllMatches() {
-		while (!operationalMatchContainer.isEmpty()) {
-			IMatch match = operationalMatchContainer.getNext();
-			String ruleName = operationalMatchContainer.getRuleName(match);
-			processOperationalRuleMatch(ruleName, match);
-			removeOperationalRuleMatch(match);
-		}
+	private void processOneArbitraryMatch() {
+
+		IMatch match = operationalMatchContainer.getNext();
+		String ruleName = operationalMatchContainer.getRuleName(match);
+		processOperationalRuleMatch(ruleName, match);
+		removeOperationalRuleMatch(match);
+
 	}
 
 	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {
-		if(match.patternName().endsWith(PatternSuffixes.CONSISTENCY))
+		if (match.patternName().endsWith(PatternSuffixes.CONSISTENCY))
 			return false;
-		
+
 		if (match.patternName().endsWith(PatternSuffixes.FWD) && !markingSrc())
 			return false;
-		
+
 		if (match.patternName().endsWith(PatternSuffixes.BWD) && !markingTrg())
 			return false;
-		
+
 		if (someElementsAlreadyProcessed(ruleName, match))
 			return false;
 
@@ -259,8 +260,9 @@ public abstract class OperationalStrategy {
 			prepareProtocol(ruleName, match, comatch);
 		}
 
-		if (options.debug()) logger.debug("Successfully applied: " + match.patternName());
-		
+		if (options.debug())
+			logger.debug("Successfully applied: " + match.patternName());
+
 		return true;
 	}
 
@@ -283,7 +285,7 @@ public abstract class OperationalStrategy {
 		match.parameterNames().forEach(n -> {
 			ra.getNodeMappings().put(n, (EObject) match.get(n));
 		});
-		
+
 		setIsRuleApplicationFinal(ra);
 	}
 
@@ -310,7 +312,7 @@ public abstract class OperationalStrategy {
 			if (!allEdgesAlreadyProcessed(ruleInfos.getBlackTrgEdges(ruleName), match))
 				return false;
 		}
-		
+
 		return true;
 	}
 
@@ -333,15 +335,17 @@ public abstract class OperationalStrategy {
 			EObject src = (EObject) match.get(edge.getSrcNode().getName());
 			EObject trg = (EObject) match.get(edge.getTrgNode().getName());
 			EReference ref = edge.getType();
-			
-			if(src == null | trg == null | ref == null)
-				throw new IllegalStateException("The match " + match.patternName() + " is invalid for this operational strategy (the edge -" + ref.getName() + "-> appears to be expected but is missing)!  "
-						+ "Are you sure you have implemented isPatternRelevant correctly?");
-			
+
+			if (src == null | trg == null | ref == null)
+				throw new IllegalStateException(
+						"The match " + match.patternName() + " is invalid for this operational strategy (the edge -"
+								+ ref.getName() + "-> appears to be expected but is missing)!  "
+								+ "Are you sure you have implemented isPatternRelevant correctly?");
+
 			if (markedEdges.contains(new RuntimeEdge(src, trg, ref)))
 				return true;
 		}
-		
+
 		return false;
 	}
 
@@ -401,22 +405,22 @@ public abstract class OperationalStrategy {
 	}
 
 	protected boolean processBrokenMatches() {
-		if(brokenRuleApplications.isEmpty())
+		if (brokenRuleApplications.isEmpty())
 			return false;
-		
+
 		revokeAllMatches();
 
 		return true;
 	}
 
 	private void revokeAllMatches() {
-		while(!brokenRuleApplications.isEmpty()){
+		while (!brokenRuleApplications.isEmpty()) {
 			THashSet<TGGRuleApplication> revoked = new THashSet<>();
-			for(TGGRuleApplication ra : brokenRuleApplications.keySet()){
+			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
 				revokeOperationalRule(ra, brokenRuleApplications.get(ra));
 				revoked.add(ra);
 			}
-			for(TGGRuleApplication revokedRA : revoked)
+			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);
 		}
 	}
@@ -432,8 +436,7 @@ public abstract class OperationalStrategy {
 		revokeEdges(ruleInfos.getGreenTrgEdges(ruleApplication.getName()), match, manipulateTrg());
 	}
 
-	private void revokeEdges(Collection<TGGRuleEdge> specificationEdges, IMatch match,
-			boolean delete) {
+	private void revokeEdges(Collection<TGGRuleEdge> specificationEdges, IMatch match, boolean delete) {
 		specificationEdges.forEach(se -> {
 			RuntimeEdge runtimeEdge = getRuntimeEdge(match, se);
 			markedEdges.remove(runtimeEdge);
@@ -460,19 +463,19 @@ public abstract class OperationalStrategy {
 		RuntimeEdge edge = new RuntimeEdge(src, trg, ref);
 		return edge;
 	}
-	
-	public ResourceSet getResourceSet(){
+
+	public ResourceSet getResourceSet() {
 		return rs;
 	}
-	
-	public Resource getSourceResource(){
+
+	public Resource getSourceResource() {
 		return s;
 	}
-	
-	public Resource getTargetResource(){
+
+	public Resource getTargetResource() {
 		return t;
 	}
-	
+
 	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
 		return runtimeConstraintProvider;
 	}
@@ -504,8 +507,8 @@ public abstract class OperationalStrategy {
 	abstract protected void wrapUp();
 
 	abstract public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library);
-	
-	public TGG getTGG(){
+
+	public TGG getTGG() {
 		return options.tgg();
 	}
 }

@@ -65,7 +65,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * (ii) updates the state of its stop criterion 
 	 */
 	@Override
-	protected boolean processOperationalRuleMatches() {
+	protected boolean processOneOperationalRuleMatch() {
 		if(stopCriterion.dont() || operationalMatchContainer.isEmpty())
 			return false;
 		
