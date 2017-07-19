@@ -31,7 +31,7 @@ public class FWDPattern extends RulePartPattern {
 	}
 	
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(SrcTranslationAndFilterACsWithRefinementPattern.class));
+		addTGGPositiveInvocation(factory.create(SrcTranslationAndFilterACsPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 	}

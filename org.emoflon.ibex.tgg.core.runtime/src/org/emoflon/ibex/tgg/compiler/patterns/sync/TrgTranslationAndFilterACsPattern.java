@@ -12,6 +12,9 @@ public class TrgTranslationAndFilterACsPattern extends TranslationAndFilterACsPa
 
 	public TrgTranslationAndFilterACsPattern(PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());
+		this.factory = factory;
+		
+		createPatternNetwork();
 	}
 	
 	protected void createPatternNetwork() {

@@ -8,9 +8,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
 
 import language.TGGRule;
 
-public class BWDForRefinementInvocationsPattern extends BWDPattern {
+public class BWDForRefinementInvocationsContextPattern extends BWDPattern {
 
-	public BWDForRefinementInvocationsPattern(PatternFactory factory) {
+	public BWDForRefinementInvocationsContextPattern(PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule(), factory);		
 	}
 	
@@ -19,7 +19,7 @@ public class BWDForRefinementInvocationsPattern extends BWDPattern {
 		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));
 
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(BWDForRefinementInvocationsPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(superRule).create(BWDForRefinementInvocationsContextPattern.class));
 	}
 
 	@Override

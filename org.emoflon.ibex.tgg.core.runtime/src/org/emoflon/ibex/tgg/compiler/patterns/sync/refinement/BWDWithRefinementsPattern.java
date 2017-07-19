@@ -10,7 +10,7 @@ public class BWDWithRefinementsPattern extends BWDPattern {
 	}
 	
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(BWDForRefinementInvocationsPattern.class));
+		addTGGPositiveInvocation(factory.create(BWDForRefinementInvocationsContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgTranslationAndFilterACsWithRefinementPattern.class));
 	}
 }
