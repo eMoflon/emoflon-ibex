@@ -214,6 +214,14 @@ public abstract class OperationalStrategy {
 		if (match.patternName().endsWith(PatternSuffixes.BWD) && !markingTrg())
 			return false;
 
+		if (match.patternName().endsWith(PatternSuffixes.FWD) && ruleInfos.getGreenSrcNodes(ruleName).isEmpty()
+															  && ruleInfos.getGreenSrcEdges(ruleName).isEmpty())
+			return false;
+
+		if (match.patternName().endsWith(PatternSuffixes.BWD) && ruleInfos.getGreenTrgNodes(ruleName).isEmpty()
+															  && ruleInfos.getGreenTrgEdges(ruleName).isEmpty())
+			return false;
+
 		if (someElementsAlreadyProcessed(ruleName, match))
 			return false;
 
