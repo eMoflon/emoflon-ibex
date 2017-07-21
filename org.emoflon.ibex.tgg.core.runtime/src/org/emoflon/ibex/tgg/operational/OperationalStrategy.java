@@ -68,6 +68,7 @@ public abstract class OperationalStrategy {
 	protected IbexOptions options;
 
 	private PatternMatchingEngine engine;
+	private boolean domainsHaveNoSharedTypes;
 
 	public OperationalStrategy(String projectPath, String workspacePath, boolean flatten, boolean debug) {
 		base = URI.createPlatformResourceURI("/", true);
@@ -102,7 +103,26 @@ public abstract class OperationalStrategy {
 	abstract public boolean isPatternRelevant(String patternName);
 
 	public void addOperationalRuleMatch(String ruleName, IMatch match) {
-		operationalMatchContainer.addMatch(ruleName, match);
+		if(matchIsDomainConform(ruleName, match))
+			operationalMatchContainer.addMatch(ruleName, match);
+	}
+
+	private boolean matchIsDomainConform(String ruleName, IMatch match) {
+		if(domainsHaveNoSharedTypes) return true;
+	
+		return matchedNodesAreInCorrectResource(s, ruleInfos.getBlackSrcNodes(ruleName), match) &&
+			   matchedNodesAreInCorrectResource(s, ruleInfos.getGreenSrcNodes(ruleName), match) &&
+			   matchedNodesAreInCorrectResource(t, ruleInfos.getBlackTrgNodes(ruleName), match) &&
+			   matchedNodesAreInCorrectResource(t, ruleInfos.getGreenTrgNodes(ruleName), match);
+	}
+	
+	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, IMatch match){
+		return nodes.stream().noneMatch(n -> match.isInMatch(n.getName()) && 
+											 !nodeIsInResource(match, n.getName(), r));
+	}
+
+	private boolean nodeIsInResource(IMatch match, String name, Resource r) {
+		return match.get(name).eResource().equals(r);
 	}
 
 	public void removeOperationalRuleMatch(IMatch match) {
@@ -133,6 +153,8 @@ public abstract class OperationalStrategy {
 
 		ruleInfos = new RuleInfos(options.flattenedTGG());
 		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG());
+		
+		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
 	}
 
 	/**

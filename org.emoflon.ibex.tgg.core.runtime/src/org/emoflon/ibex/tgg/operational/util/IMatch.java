@@ -12,4 +12,7 @@ public interface IMatch {
 
 	String patternName();
 
+	default boolean isInMatch(String name) {
+		return parameterNames().contains(name);
+	}
 }
