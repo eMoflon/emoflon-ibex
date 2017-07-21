@@ -13,7 +13,6 @@ import org.emoflon.ibex.tgg.operational.util.RuleInfos;
 
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
-import language.DomainType;
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
