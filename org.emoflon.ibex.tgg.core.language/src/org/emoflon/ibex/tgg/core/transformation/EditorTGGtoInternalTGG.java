@@ -404,7 +404,7 @@ public class EditorTGGtoInternalTGG {
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
 
 			if (ct.getSuper() != null) {
-				((EClass) xtextToTGG.get(ct)).getESuperTypes().add((EClass) xtextToTGG.get(ct.getSuper()));
+				((EClass) xTextCorrToCorrClass.get(ct.getName())).getESuperTypes().add((EClass) xTextCorrToCorrClass.get(ct.getSuper().getName()));
 			}
 		}
 
@@ -415,19 +415,23 @@ public class EditorTGGtoInternalTGG {
 		EClass corrClass = ecoreFactory.createEClass();
 		corrClass.setName(ct.getName());
 
-		EReference srcRef = ecoreFactory.createEReference();
-		srcRef.setName("source");
-		srcRef.setLowerBound(0);
-		srcRef.setUpperBound(1);
-		srcRef.setEType(ct.getSource());
-		corrClass.getEStructuralFeatures().add(srcRef);
+		if (ct.getSource() != null) {
+			EReference srcRef = ecoreFactory.createEReference();
+			srcRef.setName("source");
+			srcRef.setLowerBound(0);
+			srcRef.setUpperBound(1);
+			srcRef.setEType(ct.getSource());
+			corrClass.getEStructuralFeatures().add(srcRef);
+		}
 
-		EReference trgRef = ecoreFactory.createEReference();
-		trgRef.setName("target");
-		trgRef.setLowerBound(0);
-		trgRef.setUpperBound(1);
-		trgRef.setEType(ct.getTarget());
-		corrClass.getEStructuralFeatures().add(trgRef);
+		if (ct.getTarget() != null) {
+			EReference trgRef = ecoreFactory.createEReference();
+			trgRef.setName("target");
+			trgRef.setLowerBound(0);
+			trgRef.setUpperBound(1);
+			trgRef.setEType(ct.getTarget());
+			corrClass.getEStructuralFeatures().add(trgRef);
+		}
 		
 		xTextCorrToCorrClass.put(ct.getName(), corrClass);
 
