@@ -21,7 +21,7 @@ Export-Package: language,
  language.util,
  org.emoflon.ibex.tgg.core.transformation
 Bundle-Name: org.emoflon.ibex.tgg.core.language
-Bundle-Version: 1.0
+Bundle-Version: 1.0.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
