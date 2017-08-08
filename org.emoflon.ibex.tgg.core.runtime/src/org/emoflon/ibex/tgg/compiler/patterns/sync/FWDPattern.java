@@ -7,7 +7,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.refinement.SrcTranslationAndFilterACsWithRefinementPattern;
 
 import language.BindingType;
 import language.DomainType;

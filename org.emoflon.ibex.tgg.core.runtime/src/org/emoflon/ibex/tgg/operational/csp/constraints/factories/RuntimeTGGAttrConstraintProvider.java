@@ -5,8 +5,6 @@ import java.util.Collection;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 
-import sun.font.CreatedFontTracker;
-
 public class RuntimeTGGAttrConstraintProvider {
 
 	private Collection<RuntimeTGGAttrConstraintFactory> factories;
