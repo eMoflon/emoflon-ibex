@@ -18,10 +18,9 @@ Export-Package: language,
  language.inplaceAttributes,
  language.inplaceAttributes.impl,
  language.inplaceAttributes.util,
- language.util,
- org.emoflon.ibex.tgg.core.transformation
+ language.util
 Bundle-Name: org.emoflon.ibex.tgg.core.language
-Bundle-Version: 1.0
+Bundle-Version: 1.0.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -33,6 +32,4 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.core.resources,
  org.apache.log4j,
  org.eclipse.core.runtime;bundle-version="3.12.0"
-Bundle-ClassPath: lib/democles.jar,
- lib/javabdd-1.0b2.jar,
- .
+Bundle-ClassPath: .

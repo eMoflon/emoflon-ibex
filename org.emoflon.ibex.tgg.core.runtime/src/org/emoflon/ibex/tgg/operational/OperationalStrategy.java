@@ -494,6 +494,14 @@ public abstract class OperationalStrategy {
 	public Resource getTargetResource() {
 		return t;
 	}
+	
+	public Resource getProtocolResource() {
+		return p;
+	}
+	
+	public Resource getCorrespondenceResource() {
+		return c;
+	}
 
 	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
 		return runtimeConstraintProvider;

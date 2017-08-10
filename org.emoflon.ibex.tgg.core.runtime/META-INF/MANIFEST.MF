@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.emoflon.ibex.tgg.core.runtime;singleton:=true
 Bundle-Name: org.emoflon.ibex.tgg.core.runtime
-Bundle-Version: 1.0
+Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
  org.eclipse.emf.common,
@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.emoflon.ibex.tgg.editor,
- org.emoflon.ibex.tgg.ide
+ org.emoflon.ibex.tgg.ide,
+ org.apache.commons.lang3;bundle-version="3.1.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -23,7 +24,9 @@ Bundle-ClassPath: lib/trove-3.1a1.jar,
  lib/commons-io-2.5.jar,
  lib/commons-lang3-3.5.jar,
  lib/gurobi.jar,
- .
+ .,
+ lib/democles.jar,
+ lib/javabdd-1.0b2.jar
 Export-Package: gnu.trove,
  gnu.trove.decorator,
  gnu.trove.function,
@@ -77,7 +80,11 @@ Export-Package: gnu.trove,
  org.emoflon.ibex.tgg.compiler.patterns.gen,
  org.emoflon.ibex.tgg.compiler.patterns.gen.refinement,
  org.emoflon.ibex.tgg.compiler.patterns.sync,
+ org.emoflon.ibex.tgg.compiler.patterns.sync.refinement,
  org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds,
+ org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.refinement,
+ org.emoflon.ibex.tgg.core.transformation,
+ org.emoflon.ibex.tgg.core.transformation.csp.sorting,
  org.emoflon.ibex.tgg.operational,
  org.emoflon.ibex.tgg.operational.csp,
  org.emoflon.ibex.tgg.operational.csp.constraints,
@@ -88,6 +95,15 @@ Export-Package: gnu.trove,
  org.emoflon.ibex.tgg.operational.strategies.gen,
  org.emoflon.ibex.tgg.operational.strategies.sync,
  org.emoflon.ibex.tgg.operational.util,
+ org.gervarro.democles.common,
+ org.gervarro.democles.common.emf,
+ org.gervarro.democles.common.runtime,
+ org.gervarro.democles.event,
+ org.gervarro.democles.plan,
+ org.gervarro.democles.plan.common,
+ org.gervarro.democles.specification,
+ org.gervarro.democles.specification.impl,
+ org.gervarro.extension,
  runtime,
  runtime.impl,
  runtime.util
