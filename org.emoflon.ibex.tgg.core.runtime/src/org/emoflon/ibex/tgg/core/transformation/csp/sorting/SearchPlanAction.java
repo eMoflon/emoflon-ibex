@@ -62,7 +62,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 		try {
 			sc = generatePlan(combiner, weightedOperations, inputAdornment);
 			sortedList = new ArrayList<>();
-			Chain c = sc.getRoot();
+			Chain<?> c = sc.getRoot();
 			while(c!= null){
 				sortedList.add((TGGAttributeConstraint) c.getValue());
 				c = c.getNext();

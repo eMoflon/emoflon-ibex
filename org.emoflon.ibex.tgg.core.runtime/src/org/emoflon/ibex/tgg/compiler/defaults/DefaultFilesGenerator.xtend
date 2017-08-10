@@ -97,7 +97,7 @@ class DefaultFilesGenerator {
 
 	static def String generateBasicStructure(String additionalImports, String fileName, String strategy, String engine, String projectName, String setUpRoutine) {
 		'''
-			package org.emoflon.ibex.tgg.run;
+			package org.emoflon.ibex.tgg.run.«projectName.toLowerCase»;
 			
 			import java.io.IOException;
 			

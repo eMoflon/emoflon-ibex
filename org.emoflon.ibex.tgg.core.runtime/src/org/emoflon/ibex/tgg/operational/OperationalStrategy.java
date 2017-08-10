@@ -26,7 +26,9 @@ import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
+import org.emoflon.ibex.tgg.operational.util.NextMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
+import org.emoflon.ibex.tgg.operational.util.UpdatePolicy;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TCustomHashSet;
@@ -56,6 +58,7 @@ public abstract class OperationalStrategy {
 
 	protected RuleInfos ruleInfos;
 	protected MatchContainer operationalMatchContainer;
+	protected UpdatePolicy updatePolicy;
 
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
 
@@ -71,6 +74,10 @@ public abstract class OperationalStrategy {
 	private boolean domainsHaveNoSharedTypes;
 
 	public OperationalStrategy(String projectPath, String workspacePath, boolean flatten, boolean debug) {
+		this(projectPath, workspacePath, flatten, debug, new NextMatchUpdatePolicy());
+	}
+
+	public OperationalStrategy(String projectPath, String workspacePath, boolean flatten, boolean debug, UpdatePolicy policy) {
 		base = URI.createPlatformResourceURI("/", true);
 		this.workspacePath = workspacePath;
 		this.projectPath = projectPath;
@@ -79,6 +86,8 @@ public abstract class OperationalStrategy {
 		options.debug(debug);
 		options.useFlattenedTGG(flatten);
 		options.projectPath(projectPath);
+		
+		this.updatePolicy = policy;
 	}
 
 	public void registerPatternMatchingEngine(PatternMatchingEngine engine) throws IOException {
@@ -212,18 +221,12 @@ public abstract class OperationalStrategy {
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
-		processOneArbitraryMatch();
-
-		return true;
-	}
-
-	private void processOneArbitraryMatch() {
-
-		IMatch match = operationalMatchContainer.getNext();
+		IMatch match = this.updatePolicy.chooseOneMatch(operationalMatchContainer);
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
+		return true;
 	}
 
 	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {
@@ -537,5 +540,12 @@ public abstract class OperationalStrategy {
 
 	public TGG getTGG() {
 		return options.tgg();
+	}
+	
+	public void setUpdatePolicy(UpdatePolicy updatePolicy) {
+		if (updatePolicy == null)
+			throw new NullPointerException("UpdatePolicy must not be set to null.");
+		else
+			this.updatePolicy = updatePolicy;
 	}
 }

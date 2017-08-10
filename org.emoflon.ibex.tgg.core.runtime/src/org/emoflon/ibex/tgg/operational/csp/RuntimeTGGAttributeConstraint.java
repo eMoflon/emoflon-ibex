@@ -11,8 +11,6 @@ import org.emoflon.ibex.tgg.operational.csp.helper.LoremIpsum;
 
 import language.basic.expressions.TGGAttributeExpression;
 import language.csp.TGGAttributeConstraint;
-import language.csp.definition.*;
-import language.csp.impl.TGGAttributeVariableImpl;
 
 public abstract class RuntimeTGGAttributeConstraint {
 	private static final char B = 'B';

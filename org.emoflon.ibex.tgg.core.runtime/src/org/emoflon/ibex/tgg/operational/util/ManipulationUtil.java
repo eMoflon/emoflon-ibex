@@ -19,7 +19,6 @@ import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGLiteralExpression;
 import language.inplaceAttributes.TGGAttributeConstraintOperators;
 import language.inplaceAttributes.TGGInplaceAttributeExpression;
-import runtime.RuntimePackage;
 
 /**
  * @author leblebici Util class for creating EObjects, Edges, and
@@ -27,8 +26,6 @@ import runtime.RuntimePackage;
  */
 public class ManipulationUtil {
 
-	private static RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
-	
 	public static void createNonCorrNodes(IMatch match, HashMap<String, EObject> comatch,
 			Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
 		for (TGGRuleNode n : greenNodes) {
@@ -67,6 +64,7 @@ public class ManipulationUtil {
 		return (EObject) match.get(name);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void createEMFEdge(TGGRuleEdge e, EObject src, EObject trg) {
 		EReference ref = e.getType();
 		if (ref.isMany())
@@ -75,6 +73,7 @@ public class ManipulationUtil {
 			src.eSet(ref, trg);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static void deleteEdge(EObject src, EObject trg, EReference ref) {
 		if (ref.isMany())
 			((EList) src.eGet(ref)).remove(trg);
@@ -85,7 +84,13 @@ public class ManipulationUtil {
 	private static EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
 		EObject newObj = EcoreUtil.create(node.getType());
 
-		// apply inplace attribute assignments
+		handlePlacementInResource(node, resource, newObj);
+		applyInPlaceAttributeAssignments(match, node, newObj);
+
+		return newObj;
+	}
+
+	private static void applyInPlaceAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
 		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
 			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
@@ -108,9 +113,6 @@ public class ManipulationUtil {
 
 			}
 		}
-		
-		handlePlacementInResource(node, resource, newObj);
-		return newObj;
 	}
 
 	private static void handlePlacementInResource(TGGRuleNode node, Resource resource, EObject newObj) {

@@ -81,6 +81,7 @@ public class ConsistencyReporter {
 				if (!ref.isDerived()) {
 					Object getterResult = node.eGet(ref);
 					if (getterResult instanceof EList) {
+						@SuppressWarnings("unchecked")
 						EList<EObject> getResultCollection = (EList<EObject>) getterResult;
 						for (EObject edgeTrg : getResultCollection) {
 							edges.add(new RuntimeEdge(node, edgeTrg, ref));

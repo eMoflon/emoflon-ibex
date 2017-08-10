@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.util;
 
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
@@ -52,6 +53,10 @@ public class MatchContainer {
 
 	public IMatch getNext() {
 		return (IMatch) matchToRuleNameID.keySet().iterator().next();
+	}
+
+	public Set<IMatch> getMatches() {
+		return matchToRuleNameID.keySet();
 	}
 
 	public IMatch getNextRandom() {
