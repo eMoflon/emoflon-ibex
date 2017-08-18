@@ -13,7 +13,6 @@
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//BindingType">
       <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//BindingType/CONTEXT"/>
       <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//BindingType/CREATE"/>
-      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//BindingType/NEGATIVE"/>
     </genEnums>
     <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/src"/>
@@ -25,6 +24,7 @@
     <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/refines"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/complements"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/nacs"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/nodes"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/edges"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/attributeConditionLibrary"/>
@@ -50,6 +50,12 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleEdge/srcNode"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleEdge/trgNode"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleEdge/type"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/nodes"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/boundaryNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/edges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/attributeConditionLibrary"/>
     </genClasses>
     <nestedGenPackages prefix="InplaceAttributes" disposableProviderFactory="true"
         ecorePackage="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//inplaceAttributes">

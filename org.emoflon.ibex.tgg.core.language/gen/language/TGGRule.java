@@ -20,6 +20,7 @@ import org.eclipse.emf.common.util.EList;
  * <ul>
  *   <li>{@link language.TGGRule#getRefines <em>Refines</em>}</li>
  *   <li>{@link language.TGGRule#getComplements <em>Complements</em>}</li>
+ *   <li>{@link language.TGGRule#getNacs <em>Nacs</em>}</li>
  *   <li>{@link language.TGGRule#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.TGGRule#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.TGGRule#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
@@ -73,6 +74,22 @@ public interface TGGRule extends TGGNamedElement {
 	 * @generated
 	 */
 	void setComplements(TGGRule value);
+
+	/**
+	 * Returns the value of the '<em><b>Nacs</b></em>' containment reference list.
+	 * The list contents are of type {@link language.NAC}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Nacs</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Nacs</em>' containment reference list.
+	 * @see language.LanguagePackage#getTGGRule_Nacs()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<NAC> getNacs();
 
 	/**
 	 * Returns the value of the '<em><b>Nodes</b></em>' containment reference list.

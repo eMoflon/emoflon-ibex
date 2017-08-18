@@ -36,17 +36,7 @@ public enum BindingType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	CREATE(1, "CREATE", "CREATE"),
-
-	/**
-	 * The '<em><b>NEGATIVE</b></em>' literal object.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #NEGATIVE_VALUE
-	 * @generated
-	 * @ordered
-	 */
-	NEGATIVE(2, "NEGATIVE", "NEGATIVE");
+	CREATE(1, "CREATE", "CREATE");
 
 	/**
 	 * The '<em><b>CONTEXT</b></em>' literal value.
@@ -79,27 +69,12 @@ public enum BindingType implements Enumerator {
 	public static final int CREATE_VALUE = 1;
 
 	/**
-	 * The '<em><b>NEGATIVE</b></em>' literal value.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of '<em><b>NEGATIVE</b></em>' literal object isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @see #NEGATIVE
-	 * @model
-	 * @generated
-	 * @ordered
-	 */
-	public static final int NEGATIVE_VALUE = 2;
-
-	/**
 	 * An array of all the '<em><b>Binding Type</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final BindingType[] VALUES_ARRAY = new BindingType[] { CONTEXT, CREATE, NEGATIVE, };
+	private static final BindingType[] VALUES_ARRAY = new BindingType[] { CONTEXT, CREATE, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Binding Type</b></em>' enumerators.
@@ -159,8 +134,6 @@ public enum BindingType implements Enumerator {
 			return CONTEXT;
 		case CREATE_VALUE:
 			return CREATE;
-		case NEGATIVE_VALUE:
-			return NEGATIVE;
 		}
 		return null;
 	}

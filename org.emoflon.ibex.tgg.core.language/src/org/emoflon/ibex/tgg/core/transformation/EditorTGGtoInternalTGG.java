@@ -383,8 +383,6 @@ public class EditorTGGtoInternalTGG {
 		String value = op.getValue();
 		if ("++".equals(value))
 			return BindingType.CREATE;
-		if ("!".equals(value))
-			return BindingType.NEGATIVE;
 		return null;
 	}
 

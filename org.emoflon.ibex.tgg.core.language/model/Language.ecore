@@ -16,6 +16,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="refines" upperBound="-1"
         eType="#//TGGRule"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="complements" eType="#//TGGRule"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nacs" upperBound="-1" eType="#//NAC"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
         eType="#//TGGRuleNode" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
@@ -62,7 +64,16 @@
   <eClassifiers xsi:type="ecore:EEnum" name="BindingType">
     <eLiterals name="CONTEXT" literal="CONTEXT"/>
     <eLiterals name="CREATE" value="1" literal="CREATE"/>
-    <eLiterals name="NEGATIVE" value="2" literal="NEGATIVE"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NAC" eSuperTypes="#//basic/TGGNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
+        eType="#//TGGRuleNode" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="boundaryNodes" upperBound="-1"
+        eType="#//TGGRuleNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
+        eType="#//TGGRuleEdge" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConditionLibrary"
+        lowerBound="1" eType="#//csp/TGGAttributeConstraintLibrary" containment="true"/>
   </eClassifiers>
   <eSubpackages name="inplaceAttributes" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//inplaceAttributes"
       nsPrefix="org.emoflon.ibex.tgg.core.language.inplaceAttributes">

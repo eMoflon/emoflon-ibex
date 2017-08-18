@@ -94,6 +94,13 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass nacEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EEnum domainTypeEEnum = null;
 
 	/**
@@ -282,7 +289,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_Nodes() {
+	public EReference getTGGRule_Nacs() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -291,7 +298,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_Edges() {
+	public EReference getTGGRule_Nodes() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(3);
 	}
 
@@ -300,7 +307,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_AttributeConditionLibrary() {
+	public EReference getTGGRule_Edges() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(4);
 	}
 
@@ -309,8 +316,17 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getTGGRule_AttributeConditionLibrary() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EAttribute getTGGRule_Abstract() {
-		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(5);
+		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(6);
 	}
 
 	/**
@@ -471,6 +487,51 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getNAC() {
+		return nacEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getNAC_Nodes() {
+		return (EReference) nacEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getNAC_BoundaryNodes() {
+		return (EReference) nacEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getNAC_Edges() {
+		return (EReference) nacEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getNAC_AttributeConditionLibrary() {
+		return (EReference) nacEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getDomainType() {
 		return domainTypeEEnum;
 	}
@@ -523,6 +584,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		tggRuleEClass = createEClass(TGG_RULE);
 		createEReference(tggRuleEClass, TGG_RULE__REFINES);
 		createEReference(tggRuleEClass, TGG_RULE__COMPLEMENTS);
+		createEReference(tggRuleEClass, TGG_RULE__NACS);
 		createEReference(tggRuleEClass, TGG_RULE__NODES);
 		createEReference(tggRuleEClass, TGG_RULE__EDGES);
 		createEReference(tggRuleEClass, TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY);
@@ -548,6 +610,12 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		createEReference(tggRuleEdgeEClass, TGG_RULE_EDGE__SRC_NODE);
 		createEReference(tggRuleEdgeEClass, TGG_RULE_EDGE__TRG_NODE);
 		createEReference(tggRuleEdgeEClass, TGG_RULE_EDGE__TYPE);
+
+		nacEClass = createEClass(NAC);
+		createEReference(nacEClass, NAC__NODES);
+		createEReference(nacEClass, NAC__BOUNDARY_NODES);
+		createEReference(nacEClass, NAC__EDGES);
+		createEReference(nacEClass, NAC__ATTRIBUTE_CONDITION_LIBRARY);
 
 		// Create enums
 		domainTypeEEnum = createEEnum(DOMAIN_TYPE);
@@ -602,6 +670,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		tggRuleNodeEClass.getESuperTypes().add(this.getTGGRuleElement());
 		tggRuleCorrEClass.getESuperTypes().add(this.getTGGRuleNode());
 		tggRuleEdgeEClass.getESuperTypes().add(this.getTGGRuleElement());
+		nacEClass.getESuperTypes().add(theBasicPackage.getTGGNamedElement());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(tggEClass, language.TGG.class, "TGG", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -629,6 +698,9 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		initEReference(getTGGRule_Complements(), this.getTGGRule(), null, "complements", null, 0, 1, TGGRule.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Nacs(), this.getNAC(), null, "nacs", null, 0, -1, TGGRule.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 		initEReference(getTGGRule_Nodes(), this.getTGGRuleNode(), null, "nodes", null, 0, -1, TGGRule.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -692,6 +764,20 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(nacEClass, language.NAC.class, "NAC", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getNAC_Nodes(), this.getTGGRuleNode(), null, "nodes", null, 0, -1, language.NAC.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getNAC_BoundaryNodes(), this.getTGGRuleNode(), null, "boundaryNodes", null, 0, -1,
+				language.NAC.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getNAC_Edges(), this.getTGGRuleEdge(), null, "edges", null, 0, -1, language.NAC.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getNAC_AttributeConditionLibrary(), theCspPackage.getTGGAttributeConstraintLibrary(), null,
+				"attributeConditionLibrary", null, 1, 1, language.NAC.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		// Initialize enums and add enum literals
 		initEEnum(domainTypeEEnum, DomainType.class, "DomainType");
 		addEEnumLiteral(domainTypeEEnum, DomainType.SRC);
@@ -701,7 +787,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		initEEnum(bindingTypeEEnum, BindingType.class, "BindingType");
 		addEEnumLiteral(bindingTypeEEnum, BindingType.CONTEXT);
 		addEEnumLiteral(bindingTypeEEnum, BindingType.CREATE);
-		addEEnumLiteral(bindingTypeEEnum, BindingType.NEGATIVE);
 
 		// Create resource
 		createResource(eNS_URI);

@@ -99,6 +99,11 @@ public class LanguageAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseNAC(NAC object) {
+			return createNACAdapter();
+		}
+
+		@Override
 		public Adapter caseTGGNamedElement(TGGNamedElement object) {
 			return createTGGNamedElementAdapter();
 		}
@@ -203,6 +208,20 @@ public class LanguageAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createTGGRuleEdgeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link language.NAC <em>NAC</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see language.NAC
+	 * @generated
+	 */
+	public Adapter createNACAdapter() {
 		return null;
 	}
 

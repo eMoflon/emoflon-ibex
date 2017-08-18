@@ -67,6 +67,15 @@ public interface LanguageFactory extends EFactory {
 	TGGRuleEdge createTGGRuleEdge();
 
 	/**
+	 * Returns a new object of class '<em>NAC</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>NAC</em>'.
+	 * @generated
+	 */
+	NAC createNAC();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

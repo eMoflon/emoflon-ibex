@@ -5,6 +5,7 @@ package language.impl;
 import java.util.Collection;
 
 import language.LanguagePackage;
+import language.NAC;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -38,6 +39,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <ul>
  *   <li>{@link language.impl.TGGRuleImpl#getRefines <em>Refines</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getComplements <em>Complements</em>}</li>
+ *   <li>{@link language.impl.TGGRuleImpl#getNacs <em>Nacs</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
@@ -67,6 +69,16 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * @ordered
 	 */
 	protected TGGRule complements;
+
+	/**
+	 * The cached value of the '{@link #getNacs() <em>Nacs</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getNacs()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<NAC> nacs;
 
 	/**
 	 * The cached value of the '{@link #getNodes() <em>Nodes</em>}' containment reference list.
@@ -194,6 +206,18 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<NAC> getNacs() {
+		if (nacs == null) {
+			nacs = new EObjectContainmentEList<NAC>(NAC.class, this, LanguagePackage.TGG_RULE__NACS);
+		}
+		return nacs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EList<TGGRuleNode> getNodes() {
 		if (nodes == null) {
 			nodes = new EObjectContainmentEList<TGGRuleNode>(TGGRuleNode.class, this, LanguagePackage.TGG_RULE__NODES);
@@ -295,6 +319,8 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
+		case LanguagePackage.TGG_RULE__NACS:
+			return ((InternalEList<?>) getNacs()).basicRemove(otherEnd, msgs);
 		case LanguagePackage.TGG_RULE__NODES:
 			return ((InternalEList<?>) getNodes()).basicRemove(otherEnd, msgs);
 		case LanguagePackage.TGG_RULE__EDGES:
@@ -319,6 +345,8 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 			if (resolve)
 				return getComplements();
 			return basicGetComplements();
+		case LanguagePackage.TGG_RULE__NACS:
+			return getNacs();
 		case LanguagePackage.TGG_RULE__NODES:
 			return getNodes();
 		case LanguagePackage.TGG_RULE__EDGES:
@@ -346,6 +374,10 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 			return;
 		case LanguagePackage.TGG_RULE__COMPLEMENTS:
 			setComplements((TGGRule) newValue);
+			return;
+		case LanguagePackage.TGG_RULE__NACS:
+			getNacs().clear();
+			getNacs().addAll((Collection<? extends NAC>) newValue);
 			return;
 		case LanguagePackage.TGG_RULE__NODES:
 			getNodes().clear();
@@ -379,6 +411,9 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		case LanguagePackage.TGG_RULE__COMPLEMENTS:
 			setComplements((TGGRule) null);
 			return;
+		case LanguagePackage.TGG_RULE__NACS:
+			getNacs().clear();
+			return;
 		case LanguagePackage.TGG_RULE__NODES:
 			getNodes().clear();
 			return;
@@ -407,6 +442,8 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 			return refines != null && !refines.isEmpty();
 		case LanguagePackage.TGG_RULE__COMPLEMENTS:
 			return complements != null;
+		case LanguagePackage.TGG_RULE__NACS:
+			return nacs != null && !nacs.isEmpty();
 		case LanguagePackage.TGG_RULE__NODES:
 			return nodes != null && !nodes.isEmpty();
 		case LanguagePackage.TGG_RULE__EDGES:

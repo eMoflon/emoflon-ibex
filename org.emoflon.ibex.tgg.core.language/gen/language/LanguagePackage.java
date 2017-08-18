@@ -179,13 +179,22 @@ public interface LanguagePackage extends EPackage {
 	int TGG_RULE__COMPLEMENTS = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Nacs</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__NACS = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 2;
+
+	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__NODES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 2;
+	int TGG_RULE__NODES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
@@ -194,7 +203,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__EDGES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 3;
+	int TGG_RULE__EDGES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The feature id for the '<em><b>Attribute Condition Library</b></em>' containment reference.
@@ -203,7 +212,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 4;
+	int TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 5;
 
 	/**
 	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
@@ -212,7 +221,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__ABSTRACT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 5;
+	int TGG_RULE__ABSTRACT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The number of structural features of the '<em>TGG Rule</em>' class.
@@ -221,7 +230,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_FEATURE_COUNT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 6;
+	int TGG_RULE_FEATURE_COUNT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 7;
 
 	/**
 	 * The number of operations of the '<em>TGG Rule</em>' class.
@@ -606,6 +615,79 @@ public interface LanguagePackage extends EPackage {
 	int TGG_RULE_EDGE_OPERATION_COUNT = TGG_RULE_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link language.impl.NACImpl <em>NAC</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see language.impl.NACImpl
+	 * @see language.impl.LanguagePackageImpl#getNAC()
+	 * @generated
+	 */
+	int NAC = 6;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAC__NAME = BasicPackage.TGG_NAMED_ELEMENT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAC__NODES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Boundary Nodes</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAC__BOUNDARY_NODES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAC__EDGES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Condition Library</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAC__ATTRIBUTE_CONDITION_LIBRARY = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 3;
+
+	/**
+	 * The number of structural features of the '<em>NAC</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAC_FEATURE_COUNT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 4;
+
+	/**
+	 * The number of operations of the '<em>NAC</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAC_OPERATION_COUNT = BasicPackage.TGG_NAMED_ELEMENT_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link language.DomainType <em>Domain Type</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -613,7 +695,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getDomainType()
 	 * @generated
 	 */
-	int DOMAIN_TYPE = 6;
+	int DOMAIN_TYPE = 7;
 
 	/**
 	 * The meta object id for the '{@link language.BindingType <em>Binding Type</em>}' enum.
@@ -623,7 +705,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getBindingType()
 	 * @generated
 	 */
-	int BINDING_TYPE = 7;
+	int BINDING_TYPE = 8;
 
 	/**
 	 * Returns the meta object for class '{@link language.TGG <em>TGG</em>}'.
@@ -721,6 +803,17 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 */
 	EReference getTGGRule_Complements();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link language.TGGRule#getNacs <em>Nacs</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Nacs</em>'.
+	 * @see language.TGGRule#getNacs()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_Nacs();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link language.TGGRule#getNodes <em>Nodes</em>}'.
@@ -950,6 +1043,60 @@ public interface LanguagePackage extends EPackage {
 	EReference getTGGRuleEdge_Type();
 
 	/**
+	 * Returns the meta object for class '{@link language.NAC <em>NAC</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>NAC</em>'.
+	 * @see language.NAC
+	 * @generated
+	 */
+	EClass getNAC();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link language.NAC#getNodes <em>Nodes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Nodes</em>'.
+	 * @see language.NAC#getNodes()
+	 * @see #getNAC()
+	 * @generated
+	 */
+	EReference getNAC_Nodes();
+
+	/**
+	 * Returns the meta object for the reference list '{@link language.NAC#getBoundaryNodes <em>Boundary Nodes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Boundary Nodes</em>'.
+	 * @see language.NAC#getBoundaryNodes()
+	 * @see #getNAC()
+	 * @generated
+	 */
+	EReference getNAC_BoundaryNodes();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link language.NAC#getEdges <em>Edges</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Edges</em>'.
+	 * @see language.NAC#getEdges()
+	 * @see #getNAC()
+	 * @generated
+	 */
+	EReference getNAC_Edges();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link language.NAC#getAttributeConditionLibrary <em>Attribute Condition Library</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Attribute Condition Library</em>'.
+	 * @see language.NAC#getAttributeConditionLibrary()
+	 * @see #getNAC()
+	 * @generated
+	 */
+	EReference getNAC_AttributeConditionLibrary();
+
+	/**
 	 * Returns the meta object for enum '{@link language.DomainType <em>Domain Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1068,6 +1215,14 @@ public interface LanguagePackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_RULE__COMPLEMENTS = eINSTANCE.getTGGRule_Complements();
+
+		/**
+		 * The meta object literal for the '<em><b>Nacs</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__NACS = eINSTANCE.getTGGRule_Nacs();
 
 		/**
 		 * The meta object literal for the '<em><b>Nodes</b></em>' containment reference list feature.
@@ -1244,6 +1399,48 @@ public interface LanguagePackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_RULE_EDGE__TYPE = eINSTANCE.getTGGRuleEdge_Type();
+
+		/**
+		 * The meta object literal for the '{@link language.impl.NACImpl <em>NAC</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see language.impl.NACImpl
+		 * @see language.impl.LanguagePackageImpl#getNAC()
+		 * @generated
+		 */
+		EClass NAC = eINSTANCE.getNAC();
+
+		/**
+		 * The meta object literal for the '<em><b>Nodes</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference NAC__NODES = eINSTANCE.getNAC_Nodes();
+
+		/**
+		 * The meta object literal for the '<em><b>Boundary Nodes</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference NAC__BOUNDARY_NODES = eINSTANCE.getNAC_BoundaryNodes();
+
+		/**
+		 * The meta object literal for the '<em><b>Edges</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference NAC__EDGES = eINSTANCE.getNAC_Edges();
+
+		/**
+		 * The meta object literal for the '<em><b>Attribute Condition Library</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference NAC__ATTRIBUTE_CONDITION_LIBRARY = eINSTANCE.getNAC_AttributeConditionLibrary();
 
 		/**
 		 * The meta object literal for the '{@link language.DomainType <em>Domain Type</em>}' enum.
