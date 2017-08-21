@@ -24,7 +24,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
-import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 // <-- [user defined imports]
 // [user defined imports] -->
@@ -37,7 +36,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * The following features are implemented:
  * <ul>
  *   <li>{@link language.impl.NACImpl#getNodes <em>Nodes</em>}</li>
- *   <li>{@link language.impl.NACImpl#getBoundaryNodes <em>Boundary Nodes</em>}</li>
  *   <li>{@link language.impl.NACImpl#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.impl.NACImpl#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  * </ul>
@@ -55,16 +53,6 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 	 * @ordered
 	 */
 	protected EList<TGGRuleNode> nodes;
-
-	/**
-	 * The cached value of the '{@link #getBoundaryNodes() <em>Boundary Nodes</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getBoundaryNodes()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<TGGRuleNode> boundaryNodes;
 
 	/**
 	 * The cached value of the '{@link #getEdges() <em>Edges</em>}' containment reference list.
@@ -115,19 +103,6 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 			nodes = new EObjectContainmentEList<TGGRuleNode>(TGGRuleNode.class, this, LanguagePackage.NAC__NODES);
 		}
 		return nodes;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList<TGGRuleNode> getBoundaryNodes() {
-		if (boundaryNodes == null) {
-			boundaryNodes = new EObjectResolvingEList<TGGRuleNode>(TGGRuleNode.class, this,
-					LanguagePackage.NAC__BOUNDARY_NODES);
-		}
-		return boundaryNodes;
 	}
 
 	/**
@@ -222,8 +197,6 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 		switch (featureID) {
 		case LanguagePackage.NAC__NODES:
 			return getNodes();
-		case LanguagePackage.NAC__BOUNDARY_NODES:
-			return getBoundaryNodes();
 		case LanguagePackage.NAC__EDGES:
 			return getEdges();
 		case LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY:
@@ -244,10 +217,6 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 		case LanguagePackage.NAC__NODES:
 			getNodes().clear();
 			getNodes().addAll((Collection<? extends TGGRuleNode>) newValue);
-			return;
-		case LanguagePackage.NAC__BOUNDARY_NODES:
-			getBoundaryNodes().clear();
-			getBoundaryNodes().addAll((Collection<? extends TGGRuleNode>) newValue);
 			return;
 		case LanguagePackage.NAC__EDGES:
 			getEdges().clear();
@@ -271,9 +240,6 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 		case LanguagePackage.NAC__NODES:
 			getNodes().clear();
 			return;
-		case LanguagePackage.NAC__BOUNDARY_NODES:
-			getBoundaryNodes().clear();
-			return;
 		case LanguagePackage.NAC__EDGES:
 			getEdges().clear();
 			return;
@@ -294,8 +260,6 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 		switch (featureID) {
 		case LanguagePackage.NAC__NODES:
 			return nodes != null && !nodes.isEmpty();
-		case LanguagePackage.NAC__BOUNDARY_NODES:
-			return boundaryNodes != null && !boundaryNodes.isEmpty();
 		case LanguagePackage.NAC__EDGES:
 			return edges != null && !edges.isEmpty();
 		case LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY:

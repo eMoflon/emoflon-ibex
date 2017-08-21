@@ -53,7 +53,6 @@
     </genClasses>
     <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/nodes"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/boundaryNodes"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/edges"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/attributeConditionLibrary"/>
     </genClasses>

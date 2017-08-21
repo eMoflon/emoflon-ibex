@@ -29,6 +29,8 @@ import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.AttributeAssignment;
 import org.moflon.tgg.mosl.tgg.AttributeConstraint;
 import org.moflon.tgg.mosl.tgg.AttributeExpression;
+import org.moflon.tgg.mosl.tgg.ContextLinkVariablePattern;
+import org.moflon.tgg.mosl.tgg.ContextObjectVariablePattern;
 import org.moflon.tgg.mosl.tgg.CorrType;
 import org.moflon.tgg.mosl.tgg.CorrVariablePattern;
 import org.moflon.tgg.mosl.tgg.EnumExpression;
@@ -36,18 +38,20 @@ import org.moflon.tgg.mosl.tgg.Expression;
 import org.moflon.tgg.mosl.tgg.LinkVariablePattern;
 import org.moflon.tgg.mosl.tgg.LiteralExpression;
 import org.moflon.tgg.mosl.tgg.LocalVariable;
+import org.moflon.tgg.mosl.tgg.Nac;
 import org.moflon.tgg.mosl.tgg.ObjectVariablePattern;
 import org.moflon.tgg.mosl.tgg.Operator;
 import org.moflon.tgg.mosl.tgg.Param;
 import org.moflon.tgg.mosl.tgg.ParamValue;
 import org.moflon.tgg.mosl.tgg.Rule;
+import org.moflon.tgg.mosl.tgg.TggFactory;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 import org.moflon.util.LogUtils;
-
 
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
+import language.NAC;
 import language.TGG;
 import language.TGGRule;
 import language.TGGRuleCorr;
@@ -136,7 +140,7 @@ public class EditorTGGtoInternalTGG {
 			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule.getTargetPatterns(), DomainType.TRG));
 			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextRule.getCorrespondencePatterns()));
 
-			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule));
+			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule.getNodes()));
 
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
@@ -148,10 +152,59 @@ public class EditorTGGtoInternalTGG {
                                                                  .collect(Collectors.toList()));
         }
 
+        // translate nacs
+        for (Nac xtextNac : xtextTGG.getNacs()) {
+			NAC tggNac = LanguageFactory.eINSTANCE.createNAC();
+			tggNac.setName(xtextNac.getName());
+			TGGRule rule = (TGGRule) xtextToTGG.get(xtextNac.getRule());
+			rule.getNacs().add(tggNac);
+			map(xtextNac, tggNac);
+			
+			tggNac.getNodes().addAll(createTGGRuleNodes(toOVPatterns(xtextNac.getSourcePatterns()), DomainType.SRC));
+			tggNac.getNodes().addAll(createTGGRuleNodes(toOVPatterns(xtextNac.getTargetPatterns()), DomainType.TRG));
+			
+			tggNac.getEdges().addAll(createTGGRuleEdges(tggNac.getNodes()));
+			
+			tggNac.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextNac.getAttrConditions()));
+		}
+        
 		tgg = addOppositeEdges(tgg);
 		tgg = sortTGGAttributeConstraints(tgg);
 
 		return tgg;
+	}
+
+	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {
+		return patterns.stream()
+				.map(p -> toOVPattern(p))
+				.collect(Collectors.toList());
+	}
+
+	private HashMap<ContextObjectVariablePattern, ObjectVariablePattern> cOVtoOV = new HashMap<>();
+	private ObjectVariablePattern toOVPattern(ContextObjectVariablePattern cp) {
+		if (!cOVtoOV.containsKey(cp)) {
+			ObjectVariablePattern ovP = TggFactory.eINSTANCE.createObjectVariablePattern();
+			ovP.setName(cp.getName());
+			ovP.setType(cp.getType());
+			cOVtoOV.put(cp, ovP);
+			ovP.getAttributeConstraints().addAll(cp.getAttributeConstraints());
+			ovP.getLinkVariablePatterns().addAll(toLPPatterns(cp.getLinkVariablePatterns()));
+		}
+		
+		return cOVtoOV.get(cp);
+	}
+
+	private Collection<? extends LinkVariablePattern> toLPPatterns(Collection<ContextLinkVariablePattern> linkVariablePatterns) {
+		return linkVariablePatterns.stream()
+				.map(p -> toLVPattern(p))
+				.collect(Collectors.toList());
+	}
+
+	private LinkVariablePattern toLVPattern(ContextLinkVariablePattern p) {
+		LinkVariablePattern lvP = TggFactory.eINSTANCE.createLinkVariablePattern();
+		lvP.setType(p.getType());
+		lvP.setTarget(toOVPattern(p.getTarget()));
+		return lvP;
 	}
 
 	private TGGAttributeConstraintDefinitionLibrary createAttributeConditionDefinitionLibrary(
@@ -237,10 +290,10 @@ public class EditorTGGtoInternalTGG {
 		return parameterDefinition;
 	}
 
-	private Collection<TGGRuleEdge> createTGGRuleEdges(TGGRule tggRule) {
+	private Collection<TGGRuleEdge> createTGGRuleEdges(Collection<TGGRuleNode> nodes) {
 		ArrayList<TGGRuleEdge> result = new ArrayList<>();
 
-		for (TGGRuleNode node : tggRule.getNodes()) {
+		for (TGGRuleNode node : nodes) {
 			if (node.getDomainType() == DomainType.SRC || node.getDomainType() == DomainType.TRG) {
 				ObjectVariablePattern ov = (ObjectVariablePattern) tggToXtext.get(node);
 				for (LinkVariablePattern lv : ov.getLinkVariablePatterns()) {

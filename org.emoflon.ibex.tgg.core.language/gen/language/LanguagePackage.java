@@ -643,22 +643,13 @@ public interface LanguagePackage extends EPackage {
 	int NAC__NODES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Boundary Nodes</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int NAC__BOUNDARY_NODES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 1;
-
-	/**
 	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int NAC__EDGES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 2;
+	int NAC__EDGES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Attribute Condition Library</b></em>' containment reference.
@@ -667,7 +658,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NAC__ATTRIBUTE_CONDITION_LIBRARY = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 3;
+	int NAC__ATTRIBUTE_CONDITION_LIBRARY = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of structural features of the '<em>NAC</em>' class.
@@ -676,7 +667,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NAC_FEATURE_COUNT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 4;
+	int NAC_FEATURE_COUNT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of operations of the '<em>NAC</em>' class.
@@ -1064,17 +1055,6 @@ public interface LanguagePackage extends EPackage {
 	EReference getNAC_Nodes();
 
 	/**
-	 * Returns the meta object for the reference list '{@link language.NAC#getBoundaryNodes <em>Boundary Nodes</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Boundary Nodes</em>'.
-	 * @see language.NAC#getBoundaryNodes()
-	 * @see #getNAC()
-	 * @generated
-	 */
-	EReference getNAC_BoundaryNodes();
-
-	/**
 	 * Returns the meta object for the containment reference list '{@link language.NAC#getEdges <em>Edges</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1417,14 +1397,6 @@ public interface LanguagePackage extends EPackage {
 		 * @generated
 		 */
 		EReference NAC__NODES = eINSTANCE.getNAC_Nodes();
-
-		/**
-		 * The meta object literal for the '<em><b>Boundary Nodes</b></em>' reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference NAC__BOUNDARY_NODES = eINSTANCE.getNAC_BoundaryNodes();
 
 		/**
 		 * The meta object literal for the '<em><b>Edges</b></em>' containment reference list feature.

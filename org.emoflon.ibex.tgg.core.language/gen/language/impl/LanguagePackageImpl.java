@@ -505,7 +505,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getNAC_BoundaryNodes() {
+	public EReference getNAC_Edges() {
 		return (EReference) nacEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -514,17 +514,8 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getNAC_Edges() {
-		return (EReference) nacEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getNAC_AttributeConditionLibrary() {
-		return (EReference) nacEClass.getEStructuralFeatures().get(3);
+		return (EReference) nacEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -613,7 +604,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 
 		nacEClass = createEClass(NAC);
 		createEReference(nacEClass, NAC__NODES);
-		createEReference(nacEClass, NAC__BOUNDARY_NODES);
 		createEReference(nacEClass, NAC__EDGES);
 		createEReference(nacEClass, NAC__ATTRIBUTE_CONDITION_LIBRARY);
 
@@ -768,9 +758,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		initEReference(getNAC_Nodes(), this.getTGGRuleNode(), null, "nodes", null, 0, -1, language.NAC.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getNAC_BoundaryNodes(), this.getTGGRuleNode(), null, "boundaryNodes", null, 0, -1,
-				language.NAC.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getNAC_Edges(), this.getTGGRuleEdge(), null, "edges", null, 0, -1, language.NAC.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

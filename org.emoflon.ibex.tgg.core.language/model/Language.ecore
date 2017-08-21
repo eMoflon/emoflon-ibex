@@ -68,8 +68,6 @@
   <eClassifiers xsi:type="ecore:EClass" name="NAC" eSuperTypes="#//basic/TGGNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
         eType="#//TGGRuleNode" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="boundaryNodes" upperBound="-1"
-        eType="#//TGGRuleNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
         eType="#//TGGRuleEdge" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConditionLibrary"

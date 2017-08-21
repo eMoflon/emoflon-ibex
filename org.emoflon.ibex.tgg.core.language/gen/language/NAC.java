@@ -19,7 +19,6 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * <ul>
  *   <li>{@link language.NAC#getNodes <em>Nodes</em>}</li>
- *   <li>{@link language.NAC#getBoundaryNodes <em>Boundary Nodes</em>}</li>
  *   <li>{@link language.NAC#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.NAC#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  * </ul>
@@ -45,22 +44,6 @@ public interface NAC extends TGGNamedElement {
 	 * @generated
 	 */
 	EList<TGGRuleNode> getNodes();
-
-	/**
-	 * Returns the value of the '<em><b>Boundary Nodes</b></em>' reference list.
-	 * The list contents are of type {@link language.TGGRuleNode}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Boundary Nodes</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Boundary Nodes</em>' reference list.
-	 * @see language.LanguagePackage#getNAC_BoundaryNodes()
-	 * @model
-	 * @generated
-	 */
-	EList<TGGRuleNode> getBoundaryNodes();
 
 	/**
 	 * Returns the value of the '<em><b>Edges</b></em>' containment reference list.
