@@ -448,8 +448,8 @@ public abstract class OperationalStrategy {
 	}
 
 	protected void revokeOperationalRule(TGGRuleApplication ruleApplication, IMatch match) {
-		revokeEdges(ruleApplication, match);
 		revokeNodes(ruleApplication);
+		revokeEdges(ruleApplication, match);
 		EcoreUtil.delete(ruleApplication);
 	}
 
