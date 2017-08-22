@@ -9,8 +9,11 @@ public class BWDWithRefinementsPattern extends BWDPattern {
 		super(factory.getFlattenedVersionOfRule(), factory);
 	}
 	
+	@Override
 	protected void createPatternNetwork() {
 		addTGGPositiveInvocation(factory.create(BWDForRefinementInvocationsContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgTranslationAndFilterACsWithRefinementPattern.class));
+		
+		collectNACs();
 	}
 }

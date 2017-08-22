@@ -17,11 +17,11 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.compiler.patterns.common.ConstraintPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsWithRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.SearchEdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTranslationStatePattern;
 
@@ -89,10 +89,9 @@ public class PatternFactory {
 	 * For every created edge in the pattern that has a 0..n multiplicity, a pattern is created which ensures that the multiplicity 
 	 * is not violated by applying the rule.  These patterns are meant to be negatively invoked.
 	 * 
-	 * @param pattern The pattern used for the analysis.
 	 * @return All patterns that should be negatively invoked to prevent violations of all 0..n multiplicities.
 	 */    
-	public Collection<IbexPattern> createPatternsForMultiplicityConstraints(RulePartPattern pattern) {
+	public Collection<IbexPattern> createPatternsForMultiplicityConstraints() {
 		TGGRule flattenedRule = compiler.getFlattenedVersionOfRule(rule);
 		
         // collect edges that need a multiplicity NAC
@@ -163,10 +162,9 @@ public class PatternFactory {
 	 * is computed which ensures that the target node is not already contained in another reference.
 	 * These patterns are meant to be negatively invoked.
 	 * 
-	 * @param pattern The pattern for which the negative patterns are computed.
 	 * @return All patterns that should be negatively invoked to prevent violations of containment.
 	 */
-	public Collection<IbexPattern> createPatternsForContainmentReferenceConstraints(RulePartPattern pattern) {
+	public Collection<IbexPattern> createPatternsForContainmentReferenceConstraints() {
 		TGGRule flattenedRule = compiler.getFlattenedVersionOfRule(rule);
 
         // collect edges that need a multiplicity NAC
@@ -249,6 +247,10 @@ public class PatternFactory {
 	
 	public IbexPattern createFilterACPatterns(DomainType domain) {
 		return createPattern(rule.getName() + ForbidAllFilterACsPattern.getPatternNameSuffix(domain), () -> new ForbidAllFilterACsPattern(domain, this));
+	}
+	
+	public IbexPattern createFilterACWithRefimenentsPatterns(DomainType domain) {
+		return createPattern(rule.getName() + ForbidAllFilterACsPattern.getPatternNameSuffix(domain), () -> new ForbidAllFilterACsWithRefinementsPattern(domain, this));
 	}
 
 	public IbexPattern createFilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, Collection<TGGRule> savingRules) {

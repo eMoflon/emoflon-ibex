@@ -17,8 +17,8 @@ public class CCWithRefinementsPattern extends CCPattern {
 		addTGGPositiveInvocation(factory.create(CCForRefinementInvocationsPattern.class));
 		
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
-			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
-			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
+			addTGGPositiveInvocation(factory.createFilterACWithRefimenentsPatterns(DomainType.SRC));
+			addTGGPositiveInvocation(factory.createFilterACWithRefimenentsPatterns(DomainType.TRG));
 		}
 	}
 

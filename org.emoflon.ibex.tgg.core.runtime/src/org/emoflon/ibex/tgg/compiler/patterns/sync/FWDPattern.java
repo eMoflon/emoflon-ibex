@@ -1,10 +1,15 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.ConstraintPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 
@@ -33,6 +38,23 @@ public class FWDPattern extends RulePartPattern {
 		addTGGPositiveInvocation(factory.create(SrcTranslationAndFilterACsPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
+		
+		collectNACs();
+	}
+	
+	protected void collectNACs() {
+		Collection<IbexPattern> nacs = factory.createPatternsForMultiplicityConstraints();
+		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
+		
+		addTGGNegativeInvocations(nacs.stream().filter(n -> {
+			Optional<TGGRuleElement> e = ((ConstraintPattern)n).getSignatureElements().stream().findAny();
+			DomainType domain = DomainType.SRC;
+			if (e.isPresent()) {
+				domain = e.get().getDomainType();
+			}
+			
+			return domain.equals(DomainType.TRG);
+		}).collect(Collectors.toList()));
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public class MODELGENWithRefinementsPattern extends MODELGENPattern {
 	@Override
 	protected void createPatternNetwork() {
 		addTGGPositiveInvocation(factory.create(MODELGENForRefinementInvocationsPattern.class));
-		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints(this));
-		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints(this));
+		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints());
+		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints());
 	}
 }

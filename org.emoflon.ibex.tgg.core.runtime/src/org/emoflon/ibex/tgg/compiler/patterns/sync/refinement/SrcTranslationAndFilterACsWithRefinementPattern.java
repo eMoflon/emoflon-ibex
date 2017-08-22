@@ -17,6 +17,6 @@ public class SrcTranslationAndFilterACsWithRefinementPattern extends SrcTranslat
 		addTGGPositiveInvocation(factory.create(SrcTranslationACWithRefinementsPattern.class));
 		
 		if(PatternFactory.strategy != FilterACStrategy.NONE)
-			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
+			addTGGPositiveInvocation(factory.createFilterACWithRefimenentsPatterns(DomainType.SRC));
 	}
 }

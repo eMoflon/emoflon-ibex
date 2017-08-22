@@ -20,8 +20,8 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class ForbidAllFilterACsPattern extends RulePartPattern {
-	private DomainType domain;
-	private PatternFactory factory;
+	protected DomainType domain;
+	protected PatternFactory factory;
 
 	public ForbidAllFilterACsPattern(DomainType domain, PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());
@@ -50,7 +50,7 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 		}
 	}
 
-	private void addDECPatternsAsTGGNegativeInvocations(TGGRule rule, DomainType domain) {
+	protected void addDECPatternsAsTGGNegativeInvocations(TGGRule rule, DomainType domain) {
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
 

@@ -9,9 +9,12 @@ public class FWDWithRefinementsPattern extends FWDPattern {
 		super(factory.getFlattenedVersionOfRule(), factory);
 	}
 	
+	@Override
 	protected void createPatternNetwork() {
 		addTGGPositiveInvocation(factory.create(FWDForRefinementInvocationsContextPattern.class));
 		addTGGPositiveInvocation(factory.create(SrcTranslationAndFilterACsWithRefinementPattern.class));
+		
+		collectNACs();
 	}
 
 }
