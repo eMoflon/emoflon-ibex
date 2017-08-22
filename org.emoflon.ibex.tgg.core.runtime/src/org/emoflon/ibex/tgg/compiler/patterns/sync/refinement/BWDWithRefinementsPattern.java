@@ -14,6 +14,7 @@ public class BWDWithRefinementsPattern extends BWDPattern {
 		addTGGPositiveInvocation(factory.create(BWDForRefinementInvocationsContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgTranslationAndFilterACsWithRefinementPattern.class));
 		
-		collectNACs();
+		collectGeneratedNACs();
+		addTGGNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
 	}
 }

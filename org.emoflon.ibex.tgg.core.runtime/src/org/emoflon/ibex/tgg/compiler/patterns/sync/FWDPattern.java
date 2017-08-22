@@ -39,10 +39,12 @@ public class FWDPattern extends RulePartPattern {
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 		
-		collectNACs();
+		collectGeneratedNACs();
+		
+		addTGGNegativeInvocations(factory.createPatternsForUserDefinedTargetNACs());
 	}
 	
-	protected void collectNACs() {
+	protected void collectGeneratedNACs() {
 		Collection<IbexPattern> nacs = factory.createPatternsForMultiplicityConstraints();
 		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
 		

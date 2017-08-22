@@ -22,12 +22,12 @@ public abstract class IbexPattern {
 	protected TGGRule rule;
 
 	/**
-	 * each positive pattern invocation for a pattern pat corresponds to the following text find pat(<<signature elements of pat separated with ",">>);
+	 * Each positive pattern invocation for a pattern pat corresponds to: find pat(<<signature elements of pat separated with ",">>);
 	 */
 	private Collection<IbexPattern> positiveInvocations = new HashSet<>();
 
 	/**
-	 * each negative pattern invocation for a pattern pat corresponds to the following text neg find pat(<<signature elements of pat separated with ",">>);
+	 * Each negative pattern invocation for a pattern pat corresponds to: neg find pat(<<signature elements of pat separated with ",">>);
 	 */
 	private Collection<IbexPattern> negativeInvocations = new HashSet<>();
 	
@@ -35,17 +35,7 @@ public abstract class IbexPattern {
 	private Map<IbexPattern, Collection<Map<TGGRuleElement, TGGRuleElement>>> inverseInvocationVariableMappings = new HashMap<>();
 	private Map<IbexPattern, Collection<TGGRuleElement>> invocationUnmappedVariables = new HashMap<>();
 
-	/**
-	 * each signature element e of a pattern corresponds to a parameter:
-	 * 
-	 * pattern(e1 : <type of e1>, e2: <type of e2,...)
-	 * 
-	 * <type of e> is Edge if e is a TGGRuleEdge
-	 */
-	// protected Collection<TGGRuleElement> signatureElements;
-
 	private Collection<TGGRuleNode> bodyNodes;
-
 	private Collection<TGGRuleEdge> bodyEdges;
 
 	protected IbexPattern() {
@@ -61,7 +51,49 @@ public abstract class IbexPattern {
 		bodyNodes = calculateBodyNodes(rule.getNodes());
 		bodyEdges = calculateBodyEdges(rule.getEdges());
 	}
+	
+	/**
+	 * Auxiliary method used by {@link #calculateBodyEdges(Collection)} to
+	 * decide if e should be part of this pattern or not.
+	 * 
+	 * @param e
+	 *            An edge of the underlying TGG rule of this pattern
+	 * @return true if e should be a body edge of the pattern, otherwise e is
+	 *         not part of the pattern
+	 */
+	protected abstract boolean isRelevantForBody(TGGRuleEdge e);
 
+	/**
+	 * Auxiliary method used by {@link #calculateBodyNodes(Collection)} to
+	 * decide if n should be part of this pattern or not.
+	 * 
+	 * @param n
+	 *            A node of the underlying TGG rule of this pattern
+	 * @return true if n should be a body node of the pattern, otherwise n is
+	 *         not part of the pattern
+	 */
+	protected abstract boolean isRelevantForBody(TGGRuleNode n);
+
+	/**
+	 * Used by {@link #getSignatureElements()} to determine the signature of
+	 * this pattern. All variables in a pattern are divided into either local
+	 * variables or signature variables. This distinction is based on if any
+	 * external component is interested in the computed values of a certain
+	 * variable or not. If this is not the case then the variable should be
+	 * declared as being local to the pattern as this improves efficiency.
+	 * 
+	 * @param e
+	 *            An edge or a node of the underlying TGG rule.
+	 * @return true if e should be part of the patterns signature or not.
+	 */
+	public abstract boolean isRelevantForSignature(TGGRuleElement e);
+
+
+	/**
+	 * Each signature element e of a pattern corresponds to a parameter:
+	 * 
+	 * pattern(e1 : <type of e1>, e2: <type of e2,...)
+	 */
 	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule) {
 		return rule.getNodes().stream().filter(e -> isRelevantForSignature(e)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
@@ -77,10 +109,6 @@ public abstract class IbexPattern {
 		signatureElements.stream().filter(e -> isRelevantForBody(e)).forEach(e -> result.add((TGGRuleNode) e));
 		return result;
 	}
-
-	protected abstract boolean isRelevantForBody(TGGRuleEdge e);
-
-	protected abstract boolean isRelevantForBody(TGGRuleNode n);
 
 	public Collection<TGGRuleNode> getBodyNodes() {
 		return bodyNodes;
@@ -101,8 +129,6 @@ public abstract class IbexPattern {
 	public Collection<TGGRuleEdge> getBodyEdges() {
 		return bodyEdges;
 	}
-
-	public abstract boolean isRelevantForSignature(TGGRuleElement e);
 
 	public String getName() {
 		return rule.getName() + getPatternNameSuffix();
@@ -148,7 +174,9 @@ public abstract class IbexPattern {
 	}
 	
 	/**
-	 * This methods adds a standard tgg mapping based on the names in both this and the invoked pattern
+	 * This methods adds a standard tgg mapping based on the names in both this
+	 * and the invoked pattern
+	 * 
 	 * @param invocationPattern
 	 */
 	protected void addVariableMapping(IbexPattern invocationPattern) {

@@ -39,10 +39,12 @@ public class BWDPattern extends RulePartPattern {
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));
 		
-		collectNACs();
+		collectGeneratedNACs();
+		
+		addTGGNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
 	}
 	
-	protected void collectNACs() {
+	protected void collectGeneratedNACs() {
 		Collection<IbexPattern> nacs = factory.createPatternsForMultiplicityConstraints();
 		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
 		

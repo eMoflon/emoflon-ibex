@@ -27,6 +27,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTransla
 
 import language.BindingType;
 import language.DomainType;
+import language.NAC;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -259,5 +260,44 @@ public class PatternFactory {
 
 	public IbexPattern createSearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
 		return createPattern(rule.getName() + SearchEdgePattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new SearchEdgePattern(entryPoint, edgeType, eDirection, this));
+	}
+
+	private Collection<IbexPattern> createPatternsForUserDefinedNACs(DomainType domain){
+		return rule.getNacs().stream()
+				.filter(nac -> hasElementWithDomain(nac, domain))
+				.map(nac -> createPattern(nac.getName(), () -> new ConstraintPattern(rule, getSignatureElementsFromNAC(nac), getBodyElementsFromNAC(nac), nac.getName())))
+				.collect(Collectors.toList());
+	}
+	
+	public Collection<IbexPattern> createPatternsForUserDefinedSourceNACs() {		
+		return createPatternsForUserDefinedNACs(DomainType.SRC);
+	}
+	
+	private Collection<TGGRuleElement> getSignatureElementsFromNAC(NAC nac) {
+		ArrayList<TGGRuleElement> sigElements = new ArrayList<>();
+		sigElements.addAll(nac.getEdges());
+		sigElements.addAll(nac.getNodes());
+		sigElements.removeAll(getBodyElementsFromNAC(nac));
+		return sigElements;
+	}
+
+	private Collection<TGGRuleElement> getBodyElementsFromNAC(NAC nac) {
+		ArrayList<TGGRuleElement> bodyElements = new ArrayList<>();
+		bodyElements.addAll(nac.getEdges());
+		bodyElements.removeIf(e -> rule.getEdges().stream().anyMatch(re -> re.getName().equals(e.getName())));
+		
+		bodyElements.addAll(nac.getNodes());
+		bodyElements.removeIf(n -> rule.getNodes().stream().anyMatch(rn -> rn.getName().equals(n.getName())));
+		
+		return bodyElements;
+	}
+
+	private boolean hasElementWithDomain(NAC nac, DomainType domain) {
+		return nac.getNodes().stream().anyMatch(node -> node.getDomainType().equals(domain)) ||
+		       nac.getEdges().stream().anyMatch(edge -> edge.getDomainType().equals(domain));
+	}
+
+	public Collection<IbexPattern> createPatternsForUserDefinedTargetNACs() {
+		return createPatternsForUserDefinedNACs(DomainType.TRG);
 	}
 }

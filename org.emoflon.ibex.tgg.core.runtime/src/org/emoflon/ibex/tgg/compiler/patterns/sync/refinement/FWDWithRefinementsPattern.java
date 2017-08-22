@@ -14,7 +14,8 @@ public class FWDWithRefinementsPattern extends FWDPattern {
 		addTGGPositiveInvocation(factory.create(FWDForRefinementInvocationsContextPattern.class));
 		addTGGPositiveInvocation(factory.create(SrcTranslationAndFilterACsWithRefinementPattern.class));
 		
-		collectNACs();
+		collectGeneratedNACs();
+		addTGGNegativeInvocations(factory.createPatternsForUserDefinedTargetNACs());
 	}
 
 }
