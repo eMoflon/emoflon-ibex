@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.ConstraintPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
@@ -49,7 +49,7 @@ public class FWDPattern extends RulePartPattern {
 		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
 		
 		addTGGNegativeInvocations(nacs.stream().filter(n -> {
-			Optional<TGGRuleElement> e = ((ConstraintPattern)n).getSignatureElements().stream().findAny();
+			Optional<TGGRuleElement> e = ((NacPattern)n).getSignatureElements().stream().findAny();
 			DomainType domain = DomainType.SRC;
 			if (e.isPresent()) {
 				domain = e.get().getDomainType();

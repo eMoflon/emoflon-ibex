@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
-import org.emoflon.ibex.tgg.compiler.patterns.common.ConstraintPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
@@ -151,7 +151,7 @@ public class PatternFactory {
 					+ "Edge"
 					+ "_Multiplicity";
 			
-			negativePatterns.add(createPattern(patternName, () -> new ConstraintPattern(rule, signatureElements, bodyElements, patternName)));
+			negativePatterns.add(createPattern(patternName, () -> new NacPattern(rule, signatureElements, bodyElements, patternName)));
         }
         
         return negativePatterns;
@@ -199,7 +199,7 @@ public class PatternFactory {
 					+ e.getTrgNode().getName()
 					+ "_Containment";
 			
-			negativePatterns.add(createPattern(patternName, () -> new ConstraintPattern(rule, signatureElements, bodyElements, patternName)));
+			negativePatterns.add(createPattern(patternName, () -> new NacPattern(rule, signatureElements, bodyElements, patternName)));
         }
         
         return negativePatterns;
@@ -265,7 +265,7 @@ public class PatternFactory {
 	private Collection<IbexPattern> createPatternsForUserDefinedNACs(DomainType domain){
 		return rule.getNacs().stream()
 				.filter(nac -> hasElementWithDomain(nac, domain))
-				.map(nac -> createPattern(nac.getName(), () -> new ConstraintPattern(rule, getSignatureElementsFromNAC(nac), getBodyElementsFromNAC(nac), nac.getName())))
+				.map(nac -> createPattern(nac.getName(), () -> new NacPattern(rule, getSignatureElementsFromNAC(nac), getBodyElementsFromNAC(nac), nac.getName())))
 				.collect(Collectors.toList());
 	}
 	
