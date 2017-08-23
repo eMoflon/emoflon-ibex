@@ -9,10 +9,11 @@ import java.util.stream.Collectors;
 import language.*;
 
 /**
- * The ConstraintPattern can be used to implement application constraints for a {@link TGGRule}.
- * It extends {@link RulePartPattern} by allowing elements in the body and signature that are not part of the rule.
+ * This class can be used to implement application conditions for a
+ * {@link TGGRule}. It extends {@link RulePartPattern} by allowing elements in
+ * the body and signature that are not part of the rule.
  */
-public class ConstraintPattern extends RulePartPattern {
+public class NacPattern extends RulePartPattern {
 	private Collection<TGGRuleElement> signatureElements = new ArrayList<>();
 	private Collection<TGGRuleNode> bodyNodes = new ArrayList<>();
 	private Collection<TGGRuleEdge> bodyEdges = new ArrayList<>();
@@ -20,12 +21,19 @@ public class ConstraintPattern extends RulePartPattern {
 	private String constraintName;
 	
 	/**
-	 * Creates a new ConstraintPattern. The body and signature are initialized with the given parameters.
-	 * @param rule The {@link TGGRule} that this constraint belongs to.
-	 * @param signatureElements The {@link TGGElements} that shall be part of this constraint's signature.
-	 * @param bodyElements The {@link TGGElements} that shall be part of this constraint, but not part of the signature).
+	 * Creates a new ConstraintPattern. The body and signature are initialized
+	 * with the given parameters.
+	 * 
+	 * @param rule
+	 *            The {@link TGGRule} that this constraint belongs to.
+	 * @param signatureElements
+	 *            The {@link TGGElements} that shall be part of this
+	 *            constraint's signature.
+	 * @param bodyElements
+	 *            The {@link TGGElements} that shall be part of this constraint,
+	 *            but not part of the signature).
 	 */
-	public ConstraintPattern(TGGRule rule, Collection<TGGRuleElement> signatureElements, Collection<TGGRuleElement> bodyElements, String name) {
+	public NacPattern(TGGRule rule, Collection<TGGRuleElement> signatureElements, Collection<TGGRuleElement> bodyElements, String name) {
 		this.rule = rule;
 		this.constraintName = "_" + name;
 		this.signatureElements = signatureElements;
@@ -84,10 +92,12 @@ public class ConstraintPattern extends RulePartPattern {
 		return this.bodyEdges;
 	}
 
+	/**
+	 * When invoking a NAC we know that all signature elements have already been
+	 * checked for injectivity in the invoking rule.
+	 */
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		return false;
+		return signatureElements.contains(node1) && signatureElements.contains(node2);
 	}
-
-
 }

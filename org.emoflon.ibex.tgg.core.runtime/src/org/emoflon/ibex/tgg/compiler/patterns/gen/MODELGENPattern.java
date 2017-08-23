@@ -40,6 +40,9 @@ public class MODELGENPattern extends RulePartPattern {
 		
 		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints());
 		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints());
+		
+		addTGGNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
+		addTGGNegativeInvocations(factory.createPatternsForUserDefinedTargetNACs());
 	}
 
 	@Override

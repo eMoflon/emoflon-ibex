@@ -49,6 +49,18 @@ public abstract class RulePartPattern extends IbexPattern {
 		return injectivityCheckPairs;
 	}
 	
+	/**
+	 * Based on knowledge about how this pattern is invoked or used, you can
+	 * choose to filter out pairs for which you know injectivity has already
+	 * been checked. This speeds up the matching process as this pair of
+	 * variables is excluded from {@link #getInjectivityChecks()} and does not
+	 * have to be checked.
+	 * 
+	 * @param node1
+	 * @param node2
+	 * @return true if this pair can be excluded from the injectivity check for
+	 *         this pattern.
+	 */
 	abstract protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2);
 	
 
