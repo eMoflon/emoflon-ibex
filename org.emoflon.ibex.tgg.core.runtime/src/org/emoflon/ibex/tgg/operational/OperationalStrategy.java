@@ -221,12 +221,20 @@ public abstract class OperationalStrategy {
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
-		IMatch match = this.updatePolicy.chooseOneMatch(operationalMatchContainer);
+		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
 		return true;
+	}
+
+	protected IMatch chooseOneMatch() {
+		IMatch match = updatePolicy.chooseOneMatch(operationalMatchContainer);
+		if(match == null)
+			throw new IllegalStateException("Update policies should never return null!");
+		
+		return match;
 	}
 
 	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {

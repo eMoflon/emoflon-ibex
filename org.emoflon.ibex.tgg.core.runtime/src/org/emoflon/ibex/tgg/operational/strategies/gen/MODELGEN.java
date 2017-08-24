@@ -69,7 +69,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 		if(stopCriterion.dont() || operationalMatchContainer.isEmpty())
 			return false;
 		
-		IMatch match = this.updatePolicy.chooseOneMatch(operationalMatchContainer);
+		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		if(stopCriterion.dont(ruleName))
 			removeOperationalRuleMatch(match);
