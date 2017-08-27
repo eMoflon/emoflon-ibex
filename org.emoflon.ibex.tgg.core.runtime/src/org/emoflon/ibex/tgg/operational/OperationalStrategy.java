@@ -99,6 +99,12 @@ public abstract class OperationalStrategy {
 		initialiseEngine();
 		loadModels();
 	}
+	
+	public void resetPatternMatchingEngine() throws IOException{
+		createAndPrepareResourceSet();
+		engine.initialiseAgain(rs);
+		loadModels();
+	}
 
 	protected abstract void registerUserMetamodels() throws IOException;
 
