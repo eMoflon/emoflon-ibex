@@ -14,6 +14,8 @@ public class MODELGENStopCriterion {
 	
 	private long timeOutInMS = -1;
 
+	private int maxElementCount = -1;
+
 	private int currentSrcCount;
 	private int maxSrcCount = -1;
 
@@ -37,6 +39,10 @@ public class MODELGENStopCriterion {
 	
 	public void setTimeOutInMS(long timeOutInMS) {
 		this.timeOutInMS = timeOutInMS;
+	}
+
+	public void setMaxElementCount(int maxElementCount) {
+		this.maxElementCount = maxElementCount;
 	}
 
 	public void setMaxSrcCount(int maxSrcCount) {
@@ -72,6 +78,9 @@ public class MODELGENStopCriterion {
 			return true;
 
 		if (maxTrgCount != -1 && maxTrgCount <= currentTrgCount)
+			return true;
+
+		if (maxElementCount != -1 && maxElementCount <= currentSrcCount + currentTrgCount)
 			return true;
 
 		if (timeOutInMS != -1 && System.currentTimeMillis() - startTime > timeOutInMS)
