@@ -86,7 +86,7 @@ public abstract class OperationalStrategy {
 		options.debug(debug);
 		options.useFlattenedTGG(flatten);
 		options.projectPath(projectPath);
-		
+
 		this.updatePolicy = policy;
 	}
 
@@ -112,22 +112,20 @@ public abstract class OperationalStrategy {
 	abstract public boolean isPatternRelevant(String patternName);
 
 	public void addOperationalRuleMatch(String ruleName, IMatch match) {
-		if(matchIsDomainConform(ruleName, match))
+		if (matchIsDomainConform(ruleName, match))
 			operationalMatchContainer.addMatch(ruleName, match);
 	}
 
 	private boolean matchIsDomainConform(String ruleName, IMatch match) {
-		if(domainsHaveNoSharedTypes) return true;
-	
-		return matchedNodesAreInCorrectResource(s, ruleInfos.getBlackSrcNodes(ruleName), match) &&
-			   matchedNodesAreInCorrectResource(s, ruleInfos.getGreenSrcNodes(ruleName), match) &&
-			   matchedNodesAreInCorrectResource(t, ruleInfos.getBlackTrgNodes(ruleName), match) &&
-			   matchedNodesAreInCorrectResource(t, ruleInfos.getGreenTrgNodes(ruleName), match);
+		if (domainsHaveNoSharedTypes)
+			return true;
+
+		return matchedNodesAreInCorrectResource(s, ruleInfos.getBlackSrcNodes(ruleName), match) && matchedNodesAreInCorrectResource(s, ruleInfos.getGreenSrcNodes(ruleName), match)
+				&& matchedNodesAreInCorrectResource(t, ruleInfos.getBlackTrgNodes(ruleName), match) && matchedNodesAreInCorrectResource(t, ruleInfos.getGreenTrgNodes(ruleName), match);
 	}
-	
-	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, IMatch match){
-		return nodes.stream().noneMatch(n -> match.isInMatch(n.getName()) && 
-											 !nodeIsInResource(match, n.getName(), r));
+
+	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, IMatch match) {
+		return nodes.stream().noneMatch(n -> match.isInMatch(n.getName()) && !nodeIsInResource(match, n.getName(), r));
 	}
 
 	private boolean nodeIsInResource(IMatch match, String name, Resource r) {
@@ -162,7 +160,7 @@ public abstract class OperationalStrategy {
 
 		ruleInfos = new RuleInfos(options.flattenedTGG());
 		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG());
-		
+
 		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
 	}
 
@@ -247,19 +245,16 @@ public abstract class OperationalStrategy {
 		if (match.patternName().endsWith(PatternSuffixes.BWD) && !markingTrg())
 			return false;
 
-		if (match.patternName().endsWith(PatternSuffixes.FWD) && ruleInfos.getGreenSrcNodes(ruleName).isEmpty()
-															  && ruleInfos.getGreenSrcEdges(ruleName).isEmpty())
+		if (match.patternName().endsWith(PatternSuffixes.FWD) && ruleInfos.getGreenSrcNodes(ruleName).isEmpty() && ruleInfos.getGreenSrcEdges(ruleName).isEmpty())
 			return false;
 
-		if (match.patternName().endsWith(PatternSuffixes.BWD) && ruleInfos.getGreenTrgNodes(ruleName).isEmpty()
-															  && ruleInfos.getGreenTrgEdges(ruleName).isEmpty())
+		if (match.patternName().endsWith(PatternSuffixes.BWD) && ruleInfos.getGreenTrgNodes(ruleName).isEmpty() && ruleInfos.getGreenTrgEdges(ruleName).isEmpty())
 			return false;
 
 		if (someElementsAlreadyProcessed(ruleName, match))
 			return false;
 
-		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(
-				ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
+		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
 		if (!cspContainer.solve())
 			return false;
 
@@ -280,14 +275,12 @@ public abstract class OperationalStrategy {
 		if (manipulateSrc()) {
 			ManipulationUtil.createNonCorrNodes(match, comatch, ruleInfos.getGreenSrcNodes(ruleName), s);
 		}
-		Collection<RuntimeEdge> srcEdges = ManipulationUtil.createEdges(match, comatch,
-				ruleInfos.getGreenSrcEdges(ruleName), manipulateSrc());
+		Collection<RuntimeEdge> srcEdges = ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenSrcEdges(ruleName), manipulateSrc());
 
 		if (manipulateTrg()) {
 			ManipulationUtil.createNonCorrNodes(match, comatch, ruleInfos.getGreenTrgNodes(ruleName), t);
 		}
-		Collection<RuntimeEdge> trgEdges = ManipulationUtil.createEdges(match, comatch,
-				ruleInfos.getGreenTrgEdges(ruleName), manipulateTrg());
+		Collection<RuntimeEdge> trgEdges = ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenTrgEdges(ruleName), manipulateTrg());
 
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
 		applyCSPValues(comatch, cspValues);
@@ -315,12 +308,11 @@ public abstract class OperationalStrategy {
 
 		ra.setName(ruleName);
 
-		fillProtocolInfo(ruleInfos.getGreenSrcNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedSrc(),
-				createdElements, match);
-		fillProtocolInfo(ruleInfos.getGreenTrgNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedTrg(),
-				createdElements, match);
-		fillProtocolInfo(ruleInfos.getGreenCorrNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedCorr(),
-				createdElements, match);
+		fillProtocolInfo(ruleInfos.getGreenSrcNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedSrc(), createdElements, match);
+		fillProtocolInfo(ruleInfos.getGreenTrgNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedTrg(), createdElements, match);
+		fillProtocolInfo(ruleInfos.getGreenCorrNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedCorr(), createdElements, match);
+		addProtocolContextEdges(ruleInfos.getBlackSrcNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_ContextSrc(), match);
+		addProtocolContextEdges(ruleInfos.getBlackTrgNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_ContextTrg(), match);
 
 		ra.getNodeMappings().putAll(createdElements);
 		match.parameterNames().forEach(n -> {
@@ -335,11 +327,16 @@ public abstract class OperationalStrategy {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void fillProtocolInfo(Collection<? extends TGGRuleElement> ruleInfos, TGGRuleApplication protocol,
-			EStructuralFeature feature, HashMap<String, EObject> createdElements, IMatch match) {
+	private void fillProtocolInfo(Collection<? extends TGGRuleElement> ruleInfos, TGGRuleApplication protocol, EStructuralFeature feature, HashMap<String, EObject> createdElements, IMatch match) {
 		ruleInfos.forEach(e -> {
-			((EList) protocol.eGet(feature))
-					.add(ManipulationUtil.getVariableByName(e.getName(), createdElements, match));
+			((EList) protocol.eGet(feature)).add(ManipulationUtil.getVariableByName(e.getName(), createdElements, match));
+		});
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void addProtocolContextEdges(Collection<? extends TGGRuleElement> ruleInfos, TGGRuleApplication protocol, EStructuralFeature feature, IMatch match) {
+		ruleInfos.forEach(e -> {
+			((EList) protocol.eGet(feature)).add(match.get(e.getName()));
 		});
 	}
 
@@ -378,10 +375,8 @@ public abstract class OperationalStrategy {
 			EReference ref = edge.getType();
 
 			if (src == null | trg == null | ref == null)
-				throw new IllegalStateException(
-						"The match " + match.patternName() + " is invalid for this operational strategy (the edge -"
-								+ ref.getName() + "-> appears to be expected but is missing)!  "
-								+ "Are you sure you have implemented isPatternRelevant correctly?");
+				throw new IllegalStateException("The match " + match.patternName() + " is invalid for this operational strategy (the edge -" + ref.getName() + "-> appears to be expected but is missing)!  "
+						+ "Are you sure you have implemented isPatternRelevant correctly?");
 
 			if (markedEdges.contains(new RuntimeEdge(src, trg, ref)))
 				return true;
@@ -401,8 +396,7 @@ public abstract class OperationalStrategy {
 		return true;
 	}
 
-	protected void applyCSPValues(HashMap<String, EObject> comatch,
-			Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
+	protected void applyCSPValues(HashMap<String, EObject> comatch, Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
 		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
 			EObject entry = comatch.get(cspVal.getLeft().getObjectVar().getName());
 			if (entry != null) {
@@ -427,7 +421,9 @@ public abstract class OperationalStrategy {
 		return true;
 	}
 
-	/***** Methods for reacting to broken matches of consistency patterns ******/
+	/*****
+	 * Methods for reacting to broken matches of consistency patterns
+	 ******/
 
 	public void addBrokenMatch(IMatch match) {
 		TGGRuleApplication ra = (TGGRuleApplication) match.get("eMoflon_ProtocolNode");
@@ -506,6 +502,14 @@ public abstract class OperationalStrategy {
 		return t;
 	}
 
+	public Resource getProtocolResource() {
+		return p;
+	}
+
+	public Resource getCorrespondenceResource() {
+		return c;
+	}
+
 	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
 		return runtimeConstraintProvider;
 	}
@@ -541,7 +545,7 @@ public abstract class OperationalStrategy {
 	public TGG getTGG() {
 		return options.tgg();
 	}
-	
+
 	public void setUpdatePolicy(UpdatePolicy updatePolicy) {
 		if (updatePolicy == null)
 			throw new NullPointerException("UpdatePolicy must not be set to null.");
