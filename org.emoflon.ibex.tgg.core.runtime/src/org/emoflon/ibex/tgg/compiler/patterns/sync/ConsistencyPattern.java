@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -40,13 +39,12 @@ public class ConsistencyPattern extends IbexPattern {
 		createPatternNetwork();
 	}
 	
-	private void createPatternNetwork() {
+	protected void createPatternNetwork() {
 		createMarkedInvocations(PatternFactory.getMarkedPatterns());
 		addTGGPositiveInvocation(factory.create(WholeRulePattern.class));
-		addContextEdges();
 	}
 	
-	private void addProtocolNode() {
+	public void addProtocolNode() {
 		protocolNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
 		protocolNode.setName(getProtocolNodeName());
 		protocolNode.setType(RuntimePackage.eINSTANCE.getTGGRuleApplication());
@@ -63,27 +61,7 @@ public class ConsistencyPattern extends IbexPattern {
 		this.getBodyNodes().add(protocolNode);
 	}
 	
-	private void addContextEdges() {
-		// concat all elements of this pattern into one collection
-		Collection<TGGRuleNode> ruleEls = getBodySrcTrgNodes();
-		ruleEls.addAll(getSignatureElements().stream().filter(e -> e instanceof TGGRuleNode).map(e -> (TGGRuleNode) e).collect(Collectors.toList()));
-		
-		// for all elements that are not the protocol node
-		for(TGGRuleNode el : ruleEls.stream().distinct().filter(e -> !e.equals(protocolNode)).collect(Collectors.toList())) {
-			if(el.getDomainType() == DomainType.CORR || el.getBindingType() != BindingType.CONTEXT)
-				continue;
-			
-			// create a contextSrc or contextTrg edge
-			TGGRuleEdge contextEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
-			contextEdge.setName(el.getDomainType() == DomainType.SRC ? "contextSrc" : "contextTrg");
-			contextEdge.setType(el.getDomainType() == DomainType.SRC ? RuntimePackage.eINSTANCE.getTGGRuleApplication_ContextSrc() : RuntimePackage.eINSTANCE.getTGGRuleApplication_ContextTrg());
-			contextEdge.setSrcNode(protocolNode);
-			contextEdge.setTrgNode(el);
-			this.getBodyEdges().add(contextEdge);
-		}
-	}
-	
-	protected void createMarkedInvocations(Collection<CheckTranslationStatePattern> markedPatterns) {
+	public void createMarkedInvocations(Collection<CheckTranslationStatePattern> markedPatterns) {
 		TGGRuleNode protocolNode = (TGGRuleNode) getSignatureElements().stream().filter(e -> ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).findAny().get();
 		
 		for (TGGRuleElement el : getSignatureElements()) {
