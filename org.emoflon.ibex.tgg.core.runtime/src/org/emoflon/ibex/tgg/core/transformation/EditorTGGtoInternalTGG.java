@@ -10,24 +10,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.core.transformation.csp.sorting.CSPSearchPlanMode;
 import org.emoflon.ibex.tgg.core.transformation.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
-import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.moflon.tgg.mosl.tgg.Adornment;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
@@ -52,8 +47,6 @@ import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TggFactory;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 import org.moflon.util.LogUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 import language.BindingType;
 import language.DomainType;
@@ -114,31 +107,13 @@ public class EditorTGGtoInternalTGG {
 				IFile tggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.INTERNAL_TGG_MODEL_EXTENSION);
 				IbexTGGBuilder.saveModelInProject(tggFile, rs, p.getTggModel());
 				IFile flattenedTggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.INTERNAL_TGG_FLATTENED_MODEL_EXTENSION);
-				Resource int_model_flat_res = IbexTGGBuilder.saveModelInProject(flattenedTggFile, rs, p.getFlattenedTggModel());
-			
-				// the visualized internal model is only created if non existent so that we can keep it consistent and the visualization only changes minimally
-				IFile flattenedVisTggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.INTERNAL_TGG_VIS_MODEL_EXTENSION);
-				if(!flattenedVisTggFile.exists())
-					IbexTGGBuilder.saveModelInProject(flattenedVisTggFile, rs, p.getFlattenedTggModel());
-				else {
-					Resource int_model_flat_vis_res = IbexTGGBuilder.loadModelInProject(flattenedVisTggFile, rs);		
-					keepTGGVisModelConsistent(project, int_model_flat_res, int_model_flat_vis_res);
-					int_model_flat_vis_res.save(null);
-//					IbexTGGBuilder.saveModelInProject(flattenedVisTggFile, rs, p.getFlattenedTggModel());
-				}
+				IbexTGGBuilder.saveModelInProject(flattenedTggFile, rs, p.getFlattenedTggModel());
 			} catch (IOException e) {
 				LogUtils.error(logger, e);
 			}
 		});
 		
 		return tggProject;
-	}
-
-	private void keepTGGVisModelConsistent(IProject project, Resource srcRes, Resource trgRes) {
-		CC cc = new IDTGGExtension(srcRes, trgRes).performCC();
-		if(cc == null) 
-			return;
-		SYNC sync = new IDTGGExtension(srcRes, trgRes, cc).performSYNC();
 	}
 
 	private TGG createTGG(TripleGraphGrammarFile xtextTGG) {
