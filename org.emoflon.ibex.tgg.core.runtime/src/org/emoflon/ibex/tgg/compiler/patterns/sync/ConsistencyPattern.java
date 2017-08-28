@@ -43,7 +43,8 @@ public class ConsistencyPattern extends IbexPattern {
 	private void createPatternNetwork() {
 		createMarkedInvocations(PatternFactory.getMarkedPatterns());
 		addTGGPositiveInvocation(factory.create(WholeRulePattern.class));
-		addContextEdges();
+//		FIXME[Fritsche] profile addContextEdges. Why is it slowing everything down?
+//		addContextEdges();
 	}
 	
 	private void addProtocolNode() {
