@@ -1,4 +1,3 @@
-
 package org.emoflon.ibex.tgg.compiler.defaults
 
 import java.util.Collection
