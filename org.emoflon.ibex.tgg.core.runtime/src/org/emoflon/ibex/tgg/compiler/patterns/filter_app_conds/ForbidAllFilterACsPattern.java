@@ -1,12 +1,16 @@
 package org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
@@ -22,11 +26,13 @@ import language.TGGRuleNode;
 public class ForbidAllFilterACsPattern extends RulePartPattern {
 	protected DomainType domain;
 	protected PatternFactory factory;
+	protected IbexPatternOptimiser optimiser;
 
 	public ForbidAllFilterACsPattern(DomainType domain, PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());
 		this.factory = factory;
 		this.domain = domain;
+		optimiser = new IbexPatternOptimiser();
 
 		initialize();
 		
@@ -51,6 +57,8 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 	}
 
 	protected void addDECPatternsAsTGGNegativeInvocations(TGGRule rule, DomainType domain) {
+		final Collection<IbexPattern> filterNACs = new ArrayList<>();
+		
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
 
@@ -66,11 +74,21 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 					if (onlyPossibleEdgeIsAlreadyTranslatedInRule(n, eType, eDirection)) continue;
 					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg)) continue;
 		
+					// Collect all Filter NACs, but do not add them yet as negative invocations
 					if(thereIsNoSavingRule(domain, eType, eDirection, tgg))
-						addTGGNegativeInvocation(factory.createFilterACPattern(n, eType, eDirection, determineSavingRules(domain, eType, eDirection, tgg)));					
+						filterNACs.add(factory.createFilterACPattern(n, eType, eDirection));					
 				}
 			}
 		}
+		
+		// Use optimiser to remove some of the filter NACs
+		final Collection<IbexPattern> optimisedFilterNACs = filterNACs.stream()
+							   .filter(nac -> !optimiser.isRedundantDueToEMFContainmentSemantics(nac))
+							   .filter(nac -> !optimiser.ignoreDueToEOppositeSemantics(nac, filterNACs))
+							   .collect(Collectors.toList());
+		
+		// Add all remaining filter NACs now as negative invocations
+		addTGGNegativeInvocations(optimisedFilterNACs);
 	}
 
 	private boolean thereIsNoSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
