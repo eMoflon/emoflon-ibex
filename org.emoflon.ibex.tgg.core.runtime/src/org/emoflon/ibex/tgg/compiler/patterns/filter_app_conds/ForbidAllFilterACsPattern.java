@@ -84,8 +84,9 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 		// Use optimiser to remove some of the filter NACs
 		final Collection<IbexPattern> optimisedFilterNACs = filterNACs.stream()
 							   .filter(nac -> !optimiser.isRedundantDueToEMFContainmentSemantics(nac))
-							   .filter(nac -> !optimiser.ignoreDueToEOppositeSemantics(nac, filterNACs))
 							   .collect(Collectors.toList());
+		
+		optimisedFilterNACs.removeAll(optimiser.ignoreDueToEOppositeSemantics(optimisedFilterNACs));
 		
 		// Add all remaining filter NACs now as negative invocations
 		addTGGNegativeInvocations(optimisedFilterNACs);

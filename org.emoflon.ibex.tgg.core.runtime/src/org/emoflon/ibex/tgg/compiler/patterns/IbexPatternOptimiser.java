@@ -146,7 +146,7 @@ public class IbexPatternOptimiser {
 	public boolean isRedundantDueToEMFContainmentSemantics(IbexPattern filterNAC) {
 		// Premise is the only positive invocation
 		assert(filterNAC.getPositiveInvocations().size() == 1);
-		IbexPattern premise = filterNAC.getPositiveInvocations().iterator().next();
+		IbexPattern premise = premise(filterNAC);
 		
 		// Check for expected structure:  three nodes and two edges
 		if(premise.getBodyNodes().size() == 3 && premise.getBodyEdges().size() == 2){
@@ -166,16 +166,49 @@ public class IbexPatternOptimiser {
 	}
 
 	/**
-	 * If the premise of a filter NAC consists of two nodes connected by an edge e, and there
-	 * exists another filter NAC with a premise with the same two nodes but with e' = eOpposte(e)
-	 * then one of these filter NACs can be removed.
+	 * If the premise of a filter NAC consists of two nodes connected by an edge
+	 * e, and there exists another filter NAC with a premise with the same two
+	 * nodes but with e' = eOpposte(e) then one of these filter NACs can be
+	 * removed.
 	 * 
-	 * @param nac
-	 * @return true If there exists another "eOpposite" 
+	 * @param allFilterNACs
+	 * @return filter NACs that can be safely ignored
 	 */
-	public boolean ignoreDueToEOppositeSemantics(IbexPattern filterNAC, Collection<IbexPattern> allFilterNACs) {
-		// TODO[Anjorin]
+	public Collection<IbexPattern> ignoreDueToEOppositeSemantics(Collection<IbexPattern> allFilterNACs) {
+		List<IbexPattern> candidates = allFilterNACs
+			.stream()
+			.filter(nac -> nac.getPositiveInvocations().size() == 1)
+			.filter(nac -> premiseHasTwoNodesAndOneEdge(nac.getPositiveInvocations().iterator().next()))
+			.collect(Collectors.toList());
+		
+		return candidates
+				.stream()
+				.filter(nac -> {
+					return allFilterNACs.stream().anyMatch(otherNAC -> isGreaterEOpposite(premise(otherNAC), premise(nac)));
+				})
+				.collect(Collectors.toList());
+	}
+
+	private boolean isGreaterEOpposite(IbexPattern premise1, IbexPattern premise2) {
+		TGGRuleEdge e1 = premise1.getBodyEdges().iterator().next();
+		TGGRuleEdge e2 = premise2.getBodyEdges().iterator().next();
+		
+		if(e2.getType().equals(e1.getType().getEOpposite())){
+			if(e1.getSrcNode().getName().equals(e2.getTrgNode().getName()) || 
+			   e1.getTrgNode().getName().equals(e2.getSrcNode().getName())){
+				return e1.getType().getName().compareTo(e2.getType().getName()) >= 0;
+			}
+		}
+		
 		return false;
+	}
+
+	private IbexPattern premise(IbexPattern nac) {
+		return nac.getPositiveInvocations().iterator().next();
+	}
+
+	private boolean premiseHasTwoNodesAndOneEdge(IbexPattern premise) {
+		return premise.getBodyNodes().size() == 2 && premise.getBodyEdges().size() == 1;
 	}
 	
 }
