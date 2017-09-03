@@ -143,7 +143,8 @@ public abstract class OperationalStrategy {
 	abstract public void loadModels() throws IOException;
 
 	protected void initialiseEngine() throws IOException {
-		engine.initialise(rs, this, options);
+		engine.initialise(rs.getPackageRegistry(), this, options);
+		engine.monitor(rs);
 	}
 
 	public void terminate() throws IOException {
