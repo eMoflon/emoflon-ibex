@@ -19,7 +19,18 @@ Export-Package: language,
  language.inplaceAttributes.impl,
  language.inplaceAttributes.util,
  language.util,
- org.emoflon.ibex.tgg.core.transformation
+ net.sf.javabdd,
+ org.emoflon.ibex.tgg.core.transformation,
+ org.emoflon.ibex.tgg.core.transformation.csp.sorting,
+ org.gervarro.democles.common,
+ org.gervarro.democles.common.emf,
+ org.gervarro.democles.common.runtime,
+ org.gervarro.democles.event,
+ org.gervarro.democles.plan,
+ org.gervarro.democles.plan.common,
+ org.gervarro.democles.specification,
+ org.gervarro.democles.specification.impl,
+ org.gervarro.extension
 Bundle-Name: org.emoflon.ibex.tgg.core.language
 Bundle-Version: 1.0.0.qualifier
 Bundle-ManifestVersion: 2
