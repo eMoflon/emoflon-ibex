@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 
@@ -24,16 +23,16 @@ public class IbexPatternOptimiser {
 	 * @param nodes The pair of nodes between which a unequal-constraint might be necessary.
 	 * @return true, if the pair requires an unequal-constraint.
 	 */
-	public boolean unequalConstraintNecessary(Pair<TGGRuleNode, TGGRuleNode> nodes) {
-		return !unequalConstantAttributeValues(nodes)
-			&& !transitiveContainment(nodes)
-			&& !differentContainmentSubTrees(nodes);
+	public boolean unequalConstraintNecessary(TGGRuleNode left, TGGRuleNode right) {
+		return !unequalConstantAttributeValues(left, right)
+			&& !transitiveContainment(left, right)
+			&& !differentContainmentSubTrees(left, right);
 	}
 
-	private boolean unequalConstantAttributeValues(Pair<TGGRuleNode, TGGRuleNode> nodes) {
-		for (TGGInplaceAttributeExpression attrExprLeft : nodes.getLeft().getAttrExpr()) {
+	private boolean unequalConstantAttributeValues(TGGRuleNode left, TGGRuleNode right) {
+		for (TGGInplaceAttributeExpression attrExprLeft : left.getAttrExpr()) {
 			if (attrExprLeft.getValueExpr() instanceof TGGLiteralExpression)
-				for (TGGInplaceAttributeExpression attrExprRight : nodes.getRight().getAttrExpr()) {
+				for (TGGInplaceAttributeExpression attrExprRight : right.getAttrExpr()) {
 					if (attrExprRight.getValueExpr() instanceof TGGLiteralExpression && attrExprLeft.getAttribute().equals(attrExprRight.getAttribute()))
 						if (!((TGGLiteralExpression)attrExprLeft.getValueExpr()).getValue().equals(((TGGLiteralExpression)attrExprRight.getValueExpr()).getValue())) {
 							return true;
@@ -44,25 +43,25 @@ public class IbexPatternOptimiser {
 		return false;
 	}
 
-	private boolean transitiveContainment(Pair<TGGRuleNode, TGGRuleNode> nodes) {
-		List<TGGRuleNode> leftHierarchy = containmentHierarchyFromNodeToRoot(nodes.getLeft());
-		List<TGGRuleNode> rightHierarchy = containmentHierarchyFromNodeToRoot(nodes.getRight());
+	private boolean transitiveContainment(TGGRuleNode left, TGGRuleNode right) {
+		List<TGGRuleNode> leftHierarchy = containmentHierarchyFromNodeToRoot(left);
+		List<TGGRuleNode> rightHierarchy = containmentHierarchyFromNodeToRoot(right);
 		
-		for (TGGRuleNode left : leftHierarchy) {
-			if (left.equals(nodes.getRight()))
+		for (TGGRuleNode leftHierNode : leftHierarchy) {
+			if (leftHierNode.equals(right))
 				return true;
 		}
-		for (TGGRuleNode right : rightHierarchy) {
-			if (right.equals(nodes.getLeft()))
+		for (TGGRuleNode rightHierNode : rightHierarchy) {
+			if (rightHierNode.equals(left))
 				return true;
 		}
 		
 		return false;
 	}
 
-	private boolean differentContainmentSubTrees(Pair<TGGRuleNode, TGGRuleNode> nodes) {
-		List<TGGRuleNode> leftHierarchy = containmentHierarchyFromNodeToRoot(nodes.getLeft());
-		List<TGGRuleNode> rightHierarchy = containmentHierarchyFromNodeToRoot(nodes.getRight());
+	private boolean differentContainmentSubTrees(TGGRuleNode left, TGGRuleNode right) {
+		List<TGGRuleNode> leftHierarchy = containmentHierarchyFromNodeToRoot(left);
+		List<TGGRuleNode> rightHierarchy = containmentHierarchyFromNodeToRoot(right);
 		
 		// if one of the nodes is the root of its tree, both nodes cannot be in different sub-trees
 		if (leftHierarchy.size() <= 1 || rightHierarchy.size() <= 1)

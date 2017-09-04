@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EClass;
+import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 
 import language.TGGRule;
 import language.TGGRuleNode;
@@ -34,13 +35,16 @@ public abstract class RulePartPattern extends IbexPattern {
 		nodes = nodes.stream().distinct().collect(Collectors.toList());
 		
 		Collection<Pair<TGGRuleNode, TGGRuleNode>> injectivityCheckPairs = new ArrayList<>();
+		IbexPatternOptimiser optimiser = new IbexPatternOptimiser();
 		for(int i = 0; i < nodes.size(); i++){
 			for(int j = i+1; j < nodes.size(); j++){
 				TGGRuleNode nodeI = nodes.get(i);
 				TGGRuleNode nodeJ = nodes.get(j);
 				if(compatibleTypes(nodeI.getType(), nodeJ.getType())){
 					if(!injectivityIsAlreadyChecked(nodeI, nodeJ)){
-						injectivityCheckPairs.add(MutablePair.of(nodeI, nodeJ));
+						if (optimiser.unequalConstraintNecessary(nodeI, nodeJ)) {
+							injectivityCheckPairs.add(MutablePair.of(nodeI, nodeJ));
+						}
 					}
 				}
 			}
