@@ -48,6 +48,11 @@ public class NacPattern extends RulePartPattern {
 				 .map(e -> (TGGRuleEdge)e)
 				 .collect(Collectors.toSet());
 		
+		// optimisation needs to be done after bodyEdges have been set initially, since "retainAsOpposite()" accesses "getBodyEdges()"
+		this.bodyEdges = bodyEdges.stream()
+	   			 .filter(e -> optimiser.retainAsOpposite(e, this))
+	   			 .collect(Collectors.toSet());
+		
 		this.initialize();
 	}
 	

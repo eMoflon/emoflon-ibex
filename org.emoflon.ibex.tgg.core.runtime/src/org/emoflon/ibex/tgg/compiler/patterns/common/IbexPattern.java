@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
+
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -20,6 +22,8 @@ import language.TGGRuleNode;
 public abstract class IbexPattern {
 
 	protected TGGRule rule;
+	
+	protected IbexPatternOptimiser optimiser = new IbexPatternOptimiser();
 
 	/**
 	 * Each positive pattern invocation for a pattern pat corresponds to: find pat(<<signature elements of pat separated with ",">>);
@@ -50,6 +54,11 @@ public abstract class IbexPattern {
 	protected void initialize() {
 		bodyNodes = calculateBodyNodes(rule.getNodes());
 		bodyEdges = calculateBodyEdges(rule.getEdges());
+		
+		// optimisation needs to be done after bodyEdges have been set initially, since "retainAsOpposite()" accesses "getBodyEdges()"
+		bodyEdges = bodyEdges.stream()
+				   			 .filter(e -> optimiser.retainAsOpposite(e, this))
+				   			 .collect(Collectors.toSet());
 	}
 	
 	/**
