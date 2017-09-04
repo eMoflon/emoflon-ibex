@@ -25,17 +25,17 @@ public class IbexPatternOptimiser {
 	 * @return true, if the pair requires an unequal-constraint.
 	 */
 	public boolean unequalConstraintNecessary(Pair<TGGRuleNode, TGGRuleNode> nodes) {
-		return !equalConstantAttributeValues(nodes)
+		return !unequalConstantAttributeValues(nodes)
 			&& !transitiveContainment(nodes)
 			&& !differentContainmentSubTrees(nodes);
 	}
 
-	private boolean equalConstantAttributeValues(Pair<TGGRuleNode, TGGRuleNode> nodes) {
+	private boolean unequalConstantAttributeValues(Pair<TGGRuleNode, TGGRuleNode> nodes) {
 		for (TGGInplaceAttributeExpression attrExprLeft : nodes.getLeft().getAttrExpr()) {
 			if (attrExprLeft.getValueExpr() instanceof TGGLiteralExpression)
 				for (TGGInplaceAttributeExpression attrExprRight : nodes.getRight().getAttrExpr()) {
 					if (attrExprRight.getValueExpr() instanceof TGGLiteralExpression && attrExprLeft.getAttribute().equals(attrExprRight.getAttribute()))
-						if (((TGGLiteralExpression)attrExprLeft.getValueExpr()).getValue().equals(((TGGLiteralExpression)attrExprRight.getValueExpr()).getValue())) {
+						if (!((TGGLiteralExpression)attrExprLeft.getValueExpr()).getValue().equals(((TGGLiteralExpression)attrExprRight.getValueExpr()).getValue())) {
 							return true;
 						}
 				}
@@ -168,7 +168,7 @@ public class IbexPatternOptimiser {
 	/**
 	 * If the premise of a filter NAC consists of two nodes connected by an edge
 	 * e, and there exists another filter NAC with a premise with the same two
-	 * nodes but with e' = eOpposte(e) then one of these filter NACs can be
+	 * nodes but with e' = eOpposite(e) then one of these filter NACs can be
 	 * removed.
 	 * 
 	 * @param allFilterNACs
