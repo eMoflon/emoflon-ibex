@@ -254,8 +254,8 @@ public class PatternFactory {
 		return createPattern(rule.getName() + ForbidAllFilterACsPattern.getPatternNameSuffix(domain), () -> new ForbidAllFilterACsWithRefinementsPattern(domain, this));
 	}
 
-	public IbexPattern createFilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, Collection<TGGRule> savingRules) {
-		return createPattern(rule.getName() + FilterACPattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new FilterACPattern(entryPoint, edgeType, eDirection, savingRules, this));
+	public IbexPattern createFilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
+		return createPattern(rule.getName() + FilterACPattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new FilterACPattern(entryPoint, edgeType, eDirection, this));
 	}
 
 	public IbexPattern createSearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
