@@ -15,18 +15,21 @@ import runtime.RuntimePackage;
 
 public class CheckTranslationStatePattern extends IbexPattern {
 	
-	public static final String PROTOCOL_NAME = "protocol";
-	public static final String OBJECT_NAME = "checkedObject";
+	private static final String PROTOCOL_NAME = "protocol";
+	private static final String OBJECT_NAME = "checkedObject";
 	
-	public static final String CREATED_SRC_NAME = "createdSrc";
-	public static final String CREATED_TRG_NAME = "createdTrg";
+	private static final String CREATED_SRC_NAME = "createdSrc";
+	private static final String CREATED_TRG_NAME = "createdTrg";
+	
+	private static final String CONTEXT_SRC_NAME = "contextSrc";
+	private static final String CONTEXT_TRG_NAME = "contextTrg";
 	
 	private boolean localProtocol = false;
 	
 	private DomainType domain;
 	
 	public CheckTranslationStatePattern(DomainType domain, boolean localProtocol) {
-		super(createMarkedPatternRule(domain, localProtocol));
+		super(createMarkedPatternRule(domain, localProtocol, false));
 		this.localProtocol = localProtocol;
 		this.domain = domain;
 		initialize();
@@ -43,7 +46,7 @@ public class CheckTranslationStatePattern extends IbexPattern {
 		return localPattern.getRule();
 	}
 
-	private static TGGRule createMarkedPatternRule(DomainType domain, boolean localProtocol) {
+	private static TGGRule createMarkedPatternRule(DomainType domain, boolean localProtocol, boolean context) {
 		LanguageFactory factory = LanguageFactory.eINSTANCE;
 		TGGRule rule = factory.createTGGRule();
 		
@@ -62,17 +65,31 @@ public class CheckTranslationStatePattern extends IbexPattern {
 		protocol.setType(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 		checkedObject.setType(EcorePackage.Literals.EOBJECT);
 		
-		TGGRuleEdge createdEdge = factory.createTGGRuleEdge();
-		createdEdge.setName(domain == DomainType.SRC ? CREATED_SRC_NAME : CREATED_TRG_NAME);
-		createdEdge.setType(domain == DomainType.SRC ? RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_SRC : RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_TRG);
-		createdEdge.setDomainType(domain);
-		createdEdge.setBindingType(BindingType.CONTEXT);
-		createdEdge.setSrcNode(protocol);
-		createdEdge.setTrgNode(checkedObject);
+		TGGRuleEdge edge = factory.createTGGRuleEdge();
+		
+		switch (domain) {
+		case SRC:
+			edge.setName(context? CREATED_SRC_NAME : CONTEXT_SRC_NAME);
+			edge.setType(context? RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_SRC : RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_SRC);
+			break;
+			
+		case TRG:
+			edge.setName(context? CREATED_TRG_NAME : CONTEXT_TRG_NAME);
+			edge.setType(context? RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_TRG : RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_TRG);
+			break;
+			
+		default:
+			throw new IllegalArgumentException("Domain can only be src or trg!");
+		}
+		
+		edge.setDomainType(domain);
+		edge.setBindingType(BindingType.CONTEXT);
+		edge.setSrcNode(protocol);
+		edge.setTrgNode(checkedObject);
 		
 		rule.getNodes().add(protocol);
 		rule.getNodes().add(checkedObject);
-		rule.getEdges().add(createdEdge);
+		rule.getEdges().add(edge);
 		
 		return rule;
 	}

@@ -55,6 +55,9 @@ public class PatternFactory {
 		return Collections.unmodifiableCollection(patterns.values());
 	}
 	
+	//FIXME
+	// Create patterns with contextSrc/contextTrg 
+	// Where should they be used?
 	private static Collection<CheckTranslationStatePattern> createMarkedPatterns() {
 		List<CheckTranslationStatePattern> markedPatterns = new ArrayList<>();
 		
