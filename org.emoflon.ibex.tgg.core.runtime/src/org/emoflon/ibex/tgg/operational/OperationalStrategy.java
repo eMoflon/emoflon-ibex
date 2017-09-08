@@ -149,6 +149,8 @@ public abstract class OperationalStrategy {
 
 	public void terminate() throws IOException {
 		engine.terminate();
+		rs.getAllContents().forEachRemaining(c -> c.eAdapters().clear());
+		rs.eAdapters().clear();
 	}
 
 	protected void loadTGG() throws IOException {
