@@ -24,7 +24,7 @@ public abstract class TranslationACPattern extends IbexPattern {
 		for (TGGRuleElement el : getSignatureElements()) {
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
-				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true);
+				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findFirst().get();
 
 				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();

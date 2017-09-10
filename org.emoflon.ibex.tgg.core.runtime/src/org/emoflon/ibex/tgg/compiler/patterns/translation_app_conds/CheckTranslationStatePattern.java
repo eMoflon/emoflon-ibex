@@ -25,12 +25,14 @@ public class CheckTranslationStatePattern extends IbexPattern {
 	private static final String CONTEXT_TRG_NAME = "contextTrg";
 	
 	private boolean localProtocol = false;
+	private boolean marksContext = false; 
 	
 	private DomainType domain;
 	
-	public CheckTranslationStatePattern(DomainType domain, boolean localProtocol) {
-		super(createMarkedPatternRule(domain, localProtocol, false));
+	public CheckTranslationStatePattern(DomainType domain, boolean localProtocol, boolean context) {
+		super(createMarkedPatternRule(domain, localProtocol, context));
 		this.localProtocol = localProtocol;
+		this.marksContext = context;
 		this.domain = domain;
 		initialize();
 	}
@@ -69,13 +71,13 @@ public class CheckTranslationStatePattern extends IbexPattern {
 		
 		switch (domain) {
 		case SRC:
-			edge.setName(context? CREATED_SRC_NAME : CONTEXT_SRC_NAME);
-			edge.setType(context? RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_SRC : RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_SRC);
+			edge.setName(context? CONTEXT_SRC_NAME : CREATED_SRC_NAME);
+			edge.setType(context? RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_SRC : RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_SRC);
 			break;
 			
 		case TRG:
-			edge.setName(context? CREATED_TRG_NAME : CONTEXT_TRG_NAME);
-			edge.setType(context? RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_TRG : RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_TRG);
+			edge.setName(context? CONTEXT_TRG_NAME : CREATED_TRG_NAME);
+			edge.setType(context? RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_TRG : RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_TRG);
 			break;
 			
 		default:
@@ -116,7 +118,7 @@ public class CheckTranslationStatePattern extends IbexPattern {
 	
 	@Override
 	public String getName() {
-		return "MarkedPattern" + getPatternNameSuffix();
+		return (marksContext ? "ContextMarkedPattern" : "MarkedPattern") + getPatternNameSuffix();
 	}
 
 	public DomainType getDomain() {
@@ -125,5 +127,9 @@ public class CheckTranslationStatePattern extends IbexPattern {
 	
 	public boolean isLocal() {
 		return localProtocol;
+	}
+	
+	public boolean marksContext() {
+		return marksContext;
 	}
 }

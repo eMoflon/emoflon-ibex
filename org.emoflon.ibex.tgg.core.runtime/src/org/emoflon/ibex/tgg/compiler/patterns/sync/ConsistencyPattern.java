@@ -7,7 +7,6 @@ import java.util.Map;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTranslationStatePattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -40,7 +39,7 @@ public class ConsistencyPattern extends IbexPattern {
 	}
 	
 	protected void createPatternNetwork() {
-		createMarkedInvocations(PatternFactory.getMarkedPatterns());
+		createMarkedInvocations();
 		addTGGPositiveInvocation(factory.create(WholeRulePattern.class));
 	}
 	
@@ -61,23 +60,46 @@ public class ConsistencyPattern extends IbexPattern {
 		this.getBodyNodes().add(protocolNode);
 	}
 	
-	public void createMarkedInvocations(Collection<CheckTranslationStatePattern> markedPatterns) {
-		TGGRuleNode protocolNode = (TGGRuleNode) getSignatureElements().stream().filter(e -> ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).findAny().get();
+	public void createMarkedInvocations() {
+		TGGRuleNode ruleApplicationNode = getRuleApplicationNode(getSignatureElements());
 		
-		for (TGGRuleElement el : getSignatureElements()) {
+		getSignatureElements()
+		.stream()
+		.filter(e -> !e.equals(ruleApplicationNode))
+		.forEach(el ->
+		{
 			TGGRuleNode node = (TGGRuleNode) el;
-			if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
-				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), false);
-				TGGRuleNode invokedProtocol = (TGGRuleNode) markedPattern.getSignatureElements().stream().filter(e -> ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).findAny().get();
-				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().filter(e -> !e.equals(invokedProtocol)).findFirst().get();
+			if (nodeIsConnectedToRuleApplicationNode(node)) {
+				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), false, node.getBindingType().equals(BindingType.CONTEXT));
+				TGGRuleNode invokedRuleApplicationNode = getRuleApplicationNode(markedPattern.getSignatureElements());
+				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements()
+						.stream()
+						.filter(e -> !e.equals(invokedRuleApplicationNode))
+						.findFirst()
+						.get();
 				
 				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
-				mapping.put(protocolNode, invokedProtocol);
+				mapping.put(ruleApplicationNode, invokedRuleApplicationNode);
 				mapping.put(node, invokedObject);
 				
 				addCustomPositiveInvocation(markedPattern, mapping);
 			}
-		}
+		});
+	}
+
+	private boolean nodeIsConnectedToRuleApplicationNode(TGGRuleNode node) {
+		return !node.getDomainType().equals(DomainType.CORR);
+	}
+
+	private TGGRuleNode getRuleApplicationNode(Collection<TGGRuleElement> elements) {
+		return (TGGRuleNode) elements.stream()
+					   			     .filter(this::isRuleApplicationNode)
+					   			     .findAny()
+					   			     .get();
+	}
+
+	private boolean isRuleApplicationNode(TGGRuleElement e) {
+		return ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 	}
 	
 	@Override
@@ -114,7 +136,4 @@ public class ConsistencyPattern extends IbexPattern {
 	protected boolean isRelevantForBody(TGGRuleNode n) {
 		return n.getDomainType() != DomainType.CORR;
 	}
-
-	
-
 }

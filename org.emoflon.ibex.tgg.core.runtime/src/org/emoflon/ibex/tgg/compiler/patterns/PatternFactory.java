@@ -55,14 +55,15 @@ public class PatternFactory {
 		return Collections.unmodifiableCollection(patterns.values());
 	}
 	
-	//FIXME
-	// Create patterns with contextSrc/contextTrg 
-	// Where should they be used?
 	private static Collection<CheckTranslationStatePattern> createMarkedPatterns() {
 		List<CheckTranslationStatePattern> markedPatterns = new ArrayList<>();
 		
-		CheckTranslationStatePattern signProtocolSrcMarkedPattern = new CheckTranslationStatePattern(DomainType.SRC, false);
-		CheckTranslationStatePattern signProtocolTrgMarkedPattern = new CheckTranslationStatePattern(DomainType.TRG, false);
+		CheckTranslationStatePattern signProtocolSrcMarkedPattern = new CheckTranslationStatePattern(DomainType.SRC, false, false);
+		CheckTranslationStatePattern signProtocolTrgMarkedPattern = new CheckTranslationStatePattern(DomainType.TRG, false, false);
+		
+		CheckTranslationStatePattern signProtocolSrcMarkedContextPattern = new CheckTranslationStatePattern(DomainType.SRC, false, true);
+		CheckTranslationStatePattern signProtocolTrgMarkedContextPattern = new CheckTranslationStatePattern(DomainType.TRG, false, true);
+		
 		CheckTranslationStatePattern localProtocolSrcMarkedPattern = new CheckTranslationStatePattern(signProtocolSrcMarkedPattern, DomainType.SRC, true);
 		CheckTranslationStatePattern localProtocolTrgMarkedPattern = new CheckTranslationStatePattern(signProtocolTrgMarkedPattern, DomainType.TRG, true);
 		
@@ -73,6 +74,8 @@ public class PatternFactory {
 		markedPatterns.add(localProtocolTrgMarkedPattern);
 		markedPatterns.add(signProtocolSrcMarkedPattern);
 		markedPatterns.add(signProtocolTrgMarkedPattern);
+		markedPatterns.add(signProtocolSrcMarkedContextPattern);
+		markedPatterns.add(signProtocolTrgMarkedContextPattern);
 		
 		return Collections.unmodifiableCollection(markedPatterns);
 	}
@@ -81,9 +84,9 @@ public class PatternFactory {
 		return markedPatterns;
 	}
 	
-	public static IbexPattern getMarkedPattern(DomainType domain, boolean local) {
+	public static IbexPattern getMarkedPattern(DomainType domain, boolean local, boolean context) {
 		return markedPatterns.stream()
-							 .filter(p -> p.getDomain().equals(domain) && (p.isLocal() == local))
+							 .filter(p -> p.getDomain().equals(domain) && (p.isLocal() == local) && (p.marksContext() == context))
 							 .findFirst()
 							 .get();
 	}
