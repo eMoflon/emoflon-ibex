@@ -11,7 +11,7 @@ public class ConsistencyWithRefinementsPattern extends ConsistencyPattern {
 	}
 	
 	protected void createPatternNetwork() {
-		createMarkedInvocations(PatternFactory.getMarkedPatterns());
+		createMarkedInvocations();
 		addTGGPositiveInvocation(factory.create(WholeRuleWithRefinementsPattern.class));
 	}
 }

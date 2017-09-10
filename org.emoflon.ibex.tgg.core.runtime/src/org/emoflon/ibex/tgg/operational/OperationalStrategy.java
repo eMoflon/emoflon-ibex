@@ -318,13 +318,14 @@ public abstract class OperationalStrategy {
 
 		ra.setName(ruleName);
 
-		fillProtocolInfo(ruleInfos.getGreenSrcNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedSrc(),
-				createdElements, match);
-		fillProtocolInfo(ruleInfos.getGreenTrgNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedTrg(),
-				createdElements, match);
-		fillProtocolInfo(ruleInfos.getGreenCorrNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedCorr(),
-				createdElements, match);
+		fillProtocolInfo(ruleInfos.getGreenSrcNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedSrc(), createdElements, match);
+		fillProtocolInfo(ruleInfos.getGreenTrgNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedTrg(), createdElements, match);
+		fillProtocolInfo(ruleInfos.getGreenCorrNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_CreatedCorr(), createdElements, match);
 
+		addProtocolContextEdges(ruleInfos.getBlackSrcNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_ContextSrc(), match);
+		addProtocolContextEdges(ruleInfos.getBlackTrgNodes(ruleName), ra, runtimePackage.getTGGRuleApplication_ContextTrg(), match);
+
+		
 		ra.getNodeMappings().putAll(createdElements);
 		match.parameterNames().forEach(n -> {
 			ra.getNodeMappings().put(n, (EObject) match.get(n));
@@ -343,6 +344,13 @@ public abstract class OperationalStrategy {
 		ruleInfos.forEach(e -> {
 			((EList) protocol.eGet(feature))
 					.add(ManipulationUtil.getVariableByName(e.getName(), createdElements, match));
+		});
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void addProtocolContextEdges(Collection<? extends TGGRuleElement> ruleInfos, TGGRuleApplication protocol, EStructuralFeature feature, IMatch match) {
+		ruleInfos.forEach(e -> {
+			((EList) protocol.eGet(feature)).add(match.get(e.getName()));
 		});
 	}
 
