@@ -26,7 +26,7 @@ import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
-import org.emoflon.ibex.tgg.operational.util.NextMatchUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.util.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
 import org.emoflon.ibex.tgg.operational.util.UpdatePolicy;
 
@@ -74,7 +74,7 @@ public abstract class OperationalStrategy {
 	private boolean domainsHaveNoSharedTypes;
 
 	public OperationalStrategy(String projectPath, String workspacePath, boolean flatten, boolean debug) {
-		this(projectPath, workspacePath, flatten, debug, new NextMatchUpdatePolicy());
+		this(projectPath, workspacePath, flatten, debug, new RandomMatchUpdatePolicy());
 	}
 
 	public OperationalStrategy(String projectPath, String workspacePath, boolean flatten, boolean debug, UpdatePolicy policy) {
@@ -149,6 +149,8 @@ public abstract class OperationalStrategy {
 
 	public void terminate() throws IOException {
 		engine.terminate();
+		rs.getAllContents().forEachRemaining(c -> c.eAdapters().clear());
+		rs.eAdapters().clear();
 	}
 
 	protected void loadTGG() throws IOException {
