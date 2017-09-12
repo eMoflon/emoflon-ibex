@@ -487,9 +487,9 @@ public abstract class OperationalStrategy {
 	}
 
 	protected void revokeNodes(TGGRuleApplication ra) {
+		revokeNodes(ra.getCreatedCorr(), manipulateCorr());
 		revokeNodes(ra.getCreatedSrc(), manipulateSrc());
 		revokeNodes(ra.getCreatedTrg(), manipulateTrg());
-		revokeNodes(ra.getCreatedCorr(), manipulateCorr());
 	}
 
 	private void revokeNodes(Collection<EObject> nodes, boolean delete) {
