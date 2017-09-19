@@ -487,9 +487,20 @@ public abstract class OperationalStrategy {
 	}
 
 	protected void revokeNodes(TGGRuleApplication ra) {
-		revokeNodes(ra.getCreatedCorr(), manipulateCorr());
+		revokeCorrs(ra.getCreatedCorr(), manipulateCorr());
 		revokeNodes(ra.getCreatedSrc(), manipulateSrc());
 		revokeNodes(ra.getCreatedTrg(), manipulateTrg());
+	}
+
+	private void revokeCorrs(EList<EObject> createdCorr, boolean manipulateCorr) {
+		if(manipulateCorr) {
+			for(EObject corr : createdCorr) {
+				corr.eUnset(corr.eClass().getEStructuralFeature("source"));
+				corr.eUnset(corr.eClass().getEStructuralFeature("target"));
+			}			
+		}
+		
+		revokeNodes(createdCorr, manipulateCorr);
 	}
 
 	private void revokeNodes(Collection<EObject> nodes, boolean delete) {
