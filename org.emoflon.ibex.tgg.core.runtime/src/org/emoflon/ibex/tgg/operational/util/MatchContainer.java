@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.util;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
@@ -49,6 +50,10 @@ public class MatchContainer {
 	public void removeMatch(IMatch match) {
 		if (matchToRuleNameID.containsKey(match))
 			matchToRuleNameID.remove(match);
+	}
+	
+	public void removeMatches(Collection<IMatch> matches) {
+		matches.forEach(this::removeMatch);
 	}
 
 	public IMatch getNext() {
