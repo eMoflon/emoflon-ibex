@@ -1,9 +1,12 @@
 package org.emoflon.ibex.tgg.operational;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.management.ImmutableDescriptor;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -24,6 +27,7 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
+import org.emoflon.ibex.tgg.operational.util.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
 import org.emoflon.ibex.tgg.operational.util.RandomMatchUpdatePolicy;
@@ -233,7 +237,8 @@ public abstract class OperationalStrategy {
 	}
 
 	protected IMatch chooseOneMatch() {
-		IMatch match = updatePolicy.chooseOneMatch(operationalMatchContainer);
+		
+		IMatch match = updatePolicy.chooseOneMatch(new ImmutableMatchContainer(operationalMatchContainer));
 		if(match == null)
 			throw new IllegalStateException("Update policies should never return null!");
 		

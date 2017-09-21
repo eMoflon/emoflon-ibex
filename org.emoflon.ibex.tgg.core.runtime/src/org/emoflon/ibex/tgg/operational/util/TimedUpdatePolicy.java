@@ -29,7 +29,7 @@ public class TimedUpdatePolicy implements UpdatePolicy {
 	}
 	
 	@Override
-	public IMatch chooseOneMatch(MatchContainer matchContainer) {
+	public IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
 		long currentTime = System.nanoTime();
 		long deadline = startTime + timeout;
 		if (currentTime >= deadline)
