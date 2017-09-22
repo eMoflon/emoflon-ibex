@@ -105,8 +105,8 @@ class DefaultFilesGenerator {
 			
 			public class «fileName» extends «strategy» {
 			
-				public «fileName»(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
-					super(projectName, workspacePath, flatten, debug);
+				public «fileName»(String projectName, String workspacePath, boolean debug) throws IOException {
+					super(projectName, workspacePath, debug);
 					registerPatternMatchingEngine(new «engine»());
 				}
 			
@@ -133,7 +133,7 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
-			«fileName» generator = new «fileName»("«projectName»", "./../", false, false);
+			«fileName» generator = new «fileName»("«projectName»", "./../", false);
 			
 			MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 			stop.setTimeOutInMS(1000);
@@ -162,7 +162,7 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
-			«fileName» sync = new «fileName»("«projectName»", "./../", false, false);
+			«fileName» sync = new «fileName»("«projectName»", "./../", false);
 			
 			logger.info("Starting SYNC");
 			long tic = System.currentTimeMillis();
@@ -187,7 +187,7 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
-			«fileName» cc = new «fileName»("«projectName»", "./../", false, false);
+			«fileName» cc = new «fileName»("«projectName»", "./../", false);
 			
 			logger.info("Starting CC");
 			long tic = System.currentTimeMillis();
