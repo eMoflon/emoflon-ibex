@@ -14,8 +14,8 @@ public abstract class SYNC extends OperationalStrategy {
 
 	private SYNC_Strategy strategy;
 	
-	public SYNC(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
-		super(projectName, workspacePath, flatten, debug);
+	public SYNC(String projectName, String workspacePath, boolean debug) throws IOException {
+		super(projectName, workspacePath, debug);
 	}
 
 	@Override

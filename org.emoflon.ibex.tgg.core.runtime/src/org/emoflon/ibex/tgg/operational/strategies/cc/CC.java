@@ -55,8 +55,8 @@ public abstract class CC extends OperationalStrategy {
 
 	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 
-	public CC(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
-		super(projectName, workspacePath, flatten, debug);
+	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
+		super(projectName, workspacePath, debug);
 	}
 
 	@Override

@@ -27,10 +27,10 @@ public class ConsistencyPattern extends IbexPattern {
 	private TGGRuleNode protocolNode;
 	
 	public ConsistencyPattern(PatternFactory factory) {
-		this(factory.getRule(), factory);
+		this(factory.getFlattenedVersionOfRule(), factory);
 	}
 	
-	public ConsistencyPattern(TGGRule rule, PatternFactory factory) {
+	private ConsistencyPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
 		addProtocolNode();

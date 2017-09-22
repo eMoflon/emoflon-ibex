@@ -1,8 +1,7 @@
-package org.emoflon.ibex.tgg.compiler.patterns.cc.refinement;
+package org.emoflon.ibex.tgg.compiler.patterns.cc;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
@@ -13,7 +12,7 @@ import language.TGGRuleNode;
 public class CCForRefinementInvocationsPattern extends CCPattern {
 
 	public CCForRefinementInvocationsPattern(PatternFactory factory) {
-		super(factory.getFlattenedVersionOfRule(), factory);		
+		super(factory);		
 	}
 	
 	@Override

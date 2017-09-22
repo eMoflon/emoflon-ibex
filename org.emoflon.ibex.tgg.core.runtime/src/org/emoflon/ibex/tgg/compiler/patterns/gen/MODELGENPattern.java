@@ -5,10 +5,7 @@ import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 
 import language.BindingType;
 import language.TGGRule;
@@ -22,10 +19,10 @@ public class MODELGENPattern extends RulePartPattern {
 	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
 
 	public MODELGENPattern(PatternFactory factory) {
-		this(factory.getRule(), factory); 
+		this(factory.getFlattenedVersionOfRule(), factory); 
 	}
 	
-	protected MODELGENPattern(TGGRule rule, PatternFactory factory) {
+	private MODELGENPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
 		signatureElements = getSignatureElements(getRule());
@@ -34,9 +31,7 @@ public class MODELGENPattern extends RulePartPattern {
 	}
 
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));
-		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
-		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
+		addTGGPositiveInvocation(factory.create(MODELGENForRefinementInvocationsPattern.class));
 		
 		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints());
 		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints());
@@ -62,7 +57,7 @@ public class MODELGENPattern extends RulePartPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.MODELGEN;
+		return PatternSuffixes.GEN;
 	}
 
 	@Override

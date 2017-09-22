@@ -8,16 +8,11 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.cc.refinement.CCWithRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.MODELGENPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.refinement.MODELGENWithRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.refinement.BWDWithRefinementsPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.refinement.ConsistencyWithRefinementsPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.refinement.FWDWithRefinementsPattern;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
 import language.TGGRule;
@@ -38,40 +33,21 @@ public class TGGCompiler {
 	}
 
 	public void preparePatterns() {	
-		if (options.useFlattenedTGG()) {
-			for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
-				PatternFactory factory = getFactory(rule);
+		for (TGGRule rule : options.getConcreteTGGRules()) {
+			PatternFactory factory = getFactory(rule);
 
-				// Model generation
-				factory.create(MODELGENPattern.class);
-				
-				// Consistency checking
-				factory.create(CCPattern.class);
-				
-				// Synchronisation
-				factory.create(FWDPattern.class);
-				factory.create(BWDPattern.class);
-				factory.create(ConsistencyPattern.class);
-				
-				ruleToPatterns.put(rule, factory.getPatterns());
-			}
-		} else {
-			for (TGGRule rule : options.getConcreteTGGRules()) {
-				PatternFactory factory = getFactory(rule);
-				
-				// Model generation
-				factory.create(MODELGENWithRefinementsPattern.class);
+			// Model generation
+			factory.create(MODELGENPattern.class);
 
-				// Consistency checking
-				factory.create(CCWithRefinementsPattern.class);
+			// Consistency checking
+			factory.create(CCPattern.class);
 
-				// Synchronisation
-				factory.create(FWDWithRefinementsPattern.class);
-				factory.create(BWDWithRefinementsPattern.class);
-				factory.create(ConsistencyWithRefinementsPattern.class);
-				
-				ruleToPatterns.put(rule, factory.getPatterns());
-			}
+			// Synchronisation
+			factory.create(FWDPattern.class);
+			factory.create(BWDPattern.class);
+			factory.create(ConsistencyPattern.class);
+
+			ruleToPatterns.put(rule, factory.getPatterns());
 		}
 	
 		checkForDuplicates();

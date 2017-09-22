@@ -26,8 +26,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 	protected MODELGENStopCriterion stopCriterion;
 		
-	public MODELGEN(String projectName, String workspacePath, boolean flatten, boolean debug) throws IOException {
-		super(projectName, workspacePath, flatten, debug);
+	public MODELGEN(String projectName, String workspacePath, boolean debug) throws IOException {
+		super(projectName, workspacePath, debug);
 	}
 	
 	public void setStopCriterion(MODELGENStopCriterion stop) {
@@ -56,7 +56,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 	@Override
 	public boolean isPatternRelevant(String patternName) {
-		return patternName.endsWith(PatternSuffixes.MODELGEN);
+		return patternName.endsWith(PatternSuffixes.GEN);
 	}
 	
 	/**

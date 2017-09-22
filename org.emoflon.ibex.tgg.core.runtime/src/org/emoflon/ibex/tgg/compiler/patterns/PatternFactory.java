@@ -15,13 +15,12 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
-import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsWithRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.SearchEdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTranslationStatePattern;
 
@@ -254,10 +253,6 @@ public class PatternFactory {
 	
 	public IbexPattern createFilterACPatterns(DomainType domain) {
 		return createPattern(rule.getName() + ForbidAllFilterACsPattern.getPatternNameSuffix(domain), () -> new ForbidAllFilterACsPattern(domain, this));
-	}
-	
-	public IbexPattern createFilterACWithRefimenentsPatterns(DomainType domain) {
-		return createPattern(rule.getName() + ForbidAllFilterACsPattern.getPatternNameSuffix(domain), () -> new ForbidAllFilterACsWithRefinementsPattern(domain, this));
 	}
 
 	public IbexPattern createFilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {

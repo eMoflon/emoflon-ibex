@@ -1,17 +1,16 @@
-package org.emoflon.ibex.tgg.compiler.patterns.sync.refinement;
+package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
 
 import language.TGGRule;
 
 public class BWDForRefinementInvocationsContextPattern extends BWDPattern {
 
 	public BWDForRefinementInvocationsContextPattern(PatternFactory factory) {
-		super(factory.getFlattenedVersionOfRule(), factory);		
+		super(factory);		
 	}
 	
 	protected void createPatternNetwork() {

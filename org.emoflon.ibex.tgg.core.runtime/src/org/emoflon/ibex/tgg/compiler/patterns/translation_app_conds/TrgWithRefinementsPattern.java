@@ -1,9 +1,9 @@
-package org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.refinement;
+package org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
 import language.DomainType;
 import language.TGGRule;
@@ -11,21 +11,21 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class SrcWithRefinementsPattern extends RulePartPattern {
+public class TrgWithRefinementsPattern extends RulePartPattern {
 
-	public SrcWithRefinementsPattern(PatternFactory factory) {
+	public TrgWithRefinementsPattern(PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());
 		
 		// Create pattern network
-		addTGGPositiveInvocation(factory.create(SrcPattern.class));
+		addTGGPositiveInvocation(factory.create(TrgPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(SrcWithRefinementsPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(superRule).create(TrgWithRefinementsPattern.class));
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.SRC_REFINEMENT_INVOCATIONS;
+		return PatternSuffixes.TRG_REFINEMENT_INVOCATIONS;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class SrcWithRefinementsPattern extends RulePartPattern {
 
 	@Override
 	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getDomainType() == DomainType.SRC;
+		return e.getDomainType() == DomainType.TRG;
 	}
 
 }

@@ -1,12 +1,9 @@
 package org.emoflon.ibex.tgg.operational;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.management.ImmutableDescriptor;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -77,18 +74,17 @@ public abstract class OperationalStrategy {
 	private PatternMatchingEngine engine;
 	private boolean domainsHaveNoSharedTypes;
 
-	public OperationalStrategy(String projectPath, String workspacePath, boolean flatten, boolean debug) {
-		this(projectPath, workspacePath, flatten, debug, new RandomMatchUpdatePolicy());
+	public OperationalStrategy(String projectPath, String workspacePath, boolean debug) {
+		this(projectPath, workspacePath, debug, new RandomMatchUpdatePolicy());
 	}
 
-	public OperationalStrategy(String projectPath, String workspacePath, boolean flatten, boolean debug, UpdatePolicy policy) {
+	public OperationalStrategy(String projectPath, String workspacePath, boolean debug, UpdatePolicy policy) {
 		base = URI.createPlatformResourceURI("/", true);
 		this.workspacePath = workspacePath;
 		this.projectPath = projectPath;
 
 		options = new IbexOptions();
 		options.debug(debug);
-		options.useFlattenedTGG(flatten);
 		options.projectPath(projectPath);
 		
 		this.updatePolicy = policy;
@@ -274,8 +270,6 @@ public abstract class OperationalStrategy {
 		if (!conformTypesOfGreenNodes(match, ruleName))
 			return false;
 
-		// TODO [Leblebici]: what if some context elements are not processed?
-		// the match is then "pending" (and waiting for its context)
 		if (!allContextElementsalreadyProcessed(match, ruleName))
 			return false;
 

@@ -18,10 +18,10 @@ public class WholeRulePattern extends RulePartPattern {
 	protected PatternFactory factory;
 
 	public WholeRulePattern(PatternFactory factory) {
-		this(factory.getRule(), factory);
+		this(factory.getFlattenedVersionOfRule(), factory);
 	}
 
-	public WholeRulePattern(TGGRule rule, PatternFactory factory) {
+	private WholeRulePattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
 		
@@ -32,6 +32,9 @@ public class WholeRulePattern extends RulePartPattern {
 		addTGGPositiveInvocation(factory.create(SrcPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
+		
+		for (TGGRule superRule : factory.getRule().getRefines())
+			addTGGPositiveInvocation(factory.getFactory(superRule).create(WholeRulePattern.class));
 	}
 
 	@Override

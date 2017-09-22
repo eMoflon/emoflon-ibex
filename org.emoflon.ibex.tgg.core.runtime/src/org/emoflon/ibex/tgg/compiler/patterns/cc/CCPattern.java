@@ -5,10 +5,7 @@ import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
 import language.BindingType;
@@ -25,10 +22,10 @@ public class CCPattern extends RulePartPattern {
 
 
 	public CCPattern(PatternFactory factory) {
-		this(factory.getRule(), factory);
+		this(factory.getFlattenedVersionOfRule(), factory);
 	}
 	
-	protected CCPattern(TGGRule rule, PatternFactory factory) {
+	private CCPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
 		signatureElements = getSignatureElements(getRule());
@@ -37,9 +34,7 @@ public class CCPattern extends RulePartPattern {
 	}
 
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(SrcPattern.class));
-		addTGGPositiveInvocation(factory.create(TrgPattern.class));
-		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
+		addTGGPositiveInvocation(factory.create(CCForRefinementInvocationsPattern.class));
 		
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));

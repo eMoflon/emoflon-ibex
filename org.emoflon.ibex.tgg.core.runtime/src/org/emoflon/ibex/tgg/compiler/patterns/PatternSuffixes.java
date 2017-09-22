@@ -67,7 +67,7 @@ public class PatternSuffixes {
 	 * multiplicity NACs.
 	 * Used for applying the original TGG rules, i.e., for the model generator. 
 	 */
-	public static final String MODELGEN = SEP + "MODELGEN";
+	public static final String GEN = SEP + "GEN";
 	
 	/**
 	 * Forbid this pattern to ensure that all source elements created by the original

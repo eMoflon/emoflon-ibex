@@ -1,11 +1,10 @@
-package org.emoflon.ibex.tgg.compiler.patterns.gen.refinement;
+package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.MODELGENPattern;
 
 import language.TGGRule;
 import language.TGGRuleNode;
@@ -13,7 +12,7 @@ import language.TGGRuleNode;
 public class MODELGENForRefinementInvocationsPattern extends MODELGENPattern {
 
 	public MODELGENForRefinementInvocationsPattern(PatternFactory factory) {
-		super(factory.getFlattenedVersionOfRule(), factory);		
+		super(factory);		
 	}
 	
 	@Override

@@ -8,14 +8,12 @@ import language.TGGRule;
 
 public class IbexOptions {
 	private boolean debug;
-	private boolean useFlattenedTGG;
 	private String projectPath;
 	private TGG tgg;
 	private TGG flattenedTGG;
 	
 	public IbexOptions() {
 		debug = false;
-		useFlattenedTGG = false;
 		projectPath = "/";
 	}
 	
@@ -25,14 +23,6 @@ public class IbexOptions {
 	
 	public boolean debug(){
 		return debug;
-	}
-
-	public void useFlattenedTGG(boolean useFlattenedTGG) {
-		this.useFlattenedTGG = useFlattenedTGG; 
-	}
-	
-	public boolean useFlattenedTGG(){
-		return useFlattenedTGG;
 	}
 
 	public void projectPath(String projectPath) {

@@ -7,11 +7,9 @@ import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -24,10 +22,10 @@ public class BWDPattern extends RulePartPattern {
 	protected PatternFactory factory;
 
 	public BWDPattern(PatternFactory factory) {
-		this(factory.getRule(), factory);
+		this(factory.getFlattenedVersionOfRule(), factory);
 	}
 
-	public BWDPattern(TGGRule rule, PatternFactory factory) {
+	private BWDPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
 		
@@ -35,12 +33,10 @@ public class BWDPattern extends RulePartPattern {
 	}
 	
 	protected void createPatternNetwork() {
+		addTGGPositiveInvocation(factory.create(BWDForRefinementInvocationsContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgTranslationAndFilterACsPattern.class));
-		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
-		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));
 		
 		collectGeneratedNACs();
-		
 		addTGGNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
 	}
 	
