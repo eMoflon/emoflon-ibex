@@ -7,6 +7,7 @@ import java.util.Map;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
 import language.BindingType;
 import language.DomainType;
@@ -41,6 +42,11 @@ public class ConsistencyPattern extends IbexPattern {
 	protected void createPatternNetwork() {
 		createMarkedInvocations();
 		addTGGPositiveInvocation(factory.create(WholeRulePattern.class));
+		
+		if (PatternFactory.strategy != FilterACStrategy.NONE) {
+			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
+			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
+		}
 	}
 	
 	public void addProtocolNode() {
