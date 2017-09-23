@@ -13,16 +13,16 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class MODELGENPattern extends RulePartPattern {
+public class GENPattern extends RulePartPattern {
 	
 	protected PatternFactory factory;
 	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
 
-	public MODELGENPattern(PatternFactory factory) {
+	public GENPattern(PatternFactory factory) {
 		this(factory.getFlattenedVersionOfRule(), factory); 
 	}
 	
-	private MODELGENPattern(TGGRule rule, PatternFactory factory) {
+	private GENPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
 		signatureElements = getSignatureElements(getRule());
@@ -31,7 +31,7 @@ public class MODELGENPattern extends RulePartPattern {
 	}
 
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(MODELGENForRefinementInvocationsPattern.class));
+		addTGGPositiveInvocation(factory.create(GENForRefinementInvocationsPattern.class));
 		
 		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints());
 		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints());

@@ -60,7 +60,7 @@ public class PatternSuffixes {
 	 * Contains the entire context of the original TGG rule
 	 * and invocations to the corresponding patterns of super-rules.
 	 */	
-	public static final String MODELGEN_REFINEMENT_INVOCATIONS = SEP + "MODELGEN_REFINEMENT_INVOCATIONS";
+	public static final String GEN_REFINEMENT_INVOCATIONS = SEP + "GEN_REFINEMENT_INVOCATIONS";
 
 	/** 
 	 * Contains the entire context of the original TGG rule together with

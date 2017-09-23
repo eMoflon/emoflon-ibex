@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.MODELGENPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.GENPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDPattern;
@@ -37,7 +37,7 @@ public class TGGCompiler {
 			PatternFactory factory = getFactory(rule);
 
 			// Model generation
-			factory.create(MODELGENPattern.class);
+			factory.create(GENPattern.class);
 
 			// Consistency checking
 			factory.create(CCPattern.class);

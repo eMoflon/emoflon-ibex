@@ -9,9 +9,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 import language.TGGRule;
 import language.TGGRuleNode;
 
-public class MODELGENForRefinementInvocationsPattern extends MODELGENPattern {
+public class GENForRefinementInvocationsPattern extends GENPattern {
 
-	public MODELGENForRefinementInvocationsPattern(PatternFactory factory) {
+	public GENForRefinementInvocationsPattern(PatternFactory factory) {
 		super(factory);		
 	}
 	
@@ -22,12 +22,12 @@ public class MODELGENForRefinementInvocationsPattern extends MODELGENPattern {
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(MODELGENForRefinementInvocationsPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(superRule).create(GENForRefinementInvocationsPattern.class));
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.MODELGEN_REFINEMENT_INVOCATIONS;
+		return PatternSuffixes.GEN_REFINEMENT_INVOCATIONS;
 	}
 	
 	@Override
