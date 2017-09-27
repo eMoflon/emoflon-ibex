@@ -101,6 +101,8 @@ class DefaultFilesGenerator {
 			import java.io.IOException;
 			
 			import org.apache.log4j.BasicConfigurator;
+			import org.apache.commons.lang3.NotImplementedException;
+			
 			«additionalImports»
 			
 			public class «fileName» extends «strategy» {
@@ -204,7 +206,8 @@ class DefaultFilesGenerator {
 	def static generateMetamodelRegistration() {
 		'''
 		protected void registerUserMetamodels() throws IOException {
-			//FIXME load and register source and target metamodels
+			// Load and register source and target metamodels
+			throw new NotImplementedException("Please check that your source and target metamodels are loaded and registered.");
 			
 			// Register correspondence metamodel last
 			loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
