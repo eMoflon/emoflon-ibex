@@ -55,7 +55,7 @@ public class ManipulationUtil {
 	}
 
 	public static void deleteNodes(Collection<EObject> elements) {
-		elements.stream().forEach(EcoreUtil::delete);
+		EcoreUtil.deleteAll(elements, false);
 	}
 
 	public static EObject getVariableByName(String name, HashMap<String, EObject> comatch, IMatch match) {
@@ -75,10 +75,18 @@ public class ManipulationUtil {
 
 	@SuppressWarnings("rawtypes")
 	public static void deleteEdge(EObject src, EObject trg, EReference ref) {
-		if (ref.isMany())
-			((EList) src.eGet(ref)).remove(trg);
-		else
-			src.eUnset(ref);
+		if(src.eResource() == null)
+			return;
+		
+		if (ref.isMany()) {
+			EList list = ((EList) src.eGet(ref));
+			if(list.contains(trg))
+				list.remove(trg);
+		}
+		else {
+			if(src.eGet(ref) != null)
+				src.eUnset(ref);
+		}
 	}
 
 	private static EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
