@@ -7,8 +7,11 @@ import java.util.HashMap;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 
 import language.TGGRuleCorr;
@@ -55,8 +58,46 @@ public class ManipulationUtil {
 	}
 
 	public static void deleteNodes(Collection<EObject> elements) {
-		EcoreUtil.deleteAll(elements, false);
+		for (EObject eob : elements) {
+			delete(eob);
+		}
 	}
+	
+	// This method is exactly what is in EcoreUtil.delete (apart from the FIXME below)
+	public static void delete(EObject eObject)
+	  {
+	    EObject rootEObject = EcoreUtil.getRootContainer(eObject);
+	    Resource resource = rootEObject.eResource();
+
+	    Collection<EStructuralFeature.Setting> usages;
+	    if (resource == null)
+	    {
+	      usages = UsageCrossReferencer.find(eObject, rootEObject);
+	    }
+	    else
+	    {
+	      ResourceSet resourceSet = resource.getResourceSet();
+	      if (resourceSet == null)
+	      {
+	        usages = UsageCrossReferencer.find(eObject, resource);
+	      }
+	      else
+	      {
+	        usages = UsageCrossReferencer.find(eObject, resourceSet);
+	      }
+	    }
+
+	    for (EStructuralFeature.Setting setting : usages)
+	    {
+	      if (setting.getEStructuralFeature().isChangeable())
+	      {
+	        EcoreUtil.remove(setting, eObject);
+	      }
+	    }
+
+	    //FIXME [Greg] Why doesn't this work?
+	    //EcoreUtil.remove(eObject);
+	  }
 
 	public static EObject getVariableByName(String name, HashMap<String, EObject> comatch, IMatch match) {
 		if (comatch.containsKey(name))

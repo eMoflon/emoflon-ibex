@@ -4,24 +4,27 @@
     modelName="Runtime" updateClasspath="false" codeFormatting="true" importerID="org.eclipse.emf.importer.ecore"
     complianceLevel="8.0" copyrightFields="false" operationReflection="true">
   <foreignModel>Runtime.ecore</foreignModel>
-  <genPackages prefix="Runtime" disposableProviderFactory="true" ecorePackage="platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#/">
-    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//Protocol">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//Protocol/steps"/>
+  <genPackages prefix="Runtime" disposableProviderFactory="true" ecorePackage="Runtime.ecore#/">
+    <genClasses ecoreClass="Runtime.ecore#//Protocol">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Runtime.ecore#//Protocol/steps"/>
     </genClasses>
-    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/createdSrc"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/createdTrg"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/createdCorr"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/contextSrc"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/contextTrg"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/name"/>
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/protocol"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/final"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/nodeMappings"/>
+    <genClasses ecoreClass="Runtime.ecore#//TGGRuleApplication">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Runtime.ecore#//TGGRuleApplication/createdSrc"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Runtime.ecore#//TGGRuleApplication/createdTrg"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Runtime.ecore#//TGGRuleApplication/createdCorr"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Runtime.ecore#//TGGRuleApplication/contextSrc"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Runtime.ecore#//TGGRuleApplication/contextTrg"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Runtime.ecore#//TGGRuleApplication/name"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference Runtime.ecore#//TGGRuleApplication/protocol"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Runtime.ecore#//TGGRuleApplication/final"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Runtime.ecore#//TGGRuleApplication/nodeMappings"/>
     </genClasses>
-    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//NodeMapping">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//NodeMapping/key"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//NodeMapping/value"/>
+    <genClasses ecoreClass="Runtime.ecore#//NodeMapping">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Runtime.ecore#//NodeMapping/key"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Runtime.ecore#//NodeMapping/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Runtime.ecore#//TempContainer">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Runtime.ecore#//TempContainer/objects"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

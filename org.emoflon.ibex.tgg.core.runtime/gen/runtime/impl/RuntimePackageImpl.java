@@ -15,6 +15,7 @@ import runtime.Protocol;
 import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
+import runtime.TempContainer;
 
 /**
  * <!-- begin-user-doc -->
@@ -43,6 +44,13 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 	 * @generated
 	 */
 	private EClass nodeMappingEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass tempContainerEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -247,6 +255,24 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getTempContainer() {
+		return tempContainerEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTempContainer_Objects() {
+		return (EReference) tempContainerEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public RuntimeFactory getRuntimeFactory() {
 		return (RuntimeFactory) getEFactoryInstance();
 	}
@@ -288,6 +314,9 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 		nodeMappingEClass = createEClass(NODE_MAPPING);
 		createEAttribute(nodeMappingEClass, NODE_MAPPING__KEY);
 		createEReference(nodeMappingEClass, NODE_MAPPING__VALUE);
+
+		tempContainerEClass = createEClass(TEMP_CONTAINER);
+		createEReference(tempContainerEClass, TEMP_CONTAINER__OBJECTS);
 	}
 
 	/**
@@ -364,6 +393,12 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 		initEReference(getNodeMapping_Value(), ecorePackage.getEObject(), null, "value", null, 0, 1, Map.Entry.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(tempContainerEClass, TempContainer.class, "TempContainer", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTempContainer_Objects(), ecorePackage.getEObject(), null, "objects", null, 0, -1,
+				TempContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

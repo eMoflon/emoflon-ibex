@@ -90,6 +90,13 @@ public class RuntimeSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case RuntimePackage.TEMP_CONTAINER: {
+			TempContainer tempContainer = (TempContainer) theEObject;
+			T result = caseTempContainer(tempContainer);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		default:
 			return defaultCase(theEObject);
 		}
@@ -137,6 +144,21 @@ public class RuntimeSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseNodeMapping(Map.Entry<String, EObject> object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Temp Container</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Temp Container</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTempContainer(TempContainer object) {
 		return null;
 	}
 

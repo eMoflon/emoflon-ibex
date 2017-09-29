@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -42,8 +43,10 @@ import language.basic.expressions.TGGAttributeExpression;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 import language.impl.LanguagePackageImpl;
+import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
+import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
 public abstract class OperationalStrategy {
@@ -52,6 +55,8 @@ public abstract class OperationalStrategy {
 	protected final URI base;
 
 	protected ResourceSet rs;
+	
+	protected Resource trash;
 	protected Resource s;
 	protected Resource t;
 	protected Resource c;
@@ -92,12 +97,16 @@ public abstract class OperationalStrategy {
 
 	public void registerPatternMatchingEngine(PatternMatchingEngine engine) throws IOException {
 		this.engine = engine;
+		
 		createAndPrepareResourceSet();
 		registerInternalMetamodels();
 		registerUserMetamodels();
 		loadTGG();
 		initialiseEngine();
 		loadModels();
+		
+		this.trash = createResource("instances/trash.xmi");
+		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
 	}
 
 	protected abstract void registerUserMetamodels() throws IOException;
@@ -466,8 +475,10 @@ public abstract class OperationalStrategy {
 	}
 
 	protected void revokeOperationalRule(TGGRuleApplication ruleApplication, IMatch match) {
+		revokeCorrs(ruleApplication);
 		revokeNodes(ruleApplication);
 		revokeEdges(ruleApplication, match);
+		
 		EcoreUtil.delete(ruleApplication);
 	}
 
@@ -486,25 +497,51 @@ public abstract class OperationalStrategy {
 	}
 
 	protected void revokeNodes(TGGRuleApplication ra) {
-		revokeCorrs(ra.getCreatedCorr(), manipulateCorr());
 		revokeNodes(ra.getCreatedSrc(), manipulateSrc());
 		revokeNodes(ra.getCreatedTrg(), manipulateTrg());
 	}
 
-	private void revokeCorrs(EList<EObject> createdCorr, boolean manipulateCorr) {
-		if(manipulateCorr) {
+	private void revokeCorrs(TGGRuleApplication ra) {
+		EList<EObject> createdCorr = ra.getCreatedCorr();
+		if(manipulateCorr()) {
 			for(EObject corr : createdCorr) {
-				corr.eUnset(corr.eClass().getEStructuralFeature("source"));
-				corr.eUnset(corr.eClass().getEStructuralFeature("target"));
-			}			
+				EStructuralFeature srcFeature = corr.eClass().getEStructuralFeature("source");
+				EStructuralFeature trgFeature = corr.eClass().getEStructuralFeature("target");
+				
+				EObject src = (EObject) corr.eGet(srcFeature);
+				EObject trg = (EObject) corr.eGet(trgFeature);
+				
+				if(isDanglingNode(Optional.ofNullable(src))) addToTrash(src);
+				if(isDanglingNode(Optional.ofNullable(trg))) addToTrash(trg);
+				
+				corr.eUnset(srcFeature);
+				corr.eUnset(trgFeature);
+			}
 		}
 		
-		revokeNodes(createdCorr, manipulateCorr);
+		revokeNodes(createdCorr, manipulateCorr());
+	}
+
+	private void addToTrash(EObject o) {
+		TempContainer c = (TempContainer) trash.getContents().get(0);
+		c.getObjects().add(EcoreUtil.getRootContainer(o));
+	}
+
+	private boolean isDanglingNode(EObject o) {
+		return o.eResource() == null;
+	}
+	
+	private boolean isDanglingNode(Optional<EObject> o) {
+		return o.map(this::isDanglingNode).orElse(false);
 	}
 
 	private void revokeNodes(Collection<EObject> nodes, boolean delete) {
-		if (delete)
+		if (delete) {
+			for (EObject n : nodes) if(isDanglingNode(n)) addToTrash(n);
+			
+			// Now safe to delete
 			ManipulationUtil.deleteNodes(new THashSet<>(nodes));
+		}
 	}
 
 	private RuntimeEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {

@@ -249,6 +249,43 @@ public interface RuntimePackage extends EPackage {
 	int NODE_MAPPING_OPERATION_COUNT = 0;
 
 	/**
+	 * The meta object id for the '{@link runtime.impl.TempContainerImpl <em>Temp Container</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see runtime.impl.TempContainerImpl
+	 * @see runtime.impl.RuntimePackageImpl#getTempContainer()
+	 * @generated
+	 */
+	int TEMP_CONTAINER = 3;
+
+	/**
+	 * The feature id for the '<em><b>Objects</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMP_CONTAINER__OBJECTS = 0;
+
+	/**
+	 * The number of structural features of the '<em>Temp Container</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMP_CONTAINER_FEATURE_COUNT = 1;
+
+	/**
+	 * The number of operations of the '<em>Temp Container</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TEMP_CONTAINER_OPERATION_COUNT = 0;
+
+	/**
 	 * Returns the meta object for class '{@link runtime.Protocol <em>Protocol</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -413,6 +450,27 @@ public interface RuntimePackage extends EPackage {
 	EReference getNodeMapping_Value();
 
 	/**
+	 * Returns the meta object for class '{@link runtime.TempContainer <em>Temp Container</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Temp Container</em>'.
+	 * @see runtime.TempContainer
+	 * @generated
+	 */
+	EClass getTempContainer();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link runtime.TempContainer#getObjects <em>Objects</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Objects</em>'.
+	 * @see runtime.TempContainer#getObjects()
+	 * @see #getTempContainer()
+	 * @generated
+	 */
+	EReference getTempContainer_Objects();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -560,6 +618,24 @@ public interface RuntimePackage extends EPackage {
 		 * @generated
 		 */
 		EReference NODE_MAPPING__VALUE = eINSTANCE.getNodeMapping_Value();
+
+		/**
+		 * The meta object literal for the '{@link runtime.impl.TempContainerImpl <em>Temp Container</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see runtime.impl.TempContainerImpl
+		 * @see runtime.impl.RuntimePackageImpl#getTempContainer()
+		 * @generated
+		 */
+		EClass TEMP_CONTAINER = eINSTANCE.getTempContainer();
+
+		/**
+		 * The meta object literal for the '<em><b>Objects</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TEMP_CONTAINER__OBJECTS = eINSTANCE.getTempContainer_Objects();
 
 	}
 

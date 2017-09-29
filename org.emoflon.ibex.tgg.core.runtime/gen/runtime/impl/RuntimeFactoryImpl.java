@@ -64,6 +64,8 @@ public class RuntimeFactoryImpl extends EFactoryImpl implements RuntimeFactory {
 			return createTGGRuleApplication();
 		case RuntimePackage.NODE_MAPPING:
 			return (EObject) createNodeMapping();
+		case RuntimePackage.TEMP_CONTAINER:
+			return createTempContainer();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -97,6 +99,16 @@ public class RuntimeFactoryImpl extends EFactoryImpl implements RuntimeFactory {
 	public Map.Entry<String, EObject> createNodeMapping() {
 		NodeMappingImpl nodeMapping = new NodeMappingImpl();
 		return nodeMapping;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public TempContainer createTempContainer() {
+		TempContainerImpl tempContainer = new TempContainerImpl();
+		return tempContainer;
 	}
 
 	/**

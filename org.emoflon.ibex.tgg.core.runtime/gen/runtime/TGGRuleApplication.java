@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link runtime.TGGRuleApplication#getCreatedSrc <em>Created Src</em>}</li>
  *   <li>{@link runtime.TGGRuleApplication#getCreatedTrg <em>Created Trg</em>}</li>
@@ -27,7 +28,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link runtime.TGGRuleApplication#isFinal <em>Final</em>}</li>
  *   <li>{@link runtime.TGGRuleApplication#getNodeMappings <em>Node Mappings</em>}</li>
  * </ul>
- * </p>
  *
  * @see runtime.RuntimePackage#getTGGRuleApplication()
  * @model
@@ -206,7 +206,7 @@ public interface TGGRuleApplication extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Node Mappings</em>' map.
 	 * @see runtime.RuntimePackage#getTGGRuleApplication_NodeMappings()
-	 * @model mapType="runtime.NodeMapping<org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EObject>"
+	 * @model mapType="runtime.NodeMapping&lt;org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EObject&gt;"
 	 * @generated
 	 */
 	EMap<String, EObject> getNodeMappings();

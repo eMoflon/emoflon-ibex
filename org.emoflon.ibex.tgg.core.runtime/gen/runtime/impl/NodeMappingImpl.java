@@ -24,11 +24,11 @@ import runtime.RuntimePackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link runtime.impl.NodeMappingImpl#getTypedKey <em>Key</em>}</li>
  *   <li>{@link runtime.impl.NodeMappingImpl#getTypedValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

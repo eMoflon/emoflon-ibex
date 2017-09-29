@@ -40,6 +40,15 @@ public interface RuntimeFactory extends EFactory {
 	TGGRuleApplication createTGGRuleApplication();
 
 	/**
+	 * Returns a new object of class '<em>Temp Container</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Temp Container</em>'.
+	 * @generated
+	 */
+	TempContainer createTempContainer();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

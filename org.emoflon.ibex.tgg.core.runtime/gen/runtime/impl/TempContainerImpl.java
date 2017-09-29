@@ -5,53 +5,51 @@ package runtime.impl;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.EObject;
 
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
-import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
-import org.eclipse.emf.ecore.util.InternalEList;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 
-import runtime.Protocol;
+import org.eclipse.emf.ecore.util.InternalEList;
 import runtime.RuntimePackage;
-import runtime.TGGRuleApplication;
-// <-- [user defined imports]
-// [user defined imports] -->
+import runtime.TempContainer;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Protocol</b></em>'.
+ * An implementation of the model object '<em><b>Temp Container</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link runtime.impl.ProtocolImpl#getSteps <em>Steps</em>}</li>
+ *   <li>{@link runtime.impl.TempContainerImpl#getObjects <em>Objects</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class ProtocolImpl extends EObjectImpl implements Protocol {
+public class TempContainerImpl extends EObjectImpl implements TempContainer {
 	/**
-	 * The cached value of the '{@link #getSteps() <em>Steps</em>}' containment reference list.
+	 * The cached value of the '{@link #getObjects() <em>Objects</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getSteps()
+	 * @see #getObjects()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<TGGRuleApplication> steps;
+	protected EList<EObject> objects;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ProtocolImpl() {
+	protected TempContainerImpl() {
 		super();
 	}
 
@@ -62,7 +60,7 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return RuntimePackage.Literals.PROTOCOL;
+		return RuntimePackage.Literals.TEMP_CONTAINER;
 	}
 
 	/**
@@ -70,27 +68,11 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<TGGRuleApplication> getSteps() {
-		if (steps == null) {
-			steps = new EObjectContainmentWithInverseEList<TGGRuleApplication>(TGGRuleApplication.class, this,
-					RuntimePackage.PROTOCOL__STEPS, RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL);
+	public EList<EObject> getObjects() {
+		if (objects == null) {
+			objects = new EObjectContainmentEList<EObject>(EObject.class, this, RuntimePackage.TEMP_CONTAINER__OBJECTS);
 		}
-		return steps;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-		case RuntimePackage.PROTOCOL__STEPS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getSteps()).basicAdd(otherEnd, msgs);
-		}
-		return super.eInverseAdd(otherEnd, featureID, msgs);
+		return objects;
 	}
 
 	/**
@@ -101,8 +83,8 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case RuntimePackage.PROTOCOL__STEPS:
-			return ((InternalEList<?>) getSteps()).basicRemove(otherEnd, msgs);
+		case RuntimePackage.TEMP_CONTAINER__OBJECTS:
+			return ((InternalEList<?>) getObjects()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -115,8 +97,8 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case RuntimePackage.PROTOCOL__STEPS:
-			return getSteps();
+		case RuntimePackage.TEMP_CONTAINER__OBJECTS:
+			return getObjects();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -130,9 +112,9 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case RuntimePackage.PROTOCOL__STEPS:
-			getSteps().clear();
-			getSteps().addAll((Collection<? extends TGGRuleApplication>) newValue);
+		case RuntimePackage.TEMP_CONTAINER__OBJECTS:
+			getObjects().clear();
+			getObjects().addAll((Collection<? extends EObject>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -146,8 +128,8 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case RuntimePackage.PROTOCOL__STEPS:
-			getSteps().clear();
+		case RuntimePackage.TEMP_CONTAINER__OBJECTS:
+			getObjects().clear();
 			return;
 		}
 		super.eUnset(featureID);
@@ -161,12 +143,10 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case RuntimePackage.PROTOCOL__STEPS:
-			return steps != null && !steps.isEmpty();
+		case RuntimePackage.TEMP_CONTAINER__OBJECTS:
+			return objects != null && !objects.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
-} //ProtocolImpl
+} //TempContainerImpl

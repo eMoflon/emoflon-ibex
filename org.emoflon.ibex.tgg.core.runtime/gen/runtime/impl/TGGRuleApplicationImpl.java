@@ -35,6 +35,7 @@ import runtime.TGGRuleApplication;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link runtime.impl.TGGRuleApplicationImpl#getCreatedSrc <em>Created Src</em>}</li>
  *   <li>{@link runtime.impl.TGGRuleApplicationImpl#getCreatedTrg <em>Created Trg</em>}</li>
@@ -46,7 +47,6 @@ import runtime.TGGRuleApplication;
  *   <li>{@link runtime.impl.TGGRuleApplicationImpl#isFinal <em>Final</em>}</li>
  *   <li>{@link runtime.impl.TGGRuleApplicationImpl#getNodeMappings <em>Node Mappings</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -265,7 +265,7 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 	public Protocol getProtocol() {
 		if (eContainerFeatureID() != RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL)
 			return null;
-		return (Protocol) eContainer();
+		return (Protocol) eInternalContainer();
 	}
 
 	/**
