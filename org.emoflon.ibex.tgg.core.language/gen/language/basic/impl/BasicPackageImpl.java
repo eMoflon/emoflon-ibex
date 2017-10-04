@@ -29,8 +29,10 @@ import language.inplaceAttributes.impl.InplaceAttributesPackageImpl;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EcorePackage;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+import org.eclipse.emf.ecore.impl.EcorePackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -98,14 +100,16 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		// Obtain or create and register interdependencies
 		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI) : LanguagePackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
+						: LanguagePackage.eINSTANCE);
 		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(InplaceAttributesPackage.eNS_URI) instanceof InplaceAttributesPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI)
 						: InplaceAttributesPackage.eINSTANCE);
 		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(CspPackage.eNS_URI) instanceof CspPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI) : CspPackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI)
+						: CspPackage.eINSTANCE);
 		DefinitionPackageImpl theDefinitionPackage = (DefinitionPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(DefinitionPackage.eNS_URI) instanceof DefinitionPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI)
@@ -114,6 +118,10 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
+		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
+				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
+						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
+						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theBasicPackage.createPackageContents();
@@ -122,6 +130,7 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		theCspPackage.createPackageContents();
 		theDefinitionPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
+		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theBasicPackage.initializePackageContents();
@@ -130,6 +139,7 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		theCspPackage.initializePackageContents();
 		theDefinitionPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
+		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theBasicPackage.freeze();
@@ -217,6 +227,7 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		// Obtain other dependent packages
 		ExpressionsPackage theExpressionsPackage = (ExpressionsPackage) EPackage.Registry.INSTANCE
 				.getEPackage(ExpressionsPackage.eNS_URI);
+		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 
 		// Add subpackages
 		getESubpackages().add(theExpressionsPackage);
@@ -230,8 +241,9 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		// Initialize classes, features, and operations; add parameters
 		initEClass(tggNamedElementEClass, TGGNamedElement.class, "TGGNamedElement", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGNamedElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, TGGNamedElement.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGNamedElement_Name(), theEcorePackage.getEString(), "name", null, 0, 1,
+				TGGNamedElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 	}
 
 } //BasicPackageImpl

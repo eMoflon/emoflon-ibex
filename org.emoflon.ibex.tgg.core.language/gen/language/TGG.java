@@ -9,8 +9,6 @@ import language.csp.definition.TGGAttributeConstraintDefinitionLibrary;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EPackage;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -19,6 +17,7 @@ import org.eclipse.emf.ecore.EPackage;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGG#getSrc <em>Src</em>}</li>
  *   <li>{@link language.TGG#getTrg <em>Trg</em>}</li>
@@ -26,7 +25,6 @@ import org.eclipse.emf.ecore.EPackage;
  *   <li>{@link language.TGG#getRules <em>Rules</em>}</li>
  *   <li>{@link language.TGG#getAttributeConstraintDefinitionLibrary <em>Attribute Constraint Definition Library</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGG()
  * @model
@@ -132,7 +130,5 @@ public interface TGG extends TGGNamedElement {
 	 * @generated
 	 */
 	void setAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGG

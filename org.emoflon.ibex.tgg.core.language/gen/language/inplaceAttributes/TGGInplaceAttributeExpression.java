@@ -6,8 +6,6 @@ import language.basic.expressions.TGGExpression;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -16,12 +14,12 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.inplaceAttributes.TGGInplaceAttributeExpression#getAttribute <em>Attribute</em>}</li>
  *   <li>{@link language.inplaceAttributes.TGGInplaceAttributeExpression#getValueExpr <em>Value Expr</em>}</li>
  *   <li>{@link language.inplaceAttributes.TGGInplaceAttributeExpression#getOperator <em>Operator</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.inplaceAttributes.InplaceAttributesPackage#getTGGInplaceAttributeExpression()
  * @model
@@ -109,7 +107,5 @@ public interface TGGInplaceAttributeExpression extends EObject {
 	 * @generated
 	 */
 	void setOperator(TGGAttributeConstraintOperators value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGInplaceAttributeExpression

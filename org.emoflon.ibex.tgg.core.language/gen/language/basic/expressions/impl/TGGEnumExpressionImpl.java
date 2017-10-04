@@ -13,8 +13,6 @@ import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -22,11 +20,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.basic.expressions.impl.TGGEnumExpressionImpl#getEenum <em>Eenum</em>}</li>
  *   <li>{@link language.basic.expressions.impl.TGGEnumExpressionImpl#getLiteral <em>Literal</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -221,7 +219,5 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGEnumExpressionImpl

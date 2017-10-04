@@ -170,13 +170,13 @@ public interface LanguagePackage extends EPackage {
 	int TGG_RULE__REFINES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Complements</b></em>' reference.
+	 * The feature id for the '<em><b>Kernel</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__COMPLEMENTS = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 1;
+	int TGG_RULE__KERNEL = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Nacs</b></em>' containment reference list.
@@ -785,15 +785,15 @@ public interface LanguagePackage extends EPackage {
 	EReference getTGGRule_Refines();
 
 	/**
-	 * Returns the meta object for the reference '{@link language.TGGRule#getComplements <em>Complements</em>}'.
+	 * Returns the meta object for the reference '{@link language.TGGRule#getKernel <em>Kernel</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Complements</em>'.
-	 * @see language.TGGRule#getComplements()
+	 * @return the meta object for the reference '<em>Kernel</em>'.
+	 * @see language.TGGRule#getKernel()
 	 * @see #getTGGRule()
 	 * @generated
 	 */
-	EReference getTGGRule_Complements();
+	EReference getTGGRule_Kernel();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link language.TGGRule#getNacs <em>Nacs</em>}'.
@@ -1189,12 +1189,12 @@ public interface LanguagePackage extends EPackage {
 		EReference TGG_RULE__REFINES = eINSTANCE.getTGGRule_Refines();
 
 		/**
-		 * The meta object literal for the '<em><b>Complements</b></em>' reference feature.
+		 * The meta object literal for the '<em><b>Kernel</b></em>' reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_RULE__COMPLEMENTS = eINSTANCE.getTGGRule_Complements();
+		EReference TGG_RULE__KERNEL = eINSTANCE.getTGGRule_Kernel();
 
 		/**
 		 * The meta object literal for the '<em><b>Nacs</b></em>' containment reference list feature.

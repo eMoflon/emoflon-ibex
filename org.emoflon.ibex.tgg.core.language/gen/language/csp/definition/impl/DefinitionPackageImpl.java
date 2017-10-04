@@ -33,8 +33,10 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+import org.eclipse.emf.ecore.impl.EcorePackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -123,21 +125,28 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 		// Obtain or create and register interdependencies
 		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI) : LanguagePackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
+						: LanguagePackage.eINSTANCE);
 		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(InplaceAttributesPackage.eNS_URI) instanceof InplaceAttributesPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI)
 						: InplaceAttributesPackage.eINSTANCE);
 		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(CspPackage.eNS_URI) instanceof CspPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI) : CspPackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI)
+						: CspPackage.eINSTANCE);
 		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(BasicPackage.eNS_URI) instanceof BasicPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI) : BasicPackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI)
+						: BasicPackage.eINSTANCE);
 		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
+		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
+				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
+						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
+						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theDefinitionPackage.createPackageContents();
@@ -146,6 +155,7 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 		theCspPackage.createPackageContents();
 		theBasicPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
+		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theDefinitionPackage.initializePackageContents();
@@ -154,6 +164,7 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 		theCspPackage.initializePackageContents();
 		theBasicPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
+		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theDefinitionPackage.freeze();
@@ -347,6 +358,7 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 
 		// Obtain other dependent packages
 		BasicPackage theBasicPackage = (BasicPackage) EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI);
+		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 
 		// Create type parameters
 
@@ -365,7 +377,7 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 
 		initEClass(tggAttributeConstraintDefinitionEClass, TGGAttributeConstraintDefinition.class,
 				"TGGAttributeConstraintDefinition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGAttributeConstraintDefinition_UserDefined(), ecorePackage.getEBoolean(), "userDefined",
+		initEAttribute(getTGGAttributeConstraintDefinition_UserDefined(), theEcorePackage.getEBoolean(), "userDefined",
 				"true", 0, 1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTGGAttributeConstraintDefinition_ParameterDefinitions(),
@@ -382,16 +394,16 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 
 		initEClass(tggAttributeConstraintParameterDefinitionEClass, TGGAttributeConstraintParameterDefinition.class,
 				"TGGAttributeConstraintParameterDefinition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeConstraintParameterDefinition_Type(), ecorePackage.getEDataType(), null, "type",
-				null, 0, 1, TGGAttributeConstraintParameterDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGAttributeConstraintParameterDefinition_Name(), ecorePackage.getEString(), "name", null, 0,
-				1, TGGAttributeConstraintParameterDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEReference(getTGGAttributeConstraintParameterDefinition_Type(), theEcorePackage.getEDataType(), null,
+				"type", null, 0, 1, TGGAttributeConstraintParameterDefinition.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGAttributeConstraintParameterDefinition_Name(), theEcorePackage.getEString(), "name", null,
+				0, 1, TGGAttributeConstraintParameterDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggAttributeConstraintAdornmentEClass, TGGAttributeConstraintAdornment.class,
 				"TGGAttributeConstraintAdornment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGAttributeConstraintAdornment_Value(), ecorePackage.getEString(), "value", null, 0, -1,
+		initEAttribute(getTGGAttributeConstraintAdornment_Value(), theEcorePackage.getEString(), "value", null, 0, -1,
 				TGGAttributeConstraintAdornment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE,
 				!IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 	}

@@ -19,8 +19,6 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -28,10 +26,10 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.csp.definition.impl.TGGAttributeConstraintDefinitionLibraryImpl#getTggAttributeConstraintDefinitions <em>Tgg Attribute Constraint Definitions</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -154,7 +152,5 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGAttributeConstraintDefinitionLibraryImpl

@@ -26,8 +26,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -35,6 +33,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGImpl#getSrc <em>Src</em>}</li>
  *   <li>{@link language.impl.TGGImpl#getTrg <em>Trg</em>}</li>
@@ -42,7 +41,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link language.impl.TGGImpl#getRules <em>Rules</em>}</li>
  *   <li>{@link language.impl.TGGImpl#getAttributeConstraintDefinitionLibrary <em>Attribute Constraint Definition Library</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -366,7 +364,5 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGImpl

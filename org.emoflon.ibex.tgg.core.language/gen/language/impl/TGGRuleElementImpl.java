@@ -14,8 +14,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -23,11 +21,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGRuleElementImpl#getDomainType <em>Domain Type</em>}</li>
  *   <li>{@link language.impl.TGGRuleElementImpl#getBindingType <em>Binding Type</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -221,7 +219,5 @@ public abstract class TGGRuleElementImpl extends TGGNamedElementImpl implements 
 		result.append(')');
 		return result.toString();
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGRuleElementImpl

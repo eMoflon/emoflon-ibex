@@ -32,8 +32,10 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+import org.eclipse.emf.ecore.impl.EcorePackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -115,7 +117,8 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		// Obtain or create and register interdependencies
 		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI) : LanguagePackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
+						: LanguagePackage.eINSTANCE);
 		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(InplaceAttributesPackage.eNS_URI) instanceof InplaceAttributesPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI)
@@ -126,11 +129,16 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 						: DefinitionPackage.eINSTANCE);
 		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(BasicPackage.eNS_URI) instanceof BasicPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI) : BasicPackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI)
+						: BasicPackage.eINSTANCE);
 		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
+		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
+				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
+						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
+						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theCspPackage.createPackageContents();
@@ -139,6 +147,7 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		theDefinitionPackage.createPackageContents();
 		theBasicPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
+		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theCspPackage.initializePackageContents();
@@ -147,6 +156,7 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		theDefinitionPackage.initializePackageContents();
 		theBasicPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
+		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theCspPackage.freeze();
@@ -339,6 +349,7 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 				.getEPackage(DefinitionPackage.eNS_URI);
 		ExpressionsPackage theExpressionsPackage = (ExpressionsPackage) EPackage.Registry.INSTANCE
 				.getEPackage(ExpressionsPackage.eNS_URI);
+		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 
 		// Add subpackages
 		getESubpackages().add(theDefinitionPackage);
@@ -385,7 +396,7 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 
 		initEClass(tggAttributeVariableEClass, TGGAttributeVariable.class, "TGGAttributeVariable", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGAttributeVariable_Name(), ecorePackage.getEString(), "name", null, 0, 1,
+		initEAttribute(getTGGAttributeVariable_Name(), theEcorePackage.getEString(), "name", null, 0, 1,
 				TGGAttributeVariable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 	}

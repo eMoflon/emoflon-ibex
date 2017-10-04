@@ -5,8 +5,6 @@ package language.csp.definition;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -15,10 +13,10 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.csp.definition.TGGAttributeConstraintAdornment#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.csp.definition.DefinitionPackage#getTGGAttributeConstraintAdornment()
  * @model
@@ -40,7 +38,5 @@ public interface TGGAttributeConstraintAdornment extends EObject {
 	 * @generated
 	 */
 	EList<String> getValue();
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeConstraintAdornment

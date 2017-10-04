@@ -28,6 +28,7 @@ import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.AttributeAssignment;
 import org.moflon.tgg.mosl.tgg.AttributeConstraint;
 import org.moflon.tgg.mosl.tgg.AttributeExpression;
+import org.moflon.tgg.mosl.tgg.ComplementRule;
 import org.moflon.tgg.mosl.tgg.ContextLinkVariablePattern;
 import org.moflon.tgg.mosl.tgg.ContextObjectVariablePattern;
 import org.moflon.tgg.mosl.tgg.CorrType;
@@ -129,6 +130,7 @@ public class EditorTGGtoInternalTGG {
 		map(xtextTGG, tgg);
 
 		for (Rule xtextRule : xtextTGG.getRules()) {
+			System.out.println("Normal rule: " + xtextRule.getName());
 			TGGRule tggRule = tggFactory.createTGGRule();
 			tggRule.setName(xtextRule.getName());
 			tggRule.setAbstract(xtextRule.isAbstractRule());
@@ -150,7 +152,25 @@ public class EditorTGGtoInternalTGG {
                                                                  .map(r -> (TGGRule)xtextToTGG.get(r))
                                                                  .collect(Collectors.toList()));
         }
+        
+     // translate complements
+        for (ComplementRule xtextCompRule : xtextTGG.getComplementRules()) {
+        	System.out.println("Comple rule: " + xtextCompRule.getName());
+			TGGRule tggRule = tggFactory.createTGGRule();
+			tggRule.setName(xtextCompRule.getName());
+			tgg.getRules().add(tggRule);
+			map(xtextCompRule, tggRule);
 
+			tggRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getSourcePatterns(), DomainType.SRC));
+			tggRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getTargetPatterns(), DomainType.TRG));
+			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextCompRule.getCorrespondencePatterns()));
+
+			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule.getNodes()));
+
+			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
+		}
+        
+    
         // translate nacs
         for (Nac xtextNac : xtextTGG.getNacs()) {
 			NAC tggNac = LanguageFactory.eINSTANCE.createNAC();

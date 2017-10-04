@@ -32,8 +32,10 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+import org.eclipse.emf.ecore.impl.EcorePackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -108,21 +110,28 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 		// Obtain or create and register interdependencies
 		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI) : LanguagePackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
+						: LanguagePackage.eINSTANCE);
 		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(CspPackage.eNS_URI) instanceof CspPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI) : CspPackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI)
+						: CspPackage.eINSTANCE);
 		DefinitionPackageImpl theDefinitionPackage = (DefinitionPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(DefinitionPackage.eNS_URI) instanceof DefinitionPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI)
 						: DefinitionPackage.eINSTANCE);
 		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(BasicPackage.eNS_URI) instanceof BasicPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI) : BasicPackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI)
+						: BasicPackage.eINSTANCE);
 		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
+		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
+				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
+						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
+						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theInplaceAttributesPackage.createPackageContents();
@@ -131,6 +140,7 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 		theDefinitionPackage.createPackageContents();
 		theBasicPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
+		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theInplaceAttributesPackage.initializePackageContents();
@@ -139,6 +149,7 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 		theDefinitionPackage.initializePackageContents();
 		theBasicPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
+		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theInplaceAttributesPackage.freeze();
@@ -256,6 +267,7 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 		setNsURI(eNS_URI);
 
 		// Obtain other dependent packages
+		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 		ExpressionsPackage theExpressionsPackage = (ExpressionsPackage) EPackage.Registry.INSTANCE
 				.getEPackage(ExpressionsPackage.eNS_URI);
 
@@ -268,7 +280,7 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 		// Initialize classes, features, and operations; add parameters
 		initEClass(tggInplaceAttributeExpressionEClass, TGGInplaceAttributeExpression.class,
 				"TGGInplaceAttributeExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGInplaceAttributeExpression_Attribute(), ecorePackage.getEAttribute(), null, "attribute",
+		initEReference(getTGGInplaceAttributeExpression_Attribute(), theEcorePackage.getEAttribute(), null, "attribute",
 				null, 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTGGInplaceAttributeExpression_ValueExpr(), theExpressionsPackage.getTGGExpression(), null,

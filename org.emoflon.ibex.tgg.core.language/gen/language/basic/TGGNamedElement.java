@@ -3,8 +3,6 @@
 package language.basic;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -13,10 +11,10 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.basic.TGGNamedElement#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.basic.BasicPackage#getTGGNamedElement()
  * @model
@@ -48,7 +46,5 @@ public interface TGGNamedElement extends EObject {
 	 * @generated
 	 */
 	void setName(String value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGNamedElement

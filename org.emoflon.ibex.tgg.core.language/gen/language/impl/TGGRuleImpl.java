@@ -27,8 +27,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -36,16 +34,16 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGRuleImpl#getRefines <em>Refines</em>}</li>
- *   <li>{@link language.impl.TGGRuleImpl#getComplements <em>Complements</em>}</li>
+ *   <li>{@link language.impl.TGGRuleImpl#getKernel <em>Kernel</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getNacs <em>Nacs</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#isAbstract <em>Abstract</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -61,14 +59,14 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	protected EList<TGGRule> refines;
 
 	/**
-	 * The cached value of the '{@link #getComplements() <em>Complements</em>}' reference.
+	 * The cached value of the '{@link #getKernel() <em>Kernel</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getComplements()
+	 * @see #getKernel()
 	 * @generated
 	 * @ordered
 	 */
-	protected TGGRule complements;
+	protected TGGRule kernel;
 
 	/**
 	 * The cached value of the '{@link #getNacs() <em>Nacs</em>}' containment reference list.
@@ -166,17 +164,17 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TGGRule getComplements() {
-		if (complements != null && complements.eIsProxy()) {
-			InternalEObject oldComplements = (InternalEObject) complements;
-			complements = (TGGRule) eResolveProxy(oldComplements);
-			if (complements != oldComplements) {
+	public TGGRule getKernel() {
+		if (kernel != null && kernel.eIsProxy()) {
+			InternalEObject oldKernel = (InternalEObject) kernel;
+			kernel = (TGGRule) eResolveProxy(oldKernel);
+			if (kernel != oldKernel) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE__COMPLEMENTS,
-							oldComplements, complements));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE__KERNEL,
+							oldKernel, kernel));
 			}
 		}
-		return complements;
+		return kernel;
 	}
 
 	/**
@@ -184,8 +182,8 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TGGRule basicGetComplements() {
-		return complements;
+	public TGGRule basicGetKernel() {
+		return kernel;
 	}
 
 	/**
@@ -193,12 +191,11 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setComplements(TGGRule newComplements) {
-		TGGRule oldComplements = complements;
-		complements = newComplements;
+	public void setKernel(TGGRule newKernel) {
+		TGGRule oldKernel = kernel;
+		kernel = newKernel;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__COMPLEMENTS, oldComplements,
-					complements));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__KERNEL, oldKernel, kernel));
 	}
 
 	/**
@@ -341,10 +338,10 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		switch (featureID) {
 		case LanguagePackage.TGG_RULE__REFINES:
 			return getRefines();
-		case LanguagePackage.TGG_RULE__COMPLEMENTS:
+		case LanguagePackage.TGG_RULE__KERNEL:
 			if (resolve)
-				return getComplements();
-			return basicGetComplements();
+				return getKernel();
+			return basicGetKernel();
 		case LanguagePackage.TGG_RULE__NACS:
 			return getNacs();
 		case LanguagePackage.TGG_RULE__NODES:
@@ -372,8 +369,8 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 			getRefines().clear();
 			getRefines().addAll((Collection<? extends TGGRule>) newValue);
 			return;
-		case LanguagePackage.TGG_RULE__COMPLEMENTS:
-			setComplements((TGGRule) newValue);
+		case LanguagePackage.TGG_RULE__KERNEL:
+			setKernel((TGGRule) newValue);
 			return;
 		case LanguagePackage.TGG_RULE__NACS:
 			getNacs().clear();
@@ -408,8 +405,8 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		case LanguagePackage.TGG_RULE__REFINES:
 			getRefines().clear();
 			return;
-		case LanguagePackage.TGG_RULE__COMPLEMENTS:
-			setComplements((TGGRule) null);
+		case LanguagePackage.TGG_RULE__KERNEL:
+			setKernel((TGGRule) null);
 			return;
 		case LanguagePackage.TGG_RULE__NACS:
 			getNacs().clear();
@@ -440,8 +437,8 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		switch (featureID) {
 		case LanguagePackage.TGG_RULE__REFINES:
 			return refines != null && !refines.isEmpty();
-		case LanguagePackage.TGG_RULE__COMPLEMENTS:
-			return complements != null;
+		case LanguagePackage.TGG_RULE__KERNEL:
+			return kernel != null;
 		case LanguagePackage.TGG_RULE__NACS:
 			return nacs != null && !nacs.isEmpty();
 		case LanguagePackage.TGG_RULE__NODES:
@@ -472,7 +469,5 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		result.append(')');
 		return result.toString();
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGRuleImpl

@@ -18,4 +18,13 @@
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="language.basic.expressions.ExpressionsPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions"/>
   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Language -->
+      <package
+            uri="http://www.eclipse.org/emf/2002/Ecore"
+            class="org.eclipse.emf.ecore.EcorePackage"
+            genModel="model/Language.genmodel"/>
+   </extension>
+
 </plugin>

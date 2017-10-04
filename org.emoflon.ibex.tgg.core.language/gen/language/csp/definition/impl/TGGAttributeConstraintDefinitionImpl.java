@@ -23,8 +23,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -32,13 +30,13 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.csp.definition.impl.TGGAttributeConstraintDefinitionImpl#isUserDefined <em>User Defined</em>}</li>
  *   <li>{@link language.csp.definition.impl.TGGAttributeConstraintDefinitionImpl#getParameterDefinitions <em>Parameter Definitions</em>}</li>
  *   <li>{@link language.csp.definition.impl.TGGAttributeConstraintDefinitionImpl#getSyncAdornments <em>Sync Adornments</em>}</li>
  *   <li>{@link language.csp.definition.impl.TGGAttributeConstraintDefinitionImpl#getGenAdornments <em>Gen Adornments</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -304,7 +302,5 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
 		result.append(')');
 		return result.toString();
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGAttributeConstraintDefinitionImpl

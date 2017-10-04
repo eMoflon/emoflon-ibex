@@ -7,8 +7,6 @@ import language.basic.TGGNamedElement;
 import language.csp.TGGAttributeConstraintLibrary;
 
 import org.eclipse.emf.common.util.EList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -17,12 +15,12 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.NAC#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.NAC#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.NAC#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getNAC()
  * @model
@@ -86,7 +84,5 @@ public interface NAC extends TGGNamedElement {
 	 * @generated
 	 */
 	void setAttributeConditionLibrary(TGGAttributeConstraintLibrary value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // NAC

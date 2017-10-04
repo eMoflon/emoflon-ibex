@@ -7,8 +7,6 @@ import language.basic.expressions.TGGParamValue;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -17,6 +15,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getTggAttributeConstraints <em>Tgg Attribute Constraints</em>}</li>
  *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getParameterValues <em>Parameter Values</em>}</li>
@@ -25,7 +24,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getSorted_CC <em>Sorted CC</em>}</li>
  *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getSorted_MODELGEN <em>Sorted MODELGEN</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.csp.CspPackage#getTGGAttributeConstraintLibrary()
  * @model
@@ -127,7 +125,5 @@ public interface TGGAttributeConstraintLibrary extends EObject {
 	 * @generated
 	 */
 	EList<TGGAttributeConstraint> getSorted_MODELGEN();
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeConstraintLibrary
