@@ -28,6 +28,7 @@ import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.AttributeAssignment;
 import org.moflon.tgg.mosl.tgg.AttributeConstraint;
 import org.moflon.tgg.mosl.tgg.AttributeExpression;
+import org.moflon.tgg.mosl.tgg.ComplementRule;
 import org.moflon.tgg.mosl.tgg.ContextLinkVariablePattern;
 import org.moflon.tgg.mosl.tgg.ContextObjectVariablePattern;
 import org.moflon.tgg.mosl.tgg.CorrType;
@@ -127,7 +128,19 @@ public class EditorTGGtoInternalTGG {
 				createAttributeConditionDefinitionLibrary(xtextTGG.getSchema().getAttributeCondDefs()));
 
 		map(xtextTGG, tgg);
+		
+		translateXTextRulesToTGGRules(xtextTGG, tgg);
+		translateXTextRuleRefinementsToTGGRuleRefinements(xtextTGG, tgg);
+		translateXTextComplementRulesToTGGComplementRules(xtextTGG, tgg);
+		translateXTextNacsToTGGNacs(xtextTGG, tgg);
 
+		tgg = addOppositeEdges(tgg);
+		tgg = sortTGGAttributeConstraints(tgg);
+
+		return tgg;
+	}
+	
+	private void translateXTextRulesToTGGRules(TripleGraphGrammarFile xtextTGG, TGG tgg) {	
 		for (Rule xtextRule : xtextTGG.getRules()) {
 			TGGRule tggRule = tggFactory.createTGGRule();
 			tggRule.setName(xtextRule.getName());
@@ -143,15 +156,17 @@ public class EditorTGGtoInternalTGG {
 
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
-		
-        // translate rule refinement
+	}
+	
+	private void translateXTextRuleRefinementsToTGGRuleRefinements(TripleGraphGrammarFile xtextTGG, TGG tgg) {
         for (TGGRule tggRule : tgg.getRules()) {
             tggRule.getRefines().addAll(((Rule)tggToXtext.get(tggRule)).getSupertypes().stream()
                                                                  .map(r -> (TGGRule)xtextToTGG.get(r))
                                                                  .collect(Collectors.toList()));
         }
+	}
 
-        // translate nacs
+	private void translateXTextNacsToTGGNacs(TripleGraphGrammarFile xtextTGG, TGG tgg) {
         for (Nac xtextNac : xtextTGG.getNacs()) {
 			NAC tggNac = LanguageFactory.eINSTANCE.createNAC();
 			tggNac.setName(xtextNac.getName());
@@ -165,12 +180,26 @@ public class EditorTGGtoInternalTGG {
 			tggNac.getEdges().addAll(createTGGRuleEdges(tggNac.getNodes()));
 			
 			tggNac.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextNac.getAttrConditions()));
-		}
-        
-		tgg = addOppositeEdges(tgg);
-		tgg = sortTGGAttributeConstraints(tgg);
+		}	
+	}
 
-		return tgg;
+	private void translateXTextComplementRulesToTGGComplementRules(TripleGraphGrammarFile xtextTGG, TGG tgg) {
+        for (ComplementRule xtextCompRule : xtextTGG.getComplementRules()) {
+			TGGRule tggRule = tggFactory.createTGGRule();
+			tggRule.setName(xtextCompRule.getName());
+			TGGRule kernel = (TGGRule) xtextToTGG.get(xtextCompRule.getKernel());
+			tggRule.setKernel(kernel);
+			tgg.getRules().add(tggRule);
+			map(xtextCompRule, tggRule);
+
+			tggRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getSourcePatterns(), DomainType.SRC));
+			tggRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getTargetPatterns(), DomainType.TRG));
+			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextCompRule.getCorrespondencePatterns()));
+
+			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule.getNodes()));
+
+			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
+		}
 	}
 
 	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {

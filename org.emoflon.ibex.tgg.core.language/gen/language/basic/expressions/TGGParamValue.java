@@ -5,8 +5,6 @@ package language.basic.expressions;
 import language.csp.definition.TGGAttributeConstraintParameterDefinition;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -15,10 +13,10 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.basic.expressions.TGGParamValue#getParameterDefinition <em>Parameter Definition</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.basic.expressions.ExpressionsPackage#getTGGParamValue()
  * @model
@@ -50,7 +48,5 @@ public interface TGGParamValue extends EObject {
 	 * @generated
 	 */
 	void setParameterDefinition(TGGAttributeConstraintParameterDefinition value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGParamValue

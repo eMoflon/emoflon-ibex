@@ -13,8 +13,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -22,11 +20,11 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.csp.definition.impl.TGGAttributeConstraintParameterDefinitionImpl#getType <em>Type</em>}</li>
  *   <li>{@link language.csp.definition.impl.TGGAttributeConstraintParameterDefinitionImpl#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -229,7 +227,5 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends EObjectImpl
 		result.append(')');
 		return result.toString();
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGAttributeConstraintParameterDefinitionImpl

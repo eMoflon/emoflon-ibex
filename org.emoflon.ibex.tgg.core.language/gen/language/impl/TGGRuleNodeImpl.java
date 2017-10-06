@@ -24,8 +24,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -33,6 +31,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGRuleNodeImpl#getIncomingEdges <em>Incoming Edges</em>}</li>
  *   <li>{@link language.impl.TGGRuleNodeImpl#getOutgoingEdges <em>Outgoing Edges</em>}</li>
@@ -41,7 +40,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link language.impl.TGGRuleNodeImpl#getIncomingCorrsTarget <em>Incoming Corrs Target</em>}</li>
  *   <li>{@link language.impl.TGGRuleNodeImpl#getAttrExpr <em>Attr Expr</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -389,7 +387,5 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGRuleNodeImpl

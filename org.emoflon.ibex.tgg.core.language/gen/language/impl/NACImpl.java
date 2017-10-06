@@ -25,8 +25,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -34,12 +32,12 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.NACImpl#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.impl.NACImpl#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.impl.NACImpl#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -267,7 +265,5 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //NACImpl

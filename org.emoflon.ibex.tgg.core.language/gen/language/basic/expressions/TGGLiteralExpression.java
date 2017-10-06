@@ -2,9 +2,6 @@
  */
 package language.basic.expressions;
 
-// <-- [user defined imports]
-// [user defined imports] -->
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>TGG Literal Expression</b></em>'.
@@ -12,10 +9,10 @@ package language.basic.expressions;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.basic.expressions.TGGLiteralExpression#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.basic.expressions.ExpressionsPackage#getTGGLiteralExpression()
  * @model
@@ -47,7 +44,5 @@ public interface TGGLiteralExpression extends TGGExpression {
 	 * @generated
 	 */
 	void setValue(String value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGLiteralExpression

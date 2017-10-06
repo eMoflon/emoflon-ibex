@@ -14,8 +14,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -23,12 +21,12 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGRuleEdgeImpl#getSrcNode <em>Src Node</em>}</li>
  *   <li>{@link language.impl.TGGRuleEdgeImpl#getTrgNode <em>Trg Node</em>}</li>
  *   <li>{@link language.impl.TGGRuleEdgeImpl#getType <em>Type</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -378,7 +376,5 @@ public class TGGRuleEdgeImpl extends TGGRuleElementImpl implements TGGRuleEdge {
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGRuleEdgeImpl

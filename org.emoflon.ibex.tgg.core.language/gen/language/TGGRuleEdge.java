@@ -3,8 +3,6 @@
 package language;
 
 import org.eclipse.emf.ecore.EReference;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -13,12 +11,12 @@ import org.eclipse.emf.ecore.EReference;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRuleEdge#getSrcNode <em>Src Node</em>}</li>
  *   <li>{@link language.TGGRuleEdge#getTrgNode <em>Trg Node</em>}</li>
  *   <li>{@link language.TGGRuleEdge#getType <em>Type</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRuleEdge()
  * @model
@@ -106,7 +104,5 @@ public interface TGGRuleEdge extends TGGRuleElement {
 	 * @generated
 	 */
 	void setType(EReference value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGRuleEdge

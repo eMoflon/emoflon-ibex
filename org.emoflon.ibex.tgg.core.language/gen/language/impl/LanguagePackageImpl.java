@@ -37,8 +37,10 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+import org.eclipse.emf.ecore.impl.EcorePackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -166,18 +168,24 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 						: InplaceAttributesPackage.eINSTANCE);
 		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(CspPackage.eNS_URI) instanceof CspPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI) : CspPackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI)
+						: CspPackage.eINSTANCE);
 		DefinitionPackageImpl theDefinitionPackage = (DefinitionPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(DefinitionPackage.eNS_URI) instanceof DefinitionPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI)
 						: DefinitionPackage.eINSTANCE);
 		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(BasicPackage.eNS_URI) instanceof BasicPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI) : BasicPackage.eINSTANCE);
+						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI)
+						: BasicPackage.eINSTANCE);
 		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
+		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
+				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
+						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
+						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theLanguagePackage.createPackageContents();
@@ -186,6 +194,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		theDefinitionPackage.createPackageContents();
 		theBasicPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
+		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theLanguagePackage.initializePackageContents();
@@ -194,6 +203,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		theDefinitionPackage.initializePackageContents();
 		theBasicPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
+		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theLanguagePackage.freeze();
@@ -280,7 +290,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_Complements() {
+	public EReference getTGGRule_Kernel() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -574,7 +584,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 
 		tggRuleEClass = createEClass(TGG_RULE);
 		createEReference(tggRuleEClass, TGG_RULE__REFINES);
-		createEReference(tggRuleEClass, TGG_RULE__COMPLEMENTS);
+		createEReference(tggRuleEClass, TGG_RULE__KERNEL);
 		createEReference(tggRuleEClass, TGG_RULE__NACS);
 		createEReference(tggRuleEClass, TGG_RULE__NODES);
 		createEReference(tggRuleEClass, TGG_RULE__EDGES);
@@ -641,6 +651,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 				.getEPackage(InplaceAttributesPackage.eNS_URI);
 		CspPackage theCspPackage = (CspPackage) EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI);
 		BasicPackage theBasicPackage = (BasicPackage) EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI);
+		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 		DefinitionPackage theDefinitionPackage = (DefinitionPackage) EPackage.Registry.INSTANCE
 				.getEPackage(DefinitionPackage.eNS_URI);
 
@@ -664,13 +675,13 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(tggEClass, language.TGG.class, "TGG", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGG_Src(), ecorePackage.getEPackage(), null, "src", null, 0, -1, language.TGG.class,
+		initEReference(getTGG_Src(), theEcorePackage.getEPackage(), null, "src", null, 0, -1, language.TGG.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGG_Trg(), ecorePackage.getEPackage(), null, "trg", null, 0, -1, language.TGG.class,
+		initEReference(getTGG_Trg(), theEcorePackage.getEPackage(), null, "trg", null, 0, -1, language.TGG.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGG_Corr(), ecorePackage.getEPackage(), null, "corr", null, 0, 1, language.TGG.class,
+		initEReference(getTGG_Corr(), theEcorePackage.getEPackage(), null, "corr", null, 0, 1, language.TGG.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTGG_Rules(), this.getTGGRule(), null, "rules", null, 0, -1, language.TGG.class, !IS_TRANSIENT,
@@ -685,9 +696,9 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		initEReference(getTGGRule_Refines(), this.getTGGRule(), null, "refines", null, 0, -1, TGGRule.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRule_Complements(), this.getTGGRule(), null, "complements", null, 0, 1, TGGRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Kernel(), this.getTGGRule(), null, "kernel", null, 0, 1, TGGRule.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 		initEReference(getTGGRule_Nacs(), this.getNAC(), null, "nacs", null, 0, -1, TGGRule.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
@@ -720,7 +731,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		initEReference(getTGGRuleNode_OutgoingEdges(), this.getTGGRuleEdge(), this.getTGGRuleEdge_SrcNode(),
 				"outgoingEdges", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleNode_Type(), ecorePackage.getEClass(), null, "type", null, 0, 1, TGGRuleNode.class,
+		initEReference(getTGGRuleNode_Type(), theEcorePackage.getEClass(), null, "type", null, 0, 1, TGGRuleNode.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTGGRuleNode_IncomingCorrsSource(), this.getTGGRuleCorr(), this.getTGGRuleCorr_Source(),
@@ -750,9 +761,9 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		initEReference(getTGGRuleEdge_TrgNode(), this.getTGGRuleNode(), this.getTGGRuleNode_IncomingEdges(), "trgNode",
 				null, 0, 1, TGGRuleEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleEdge_Type(), ecorePackage.getEReference(), null, "type", null, 0, 1, TGGRuleEdge.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRuleEdge_Type(), theEcorePackage.getEReference(), null, "type", null, 0, 1,
+				TGGRuleEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(nacEClass, language.NAC.class, "NAC", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getNAC_Nodes(), this.getTGGRuleNode(), null, "nodes", null, 0, -1, language.NAC.class,

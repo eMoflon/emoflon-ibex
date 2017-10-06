@@ -7,8 +7,6 @@ import language.basic.TGGNamedElement;
 import language.csp.TGGAttributeConstraintLibrary;
 
 import org.eclipse.emf.common.util.EList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -17,16 +15,16 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRule#getRefines <em>Refines</em>}</li>
- *   <li>{@link language.TGGRule#getComplements <em>Complements</em>}</li>
+ *   <li>{@link language.TGGRule#getKernel <em>Kernel</em>}</li>
  *   <li>{@link language.TGGRule#getNacs <em>Nacs</em>}</li>
  *   <li>{@link language.TGGRule#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.TGGRule#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.TGGRule#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  *   <li>{@link language.TGGRule#isAbstract <em>Abstract</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRule()
  * @model
@@ -50,30 +48,30 @@ public interface TGGRule extends TGGNamedElement {
 	EList<TGGRule> getRefines();
 
 	/**
-	 * Returns the value of the '<em><b>Complements</b></em>' reference.
+	 * Returns the value of the '<em><b>Kernel</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Complements</em>' reference isn't clear,
+	 * If the meaning of the '<em>Kernel</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Complements</em>' reference.
-	 * @see #setComplements(TGGRule)
-	 * @see language.LanguagePackage#getTGGRule_Complements()
+	 * @return the value of the '<em>Kernel</em>' reference.
+	 * @see #setKernel(TGGRule)
+	 * @see language.LanguagePackage#getTGGRule_Kernel()
 	 * @model
 	 * @generated
 	 */
-	TGGRule getComplements();
+	TGGRule getKernel();
 
 	/**
-	 * Sets the value of the '{@link language.TGGRule#getComplements <em>Complements</em>}' reference.
+	 * Sets the value of the '{@link language.TGGRule#getKernel <em>Kernel</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Complements</em>' reference.
-	 * @see #getComplements()
+	 * @param value the new value of the '<em>Kernel</em>' reference.
+	 * @see #getKernel()
 	 * @generated
 	 */
-	void setComplements(TGGRule value);
+	void setKernel(TGGRule value);
 
 	/**
 	 * Returns the value of the '<em><b>Nacs</b></em>' containment reference list.
@@ -174,7 +172,5 @@ public interface TGGRule extends TGGNamedElement {
 	 * @generated
 	 */
 	void setAbstract(boolean value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGRule

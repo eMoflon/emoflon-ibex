@@ -5,8 +5,6 @@ package language.basic.expressions;
 import language.TGGRuleNode;
 
 import org.eclipse.emf.ecore.EAttribute;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -15,11 +13,11 @@ import org.eclipse.emf.ecore.EAttribute;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.basic.expressions.TGGAttributeExpression#getObjectVar <em>Object Var</em>}</li>
  *   <li>{@link language.basic.expressions.TGGAttributeExpression#getAttribute <em>Attribute</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.basic.expressions.ExpressionsPackage#getTGGAttributeExpression()
  * @model
@@ -77,7 +75,5 @@ public interface TGGAttributeExpression extends TGGExpression {
 	 * @generated
 	 */
 	void setAttribute(EAttribute value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeExpression

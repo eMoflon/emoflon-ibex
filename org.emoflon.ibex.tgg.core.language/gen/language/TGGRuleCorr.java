@@ -2,9 +2,6 @@
  */
 package language;
 
-// <-- [user defined imports]
-// [user defined imports] -->
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>TGG Rule Corr</b></em>'.
@@ -12,11 +9,11 @@ package language;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRuleCorr#getSource <em>Source</em>}</li>
  *   <li>{@link language.TGGRuleCorr#getTarget <em>Target</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRuleCorr()
  * @model
@@ -78,7 +75,5 @@ public interface TGGRuleCorr extends TGGRuleNode {
 	 * @generated
 	 */
 	void setTarget(TGGRuleNode value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGRuleCorr

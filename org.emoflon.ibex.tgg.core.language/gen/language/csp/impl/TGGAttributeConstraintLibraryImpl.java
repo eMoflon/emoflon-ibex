@@ -22,8 +22,6 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -31,6 +29,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getTggAttributeConstraints <em>Tgg Attribute Constraints</em>}</li>
  *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getParameterValues <em>Parameter Values</em>}</li>
@@ -39,7 +38,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getSorted_CC <em>Sorted CC</em>}</li>
  *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getSorted_MODELGEN <em>Sorted MODELGEN</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -331,7 +329,5 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGAttributeConstraintLibraryImpl

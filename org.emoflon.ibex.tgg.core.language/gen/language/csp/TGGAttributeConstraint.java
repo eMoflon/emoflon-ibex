@@ -9,8 +9,6 @@ import language.csp.definition.TGGAttributeConstraintDefinition;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -19,11 +17,11 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.csp.TGGAttributeConstraint#getDefinition <em>Definition</em>}</li>
  *   <li>{@link language.csp.TGGAttributeConstraint#getParameters <em>Parameters</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.csp.CspPackage#getTGGAttributeConstraint()
  * @model
@@ -71,7 +69,5 @@ public interface TGGAttributeConstraint extends EObject {
 	 * @generated
 	 */
 	EList<TGGParamValue> getParameters();
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeConstraint

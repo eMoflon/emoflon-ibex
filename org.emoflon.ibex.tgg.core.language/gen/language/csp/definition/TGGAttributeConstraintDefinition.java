@@ -5,8 +5,6 @@ package language.csp.definition;
 import language.basic.TGGNamedElement;
 
 import org.eclipse.emf.common.util.EList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -15,13 +13,13 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.csp.definition.TGGAttributeConstraintDefinition#isUserDefined <em>User Defined</em>}</li>
  *   <li>{@link language.csp.definition.TGGAttributeConstraintDefinition#getParameterDefinitions <em>Parameter Definitions</em>}</li>
  *   <li>{@link language.csp.definition.TGGAttributeConstraintDefinition#getSyncAdornments <em>Sync Adornments</em>}</li>
  *   <li>{@link language.csp.definition.TGGAttributeConstraintDefinition#getGenAdornments <em>Gen Adornments</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.csp.definition.DefinitionPackage#getTGGAttributeConstraintDefinition()
  * @model
@@ -102,7 +100,5 @@ public interface TGGAttributeConstraintDefinition extends TGGNamedElement {
 	 * @generated
 	 */
 	EList<TGGAttributeConstraintAdornment> getGenAdornments();
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeConstraintDefinition

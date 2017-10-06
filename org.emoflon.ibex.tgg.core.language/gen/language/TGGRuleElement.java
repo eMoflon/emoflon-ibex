@@ -3,8 +3,6 @@
 package language;
 
 import language.basic.TGGNamedElement;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -13,11 +11,11 @@ import language.basic.TGGNamedElement;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRuleElement#getDomainType <em>Domain Type</em>}</li>
  *   <li>{@link language.TGGRuleElement#getBindingType <em>Binding Type</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRuleElement()
  * @model abstract="true"
@@ -81,7 +79,5 @@ public interface TGGRuleElement extends TGGNamedElement {
 	 * @generated
 	 */
 	void setBindingType(BindingType value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGRuleElement

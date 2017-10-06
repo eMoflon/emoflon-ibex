@@ -2,9 +2,6 @@
  */
 package language.basic.expressions;
 
-// <-- [user defined imports]
-// [user defined imports] -->
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>TGG Expression</b></em>'.
@@ -15,7 +12,5 @@ package language.basic.expressions;
  * @model abstract="true"
  * @generated
  */
-public interface TGGExpression extends TGGParamValue { // <-- [user code injected with eMoflon]
-
-	// [user code injected with eMoflon] -->
+public interface TGGExpression extends TGGParamValue {
 } // TGGExpression

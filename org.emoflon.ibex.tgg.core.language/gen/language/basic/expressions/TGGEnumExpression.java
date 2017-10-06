@@ -4,8 +4,6 @@ package language.basic.expressions;
 
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -14,11 +12,11 @@ import org.eclipse.emf.ecore.EEnumLiteral;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.basic.expressions.TGGEnumExpression#getEenum <em>Eenum</em>}</li>
  *   <li>{@link language.basic.expressions.TGGEnumExpression#getLiteral <em>Literal</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.basic.expressions.ExpressionsPackage#getTGGEnumExpression()
  * @model
@@ -76,7 +74,5 @@ public interface TGGEnumExpression extends TGGExpression {
 	 * @generated
 	 */
 	void setLiteral(EEnumLiteral value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGEnumExpression

@@ -3,8 +3,6 @@
 package language.csp;
 
 import language.basic.expressions.TGGParamValue;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -13,10 +11,10 @@ import language.basic.expressions.TGGParamValue;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.csp.TGGAttributeVariable#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.csp.CspPackage#getTGGAttributeVariable()
  * @model
@@ -48,7 +46,5 @@ public interface TGGAttributeVariable extends TGGParamValue {
 	 * @generated
 	 */
 	void setName(String value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeVariable
