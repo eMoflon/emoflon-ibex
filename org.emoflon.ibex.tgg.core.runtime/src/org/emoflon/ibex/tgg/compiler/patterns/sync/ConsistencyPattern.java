@@ -125,7 +125,7 @@ public class ConsistencyPattern extends IbexPattern {
 		return PatternSuffixes.CONSISTENCY;
 	}
 
-	public String getProtocolNodeName() {
+	public static String getProtocolNodeName() {
 		return "eMoflon_ProtocolNode";
 	}
 
