@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
@@ -121,8 +122,18 @@ public abstract class OperationalStrategy {
 	abstract public boolean isPatternRelevant(String patternName);
 
 	public void addOperationalRuleMatch(String ruleName, IMatch match) {
-		if(matchIsDomainConform(ruleName, match))
+		if(matchIsDomainConform(ruleName, match) && matchIsValidIsomorphism(ruleName, match))
 			operationalMatchContainer.addMatch(ruleName, match);
+	}
+
+	private boolean matchIsValidIsomorphism(String ruleName, IMatch match) {
+		if(match.patternName().endsWith(PatternSuffixes.CONSISTENCY)) {
+			// Make sure that node mappings comply to bindings in match
+			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName());
+			return ruleAppNode.getNodeMappings().keySet().stream().noneMatch(n -> ruleAppNode.getNodeMappings().get(n) != match.get(n));
+		}
+		
+		return true;
 	}
 
 	private boolean matchIsDomainConform(String ruleName, IMatch match) {
