@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -68,6 +69,26 @@ public class GENPattern extends RulePartPattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
+	}
+	
+	@Override
+	protected void initialize() {
+		super.initialize();
+		
+		if (rule.getKernel() != null) {
+			// TODO:  "flatten kernel into complement rule"
+			Collection<TGGRuleNode> kernelContextNodes = rule.getKernel().getNodes()
+					.stream()
+					.filter(e -> isRelevantForSignature(e))
+					.collect(Collectors.toSet());
+			
+			for (TGGRuleNode kernelContextNode : kernelContextNodes) {
+				if ( ! rule.getNodes().contains(kernelContextNode)) {
+					//rule.getNodes().add(kernelContextNode);
+					this.getBodyNodes().add(kernelContextNode); 
+				}
+			}
+		}
 	}
 
 }

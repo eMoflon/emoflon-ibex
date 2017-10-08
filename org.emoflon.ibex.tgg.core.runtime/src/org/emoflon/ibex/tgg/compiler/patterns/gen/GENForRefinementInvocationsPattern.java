@@ -1,17 +1,11 @@
 package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.cc.CCForRefinementInvocationsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
-
-import com.sun.javafx.css.CalculatedValue;
 
 import language.TGGRule;
 import language.TGGRuleNode;
@@ -28,7 +22,10 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 		
-				
+		// invoke kernel CC pattern (because it matches Family as well)
+		if (rule.getKernel() != null) 
+			addTGGPositiveInvocation(factory.getFactory(rule.getKernel()).create(CCForRefinementInvocationsPattern.class));
+		
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(GENForRefinementInvocationsPattern.class));
 	
@@ -57,29 +54,6 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 		}
 	}
 	
-	@Override
-	protected void initialize() {
-		super.initialize();
-		
-		if (rule.getKernel() != null) {
-			System.out.println("Rule " + rule.getName());
-			// TODO:  "flatten kernel into complement rule"
-			Collection<TGGRuleNode> kernelBodyNodes = rule.getKernel().getNodes();
-			System.out.println("Kernel has " + kernelBodyNodes.size());
-			Collection<TGGRuleNode> complementBodyNodes = rule.getNodes();
-			System.out.println("Complement has " + rule.getNodes().size());
-			for (TGGRuleNode kernalBodyNode : kernelBodyNodes) {
-				System.out.println("Kernel node " + kernalBodyNode.getName());
-				if(!complementBodyNodes.contains(kernalBodyNode)) {
-					System.out.println("Unutra" + kernalBodyNode.getName());
-					complementBodyNodes.add(kernalBodyNode);
-					rule.getNodes().add(kernalBodyNode);
-				}
-			}
-			
-			//addTGGPositiveInvocation(factory.getFactory(kernelRule).create(ConsistencyPattern.class));
-		}
-		
-	}
+	
 	
 }
