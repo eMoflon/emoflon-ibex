@@ -25,14 +25,14 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 		
-		if (rule.getKernel() != null) 
+		if (isComplementRule()) 
 			addTGGPositiveInvocation(factory.getFactory(rule.getKernel()).create(ConsistencyPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(GENForRefinementInvocationsPattern.class));
 	
 	}
-	
+
 	@Override
 	protected String getPatternNameSuffix() {
 		return PatternSuffixes.GEN_REFINEMENT_INVOCATIONS;
@@ -58,19 +58,26 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 	
 	@Override
 	protected void initialize() {
-
 		super.initialize();
 		
-		if (rule.getKernel() != null) {
-			Collection<TGGRuleElement> kernelContextNodes = getSignatureElements(rule.getKernel());
-			kernelContextNodes.add(ConsistencyPattern.createProtocolNode(rule));
-						
-			for (TGGRuleElement kernelContextNode : kernelContextNodes) {
-					this.getBodyNodes().add((TGGRuleNode)kernelContextNode); 
-				
-			}
+		if (isComplementRule()) {
+			embedKernelConsistencyPatternNodes();
 		}
-		
+	}
+
+	private void embedKernelConsistencyPatternNodes() {
+		Collection<TGGRuleElement> kernelContextNodes = getSignatureElements(rule.getKernel());
+		kernelContextNodes.add(ConsistencyPattern.createProtocolNode(rule));
+					
+		for (TGGRuleElement kernelContextNode : kernelContextNodes) {
+				this.getBodyNodes().add((TGGRuleNode)kernelContextNode); 
+		}
+	}
+	
+	private boolean isComplementRule() {
+		if (rule.getKernel() != null)
+			return true;
+		return false;
 	}
 	
 }
