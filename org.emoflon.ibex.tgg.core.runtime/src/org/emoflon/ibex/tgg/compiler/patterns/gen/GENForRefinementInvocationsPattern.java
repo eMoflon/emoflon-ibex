@@ -1,13 +1,16 @@
 package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
+import java.util.Collection;
+
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.cc.CCForRefinementInvocationsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 
 import language.TGGRule;
+import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class GENForRefinementInvocationsPattern extends GENPattern {
@@ -22,9 +25,8 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 		
-		// invoke kernel CC pattern (because it matches Family as well)
 		if (rule.getKernel() != null) 
-			addTGGPositiveInvocation(factory.getFactory(rule.getKernel()).create(CCForRefinementInvocationsPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(rule.getKernel()).create(ConsistencyPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(GENForRefinementInvocationsPattern.class));
@@ -54,6 +56,21 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 		}
 	}
 	
-	
+	@Override
+	protected void initialize() {
+
+		super.initialize();
+		
+		if (rule.getKernel() != null) {
+			Collection<TGGRuleElement> kernelContextNodes = getSignatureElements(rule.getKernel());
+			kernelContextNodes.add(ConsistencyPattern.createProtocolNode(rule));
+						
+			for (TGGRuleElement kernelContextNode : kernelContextNodes) {
+					this.getBodyNodes().add((TGGRuleNode)kernelContextNode); 
+				
+			}
+		}
+		
+	}
 	
 }

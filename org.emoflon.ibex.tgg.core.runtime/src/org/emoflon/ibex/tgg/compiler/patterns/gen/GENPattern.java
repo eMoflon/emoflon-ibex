@@ -27,22 +27,6 @@ public class GENPattern extends RulePartPattern {
 		this.factory = factory;
 		signatureElements = getSignatureElements(getRule());
 		
-		if (rule.getKernel() != null) {
-			Collection<String> ruleNames = new HashSet<String>();
-			
-			for (TGGRuleElement se : signatureElements) {
-				ruleNames.add(se.getName());
-			}
-			
-			Collection<TGGRuleElement> kernelContextNodes = getSignatureElements(rule.getKernel());
-						
-			for (TGGRuleElement kernelContextNode : kernelContextNodes) {
-				if ( ! ruleNames.contains(kernelContextNode.getName())) {
-						signatureElements.add(kernelContextNode); 
-				}
-			}
-		}
-		
 		createPatternNetwork();
 	}
 
@@ -86,10 +70,4 @@ public class GENPattern extends RulePartPattern {
 		return true;
 	}
 	
-	@Override
-	protected void initialize() {
-		super.initialize();
-		
-	}
-
 }
