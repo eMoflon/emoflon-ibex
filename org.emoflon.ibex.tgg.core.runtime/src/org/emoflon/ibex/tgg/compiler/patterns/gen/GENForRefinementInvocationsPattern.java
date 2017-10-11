@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -9,6 +10,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 
+import language.LanguageFactory;
 import language.TGGRule;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -66,14 +68,27 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 	}
 
 	private void embedKernelConsistencyPatternNodes() {
-		Collection<TGGRuleElement> kernelContextNodes = getSignatureElements(rule.getKernel());
-		kernelContextNodes.add(ConsistencyPattern.createProtocolNode(rule));
-					
-		for (TGGRuleElement kernelContextNode : kernelContextNodes) {
-				this.getBodyNodes().add((TGGRuleNode)kernelContextNode); 
+		Collection<TGGRuleElement> kernelConsistencyNodes = getSignatureElements(rule.getKernel());
+		kernelConsistencyNodes.add(ConsistencyPattern.createProtocolNode(rule));
+		
+		Collection<String> names = new HashSet<String>();
+		for (TGGRuleElement re : getSignatureElements(rule)) {
+			names.add(re.getName());
+		}
+				
+		for (TGGRuleElement kernelConsistencyNode : kernelConsistencyNodes) {
+			if(!names.contains(kernelConsistencyNode.getName()) && kernelConsistencyNode instanceof TGGRuleNode)
+				this.getBodyNodes().add(createNode((TGGRuleNode) kernelConsistencyNode));
 		}
 	}
 	
+	private TGGRuleNode createNode(TGGRuleNode kernelContextNode) {
+		TGGRuleNode node = LanguageFactory.eINSTANCE.createTGGRuleNode();
+		node.setName(kernelContextNode.getName());
+		node.setType(kernelContextNode.getType());
+		return node;
+	}
+
 	private boolean isComplementRule() {
 		if (rule.getKernel() != null)
 			return true;

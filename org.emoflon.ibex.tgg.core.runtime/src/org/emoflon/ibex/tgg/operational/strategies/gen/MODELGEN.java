@@ -89,7 +89,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 	@Override
 	protected boolean protocol() {
-		return false;
+		return true;
 	}
 	
 	@Override
