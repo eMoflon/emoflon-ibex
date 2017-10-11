@@ -69,7 +69,7 @@ public abstract class RuntimeTGGAttributeConstraint {
 				.collect(Collectors.toList());
 	}
 
-	protected Object generateValue(String type) {
+	public static Object generateValue(String type) {
 
 		if (type.equals("java.lang.String"))
 			return LoremIpsum.getInstance().randomWord();

@@ -63,7 +63,7 @@ public class ManipulationUtil {
 		}
 	}
 	
-	// This method is exactly what is in EcoreUtil.delete (apart from the FIXME below)
+	// This method is exactly what is in EcoreUtil.delete (apart from the Fixme below)
 	public static void delete(EObject eObject)
 	  {
 	    EObject rootEObject = EcoreUtil.getRootContainer(eObject);

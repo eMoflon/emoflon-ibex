@@ -282,10 +282,13 @@ public abstract class OperationalStrategy {
 		if (someElementsAlreadyProcessed(ruleName, match))
 			return false;
 
-		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(
-				ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
-		if (!cspContainer.solve())
-			return false;
+		//FIXME Remove for CSP [Anjorin] 
+		// Remove
+//		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(
+//				ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
+//		if (!cspContainer.solve())
+//			return false;
+		// Remove
 
 		if (!conformTypesOfGreenNodes(match, ruleName))
 			return false;
@@ -311,8 +314,11 @@ public abstract class OperationalStrategy {
 		Collection<RuntimeEdge> trgEdges = ManipulationUtil.createEdges(match, comatch,
 				ruleInfos.getGreenTrgEdges(ruleName), manipulateTrg());
 
-		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
-		applyCSPValues(comatch, cspValues);
+		//FIXME Remove for CSP [Anjorin] 
+		// Remove
+//		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
+//		applyCSPValues(comatch, cspValues);
+		// Remove
 
 		ManipulationUtil.createCorrs(match, comatch, ruleInfos.getGreenCorrNodes(ruleName), c);
 
@@ -431,7 +437,7 @@ public abstract class OperationalStrategy {
 		return true;
 	}
 
-	protected void applyCSPValues(HashMap<String, EObject> comatch,
+	private void applyCSPValues(HashMap<String, EObject> comatch,
 			Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
 		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
 			EObject entry = comatch.get(cspVal.getLeft().getObjectVar().getName());

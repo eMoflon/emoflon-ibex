@@ -545,6 +545,7 @@ public class EditorTGGtoInternalTGG {
 		return tggModel;
 	}
 
+	//FIXME[Anjorin]:  Remove after transferring CSPs to PM
 	private TGG sortTGGAttributeConstraints(TGG tggModel) {
 		SearchPlanAction spa = new SearchPlanAction();
 		for (TGGRule rule : tggModel.getRules()) {
@@ -570,4 +571,5 @@ public class EditorTGGtoInternalTGG {
 
 		return tggModel;
 	}
+	// Remove
 }

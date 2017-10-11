@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENPattern;
@@ -77,5 +78,14 @@ public class TGGCompiler {
 				   .filter(r -> r.getName().equals(rule.getName()))
 				   .findAny()
 				   .orElseThrow(IllegalStateException::new);
+	}
+	
+	//FIXME[Anjorin]: Would be better to integrate into IbexPatterns
+	public static boolean isRootPattern(IbexPattern pattern) {
+		return pattern.getName().endsWith(PatternSuffixes.GEN) ||
+			   pattern.getName().endsWith(PatternSuffixes.CC)  ||
+			   pattern.getName().endsWith(PatternSuffixes.FWD) ||
+			   pattern.getName().endsWith(PatternSuffixes.BWD) ||
+			   pattern.getName().endsWith(PatternSuffixes.CONSISTENCY);
 	}
 }
