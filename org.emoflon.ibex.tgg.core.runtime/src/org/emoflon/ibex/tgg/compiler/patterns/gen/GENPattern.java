@@ -69,5 +69,5 @@ public class GENPattern extends RulePartPattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
 	}
-
+	
 }
