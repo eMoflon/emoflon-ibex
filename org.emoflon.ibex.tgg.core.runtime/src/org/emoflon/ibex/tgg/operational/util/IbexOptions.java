@@ -3,6 +3,8 @@ package org.emoflon.ibex.tgg.operational.util;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
+
 import language.TGG;
 import language.TGGRule;
 
@@ -11,7 +13,26 @@ public class IbexOptions {
 	private String projectPath;
 	private TGG tgg;
 	private TGG flattenedTGG;
+	private RuntimeTGGAttrConstraintProvider constraintProvider;
+	private RuleInfos ruleInfos;
+	private boolean isModelGen;
 	
+	public boolean isModelGen() {
+		return isModelGen;
+	}
+
+	public void setModelGen(boolean isModelGen) {
+		this.isModelGen = isModelGen;
+	}
+
+	public RuleInfos ruleInfos() {
+		return ruleInfos;
+	}
+
+	public void setRuleInfos(RuleInfos ruleInfos) {
+		this.ruleInfos = ruleInfos;
+	}
+
 	public IbexOptions() {
 		debug = false;
 		projectPath = "/";
@@ -61,5 +82,13 @@ public class IbexOptions {
 				.stream()
 				.filter(r -> !r.isAbstract())
 				.collect(Collectors.toList());
+	}
+
+	public void setConstraintProvider(RuntimeTGGAttrConstraintProvider constraintProvider) {
+		this.constraintProvider = constraintProvider;
+	}
+	
+	public RuntimeTGGAttrConstraintProvider constraintProvider() {
+		return constraintProvider;
 	}
 }

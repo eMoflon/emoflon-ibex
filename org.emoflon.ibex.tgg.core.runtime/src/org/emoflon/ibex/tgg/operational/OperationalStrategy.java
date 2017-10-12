@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -20,7 +19,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
-import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
+import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
@@ -40,7 +39,6 @@ import language.TGG;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
-import language.basic.expressions.TGGAttributeExpression;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 import language.impl.LanguagePackageImpl;
@@ -92,8 +90,18 @@ public abstract class OperationalStrategy {
 		options = new IbexOptions();
 		options.debug(debug);
 		options.projectPath(projectPath);
+		setModelGen();
+		options.setConstraintProvider(runtimeConstraintProvider);
 		
 		this.updatePolicy = policy;
+	}
+	
+	protected void setModelGen() {
+		options.setModelGen(false);
+	}
+
+	public void registerRuntimeTGGAttrConstraintFactory(RuntimeTGGAttrConstraintFactory factory) {
+		runtimeConstraintProvider.registerFactory(factory);
 	}
 
 	public void registerPatternMatchingEngine(PatternMatchingEngine engine) throws IOException {
@@ -151,7 +159,7 @@ public abstract class OperationalStrategy {
 	}
 
 	private boolean nodeIsInResource(IMatch match, String name, Resource r) {
-		return match.get(name).eResource().equals(r);
+		return ((EObject) match.get(name)).eResource().equals(r);
 	}
 
 	public void removeOperationalRuleMatch(IMatch match) {
@@ -282,14 +290,6 @@ public abstract class OperationalStrategy {
 		if (someElementsAlreadyProcessed(ruleName, match))
 			return false;
 
-		//FIXME Remove for CSP [Anjorin] 
-		// Remove
-//		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(
-//				ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
-//		if (!cspContainer.solve())
-//			return false;
-		// Remove
-
 		if (!conformTypesOfGreenNodes(match, ruleName))
 			return false;
 
@@ -313,12 +313,6 @@ public abstract class OperationalStrategy {
 		}
 		Collection<RuntimeEdge> trgEdges = ManipulationUtil.createEdges(match, comatch,
 				ruleInfos.getGreenTrgEdges(ruleName), manipulateTrg());
-
-		//FIXME Remove for CSP [Anjorin] 
-		// Remove
-//		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
-//		applyCSPValues(comatch, cspValues);
-		// Remove
 
 		ManipulationUtil.createCorrs(match, comatch, ruleInfos.getGreenCorrNodes(ruleName), c);
 
@@ -435,16 +429,6 @@ public abstract class OperationalStrategy {
 				return false;
 		}
 		return true;
-	}
-
-	private void applyCSPValues(HashMap<String, EObject> comatch,
-			Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
-		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
-			EObject entry = comatch.get(cspVal.getLeft().getObjectVar().getName());
-			if (entry != null) {
-				entry.eSet(cspVal.getLeft().getAttribute(), cspVal.getRight());
-			}
-		}
 	}
 
 	protected boolean conformTypesOfGreenNodes(IMatch match, String ruleName) {

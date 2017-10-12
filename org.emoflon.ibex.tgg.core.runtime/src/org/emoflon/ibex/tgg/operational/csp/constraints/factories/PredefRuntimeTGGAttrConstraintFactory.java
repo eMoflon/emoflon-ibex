@@ -1,9 +1,7 @@
 package org.emoflon.ibex.tgg.operational.csp.constraints.factories;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
@@ -24,9 +22,6 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.Sub;
 
 public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
 
-	private Collection<String> constraints; 
-	private Map<String, Supplier<RuntimeTGGAttributeConstraint>> creators;
-	
 	public PredefRuntimeTGGAttrConstraintFactory() {
 		initialize();
 	}

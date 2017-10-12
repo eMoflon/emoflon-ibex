@@ -23,9 +23,6 @@ class DefaultFilesGenerator {
 			
 			public class UserDefinedRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
 			
-				private Collection<String> constraints; 
-				private Map<String, Supplier<RuntimeTGGAttributeConstraint>> creators;
-				
 				public UserDefinedRuntimeTGGAttrConstraintFactory() {
 					initialize();
 				}
@@ -140,12 +137,15 @@ class DefaultFilesGenerator {
 			MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 			stop.setTimeOutInMS(1000);
 			generator.setStopCriterion(stop);
+
+			generator.registerRuntimeTGGAttrConstraintFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
 			
 			logger.info("Starting MODELGEN");
 			long tic = System.currentTimeMillis();
 			generator.run();
 			long toc = System.currentTimeMillis();
 			logger.info("Completed MODELGEN in: " + (toc - tic) + " ms");
+			
 			
 			generator.saveModels();
 			generator.terminate();
@@ -165,6 +165,8 @@ class DefaultFilesGenerator {
 			projectName,
 			'''
 			«fileName» sync = new «fileName»("«projectName»", "./../", false);
+			
+			sync.registerRuntimeTGGAttrConstraintFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
 			
 			logger.info("Starting SYNC");
 			long tic = System.currentTimeMillis();
@@ -190,6 +192,9 @@ class DefaultFilesGenerator {
 			projectName,
 			'''
 			«fileName» cc = new «fileName»("«projectName»", "./../", false);
+			
+			cc.registerRuntimeTGGAttrConstraintFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
+
 			
 			logger.info("Starting CC");
 			long tic = System.currentTimeMillis();

@@ -47,7 +47,7 @@ public class RuntimeTGGAttributeConstraintContainer {
 	
 	private RuntimeTGGAttributeConstraint extractRuntimeConstraint(TGGAttributeConstraint c) {
 		RuntimeTGGAttributeConstraint runtimeConstraint = constraintProvider.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
-		runtimeConstraint.initialize(this, c);
+		//runtimeConstraint.initialize(this, c);
 		return runtimeConstraint;
 	}
 

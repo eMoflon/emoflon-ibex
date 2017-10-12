@@ -4,27 +4,47 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.operational.csp.helper.LoremIpsum;
 
 import language.basic.expressions.TGGAttributeExpression;
+import language.basic.expressions.TGGParamValue;
 import language.csp.TGGAttributeConstraint;
+import language.csp.definition.TGGAttributeConstraintAdornment;
 
 public abstract class RuntimeTGGAttributeConstraint {
 	private static final char B = 'B';
 	private static final char F = 'F';
 
 	private boolean satisfied = false;
-
-	private TGGAttributeConstraint constraint;
 	protected List<RuntimeTGGAttributeConstraintVariable> variables;
+	private TGGAttributeConstraint constraint;
 
 	public RuntimeTGGAttributeConstraint() {
 		variables = new ArrayList<>();
+		constraint.getParameters().forEach(p -> {
+			variables.add(new RuntimeTGGAttributeConstraintVariable(calculateBoundState(p), calculateValue(p), calculateType(p)));
+		});
 	}
 
+	public void setConstraint(TGGAttributeConstraint constraint) {
+		this.constraint = constraint;
+	}
+	
+	private String calculateType(TGGParamValue p) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	private Object calculateValue(TGGParamValue p) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	private boolean calculateBoundState(TGGParamValue p) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 	public String getBindingStates(RuntimeTGGAttributeConstraintVariable... variables) {
 		if (variables.length == 0) {
 			throw new IllegalArgumentException("Cannot determine binding states from an empty list of variables!");
@@ -49,7 +69,7 @@ public abstract class RuntimeTGGAttributeConstraint {
 		return variables;
 	}
 
-	protected abstract void solve();
+	public abstract void solve();
 
 	public Collection<Pair<TGGAttributeExpression, Object>> getBoundAttrExprValues() {
 		Collection<Pair<TGGAttributeExpression, Object>> tuples = new ArrayList<Pair<TGGAttributeExpression, Object>>();
@@ -60,13 +80,6 @@ public abstract class RuntimeTGGAttributeConstraint {
 			}
 		}
 		return tuples;
-	}
-
-	public void initialize(RuntimeTGGAttributeConstraintContainer cont, TGGAttributeConstraint constraint) {
-		this.constraint = constraint;
-
-		variables = constraint.getParameters().stream().map(p -> cont.params2runtimeVariable.get(p))
-				.collect(Collectors.toList());
 	}
 
 	public static Object generateValue(String type) {
@@ -88,5 +101,12 @@ public abstract class RuntimeTGGAttributeConstraint {
 
 		throw new RuntimeException("The type " + type + " is not supported for random value generation");
 
+	}
+
+	public List<TGGAttributeConstraintAdornment> getAllowedAdornments(boolean isModelGen) {
+		if(isModelGen)
+			return constraint.getDefinition().getGenAdornments();
+		else
+			return constraint.getDefinition().getSyncAdornments();
 	}
 }

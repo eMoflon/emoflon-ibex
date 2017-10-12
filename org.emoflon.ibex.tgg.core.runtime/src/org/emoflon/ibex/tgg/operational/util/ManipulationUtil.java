@@ -3,7 +3,10 @@ package org.emoflon.ibex.tgg.operational.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -12,6 +15,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 
 import language.TGGRuleCorr;
@@ -29,8 +33,7 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
  */
 public class ManipulationUtil {
 
-	public static void createNonCorrNodes(IMatch match, HashMap<String, EObject> comatch,
-			Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
+	public static void createNonCorrNodes(IMatch match, HashMap<String, EObject> comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
 		for (TGGRuleNode n : greenNodes) {
 			comatch.put(n.getName(), createNode(match, n, nodeResource));
 		}
@@ -52,7 +55,7 @@ public class ManipulationUtil {
 	public static void createCorrs(IMatch match, HashMap<String, EObject> comatch,
 			Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		for (TGGRuleCorr c : greenCorrs) {
-			comatch.put(c.getName(), createCorr(c, getVariableByName(c.getSource().getName(), comatch, match),
+			comatch.put(c.getName(), createCorr(match, comatch, c, getVariableByName(c.getSource().getName(), comatch, match),
 					getVariableByName(c.getTarget().getName(), comatch, match), corrR));
 		}
 	}
@@ -132,11 +135,31 @@ public class ManipulationUtil {
 
 	private static EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
 		EObject newObj = EcoreUtil.create(node.getType());
-
 		handlePlacementInResource(node, resource, newObj);
+		
 		applyInPlaceAttributeAssignments(match, node, newObj);
+		applyAttributeAssignments(match, node, newObj);
 
 		return newObj;
+	}
+
+	private static void applyAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
+		Collection<String> attributeNames = match.parameterNames().stream()
+			.filter(pname -> { 
+				Optional<Pair<String, String>> o = IbexPattern.getNodeAndAttrFromVarName(pname);
+				Optional<Boolean> check = o.map(node_attr -> node_attr.getLeft().equals(node.getName()));
+				return check.orElse(false);
+			})
+			.collect(Collectors.toList());
+		
+		for (String node_attr : attributeNames) {
+			Object attributeValue = match.get(node_attr);
+			Pair<String, String> node_attr_pair = IbexPattern.getNodeAndAttrFromVarName(node_attr).orElseThrow(() -> new IllegalStateException("Missing attribute value"));
+			String attributeName = node_attr_pair.getRight();
+			
+			EStructuralFeature feature = node.getType().getEStructuralFeature(attributeName);
+			newObj.eSet(feature, attributeValue);
+		}
 	}
 
 	private static void applyInPlaceAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
@@ -168,8 +191,8 @@ public class ManipulationUtil {
 		resource.getContents().add(newObj);
 	}
 
-	private static EObject createCorr(TGGRuleNode node, EObject src, EObject trg, Resource corrR) {
-		EObject corr = createNode(null, node, corrR);
+	private static EObject createCorr(IMatch match, HashMap<String, EObject> comatch, TGGRuleNode node, EObject src, EObject trg, Resource corrR) {
+		EObject corr = createNode(match, node, corrR);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
 		return corr;

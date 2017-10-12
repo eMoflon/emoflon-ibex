@@ -59,6 +59,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 		return patternName.endsWith(PatternSuffixes.GEN);
 	}
 	
+	@Override
+	protected void setModelGen() {
+		options.setModelGen(true);
+	}
+	
 	/**
 	 * differently from the super class implementation, MODELGEN
 	 * (i) does not remove successful matches (but uses them repeatedly)
