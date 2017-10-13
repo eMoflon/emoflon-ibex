@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
 import java.util.Collection;
-import java.util.HashSet;
+
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -68,31 +68,29 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 	}
 
 	private void embedKernelConsistencyPatternNodes() {
-		Collection<TGGRuleElement> kernelConsistencyNodes = getSignatureElements(rule.getKernel());
-		kernelConsistencyNodes.add(ConsistencyPattern.createProtocolNode(rule));
+
+		Collection<TGGRuleElement> kernelNodes = getSignatureElements(rule.getKernel());
+		kernelNodes.add(ConsistencyPattern.createProtocolNode(rule));
 		
-		Collection<String> names = new HashSet<String>();
-		for (TGGRuleElement re : getSignatureElements(rule)) {
-			names.add(re.getName());
-		}
-				
-		for (TGGRuleElement kernelConsistencyNode : kernelConsistencyNodes) {
-			if(!names.contains(kernelConsistencyNode.getName()) && kernelConsistencyNode instanceof TGGRuleNode)
-				this.getBodyNodes().add(createNode((TGGRuleNode) kernelConsistencyNode));
+		for (TGGRuleElement kernelNode : kernelNodes) {
+			if(kernelNodeIsNotInComplement(kernelNode) && kernelNode instanceof TGGRuleNode)
+				this.getBodyNodes().add(createNode((TGGRuleNode) kernelNode));
 		}
 	}
 	
-	private TGGRuleNode createNode(TGGRuleNode kernelContextNode) {
+	private boolean kernelNodeIsNotInComplement(TGGRuleElement kernelNode) {
+		return getSignatureElements(rule).stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
+	}
+
+	private TGGRuleNode createNode(TGGRuleNode kernelNode) {
 		TGGRuleNode node = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		node.setName(kernelContextNode.getName());
-		node.setType(kernelContextNode.getType());
+		node.setName(kernelNode.getName());
+		node.setType(kernelNode.getType());
 		return node;
 	}
 
 	private boolean isComplementRule() {
-		if (rule.getKernel() != null)
-			return true;
-		return false;
+		return rule.getKernel() != null;
 	}
-	
+
 }
