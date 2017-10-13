@@ -24,6 +24,10 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link language.TGGRule#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.TGGRule#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  *   <li>{@link language.TGGRule#isAbstract <em>Abstract</em>}</li>
+ *   <li>{@link language.TGGRule#isComplement <em>Complement</em>}</li>
+ *   <li>{@link language.TGGRule#isAdditionalContext <em>Additional Context</em>}</li>
+ *   <li>{@link language.TGGRule#getLowerRABound <em>Lower RA Bound</em>}</li>
+ *   <li>{@link language.TGGRule#getUpperRABound <em>Upper RA Bound</em>}</li>
  * </ul>
  *
  * @see language.LanguagePackage#getTGGRule()
@@ -172,5 +176,109 @@ public interface TGGRule extends TGGNamedElement {
 	 * @generated
 	 */
 	void setAbstract(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Complement</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Complement</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Complement</em>' attribute.
+	 * @see #setComplement(boolean)
+	 * @see language.LanguagePackage#getTGGRule_Complement()
+	 * @model
+	 * @generated
+	 */
+	boolean isComplement();
+
+	/**
+	 * Sets the value of the '{@link language.TGGRule#isComplement <em>Complement</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Complement</em>' attribute.
+	 * @see #isComplement()
+	 * @generated
+	 */
+	void setComplement(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Additional Context</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Additional Context</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Additional Context</em>' attribute.
+	 * @see #setAdditionalContext(boolean)
+	 * @see language.LanguagePackage#getTGGRule_AdditionalContext()
+	 * @model
+	 * @generated
+	 */
+	boolean isAdditionalContext();
+
+	/**
+	 * Sets the value of the '{@link language.TGGRule#isAdditionalContext <em>Additional Context</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Additional Context</em>' attribute.
+	 * @see #isAdditionalContext()
+	 * @generated
+	 */
+	void setAdditionalContext(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Lower RA Bound</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Lower RA Bound</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Lower RA Bound</em>' attribute.
+	 * @see #setLowerRABound(int)
+	 * @see language.LanguagePackage#getTGGRule_LowerRABound()
+	 * @model
+	 * @generated
+	 */
+	int getLowerRABound();
+
+	/**
+	 * Sets the value of the '{@link language.TGGRule#getLowerRABound <em>Lower RA Bound</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Lower RA Bound</em>' attribute.
+	 * @see #getLowerRABound()
+	 * @generated
+	 */
+	void setLowerRABound(int value);
+
+	/**
+	 * Returns the value of the '<em><b>Upper RA Bound</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Upper RA Bound</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Upper RA Bound</em>' attribute.
+	 * @see #setUpperRABound(int)
+	 * @see language.LanguagePackage#getTGGRule_UpperRABound()
+	 * @model
+	 * @generated
+	 */
+	int getUpperRABound();
+
+	/**
+	 * Sets the value of the '{@link language.TGGRule#getUpperRABound <em>Upper RA Bound</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Upper RA Bound</em>' attribute.
+	 * @see #getUpperRABound()
+	 * @generated
+	 */
+	void setUpperRABound(int value);
 
 } // TGGRule

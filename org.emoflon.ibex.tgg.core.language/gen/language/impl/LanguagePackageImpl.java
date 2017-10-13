@@ -344,6 +344,42 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getTGGRule_Complement() {
+		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTGGRule_AdditionalContext() {
+		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(8);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTGGRule_LowerRABound() {
+		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(9);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTGGRule_UpperRABound() {
+		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(10);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGRuleElement() {
 		return tggRuleElementEClass;
 	}
@@ -590,6 +626,10 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		createEReference(tggRuleEClass, TGG_RULE__EDGES);
 		createEReference(tggRuleEClass, TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY);
 		createEAttribute(tggRuleEClass, TGG_RULE__ABSTRACT);
+		createEAttribute(tggRuleEClass, TGG_RULE__COMPLEMENT);
+		createEAttribute(tggRuleEClass, TGG_RULE__ADDITIONAL_CONTEXT);
+		createEAttribute(tggRuleEClass, TGG_RULE__LOWER_RA_BOUND);
+		createEAttribute(tggRuleEClass, TGG_RULE__UPPER_RA_BOUND);
 
 		tggRuleElementEClass = createEClass(TGG_RULE_ELEMENT);
 		createEAttribute(tggRuleElementEClass, TGG_RULE_ELEMENT__DOMAIN_TYPE);
@@ -712,6 +752,15 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 				"attributeConditionLibrary", null, 1, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getTGGRule_Abstract(), ecorePackage.getEBoolean(), "abstract", null, 0, 1, TGGRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGRule_Complement(), ecorePackage.getEBoolean(), "complement", null, 0, 1, TGGRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGRule_AdditionalContext(), ecorePackage.getEBoolean(), "additionalContext", null, 0, 1,
+				TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGRule_LowerRABound(), ecorePackage.getEInt(), "lowerRABound", null, 0, 1, TGGRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGRule_UpperRABound(), ecorePackage.getEInt(), "upperRABound", null, 0, 1, TGGRule.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggRuleElementEClass, TGGRuleElement.class, "TGGRuleElement", IS_ABSTRACT, !IS_INTERFACE,

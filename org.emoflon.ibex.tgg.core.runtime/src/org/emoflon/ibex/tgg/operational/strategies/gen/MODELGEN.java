@@ -1,7 +1,13 @@
 package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -9,6 +15,7 @@ import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.util.EmptyMatch;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 
+import language.TGGRule;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 
@@ -25,9 +32,11 @@ import language.csp.TGGAttributeConstraintLibrary;
 public abstract class MODELGEN extends OperationalStrategy {
 
 	protected MODELGENStopCriterion stopCriterion;
+	private Collection<String> complementRulesNames;
 		
 	public MODELGEN(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
+		//this.complementRulesNames = getComplementRulesNames();
 	}
 	
 	public void setStopCriterion(MODELGENStopCriterion stop) {
@@ -69,14 +78,66 @@ public abstract class MODELGEN extends OperationalStrategy {
 		if(stopCriterion.dont() || operationalMatchContainer.isEmpty())
 			return false;
 		
-		IMatch match = chooseOneMatch();
-		String ruleName = operationalMatchContainer.getRuleName(match);
-		if(stopCriterion.dont(ruleName))
-			removeOperationalRuleMatch(match);
-		else if (processOperationalRuleMatch(ruleName, match))
-			updateStopCriterion(ruleName);
-			
+		Set<IMatch> matches = new HashSet<IMatch>();
+		matches = findAllComplementMatches();
+		
+		if (! matches.isEmpty()) {
+			processAllComplementRuleMatches(matches);
+		}
+		else {
+			IMatch match = chooseOneMatch();
+			String ruleName = operationalMatchContainer.getRuleName(match);
+			if(stopCriterion.dont(ruleName))
+				removeOperationalRuleMatch(match);
+			else if (processOperationalRuleMatch(ruleName, match))
+				updateStopCriterion(ruleName);
+		}
 		return true;
+	}
+
+	private void processAllComplementRuleMatches(Set<IMatch> matches) {
+		while (! matches.isEmpty()) {
+				IMatch match = matches.iterator().next();
+				processComplementRuleMatch(match);
+				matches.remove(match);
+				removeOperationalRuleMatch(match);
+			}
+	}
+	
+	private void processComplementRuleMatch(IMatch match) {
+		String ruleName = operationalMatchContainer.getRuleName(match);
+		Optional<TGGRule> Optrule = getTGG().getRules().stream()
+											.filter(p -> p.getName().equals(ruleName)).findAny();
+		TGGRule rule = Optrule.orElse(null);
+		if(rule.isAdditionalContext()) {
+			processOperationalRuleMatch(ruleName, match);
+		}
+		else {
+			int upperBoundUpdatePolicy = 10;
+			int lowerBoundUpdatePolicy = 0;
+			if (stopCriterion.complentRuleBounds.containsKey(ruleName)) {
+				upperBoundUpdatePolicy = stopCriterion.complentRuleBounds.get(ruleName).get("upperBound");
+				lowerBoundUpdatePolicy = stopCriterion.complentRuleBounds.get(ruleName).get("lowerBound");
+			}
+			int upperBound = Math.min(rule.getUpperRABound(), upperBoundUpdatePolicy);
+			int lowerBound = Math.max(rule.getLowerRABound(), lowerBoundUpdatePolicy);
+			Random random = new Random();
+			int randomUpperBound = lowerBound + random.nextInt(upperBound - lowerBound + 1);
+			for (int i = 0; i < randomUpperBound; i++) {
+				processOperationalRuleMatch(ruleName, match);
+			}
+		}
+	}
+
+	private Set<IMatch> findAllComplementMatches() {
+		this.complementRulesNames = getComplementRulesNames();
+		Set<IMatch> processedMatches = operationalMatchContainer.getMatches().stream()
+				.filter(m -> complementRulesNames.contains(m.patternName()))
+				/*.filter(m -> m.patternName().contains("Daughter2Female") 
+						|| m.patternName().contains("Son2Male")
+						|| m.patternName().contains("CreateOneSiblingFamily"))*/
+				.collect(Collectors.toSet());
+		return processedMatches;
 	}
 
 	private void updateStopCriterion(String ruleName) {

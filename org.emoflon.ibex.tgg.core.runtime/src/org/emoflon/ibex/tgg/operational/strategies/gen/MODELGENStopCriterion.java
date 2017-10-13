@@ -27,6 +27,7 @@ public class MODELGENStopCriterion {
 	private HashMap<String, Integer> currentRuleCount = new HashMap<>();
 	
 	private HashSet<String> abstractRules = new HashSet<>();
+	
 
 	public MODELGENStopCriterion(TGG tgg) {
 		this.tgg = tgg;
@@ -97,4 +98,17 @@ public class MODELGENStopCriterion {
 		else
 			currentRuleCount.put(ruleName, 1);
 	}
+	
+	HashMap<String, HashMap<String, Integer>> complentRuleBounds = new HashMap<String, HashMap<String, Integer>>();
+	
+	public void boundsForComplementRule(String name, int upperBound, int lowerBound) {
+		HashMap<String, Integer> bounders = new HashMap<String, Integer>(); 
+		bounders.put("upperBound", upperBound);
+		bounders.put("lowerBound", lowerBound);
+		complentRuleBounds.put(name, bounders);
+	}
 }
+
+
+
+

@@ -43,6 +43,10 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link language.impl.TGGRuleImpl#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#isAbstract <em>Abstract</em>}</li>
+ *   <li>{@link language.impl.TGGRuleImpl#isComplement <em>Complement</em>}</li>
+ *   <li>{@link language.impl.TGGRuleImpl#isAdditionalContext <em>Additional Context</em>}</li>
+ *   <li>{@link language.impl.TGGRuleImpl#getLowerRABound <em>Lower RA Bound</em>}</li>
+ *   <li>{@link language.impl.TGGRuleImpl#getUpperRABound <em>Upper RA Bound</em>}</li>
  * </ul>
  *
  * @generated
@@ -127,6 +131,86 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * @ordered
 	 */
 	protected boolean abstract_ = ABSTRACT_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isComplement() <em>Complement</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isComplement()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean COMPLEMENT_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isComplement() <em>Complement</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isComplement()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean complement = COMPLEMENT_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isAdditionalContext() <em>Additional Context</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAdditionalContext()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean ADDITIONAL_CONTEXT_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isAdditionalContext() <em>Additional Context</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAdditionalContext()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean additionalContext = ADDITIONAL_CONTEXT_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getLowerRABound() <em>Lower RA Bound</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getLowerRABound()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final int LOWER_RA_BOUND_EDEFAULT = 0;
+
+	/**
+	 * The cached value of the '{@link #getLowerRABound() <em>Lower RA Bound</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getLowerRABound()
+	 * @generated
+	 * @ordered
+	 */
+	protected int lowerRABound = LOWER_RA_BOUND_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getUpperRABound() <em>Upper RA Bound</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getUpperRABound()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final int UPPER_RA_BOUND_EDEFAULT = 0;
+
+	/**
+	 * The cached value of the '{@link #getUpperRABound() <em>Upper RA Bound</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getUpperRABound()
+	 * @generated
+	 * @ordered
+	 */
+	protected int upperRABound = UPPER_RA_BOUND_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -313,6 +397,94 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isComplement() {
+		return complement;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setComplement(boolean newComplement) {
+		boolean oldComplement = complement;
+		complement = newComplement;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__COMPLEMENT, oldComplement,
+					complement));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public boolean isAdditionalContext() {
+		return additionalContext;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAdditionalContext(boolean newAdditionalContext) {
+		boolean oldAdditionalContext = additionalContext;
+		additionalContext = newAdditionalContext;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ADDITIONAL_CONTEXT,
+					oldAdditionalContext, additionalContext));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public int getLowerRABound() {
+		return lowerRABound;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setLowerRABound(int newLowerRABound) {
+		int oldLowerRABound = lowerRABound;
+		lowerRABound = newLowerRABound;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__LOWER_RA_BOUND,
+					oldLowerRABound, lowerRABound));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public int getUpperRABound() {
+		return upperRABound;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setUpperRABound(int newUpperRABound) {
+		int oldUpperRABound = upperRABound;
+		upperRABound = newUpperRABound;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__UPPER_RA_BOUND,
+					oldUpperRABound, upperRABound));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -352,6 +524,14 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 			return getAttributeConditionLibrary();
 		case LanguagePackage.TGG_RULE__ABSTRACT:
 			return isAbstract();
+		case LanguagePackage.TGG_RULE__COMPLEMENT:
+			return isComplement();
+		case LanguagePackage.TGG_RULE__ADDITIONAL_CONTEXT:
+			return isAdditionalContext();
+		case LanguagePackage.TGG_RULE__LOWER_RA_BOUND:
+			return getLowerRABound();
+		case LanguagePackage.TGG_RULE__UPPER_RA_BOUND:
+			return getUpperRABound();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -390,6 +570,18 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		case LanguagePackage.TGG_RULE__ABSTRACT:
 			setAbstract((Boolean) newValue);
 			return;
+		case LanguagePackage.TGG_RULE__COMPLEMENT:
+			setComplement((Boolean) newValue);
+			return;
+		case LanguagePackage.TGG_RULE__ADDITIONAL_CONTEXT:
+			setAdditionalContext((Boolean) newValue);
+			return;
+		case LanguagePackage.TGG_RULE__LOWER_RA_BOUND:
+			setLowerRABound((Integer) newValue);
+			return;
+		case LanguagePackage.TGG_RULE__UPPER_RA_BOUND:
+			setUpperRABound((Integer) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -423,6 +615,18 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		case LanguagePackage.TGG_RULE__ABSTRACT:
 			setAbstract(ABSTRACT_EDEFAULT);
 			return;
+		case LanguagePackage.TGG_RULE__COMPLEMENT:
+			setComplement(COMPLEMENT_EDEFAULT);
+			return;
+		case LanguagePackage.TGG_RULE__ADDITIONAL_CONTEXT:
+			setAdditionalContext(ADDITIONAL_CONTEXT_EDEFAULT);
+			return;
+		case LanguagePackage.TGG_RULE__LOWER_RA_BOUND:
+			setLowerRABound(LOWER_RA_BOUND_EDEFAULT);
+			return;
+		case LanguagePackage.TGG_RULE__UPPER_RA_BOUND:
+			setUpperRABound(UPPER_RA_BOUND_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -449,6 +653,14 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 			return attributeConditionLibrary != null;
 		case LanguagePackage.TGG_RULE__ABSTRACT:
 			return abstract_ != ABSTRACT_EDEFAULT;
+		case LanguagePackage.TGG_RULE__COMPLEMENT:
+			return complement != COMPLEMENT_EDEFAULT;
+		case LanguagePackage.TGG_RULE__ADDITIONAL_CONTEXT:
+			return additionalContext != ADDITIONAL_CONTEXT_EDEFAULT;
+		case LanguagePackage.TGG_RULE__LOWER_RA_BOUND:
+			return lowerRABound != LOWER_RA_BOUND_EDEFAULT;
+		case LanguagePackage.TGG_RULE__UPPER_RA_BOUND:
+			return upperRABound != UPPER_RA_BOUND_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -466,6 +678,14 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (abstract: ");
 		result.append(abstract_);
+		result.append(", complement: ");
+		result.append(complement);
+		result.append(", additionalContext: ");
+		result.append(additionalContext);
+		result.append(", lowerRABound: ");
+		result.append(lowerRABound);
+		result.append(", upperRABound: ");
+		result.append(upperRABound);
 		result.append(')');
 		return result.toString();
 	}

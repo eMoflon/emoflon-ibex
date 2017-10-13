@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -199,7 +200,63 @@ public class EditorTGGtoInternalTGG {
 			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule.getNodes()));
 
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
+		
+			tggRule.setAdditionalContext(!hasAdditionalContext(tggRule));
+			tggRule.setLowerRABound(getLowerRABound(tggRule));
+			tggRule.setUpperRABound(getUpperRABound(tggRule));
+			
+        }
+	}
+
+	private int getUpperRABound(TGGRule tggRule) {
+        Collection<TGGRuleEdge> relevantEdges = tggRule.getEdges().stream()
+				   .filter(e -> e.getBindingType() == BindingType.CREATE
+						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
+				   .collect(Collectors.toList());
+        
+        // TODO: [Milica] this value should not be hardcoded here?
+        int maxValueForUpperBound = 10;
+
+        for (TGGRuleEdge t : relevantEdges) {
+        	if (t.getType().getUpperBound() != -1 && t.getType().getUpperBound() < maxValueForUpperBound)
+        		maxValueForUpperBound = t.getType().getUpperBound();
+        }
+
+		return maxValueForUpperBound;
+	}
+
+	private int getLowerRABound(TGGRule tggRule) {
+        Collection<TGGRuleEdge> relevantEdges = tggRule.getEdges().stream()
+				   .filter(e -> e.getBindingType() == BindingType.CREATE
+						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
+				   .collect(Collectors.toList());
+        
+     // TODO: [Milica] this value should not be hardcoded here?
+        int minValueForLowerBound = 0; 
+        for (TGGRuleEdge t : relevantEdges) {
+        	if (t.getType().getLowerBound() > minValueForLowerBound)
+        		minValueForLowerBound = t.getType().getLowerBound();
+        }	
+
+		return minValueForLowerBound;
+	}
+
+	private boolean hasAdditionalContext(TGGRule tggRule) {
+		Collection<String> contextNodesNames = new HashSet<String>();
+		Collection<String> contextKernelNodesNames = new HashSet<String>();
+		Collection<TGGRuleNode> relevantKernelNodes = tggRule.getNodes().stream()
+				.filter(n -> n.getBindingType().equals(BindingType.CONTEXT))
+				.collect(Collectors.toSet());
+		for (TGGRuleNode t : relevantKernelNodes) {
+			contextNodesNames.add(t.getName());
 		}
+		Collection<TGGRuleNode> contextKernelNodes = tggRule.getKernel().getNodes();
+		for (TGGRuleNode t : contextKernelNodes) {
+			contextKernelNodesNames.add(t.getName());
+		}
+
+		return contextKernelNodesNames.containsAll(contextNodesNames);
+		
 	}
 
 	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {

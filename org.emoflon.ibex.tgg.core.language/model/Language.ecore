@@ -79,6 +79,22 @@
         xsi:type="ecore:EAttribute"
         name="abstract"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures
+        xsi:type="ecore:EAttribute"
+        name="complement"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures
+        xsi:type="ecore:EAttribute"
+        name="additionalContext"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures
+        xsi:type="ecore:EAttribute"
+        name="lowerRABound"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures
+        xsi:type="ecore:EAttribute"
+        name="upperRABound"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
   </eClassifiers>
   <eClassifiers
       xsi:type="ecore:EClass"
