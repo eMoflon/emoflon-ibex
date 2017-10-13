@@ -6,6 +6,7 @@ import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
 import language.LanguagePackage;
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -97,6 +98,13 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * @generated
 	 */
 	private EClass nacEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass tggComplementRuleEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -272,6 +280,15 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getTGG_ComplementRules() {
+		return (EReference) tggEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGRule() {
 		return tggRuleEClass;
 	}
@@ -337,42 +354,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 */
 	public EAttribute getTGGRule_Abstract() {
 		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(6);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getTGGRule_Complement() {
-		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(7);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getTGGRule_AdditionalContext() {
-		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(8);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getTGGRule_LowerRABound() {
-		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(9);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getTGGRule_UpperRABound() {
-		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(10);
 	}
 
 	/**
@@ -569,6 +550,42 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getTGGComplementRule() {
+		return tggComplementRuleEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTGGComplementRule_AdditionalContext() {
+		return (EAttribute) tggComplementRuleEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTGGComplementRule_LowerRABound() {
+		return (EAttribute) tggComplementRuleEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTGGComplementRule_UpperRABound() {
+		return (EAttribute) tggComplementRuleEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getDomainType() {
 		return domainTypeEEnum;
 	}
@@ -617,6 +634,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		createEReference(tggEClass, TGG__CORR);
 		createEReference(tggEClass, TGG__RULES);
 		createEReference(tggEClass, TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY);
+		createEReference(tggEClass, TGG__COMPLEMENT_RULES);
 
 		tggRuleEClass = createEClass(TGG_RULE);
 		createEReference(tggRuleEClass, TGG_RULE__REFINES);
@@ -626,10 +644,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		createEReference(tggRuleEClass, TGG_RULE__EDGES);
 		createEReference(tggRuleEClass, TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY);
 		createEAttribute(tggRuleEClass, TGG_RULE__ABSTRACT);
-		createEAttribute(tggRuleEClass, TGG_RULE__COMPLEMENT);
-		createEAttribute(tggRuleEClass, TGG_RULE__ADDITIONAL_CONTEXT);
-		createEAttribute(tggRuleEClass, TGG_RULE__LOWER_RA_BOUND);
-		createEAttribute(tggRuleEClass, TGG_RULE__UPPER_RA_BOUND);
 
 		tggRuleElementEClass = createEClass(TGG_RULE_ELEMENT);
 		createEAttribute(tggRuleElementEClass, TGG_RULE_ELEMENT__DOMAIN_TYPE);
@@ -656,6 +670,11 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		createEReference(nacEClass, NAC__NODES);
 		createEReference(nacEClass, NAC__EDGES);
 		createEReference(nacEClass, NAC__ATTRIBUTE_CONDITION_LIBRARY);
+
+		tggComplementRuleEClass = createEClass(TGG_COMPLEMENT_RULE);
+		createEAttribute(tggComplementRuleEClass, TGG_COMPLEMENT_RULE__ADDITIONAL_CONTEXT);
+		createEAttribute(tggComplementRuleEClass, TGG_COMPLEMENT_RULE__LOWER_RA_BOUND);
+		createEAttribute(tggComplementRuleEClass, TGG_COMPLEMENT_RULE__UPPER_RA_BOUND);
 
 		// Create enums
 		domainTypeEEnum = createEEnum(DOMAIN_TYPE);
@@ -712,6 +731,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		tggRuleCorrEClass.getESuperTypes().add(this.getTGGRuleNode());
 		tggRuleEdgeEClass.getESuperTypes().add(this.getTGGRuleElement());
 		nacEClass.getESuperTypes().add(theBasicPackage.getTGGNamedElement());
+		tggComplementRuleEClass.getESuperTypes().add(this.getTGGRule());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(tggEClass, language.TGG.class, "TGG", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -731,6 +751,9 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 				theDefinitionPackage.getTGGAttributeConstraintDefinitionLibrary(), null,
 				"attributeConstraintDefinitionLibrary", null, 1, 1, language.TGG.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGG_ComplementRules(), this.getTGGComplementRule(), null, "complementRules", null, 0, -1,
+				language.TGG.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggRuleEClass, TGGRule.class, "TGGRule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getTGGRule_Refines(), this.getTGGRule(), null, "refines", null, 0, -1, TGGRule.class,
@@ -752,15 +775,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 				"attributeConditionLibrary", null, 1, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getTGGRule_Abstract(), ecorePackage.getEBoolean(), "abstract", null, 0, 1, TGGRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGRule_Complement(), ecorePackage.getEBoolean(), "complement", null, 0, 1, TGGRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGRule_AdditionalContext(), ecorePackage.getEBoolean(), "additionalContext", null, 0, 1,
-				TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGRule_LowerRABound(), ecorePackage.getEInt(), "lowerRABound", null, 0, 1, TGGRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGRule_UpperRABound(), ecorePackage.getEInt(), "upperRABound", null, 0, 1, TGGRule.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggRuleElementEClass, TGGRuleElement.class, "TGGRuleElement", IS_ABSTRACT, !IS_INTERFACE,
@@ -824,6 +838,18 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		initEReference(getNAC_AttributeConditionLibrary(), theCspPackage.getTGGAttributeConstraintLibrary(), null,
 				"attributeConditionLibrary", null, 1, 1, language.NAC.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(tggComplementRuleEClass, TGGComplementRule.class, "TGGComplementRule", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGComplementRule_AdditionalContext(), ecorePackage.getEBoolean(), "additionalContext", null,
+				0, 1, TGGComplementRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGComplementRule_LowerRABound(), ecorePackage.getEInt(), "lowerRABound", null, 0, 1,
+				TGGComplementRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGComplementRule_UpperRABound(), ecorePackage.getEInt(), "upperRABound", null, 0, 1,
+				TGGComplementRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(domainTypeEEnum, DomainType.class, "DomainType");

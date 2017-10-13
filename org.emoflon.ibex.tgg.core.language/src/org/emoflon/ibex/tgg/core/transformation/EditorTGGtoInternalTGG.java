@@ -54,6 +54,7 @@ import language.DomainType;
 import language.LanguageFactory;
 import language.NAC;
 import language.TGG;
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -186,29 +187,29 @@ public class EditorTGGtoInternalTGG {
 
 	private void translateXTextComplementRulesToTGGComplementRules(TripleGraphGrammarFile xtextTGG, TGG tgg) {
         for (ComplementRule xtextCompRule : xtextTGG.getComplementRules()) {
-			TGGRule tggRule = tggFactory.createTGGRule();
-			tggRule.setName(xtextCompRule.getName());
+			TGGComplementRule tggComplementRule = tggFactory.createTGGComplementRule();
+			tggComplementRule.setName(xtextCompRule.getName());
 			TGGRule kernel = (TGGRule) xtextToTGG.get(xtextCompRule.getKernel());
-			tggRule.setKernel(kernel);
-			tgg.getRules().add(tggRule);
-			map(xtextCompRule, tggRule);
+			tggComplementRule.setKernel(kernel);
+			tgg.getRules().add(tggComplementRule);
+			map(xtextCompRule, tggComplementRule);
 
-			tggRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getSourcePatterns(), DomainType.SRC));
-			tggRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getTargetPatterns(), DomainType.TRG));
-			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextCompRule.getCorrespondencePatterns()));
+			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getSourcePatterns(), DomainType.SRC));
+			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getTargetPatterns(), DomainType.TRG));
+			tggComplementRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextCompRule.getCorrespondencePatterns()));
 
-			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule.getNodes()));
+			tggComplementRule.getEdges().addAll(createTGGRuleEdges(tggComplementRule.getNodes()));
 
-			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
+			tggComplementRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
 		
-			tggRule.setAdditionalContext(!hasAdditionalContext(tggRule));
-			tggRule.setLowerRABound(getLowerRABound(tggRule));
-			tggRule.setUpperRABound(getUpperRABound(tggRule));
+			tggComplementRule.setAdditionalContext(!hasAdditionalContext(tggComplementRule));
+			tggComplementRule.setLowerRABound(getLowerRABound(tggComplementRule));
+			tggComplementRule.setUpperRABound(getUpperRABound(tggComplementRule));
 			
         }
 	}
 
-	private int getUpperRABound(TGGRule tggRule) {
+	private int getUpperRABound(TGGComplementRule tggRule) {
         Collection<TGGRuleEdge> relevantEdges = tggRule.getEdges().stream()
 				   .filter(e -> e.getBindingType() == BindingType.CREATE
 						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
@@ -225,7 +226,7 @@ public class EditorTGGtoInternalTGG {
 		return maxValueForUpperBound;
 	}
 
-	private int getLowerRABound(TGGRule tggRule) {
+	private int getLowerRABound(TGGComplementRule tggRule) {
         Collection<TGGRuleEdge> relevantEdges = tggRule.getEdges().stream()
 				   .filter(e -> e.getBindingType() == BindingType.CREATE
 						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
@@ -241,16 +242,16 @@ public class EditorTGGtoInternalTGG {
 		return minValueForLowerBound;
 	}
 
-	private boolean hasAdditionalContext(TGGRule tggRule) {
+	private boolean hasAdditionalContext(TGGComplementRule tggComplementRule) {
 		Collection<String> contextNodesNames = new HashSet<String>();
 		Collection<String> contextKernelNodesNames = new HashSet<String>();
-		Collection<TGGRuleNode> relevantKernelNodes = tggRule.getNodes().stream()
+		Collection<TGGRuleNode> relevantKernelNodes = tggComplementRule.getNodes().stream()
 				.filter(n -> n.getBindingType().equals(BindingType.CONTEXT))
 				.collect(Collectors.toSet());
 		for (TGGRuleNode t : relevantKernelNodes) {
 			contextNodesNames.add(t.getName());
 		}
-		Collection<TGGRuleNode> contextKernelNodes = tggRule.getKernel().getNodes();
+		Collection<TGGRuleNode> contextKernelNodes = tggComplementRule.getKernel().getNodes();
 		for (TGGRuleNode t : contextKernelNodes) {
 			contextKernelNodesNames.add(t.getName());
 		}

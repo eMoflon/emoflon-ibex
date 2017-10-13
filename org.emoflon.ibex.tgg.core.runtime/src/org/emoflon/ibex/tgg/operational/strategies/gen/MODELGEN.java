@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,6 +14,7 @@ import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.util.EmptyMatch;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
@@ -106,9 +106,15 @@ public abstract class MODELGEN extends OperationalStrategy {
 	
 	private void processComplementRuleMatch(IMatch match) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		Optional<TGGRule> Optrule = getTGG().getRules().stream()
-											.filter(p -> p.getName().equals(ruleName)).findAny();
-		TGGRule rule = Optrule.orElse(null);
+		TGGComplementRule rule = null;
+		for (TGGRule r : getTGG().getRules()) {
+			if (r instanceof TGGComplementRule && r.getName().equals(ruleName))
+				rule = (TGGComplementRule) r;
+		}
+		/*Optional<TGGComplementRule> Optrule = getTGG().getRules().stream()
+											.filter(p -> p instanceof TGGComplementRule && p.getName().equals(ruleName))
+											.findAny();
+		TGGComplementRule rule = Optrule.orElse(null);*/
 		if(rule.isAdditionalContext()) {
 			processOperationalRuleMatch(ruleName, match);
 		}

@@ -38,6 +38,7 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
 import language.TGG;
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -616,9 +617,8 @@ public abstract class OperationalStrategy {
 	public Collection<String> getComplementRulesNames(){
 		Collection<String> complementRulesNames = new HashSet<String>();
 		for (TGGRule cRule : getTGG().getRules()) {
-			if (cRule.isComplement()) {
-				complementRulesNames.add(cRule.getName() + PatternSuffixes.GEN);
-			}
+			if(cRule instanceof TGGComplementRule)
+				complementRulesNames.add(cRule.getName() + PatternSuffixes.GEN);	
 		}
 		return complementRulesNames;
 	}

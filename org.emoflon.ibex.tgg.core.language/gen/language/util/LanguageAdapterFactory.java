@@ -104,6 +104,11 @@ public class LanguageAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseTGGComplementRule(TGGComplementRule object) {
+			return createTGGComplementRuleAdapter();
+		}
+
+		@Override
 		public Adapter caseTGGNamedElement(TGGNamedElement object) {
 			return createTGGNamedElementAdapter();
 		}
@@ -222,6 +227,20 @@ public class LanguageAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createNACAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link language.TGGComplementRule <em>TGG Complement Rule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see language.TGGComplementRule
+	 * @generated
+	 */
+	public Adapter createTGGComplementRuleAdapter() {
 		return null;
 	}
 
