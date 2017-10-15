@@ -11,6 +11,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 
 import language.LanguageFactory;
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -28,7 +29,7 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
 		
 		if (isComplementRule()) 
-			addTGGPositiveInvocation(factory.getFactory(rule.getKernel()).create(ConsistencyPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(((TGGComplementRule) rule).getKernel()).create(ConsistencyPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(GENForRefinementInvocationsPattern.class));
@@ -69,7 +70,7 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 
 	private void embedKernelConsistencyPatternNodes() {
 
-		Collection<TGGRuleElement> kernelNodes = getSignatureElements(rule.getKernel());
+		Collection<TGGRuleElement> kernelNodes = getSignatureElements(((TGGComplementRule) rule).getKernel());
 		kernelNodes.add(ConsistencyPattern.createProtocolNode(rule));
 		
 		for (TGGRuleElement kernelNode : kernelNodes) {
@@ -90,7 +91,7 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 	}
 
 	private boolean isComplementRule() {
-		return rule.getKernel() != null;
+		return rule instanceof TGGComplementRule;
 	}
 
 }

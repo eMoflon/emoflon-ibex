@@ -37,12 +37,6 @@
         lowerBound="1"
         eType="#//csp/definition/TGGAttributeConstraintDefinitionLibrary"
         containment="true"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="complementRules"
-        upperBound="-1"
-        eType="#//TGGComplementRule"
-        containment="true"/>
   </eClassifiers>
   <eClassifiers
       xsi:type="ecore:EClass"
@@ -52,10 +46,6 @@
         xsi:type="ecore:EReference"
         name="refines"
         upperBound="-1"
-        eType="#//TGGRule"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="kernel"
         eType="#//TGGRule"/>
     <eStructuralFeatures
         xsi:type="ecore:EReference"
@@ -228,16 +218,20 @@
       eSuperTypes="#//TGGRule">
     <eStructuralFeatures
         xsi:type="ecore:EAttribute"
-        name="additionalContext"
+        name="bounded"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures
         xsi:type="ecore:EAttribute"
-        name="lowerRABound"
+        name="ruleApplicationLowerBound"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     <eStructuralFeatures
         xsi:type="ecore:EAttribute"
-        name="upperRABound"
+        name="ruleApplicationUpperBound"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures
+        xsi:type="ecore:EReference"
+        name="kernel"
+        eType="#//TGGRule"/>
   </eClassifiers>
   <eSubpackages
       name="inplaceAttributes"

@@ -24,7 +24,6 @@ import org.eclipse.emf.ecore.EPackage;
  *   <li>{@link language.TGG#getCorr <em>Corr</em>}</li>
  *   <li>{@link language.TGG#getRules <em>Rules</em>}</li>
  *   <li>{@link language.TGG#getAttributeConstraintDefinitionLibrary <em>Attribute Constraint Definition Library</em>}</li>
- *   <li>{@link language.TGG#getComplementRules <em>Complement Rules</em>}</li>
  * </ul>
  *
  * @see language.LanguagePackage#getTGG()
@@ -131,21 +130,5 @@ public interface TGG extends TGGNamedElement {
 	 * @generated
 	 */
 	void setAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary value);
-
-	/**
-	 * Returns the value of the '<em><b>Complement Rules</b></em>' containment reference list.
-	 * The list contents are of type {@link language.TGGComplementRule}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Complement Rules</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Complement Rules</em>' containment reference list.
-	 * @see language.LanguagePackage#getTGG_ComplementRules()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<TGGComplementRule> getComplementRules();
 
 } // TGG

@@ -3,9 +3,10 @@ package org.emoflon.ibex.tgg.operational;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -39,7 +40,6 @@ import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
 import language.TGG;
 import language.TGGComplementRule;
-import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -614,12 +614,11 @@ public abstract class OperationalStrategy {
 		return options.tgg();
 	}
 	
-	public Collection<String> getComplementRulesNames(){
-		Collection<String> complementRulesNames = new HashSet<String>();
-		for (TGGRule cRule : getTGG().getRules()) {
-			if(cRule instanceof TGGComplementRule)
-				complementRulesNames.add(cRule.getName() + PatternSuffixes.GEN);	
-		}
+	public Set<String> getComplementRulesNames(){
+		Set<String> complementRulesNames = getTGG().getRules().stream()
+												.filter(r -> r instanceof TGGComplementRule)
+												.map(n -> n.getName())
+												.collect(Collectors.toSet());
 		return complementRulesNames;
 	}
 	

@@ -99,13 +99,13 @@ public class MODELGENStopCriterion {
 			currentRuleCount.put(ruleName, 1);
 	}
 	
-	HashMap<String, HashMap<String, Integer>> complentRuleBounds = new HashMap<String, HashMap<String, Integer>>();
+	HashMap<String, HashMap<String, Integer>> complementRuleApplicationBounds = new HashMap<String, HashMap<String, Integer>>();
 	
-	public void boundsForComplementRule(String name, int upperBound, int lowerBound) {
+	public void boundsForComplementRule(String name, int lowerBound, int upperBound) {
 		HashMap<String, Integer> bounders = new HashMap<String, Integer>(); 
-		bounders.put("upperBound", upperBound);
 		bounders.put("lowerBound", lowerBound);
-		complentRuleBounds.put(name, bounders);
+		bounders.put("upperBound", upperBound);
+		complementRuleApplicationBounds.put(name, bounders);
 	}
 }
 

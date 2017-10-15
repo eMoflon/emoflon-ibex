@@ -18,7 +18,6 @@ import org.eclipse.emf.common.util.EList;
  * </p>
  * <ul>
  *   <li>{@link language.TGGRule#getRefines <em>Refines</em>}</li>
- *   <li>{@link language.TGGRule#getKernel <em>Kernel</em>}</li>
  *   <li>{@link language.TGGRule#getNacs <em>Nacs</em>}</li>
  *   <li>{@link language.TGGRule#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.TGGRule#getEdges <em>Edges</em>}</li>
@@ -46,32 +45,6 @@ public interface TGGRule extends TGGNamedElement {
 	 * @generated
 	 */
 	EList<TGGRule> getRefines();
-
-	/**
-	 * Returns the value of the '<em><b>Kernel</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Kernel</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Kernel</em>' reference.
-	 * @see #setKernel(TGGRule)
-	 * @see language.LanguagePackage#getTGGRule_Kernel()
-	 * @model
-	 * @generated
-	 */
-	TGGRule getKernel();
-
-	/**
-	 * Sets the value of the '{@link language.TGGRule#getKernel <em>Kernel</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Kernel</em>' reference.
-	 * @see #getKernel()
-	 * @generated
-	 */
-	void setKernel(TGGRule value);
 
 	/**
 	 * Returns the value of the '<em><b>Nacs</b></em>' containment reference list.

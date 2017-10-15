@@ -1,8 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -15,7 +13,6 @@ import org.emoflon.ibex.tgg.operational.util.EmptyMatch;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 
 import language.TGGComplementRule;
-import language.TGGRule;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 
@@ -32,11 +29,10 @@ import language.csp.TGGAttributeConstraintLibrary;
 public abstract class MODELGEN extends OperationalStrategy {
 
 	protected MODELGENStopCriterion stopCriterion;
-	private Collection<String> complementRulesNames;
+	private Set<String> complementRulesNames;
 		
 	public MODELGEN(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
-		//this.complementRulesNames = getComplementRulesNames();
 	}
 	
 	public void setStopCriterion(MODELGENStopCriterion stop) {
@@ -78,8 +74,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 		if(stopCriterion.dont() || operationalMatchContainer.isEmpty())
 			return false;
 		
-		Set<IMatch> matches = new HashSet<IMatch>();
-		matches = findAllComplementMatches();
+		complementRulesNames = getComplementRulesNames();
+		Set<IMatch> matches = findAllComplementRuleMatches();
 		
 		if (! matches.isEmpty()) {
 			processAllComplementRuleMatches(matches);
@@ -106,44 +102,43 @@ public abstract class MODELGEN extends OperationalStrategy {
 	
 	private void processComplementRuleMatch(IMatch match) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		TGGComplementRule rule = null;
-		for (TGGRule r : getTGG().getRules()) {
-			if (r instanceof TGGComplementRule && r.getName().equals(ruleName))
-				rule = (TGGComplementRule) r;
-		}
-		/*Optional<TGGComplementRule> Optrule = getTGG().getRules().stream()
-											.filter(p -> p instanceof TGGComplementRule && p.getName().equals(ruleName))
-											.findAny();
-		TGGComplementRule rule = Optrule.orElse(null);*/
-		if(rule.isAdditionalContext()) {
+		TGGComplementRule rule = (TGGComplementRule) getTGG().getRules().stream()
+				.filter(r -> r.getName().equals(ruleName) && r instanceof TGGComplementRule).findFirst().get();
+
+		if(rule.isBounded()) {
 			processOperationalRuleMatch(ruleName, match);
 		}
 		else {
-			int upperBoundUpdatePolicy = 10;
-			int lowerBoundUpdatePolicy = 0;
-			if (stopCriterion.complentRuleBounds.containsKey(ruleName)) {
-				upperBoundUpdatePolicy = stopCriterion.complentRuleBounds.get(ruleName).get("upperBound");
-				lowerBoundUpdatePolicy = stopCriterion.complentRuleBounds.get(ruleName).get("lowerBound");
-			}
-			int upperBound = Math.min(rule.getUpperRABound(), upperBoundUpdatePolicy);
-			int lowerBound = Math.max(rule.getLowerRABound(), lowerBoundUpdatePolicy);
-			Random random = new Random();
-			int randomUpperBound = lowerBound + random.nextInt(upperBound - lowerBound + 1);
+			int randomUpperBound = getRandomRuleApplicationUpperBound(ruleName, rule);
 			for (int i = 0; i < randomUpperBound; i++) {
 				processOperationalRuleMatch(ruleName, match);
 			}
 		}
 	}
 
-	private Set<IMatch> findAllComplementMatches() {
-		this.complementRulesNames = getComplementRulesNames();
-		Set<IMatch> processedMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> complementRulesNames.contains(m.patternName()))
-				/*.filter(m -> m.patternName().contains("Daughter2Female") 
-						|| m.patternName().contains("Son2Male")
-						|| m.patternName().contains("CreateOneSiblingFamily"))*/
+	private int getRandomRuleApplicationUpperBound(String ruleName, TGGComplementRule rule) {
+		int upperBound = rule.getRuleApplicationUpperBound();
+		int lowerBound = rule.getRuleApplicationLowerBound();
+		
+		if (stopCriterion.complementRuleApplicationBounds.containsKey(ruleName)) {
+			upperBound = Math.min(rule.getRuleApplicationUpperBound(), stopCriterion.complementRuleApplicationBounds.get(ruleName).get("upperBound"));
+			lowerBound = Math.min(rule.getRuleApplicationLowerBound(), stopCriterion.complementRuleApplicationBounds.get(ruleName).get("lowerBound"));
+		}
+		Random random = new Random();
+		
+		return lowerBound + random.nextInt(upperBound - lowerBound + 1);
+	}
+
+	private Set<IMatch> findAllComplementRuleMatches() {
+		Set<IMatch> complementRuleMatches = operationalMatchContainer.getMatches().stream()
+				.filter(m -> complementRulesNames.contains(adjustedPatternName(m.patternName())))
 				.collect(Collectors.toSet());
-		return processedMatches;
+		return complementRuleMatches;
+	}
+	
+	private String adjustedPatternName(String patternName) {
+		patternName = patternName.substring(0, patternName.length() - PatternSuffixes.GEN.length());
+		return patternName;
 	}
 
 	private void updateStopCriterion(String ruleName) {
@@ -190,4 +185,5 @@ public abstract class MODELGEN extends OperationalStrategy {
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
 		return library.getSorted_MODELGEN();
 	}
+	
 }

@@ -5,10 +5,12 @@ package language.impl;
 import language.LanguagePackage;
 import language.TGGComplementRule;
 
+import language.TGGRule;
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 /**
@@ -19,73 +21,84 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link language.impl.TGGComplementRuleImpl#isAdditionalContext <em>Additional Context</em>}</li>
- *   <li>{@link language.impl.TGGComplementRuleImpl#getLowerRABound <em>Lower RA Bound</em>}</li>
- *   <li>{@link language.impl.TGGComplementRuleImpl#getUpperRABound <em>Upper RA Bound</em>}</li>
+ *   <li>{@link language.impl.TGGComplementRuleImpl#isBounded <em>Bounded</em>}</li>
+ *   <li>{@link language.impl.TGGComplementRuleImpl#getRuleApplicationLowerBound <em>Rule Application Lower Bound</em>}</li>
+ *   <li>{@link language.impl.TGGComplementRuleImpl#getRuleApplicationUpperBound <em>Rule Application Upper Bound</em>}</li>
+ *   <li>{@link language.impl.TGGComplementRuleImpl#getKernel <em>Kernel</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementRule {
 	/**
-	 * The default value of the '{@link #isAdditionalContext() <em>Additional Context</em>}' attribute.
+	 * The default value of the '{@link #isBounded() <em>Bounded</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #isAdditionalContext()
+	 * @see #isBounded()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final boolean ADDITIONAL_CONTEXT_EDEFAULT = false;
+	protected static final boolean BOUNDED_EDEFAULT = false;
 
 	/**
-	 * The cached value of the '{@link #isAdditionalContext() <em>Additional Context</em>}' attribute.
+	 * The cached value of the '{@link #isBounded() <em>Bounded</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #isAdditionalContext()
+	 * @see #isBounded()
 	 * @generated
 	 * @ordered
 	 */
-	protected boolean additionalContext = ADDITIONAL_CONTEXT_EDEFAULT;
+	protected boolean bounded = BOUNDED_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getLowerRABound() <em>Lower RA Bound</em>}' attribute.
+	 * The default value of the '{@link #getRuleApplicationLowerBound() <em>Rule Application Lower Bound</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getLowerRABound()
+	 * @see #getRuleApplicationLowerBound()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final int LOWER_RA_BOUND_EDEFAULT = 0;
+	protected static final int RULE_APPLICATION_LOWER_BOUND_EDEFAULT = 0;
 
 	/**
-	 * The cached value of the '{@link #getLowerRABound() <em>Lower RA Bound</em>}' attribute.
+	 * The cached value of the '{@link #getRuleApplicationLowerBound() <em>Rule Application Lower Bound</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getLowerRABound()
+	 * @see #getRuleApplicationLowerBound()
 	 * @generated
 	 * @ordered
 	 */
-	protected int lowerRABound = LOWER_RA_BOUND_EDEFAULT;
+	protected int ruleApplicationLowerBound = RULE_APPLICATION_LOWER_BOUND_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getUpperRABound() <em>Upper RA Bound</em>}' attribute.
+	 * The default value of the '{@link #getRuleApplicationUpperBound() <em>Rule Application Upper Bound</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getUpperRABound()
+	 * @see #getRuleApplicationUpperBound()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final int UPPER_RA_BOUND_EDEFAULT = 0;
+	protected static final int RULE_APPLICATION_UPPER_BOUND_EDEFAULT = 0;
 
 	/**
-	 * The cached value of the '{@link #getUpperRABound() <em>Upper RA Bound</em>}' attribute.
+	 * The cached value of the '{@link #getRuleApplicationUpperBound() <em>Rule Application Upper Bound</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getUpperRABound()
+	 * @see #getRuleApplicationUpperBound()
 	 * @generated
 	 * @ordered
 	 */
-	protected int upperRABound = UPPER_RA_BOUND_EDEFAULT;
+	protected int ruleApplicationUpperBound = RULE_APPLICATION_UPPER_BOUND_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getKernel() <em>Kernel</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getKernel()
+	 * @generated
+	 * @ordered
+	 */
+	protected TGGRule kernel;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -111,8 +124,8 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public boolean isAdditionalContext() {
-		return additionalContext;
+	public boolean isBounded() {
+		return bounded;
 	}
 
 	/**
@@ -120,12 +133,35 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setAdditionalContext(boolean newAdditionalContext) {
-		boolean oldAdditionalContext = additionalContext;
-		additionalContext = newAdditionalContext;
+	public void setBounded(boolean newBounded) {
+		boolean oldBounded = bounded;
+		bounded = newBounded;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED,
+					oldBounded, bounded));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public int getRuleApplicationLowerBound() {
+		return ruleApplicationLowerBound;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setRuleApplicationLowerBound(int newRuleApplicationLowerBound) {
+		int oldRuleApplicationLowerBound = ruleApplicationLowerBound;
+		ruleApplicationLowerBound = newRuleApplicationLowerBound;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					LanguagePackage.TGG_COMPLEMENT_RULE__ADDITIONAL_CONTEXT, oldAdditionalContext, additionalContext));
+					LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND, oldRuleApplicationLowerBound,
+					ruleApplicationLowerBound));
 	}
 
 	/**
@@ -133,8 +169,8 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public int getLowerRABound() {
-		return lowerRABound;
+	public int getRuleApplicationUpperBound() {
+		return ruleApplicationUpperBound;
 	}
 
 	/**
@@ -142,12 +178,13 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setLowerRABound(int newLowerRABound) {
-		int oldLowerRABound = lowerRABound;
-		lowerRABound = newLowerRABound;
+	public void setRuleApplicationUpperBound(int newRuleApplicationUpperBound) {
+		int oldRuleApplicationUpperBound = ruleApplicationUpperBound;
+		ruleApplicationUpperBound = newRuleApplicationUpperBound;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_COMPLEMENT_RULE__LOWER_RA_BOUND,
-					oldLowerRABound, lowerRABound));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND, oldRuleApplicationUpperBound,
+					ruleApplicationUpperBound));
 	}
 
 	/**
@@ -155,8 +192,17 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public int getUpperRABound() {
-		return upperRABound;
+	public TGGRule getKernel() {
+		if (kernel != null && kernel.eIsProxy()) {
+			InternalEObject oldKernel = (InternalEObject) kernel;
+			kernel = (TGGRule) eResolveProxy(oldKernel);
+			if (kernel != oldKernel) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL, oldKernel, kernel));
+			}
+		}
+		return kernel;
 	}
 
 	/**
@@ -164,12 +210,21 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setUpperRABound(int newUpperRABound) {
-		int oldUpperRABound = upperRABound;
-		upperRABound = newUpperRABound;
+	public TGGRule basicGetKernel() {
+		return kernel;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setKernel(TGGRule newKernel) {
+		TGGRule oldKernel = kernel;
+		kernel = newKernel;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_COMPLEMENT_RULE__UPPER_RA_BOUND,
-					oldUpperRABound, upperRABound));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL,
+					oldKernel, kernel));
 	}
 
 	/**
@@ -180,12 +235,16 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case LanguagePackage.TGG_COMPLEMENT_RULE__ADDITIONAL_CONTEXT:
-			return isAdditionalContext();
-		case LanguagePackage.TGG_COMPLEMENT_RULE__LOWER_RA_BOUND:
-			return getLowerRABound();
-		case LanguagePackage.TGG_COMPLEMENT_RULE__UPPER_RA_BOUND:
-			return getUpperRABound();
+		case LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED:
+			return isBounded();
+		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND:
+			return getRuleApplicationLowerBound();
+		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND:
+			return getRuleApplicationUpperBound();
+		case LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL:
+			if (resolve)
+				return getKernel();
+			return basicGetKernel();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -198,14 +257,17 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case LanguagePackage.TGG_COMPLEMENT_RULE__ADDITIONAL_CONTEXT:
-			setAdditionalContext((Boolean) newValue);
+		case LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED:
+			setBounded((Boolean) newValue);
 			return;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__LOWER_RA_BOUND:
-			setLowerRABound((Integer) newValue);
+		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND:
+			setRuleApplicationLowerBound((Integer) newValue);
 			return;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__UPPER_RA_BOUND:
-			setUpperRABound((Integer) newValue);
+		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND:
+			setRuleApplicationUpperBound((Integer) newValue);
+			return;
+		case LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL:
+			setKernel((TGGRule) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -219,14 +281,17 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case LanguagePackage.TGG_COMPLEMENT_RULE__ADDITIONAL_CONTEXT:
-			setAdditionalContext(ADDITIONAL_CONTEXT_EDEFAULT);
+		case LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED:
+			setBounded(BOUNDED_EDEFAULT);
 			return;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__LOWER_RA_BOUND:
-			setLowerRABound(LOWER_RA_BOUND_EDEFAULT);
+		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND:
+			setRuleApplicationLowerBound(RULE_APPLICATION_LOWER_BOUND_EDEFAULT);
 			return;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__UPPER_RA_BOUND:
-			setUpperRABound(UPPER_RA_BOUND_EDEFAULT);
+		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND:
+			setRuleApplicationUpperBound(RULE_APPLICATION_UPPER_BOUND_EDEFAULT);
+			return;
+		case LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL:
+			setKernel((TGGRule) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -240,12 +305,14 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case LanguagePackage.TGG_COMPLEMENT_RULE__ADDITIONAL_CONTEXT:
-			return additionalContext != ADDITIONAL_CONTEXT_EDEFAULT;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__LOWER_RA_BOUND:
-			return lowerRABound != LOWER_RA_BOUND_EDEFAULT;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__UPPER_RA_BOUND:
-			return upperRABound != UPPER_RA_BOUND_EDEFAULT;
+		case LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED:
+			return bounded != BOUNDED_EDEFAULT;
+		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND:
+			return ruleApplicationLowerBound != RULE_APPLICATION_LOWER_BOUND_EDEFAULT;
+		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND:
+			return ruleApplicationUpperBound != RULE_APPLICATION_UPPER_BOUND_EDEFAULT;
+		case LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL:
+			return kernel != null;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -261,12 +328,12 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 			return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (additionalContext: ");
-		result.append(additionalContext);
-		result.append(", lowerRABound: ");
-		result.append(lowerRABound);
-		result.append(", upperRABound: ");
-		result.append(upperRABound);
+		result.append(" (bounded: ");
+		result.append(bounded);
+		result.append(", ruleApplicationLowerBound: ");
+		result.append(ruleApplicationLowerBound);
+		result.append(", ruleApplicationUpperBound: ");
+		result.append(ruleApplicationUpperBound);
 		result.append(')');
 		return result.toString();
 	}

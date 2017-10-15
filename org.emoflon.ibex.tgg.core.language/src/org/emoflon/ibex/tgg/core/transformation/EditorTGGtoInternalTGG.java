@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -202,15 +201,15 @@ public class EditorTGGtoInternalTGG {
 
 			tggComplementRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
 		
-			tggComplementRule.setAdditionalContext(!hasAdditionalContext(tggComplementRule));
-			tggComplementRule.setLowerRABound(getLowerRABound(tggComplementRule));
-			tggComplementRule.setUpperRABound(getUpperRABound(tggComplementRule));
+			tggComplementRule.setBounded(hasAdditionalContext(tggComplementRule));
+			tggComplementRule.setRuleApplicationLowerBound(ruleApplicationLowerBound(tggComplementRule));
+			tggComplementRule.setRuleApplicationUpperBound(ruleApplicationUpperBound(tggComplementRule));
 			
         }
 	}
 
-	private int getUpperRABound(TGGComplementRule tggRule) {
-        Collection<TGGRuleEdge> relevantEdges = tggRule.getEdges().stream()
+	private int ruleApplicationUpperBound(TGGComplementRule tggComplementRule) {
+        Collection<TGGRuleEdge> relevantEdges = tggComplementRule.getEdges().stream()
 				   .filter(e -> e.getBindingType() == BindingType.CREATE
 						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
 				   .collect(Collectors.toList());
@@ -218,46 +217,40 @@ public class EditorTGGtoInternalTGG {
         // TODO: [Milica] this value should not be hardcoded here?
         int maxValueForUpperBound = 10;
 
-        for (TGGRuleEdge t : relevantEdges) {
-        	if (t.getType().getUpperBound() != -1 && t.getType().getUpperBound() < maxValueForUpperBound)
-        		maxValueForUpperBound = t.getType().getUpperBound();
+        for (TGGRuleEdge e : relevantEdges) {
+        	if (e.getType().getUpperBound() != -1 && e.getType().getUpperBound() < maxValueForUpperBound)
+        		maxValueForUpperBound = e.getType().getUpperBound();
         }
 
 		return maxValueForUpperBound;
 	}
 
-	private int getLowerRABound(TGGComplementRule tggRule) {
-        Collection<TGGRuleEdge> relevantEdges = tggRule.getEdges().stream()
+	private int ruleApplicationLowerBound(TGGComplementRule tggComplementRule) {
+        Collection<TGGRuleEdge> relevantEdges = tggComplementRule.getEdges().stream()
 				   .filter(e -> e.getBindingType() == BindingType.CREATE
 						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
 				   .collect(Collectors.toList());
         
      // TODO: [Milica] this value should not be hardcoded here?
         int minValueForLowerBound = 0; 
-        for (TGGRuleEdge t : relevantEdges) {
-        	if (t.getType().getLowerBound() > minValueForLowerBound)
-        		minValueForLowerBound = t.getType().getLowerBound();
+        for (TGGRuleEdge e : relevantEdges) {
+        	if (e.getType().getLowerBound() > minValueForLowerBound)
+        		minValueForLowerBound = e.getType().getLowerBound();
         }	
 
 		return minValueForLowerBound;
 	}
 
 	private boolean hasAdditionalContext(TGGComplementRule tggComplementRule) {
-		Collection<String> contextNodesNames = new HashSet<String>();
-		Collection<String> contextKernelNodesNames = new HashSet<String>();
-		Collection<TGGRuleNode> relevantKernelNodes = tggComplementRule.getNodes().stream()
+		Collection<TGGRuleNode> contextComplementRuleNodes = tggComplementRule.getNodes().stream()
 				.filter(n -> n.getBindingType().equals(BindingType.CONTEXT))
 				.collect(Collectors.toSet());
-		for (TGGRuleNode t : relevantKernelNodes) {
-			contextNodesNames.add(t.getName());
+		Collection<TGGRuleNode> kernelNodes = tggComplementRule.getKernel().getNodes();
+		for (TGGRuleNode node : contextComplementRuleNodes) {
+			if(kernelNodes.stream().noneMatch(cn -> cn.getName().equals(node.getName())))
+				return true;
 		}
-		Collection<TGGRuleNode> contextKernelNodes = tggComplementRule.getKernel().getNodes();
-		for (TGGRuleNode t : contextKernelNodes) {
-			contextKernelNodesNames.add(t.getName());
-		}
-
-		return contextKernelNodesNames.containsAll(contextNodesNames);
-		
+		return false;
 	}
 
 	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {

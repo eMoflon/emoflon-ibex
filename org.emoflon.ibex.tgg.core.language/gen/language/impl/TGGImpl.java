@@ -6,7 +6,6 @@ import java.util.Collection;
 
 import language.LanguagePackage;
 import language.TGG;
-import language.TGGComplementRule;
 import language.TGGRule;
 
 import language.basic.impl.TGGNamedElementImpl;
@@ -41,7 +40,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link language.impl.TGGImpl#getCorr <em>Corr</em>}</li>
  *   <li>{@link language.impl.TGGImpl#getRules <em>Rules</em>}</li>
  *   <li>{@link language.impl.TGGImpl#getAttributeConstraintDefinitionLibrary <em>Attribute Constraint Definition Library</em>}</li>
- *   <li>{@link language.impl.TGGImpl#getComplementRules <em>Complement Rules</em>}</li>
  * </ul>
  *
  * @generated
@@ -96,16 +94,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * @ordered
 	 */
 	protected TGGAttributeConstraintDefinitionLibrary attributeConstraintDefinitionLibrary;
-
-	/**
-	 * The cached value of the '{@link #getComplementRules() <em>Complement Rules</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getComplementRules()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<TGGComplementRule> complementRules;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -262,19 +250,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<TGGComplementRule> getComplementRules() {
-		if (complementRules == null) {
-			complementRules = new EObjectContainmentEList<TGGComplementRule>(TGGComplementRule.class, this,
-					LanguagePackage.TGG__COMPLEMENT_RULES);
-		}
-		return complementRules;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -282,8 +257,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 			return ((InternalEList<?>) getRules()).basicRemove(otherEnd, msgs);
 		case LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY:
 			return basicSetAttributeConstraintDefinitionLibrary(null, msgs);
-		case LanguagePackage.TGG__COMPLEMENT_RULES:
-			return ((InternalEList<?>) getComplementRules()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -308,8 +281,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 			return getRules();
 		case LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY:
 			return getAttributeConstraintDefinitionLibrary();
-		case LanguagePackage.TGG__COMPLEMENT_RULES:
-			return getComplementRules();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -341,10 +312,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 		case LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY:
 			setAttributeConstraintDefinitionLibrary((TGGAttributeConstraintDefinitionLibrary) newValue);
 			return;
-		case LanguagePackage.TGG__COMPLEMENT_RULES:
-			getComplementRules().clear();
-			getComplementRules().addAll((Collection<? extends TGGComplementRule>) newValue);
-			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -372,9 +339,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 		case LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY:
 			setAttributeConstraintDefinitionLibrary((TGGAttributeConstraintDefinitionLibrary) null);
 			return;
-		case LanguagePackage.TGG__COMPLEMENT_RULES:
-			getComplementRules().clear();
-			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -397,8 +361,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 			return rules != null && !rules.isEmpty();
 		case LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY:
 			return attributeConstraintDefinitionLibrary != null;
-		case LanguagePackage.TGG__COMPLEMENT_RULES:
-			return complementRules != null && !complementRules.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
