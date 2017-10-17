@@ -20,13 +20,16 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.StringToDouble;
 import org.emoflon.ibex.tgg.operational.csp.constraints.StringToInt;
 import org.emoflon.ibex.tgg.operational.csp.constraints.Sub;
 
+import language.csp.definition.TGGAttributeConstraintDefinition;
+
 public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
 
 	public PredefRuntimeTGGAttrConstraintFactory() {
-		initialize();
+		super();
 	}
 	
-	private void initialize() {
+	@Override
+	protected void initialize() {
 		creators = new HashMap<>();
 		creators.put("add", () -> new Add());
 		creators.put("addPrefix", () -> new AddPrefix());
@@ -52,18 +55,5 @@ public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstra
 		
 		constraints = new HashSet<String>();
 		constraints.addAll(creators.keySet());
-	}
-	
-	@Override
-	public RuntimeTGGAttributeConstraint createRuntimeTGGAttributeConstraint(String name) {
-		Supplier<RuntimeTGGAttributeConstraint> creator = creators.get(name);
-		if(creator == null)
-			throw new RuntimeException("CSP not implemented");
-		return creator.get();
-	}
-	
-	@Override
-	public boolean containsRuntimeTGGAttributeConstraint(String name) {
-		return constraints.contains(name);
 	}
 }

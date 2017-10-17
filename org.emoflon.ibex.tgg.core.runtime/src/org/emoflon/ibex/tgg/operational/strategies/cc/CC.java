@@ -13,6 +13,7 @@ import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
 import gnu.trove.map.TIntObjectMap;
@@ -55,8 +56,8 @@ public abstract class CC extends OperationalStrategy {
 
 	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 
-	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug);
+	public CC(IbexOptions options) throws IOException {
+		super(options);
 	}
 
 	@Override

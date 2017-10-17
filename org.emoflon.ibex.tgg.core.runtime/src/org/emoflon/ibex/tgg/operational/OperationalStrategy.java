@@ -65,7 +65,7 @@ public abstract class OperationalStrategy {
 	protected MatchContainer operationalMatchContainer;
 	protected UpdatePolicy updatePolicy;
 
-	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
+	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 	protected THashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new THashMap<>();
@@ -78,30 +78,24 @@ public abstract class OperationalStrategy {
 	private PatternMatchingEngine engine;
 	private boolean domainsHaveNoSharedTypes;
 
-	public OperationalStrategy(String projectPath, String workspacePath, boolean debug) {
-		this(projectPath, workspacePath, debug, new RandomMatchUpdatePolicy());
+	public OperationalStrategy(IbexOptions options) {
+		this(options, new RandomMatchUpdatePolicy());
 	}
 
-	public OperationalStrategy(String projectPath, String workspacePath, boolean debug, UpdatePolicy policy) {
+	public OperationalStrategy(IbexOptions options,  UpdatePolicy policy) {
 		base = URI.createPlatformResourceURI("/", true);
-		this.workspacePath = workspacePath;
-		this.projectPath = projectPath;
+		this.workspacePath = options.workspacePath();
+		this.projectPath = options.projectPath();
 
-		options = new IbexOptions();
-		options.debug(debug);
-		options.projectPath(projectPath);
+		this.options = options;
+		
 		setModelGen();
-		options.setConstraintProvider(runtimeConstraintProvider);
 		
 		this.updatePolicy = policy;
 	}
 	
 	protected void setModelGen() {
 		options.setModelGen(false);
-	}
-
-	public void registerRuntimeTGGAttrConstraintFactory(RuntimeTGGAttrConstraintFactory factory) {
-		runtimeConstraintProvider.registerFactory(factory);
 	}
 
 	public void registerPatternMatchingEngine(PatternMatchingEngine engine) throws IOException {
@@ -187,7 +181,13 @@ public abstract class OperationalStrategy {
 
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-
+		
+		// instantiate runtime constraint provider with loaded constraint definition library
+		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(options.tgg().getAttributeConstraintDefinitionLibrary());
+		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
+		options.setConstraintProvider(runtimeConstraintProvider);
+		
+		
 		rs.getResources().remove(res);
 		rs.getResources().remove(flattenedRes);
 

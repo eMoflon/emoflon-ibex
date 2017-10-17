@@ -10,13 +10,9 @@ class DefaultFilesGenerator {
 		return '''
 			package org.emoflon.ibex.tgg.operational.csp.constraints.factories;
 			
-			import java.util.Collection;
 			import java.util.HashMap;
-			import java.util.HashSet;
-			import java.util.Map;
-			import java.util.function.Supplier;
-			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
-			
+			import java.util.HashSet;			
+	
 			«FOR constraint : userDefConstraints»
 				import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«UserAttrCondHelper.getFileName(constraint)»;
 			«ENDFOR»
@@ -24,10 +20,11 @@ class DefaultFilesGenerator {
 			public class UserDefinedRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
 			
 				public UserDefinedRuntimeTGGAttrConstraintFactory() {
-					initialize();
+					super();
 				}
 				
-				private void initialize() {
+				@Override
+				protected void initialize() {
 					creators = new HashMap<>();
 					«FOR constraint : userDefConstraints»
 						creators.put("«constraint»", () -> new «UserAttrCondHelper.getFileName(constraint)»());
@@ -35,19 +32,6 @@ class DefaultFilesGenerator {
 					
 					constraints = new HashSet<String>();
 					constraints.addAll(creators.keySet());
-				}
-				
-				@Override
-				public RuntimeTGGAttributeConstraint createRuntimeTGGAttributeConstraint(String name) {
-					Supplier<RuntimeTGGAttributeConstraint> creator = creators.get(name);
-					if(creator == null)
-						throw new RuntimeException("CSP not implemented");
-					return creator.get();
-				}
-				
-				@Override
-				public boolean containsRuntimeTGGAttributeConstraint(String name) {
-					return constraints.contains(name);
 				}
 			}
 		'''
@@ -100,12 +84,14 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.BasicConfigurator;
 			import org.apache.commons.lang3.NotImplementedException;
 			
+			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
+			import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 			«additionalImports»
 			
 			public class «fileName» extends «strategy» {
 			
 				public «fileName»(String projectName, String workspacePath, boolean debug) throws IOException {
-					super(projectName, workspacePath, debug);
+					super(createIbexOptions().projectName(projectName).workspacePath(workspacePath).debug(debug));
 					registerPatternMatchingEngine(new «engine»());
 				}
 			
@@ -116,6 +102,14 @@ class DefaultFilesGenerator {
 				}
 			
 				«generateMetamodelRegistration()»
+				
+				private static IbexOptions createIbexOptions() {
+						IbexOptions options = new IbexOptions();
+						options.projectName("«projectName»");
+						options.debug(true);
+						options.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
+						return options;
+				}
 			}
 		'''
 	}
@@ -132,14 +126,12 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
-			«fileName» generator = new «fileName»("«projectName»", "./../", false);
+			«fileName» generator = new «fileName»();
 			
 			MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 			stop.setTimeOutInMS(1000);
 			generator.setStopCriterion(stop);
 
-			generator.registerRuntimeTGGAttrConstraintFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
-			
 			logger.info("Starting MODELGEN");
 			long tic = System.currentTimeMillis();
 			generator.run();
@@ -164,9 +156,7 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
-			«fileName» sync = new «fileName»("«projectName»", "./../", false);
-			
-			sync.registerRuntimeTGGAttrConstraintFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
+			«fileName» sync = new «fileName»(createIbexOptions());
 			
 			logger.info("Starting SYNC");
 			long tic = System.currentTimeMillis();
@@ -191,10 +181,7 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
-			«fileName» cc = new «fileName»("«projectName»", "./../", false);
-			
-			cc.registerRuntimeTGGAttrConstraintFactory(new UserDefinedRuntimeTGGAttrConstraintFactory());
-
+			«fileName» cc = new «fileName»(createIbexOptions());
 			
 			logger.info("Starting CC");
 			long tic = System.currentTimeMillis();

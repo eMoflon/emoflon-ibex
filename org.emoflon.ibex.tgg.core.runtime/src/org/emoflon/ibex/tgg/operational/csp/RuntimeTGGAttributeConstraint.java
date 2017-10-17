@@ -23,28 +23,8 @@ public abstract class RuntimeTGGAttributeConstraint {
 
 	public RuntimeTGGAttributeConstraint() {
 		variables = new ArrayList<>();
-		constraint.getParameters().forEach(p -> {
-			variables.add(new RuntimeTGGAttributeConstraintVariable(calculateBoundState(p), calculateValue(p), calculateType(p)));
-		});
 	}
 
-	public void setConstraint(TGGAttributeConstraint constraint) {
-		this.constraint = constraint;
-	}
-	
-	private String calculateType(TGGParamValue p) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private Object calculateValue(TGGParamValue p) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private boolean calculateBoundState(TGGParamValue p) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 	public String getBindingStates(RuntimeTGGAttributeConstraintVariable... variables) {
 		if (variables.length == 0) {
 			throw new IllegalArgumentException("Cannot determine binding states from an empty list of variables!");
