@@ -37,6 +37,10 @@ public abstract class IbexPattern {
 		return Optional.of(Pair.of(node_attr[1], node_attr[2]));
 	}
 	
+	public final static boolean isAttrNode(String nodeName) {
+		return nodeName.split("__").length == 3;
+	}
+	
 	protected TGGRule rule;
 	
 	protected IbexPatternOptimiser optimiser = new IbexPatternOptimiser();

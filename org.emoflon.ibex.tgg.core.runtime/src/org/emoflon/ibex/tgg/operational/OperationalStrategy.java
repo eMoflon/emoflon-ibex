@@ -18,8 +18,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
@@ -346,9 +346,11 @@ public abstract class OperationalStrategy {
 
 		
 		ra.getNodeMappings().putAll(createdElements);
-		match.parameterNames().forEach(n -> {
-			ra.getNodeMappings().put(n, (EObject) match.get(n));
-		});
+		match.parameterNames().stream()
+			.filter(n -> !IbexPattern.isAttrNode(n))
+			.forEach(n -> {
+				ra.getNodeMappings().put(n, (EObject) match.get(n));
+			});
 
 		setIsRuleApplicationFinal(ra);
 	}
