@@ -33,7 +33,7 @@ import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
 import org.emoflon.ibex.tgg.operational.util.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
-import org.emoflon.ibex.tgg.operational.util.UpdatePolicy;
+import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TCustomHashSet;
@@ -68,7 +68,7 @@ public abstract class OperationalStrategy {
 
 	protected RuleInfos ruleInfos;
 	protected MatchContainer operationalMatchContainer;
-	protected UpdatePolicy updatePolicy;
+	protected IUpdatePolicy updatePolicy;
 
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
 
@@ -87,7 +87,7 @@ public abstract class OperationalStrategy {
 		this(projectPath, workspacePath, debug, new RandomMatchUpdatePolicy());
 	}
 
-	public OperationalStrategy(String projectPath, String workspacePath, boolean debug, UpdatePolicy policy) {
+	public OperationalStrategy(String projectPath, String workspacePath, boolean debug, IUpdatePolicy policy) {
 		base = URI.createPlatformResourceURI("/", true);
 		this.workspacePath = workspacePath;
 		this.projectPath = projectPath;
@@ -622,7 +622,7 @@ public abstract class OperationalStrategy {
 		return complementRulesNames;
 	}
 	
-	public void setUpdatePolicy(UpdatePolicy updatePolicy) {
+	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
 		if (updatePolicy == null)
 			throw new NullPointerException("UpdatePolicy must not be set to null.");
 		else

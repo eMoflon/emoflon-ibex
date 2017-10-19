@@ -202,43 +202,31 @@ public class EditorTGGtoInternalTGG {
 			tggComplementRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
 		
 			tggComplementRule.setBounded(hasAdditionalContext(tggComplementRule));
-			tggComplementRule.setRuleApplicationLowerBound(ruleApplicationLowerBound(tggComplementRule));
-			tggComplementRule.setRuleApplicationUpperBound(ruleApplicationUpperBound(tggComplementRule));
+			//tggComplementRule.setRuleApplicationLowerBound(ruleApplicationLowerBound(tggComplementRule));
+			//tggComplementRule.setRuleApplicationUpperBound(ruleApplicationUpperBound(tggComplementRule));
 			
         }
 	}
 
 	private int ruleApplicationUpperBound(TGGComplementRule tggComplementRule) {
-        Collection<TGGRuleEdge> relevantEdges = tggComplementRule.getEdges().stream()
+        Collection<Integer> relevantEdges = tggComplementRule.getEdges().stream()
 				   .filter(e -> e.getBindingType() == BindingType.CREATE
 						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
+				   .map(i -> i.getType().getUpperBound())
 				   .collect(Collectors.toList());
         
-        // TODO: [Milica] this value should not be hardcoded here?
-        int maxValueForUpperBound = 10;
-
-        for (TGGRuleEdge e : relevantEdges) {
-        	if (e.getType().getUpperBound() != -1 && e.getType().getUpperBound() < maxValueForUpperBound)
-        		maxValueForUpperBound = e.getType().getUpperBound();
-        }
-
-		return maxValueForUpperBound;
+        return relevantEdges.stream().filter(n -> n != -1).min(Integer::compare).orElse(-1);
+        
 	}
 
 	private int ruleApplicationLowerBound(TGGComplementRule tggComplementRule) {
-        Collection<TGGRuleEdge> relevantEdges = tggComplementRule.getEdges().stream()
+        Collection<Integer> relevantEdges = tggComplementRule.getEdges().stream()
 				   .filter(e -> e.getBindingType() == BindingType.CREATE
 						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
+				   .map(i -> i.getType().getLowerBound())
 				   .collect(Collectors.toList());
         
-     // TODO: [Milica] this value should not be hardcoded here?
-        int minValueForLowerBound = 0; 
-        for (TGGRuleEdge e : relevantEdges) {
-        	if (e.getType().getLowerBound() > minValueForLowerBound)
-        		minValueForLowerBound = e.getType().getLowerBound();
-        }	
-
-		return minValueForLowerBound;
+        return relevantEdges.stream().max(Integer::compare).get();
 	}
 
 	private boolean hasAdditionalContext(TGGComplementRule tggComplementRule) {

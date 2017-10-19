@@ -1,18 +1,23 @@
 package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.util.EmptyMatch;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 
+import language.BindingType;
 import language.TGGComplementRule;
+import language.TGGRule;
+import language.TGGRuleEdge;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 
@@ -75,10 +80,10 @@ public abstract class MODELGEN extends OperationalStrategy {
 			return false;
 		
 		complementRulesNames = getComplementRulesNames();
-		Set<IMatch> matches = findAllComplementRuleMatches();
+		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		
-		if (! matches.isEmpty()) {
-			processAllComplementRuleMatches(matches);
+		if (! complementRuleMatches.isEmpty()) {
+			processAllComplementRulesMatches(complementRuleMatches);
 		}
 		else {
 			IMatch match = chooseOneMatch();
@@ -91,54 +96,87 @@ public abstract class MODELGEN extends OperationalStrategy {
 		return true;
 	}
 
-	private void processAllComplementRuleMatches(Set<IMatch> matches) {
-		while (! matches.isEmpty()) {
-				IMatch match = matches.iterator().next();
-				processComplementRuleMatch(match);
-				matches.remove(match);
+	private void processAllComplementRulesMatches(Set<IMatch> complementRuleMatches) {
+		Set<String> uniqueRulesNames = complementRuleMatches.stream()
+											.map(m -> PatternSuffixes.removeSuffix(m.patternName()))
+											.distinct()
+											.collect(Collectors.toSet());
+		HashMap<String, Integer> complementRulesBounds = updatePolicy.getNumberOfApplications(uniqueRulesNames);
+		
+		checkComplianceWithSchema(complementRulesBounds);
+		
+		while (! complementRuleMatches.isEmpty()) {
+				IMatch match = complementRuleMatches.iterator().next();
+				processComplementRuleMatch(match, complementRulesBounds);
+				complementRuleMatches.remove(match);
 				removeOperationalRuleMatch(match);
 			}
 	}
-	
-	private void processComplementRuleMatch(IMatch match) {
+
+	private void processComplementRuleMatch(IMatch match, HashMap<String, Integer> complementRulesBounds) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		TGGComplementRule rule = (TGGComplementRule) getTGG().getRules().stream()
-				.filter(r -> r.getName().equals(ruleName) && r instanceof TGGComplementRule).findFirst().get();
+		System.out.println("Nasao match " + ruleName);
+		TGGComplementRule rule = getConcreteComplementRule(ruleName);
 
 		if(rule.isBounded()) {
 			processOperationalRuleMatch(ruleName, match);
 		}
 		else {
-			int randomUpperBound = getRandomRuleApplicationUpperBound(ruleName, rule);
-			for (int i = 0; i < randomUpperBound; i++) {
-				processOperationalRuleMatch(ruleName, match);
-			}
+			IntStream.range(0, complementRulesBounds.get(ruleName))
+					.forEach(i -> processOperationalRuleMatch(ruleName, match));
 		}
 	}
 
-	private int getRandomRuleApplicationUpperBound(String ruleName, TGGComplementRule rule) {
-		int upperBound = rule.getRuleApplicationUpperBound();
-		int lowerBound = rule.getRuleApplicationLowerBound();
+	private void checkComplianceWithSchema(HashMap<String, Integer> complementRulesBounds) {
+		HashMap<EReference, Integer> egdesToBeCreated = new HashMap<EReference, Integer>();
 		
-		if (stopCriterion.complementRuleApplicationBounds.containsKey(ruleName)) {
-			upperBound = Math.min(rule.getRuleApplicationUpperBound(), stopCriterion.complementRuleApplicationBounds.get(ruleName).get("upperBound"));
-			lowerBound = Math.min(rule.getRuleApplicationLowerBound(), stopCriterion.complementRuleApplicationBounds.get(ruleName).get("lowerBound"));
-		}
-		Random random = new Random();
+		complementRulesBounds.keySet().stream()
+        	.forEach( name -> {
+        		if(getConcreteComplementRule(name).isBounded()) {
+        			int number = (int) findAllComplementRuleMatches().stream()
+        					.filter(m -> m.patternName().contains(name)).count();
+            		getRelevantEdges(getConcreteComplementRule(name)).stream()
+            		.forEach( e -> {egdesToBeCreated.put(e.getType(), number);});
+        		}
+        		else {
+        		getRelevantEdges(getConcreteComplementRule(name)).stream()
+        		.forEach( e -> {
+        			if(! egdesToBeCreated.containsKey(e.getType())) {
+        				egdesToBeCreated.put(e.getType(), complementRulesBounds.get(name));
+        			}
+        			else {
+        				egdesToBeCreated.put(e.getType(), egdesToBeCreated.get(e.getType()) + complementRulesBounds.get(name));
+        			}
+        		});
+        		}});
 		
-		return lowerBound + random.nextInt(upperBound - lowerBound + 1);
+		egdesToBeCreated.keySet().stream()
+					.filter(e -> e.getUpperBound() != -1 && egdesToBeCreated.get(e) > e.getUpperBound())
+					.findAny()
+					.ifPresent(e -> {throw new IllegalArgumentException("Cardinalities for " + e.getName() + " are violated");});
+		
+
+	}
+	
+	private Set<TGGRuleEdge> getRelevantEdges(TGGRule rule) {
+		Set<TGGRuleEdge> relevantEdges = rule.getEdges().stream()
+				   .filter(e -> e.getBindingType() == BindingType.CREATE
+						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
+				   .collect(Collectors.toSet());
+		
+        return relevantEdges;
 	}
 
 	private Set<IMatch> findAllComplementRuleMatches() {
 		Set<IMatch> complementRuleMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> complementRulesNames.contains(adjustedPatternName(m.patternName())))
+				.filter(m -> complementRulesNames.contains(PatternSuffixes.removeSuffix(m.patternName())))
 				.collect(Collectors.toSet());
 		return complementRuleMatches;
 	}
 	
-	private String adjustedPatternName(String patternName) {
-		patternName = patternName.substring(0, patternName.length() - PatternSuffixes.GEN.length());
-		return patternName;
+	private TGGComplementRule getConcreteComplementRule(String ruleName) {
+		return (TGGComplementRule) getTGG().getRules().stream()
+				.filter(r -> r.getName().equals(ruleName) && r instanceof TGGComplementRule).findFirst().get();
 	}
 
 	private void updateStopCriterion(String ruleName) {

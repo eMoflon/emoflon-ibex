@@ -113,7 +113,7 @@ public abstract class IbexPattern {
 		return result;
 	}
 
-	private Collection<TGGRuleNode> calculateBodyNodes(Collection<TGGRuleNode> signatureElements) {
+	protected Collection<TGGRuleNode> calculateBodyNodes(Collection<TGGRuleNode> signatureElements) {
 		ArrayList<TGGRuleNode> result = new ArrayList<>();
 		signatureElements.stream().filter(e -> isRelevantForBody(e)).forEach(e -> result.add((TGGRuleNode) e));
 		return result;

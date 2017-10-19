@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
 import java.util.Collection;
 
-
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
@@ -70,12 +69,13 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 
 	private void embedKernelConsistencyPatternNodes() {
 
-		Collection<TGGRuleElement> kernelNodes = getSignatureElements(((TGGComplementRule) rule).getKernel());
-		kernelNodes.add(ConsistencyPattern.createProtocolNode(rule));
+		Collection<TGGRuleNode> kernelNodes = ((TGGComplementRule) rule).getKernel().getNodes();
+
+		getBodyNodes().add(ConsistencyPattern.createProtocolNode(((TGGComplementRule) rule).getKernel()));
 		
 		for (TGGRuleElement kernelNode : kernelNodes) {
 			if(kernelNodeIsNotInComplement(kernelNode) && kernelNode instanceof TGGRuleNode)
-				this.getBodyNodes().add(createNode((TGGRuleNode) kernelNode));
+				this.getBodyNodes().add(createProxyNode((TGGRuleNode) kernelNode));
 		}
 	}
 	
@@ -83,7 +83,8 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 		return getSignatureElements(rule).stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
 	}
 
-	private TGGRuleNode createNode(TGGRuleNode kernelNode) {
+	/* Creates a simple node with just the same name and type of kernelNode */
+	private TGGRuleNode createProxyNode(TGGRuleNode kernelNode) {
 		TGGRuleNode node = LanguageFactory.eINSTANCE.createTGGRuleNode();
 		node.setName(kernelNode.getName());
 		node.setType(kernelNode.getType());
