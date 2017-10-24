@@ -1,6 +1,8 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,6 +12,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
 import language.BindingType;
 import language.DomainType;
@@ -35,9 +38,13 @@ public class BWDPattern extends RulePartPattern {
 	protected void createPatternNetwork() {
 		// Rule Patterns
 		addTGGPositiveInvocation(factory.create(BWDRefinementPattern.class));
-		
-		// Translation Patterns
-		addTGGPositiveInvocation(factory.create(TrgTranslationAndFilterACsPattern.class));
+
+		// Marked Patterns
+		createMarkedInvocations();
+
+		// FilterNACs
+		if(PatternFactory.strategy != FilterACStrategy.NONE)
+			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
 		
 		// NACs
 		addTGGNegativeInvocations(collectGeneratedNACs());
@@ -57,6 +64,24 @@ public class BWDPattern extends RulePartPattern {
 			
 			return domain.equals(DomainType.SRC);
 		}).collect(Collectors.toList());
+	}
+
+	protected void createMarkedInvocations() {
+		for (TGGRuleElement el : getSignatureElements()) {
+			TGGRuleNode node = (TGGRuleNode) el;
+			if (node.getDomainType().equals(DomainType.TRG)) {
+				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, node.getBindingType().equals(BindingType.CONTEXT));
+				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findFirst().get();
+
+				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
+				mapping.put(node, invokedObject);
+
+				if (node.getBindingType().equals(BindingType.CONTEXT))
+					addCustomPositiveInvocation(markedPattern, mapping);
+				else
+					addCustomNegativeInvocation(markedPattern, mapping);
+			}
+		}
 	}
 
 	@Override
