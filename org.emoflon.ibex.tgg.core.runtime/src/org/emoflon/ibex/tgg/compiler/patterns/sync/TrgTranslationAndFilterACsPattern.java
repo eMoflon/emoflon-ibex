@@ -4,7 +4,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TranslationACPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TrgTranslationACPattern;
 
 import language.DomainType;
 
@@ -12,14 +11,12 @@ public class TrgTranslationAndFilterACsPattern extends TranslationACPattern {
 	protected PatternFactory factory;
 
 	public TrgTranslationAndFilterACsPattern(PatternFactory factory) {
-		super(factory.getFlattenedVersionOfRule(), true);
+		super(factory.getFlattenedVersionOfRule());
 		this.factory = factory;
-		
-		createPatternNetwork();
 	}
 	
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(TrgTranslationACPattern.class));
+		super.createPatternNetwork();
 		
 		if(PatternFactory.strategy != FilterACStrategy.NONE)
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
