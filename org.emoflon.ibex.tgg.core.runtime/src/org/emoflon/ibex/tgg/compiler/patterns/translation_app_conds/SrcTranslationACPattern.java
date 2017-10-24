@@ -8,7 +8,7 @@ import language.DomainType;
 public class SrcTranslationACPattern extends TranslationACPattern {
 
 	public SrcTranslationACPattern(PatternFactory factory) {
-		super(factory.getFlattenedVersionOfRule());
+		super(factory.getFlattenedVersionOfRule(), false);
 		
 		// Create pattern network
 		addTGGPositiveInvocation(factory.create(SrcRefinementsPattern.class));

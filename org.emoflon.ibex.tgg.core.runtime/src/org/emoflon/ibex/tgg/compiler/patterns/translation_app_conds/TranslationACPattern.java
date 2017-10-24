@@ -15,22 +15,25 @@ import language.TGGRuleNode;
 
 public abstract class TranslationACPattern extends IbexPattern {
 
-	public TranslationACPattern(TGGRule rule) {
+	public TranslationACPattern(TGGRule rule, boolean positive) {
 		super(rule);
-		createMarkedInvocations();
+		createMarkedInvocations(positive);
 	}
 
-	protected void createMarkedInvocations() {
+	protected void createMarkedInvocations(boolean positive) {
 		for (TGGRuleElement el : getSignatureElements()) {
 			TGGRuleNode node = (TGGRuleNode) el;
-			if (node.getBindingType().equals(BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
+			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && !node.getDomainType().equals(DomainType.CORR)) {
 				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findFirst().get();
 
 				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
 				mapping.put(node, invokedObject);
 
-				addCustomNegativeInvocation(markedPattern, mapping);
+				if (positive)
+					addCustomPositiveInvocation(markedPattern, mapping);
+				else
+					addCustomNegativeInvocation(markedPattern, mapping);
 			}
 		}
 	}

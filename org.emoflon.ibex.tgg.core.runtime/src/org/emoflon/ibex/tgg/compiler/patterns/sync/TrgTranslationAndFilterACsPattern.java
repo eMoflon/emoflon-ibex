@@ -3,15 +3,16 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TranslationACPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TrgTranslationACPattern;
 
 import language.DomainType;
 
-public class TrgTranslationAndFilterACsPattern extends TranslationAndFilterACsPattern {
+public class TrgTranslationAndFilterACsPattern extends TranslationACPattern {
 	protected PatternFactory factory;
 
 	public TrgTranslationAndFilterACsPattern(PatternFactory factory) {
-		super(factory.getFlattenedVersionOfRule());
+		super(factory.getFlattenedVersionOfRule(), true);
 		this.factory = factory;
 		
 		createPatternNetwork();
