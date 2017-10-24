@@ -4,6 +4,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
 import language.TGGRule;
 
@@ -14,7 +15,7 @@ public class BWDRefinementPattern extends BWDPattern {
 	}
 	
 	protected void createPatternNetwork() {
-//		addTGGPositiveInvocation(factory.create(TrgPattern.class));
+		addTGGPositiveInvocation(factory.create(TrgPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));
 
