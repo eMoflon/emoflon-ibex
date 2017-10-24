@@ -11,16 +11,16 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class TrgWithRefinementsPattern extends RulePartPattern {
+public class TrgRefinementsPattern extends RulePartPattern {
 
-	public TrgWithRefinementsPattern(PatternFactory factory) {
+	public TrgRefinementsPattern(PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());
 		
 		// Create pattern network
 		addTGGPositiveInvocation(factory.create(TrgPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(TrgWithRefinementsPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(superRule).create(TrgRefinementsPattern.class));
 	}
 
 	@Override

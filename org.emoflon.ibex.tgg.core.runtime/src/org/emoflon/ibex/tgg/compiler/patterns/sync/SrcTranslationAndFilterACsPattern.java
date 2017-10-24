@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
-import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.SrcTranslationACWithRefinementsPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.SrcTranslationACPattern;
 
 import language.DomainType;
 
@@ -18,7 +18,7 @@ public class SrcTranslationAndFilterACsPattern extends TranslationAndFilterACsPa
 	}
 	
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(SrcTranslationACWithRefinementsPattern.class));
+		addTGGPositiveInvocation(factory.create(SrcTranslationACPattern.class));
 		
 		if(PatternFactory.strategy != FilterACStrategy.NONE)
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));

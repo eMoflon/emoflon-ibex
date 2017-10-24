@@ -33,18 +33,22 @@ public class FWDPattern extends RulePartPattern {
 	}
 	
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(FWDForRefinementInvocationsContextPattern.class));
+		// Rule Patterns
+		addTGGPositiveInvocation(factory.create(FWDRefinementPattern.class));
+		
+		// Translation Patterns
 		addTGGPositiveInvocation(factory.create(SrcTranslationAndFilterACsPattern.class));
 		
-		collectGeneratedNACs();
+		// NACs
+		addTGGNegativeInvocations(collectGeneratedNACs());
 		addTGGNegativeInvocations(factory.createPatternsForUserDefinedTargetNACs());
 	}
 	
-	protected void collectGeneratedNACs() {
+	protected Collection<IbexPattern> collectGeneratedNACs() {
 		Collection<IbexPattern> nacs = factory.createPatternsForMultiplicityConstraints();
 		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
 		
-		addTGGNegativeInvocations(nacs.stream().filter(n -> {
+		return nacs.stream().filter(n -> {
 			Optional<TGGRuleElement> e = ((NacPattern)n).getSignatureElements().stream().findAny();
 			DomainType domain = DomainType.SRC;
 			if (e.isPresent()) {
@@ -52,7 +56,7 @@ public class FWDPattern extends RulePartPattern {
 			}
 			
 			return domain.equals(DomainType.TRG);
-		}).collect(Collectors.toList()));
+		}).collect(Collectors.toList());
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class GENPattern extends RulePartPattern {
 	}
 
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(GENForRefinementInvocationsPattern.class));
+		addTGGPositiveInvocation(factory.create(GENRefinementPattern.class));
 		
 		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints());
 		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints());

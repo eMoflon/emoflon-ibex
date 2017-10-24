@@ -14,9 +14,9 @@ import language.TGGRule;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class GENForRefinementInvocationsPattern extends GENPattern {
+public class GENRefinementPattern extends GENPattern {
 
-	public GENForRefinementInvocationsPattern(PatternFactory factory) {
+	public GENRefinementPattern(PatternFactory factory) {
 		super(factory);		
 	}
 	
@@ -30,7 +30,7 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 			addTGGPositiveInvocation(factory.getFactory(rule.getKernel()).create(ConsistencyPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(GENForRefinementInvocationsPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(superRule).create(GENRefinementPattern.class));
 	
 	}
 

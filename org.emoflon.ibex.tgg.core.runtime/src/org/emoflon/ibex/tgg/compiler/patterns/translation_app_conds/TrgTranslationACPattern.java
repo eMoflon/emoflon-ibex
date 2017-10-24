@@ -5,23 +5,23 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 import language.DomainType;
 
-public class SrcTranslationACWithRefinementsPattern extends TranslationACPattern {
+public class TrgTranslationACPattern extends TranslationACPattern {
 
-	public SrcTranslationACWithRefinementsPattern(PatternFactory factory) {
+	public TrgTranslationACPattern(PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());
 		
 		// Create pattern network
-		addTGGPositiveInvocation(factory.create(SrcWithRefinementsPattern.class));
+		addTGGPositiveInvocation(factory.create(TrgRefinementsPattern.class));
 	}
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return PatternSuffixes.SRC_TRANSLATION_NACS;
+		return PatternSuffixes.TRG_TRANSLATION_NACS;
 	}
 
 	@Override
 	protected DomainType getInputDomainType() {
-		return DomainType.SRC;
+		return DomainType.TRG;
 	}
 
 }

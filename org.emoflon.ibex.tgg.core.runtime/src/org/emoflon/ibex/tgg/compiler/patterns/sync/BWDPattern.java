@@ -33,18 +33,22 @@ public class BWDPattern extends RulePartPattern {
 	}
 	
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(BWDForRefinementInvocationsContextPattern.class));
+		// Rule Patterns
+		addTGGPositiveInvocation(factory.create(BWDRefinementPattern.class));
+		
+		// Translation Patterns
 		addTGGPositiveInvocation(factory.create(TrgTranslationAndFilterACsPattern.class));
 		
-		collectGeneratedNACs();
+		// NACs
+		addTGGNegativeInvocations(collectGeneratedNACs());
 		addTGGNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
 	}
 	
-	protected void collectGeneratedNACs() {
+	protected Collection<IbexPattern> collectGeneratedNACs() {
 		Collection<IbexPattern> nacs = factory.createPatternsForMultiplicityConstraints();
 		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
 		
-		addTGGNegativeInvocations(nacs.stream().filter(n -> {
+		return nacs.stream().filter(n -> {
 			Optional<TGGRuleElement> e = ((NacPattern)n).getSignatureElements().stream().findAny();
 			DomainType domain = DomainType.TRG;
 			if (e.isPresent()) {
@@ -52,7 +56,7 @@ public class BWDPattern extends RulePartPattern {
 			}
 			
 			return domain.equals(DomainType.SRC);
-		}).collect(Collectors.toList()));
+		}).collect(Collectors.toList());
 	}
 
 	@Override
