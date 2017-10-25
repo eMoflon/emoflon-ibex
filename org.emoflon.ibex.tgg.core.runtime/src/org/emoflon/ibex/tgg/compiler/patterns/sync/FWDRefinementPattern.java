@@ -18,6 +18,8 @@ public class FWDRefinementPattern extends FWDPattern {
 		addTGGPositiveInvocation(factory.create(SrcPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
+		
+		createMarkedInvocations(true);
 
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(FWDRefinementPattern.class));

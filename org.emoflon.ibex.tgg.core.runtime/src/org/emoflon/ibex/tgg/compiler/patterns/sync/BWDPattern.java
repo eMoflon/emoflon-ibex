@@ -40,7 +40,7 @@ public class BWDPattern extends RulePartPattern {
 		addTGGPositiveInvocation(factory.create(BWDRefinementPattern.class));
 
 		// Marked Patterns
-		createMarkedInvocations();
+		createMarkedInvocations(false);
 
 		// FilterNACs
 		if(PatternFactory.strategy != FilterACStrategy.NONE)
@@ -66,17 +66,17 @@ public class BWDPattern extends RulePartPattern {
 		}).collect(Collectors.toList());
 	}
 
-	protected void createMarkedInvocations() {
+	protected void createMarkedInvocations(boolean positive) {
 		for (TGGRuleElement el : getSignatureElements()) {
 			TGGRuleNode node = (TGGRuleNode) el;
-			if (node.getDomainType().equals(DomainType.TRG)) {
-				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, node.getBindingType().equals(BindingType.CONTEXT));
+			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && node.getDomainType().equals(DomainType.TRG)) {
+				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findFirst().get();
 
 				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
 				mapping.put(node, invokedObject);
 
-				if (node.getBindingType().equals(BindingType.CONTEXT))
+				if (positive)
 					addCustomPositiveInvocation(markedPattern, mapping);
 				else
 					addCustomNegativeInvocation(markedPattern, mapping);

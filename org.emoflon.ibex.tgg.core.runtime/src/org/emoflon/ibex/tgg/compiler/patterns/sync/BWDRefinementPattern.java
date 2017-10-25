@@ -19,6 +19,8 @@ public class BWDRefinementPattern extends BWDPattern {
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));
 
+		createMarkedInvocations(true);
+		
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(BWDRefinementPattern.class));
 	}
