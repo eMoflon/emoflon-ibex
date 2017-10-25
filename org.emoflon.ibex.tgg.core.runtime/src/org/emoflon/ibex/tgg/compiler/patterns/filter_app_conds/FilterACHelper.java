@@ -28,16 +28,16 @@ public class FilterACHelper {
 	/*
 	 * These edge counting rules only work in the context of dec because we filter those rules where our entry point is not set to context
 	 */
-	protected static boolean isEdgeInTGG(TGG tgg, EReference eType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
+	public static boolean isEdgeInTGG(TGG tgg, EReference eType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
 		return tgg.getRules().stream().filter(r -> FilterACHelper.countEdgeInRule(r, eType, eDirection, findRescuePattern, mode).getLeft() > 0).count() != 0;
 	}
 
-	protected static Triple<Integer, TGGRuleNode, TGGRuleNode> countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
+	public static Triple<Integer, TGGRuleNode, TGGRuleNode> countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
 		return rule.getNodes().stream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection, findRescuePattern, mode)).max((t1, t2) -> Integer.compare(t1.getLeft(),  t2.getLeft())).orElseGet(() -> new Triple<Integer, TGGRuleNode, TGGRuleNode>(0, null, null));
 	}
 
 	// TODO[Fritsche] can be merged into the upper method
-	protected static Triple<Integer, TGGRuleNode, TGGRuleNode> countEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
+	public static Triple<Integer, TGGRuleNode, TGGRuleNode> countEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
 		return eDirection == EdgeDirection.INCOMING ? countIncomingEdgeInRule(rule, edgeType, findRescuePattern, mode) : countOutgoingEdgeInRule(rule, edgeType, findRescuePattern, mode);
 	}
 
@@ -74,7 +74,7 @@ public class FilterACHelper {
 	/**
 	 * this method returns the type of the currently viewed object which is implicit
 	 */
-	protected static EClass getType(EReference eType, EdgeDirection eDirection) {
+	public static EClass getType(EReference eType, EdgeDirection eDirection) {
 		return eDirection == EdgeDirection.INCOMING ? (EClass) eType.getEType() : (EClass) eType.eContainer();
 	}
 
@@ -148,7 +148,7 @@ public class FilterACHelper {
 		return node.getName().contains(DEC_NODE);
 	}
 
-	protected static Collection<EReference> extractEReferences(EClass nodeClass) {
+	public static Collection<EReference> extractEReferences(EClass nodeClass) {
 		EPackage pkg = (EPackage) nodeClass.eContainer();
 		return pkg.getEClassifiers().stream().filter(c -> (c instanceof EClass)).flatMap(c -> ((EClass) c).getEReferences().stream())
 				.filter(r -> r.getEType().equals(nodeClass) || r.eContainer().equals(nodeClass)).collect(Collectors.toList());
