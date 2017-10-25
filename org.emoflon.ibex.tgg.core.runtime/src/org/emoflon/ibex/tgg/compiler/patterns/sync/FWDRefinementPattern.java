@@ -3,22 +3,26 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 
 import language.TGGRule;
 
-public class FWDForRefinementInvocationsContextPattern extends FWDPattern {
+public class FWDRefinementPattern extends FWDPattern {
 
-	public FWDForRefinementInvocationsContextPattern(PatternFactory factory) {
+	public FWDRefinementPattern(PatternFactory factory) {
 		super(factory);		
 	}
 	
 	protected void createPatternNetwork() {
+		addTGGPositiveInvocation(factory.create(SrcPattern.class));
 		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
+		
+		createMarkedInvocations(true);
 
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(FWDForRefinementInvocationsContextPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(superRule).create(FWDRefinementPattern.class));
 	}
 
 	@Override
