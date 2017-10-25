@@ -80,7 +80,7 @@ public abstract class OperationalStrategy {
 
 	protected IbexOptions options;
 
-	private PatternMatchingEngine engine;
+	protected PatternMatchingEngine engine;
 	private boolean domainsHaveNoSharedTypes;
 
 	public OperationalStrategy(String projectPath, String workspacePath, boolean debug) {
@@ -264,37 +264,37 @@ public abstract class OperationalStrategy {
 		return match;
 	}
 
-	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {
+	public HashMap<String, EObject> processOperationalRuleMatch(String ruleName, IMatch match) {
 		if (match.patternName().endsWith(PatternSuffixes.CONSISTENCY))
-			return false;
+			return null;
 
 		if (match.patternName().endsWith(PatternSuffixes.FWD) && !markingSrc())
-			return false;
+			return null;
 
 		if (match.patternName().endsWith(PatternSuffixes.BWD) && !markingTrg())
-			return false;
+			return null;
 
 		if (match.patternName().endsWith(PatternSuffixes.FWD) && ruleInfos.getGreenSrcNodes(ruleName).isEmpty()
 															  && ruleInfos.getGreenSrcEdges(ruleName).isEmpty())
-			return false;
+			return null;
 
 		if (match.patternName().endsWith(PatternSuffixes.BWD) && ruleInfos.getGreenTrgNodes(ruleName).isEmpty()
 															  && ruleInfos.getGreenTrgEdges(ruleName).isEmpty())
-			return false;
+			return null;
 
 		if (someElementsAlreadyProcessed(ruleName, match))
-			return false;
+			return null;
 
 		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(
 				ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
 		if (!cspContainer.solve())
-			return false;
+			return null;
 
 		if (!conformTypesOfGreenNodes(match, ruleName))
-			return false;
+			return null;
 
 		if (!allContextElementsalreadyProcessed(match, ruleName))
-			return false;
+			return null;
 
 		/*
 		 * this hash map complements the match to a comatch of an original
@@ -329,7 +329,7 @@ public abstract class OperationalStrategy {
 		if (options.debug())
 			logger.debug("Successfully applied: " + match.patternName());
 
-		return true;
+		return comatch;
 	}
 
 	protected void prepareProtocol(String ruleName, IMatch match, HashMap<String, EObject> createdElements) {
@@ -354,6 +354,7 @@ public abstract class OperationalStrategy {
 		});
 
 		setIsRuleApplicationFinal(ra);
+		createdElements.put(ConsistencyPattern.getProtocolNodeName(), ra);
 	}
 
 	protected void setIsRuleApplicationFinal(TGGRuleApplication ra) {

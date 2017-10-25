@@ -221,14 +221,6 @@
         name="bounded"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures
-        xsi:type="ecore:EAttribute"
-        name="ruleApplicationLowerBound"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EAttribute"
-        name="ruleApplicationUpperBound"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures
         xsi:type="ecore:EReference"
         name="kernel"
         eType="#//TGGRule"/>

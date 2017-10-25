@@ -29,7 +29,6 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 		
 		if (isComplementRule()) 
 			addTGGPositiveInvocation(factory.getFactory(((TGGComplementRule) rule).getKernel()).create(ConsistencyPattern.class));
-		
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(GENForRefinementInvocationsPattern.class));
 	
@@ -70,8 +69,6 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 	private void embedKernelConsistencyPatternNodes() {
 
 		Collection<TGGRuleNode> kernelNodes = ((TGGComplementRule) rule).getKernel().getNodes();
-
-		getBodyNodes().add(ConsistencyPattern.createProtocolNode(((TGGComplementRule) rule).getKernel()));
 		
 		for (TGGRuleElement kernelNode : kernelNodes) {
 			if(kernelNodeIsNotInComplement(kernelNode) && kernelNode instanceof TGGRuleNode)
@@ -88,11 +85,10 @@ public class GENForRefinementInvocationsPattern extends GENPattern {
 		TGGRuleNode node = LanguageFactory.eINSTANCE.createTGGRuleNode();
 		node.setName(kernelNode.getName());
 		node.setType(kernelNode.getType());
+
 		return node;
 	}
 
-	private boolean isComplementRule() {
-		return rule instanceof TGGComplementRule;
-	}
+
 
 }

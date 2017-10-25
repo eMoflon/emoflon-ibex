@@ -12,8 +12,6 @@ package language;
  * </p>
  * <ul>
  *   <li>{@link language.TGGComplementRule#isBounded <em>Bounded</em>}</li>
- *   <li>{@link language.TGGComplementRule#getRuleApplicationLowerBound <em>Rule Application Lower Bound</em>}</li>
- *   <li>{@link language.TGGComplementRule#getRuleApplicationUpperBound <em>Rule Application Upper Bound</em>}</li>
  *   <li>{@link language.TGGComplementRule#getKernel <em>Kernel</em>}</li>
  * </ul>
  *
@@ -47,58 +45,6 @@ public interface TGGComplementRule extends TGGRule {
 	 * @generated
 	 */
 	void setBounded(boolean value);
-
-	/**
-	 * Returns the value of the '<em><b>Rule Application Lower Bound</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Rule Application Lower Bound</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Rule Application Lower Bound</em>' attribute.
-	 * @see #setRuleApplicationLowerBound(int)
-	 * @see language.LanguagePackage#getTGGComplementRule_RuleApplicationLowerBound()
-	 * @model
-	 * @generated
-	 */
-	int getRuleApplicationLowerBound();
-
-	/**
-	 * Sets the value of the '{@link language.TGGComplementRule#getRuleApplicationLowerBound <em>Rule Application Lower Bound</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Rule Application Lower Bound</em>' attribute.
-	 * @see #getRuleApplicationLowerBound()
-	 * @generated
-	 */
-	void setRuleApplicationLowerBound(int value);
-
-	/**
-	 * Returns the value of the '<em><b>Rule Application Upper Bound</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Rule Application Upper Bound</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Rule Application Upper Bound</em>' attribute.
-	 * @see #setRuleApplicationUpperBound(int)
-	 * @see language.LanguagePackage#getTGGComplementRule_RuleApplicationUpperBound()
-	 * @model
-	 * @generated
-	 */
-	int getRuleApplicationUpperBound();
-
-	/**
-	 * Sets the value of the '{@link language.TGGComplementRule#getRuleApplicationUpperBound <em>Rule Application Upper Bound</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Rule Application Upper Bound</em>' attribute.
-	 * @see #getRuleApplicationUpperBound()
-	 * @generated
-	 */
-	void setRuleApplicationUpperBound(int value);
 
 	/**
 	 * Returns the value of the '<em><b>Kernel</b></em>' reference.

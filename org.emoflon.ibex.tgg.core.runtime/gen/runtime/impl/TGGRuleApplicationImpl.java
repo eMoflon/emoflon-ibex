@@ -46,6 +46,7 @@ import runtime.TGGRuleApplication;
  *   <li>{@link runtime.impl.TGGRuleApplicationImpl#getProtocol <em>Protocol</em>}</li>
  *   <li>{@link runtime.impl.TGGRuleApplicationImpl#isFinal <em>Final</em>}</li>
  *   <li>{@link runtime.impl.TGGRuleApplicationImpl#getNodeMappings <em>Node Mappings</em>}</li>
+ *   <li>{@link runtime.impl.TGGRuleApplicationImpl#isAmalgamated <em>Amalgamated</em>}</li>
  * </ul>
  *
  * @generated
@@ -150,6 +151,26 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 	 * @ordered
 	 */
 	protected EMap<String, EObject> nodeMappings;
+
+	/**
+	 * The default value of the '{@link #isAmalgamated() <em>Amalgamated</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAmalgamated()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean AMALGAMATED_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isAmalgamated() <em>Amalgamated</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAmalgamated()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean amalgamated = AMALGAMATED_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -342,6 +363,28 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isAmalgamated() {
+		return amalgamated;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAmalgamated(boolean newAmalgamated) {
+		boolean oldAmalgamated = amalgamated;
+		amalgamated = newAmalgamated;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, RuntimePackage.TGG_RULE_APPLICATION__AMALGAMATED,
+					oldAmalgamated, amalgamated));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -412,6 +455,8 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 				return getNodeMappings();
 			else
 				return getNodeMappings().map();
+		case RuntimePackage.TGG_RULE_APPLICATION__AMALGAMATED:
+			return isAmalgamated();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -457,6 +502,9 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 		case RuntimePackage.TGG_RULE_APPLICATION__NODE_MAPPINGS:
 			((EStructuralFeature.Setting) getNodeMappings()).set(newValue);
 			return;
+		case RuntimePackage.TGG_RULE_APPLICATION__AMALGAMATED:
+			setAmalgamated((Boolean) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -496,6 +544,9 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 		case RuntimePackage.TGG_RULE_APPLICATION__NODE_MAPPINGS:
 			getNodeMappings().clear();
 			return;
+		case RuntimePackage.TGG_RULE_APPLICATION__AMALGAMATED:
+			setAmalgamated(AMALGAMATED_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -526,6 +577,8 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 			return final_ != FINAL_EDEFAULT;
 		case RuntimePackage.TGG_RULE_APPLICATION__NODE_MAPPINGS:
 			return nodeMappings != null && !nodeMappings.isEmpty();
+		case RuntimePackage.TGG_RULE_APPLICATION__AMALGAMATED:
+			return amalgamated != AMALGAMATED_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -545,6 +598,8 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 		result.append(name);
 		result.append(", final: ");
 		result.append(final_);
+		result.append(", amalgamated: ");
+		result.append(amalgamated);
 		result.append(')');
 		return result.toString();
 	}

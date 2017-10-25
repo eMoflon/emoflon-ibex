@@ -22,8 +22,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * </p>
  * <ul>
  *   <li>{@link language.impl.TGGComplementRuleImpl#isBounded <em>Bounded</em>}</li>
- *   <li>{@link language.impl.TGGComplementRuleImpl#getRuleApplicationLowerBound <em>Rule Application Lower Bound</em>}</li>
- *   <li>{@link language.impl.TGGComplementRuleImpl#getRuleApplicationUpperBound <em>Rule Application Upper Bound</em>}</li>
  *   <li>{@link language.impl.TGGComplementRuleImpl#getKernel <em>Kernel</em>}</li>
  * </ul>
  *
@@ -49,46 +47,6 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	 * @ordered
 	 */
 	protected boolean bounded = BOUNDED_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #getRuleApplicationLowerBound() <em>Rule Application Lower Bound</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getRuleApplicationLowerBound()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int RULE_APPLICATION_LOWER_BOUND_EDEFAULT = 0;
-
-	/**
-	 * The cached value of the '{@link #getRuleApplicationLowerBound() <em>Rule Application Lower Bound</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getRuleApplicationLowerBound()
-	 * @generated
-	 * @ordered
-	 */
-	protected int ruleApplicationLowerBound = RULE_APPLICATION_LOWER_BOUND_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #getRuleApplicationUpperBound() <em>Rule Application Upper Bound</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getRuleApplicationUpperBound()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int RULE_APPLICATION_UPPER_BOUND_EDEFAULT = 0;
-
-	/**
-	 * The cached value of the '{@link #getRuleApplicationUpperBound() <em>Rule Application Upper Bound</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getRuleApplicationUpperBound()
-	 * @generated
-	 * @ordered
-	 */
-	protected int ruleApplicationUpperBound = RULE_APPLICATION_UPPER_BOUND_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getKernel() <em>Kernel</em>}' reference.
@@ -146,52 +104,6 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public int getRuleApplicationLowerBound() {
-		return ruleApplicationLowerBound;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setRuleApplicationLowerBound(int newRuleApplicationLowerBound) {
-		int oldRuleApplicationLowerBound = ruleApplicationLowerBound;
-		ruleApplicationLowerBound = newRuleApplicationLowerBound;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND, oldRuleApplicationLowerBound,
-					ruleApplicationLowerBound));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public int getRuleApplicationUpperBound() {
-		return ruleApplicationUpperBound;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setRuleApplicationUpperBound(int newRuleApplicationUpperBound) {
-		int oldRuleApplicationUpperBound = ruleApplicationUpperBound;
-		ruleApplicationUpperBound = newRuleApplicationUpperBound;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND, oldRuleApplicationUpperBound,
-					ruleApplicationUpperBound));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public TGGRule getKernel() {
 		if (kernel != null && kernel.eIsProxy()) {
 			InternalEObject oldKernel = (InternalEObject) kernel;
@@ -237,10 +149,6 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 		switch (featureID) {
 		case LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED:
 			return isBounded();
-		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND:
-			return getRuleApplicationLowerBound();
-		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND:
-			return getRuleApplicationUpperBound();
 		case LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL:
 			if (resolve)
 				return getKernel();
@@ -260,12 +168,6 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 		case LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED:
 			setBounded((Boolean) newValue);
 			return;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND:
-			setRuleApplicationLowerBound((Integer) newValue);
-			return;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND:
-			setRuleApplicationUpperBound((Integer) newValue);
-			return;
 		case LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL:
 			setKernel((TGGRule) newValue);
 			return;
@@ -284,12 +186,6 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 		case LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED:
 			setBounded(BOUNDED_EDEFAULT);
 			return;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND:
-			setRuleApplicationLowerBound(RULE_APPLICATION_LOWER_BOUND_EDEFAULT);
-			return;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND:
-			setRuleApplicationUpperBound(RULE_APPLICATION_UPPER_BOUND_EDEFAULT);
-			return;
 		case LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL:
 			setKernel((TGGRule) null);
 			return;
@@ -307,10 +203,6 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 		switch (featureID) {
 		case LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED:
 			return bounded != BOUNDED_EDEFAULT;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND:
-			return ruleApplicationLowerBound != RULE_APPLICATION_LOWER_BOUND_EDEFAULT;
-		case LanguagePackage.TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND:
-			return ruleApplicationUpperBound != RULE_APPLICATION_UPPER_BOUND_EDEFAULT;
 		case LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL:
 			return kernel != null;
 		}
@@ -330,10 +222,6 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (bounded: ");
 		result.append(bounded);
-		result.append(", ruleApplicationLowerBound: ");
-		result.append(ruleApplicationLowerBound);
-		result.append(", ruleApplicationUpperBound: ");
-		result.append(ruleApplicationUpperBound);
 		result.append(')');
 		return result.toString();
 	}

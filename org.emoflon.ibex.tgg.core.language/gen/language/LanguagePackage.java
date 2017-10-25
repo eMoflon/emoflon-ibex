@@ -743,6 +743,14 @@ public interface LanguagePackage extends EPackage {
 	int TGG_COMPLEMENT_RULE__ABSTRACT = TGG_RULE__ABSTRACT;
 
 	/**
+	 * The feature id for the '<em><b>Kernel</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+
+	/**
 	 * The feature id for the '<em><b>Additional Context</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -760,31 +768,13 @@ public interface LanguagePackage extends EPackage {
 	int TGG_COMPLEMENT_RULE__BOUNDED = TGG_RULE_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Rule Application Lower Bound</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND = TGG_RULE_FEATURE_COUNT + 1;
-
-	/**
-	 * The feature id for the '<em><b>Rule Application Upper Bound</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND = TGG_RULE_FEATURE_COUNT + 2;
-
-	/**
 	 * The feature id for the '<em><b>Kernel</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_COMPLEMENT_RULE__KERNEL = TGG_RULE_FEATURE_COUNT + 3;
+	int TGG_COMPLEMENT_RULE__KERNEL = TGG_RULE_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of structural features of the '<em>TGG Complement Rule</em>' class.
@@ -793,7 +783,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_COMPLEMENT_RULE_FEATURE_COUNT = TGG_RULE_FEATURE_COUNT + 4;
+	int TGG_COMPLEMENT_RULE_FEATURE_COUNT = TGG_RULE_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>TGG Complement Rule</em>' class.
@@ -802,6 +792,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
+
 	int TGG_COMPLEMENT_RULE_OPERATION_COUNT = TGG_RULE_OPERATION_COUNT + 0;
 
 	/**
@@ -1213,28 +1204,6 @@ public interface LanguagePackage extends EPackage {
 	EAttribute getTGGComplementRule_Bounded();
 
 	/**
-	 * Returns the meta object for the attribute '{@link language.TGGComplementRule#getRuleApplicationLowerBound <em>Rule Application Lower Bound</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Rule Application Lower Bound</em>'.
-	 * @see language.TGGComplementRule#getRuleApplicationLowerBound()
-	 * @see #getTGGComplementRule()
-	 * @generated
-	 */
-	EAttribute getTGGComplementRule_RuleApplicationLowerBound();
-
-	/**
-	 * Returns the meta object for the attribute '{@link language.TGGComplementRule#getRuleApplicationUpperBound <em>Rule Application Upper Bound</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Rule Application Upper Bound</em>'.
-	 * @see language.TGGComplementRule#getRuleApplicationUpperBound()
-	 * @see #getTGGComplementRule()
-	 * @generated
-	 */
-	EAttribute getTGGComplementRule_RuleApplicationUpperBound();
-
-	/**
 	 * Returns the meta object for the reference '{@link language.TGGComplementRule#getKernel <em>Kernel</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1592,24 +1561,6 @@ public interface LanguagePackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute TGG_COMPLEMENT_RULE__BOUNDED = eINSTANCE.getTGGComplementRule_Bounded();
-
-		/**
-		 * The meta object literal for the '<em><b>Rule Application Lower Bound</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND = eINSTANCE
-				.getTGGComplementRule_RuleApplicationLowerBound();
-
-		/**
-		 * The meta object literal for the '<em><b>Rule Application Upper Bound</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND = eINSTANCE
-				.getTGGComplementRule_RuleApplicationUpperBound();
 
 		/**
 		 * The meta object literal for the '<em><b>Kernel</b></em>' reference feature.

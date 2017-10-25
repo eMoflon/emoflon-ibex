@@ -7,9 +7,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.util.EmptyMatch;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
@@ -20,6 +22,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
+import runtime.TGGRuleApplication;
 
 /**
  * Different than other OperationalStrategy subtypes, MODELGEN
@@ -34,7 +37,6 @@ import language.csp.TGGAttributeConstraintLibrary;
 public abstract class MODELGEN extends OperationalStrategy {
 
 	protected MODELGENStopCriterion stopCriterion;
-	private Set<String> complementRulesNames;
 		
 	public MODELGEN(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
@@ -76,47 +78,54 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 */
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
+		
 		if(stopCriterion.dont() || operationalMatchContainer.isEmpty())
 			return false;
+
+		IMatch match = chooseOneMatch();
+		String ruleName = operationalMatchContainer.getRuleName(match);
 		
-		complementRulesNames = getComplementRulesNames();
-		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
-		
-		if (! complementRuleMatches.isEmpty()) {
-			processAllComplementRulesMatches(complementRuleMatches);
-		}
+		if (stopCriterion.dont(ruleName))
+			removeOperationalRuleMatch(match);
 		else {
-			IMatch match = chooseOneMatch();
-			String ruleName = operationalMatchContainer.getRuleName(match);
-			if(stopCriterion.dont(ruleName))
-				removeOperationalRuleMatch(match);
-			else if (processOperationalRuleMatch(ruleName, match))
+			HashMap<String, EObject> comatch = processOperationalRuleMatch(ruleName, match);
+			if (comatch != null) {
 				updateStopCriterion(ruleName);
+				if (isKernelMatch(ruleName)) 
+					processComplementRuleMatches(comatch);
+			}
 		}
 		return true;
 	}
 
-	private void processAllComplementRulesMatches(Set<IMatch> complementRuleMatches) {
-		Set<String> uniqueRulesNames = complementRuleMatches.stream()
-											.map(m -> PatternSuffixes.removeSuffix(m.patternName()))
-											.distinct()
-											.collect(Collectors.toSet());
-		HashMap<String, Integer> complementRulesBounds = updatePolicy.getNumberOfApplications(uniqueRulesNames);
+
+	private void processComplementRuleMatches(HashMap<String, EObject> comatch) {
+		engine.updateMatches();
+		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		
-		checkComplianceWithSchema(complementRulesBounds);
-		
-		while (! complementRuleMatches.isEmpty()) {
-				IMatch match = complementRuleMatches.iterator().next();
-				processComplementRuleMatch(match, complementRulesBounds);
-				complementRuleMatches.remove(match);
-				removeOperationalRuleMatch(match);
-			}
+		if (! complementRuleMatches.isEmpty()) {
+			Set<String> uniqueRulesNames = complementRuleMatches.stream()
+												.map(m -> PatternSuffixes.removeSuffix(m.patternName()))
+												.distinct()
+												.collect(Collectors.toSet());
+			HashMap<String, Integer> complementRulesBounds = updatePolicy.getNumberOfApplications(uniqueRulesNames);
+			
+			checkComplianceWithSchema(complementRulesBounds);
+			
+			while (! complementRuleMatches.isEmpty()) {
+					IMatch match = complementRuleMatches.iterator().next();
+					processComplementRuleMatch(match, complementRulesBounds);
+					complementRuleMatches.remove(match);
+					removeOperationalRuleMatch(match);
+				}
+		}
+		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
+		application.setAmalgamated(true);
 	}
 
 	private void processComplementRuleMatch(IMatch match, HashMap<String, Integer> complementRulesBounds) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		System.out.println("Nasao match " + ruleName);
-		TGGComplementRule rule = getConcreteComplementRule(ruleName);
+		TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
 
 		if(rule.isBounded()) {
 			processOperationalRuleMatch(ruleName, match);
@@ -127,19 +136,20 @@ public abstract class MODELGEN extends OperationalStrategy {
 		}
 	}
 
+	// TODO: Extract logic into few smaller methods!
 	private void checkComplianceWithSchema(HashMap<String, Integer> complementRulesBounds) {
 		HashMap<EReference, Integer> egdesToBeCreated = new HashMap<EReference, Integer>();
 		
 		complementRulesBounds.keySet().stream()
         	.forEach( name -> {
-        		if(getConcreteComplementRule(name).isBounded()) {
+        		if(((TGGComplementRule) getRule(name)).isBounded()) {
         			int number = (int) findAllComplementRuleMatches().stream()
         					.filter(m -> m.patternName().contains(name)).count();
-            		getRelevantEdges(getConcreteComplementRule(name)).stream()
+            		getRelevantEdges(((TGGComplementRule) getRule(name))).stream()
             		.forEach( e -> {egdesToBeCreated.put(e.getType(), number);});
         		}
         		else {
-        		getRelevantEdges(getConcreteComplementRule(name)).stream()
+        		getRelevantEdges(((TGGComplementRule) getRule(name))).stream()
         		.forEach( e -> {
         			if(! egdesToBeCreated.containsKey(e.getType())) {
         				egdesToBeCreated.put(e.getType(), complementRulesBounds.get(name));
@@ -154,8 +164,6 @@ public abstract class MODELGEN extends OperationalStrategy {
 					.filter(e -> e.getUpperBound() != -1 && egdesToBeCreated.get(e) > e.getUpperBound())
 					.findAny()
 					.ifPresent(e -> {throw new IllegalArgumentException("Cardinalities for " + e.getName() + " are violated");});
-		
-
 	}
 	
 	private Set<TGGRuleEdge> getRelevantEdges(TGGRule rule) {
@@ -166,17 +174,29 @@ public abstract class MODELGEN extends OperationalStrategy {
 		
         return relevantEdges;
 	}
-
+	
 	private Set<IMatch> findAllComplementRuleMatches() {
-		Set<IMatch> complementRuleMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> complementRulesNames.contains(PatternSuffixes.removeSuffix(m.patternName())))
+		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
+				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.patternName())))
 				.collect(Collectors.toSet());
-		return complementRuleMatches;
+
+		return allComplementRuleMatches;
+	}
+
+	private TGGRule getRule(String ruleName) {
+		TGGRule rule = getTGG().getRules().stream()
+				.filter(r -> r.getName().equals(ruleName)).findFirst().get();
+		return rule;
 	}
 	
-	private TGGComplementRule getConcreteComplementRule(String ruleName) {
-		return (TGGComplementRule) getTGG().getRules().stream()
-				.filter(r -> r.getName().equals(ruleName) && r instanceof TGGComplementRule).findFirst().get();
+	private boolean isKernelMatch(String kernelName) {
+		Set<String> kernelRulesNames = getTGG().getRules().stream()
+				.filter(r -> r instanceof TGGComplementRule)
+				.map(n -> ((TGGComplementRule) n).getKernel().getName())
+				.distinct()
+				.collect(Collectors.toSet());
+
+		return kernelRulesNames.contains(kernelName);
 	}
 
 	private void updateStopCriterion(String ruleName) {

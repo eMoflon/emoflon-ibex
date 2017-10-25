@@ -550,26 +550,8 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getTGGComplementRule_RuleApplicationLowerBound() {
-		return (EAttribute) tggComplementRuleEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getTGGComplementRule_RuleApplicationUpperBound() {
-		return (EAttribute) tggComplementRuleEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getTGGComplementRule_Kernel() {
-		return (EReference) tggComplementRuleEClass.getEStructuralFeatures().get(3);
+		return (EReference) tggComplementRuleEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -662,8 +644,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 
 		tggComplementRuleEClass = createEClass(TGG_COMPLEMENT_RULE);
 		createEAttribute(tggComplementRuleEClass, TGG_COMPLEMENT_RULE__BOUNDED);
-		createEAttribute(tggComplementRuleEClass, TGG_COMPLEMENT_RULE__RULE_APPLICATION_LOWER_BOUND);
-		createEAttribute(tggComplementRuleEClass, TGG_COMPLEMENT_RULE__RULE_APPLICATION_UPPER_BOUND);
 		createEReference(tggComplementRuleEClass, TGG_COMPLEMENT_RULE__KERNEL);
 
 		// Create enums
@@ -828,12 +808,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		initEAttribute(getTGGComplementRule_Bounded(), ecorePackage.getEBoolean(), "bounded", null, 0, 1,
 				TGGComplementRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGComplementRule_RuleApplicationLowerBound(), ecorePackage.getEInt(),
-				"ruleApplicationLowerBound", null, 0, 1, TGGComplementRule.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGComplementRule_RuleApplicationUpperBound(), ecorePackage.getEInt(),
-				"ruleApplicationUpperBound", null, 0, 1, TGGComplementRule.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTGGComplementRule_Kernel(), this.getTGGRule(), null, "kernel", null, 0, 1,
 				TGGComplementRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
