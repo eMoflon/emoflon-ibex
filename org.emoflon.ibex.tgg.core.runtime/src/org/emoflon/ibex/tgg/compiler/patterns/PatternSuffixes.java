@@ -148,6 +148,8 @@ public class PatternSuffixes {
 	 * @return Name without suffix
 	 */
 	public static String removeSuffix(String name) {
+		if(name.indexOf(SEP) == -1)
+			return name;
 		return name.substring(0, name.indexOf(SEP));
 	}
 
