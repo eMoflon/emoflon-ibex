@@ -87,7 +87,7 @@ public class EditorTGGtoInternalTGG {
 	private static final Logger logger = Logger.getLogger(EditorTGGtoInternalTGG.class);
 	public static final String INTERNAL_TGG_MODEL = EditorTGGtoInternalTGG.class.getName();
 
-	public TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG, TripleGraphGrammarFile flattenedXtextTGG) {
+	private TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG, TripleGraphGrammarFile flattenedXtextTGG) {
 		EPackage corrPackage = createCorrModel(xtextTGG);
 		TGG tgg = createTGG(xtextTGG);
 		TGG flattenedTgg = createTGG(flattenedXtextTGG);
