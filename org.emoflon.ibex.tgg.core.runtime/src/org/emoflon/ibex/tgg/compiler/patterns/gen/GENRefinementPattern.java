@@ -14,6 +14,12 @@ import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import language.basic.expressions.ExpressionsFactory;
+import language.basic.expressions.TGGLiteralExpression;
+import language.inplaceAttributes.InplaceAttributesFactory;
+import language.inplaceAttributes.TGGAttributeConstraintOperators;
+import language.inplaceAttributes.TGGInplaceAttributeExpression;
+import runtime.RuntimePackage;
 
 public class GENRefinementPattern extends GENPattern {
 
@@ -70,6 +76,8 @@ public class GENRefinementPattern extends GENPattern {
 	private void embedKernelConsistencyPatternNodes() {
 		Collection<TGGRuleNode> kernelNodes = ((TGGComplementRule) rule).getKernel().getNodes();
 			
+		this.getBodyNodes().add(createProtocolNode());
+		
 		for (TGGRuleElement kernelNode : kernelNodes) {
 			if(kernelNodeIsNotInComplement(kernelNode) && kernelNode instanceof TGGRuleNode)
 				this.getBodyNodes().add(createProxyNode((TGGRuleNode) kernelNode));
@@ -86,6 +94,22 @@ public class GENRefinementPattern extends GENPattern {
 		node.setName(kernelNode.getName());
 		node.setType(kernelNode.getType());
 
+		return node;
+	}
+	
+	private TGGRuleNode createProtocolNode() {
+		TGGRuleNode node = ConsistencyPattern.createProtocolNode(((TGGComplementRule) rule).getKernel());
+		
+		TGGInplaceAttributeExpression tae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
+		tae.setAttribute(RuntimePackage.Literals.TGG_RULE_APPLICATION__AMALGAMATED);
+		tae.setOperator(TGGAttributeConstraintOperators.EQUAL);
+		
+		TGGLiteralExpression le = ExpressionsFactory.eINSTANCE.createTGGLiteralExpression();
+		le.setValue("false");
+		
+		tae.setValueExpr(le);
+		node.getAttrExpr().add(tae);
+		
 		return node;
 	}
 }
