@@ -615,12 +615,21 @@ public abstract class OperationalStrategy {
 		return options.tgg();
 	}
 	
-	public Set<String> getComplementRulesNames(){
+	protected Set<String> getComplementRulesNames(){
 		Set<String> complementRulesNames = getTGG().getRules().stream()
 												.filter(r -> r instanceof TGGComplementRule)
 												.map(n -> n.getName())
 												.collect(Collectors.toSet());
 		return complementRulesNames;
+	}
+	
+	protected Set<String> getKernelRulesNames() {
+		Set<String> kernelRulesNames = getTGG().getRules().stream()
+				.filter(r -> r instanceof TGGComplementRule)
+				.map(n -> ((TGGComplementRule) n).getKernel().getName())
+				.distinct()
+				.collect(Collectors.toSet());
+		return kernelRulesNames;
 	}
 	
 	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {

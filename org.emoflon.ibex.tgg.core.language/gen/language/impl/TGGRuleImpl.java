@@ -6,7 +6,6 @@ import java.util.Collection;
 
 import language.LanguagePackage;
 import language.NAC;
-import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;

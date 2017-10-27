@@ -104,13 +104,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		
 		if (! complementRuleMatches.isEmpty()) {
-			Set<String> uniqueRulesNames = complementRuleMatches.stream()
-												.map(m -> PatternSuffixes.removeSuffix(m.patternName()))
-												.distinct()
-												.collect(Collectors.toSet());
-			HashMap<String, Integer> complementRulesBounds = updatePolicy.getNumberOfApplications(uniqueRulesNames);
-			
-			checkComplianceWithSchema(complementRulesBounds);
+			HashMap<String, Integer> complementRulesBounds = callUpdatePolicy(complementRuleMatches);
 			
 			while (! complementRuleMatches.isEmpty()) {
 					IMatch match = complementRuleMatches.iterator().next();
@@ -119,8 +113,21 @@ public abstract class MODELGEN extends OperationalStrategy {
 					removeOperationalRuleMatch(match);
 				}
 		}
+		//close the kernel, so other complement rules cannot find this match anymore
 		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
 		application.setAmalgamated(true);
+	}
+
+	private HashMap<String, Integer> callUpdatePolicy(Set<IMatch> complementRuleMatches) {
+		Set<String> uniqueRulesNames = complementRuleMatches.stream()
+				.map(m -> PatternSuffixes.removeSuffix(m.patternName()))
+				.distinct()
+				.collect(Collectors.toSet());
+		HashMap<String, Integer> complementRulesBounds = updatePolicy.getNumberOfApplications(uniqueRulesNames);
+		
+		checkComplianceWithSchema(complementRulesBounds);
+		
+		return complementRulesBounds;
 	}
 
 	private void processComplementRuleMatch(IMatch match, HashMap<String, Integer> complementRulesBounds) {
@@ -134,45 +141,6 @@ public abstract class MODELGEN extends OperationalStrategy {
 			IntStream.range(0, complementRulesBounds.get(ruleName))
 					.forEach(i -> processOperationalRuleMatch(ruleName, match));
 		}
-	}
-
-	// TODO: Extract logic into few smaller methods!
-	private void checkComplianceWithSchema(HashMap<String, Integer> complementRulesBounds) {
-		HashMap<EReference, Integer> egdesToBeCreated = new HashMap<EReference, Integer>();
-		
-		complementRulesBounds.keySet().stream()
-        	.forEach( name -> {
-        		if(((TGGComplementRule) getRule(name)).isBounded()) {
-        			int number = (int) findAllComplementRuleMatches().stream()
-        					.filter(m -> m.patternName().contains(name)).count();
-            		getRelevantEdges(((TGGComplementRule) getRule(name))).stream()
-            		.forEach( e -> {egdesToBeCreated.put(e.getType(), number);});
-        		}
-        		else {
-        		getRelevantEdges(((TGGComplementRule) getRule(name))).stream()
-        		.forEach( e -> {
-        			if(! egdesToBeCreated.containsKey(e.getType())) {
-        				egdesToBeCreated.put(e.getType(), complementRulesBounds.get(name));
-        			}
-        			else {
-        				egdesToBeCreated.put(e.getType(), egdesToBeCreated.get(e.getType()) + complementRulesBounds.get(name));
-        			}
-        		});
-        		}});
-		
-		egdesToBeCreated.keySet().stream()
-					.filter(e -> e.getUpperBound() != -1 && egdesToBeCreated.get(e) > e.getUpperBound())
-					.findAny()
-					.ifPresent(e -> {throw new IllegalArgumentException("Cardinalities for " + e.getName() + " are violated");});
-	}
-	
-	private Set<TGGRuleEdge> getRelevantEdges(TGGRule rule) {
-		Set<TGGRuleEdge> relevantEdges = rule.getEdges().stream()
-				   .filter(e -> e.getBindingType() == BindingType.CREATE
-						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
-				   .collect(Collectors.toSet());
-		
-        return relevantEdges;
 	}
 	
 	private Set<IMatch> findAllComplementRuleMatches() {
@@ -190,13 +158,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 	
 	private boolean isKernelMatch(String kernelName) {
-		Set<String> kernelRulesNames = getTGG().getRules().stream()
-				.filter(r -> r instanceof TGGComplementRule)
-				.map(n -> ((TGGComplementRule) n).getKernel().getName())
-				.distinct()
-				.collect(Collectors.toSet());
-
-		return kernelRulesNames.contains(kernelName);
+		return getKernelRulesNames().contains(kernelName);
 	}
 
 	private void updateStopCriterion(String ruleName) {
@@ -242,6 +204,48 @@ public abstract class MODELGEN extends OperationalStrategy {
 	@Override
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
 		return library.getSorted_MODELGEN();
+	}
+	
+
+	private void checkComplianceWithSchema(HashMap<String, Integer> complementRulesBounds) {
+		HashMap<EReference, Integer> edgesToBeCreated = new HashMap<EReference, Integer>();
+		
+		complementRulesBounds.keySet().stream()
+        	.forEach( name -> {
+        		if(((TGGComplementRule) getRule(name)).isBounded()) {
+        			processBoundedRuleLimits(name, edgesToBeCreated);
+        		}
+        		else {
+        		getRelevantEdges(((TGGComplementRule) getRule(name))).stream()
+        		.forEach( e -> {
+        			if(! edgesToBeCreated.containsKey(e.getType())) {
+        				edgesToBeCreated.put(e.getType(), complementRulesBounds.get(name));
+        			}
+        			else {
+        				edgesToBeCreated.put(e.getType(), edgesToBeCreated.get(e.getType()) + complementRulesBounds.get(name));
+        			}
+        		});
+        		}});
+		edgesToBeCreated.keySet().stream()
+					.filter(e -> e.getUpperBound() != -1 && edgesToBeCreated.get(e) > e.getUpperBound())
+					.findAny()
+					.ifPresent(e -> {throw new IllegalArgumentException("Cardinalities for " + e.getName() + " are violated");});
+	}
+	
+	private void processBoundedRuleLimits(String name, HashMap<EReference, Integer> edgesToBeCreated) {
+		//find all matches for bounded rule collected by operational match container
+		int number = (int) findAllComplementRuleMatches().stream()
+				.filter(m -> m.patternName().contains(name)).count();
+		getRelevantEdges(((TGGComplementRule) getRule(name))).stream()
+		.forEach( e -> {edgesToBeCreated.put(e.getType(), number);});
+	}
+
+	private Set<TGGRuleEdge> getRelevantEdges(TGGRule rule) {
+		Set<TGGRuleEdge> relevantEdges = rule.getEdges().stream()
+				   .filter(e -> e.getBindingType() == BindingType.CREATE
+						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
+				   .collect(Collectors.toSet());
+        return relevantEdges;
 	}
 	
 }
