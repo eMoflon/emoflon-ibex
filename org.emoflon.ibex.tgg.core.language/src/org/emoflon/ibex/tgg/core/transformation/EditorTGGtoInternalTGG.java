@@ -53,6 +53,7 @@ import language.DomainType;
 import language.LanguageFactory;
 import language.NAC;
 import language.TGG;
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -185,21 +186,35 @@ public class EditorTGGtoInternalTGG {
 
 	private void translateXTextComplementRulesToTGGComplementRules(TripleGraphGrammarFile xtextTGG, TGG tgg) {
         for (ComplementRule xtextCompRule : xtextTGG.getComplementRules()) {
-			TGGRule tggRule = tggFactory.createTGGRule();
-			tggRule.setName(xtextCompRule.getName());
+			TGGComplementRule tggComplementRule = tggFactory.createTGGComplementRule();
+			tggComplementRule.setName(xtextCompRule.getName());
 			TGGRule kernel = (TGGRule) xtextToTGG.get(xtextCompRule.getKernel());
-			tggRule.setKernel(kernel);
-			tgg.getRules().add(tggRule);
-			map(xtextCompRule, tggRule);
+			tggComplementRule.setKernel(kernel);
+			tgg.getRules().add(tggComplementRule);
+			map(xtextCompRule, tggComplementRule);
 
-			tggRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getSourcePatterns(), DomainType.SRC));
-			tggRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getTargetPatterns(), DomainType.TRG));
-			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextCompRule.getCorrespondencePatterns()));
+			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getSourcePatterns(), DomainType.SRC));
+			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getTargetPatterns(), DomainType.TRG));
+			tggComplementRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextCompRule.getCorrespondencePatterns()));
 
-			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule.getNodes()));
+			tggComplementRule.getEdges().addAll(createTGGRuleEdges(tggComplementRule.getNodes()));
 
-			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
+			tggComplementRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
+		
+			tggComplementRule.setBounded(hasAdditionalContext(tggComplementRule));	
+        }
+	}
+
+	private boolean hasAdditionalContext(TGGComplementRule tggComplementRule) {
+		Collection<TGGRuleNode> contextComplementRuleNodes = tggComplementRule.getNodes().stream()
+				.filter(n -> n.getBindingType().equals(BindingType.CONTEXT))
+				.collect(Collectors.toSet());
+		Collection<TGGRuleNode> kernelNodes = tggComplementRule.getKernel().getNodes();
+		for (TGGRuleNode node : contextComplementRuleNodes) {
+			if(kernelNodes.stream().noneMatch(cn -> cn.getName().equals(node.getName())))
+				return true;
 		}
+		return false;
 	}
 
 	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {

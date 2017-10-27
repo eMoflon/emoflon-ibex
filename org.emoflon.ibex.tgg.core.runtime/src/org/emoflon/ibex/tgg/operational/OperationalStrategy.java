@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -31,12 +33,13 @@ import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
 import org.emoflon.ibex.tgg.operational.util.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
-import org.emoflon.ibex.tgg.operational.util.UpdatePolicy;
+import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
 import language.TGG;
+import language.TGGComplementRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -65,7 +68,7 @@ public abstract class OperationalStrategy {
 
 	protected RuleInfos ruleInfos;
 	protected MatchContainer operationalMatchContainer;
-	protected UpdatePolicy updatePolicy;
+	protected IUpdatePolicy updatePolicy;
 
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
 
@@ -77,14 +80,14 @@ public abstract class OperationalStrategy {
 
 	protected IbexOptions options;
 
-	private PatternMatchingEngine engine;
+	protected PatternMatchingEngine engine;
 	private boolean domainsHaveNoSharedTypes;
 
 	public OperationalStrategy(String projectPath, String workspacePath, boolean debug) {
 		this(projectPath, workspacePath, debug, new RandomMatchUpdatePolicy());
 	}
 
-	public OperationalStrategy(String projectPath, String workspacePath, boolean debug, UpdatePolicy policy) {
+	public OperationalStrategy(String projectPath, String workspacePath, boolean debug, IUpdatePolicy policy) {
 		base = URI.createPlatformResourceURI("/", true);
 		this.workspacePath = workspacePath;
 		this.projectPath = projectPath;
@@ -261,37 +264,37 @@ public abstract class OperationalStrategy {
 		return match;
 	}
 
-	public boolean processOperationalRuleMatch(String ruleName, IMatch match) {
+	public HashMap<String, EObject> processOperationalRuleMatch(String ruleName, IMatch match) {
 		if (match.patternName().endsWith(PatternSuffixes.CONSISTENCY))
-			return false;
+			return null;
 
 		if (match.patternName().endsWith(PatternSuffixes.FWD) && !markingSrc())
-			return false;
+			return null;
 
 		if (match.patternName().endsWith(PatternSuffixes.BWD) && !markingTrg())
-			return false;
+			return null;
 
 		if (match.patternName().endsWith(PatternSuffixes.FWD) && ruleInfos.getGreenSrcNodes(ruleName).isEmpty()
 															  && ruleInfos.getGreenSrcEdges(ruleName).isEmpty())
-			return false;
+			return null;
 
 		if (match.patternName().endsWith(PatternSuffixes.BWD) && ruleInfos.getGreenTrgNodes(ruleName).isEmpty()
 															  && ruleInfos.getGreenTrgEdges(ruleName).isEmpty())
-			return false;
+			return null;
 
 		if (someElementsAlreadyProcessed(ruleName, match))
-			return false;
+			return null;
 
 		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(
 				ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
 		if (!cspContainer.solve())
-			return false;
+			return null;
 
 		if (!conformTypesOfGreenNodes(match, ruleName))
-			return false;
+			return null;
 
 		if (!allContextElementsalreadyProcessed(match, ruleName))
-			return false;
+			return null;
 
 		/*
 		 * this hash map complements the match to a comatch of an original
@@ -326,7 +329,7 @@ public abstract class OperationalStrategy {
 		if (options.debug())
 			logger.debug("Successfully applied: " + match.patternName());
 
-		return true;
+		return comatch;
 	}
 
 	protected void prepareProtocol(String ruleName, IMatch match, HashMap<String, EObject> createdElements) {
@@ -351,6 +354,7 @@ public abstract class OperationalStrategy {
 		});
 
 		setIsRuleApplicationFinal(ra);
+		createdElements.put(ConsistencyPattern.getProtocolNodeName(), ra);
 	}
 
 	protected void setIsRuleApplicationFinal(TGGRuleApplication ra) {
@@ -611,7 +615,24 @@ public abstract class OperationalStrategy {
 		return options.tgg();
 	}
 	
-	public void setUpdatePolicy(UpdatePolicy updatePolicy) {
+	protected Set<String> getComplementRulesNames(){
+		Set<String> complementRulesNames = getTGG().getRules().stream()
+												.filter(r -> r instanceof TGGComplementRule)
+												.map(n -> n.getName())
+												.collect(Collectors.toSet());
+		return complementRulesNames;
+	}
+	
+	protected Set<String> getKernelRulesNames() {
+		Set<String> kernelRulesNames = getTGG().getRules().stream()
+				.filter(r -> r instanceof TGGComplementRule)
+				.map(n -> ((TGGComplementRule) n).getKernel().getName())
+				.distinct()
+				.collect(Collectors.toSet());
+		return kernelRulesNames;
+	}
+	
+	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
 		if (updatePolicy == null)
 			throw new NullPointerException("UpdatePolicy must not be set to null.");
 		else

@@ -27,6 +27,7 @@ public class MODELGENStopCriterion {
 	private HashMap<String, Integer> currentRuleCount = new HashMap<>();
 	
 	private HashSet<String> abstractRules = new HashSet<>();
+	
 
 	public MODELGENStopCriterion(TGG tgg) {
 		this.tgg = tgg;
@@ -97,4 +98,9 @@ public class MODELGENStopCriterion {
 		else
 			currentRuleCount.put(ruleName, 1);
 	}
+	
 }
+
+
+
+

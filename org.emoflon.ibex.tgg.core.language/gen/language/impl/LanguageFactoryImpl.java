@@ -69,6 +69,8 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 			return createTGGRuleEdge();
 		case LanguagePackage.NAC:
 			return createNAC();
+		case LanguagePackage.TGG_COMPLEMENT_RULE:
+			return createTGGComplementRule();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -166,6 +168,16 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	public NAC createNAC() {
 		NACImpl nac = new NACImpl();
 		return nac;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public TGGComplementRule createTGGComplementRule() {
+		TGGComplementRuleImpl tggComplementRule = new TGGComplementRuleImpl();
+		return tggComplementRule;
 	}
 
 	/**

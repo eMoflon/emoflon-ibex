@@ -228,6 +228,15 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getTGGRuleApplication_Amalgamated() {
+		return (EAttribute) tggRuleApplicationEClass.getEStructuralFeatures().get(9);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getNodeMapping() {
 		return nodeMappingEClass;
 	}
@@ -310,6 +319,7 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 		createEReference(tggRuleApplicationEClass, TGG_RULE_APPLICATION__PROTOCOL);
 		createEAttribute(tggRuleApplicationEClass, TGG_RULE_APPLICATION__FINAL);
 		createEReference(tggRuleApplicationEClass, TGG_RULE_APPLICATION__NODE_MAPPINGS);
+		createEAttribute(tggRuleApplicationEClass, TGG_RULE_APPLICATION__AMALGAMATED);
 
 		nodeMappingEClass = createEClass(NODE_MAPPING);
 		createEAttribute(nodeMappingEClass, NODE_MAPPING__KEY);
@@ -385,6 +395,9 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 		initEReference(getTGGRuleApplication_NodeMappings(), this.getNodeMapping(), null, "nodeMappings", null, 0, -1,
 				TGGRuleApplication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGRuleApplication_Amalgamated(), ecorePackage.getEBoolean(), "amalgamated", "false", 0, 1,
+				TGGRuleApplication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(nodeMappingEClass, Map.Entry.class, "NodeMapping", !IS_ABSTRACT, !IS_INTERFACE,
 				!IS_GENERATED_INSTANCE_CLASS);
