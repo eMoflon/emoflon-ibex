@@ -2,9 +2,7 @@ package org.emoflon.ibex.tgg.operational.csp.constraints.factories;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.function.Supplier;
 
-import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.constraints.Add;
 import org.emoflon.ibex.tgg.operational.csp.constraints.AddPrefix;
 import org.emoflon.ibex.tgg.operational.csp.constraints.AddSuffix;
@@ -19,8 +17,6 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.SmallerOrEqual;
 import org.emoflon.ibex.tgg.operational.csp.constraints.StringToDouble;
 import org.emoflon.ibex.tgg.operational.csp.constraints.StringToInt;
 import org.emoflon.ibex.tgg.operational.csp.constraints.Sub;
-
-import language.csp.definition.TGGAttributeConstraintDefinition;
 
 public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
 

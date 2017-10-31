@@ -7,8 +7,6 @@ import java.util.function.Supplier;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
 
-import com.sun.xml.internal.bind.v2.model.runtime.RuntimeAttributePropertyInfo;
-
 import language.csp.definition.TGGAttributeConstraintDefinition;
 
 public abstract class RuntimeTGGAttrConstraintFactory {

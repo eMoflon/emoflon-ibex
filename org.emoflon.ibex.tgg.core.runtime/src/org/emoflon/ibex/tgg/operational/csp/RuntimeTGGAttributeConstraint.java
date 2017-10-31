@@ -9,7 +9,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.operational.csp.helper.LoremIpsum;
 
 import language.basic.expressions.TGGAttributeExpression;
-import language.basic.expressions.TGGParamValue;
 import language.csp.TGGAttributeConstraint;
 import language.csp.definition.TGGAttributeConstraintAdornment;
 
