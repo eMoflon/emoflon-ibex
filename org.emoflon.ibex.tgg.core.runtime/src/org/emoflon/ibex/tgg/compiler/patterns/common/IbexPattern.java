@@ -7,13 +7,10 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.emf.ecore.EAttribute;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 
 import language.TGGRule;
@@ -24,23 +21,6 @@ import language.TGGRuleNode;
 
 public abstract class IbexPattern {
 
-	public final static String getVarName(TGGRuleNode node, EAttribute attr) {
-		return "__" + node.getName() + "__" + attr.getName() + "__";
-	}
-	
-	public final static Optional<Pair<String, String>> getNodeAndAttrFromVarName(String varName){
-		String[] node_attr = varName.split("__");
-		
-		if(node_attr.length != 3)
-			return Optional.empty();
-		
-		return Optional.of(Pair.of(node_attr[1], node_attr[2]));
-	}
-	
-	public final static boolean isAttrNode(String nodeName) {
-		return nodeName.split("__").length == 3;
-	}
-	
 	protected TGGRule rule;
 	
 	protected IbexPatternOptimiser optimiser = new IbexPatternOptimiser();
@@ -133,7 +113,7 @@ public abstract class IbexPattern {
 		return result;
 	}
 
-	private Collection<TGGRuleNode> calculateBodyNodes(Collection<TGGRuleNode> signatureElements) {
+	protected Collection<TGGRuleNode> calculateBodyNodes(Collection<TGGRuleNode> signatureElements) {
 		ArrayList<TGGRuleNode> result = new ArrayList<>();
 		signatureElements.stream().filter(e -> isRelevantForBody(e)).forEach(e -> result.add((TGGRuleNode) e));
 		return result;
@@ -251,4 +231,7 @@ public abstract class IbexPattern {
 		return rule;
 	}
 
+	public final static boolean isAttrNode(String nodeName) {
+		return nodeName.split("__").length == 3;
+	}
 }

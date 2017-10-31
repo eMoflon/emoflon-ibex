@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link runtime.TGGRuleApplication#getProtocol <em>Protocol</em>}</li>
  *   <li>{@link runtime.TGGRuleApplication#isFinal <em>Final</em>}</li>
  *   <li>{@link runtime.TGGRuleApplication#getNodeMappings <em>Node Mappings</em>}</li>
+ *   <li>{@link runtime.TGGRuleApplication#isAmalgamated <em>Amalgamated</em>}</li>
  * </ul>
  *
  * @see runtime.RuntimePackage#getTGGRuleApplication()
@@ -210,6 +211,33 @@ public interface TGGRuleApplication extends EObject {
 	 * @generated
 	 */
 	EMap<String, EObject> getNodeMappings();
+
+	/**
+	 * Returns the value of the '<em><b>Amalgamated</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Amalgamated</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Amalgamated</em>' attribute.
+	 * @see #setAmalgamated(boolean)
+	 * @see runtime.RuntimePackage#getTGGRuleApplication_Amalgamated()
+	 * @model default="false"
+	 * @generated
+	 */
+	boolean isAmalgamated();
+
+	/**
+	 * Sets the value of the '{@link runtime.TGGRuleApplication#isAmalgamated <em>Amalgamated</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Amalgamated</em>' attribute.
+	 * @see #isAmalgamated()
+	 * @generated
+	 */
+	void setAmalgamated(boolean value);
 	// <-- [user code injected with eMoflon]
 
 	// [user code injected with eMoflon] -->

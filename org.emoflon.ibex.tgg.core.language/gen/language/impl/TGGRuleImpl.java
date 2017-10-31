@@ -37,7 +37,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * </p>
  * <ul>
  *   <li>{@link language.impl.TGGRuleImpl#getRefines <em>Refines</em>}</li>
- *   <li>{@link language.impl.TGGRuleImpl#getKernel <em>Kernel</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getNacs <em>Nacs</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getEdges <em>Edges</em>}</li>
@@ -57,16 +56,6 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * @ordered
 	 */
 	protected EList<TGGRule> refines;
-
-	/**
-	 * The cached value of the '{@link #getKernel() <em>Kernel</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getKernel()
-	 * @generated
-	 * @ordered
-	 */
-	protected TGGRule kernel;
 
 	/**
 	 * The cached value of the '{@link #getNacs() <em>Nacs</em>}' containment reference list.
@@ -157,45 +146,6 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 			refines = new EObjectResolvingEList<TGGRule>(TGGRule.class, this, LanguagePackage.TGG_RULE__REFINES);
 		}
 		return refines;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public TGGRule getKernel() {
-		if (kernel != null && kernel.eIsProxy()) {
-			InternalEObject oldKernel = (InternalEObject) kernel;
-			kernel = (TGGRule) eResolveProxy(oldKernel);
-			if (kernel != oldKernel) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE__KERNEL,
-							oldKernel, kernel));
-			}
-		}
-		return kernel;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public TGGRule basicGetKernel() {
-		return kernel;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setKernel(TGGRule newKernel) {
-		TGGRule oldKernel = kernel;
-		kernel = newKernel;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__KERNEL, oldKernel, kernel));
 	}
 
 	/**
@@ -338,10 +288,6 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		switch (featureID) {
 		case LanguagePackage.TGG_RULE__REFINES:
 			return getRefines();
-		case LanguagePackage.TGG_RULE__KERNEL:
-			if (resolve)
-				return getKernel();
-			return basicGetKernel();
 		case LanguagePackage.TGG_RULE__NACS:
 			return getNacs();
 		case LanguagePackage.TGG_RULE__NODES:
@@ -368,9 +314,6 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		case LanguagePackage.TGG_RULE__REFINES:
 			getRefines().clear();
 			getRefines().addAll((Collection<? extends TGGRule>) newValue);
-			return;
-		case LanguagePackage.TGG_RULE__KERNEL:
-			setKernel((TGGRule) newValue);
 			return;
 		case LanguagePackage.TGG_RULE__NACS:
 			getNacs().clear();
@@ -405,9 +348,6 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		case LanguagePackage.TGG_RULE__REFINES:
 			getRefines().clear();
 			return;
-		case LanguagePackage.TGG_RULE__KERNEL:
-			setKernel((TGGRule) null);
-			return;
 		case LanguagePackage.TGG_RULE__NACS:
 			getNacs().clear();
 			return;
@@ -437,8 +377,6 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		switch (featureID) {
 		case LanguagePackage.TGG_RULE__REFINES:
 			return refines != null && !refines.isEmpty();
-		case LanguagePackage.TGG_RULE__KERNEL:
-			return kernel != null;
 		case LanguagePackage.TGG_RULE__NACS:
 			return nacs != null && !nacs.isEmpty();
 		case LanguagePackage.TGG_RULE__NODES:

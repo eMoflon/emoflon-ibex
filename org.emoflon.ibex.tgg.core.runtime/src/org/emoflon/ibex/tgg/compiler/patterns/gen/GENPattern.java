@@ -8,6 +8,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 
 import language.BindingType;
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -26,12 +27,12 @@ public class GENPattern extends RulePartPattern {
 		super(rule);
 		this.factory = factory;
 		signatureElements = getSignatureElements(getRule());
-		
+
 		createPatternNetwork();
 	}
 
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(GENForRefinementInvocationsPattern.class));
+		addTGGPositiveInvocation(factory.create(GENRefinementPattern.class));
 		
 		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints());
 		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints());
@@ -69,5 +70,9 @@ public class GENPattern extends RulePartPattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
 	}
-
+	
+	protected boolean isComplementRule() {
+		return rule instanceof TGGComplementRule;
+	}
+	
 }

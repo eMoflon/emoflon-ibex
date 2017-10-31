@@ -276,7 +276,6 @@ public class PatternFactory {
 	
 	private Collection<TGGRuleElement> getSignatureElementsFromNAC(NAC nac) {
 		ArrayList<TGGRuleElement> sigElements = new ArrayList<>();
-		sigElements.addAll(nac.getEdges());
 		sigElements.addAll(nac.getNodes());
 		sigElements.removeAll(getBodyElementsFromNAC(nac));
 		return sigElements;
@@ -285,11 +284,8 @@ public class PatternFactory {
 	private Collection<TGGRuleElement> getBodyElementsFromNAC(NAC nac) {
 		ArrayList<TGGRuleElement> bodyElements = new ArrayList<>();
 		bodyElements.addAll(nac.getEdges());
-		bodyElements.removeIf(e -> rule.getEdges().stream().anyMatch(re -> re.getName().equals(e.getName())));
-		
 		bodyElements.addAll(nac.getNodes());
 		bodyElements.removeIf(n -> rule.getNodes().stream().anyMatch(rn -> rn.getName().equals(n.getName())));
-		
 		return bodyElements;
 	}
 

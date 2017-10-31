@@ -70,43 +70,6 @@ public class PatternSuffixes {
 	public static final String GEN = SEP + "GEN";
 	
 	/**
-	 * Forbid this pattern to ensure that all source elements created by the original
-	 * rule have not yet been translated (marked)
-	 */
-	public static final String SRC_TRANSLATION_NACS = SEP + "TRANSLATION_NACS_SRC";
-	
-	/**
-	 * Same meaning as SRC_PROTOCOL_NACS but this pattern is generated with a minor amount of signature elements.
-	 * The intention is to be able to call SRC_PROTOCOL_NACS without generating to many local variables in the calling pattern
-	 */
-	public static final String LOCAL_SRC_TRANSLATION_NACS = SEP + "LOCAL_TRANSLATION_NACS_SRC";
-	
-	/**
-	 * Forbid this pattern to ensure that all target elements created by the original
-	 * rule have not yet been translated (marked)
-	 */
-	public static final String TRG_TRANSLATION_NACS = SEP + "TRANSLATION_NACS_TRG";
-	
-	/**
-	 * Same meaning as TRG_PROTOCOL_NACS but this pattern is generated with a minor amount of signature elements.
-	 * The intention is to be able to call TRG_PROTOCOL_NACS without generating to many local variables in the calling pattern
-	 */
-	public static final String LOCAL_TRG_TRANSLATION_NACS = SEP + "LOCAL_TRANSLATION_NACS_TRG";
-	
-	
-	/**
-	 * Used to check that all source context elements of the original rule are
-	 * marked and that DEC is not violated.
-	 */
-	public static final String TRANSLATION_FILTER_AC_SRC = SEP + "TRANSLATION_FILTER_AC_SRC";
-
-	/**
-	 * Used to check that all target context elements of the original rule are
-	 * marked and that DEC is not violated.
-	 */
-	public static final String TRANSLATION_FILTER_AC_TRG = SEP + "TRANSLATION_FILTER_AC_TRG";
-	
-	/**
 	 * These patterns are used to enforce DEC in a domain
 	 */
 	public static String NO_FILTER_ACs(DomainType domain) {
@@ -185,7 +148,10 @@ public class PatternSuffixes {
 	 * @return Name without suffix
 	 */
 	public static String removeSuffix(String name) {
+		if(name.indexOf(SEP) == -1)
+			return name;
 		return name.substring(0, name.indexOf(SEP));
 	}
 
 } 
+

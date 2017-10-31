@@ -34,7 +34,8 @@ public class ConsistencyPattern extends IbexPattern {
 	private ConsistencyPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
-		addProtocolNode();
+		protocolNode = createProtocolNode(rule);
+		this.getBodyNodes().add(protocolNode);
 		
 		createPatternNetwork();
 	}
@@ -49,8 +50,8 @@ public class ConsistencyPattern extends IbexPattern {
 		}
 	}
 	
-	public void addProtocolNode() {
-		protocolNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
+	public static TGGRuleNode createProtocolNode(TGGRule rule) {
+		TGGRuleNode protocolNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
 		protocolNode.setName(getProtocolNodeName());
 		protocolNode.setType(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 		
@@ -63,7 +64,7 @@ public class ConsistencyPattern extends IbexPattern {
 		
 		tae.setValueExpr(le);
 		protocolNode.getAttrExpr().add(tae);
-		this.getBodyNodes().add(protocolNode);
+		return protocolNode;
 	}
 	
 	public void createMarkedInvocations() {

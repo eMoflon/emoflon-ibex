@@ -185,13 +185,22 @@ public interface RuntimePackage extends EPackage {
 	int TGG_RULE_APPLICATION__NODE_MAPPINGS = 8;
 
 	/**
+	 * The feature id for the '<em><b>Amalgamated</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE_APPLICATION__AMALGAMATED = 9;
+
+	/**
 	 * The number of structural features of the '<em>TGG Rule Application</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_APPLICATION_FEATURE_COUNT = 9;
+	int TGG_RULE_APPLICATION_FEATURE_COUNT = 10;
 
 	/**
 	 * The number of operations of the '<em>TGG Rule Application</em>' class.
@@ -416,6 +425,17 @@ public interface RuntimePackage extends EPackage {
 	EReference getTGGRuleApplication_NodeMappings();
 
 	/**
+	 * Returns the meta object for the attribute '{@link runtime.TGGRuleApplication#isAmalgamated <em>Amalgamated</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Amalgamated</em>'.
+	 * @see runtime.TGGRuleApplication#isAmalgamated()
+	 * @see #getTGGRuleApplication()
+	 * @generated
+	 */
+	EAttribute getTGGRuleApplication_Amalgamated();
+
+	/**
 	 * Returns the meta object for class '{@link java.util.Map.Entry <em>Node Mapping</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -592,6 +612,14 @@ public interface RuntimePackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_RULE_APPLICATION__NODE_MAPPINGS = eINSTANCE.getTGGRuleApplication_NodeMappings();
+
+		/**
+		 * The meta object literal for the '<em><b>Amalgamated</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute TGG_RULE_APPLICATION__AMALGAMATED = eINSTANCE.getTGGRuleApplication_Amalgamated();
 
 		/**
 		 * The meta object literal for the '{@link runtime.impl.NodeMappingImpl <em>Node Mapping</em>}' class.

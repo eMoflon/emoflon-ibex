@@ -76,6 +76,15 @@ public interface LanguageFactory extends EFactory {
 	NAC createNAC();
 
 	/**
+	 * Returns a new object of class '<em>TGG Complement Rule</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>TGG Complement Rule</em>'.
+	 * @generated
+	 */
+	TGGComplementRule createTGGComplementRule();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

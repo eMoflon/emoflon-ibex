@@ -34,7 +34,7 @@ public class CCPattern extends RulePartPattern {
 	}
 
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(CCForRefinementInvocationsPattern.class));
+		addTGGPositiveInvocation(factory.create(CCRefinementPattern.class));
 		
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));

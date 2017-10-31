@@ -170,22 +170,13 @@ public interface LanguagePackage extends EPackage {
 	int TGG_RULE__REFINES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Kernel</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_RULE__KERNEL = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 1;
-
-	/**
 	 * The feature id for the '<em><b>Nacs</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__NACS = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 2;
+	int TGG_RULE__NACS = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
@@ -194,7 +185,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__NODES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 3;
+	int TGG_RULE__NODES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
@@ -203,7 +194,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__EDGES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 4;
+	int TGG_RULE__EDGES = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>Attribute Condition Library</b></em>' containment reference.
@@ -212,7 +203,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 5;
+	int TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
@@ -221,7 +212,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__ABSTRACT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 6;
+	int TGG_RULE__ABSTRACT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 5;
 
 	/**
 	 * The number of structural features of the '<em>TGG Rule</em>' class.
@@ -230,7 +221,7 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_FEATURE_COUNT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 7;
+	int TGG_RULE_FEATURE_COUNT = BasicPackage.TGG_NAMED_ELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The number of operations of the '<em>TGG Rule</em>' class.
@@ -679,6 +670,132 @@ public interface LanguagePackage extends EPackage {
 	int NAC_OPERATION_COUNT = BasicPackage.TGG_NAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link language.impl.TGGComplementRuleImpl <em>TGG Complement Rule</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see language.impl.TGGComplementRuleImpl
+	 * @see language.impl.LanguagePackageImpl#getTGGComplementRule()
+	 * @generated
+	 */
+	int TGG_COMPLEMENT_RULE = 7;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE__NAME = TGG_RULE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Refines</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE__REFINES = TGG_RULE__REFINES;
+
+	/**
+	 * The feature id for the '<em><b>Nacs</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE__NACS = TGG_RULE__NACS;
+
+	/**
+	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE__NODES = TGG_RULE__NODES;
+
+	/**
+	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE__EDGES = TGG_RULE__EDGES;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Condition Library</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE__ATTRIBUTE_CONDITION_LIBRARY = TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY;
+
+	/**
+	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE__ABSTRACT = TGG_RULE__ABSTRACT;
+
+	/**
+	 * The feature id for the '<em><b>Kernel</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+
+	/**
+	 * The feature id for the '<em><b>Additional Context</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+
+	/**
+	 * The feature id for the '<em><b>Bounded</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE__BOUNDED = TGG_RULE_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Kernel</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE__KERNEL = TGG_RULE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>TGG Complement Rule</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_COMPLEMENT_RULE_FEATURE_COUNT = TGG_RULE_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of operations of the '<em>TGG Complement Rule</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+
+	int TGG_COMPLEMENT_RULE_OPERATION_COUNT = TGG_RULE_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link language.DomainType <em>Domain Type</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -686,7 +803,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getDomainType()
 	 * @generated
 	 */
-	int DOMAIN_TYPE = 7;
+	int DOMAIN_TYPE = 8;
 
 	/**
 	 * The meta object id for the '{@link language.BindingType <em>Binding Type</em>}' enum.
@@ -696,7 +813,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getBindingType()
 	 * @generated
 	 */
-	int BINDING_TYPE = 8;
+	int BINDING_TYPE = 9;
 
 	/**
 	 * Returns the meta object for class '{@link language.TGG <em>TGG</em>}'.
@@ -783,17 +900,6 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 */
 	EReference getTGGRule_Refines();
-
-	/**
-	 * Returns the meta object for the reference '{@link language.TGGRule#getKernel <em>Kernel</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Kernel</em>'.
-	 * @see language.TGGRule#getKernel()
-	 * @see #getTGGRule()
-	 * @generated
-	 */
-	EReference getTGGRule_Kernel();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link language.TGGRule#getNacs <em>Nacs</em>}'.
@@ -1077,6 +1183,38 @@ public interface LanguagePackage extends EPackage {
 	EReference getNAC_AttributeConditionLibrary();
 
 	/**
+	 * Returns the meta object for class '{@link language.TGGComplementRule <em>TGG Complement Rule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>TGG Complement Rule</em>'.
+	 * @see language.TGGComplementRule
+	 * @generated
+	 */
+	EClass getTGGComplementRule();
+
+	/**
+	 * Returns the meta object for the attribute '{@link language.TGGComplementRule#isBounded <em>Bounded</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Bounded</em>'.
+	 * @see language.TGGComplementRule#isBounded()
+	 * @see #getTGGComplementRule()
+	 * @generated
+	 */
+	EAttribute getTGGComplementRule_Bounded();
+
+	/**
+	 * Returns the meta object for the reference '{@link language.TGGComplementRule#getKernel <em>Kernel</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Kernel</em>'.
+	 * @see language.TGGComplementRule#getKernel()
+	 * @see #getTGGComplementRule()
+	 * @generated
+	 */
+	EReference getTGGComplementRule_Kernel();
+
+	/**
 	 * Returns the meta object for enum '{@link language.DomainType <em>Domain Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1187,14 +1325,6 @@ public interface LanguagePackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_RULE__REFINES = eINSTANCE.getTGGRule_Refines();
-
-		/**
-		 * The meta object literal for the '<em><b>Kernel</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_RULE__KERNEL = eINSTANCE.getTGGRule_Kernel();
 
 		/**
 		 * The meta object literal for the '<em><b>Nacs</b></em>' containment reference list feature.
@@ -1413,6 +1543,32 @@ public interface LanguagePackage extends EPackage {
 		 * @generated
 		 */
 		EReference NAC__ATTRIBUTE_CONDITION_LIBRARY = eINSTANCE.getNAC_AttributeConditionLibrary();
+
+		/**
+		 * The meta object literal for the '{@link language.impl.TGGComplementRuleImpl <em>TGG Complement Rule</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see language.impl.TGGComplementRuleImpl
+		 * @see language.impl.LanguagePackageImpl#getTGGComplementRule()
+		 * @generated
+		 */
+		EClass TGG_COMPLEMENT_RULE = eINSTANCE.getTGGComplementRule();
+
+		/**
+		 * The meta object literal for the '<em><b>Bounded</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute TGG_COMPLEMENT_RULE__BOUNDED = eINSTANCE.getTGGComplementRule_Bounded();
+
+		/**
+		 * The meta object literal for the '<em><b>Kernel</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_COMPLEMENT_RULE__KERNEL = eINSTANCE.getTGGComplementRule_Kernel();
 
 		/**
 		 * The meta object literal for the '{@link language.DomainType <em>Domain Type</em>}' enum.

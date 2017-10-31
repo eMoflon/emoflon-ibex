@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.util;
 
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -9,8 +11,8 @@ import java.util.concurrent.TimeUnit;
  * TimedUpdatePolicy will not provide any more matches, resulting
  * in an OutOfTimeException.
  */
-public class TimedUpdatePolicy implements UpdatePolicy {
-	private UpdatePolicy basePolicy;
+public class TimedUpdatePolicy implements IUpdatePolicy {
+	private IUpdatePolicy basePolicy;
 	private long startTime;
 	private long timeout;
 	
@@ -22,7 +24,7 @@ public class TimedUpdatePolicy implements UpdatePolicy {
 		}
 	}
 	
-	public TimedUpdatePolicy(UpdatePolicy basePolicy, long timeout, TimeUnit timeUnit) {
+	public TimedUpdatePolicy(IUpdatePolicy basePolicy, long timeout, TimeUnit timeUnit) {
 		this.basePolicy = basePolicy;
 		this.startTime = System.nanoTime();
 		this.timeout = timeUnit.toNanos(timeout);
@@ -39,5 +41,11 @@ public class TimedUpdatePolicy implements UpdatePolicy {
 	
 	public void reset() {
 		this.startTime = System.nanoTime();
+	}
+
+	@Override
+	public HashMap<String, Integer> getNumberOfApplications(Set<String> complementRules) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

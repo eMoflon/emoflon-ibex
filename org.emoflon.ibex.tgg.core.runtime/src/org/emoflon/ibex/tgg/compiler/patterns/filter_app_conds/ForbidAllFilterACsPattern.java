@@ -12,8 +12,8 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.SrcWithRefinementsPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TrgWithRefinementsPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.SrcRefinementsPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TrgRefinementsPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -44,11 +44,11 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 		
 		switch (domain) {
 		case SRC:
-			addTGGPositiveInvocation(factory.create(SrcWithRefinementsPattern.class));			
+			addTGGPositiveInvocation(factory.create(SrcRefinementsPattern.class));			
 			break;
 
 		case TRG:
-			addTGGPositiveInvocation(factory.create(TrgWithRefinementsPattern.class));			
+			addTGGPositiveInvocation(factory.create(TrgRefinementsPattern.class));			
 			break;
 			
 		default:
