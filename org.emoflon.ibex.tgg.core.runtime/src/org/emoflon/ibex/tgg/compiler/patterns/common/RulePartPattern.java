@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleNode;
 
@@ -70,6 +71,10 @@ public abstract class RulePartPattern extends IbexPattern {
 
 	private boolean compatibleTypes(EClass class1, EClass class2){
 		return class1 == class2 || class1.getEAllSuperTypes().contains(class2) || class2.getEAllSuperTypes().contains(class1);
+	}
+	
+	protected boolean isComplementRule() {
+		return rule instanceof TGGComplementRule;
 	}
 
 }
