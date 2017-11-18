@@ -20,15 +20,15 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class ComplementBWDPattern extends RulePartPattern {
+public class ComplementFWDPattern extends RulePartPattern {
 	protected PatternFactory factory;
 	private Collection<TGGRuleElement> signatureElements;
 
-	public ComplementBWDPattern(PatternFactory factory) {
+	public ComplementFWDPattern(PatternFactory factory) {
 		this(factory.getFlattenedVersionOfRule(), factory);
 	}
 
-	private ComplementBWDPattern(TGGRule rule, PatternFactory factory) {
+	private ComplementFWDPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
 		
@@ -38,19 +38,19 @@ public class ComplementBWDPattern extends RulePartPattern {
 	protected void createPatternNetwork() {
 		// Rule Patterns
 		if (rule instanceof TGGComplementRule)
-		addTGGPositiveInvocation(factory.getFactory(((TGGComplementRule) rule).getKernel()).create(BWDPattern.class));
+		addTGGPositiveInvocation(factory.getFactory(((TGGComplementRule) rule).getKernel()).create(FWDPattern.class));
 		
 		// Marked Patterns
-		createMarkedInvocations();
+		createMarkedInvocations(false);
 
 	}
 
-	protected void createMarkedInvocations() {
+	protected void createMarkedInvocations(boolean positive) {
 		for (TGGRuleElement e : getSignatureElements()) {
 			TGGRuleNode node = (TGGRuleNode) e;
-			if (nodeIsNotInKernel(node) && node.getDomainType().equals(DomainType.TRG)) {
+			if (nodeIsNotInKernel(node) && node.getDomainType().equals(DomainType.SRC)) {
 				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
-				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findAny().get();
+				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findFirst().get();
 
 				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
 				mapping.put(node, invokedObject);
@@ -83,13 +83,13 @@ public class ComplementBWDPattern extends RulePartPattern {
 
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_" + ((TGGComplementRule)rule).getKernel().getName() + PatternSuffixes.BWD;
+		return "_" + ((TGGComplementRule)rule).getKernel().getName() + PatternSuffixes.FWD;
 	}
 	
 	@Override
 	public boolean ignored() {
 		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
-				.noneMatch(e -> e.getDomainType() == DomainType.TRG && e.getBindingType() == BindingType.CREATE);
+				.noneMatch(e -> e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CREATE);
 	}
 	
 	@Override
@@ -117,14 +117,14 @@ public class ComplementBWDPattern extends RulePartPattern {
 	private void addKernelTargetAndContextNodes() {
 		Collection<TGGRuleNode> kernelNodes = ((TGGComplementRule) rule).getKernel().getNodes();
 		for (TGGRuleNode n : kernelNodes) {
-			if(n.getDomainType() == DomainType.TRG || n.getBindingType() == BindingType.CONTEXT)
+			if(n.getDomainType() == DomainType.SRC || n.getBindingType() == BindingType.CONTEXT)
 				getSignatureElements().add(createProxyNode(n));
 			}
 	}
 
 	private void addComplementTargetAndContextNodes() {
 		for (TGGRuleNode n : rule.getNodes()) {
-			if(nodeIsNotInKernel(n) && (n.getDomainType() == DomainType.TRG || n.getBindingType() == BindingType.CONTEXT))
+			if(nodeIsNotInKernel(n) && (n.getDomainType() == DomainType.SRC || n.getBindingType() == BindingType.CONTEXT))
 				getSignatureElements().add(createProxyNode(n));
 		}
 	}
