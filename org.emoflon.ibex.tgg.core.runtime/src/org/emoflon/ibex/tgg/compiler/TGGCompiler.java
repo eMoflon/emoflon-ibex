@@ -11,10 +11,12 @@ import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ComplementBWDPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDPattern;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
+import language.TGGComplementRule;
 import language.TGGRule;
 
 public class TGGCompiler {	
@@ -46,6 +48,8 @@ public class TGGCompiler {
 			factory.create(FWDPattern.class);
 			factory.create(BWDPattern.class);
 			factory.create(ConsistencyPattern.class);
+			if (rule instanceof TGGComplementRule)
+				factory.create(ComplementBWDPattern.class);
 
 			ruleToPatterns.put(rule.getName(), factory.getPatterns());
 		}
