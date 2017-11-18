@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.compiler.patterns.cc;
 
 import java.util.Collection;
 
-import org.eclipse.emf.ecore.util.EcoreAdapterFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
