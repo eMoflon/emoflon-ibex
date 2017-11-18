@@ -18,9 +18,9 @@ import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import language.TGGRule;
 
 public class TGGCompiler {	
-	private Map<TGGRule, Collection<IbexPattern>> ruleToPatterns;
+	private Map<String, Collection<IbexPattern>> ruleToPatterns;
 	private IbexOptions options;
-	private Map<TGGRule, PatternFactory> factories;
+	private Map<String, PatternFactory> factories;
 		
 	public TGGCompiler(IbexOptions options) {
 		this.options = options;
@@ -28,7 +28,7 @@ public class TGGCompiler {
 		ruleToPatterns = new LinkedHashMap<>();
 	}
 	
-	public Map<TGGRule, Collection<IbexPattern>> getRuleToPatternMap(){
+	public Map<String, Collection<IbexPattern>> getRuleToPatternMap(){
 		return Collections.unmodifiableMap(ruleToPatterns);
 	}
 
@@ -47,7 +47,7 @@ public class TGGCompiler {
 			factory.create(BWDPattern.class);
 			factory.create(ConsistencyPattern.class);
 
-			ruleToPatterns.put(rule, factory.getPatterns());
+			ruleToPatterns.put(rule.getName(), factory.getPatterns());
 		}
 	
 		checkForDuplicates();
@@ -69,7 +69,10 @@ public class TGGCompiler {
 	}
 
 	public PatternFactory getFactory(TGGRule rule) {
-		return factories.computeIfAbsent(rule, (k) -> new PatternFactory(k, this));
+		if(!factories.containsKey(rule.getName()))
+			factories.put(rule.getName(), new PatternFactory(rule, this));
+
+		return factories.get(rule.getName());
 	}
 
 	public TGGRule getFlattenedVersionOfRule(TGGRule rule) {

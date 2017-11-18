@@ -210,8 +210,8 @@ public class PatternFactory {
         return negativePatterns;
 	}
 		
-	public PatternFactory getFactory(TGGRule superRule) {
-		return compiler.getFactory(superRule);
+	public PatternFactory getFactory(TGGRule someRule) {
+		return compiler.getFactory(someRule);
 	}
 	
 	public TGGRule getRule() {
