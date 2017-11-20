@@ -55,10 +55,10 @@ public class ComplementBWDPattern extends RulePartPattern {
 				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
 				mapping.put(node, invokedObject);
 
-				if (node.getBindingType() == BindingType.CONTEXT)
+				if (node.getBindingType() == BindingType.CREATE)
 					addCustomNegativeInvocation(markedPattern, mapping);
 				
-				else if (node.getBindingType() == BindingType.CREATE) {
+				else if (node.getBindingType() == BindingType.CONTEXT) {
 					addCustomPositiveInvocation(markedPattern, mapping);
 				}
 					
