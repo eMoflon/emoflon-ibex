@@ -38,11 +38,10 @@ public class ComplementBWDPattern extends RulePartPattern {
 	protected void createPatternNetwork() {
 		// Rule Patterns
 		if (rule instanceof TGGComplementRule)
-		addTGGPositiveInvocation(factory.getFactory(((TGGComplementRule) rule).getKernel()).create(BWDPattern.class));
+			addTGGPositiveInvocation(factory.getFactory(((TGGComplementRule) rule).getKernel()).create(BWDPattern.class));
 		
 		// Marked Patterns
 		createMarkedInvocations();
-
 	}
 
 	protected void createMarkedInvocations() {
