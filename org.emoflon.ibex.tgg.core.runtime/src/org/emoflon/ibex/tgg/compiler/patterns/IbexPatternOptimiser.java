@@ -177,7 +177,7 @@ public class IbexPatternOptimiser {
 		List<IbexPattern> candidates = allFilterNACs
 			.stream()
 			.filter(nac -> nac.getPositiveInvocations().size() == 1)
-			.filter(nac -> premiseHasTwoNodesAndOneEdge(nac.getPositiveInvocations().iterator().next()))
+			.filter(nac -> premiseHasTwoNodesAndOneEdge(nac.getPositiveInvocations().iterator().next().getInvokedPattern()))
 			.collect(Collectors.toList());
 		
 		return candidates
@@ -203,7 +203,7 @@ public class IbexPatternOptimiser {
 	}
 
 	private IbexPattern premise(IbexPattern nac) {
-		return nac.getPositiveInvocations().iterator().next();
+		return nac.getPositiveInvocations().iterator().next().getInvokedPattern();
 	}
 
 	private boolean premiseHasTwoNodesAndOneEdge(IbexPattern premise) {
