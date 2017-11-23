@@ -166,7 +166,11 @@ public class FilterACHelper {
 	 * @return
 	 */
 	public static Collection<String> determineImports(TGGRule rule, List<IbexPattern> decPatterns) {
-		return decPatterns.stream().flatMap(p -> p.getNegativeInvocations().stream()).filter(p -> !(p instanceof SearchEdgePattern)).map(p -> p.getRule().getName().toLowerCase() + "." + p.getName())
-				.collect(Collectors.toSet());
+		return decPatterns.stream()
+					      .flatMap(p -> p.getNegativeInvocations().stream())
+					      .map(inv -> inv.getInvokedPattern())
+					      .filter(p -> !(p instanceof SearchEdgePattern))
+					      .map(p -> p.getRule().getName().toLowerCase() + "." + p.getName())
+					      .collect(Collectors.toSet());
 	}
 }

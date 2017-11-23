@@ -12,16 +12,19 @@ import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ComplementBWDPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ComplementFWDPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDPattern;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
+import language.TGGComplementRule;
 import language.TGGRule;
 
 public class TGGCompiler {	
-	private Map<TGGRule, Collection<IbexPattern>> ruleToPatterns;
+	private Map<String, Collection<IbexPattern>> ruleToPatterns;
 	private IbexOptions options;
-	private Map<TGGRule, PatternFactory> factories;
+	private Map<String, PatternFactory> factories;
 		
 	public TGGCompiler(IbexOptions options) {
 		this.options = options;
@@ -29,7 +32,7 @@ public class TGGCompiler {
 		ruleToPatterns = new LinkedHashMap<>();
 	}
 	
-	public Map<TGGRule, Collection<IbexPattern>> getRuleToPatternMap(){
+	public Map<String, Collection<IbexPattern>> getRuleToPatternMap(){
 		return Collections.unmodifiableMap(ruleToPatterns);
 	}
 
@@ -47,8 +50,11 @@ public class TGGCompiler {
 			factory.create(FWDPattern.class);
 			factory.create(BWDPattern.class);
 			factory.create(ConsistencyPattern.class);
-
-			ruleToPatterns.put(rule, factory.getPatterns());
+			if (rule instanceof TGGComplementRule) {
+				factory.create(ComplementBWDPattern.class);
+				factory.create(ComplementFWDPattern.class);
+			}
+			ruleToPatterns.put(rule.getName(), factory.getPatterns());
 		}
 	
 		checkForDuplicates();
@@ -70,7 +76,10 @@ public class TGGCompiler {
 	}
 
 	public PatternFactory getFactory(TGGRule rule) {
-		return factories.computeIfAbsent(rule, (k) -> new PatternFactory(k, this));
+		if(!factories.containsKey(rule.getName()))
+			factories.put(rule.getName(), new PatternFactory(rule, this));
+
+		return factories.get(rule.getName());
 	}
 
 	public TGGRule getFlattenedVersionOfRule(TGGRule rule) {
@@ -83,9 +92,9 @@ public class TGGCompiler {
 	//FIXME[Anjorin]: Would be better to integrate into IbexPatterns
 	public static boolean isRootPattern(IbexPattern pattern) {
 		return pattern.getName().endsWith(PatternSuffixes.GEN) ||
-			   pattern.getName().endsWith(PatternSuffixes.CC)  ||
-			   pattern.getName().endsWith(PatternSuffixes.FWD) ||
-			   pattern.getName().endsWith(PatternSuffixes.BWD) ||
-			   pattern.getName().endsWith(PatternSuffixes.CONSISTENCY);
+				pattern.getName().endsWith(PatternSuffixes.CC)  ||
+				pattern.getName().endsWith(PatternSuffixes.FWD) ||
+				pattern.getName().endsWith(PatternSuffixes.BWD) ||
+				pattern.getName().endsWith(PatternSuffixes.CONSISTENCY);
 	}
 }

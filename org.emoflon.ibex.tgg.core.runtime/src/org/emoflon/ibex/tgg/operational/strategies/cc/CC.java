@@ -96,12 +96,10 @@ public abstract class CC extends OperationalStrategy {
 		for (int v : chooseTGGRuleApplications()) {
 			IMatch match = idToMatch.get(v < 0 ? -v : v);
 			HashMap<String, EObject> comatch = matchToCoMatch.get(match);
-			if (v < 0) {
+			if (v < 0)
 				comatch.values().forEach(EcoreUtil::delete);
-			} else {
-				super.prepareProtocol(matchIdToRuleName.get(v), match, comatch);
-			}
 		}
+		
 		consistencyReporter.init(s, t, p, ruleInfos);
 	}
 
@@ -153,6 +151,8 @@ public abstract class CC extends OperationalStrategy {
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(match, comatch, ruleName));
 
 		idCounter++;
+		
+		super.prepareProtocol(ruleName, match, comatch);
 	}
 
 	private THashSet<EObject> getGreenNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
