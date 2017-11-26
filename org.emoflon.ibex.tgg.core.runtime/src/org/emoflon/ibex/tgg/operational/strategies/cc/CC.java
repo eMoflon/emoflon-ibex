@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
@@ -29,12 +32,15 @@ import gurobi.GRBException;
 import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
+import language.BindingType;
+import language.TGGComplementRule;
+import language.TGGRule;
 import language.TGGRuleNode;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 import runtime.TGGRuleApplication;
 
-public abstract class CC extends OperationalStrategy {
+public abstract class CC<E> extends OperationalStrategy {
 
 	private int nameCounter = 0;
 
@@ -53,6 +59,14 @@ public abstract class CC extends OperationalStrategy {
 	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
+	THashMap<String, TIntHashSet> sameKernelSameMatches = new THashMap<>();
+	
+	private int idContextNodes = 1;
+	THashMap<Integer, THashSet<EObject>> idToContextNodes = new THashMap<Integer, THashSet<EObject>>();
+	THashMap<Integer, TIntHashSet> diffKernelSameMatches = new THashMap<>();
+	THashMap<Integer, THashMap<Integer, THashSet<EObject>>> contextMatches = new THashMap<>();
+	//THashMap<Integer, THashSet<THashSet<EObject>>> appliedCRMatches = new THashMap<>();
+	
 	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 
 	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
@@ -88,6 +102,131 @@ public abstract class CC extends OperationalStrategy {
 	@Override
 	public boolean isPatternRelevant(String patternName) {
 		return patternName.endsWith(PatternSuffixes.CC);
+	}
+	
+	@Override
+	protected boolean processOneOperationalRuleMatch() {
+		if (operationalMatchContainer.isEmpty())
+			return false;
+
+		IMatch match = chooseOneMatch();
+		String ruleName = operationalMatchContainer.getRuleName(match);
+		
+		HashMap<String, EObject> comatch = processOperationalRuleMatch(ruleName, match);
+		if (comatch != null && isKernelMatch(ruleName)) {
+				processComplementRuleMatches(comatch, idToMatch.size() - 1);
+		}
+		removeOperationalRuleMatch(match);
+
+		return true;
+	}
+	
+	private void processComplementRuleMatches(HashMap<String, EObject> comatch, int kernelMatchID) {
+		engine.updateMatches();
+		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
+		//HashMap<Integer, THashSet<EObject>> contextMatches = new HashMap<Integer, THashSet<EObject>>();
+		
+		if (! complementRuleMatches.isEmpty())
+			contextMatches.put(kernelMatchID, new THashMap<Integer,THashSet<EObject>>());
+		
+		while (complementRuleMatches.iterator().hasNext()) {
+				IMatch match = complementRuleMatches.iterator().next();
+				String ruleName = operationalMatchContainer.getRuleName(match);
+				
+				if (processOperationalRuleMatch(ruleName, match) != null) {
+					
+					TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
+					int idMatch = idToMatch.size() - 1;
+					
+					if(rule.isBounded()) {
+						findIdenticalMatches(rule, idMatch, match, kernelMatchID);
+					}
+					//collectedCRCreatedNodes(kernelMatchID, match, rule);
+				}
+				complementRuleMatches.remove(match);
+				removeOperationalRuleMatch(match);
+		}
+		
+		//close the kernel, so other complement rules cannot find this match anymore
+		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
+		application.setAmalgamated(true);
+	}
+	
+
+	private void findIdenticalMatches(TGGRule rule, int matchID, IMatch match, int kernelMatchID) { 
+
+		THashSet<EObject> contextNodes = getContextNodes(rule, match);
+		for (Entry<Integer, THashMap<Integer, THashSet<EObject>>> entry : contextMatches.entrySet()) {
+			if(entry.getKey() == kernelMatchID) {
+				for (Entry<Integer, THashSet<EObject>> m : entry.getValue().entrySet()) {
+					if (operationalMatchContainer.getRuleName(match).equals(matchIdToRuleName.get(m.getKey()+1))) {
+						if(m.getValue().equals(contextNodes)) {
+							if (sameKernelSameMatches.get(rule.getName()) == null) {
+								sameKernelSameMatches.put(rule.getName(), new TIntHashSet());
+								sameKernelSameMatches.get(rule.getName()).add(matchID);
+								sameKernelSameMatches.get(rule.getName()).add(entry.getKey()+1);
+							}
+							else {
+							sameKernelSameMatches.get(rule.getName()).add(matchID);
+							}
+						}
+					}
+				}
+			}
+			else {
+				for (Entry<Integer, THashSet<EObject>> m : entry.getValue().entrySet()) {
+					if(m.getValue().equals(contextNodes)) {
+						int i = contextIsAlreadyInList(contextNodes);
+						if (diffKernelSameMatches.get(i) == null) {
+							diffKernelSameMatches.get(i).add(matchID);
+							diffKernelSameMatches.get(i).add(m.getKey());
+						}
+						else {
+							diffKernelSameMatches.get(i).add(m.getKey());
+						}
+					}
+				}
+			}
+		}
+		contextMatches.get(kernelMatchID).put(matchID, getContextNodes(rule, match));
+	}
+	
+	private int contextIsAlreadyInList(THashSet<EObject> contextNodes2) {
+		for (Entry<Integer, THashSet<EObject>> i : idToContextNodes.entrySet()) {
+			if(i.getValue().equals(contextNodes2)) {
+				return i.getKey();
+			}
+		}
+		idToContextNodes.put(idContextNodes, contextNodes2);
+		idContextNodes++;
+		return idContextNodes;
+	}
+
+	private THashSet<EObject> getContextNodes(TGGRule rule, IMatch match){
+		THashSet<EObject> contextNodes = new THashSet<EObject>();
+		for (String nodeName : match.parameterNames()) {
+			if (getContextNodesNames(rule).contains(nodeName)) {
+				contextNodes.add(match.get(nodeName));
+			}
+		}
+		return contextNodes;
+	}
+	
+	protected Set<String> getContextNodesNames(TGGRule rule) {
+		Set<String> contextNodesNames = rule.getNodes().stream()
+				.filter(r -> r.getBindingType() == BindingType.CONTEXT)
+				.map(n -> n.getName())
+				.collect(Collectors.toSet());
+		return contextNodesNames;
+	}
+
+	
+	private Set<IMatch> findAllComplementRuleMatches() {
+		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
+				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.patternName())))
+				.collect(Collectors.toSet());
+
+		return allComplementRuleMatches;
 	}
 
 	@Override
@@ -277,6 +416,63 @@ public abstract class CC extends OperationalStrategy {
 				e.printStackTrace();
 			}
 		}
+		
+		
+		for (String ruleName : sameKernelSameMatches.keySet()) {
+			TIntHashSet vars = sameKernelSameMatches.get(ruleName);
+		
+			GRBLinExpr expr = new GRBLinExpr();
+			vars.forEach(v -> {
+				expr.addTerm(1.0, gurobiVars.get(v));
+				return true;
+			});
+			try {
+				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
+			} catch (GRBException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		for (Integer contextID : diffKernelSameMatches.keySet()) {
+			TIntHashSet vars = diffKernelSameMatches.get(contextID);
+		
+			GRBLinExpr expr = new GRBLinExpr();
+			vars.forEach(v -> {
+				expr.addTerm(1.0, gurobiVars.get(v));
+				return true;
+			});
+			try {
+				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
+			} catch (GRBException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+	
+		/*for (Integer kernelMatch : appliedCRMatches.keySet()) {
+			TIntHashSet variables = new TIntHashSet();
+			if(appliedCRMatches.get(kernelMatch).isEmpty())
+				variables.add(kernelMatch);
+			for (THashSet<EObject> appliedCR : appliedCRMatches.get(kernelMatch)) {
+				if (appliedCR.isEmpty()) {
+					System.out.println("NON CONSISTENT KERNEL " + kernelMatch);
+					variables.add(kernelMatch);
+				}
+			}
+			GRBLinExpr expr = new GRBLinExpr();
+			variables.forEach(v -> {
+				expr.addTerm(1.0, gurobiVars.get(v));
+				return true;
+			});
+			try {
+				model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "EXCL" + nameCounter++);
+			} catch (GRBException e) {
+				e.printStackTrace();
+			}
+		
+		}*/
+		
 	}
 
 	private void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
