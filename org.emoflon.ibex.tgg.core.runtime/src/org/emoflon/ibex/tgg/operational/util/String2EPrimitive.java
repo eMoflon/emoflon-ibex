@@ -14,7 +14,7 @@ public class String2EPrimitive {
 			return Float.parseFloat(value);
 		if (type.equals(EcorePackage.Literals.ECHAR))
 			return value.length() == 0 ? null : value.charAt(0);
-		if (type.equals(EcorePackage.Literals.ESTRING))
+		if (type.equals(EcorePackage.Literals.ESTRING) || type.getInstanceClass().isAssignableFrom(String.class))
 			return value.substring(1, value.length() - 1);
 		if (type.equals(EcorePackage.Literals.EBOOLEAN))
 			return Boolean.parseBoolean(value);
