@@ -119,6 +119,8 @@ public abstract class CC<E> extends OperationalStrategy {
 	
 	private void processComplementRuleMatches(HashMap<String, EObject> comatch) {
 		engine.updateMatches();
+		
+		Set<IMatch> contextRuleMatches = findAllContextRuleMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		//has to one hashmap per kernel to get correct matches
 		THashMap<Integer, THashSet<EObject>> contextMatches = new THashMap<>();
@@ -191,7 +193,14 @@ public abstract class CC<E> extends OperationalStrategy {
 				.collect(Collectors.toSet());
 		return contextNodesNames;
 	}
+	
+	private Set<IMatch> findAllContextRuleMatches() {
+		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
+				.filter(m -> m.patternName().contains("CONTEXT"))
+				.collect(Collectors.toSet());
 
+		return allComplementRuleMatches;
+	}
 	
 	private Set<IMatch> findAllComplementRuleMatches() {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
