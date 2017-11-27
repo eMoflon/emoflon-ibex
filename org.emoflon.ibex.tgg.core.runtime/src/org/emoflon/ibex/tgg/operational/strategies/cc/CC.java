@@ -1,12 +1,16 @@
 package org.emoflon.ibex.tgg.operational.strategies.cc;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
@@ -36,6 +40,8 @@ import runtime.TGGRuleApplication;
 
 public abstract class CC extends OperationalStrategy {
 
+	private static final boolean DETERMINE_RULE_APPLICATIONS = false;
+	
 	private int nameCounter = 0;
 
 	private int idCounter = 1;
@@ -92,14 +98,25 @@ public abstract class CC extends OperationalStrategy {
 
 	@Override
 	protected void wrapUp() {
-		  for (int v : chooseTGGRuleApplications()) {
-			   IMatch match = idToMatch.get(v < 0 ? -v : v);
-			   HashMap<String, EObject> comatch = matchToCoMatch.get(match);
-			   if (v < 0)
-			    comatch.values().forEach(EcoreUtil::delete);
-		  }
-		  
-		  consistencyReporter.init(s, t, p, ruleInfos);
+		int[] corr;
+		
+		if (DETERMINE_RULE_APPLICATIONS) {
+			corr = chooseTGGRuleApplications();
+		}
+		else {
+			corr = checkExistingLinks();
+		}
+		
+		for (int v : corr) {
+			IMatch match = idToMatch.get(v < 0 ? -v : v);
+			HashMap<String, EObject> comatch = matchToCoMatch.get(match);
+			if (v < 0) {
+				comatch.values().forEach(EcoreUtil::delete);
+			} else {
+				super.prepareProtocol(matchIdToRuleName.get(v), match, comatch);
+			}
+		}
+		consistencyReporter.init(s, t, p, ruleInfos);
 	}
 
 	@Override
@@ -395,5 +412,34 @@ public abstract class CC extends OperationalStrategy {
 		}
 		return result;
 	}
-
+	
+	public int[] checkExistingLinks() {
+		TreeIterator<EObject> iter = c.getAllContents();
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		
+ 		while (iter.hasNext()) {
+			EObject o = iter.next();
+			
+			// Check nodes
+			EStructuralFeature srcFeature = o.eClass().getEStructuralFeature("source");
+			EStructuralFeature trgFeature = o.eClass().getEStructuralFeature("target");
+			
+			EObject src = (EObject) o.eGet(srcFeature);
+			EObject trg = (EObject) o.eGet(trgFeature);
+			
+			if (nodeToMarkingMatches.get(src).equals(nodeToMarkingMatches.get(trg))) {
+				for (int i : nodeToMarkingMatches.get(src)._set)
+					if (i != 0)
+						result.add(i);
+			}
+		}
+ 				
+ 		int[] result_int = new int[result.size()];
+ 		
+ 		for(int i=0; i<result.size(); i++) {
+ 			result_int[i] = result.get(i).intValue();
+ 		}
+ 		
+ 		return result_int;
+	}
 }
