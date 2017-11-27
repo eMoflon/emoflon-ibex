@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -59,13 +58,10 @@ public abstract class CC<E> extends OperationalStrategy {
 	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
-	THashMap<String, TIntHashSet> sameKernelSameMatches = new THashMap<>();
-	
-	private int idContextNodes = 1;
-	THashMap<Integer, THashSet<EObject>> idToContextNodes = new THashMap<Integer, THashSet<EObject>>();
-	THashMap<Integer, TIntHashSet> diffKernelSameMatches = new THashMap<>();
-	THashMap<Integer, THashMap<Integer, THashSet<EObject>>> contextMatches = new THashMap<>();
-	//THashMap<Integer, THashSet<THashSet<EObject>>> appliedCRMatches = new THashMap<>();
+	//has to have matchID as key
+	THashMap<Integer, TIntHashSet> sameContextSameCR = new THashMap<>();
+
+	TIntHashSet invalidMatches = new TIntHashSet();
 	
 	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 
@@ -114,20 +110,18 @@ public abstract class CC<E> extends OperationalStrategy {
 		
 		HashMap<String, EObject> comatch = processOperationalRuleMatch(ruleName, match);
 		if (comatch != null && isKernelMatch(ruleName)) {
-				processComplementRuleMatches(comatch, idToMatch.size() - 1);
+				processComplementRuleMatches(comatch);
 		}
 		removeOperationalRuleMatch(match);
 
 		return true;
 	}
 	
-	private void processComplementRuleMatches(HashMap<String, EObject> comatch, int kernelMatchID) {
+	private void processComplementRuleMatches(HashMap<String, EObject> comatch) {
 		engine.updateMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
-		//HashMap<Integer, THashSet<EObject>> contextMatches = new HashMap<Integer, THashSet<EObject>>();
-		
-		if (! complementRuleMatches.isEmpty())
-			contextMatches.put(kernelMatchID, new THashMap<Integer,THashSet<EObject>>());
+		//has to one hashmap per kernel to get correct matches
+		THashMap<Integer, THashSet<EObject>> contextMatches = new THashMap<>();
 		
 		while (complementRuleMatches.iterator().hasNext()) {
 				IMatch match = complementRuleMatches.iterator().next();
@@ -136,12 +130,12 @@ public abstract class CC<E> extends OperationalStrategy {
 				if (processOperationalRuleMatch(ruleName, match) != null) {
 					
 					TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
-					int idMatch = idToMatch.size() - 1;
+					int matchID = idToMatch.size();
 					
 					if(rule.isBounded()) {
-						findIdenticalMatches(rule, idMatch, match, kernelMatchID);
+						findIdenticalMatches(rule, match, matchID, contextMatches);
 					}
-					//collectedCRCreatedNodes(kernelMatchID, match, rule);
+			
 				}
 				complementRuleMatches.remove(match);
 				removeOperationalRuleMatch(match);
@@ -153,53 +147,31 @@ public abstract class CC<E> extends OperationalStrategy {
 	}
 	
 
-	private void findIdenticalMatches(TGGRule rule, int matchID, IMatch match, int kernelMatchID) { 
+	private void findIdenticalMatches(TGGRule rule, IMatch match, int matchID, THashMap<Integer, THashSet<EObject>> contextMatches) { 
 
-		THashSet<EObject> contextNodes = getContextNodes(rule, match);
-		for (Entry<Integer, THashMap<Integer, THashSet<EObject>>> entry : contextMatches.entrySet()) {
-			if(entry.getKey() == kernelMatchID) {
-				for (Entry<Integer, THashSet<EObject>> m : entry.getValue().entrySet()) {
-					if (operationalMatchContainer.getRuleName(match).equals(matchIdToRuleName.get(m.getKey()+1))) {
-						if(m.getValue().equals(contextNodes)) {
-							if (sameKernelSameMatches.get(rule.getName()) == null) {
-								sameKernelSameMatches.put(rule.getName(), new TIntHashSet());
-								sameKernelSameMatches.get(rule.getName()).add(matchID);
-								sameKernelSameMatches.get(rule.getName()).add(entry.getKey()+1);
-							}
-							else {
-							sameKernelSameMatches.get(rule.getName()).add(matchID);
-							}
-						}
-					}
-				}
+		THashSet<EObject> contextNodes = matchToContextNodes.get(matchID);
+		for (EObject node : contextNodes) {
+			if(!nodeToMarkingMatches.contains(node)) {
+				invalidMatches.add(matchID);
+				return;
 			}
-			else {
-				for (Entry<Integer, THashSet<EObject>> m : entry.getValue().entrySet()) {
-					if(m.getValue().equals(contextNodes)) {
-						int i = contextIsAlreadyInList(contextNodes);
-						if (diffKernelSameMatches.get(i) == null) {
-							diffKernelSameMatches.get(i).add(matchID);
-							diffKernelSameMatches.get(i).add(m.getKey());
-						}
-						else {
-							diffKernelSameMatches.get(i).add(m.getKey());
-						}
+		}
+		
+		for (Integer id : contextMatches.keySet()) {
+			if (matchIdToRuleName.get(matchID).equals(matchIdToRuleName.get(id))) {
+				if(matchToContextNodes.get(id).equals(contextNodes)) {
+					if (sameContextSameCR.get(matchID) == null) {
+						sameContextSameCR.put(matchID, new TIntHashSet());
+						sameContextSameCR.get(matchID).add(matchID);
+						sameContextSameCR.get(matchID).add(id);
+					}
+					else {
+					sameContextSameCR.get(matchID).add(id);
 					}
 				}
 			}
 		}
-		contextMatches.get(kernelMatchID).put(matchID, getContextNodes(rule, match));
-	}
-	
-	private int contextIsAlreadyInList(THashSet<EObject> contextNodes2) {
-		for (Entry<Integer, THashSet<EObject>> i : idToContextNodes.entrySet()) {
-			if(i.getValue().equals(contextNodes2)) {
-				return i.getKey();
-			}
-		}
-		idToContextNodes.put(idContextNodes, contextNodes2);
-		idContextNodes++;
-		return idContextNodes;
+		contextMatches.put(matchID, contextNodes);
 	}
 
 	private THashSet<EObject> getContextNodes(TGGRule rule, IMatch match){
@@ -418,8 +390,8 @@ public abstract class CC<E> extends OperationalStrategy {
 		}
 		
 		
-		for (String ruleName : sameKernelSameMatches.keySet()) {
-			TIntHashSet vars = sameKernelSameMatches.get(ruleName);
+		for (Integer match : sameContextSameCR.keySet()) {
+			TIntHashSet vars = sameContextSameCR.get(match);
 		
 			GRBLinExpr expr = new GRBLinExpr();
 			vars.forEach(v -> {
@@ -433,8 +405,8 @@ public abstract class CC<E> extends OperationalStrategy {
 			}
 		}
 		
-		for (Integer contextID : diffKernelSameMatches.keySet()) {
-			TIntHashSet vars = diffKernelSameMatches.get(contextID);
+		if(!invalidMatches.isEmpty()) {
+			TIntHashSet vars = invalidMatches;
 		
 			GRBLinExpr expr = new GRBLinExpr();
 			vars.forEach(v -> {
@@ -442,12 +414,13 @@ public abstract class CC<E> extends OperationalStrategy {
 				return true;
 			});
 			try {
-				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
+				model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "EXCL" + nameCounter++);
 			} catch (GRBException e) {
 				e.printStackTrace();
 			}
+			
 		}
-		
+
 		
 	
 		/*for (Integer kernelMatch : appliedCRMatches.keySet()) {
