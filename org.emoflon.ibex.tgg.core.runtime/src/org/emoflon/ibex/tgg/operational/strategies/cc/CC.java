@@ -146,9 +146,13 @@ public abstract class CC<E> extends OperationalStrategy {
 		
 		while (contextRuleMatches.iterator().hasNext()) {
 			IMatch match = contextRuleMatches.iterator().next();
-			THashSet<EObject> contextNodes = getContextNodes(match);
-			if (!matchToContextNodes.containsValue(contextNodes)){
-				invalidKernels.add(kernelMatch);
+			String ruleName = removeAllSuffixes(match.patternName());
+			TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
+			if(rule.isBounded()) {
+				THashSet<EObject> contextNodes = getContextNodes(match);
+				if (!matchToContextNodes.containsValue(contextNodes)){
+					invalidKernels.add(kernelMatch);
+				}
 			}
 			contextRuleMatches.remove(match);
 			removeOperationalRuleMatch(match);
@@ -159,6 +163,11 @@ public abstract class CC<E> extends OperationalStrategy {
 		application.setAmalgamated(true);
 	}
 	
+	private String removeAllSuffixes(String name) {
+		if(name.indexOf("_CONTEXT") == -1)
+			return name;
+		return name.substring(0, name.indexOf("_CONTEXT"));
+	}
 
 	private void findIdenticalMatches(TGGRule rule, IMatch match, int matchID, THashMap<Integer, THashSet<EObject>> contextMatches) { 
 
