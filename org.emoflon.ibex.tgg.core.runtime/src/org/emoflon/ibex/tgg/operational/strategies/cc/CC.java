@@ -61,7 +61,8 @@ public abstract class CC<E> extends OperationalStrategy {
 	//has to have matchID as key
 	THashMap<Integer, TIntHashSet> sameContextSameCR = new THashMap<>();
 
-	TIntHashSet invalidMatches = new TIntHashSet();
+	TIntObjectMap<THashSet<EObject>> invalidMatchToContextNodes = new TIntObjectHashMap<>();
+	TIntHashSet invalidKernels = new TIntHashSet();
 	
 	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 
@@ -119,7 +120,7 @@ public abstract class CC<E> extends OperationalStrategy {
 	
 	private void processComplementRuleMatches(HashMap<String, EObject> comatch) {
 		engine.updateMatches();
-		
+		int kernelMatch = idToMatch.size();
 		Set<IMatch> contextRuleMatches = findAllContextRuleMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		//has to one hashmap per kernel to get correct matches
@@ -143,6 +144,16 @@ public abstract class CC<E> extends OperationalStrategy {
 				removeOperationalRuleMatch(match);
 		}
 		
+		while (contextRuleMatches.iterator().hasNext()) {
+			IMatch match = contextRuleMatches.iterator().next();
+			THashSet<EObject> contextNodes = getContextNodes(match);
+			if (!matchToContextNodes.containsValue(contextNodes)){
+				invalidKernels.add(kernelMatch);
+			}
+			contextRuleMatches.remove(match);
+			removeOperationalRuleMatch(match);
+		}
+		
 		//close the kernel, so other complement rules cannot find this match anymore
 		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
 		application.setAmalgamated(true);
@@ -154,7 +165,7 @@ public abstract class CC<E> extends OperationalStrategy {
 		THashSet<EObject> contextNodes = matchToContextNodes.get(matchID);
 		for (EObject node : contextNodes) {
 			if(!nodeToMarkingMatches.contains(node)) {
-				invalidMatches.add(matchID);
+				invalidMatchToContextNodes.put(matchID, contextNodes);
 				return;
 			}
 		}
@@ -176,12 +187,12 @@ public abstract class CC<E> extends OperationalStrategy {
 		contextMatches.put(matchID, contextNodes);
 	}
 
-	private THashSet<EObject> getContextNodes(TGGRule rule, IMatch match){
+	private THashSet<EObject> getContextNodes(IMatch match){
 		THashSet<EObject> contextNodes = new THashSet<EObject>();
 		for (String nodeName : match.parameterNames()) {
-			if (getContextNodesNames(rule).contains(nodeName)) {
+			//if (getContextNodesNames(rule).contains(nodeName)) {
 				contextNodes.add(match.get(nodeName));
-			}
+			//}
 		}
 		return contextNodes;
 	}
@@ -414,8 +425,20 @@ public abstract class CC<E> extends OperationalStrategy {
 			}
 		}
 		
-		if(!invalidMatches.isEmpty()) {
-			TIntHashSet vars = invalidMatches;
+		for (Integer v : invalidMatchToContextNodes.keys()) {
+			GRBLinExpr expr = new GRBLinExpr();
+			expr.addTerm(1.0, gurobiVars.get(v));
+
+			try {
+				model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "EXCL" + nameCounter++);
+			} catch (GRBException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		if (!invalidKernels.isEmpty()) {
+			TIntHashSet vars = invalidKernels;
 		
 			GRBLinExpr expr = new GRBLinExpr();
 			vars.forEach(v -> {
@@ -427,34 +450,7 @@ public abstract class CC<E> extends OperationalStrategy {
 			} catch (GRBException e) {
 				e.printStackTrace();
 			}
-			
 		}
-
-		
-	
-		/*for (Integer kernelMatch : appliedCRMatches.keySet()) {
-			TIntHashSet variables = new TIntHashSet();
-			if(appliedCRMatches.get(kernelMatch).isEmpty())
-				variables.add(kernelMatch);
-			for (THashSet<EObject> appliedCR : appliedCRMatches.get(kernelMatch)) {
-				if (appliedCR.isEmpty()) {
-					System.out.println("NON CONSISTENT KERNEL " + kernelMatch);
-					variables.add(kernelMatch);
-				}
-			}
-			GRBLinExpr expr = new GRBLinExpr();
-			variables.forEach(v -> {
-				expr.addTerm(1.0, gurobiVars.get(v));
-				return true;
-			});
-			try {
-				model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "EXCL" + nameCounter++);
-			} catch (GRBException e) {
-				e.printStackTrace();
-			}
-		
-		}*/
-		
 	}
 
 	private void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
