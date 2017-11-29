@@ -1,8 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.cc;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,6 +65,9 @@ public abstract class CC<E> extends OperationalStrategy {
 
 	TIntHashSet invalidKernels = new TIntHashSet();
 	
+	HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
+	Bundle appliedBundle;
+	
 	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 
 	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
@@ -110,8 +115,9 @@ public abstract class CC<E> extends OperationalStrategy {
 		
 		HashMap<String, EObject> comatch = processOperationalRuleMatch(ruleName, match);
 		if (comatch != null && isKernelMatch(ruleName)) {
-				processComplementRuleMatches(comatch);
-		}
+					processComplementRuleMatches(comatch);
+				}
+		
 		removeOperationalRuleMatch(match);
 
 		return true;
@@ -133,7 +139,6 @@ public abstract class CC<E> extends OperationalStrategy {
 				String ruleName = operationalMatchContainer.getRuleName(match);
 				
 				if (processOperationalRuleMatch(ruleName, match) != null) {
-					
 					TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
 					int matchID = idToMatch.size();
 					
@@ -283,6 +288,15 @@ public abstract class CC<E> extends OperationalStrategy {
 
 		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(match, comatch, ruleName));
+		
+		TGGRule rule = getRule(ruleName);
+		if(! (rule instanceof TGGComplementRule)) {
+			appliedBundle = new Bundle(idCounter);
+			appliedBundles.add(appliedBundle);
+		}
+		appliedBundle.addMatch(idCounter);
+		appliedBundle.addContextNodes(getBlackNodes(match, comatch, ruleName));
+		appliedBundle.addContextEdges(getBlackEdges(match, comatch, ruleName));
 
 		idCounter++;
 		
@@ -413,6 +427,13 @@ public abstract class CC<E> extends OperationalStrategy {
 			}
 		}
 		
+		HandleDependences hd = new HandleDependences(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
+		HashMap<Integer, ArrayList<Integer>> b = hd.getBundlesDirectDependences();
+		HashMap<Integer, ArrayList<Integer>> c = hd.detectCycles();
+		HashMap<Integer, HashSet<Integer>> m = null;
+		for (int cycle : c.keySet()) {
+			 generateConstraints(hd.getBundleWithDependedRuleApplication(cycle), gurobiVars, model);
+		}
 		
 		for (Integer match : sameCRmatches.keySet()) {
 			TIntHashSet vars = sameCRmatches.get(match);
@@ -443,6 +464,29 @@ public abstract class CC<E> extends OperationalStrategy {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	//TODO: Fix this tomorrow!!
+	private void generateConstraints(HashMap<Integer, HashSet<Integer>> bundleWithDependedRuleApplication, TIntObjectHashMap<GRBVar> gurobiVars, GRBModel model) {
+		//size()-1 -> kick out last one
+		for (int i = 0; i < bundleWithDependedRuleApplication.values().size()-1; i++) {
+			for (Integer raX : bundleWithDependedRuleApplication.get(i)) {
+				for(int j = 1; j < bundleWithDependedRuleApplication.values().size(); j++) {
+					for (Integer raY : bundleWithDependedRuleApplication.get(j)) {
+						GRBLinExpr expr = new GRBLinExpr();
+						expr.addTerm(1.0, gurobiVars.get(raX));
+						expr.addTerm(1.0, gurobiVars.get(raY));
+						try {
+							model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "EXCL" + nameCounter++);
+						} catch (GRBException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} 
+			
+		}
+		
 	}
 
 	private void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
