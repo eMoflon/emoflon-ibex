@@ -58,10 +58,9 @@ public abstract class CC<E> extends OperationalStrategy {
 	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
-	//has to have matchID as key
-	THashMap<Integer, TIntHashSet> sameContextSameCR = new THashMap<>();
+	//collection of constraints for same CR belonging to same kernel
+	THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
 
-	TIntObjectMap<THashSet<EObject>> invalidMatchToContextNodes = new TIntObjectHashMap<>();
 	TIntHashSet invalidKernels = new TIntHashSet();
 	
 	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
@@ -123,8 +122,11 @@ public abstract class CC<E> extends OperationalStrategy {
 		int kernelMatch = idToMatch.size();
 		Set<IMatch> contextRuleMatches = findAllContextRuleMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
-		//has to one hashmap per kernel to get correct matches
-		THashMap<Integer, THashSet<EObject>> contextMatches = new THashMap<>();
+		
+		//has to be one hashmap per kernel to  correct matches
+		THashMap<Integer, THashSet<EObject>> contextNodesMatches = new THashMap<>();
+		// TODO [Milica]: implement check for contextEdgeMatches for same CR!
+		THashMap<Integer, THashSet<EObject>> contextEdgeMatches = new THashMap<>();
 		
 		while (complementRuleMatches.iterator().hasNext()) {
 				IMatch match = complementRuleMatches.iterator().next();
@@ -136,7 +138,7 @@ public abstract class CC<E> extends OperationalStrategy {
 					int matchID = idToMatch.size();
 					
 					if(rule.isBounded()) {
-						findIdenticalMatches(rule, match, matchID, contextMatches);
+						findIdenticalMatches(rule, match, matchID, contextNodesMatches);
 					}
 			
 				}
@@ -169,31 +171,24 @@ public abstract class CC<E> extends OperationalStrategy {
 		return name.substring(0, name.indexOf("_CONTEXT"));
 	}
 
-	private void findIdenticalMatches(TGGRule rule, IMatch match, int matchID, THashMap<Integer, THashSet<EObject>> contextMatches) { 
-
+	private void findIdenticalMatches(TGGRule rule, IMatch match, int matchID, THashMap<Integer, THashSet<EObject>> contextNodesMatches) { 
 		THashSet<EObject> contextNodes = matchToContextNodes.get(matchID);
-		for (EObject node : contextNodes) {
-			if(!nodeToMarkingMatches.contains(node)) {
-				invalidMatchToContextNodes.put(matchID, contextNodes);
-				return;
-			}
-		}
-		
-		for (Integer id : contextMatches.keySet()) {
+
+		for (Integer id : contextNodesMatches.keySet()) {
 			if (matchIdToRuleName.get(matchID).equals(matchIdToRuleName.get(id))) {
 				if(matchToContextNodes.get(id).equals(contextNodes)) {
-					if (sameContextSameCR.get(matchID) == null) {
-						sameContextSameCR.put(matchID, new TIntHashSet());
-						sameContextSameCR.get(matchID).add(matchID);
-						sameContextSameCR.get(matchID).add(id);
+					if (sameCRmatches.get(matchID) == null) {
+						sameCRmatches.put(matchID, new TIntHashSet());
+						sameCRmatches.get(matchID).add(matchID);
+						sameCRmatches.get(matchID).add(id);
 					}
 					else {
-					sameContextSameCR.get(matchID).add(id);
+					sameCRmatches.get(matchID).add(id);
 					}
 				}
 			}
 		}
-		contextMatches.put(matchID, contextNodes);
+		contextNodesMatches.put(matchID, contextNodes);
 	}
 
 	private THashSet<EObject> getContextNodes(IMatch match){
@@ -419,8 +414,8 @@ public abstract class CC<E> extends OperationalStrategy {
 		}
 		
 		
-		for (Integer match : sameContextSameCR.keySet()) {
-			TIntHashSet vars = sameContextSameCR.get(match);
+		for (Integer match : sameCRmatches.keySet()) {
+			TIntHashSet vars = sameCRmatches.get(match);
 		
 			GRBLinExpr expr = new GRBLinExpr();
 			vars.forEach(v -> {
@@ -432,18 +427,6 @@ public abstract class CC<E> extends OperationalStrategy {
 			} catch (GRBException e) {
 				e.printStackTrace();
 			}
-		}
-		
-		for (Integer v : invalidMatchToContextNodes.keys()) {
-			GRBLinExpr expr = new GRBLinExpr();
-			expr.addTerm(1.0, gurobiVars.get(v));
-
-			try {
-				model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "EXCL" + nameCounter++);
-			} catch (GRBException e) {
-				e.printStackTrace();
-			}
-			
 		}
 		
 		if (!invalidKernels.isEmpty()) {
