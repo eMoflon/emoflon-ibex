@@ -37,6 +37,9 @@ public class PatternSuffixes {
 	
 	/** Contains the entire target component of the pattern */
 	public static final String TRG = SEP + "TRG";
+	
+	/** Contains the entire correspondence component of the pattern */
+	public static final String CORR = SEP + "CORR";
 
 	/**
 	 * Contains the entire target of the original TGG rule
