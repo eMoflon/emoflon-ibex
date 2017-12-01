@@ -55,7 +55,7 @@ public class HandleDependences {
 		for (EObject node : bundle.getContextNodes()) {
 			TIntHashSet matches = nodeToMarkingMatches.get(node);
 			for (Integer match : matches.toArray()) {
-				if(!dependeces.contains(match))
+				if(!dependeces.contains(matchToBundle(match)))
 					dependeces.add(matchToBundle(match));
 			}
 		}
@@ -63,7 +63,7 @@ public class HandleDependences {
 		for (RuntimeEdge edge : bundle.getContextEdges()) {
 			TIntHashSet matches = edgeToMarkingMatches.get(edge);
 			for (Integer match : matches.toArray()) {
-				if(!dependeces.contains(match))
+				if(!dependeces.contains(matchToBundle(match)))
 					dependeces.add(matchToBundle(match));
 			}
 		}
