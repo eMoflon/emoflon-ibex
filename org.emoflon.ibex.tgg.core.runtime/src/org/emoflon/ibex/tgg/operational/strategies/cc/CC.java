@@ -451,7 +451,7 @@ public abstract class CC<E> extends OperationalStrategy {
 					expr.addTerm(1.0, gurobiVars.get(v));
 					});
 				try {
-					model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
+					model.addConstr(expr, GRB.LESS_EQUAL, vars.size()-1, "EXCL" + nameCounter++);
 				} catch (GRBException e) {
 					e.printStackTrace();
 				}
