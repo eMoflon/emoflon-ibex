@@ -19,7 +19,7 @@ public class CorrContextPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 
 		if (e.getBindingType() == BindingType.CREATE)
 			return false;

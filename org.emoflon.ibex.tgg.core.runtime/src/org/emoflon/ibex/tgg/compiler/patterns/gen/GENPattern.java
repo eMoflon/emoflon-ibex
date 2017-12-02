@@ -16,7 +16,7 @@ import language.TGGRuleNode;
 public class GENPattern extends RulePartPattern {
 	
 	protected PatternFactory factory;
-	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
+	private Collection<TGGRuleNode> signatureElements = new HashSet<TGGRuleNode>();
 
 	public GENPattern(PatternFactory factory) {
 		this(factory.getFlattenedVersionOfRule(), factory); 
@@ -25,7 +25,7 @@ public class GENPattern extends RulePartPattern {
 	private GENPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
-		signatureElements = getSignatureElements(getRule());
+		signatureElements = getSignatureNodes(getRule());
 
 		createPatternNetwork();
 	}
@@ -41,7 +41,7 @@ public class GENPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return e.getBindingType() == BindingType.CONTEXT;
 	}
 
@@ -61,7 +61,7 @@ public class GENPattern extends RulePartPattern {
 	}
 
 	@Override
-	public Collection<TGGRuleElement> getSignatureElements() {
+	public Collection<TGGRuleNode> getSignatureNodes() {
 		return signatureElements;
 	}
 	

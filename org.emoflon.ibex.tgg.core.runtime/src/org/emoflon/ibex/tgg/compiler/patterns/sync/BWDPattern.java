@@ -63,7 +63,7 @@ public class BWDPattern extends RulePartPattern {
 		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
 		
 		return nacs.stream().filter(n -> {
-			Optional<TGGRuleElement> e = ((NacPattern)n).getSignatureElements().stream().findAny();
+			Optional<TGGRuleNode> e = ((NacPattern)n).getSignatureNodes().stream().findAny();
 			DomainType domain = DomainType.TRG;
 			if (e.isPresent()) {
 				domain = e.get().getDomainType();
@@ -74,11 +74,11 @@ public class BWDPattern extends RulePartPattern {
 	}
 
 	protected void createMarkedInvocations(boolean positive) {
-		for (TGGRuleElement el : getSignatureElements()) {
+		for (TGGRuleElement el : getSignatureNodes()) {
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && node.getDomainType().equals(DomainType.TRG)) {
 				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
-				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findFirst().get();
+				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
 
 				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
 				mapping.put(node, invokedObject);
@@ -163,8 +163,8 @@ public class BWDPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getDomainType() == DomainType.TRG || e.getBindingType() == BindingType.CONTEXT;
+	public boolean isRelevantForSignature(TGGRuleNode n) {
+		return n.getDomainType() == DomainType.TRG || n.getBindingType() == BindingType.CONTEXT;
 	}
 
 	@Override

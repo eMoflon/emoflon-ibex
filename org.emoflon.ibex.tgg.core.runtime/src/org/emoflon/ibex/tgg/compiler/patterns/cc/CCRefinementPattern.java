@@ -86,7 +86,7 @@ public class CCRefinementPattern extends CCPattern {
 		}
 	
 	private boolean kernelNodeIsNotInComplement(TGGRuleElement kernelNode) {
-		return getSignatureElements(rule).stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
+		return getSignatureNodes(rule).stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
 	}
 
 	/* Creates a simple node with just the same name and type of kernelNode */

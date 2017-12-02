@@ -131,7 +131,7 @@ public class PatternFactory {
 															 				&& edge.getBindingType() == BindingType.CREATE)
 															 .count();
 
-			Collection<TGGRuleElement> signatureElements = new ArrayList<TGGRuleElement>();
+			Collection<TGGRuleNode> signatureElements = new ArrayList<TGGRuleNode>();
 			Collection<TGGRuleElement> bodyElements = new ArrayList<TGGRuleElement>();
 
 			// create/add elements to the pattern
@@ -184,7 +184,7 @@ public class PatternFactory {
         for (TGGRuleEdge e : relevantEdges) {
 			TGGRuleNode trg = e.getTrgNode();
 			
-			Collection<TGGRuleElement> signatureElements = new ArrayList<TGGRuleElement>();
+			Collection<TGGRuleNode> signatureElements = new ArrayList<TGGRuleNode>();
 			Collection<TGGRuleElement> bodyElements = new ArrayList<TGGRuleElement>();
 
 			// create/add elements to the pattern
@@ -274,8 +274,8 @@ public class PatternFactory {
 		return createPatternsForUserDefinedNACs(DomainType.SRC);
 	}
 	
-	private Collection<TGGRuleElement> getSignatureElementsFromNAC(NAC nac) {
-		ArrayList<TGGRuleElement> sigElements = new ArrayList<>();
+	private Collection<TGGRuleNode> getSignatureElementsFromNAC(NAC nac) {
+		ArrayList<TGGRuleNode> sigElements = new ArrayList<>();
 		sigElements.addAll(nac.getNodes());
 		sigElements.removeAll(getBodyElementsFromNAC(nac));
 		return sigElements;

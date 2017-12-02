@@ -51,8 +51,8 @@ public class FilterACPattern extends RulePartPattern {
 	}
 	
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return premise.getSignatureElements().stream().filter(element -> element.getName().equals(e.getName())).count() != 0;
+	public boolean isRelevantForSignature(TGGRuleNode e) {
+		return premise.getSignatureNodes().stream().filter(element -> element.getName().equals(e.getName())).count() != 0;
 	}
 
 	@Override

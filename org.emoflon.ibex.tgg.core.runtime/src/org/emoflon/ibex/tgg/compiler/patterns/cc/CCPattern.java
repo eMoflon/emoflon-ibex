@@ -18,7 +18,7 @@ import language.TGGRuleNode;
 public class CCPattern extends RulePartPattern {
 
 	protected PatternFactory factory;
-	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
+	private Collection<TGGRuleNode> signatureElements = new HashSet<TGGRuleNode>();
 
 
 	public CCPattern(PatternFactory factory) {
@@ -28,7 +28,7 @@ public class CCPattern extends RulePartPattern {
 	private CCPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
-		signatureElements = getSignatureElements(getRule());
+		signatureElements = getSignatureNodes(getRule());
 		
 		createPatternNetwork();
 	}
@@ -43,7 +43,7 @@ public class CCPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return e.getBindingType() != BindingType.CREATE || e.getDomainType() == DomainType.SRC || e.getDomainType() == DomainType.TRG;
 	}
 
@@ -58,7 +58,7 @@ public class CCPattern extends RulePartPattern {
 	}
 
 	@Override
-	public Collection<TGGRuleElement> getSignatureElements() {
+	public Collection<TGGRuleNode> getSignatureNodes() {
 		return signatureElements;
 	}
 

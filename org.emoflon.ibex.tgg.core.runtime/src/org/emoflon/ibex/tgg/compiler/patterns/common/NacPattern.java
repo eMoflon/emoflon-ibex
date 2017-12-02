@@ -14,7 +14,7 @@ import language.*;
  * the body and signature that are not part of the rule.
  */
 public class NacPattern extends RulePartPattern {
-	private Collection<TGGRuleElement> signatureElements = new ArrayList<>();
+	private Collection<TGGRuleNode> signatureElements = new ArrayList<>();
 	private Collection<TGGRuleNode> bodyNodes = new ArrayList<>();
 	private Collection<TGGRuleEdge> bodyEdges = new ArrayList<>();
 	
@@ -33,7 +33,7 @@ public class NacPattern extends RulePartPattern {
 	 *            The {@link TGGElements} that shall be part of this constraint,
 	 *            but not part of the signature).
 	 */
-	public NacPattern(TGGRule rule, Collection<TGGRuleElement> signatureElements, Collection<TGGRuleElement> bodyElements, String name) {
+	public NacPattern(TGGRule rule, Collection<TGGRuleNode> signatureElements, Collection<TGGRuleElement> bodyElements, String name) {
 		this.rule = rule;
 		this.constraintName = "_" + name;
 		this.signatureElements = signatureElements;
@@ -72,7 +72,7 @@ public class NacPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return this.signatureElements.contains(e);
 	}
 
@@ -82,7 +82,7 @@ public class NacPattern extends RulePartPattern {
 	}
 	
 	@Override
-	public Collection<TGGRuleElement> getSignatureElements() {
+	public Collection<TGGRuleNode> getSignatureNodes() {
 		return this.signatureElements;
 	}
 	

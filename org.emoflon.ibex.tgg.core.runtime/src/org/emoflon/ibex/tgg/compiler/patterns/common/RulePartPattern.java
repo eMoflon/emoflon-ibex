@@ -27,7 +27,7 @@ public abstract class RulePartPattern extends IbexPattern {
 
 	public Collection<Pair<TGGRuleNode, TGGRuleNode>> getInjectivityChecks() {
 		List<TGGRuleNode> nodes = new ArrayList<TGGRuleNode>(this.getBodyNodes());
-		nodes.addAll(this.getSignatureElements().stream()
+		nodes.addAll(this.getSignatureNodes().stream()
 												.filter(e -> e instanceof TGGRuleNode)
 												.map(TGGRuleNode.class::cast)
 												.collect(Collectors.toList()));

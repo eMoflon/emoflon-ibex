@@ -68,9 +68,9 @@ public class ConsistencyPattern extends IbexPattern {
 	}
 	
 	public void createMarkedInvocations() {
-		TGGRuleNode ruleApplicationNode = getRuleApplicationNode(getSignatureElements());
+		TGGRuleNode ruleApplicationNode = getRuleApplicationNode(getSignatureNodes());
 		
-		getSignatureElements()
+		getSignatureNodes()
 		.stream()
 		.filter(e -> !e.equals(ruleApplicationNode))
 		.forEach(el ->
@@ -78,8 +78,8 @@ public class ConsistencyPattern extends IbexPattern {
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (nodeIsConnectedToRuleApplicationNode(node)) {
 				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), false, node.getBindingType().equals(BindingType.CONTEXT));
-				TGGRuleNode invokedRuleApplicationNode = getRuleApplicationNode(markedPattern.getSignatureElements());
-				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements()
+				TGGRuleNode invokedRuleApplicationNode = getRuleApplicationNode(markedPattern.getSignatureNodes());
+				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes()
 						.stream()
 						.filter(e -> !e.equals(invokedRuleApplicationNode))
 						.findFirst()
@@ -98,7 +98,7 @@ public class ConsistencyPattern extends IbexPattern {
 		return !node.getDomainType().equals(DomainType.CORR);
 	}
 
-	private TGGRuleNode getRuleApplicationNode(Collection<TGGRuleElement> elements) {
+	private TGGRuleNode getRuleApplicationNode(Collection<TGGRuleNode> elements) {
 		return (TGGRuleNode) elements.stream()
 					   			     .filter(this::isRuleApplicationNode)
 					   			     .findAny()
@@ -110,13 +110,13 @@ public class ConsistencyPattern extends IbexPattern {
 	}
 	
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return true;
 	}
 	
 	@Override
-	public Collection<TGGRuleElement> getSignatureElements() {
-	 Collection<TGGRuleElement> signatureElements = super.getSignatureElements();
+	public Collection<TGGRuleNode> getSignatureNodes() {
+	 Collection<TGGRuleNode> signatureElements = super.getSignatureNodes();
 	 signatureElements.add(protocolNode);
 	 return signatureElements;
 	}

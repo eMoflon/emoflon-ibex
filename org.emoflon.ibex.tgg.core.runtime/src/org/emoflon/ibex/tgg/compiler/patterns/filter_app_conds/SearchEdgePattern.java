@@ -41,7 +41,7 @@ public class SearchEdgePattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return true;
 	}
 

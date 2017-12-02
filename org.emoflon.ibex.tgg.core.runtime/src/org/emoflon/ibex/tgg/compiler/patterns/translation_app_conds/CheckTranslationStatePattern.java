@@ -107,7 +107,7 @@ public class CheckTranslationStatePattern extends IbexPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return localProtocol ? !(e.getName().equals(PROTOCOL_NAME)) : true;
 	}
 

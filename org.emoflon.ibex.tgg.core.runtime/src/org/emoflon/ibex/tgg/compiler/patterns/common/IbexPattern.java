@@ -49,49 +49,13 @@ public abstract class IbexPattern {
 				   			 .collect(Collectors.toSet());
 	}
 	
-	/**
-	 * Auxiliary method used by {@link #calculateBodyEdges(Collection)} to
-	 * decide if e should be part of this pattern or not.
-	 * 
-	 * @param e
-	 *            An edge of the underlying TGG rule of this pattern
-	 * @return true if e should be a body edge of the pattern, otherwise e is
-	 *         not part of the pattern
-	 */
 	protected abstract boolean isRelevantForBody(TGGRuleEdge e);
 
-	/**
-	 * Auxiliary method used by {@link #calculateBodyNodes(Collection)} to
-	 * decide if n should be part of this pattern or not.
-	 * 
-	 * @param n
-	 *            A node of the underlying TGG rule of this pattern
-	 * @return true if n should be a body node of the pattern, otherwise n is
-	 *         not part of the pattern
-	 */
 	protected abstract boolean isRelevantForBody(TGGRuleNode n);
 
-	/**
-	 * Used by {@link #getSignatureElements()} to determine the signature of
-	 * this pattern. All variables in a pattern are divided into either local
-	 * variables or signature variables. This distinction is based on if any
-	 * external component is interested in the computed values of a certain
-	 * variable or not. If this is not the case then the variable should be
-	 * declared as being local to the pattern as this improves efficiency.
-	 * 
-	 * @param e
-	 *            An edge or a node of the underlying TGG rule.
-	 * @return true if e should be part of the patterns signature or not.
-	 */
-	public abstract boolean isRelevantForSignature(TGGRuleElement e);
+	public abstract boolean isRelevantForSignature(TGGRuleNode e);
 
-
-	/**
-	 * Each signature element e of a pattern corresponds to a parameter:
-	 * 
-	 * pattern(e1 : <type of e1>, e2: <type of e2,...)
-	 */
-	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule) {
+	protected Collection<TGGRuleNode> getSignatureNodes(TGGRule rule) {
 		return rule.getNodes().stream().filter(e -> isRelevantForSignature(e)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
@@ -133,8 +97,8 @@ public abstract class IbexPattern {
 
 	abstract protected String getPatternNameSuffix();
 
-	public Collection<TGGRuleElement> getSignatureElements() {
-		return getSignatureElements(getRule());
+	public Collection<TGGRuleNode> getSignatureNodes() {
+		return getSignatureNodes(getRule());
 	}
 
 	public Collection<PatternInvocation> getPositiveInvocations() {
@@ -172,11 +136,14 @@ public abstract class IbexPattern {
 	
 	private Map<TGGRuleElement, TGGRuleElement> getTGGVariableMapping(IbexPattern rootPattern, IbexPattern invocationpattern) {
 		Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
-		Set<TGGRuleElement> rootElements = Stream.concat(rootPattern.getSignatureElements().stream(), rootPattern.getBodyNodes().stream()).collect(Collectors.toSet());
-		Collection<TGGRuleElement> invocationElements = invocationpattern.getSignatureElements();
+		Set<TGGRuleElement> rootElements = Stream.concat(rootPattern.getSignatureNodes().stream(), rootPattern.getBodyNodes().stream()).collect(Collectors.toSet());
+		Collection<TGGRuleNode> invocationElements = invocationpattern.getSignatureNodes();
 
 		// map invocation elements to root elements based on their name
-		invocationElements.stream().forEach(iEl -> mapping.put(rootElements.stream().filter(rEl -> rEl.getName().equals(iEl.getName())).findFirst().get(), iEl));
+		invocationElements.stream().forEach(iEl -> mapping.put(rootElements.stream().filter(rEl -> rEl.getName().equals(iEl.getName()))
+		                                                                            .findFirst()
+		                                                                            .orElseThrow(() -> new IllegalStateException("The node " + iEl.getName() + " is missing in the Pattern [" + rootElements + "]")), 
+		                                                       iEl));
 		return mapping;
 	}
 	

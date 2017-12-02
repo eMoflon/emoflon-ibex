@@ -6,7 +6,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import language.BindingType;
 import language.DomainType;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class SrcContextPattern extends RulePartPattern {
@@ -16,7 +15,7 @@ public class SrcContextPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CONTEXT;
 	}
 
@@ -27,7 +26,7 @@ public class SrcContextPattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return isRelevantForSignature(e);
+		return e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CONTEXT;
 	}
 
 	@Override

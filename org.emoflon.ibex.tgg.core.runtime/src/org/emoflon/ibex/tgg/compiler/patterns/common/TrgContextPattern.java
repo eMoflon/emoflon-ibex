@@ -16,7 +16,7 @@ public class TrgContextPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return e.getDomainType() == DomainType.TRG && e.getBindingType() == BindingType.CONTEXT;
 	}
 

@@ -44,7 +44,7 @@ public class SrcRefinementsPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return e.getDomainType() == DomainType.SRC;
 	}
 
