@@ -39,12 +39,13 @@ public class CCPattern extends RulePartPattern {
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
+			//addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.CORR));
 		}
 	}
 
 	@Override
 	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getBindingType() != BindingType.CREATE || e.getDomainType() == DomainType.SRC || e.getDomainType() == DomainType.TRG;
+		return e.getBindingType() != BindingType.CREATE || e.getDomainType() == DomainType.SRC || e.getDomainType() == DomainType.TRG; // || e.getDomainType() == DomainType.CORR;
 	}
 
 	@Override

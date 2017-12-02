@@ -15,7 +15,7 @@ public class CorrPattern extends RulePartPattern {
 		super(factory.getRule());
 		
 		// Create pattern network
-		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));
+		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class CorrPattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return true;
+		return e.getDomainType() == DomainType.CORR && e.getBindingType() == BindingType.CREATE;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class CorrPattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return isRelevantForSignature(n) && n.getBindingType() == BindingType.CREATE;
+		return isRelevantForSignature(n); // && n.getBindingType() == BindingType.CREATE;
 	}
 
 	@Override

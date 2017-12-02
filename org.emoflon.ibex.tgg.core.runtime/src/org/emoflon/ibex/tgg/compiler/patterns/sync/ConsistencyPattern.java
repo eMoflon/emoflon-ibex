@@ -47,6 +47,7 @@ public class ConsistencyPattern extends IbexPattern {
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
+			//addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.CORR));
 		}
 	}
 	

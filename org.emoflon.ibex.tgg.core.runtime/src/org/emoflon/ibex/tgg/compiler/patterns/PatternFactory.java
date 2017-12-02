@@ -59,22 +59,29 @@ public class PatternFactory {
 		
 		CheckTranslationStatePattern signProtocolSrcMarkedPattern = new CheckTranslationStatePattern(DomainType.SRC, false, false);
 		CheckTranslationStatePattern signProtocolTrgMarkedPattern = new CheckTranslationStatePattern(DomainType.TRG, false, false);
+		CheckTranslationStatePattern signProtocolCorrMarkedPattern = new CheckTranslationStatePattern(DomainType.CORR, false, false);
 		
 		CheckTranslationStatePattern signProtocolSrcMarkedContextPattern = new CheckTranslationStatePattern(DomainType.SRC, false, true);
 		CheckTranslationStatePattern signProtocolTrgMarkedContextPattern = new CheckTranslationStatePattern(DomainType.TRG, false, true);
+		CheckTranslationStatePattern signProtocolCorrMarkedContextPattern = new CheckTranslationStatePattern(DomainType.CORR, false, true);
 		
 		CheckTranslationStatePattern localProtocolSrcMarkedPattern = new CheckTranslationStatePattern(signProtocolSrcMarkedPattern, DomainType.SRC, true);
 		CheckTranslationStatePattern localProtocolTrgMarkedPattern = new CheckTranslationStatePattern(signProtocolTrgMarkedPattern, DomainType.TRG, true);
+		CheckTranslationStatePattern localProtocolCorrMarkedPattern = new CheckTranslationStatePattern(signProtocolTrgMarkedPattern, DomainType.CORR, true);
 		
 		localProtocolSrcMarkedPattern.addTGGPositiveInvocation(signProtocolSrcMarkedPattern);
 		localProtocolTrgMarkedPattern.addTGGPositiveInvocation(signProtocolTrgMarkedPattern);
+		localProtocolTrgMarkedPattern.addTGGPositiveInvocation(signProtocolCorrMarkedPattern);
 		
 		markedPatterns.add(localProtocolSrcMarkedPattern);
 		markedPatterns.add(localProtocolTrgMarkedPattern);
+		markedPatterns.add(localProtocolCorrMarkedPattern);
 		markedPatterns.add(signProtocolSrcMarkedPattern);
 		markedPatterns.add(signProtocolTrgMarkedPattern);
+		markedPatterns.add(signProtocolCorrMarkedPattern);
 		markedPatterns.add(signProtocolSrcMarkedContextPattern);
 		markedPatterns.add(signProtocolTrgMarkedContextPattern);
+		markedPatterns.add(signProtocolCorrMarkedContextPattern);
 		
 		return Collections.unmodifiableCollection(markedPatterns);
 	}
