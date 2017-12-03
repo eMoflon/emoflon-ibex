@@ -8,7 +8,7 @@ import language.DomainType;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class SrcPattern extends RulePartPattern {
+public class SrcPattern extends IbexPattern {
 
 	public SrcPattern(PatternFactory factory) {
 		super(factory.getRule());

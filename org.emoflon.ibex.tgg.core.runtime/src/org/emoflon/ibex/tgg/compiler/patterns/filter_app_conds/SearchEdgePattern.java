@@ -3,12 +3,12 @@ package org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class SearchEdgePattern extends RulePartPattern {
+public class SearchEdgePattern extends IbexPattern {
 	
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;

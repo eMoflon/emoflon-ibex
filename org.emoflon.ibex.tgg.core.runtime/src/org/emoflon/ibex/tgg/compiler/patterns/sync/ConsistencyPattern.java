@@ -143,4 +143,9 @@ public class ConsistencyPattern extends IbexPattern {
 	protected boolean isRelevantForBody(TGGRuleNode n) {
 		return n.getDomainType() != DomainType.CORR;
 	}
+
+	@Override
+	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
+		return true;
+	}
 }

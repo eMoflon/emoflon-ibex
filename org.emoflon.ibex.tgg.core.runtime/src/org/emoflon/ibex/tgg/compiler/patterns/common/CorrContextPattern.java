@@ -11,7 +11,7 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class CorrContextPattern extends RulePartPattern {
+public class CorrContextPattern extends IbexPattern {
 
 	public CorrContextPattern(PatternFactory factory) {
 		super(factory.getRule());

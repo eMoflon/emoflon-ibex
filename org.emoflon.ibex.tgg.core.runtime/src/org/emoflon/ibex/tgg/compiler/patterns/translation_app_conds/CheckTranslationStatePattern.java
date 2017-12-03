@@ -131,4 +131,9 @@ public class CheckTranslationStatePattern extends IbexPattern {
 	public boolean marksContext() {
 		return marksContext;
 	}
+
+	@Override
+	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
+		return true;
+	}
 }

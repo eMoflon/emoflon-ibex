@@ -16,7 +16,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
@@ -29,7 +28,7 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class BWDPattern extends RulePartPattern {
+public class BWDPattern extends IbexPattern {
 	protected PatternFactory factory;
 
 	public BWDPattern(PatternFactory factory) {

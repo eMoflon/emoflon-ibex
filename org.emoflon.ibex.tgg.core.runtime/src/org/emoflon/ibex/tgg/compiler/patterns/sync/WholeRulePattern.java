@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
@@ -13,7 +13,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class WholeRulePattern extends RulePartPattern {
+public class WholeRulePattern extends IbexPattern {
 	protected PatternFactory factory;
 
 	public WholeRulePattern(PatternFactory factory) {

@@ -5,12 +5,11 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class FilterACPattern extends RulePartPattern {
+public class FilterACPattern extends IbexPattern {
 
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;

@@ -5,14 +5,14 @@ import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 
 import language.BindingType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class GENPattern extends RulePartPattern {
+public class GENPattern extends IbexPattern {
 	
 	protected PatternFactory factory;
 	private Collection<TGGRuleNode> signatureElements = new HashSet<TGGRuleNode>();

@@ -1,19 +1,22 @@
 package org.emoflon.ibex.tgg.compiler.patterns.common;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import language.*;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+
+import language.TGGRule;
+import language.TGGRuleEdge;
+import language.TGGRuleElement;
+import language.TGGRuleNode;
 
 /**
  * This class can be used to implement application conditions for a
  * {@link TGGRule}. It extends {@link RulePartPattern} by allowing elements in
  * the body and signature that are not part of the rule.
  */
-public class NacPattern extends RulePartPattern {
+public class NacPattern extends IbexPattern {
 	private Collection<TGGRuleNode> signatureElements = new ArrayList<>();
 	private Collection<TGGRuleNode> bodyNodes = new ArrayList<>();
 	private Collection<TGGRuleEdge> bodyEdges = new ArrayList<>();

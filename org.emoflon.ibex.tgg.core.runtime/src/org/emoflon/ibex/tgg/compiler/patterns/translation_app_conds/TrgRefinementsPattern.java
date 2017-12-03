@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
 import language.DomainType;
@@ -10,7 +10,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class TrgRefinementsPattern extends RulePartPattern {
+public class TrgRefinementsPattern extends IbexPattern {
 
 	public TrgRefinementsPattern(PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());

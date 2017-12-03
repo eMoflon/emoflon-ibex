@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -20,7 +19,7 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class ComplementBWDPattern extends RulePartPattern {
+public class ComplementBWDPattern extends IbexPattern {
 	protected PatternFactory factory;
 	private Collection<TGGRuleNode> signatureElements;
 

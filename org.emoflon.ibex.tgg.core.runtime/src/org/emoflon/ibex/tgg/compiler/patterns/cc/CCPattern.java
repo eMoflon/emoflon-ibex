@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
 import language.BindingType;
@@ -14,7 +14,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class CCPattern extends RulePartPattern {
+public class CCPattern extends IbexPattern {
 
 	protected PatternFactory factory;
 	private Collection<TGGRuleNode> signatureElements = new HashSet<TGGRuleNode>();

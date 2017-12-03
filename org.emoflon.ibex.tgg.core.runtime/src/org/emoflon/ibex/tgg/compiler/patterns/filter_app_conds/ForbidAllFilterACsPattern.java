@@ -11,7 +11,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.SrcRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TrgRefinementsPattern;
 
@@ -22,7 +22,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class ForbidAllFilterACsPattern extends RulePartPattern {
+public class ForbidAllFilterACsPattern extends IbexPattern {
 	protected DomainType domain;
 	protected PatternFactory factory;
 	protected IbexPatternOptimiser optimiser;
