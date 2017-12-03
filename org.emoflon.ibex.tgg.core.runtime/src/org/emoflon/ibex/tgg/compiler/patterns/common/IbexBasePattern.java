@@ -17,7 +17,7 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public abstract class IbexBasePattern implements IPattern {
-	private String name;
+	protected String name;
 	
 	// These are the nodes that need to be mapped when invoking this pattern
 	// Signature nodes are also the nodes that can be accessed from matches of this pattern
