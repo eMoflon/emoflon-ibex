@@ -20,10 +20,6 @@ public class SrcPattern extends IbexBasePattern {
 		createPatternNetwork(factory);
 	}
 	
-	private void createPatternNetwork(PatternFactory factory) {
-		addPositiveInvocation(factory.create(SrcContextPattern.class));
-	}
-
 	protected void initialise(TGGRule rule) {
 		String name = rule.getName() + PatternSuffixes.SRC;
 		
@@ -48,6 +44,10 @@ public class SrcPattern extends IbexBasePattern {
 		return e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CREATE;
 	}
 
+	private void createPatternNetwork(PatternFactory factory) {
+		addPositiveInvocation(factory.create(SrcContextPattern.class));
+	}
+	
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		// If both nodes are context then this has been checked in SrcContext

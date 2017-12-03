@@ -20,10 +20,6 @@ public class SrcContextPattern extends IbexBasePattern {
 		createPatternNetwork(factory);
 	}
 	
-	private void createPatternNetwork(PatternFactory factory) {
-		// Leaf pattern
-	}
-	
 	protected void initialise(TGGRule rule) {
 		String name = rule.getName() + PatternSuffixes.SRC_CONTEXT;
 		
@@ -46,6 +42,10 @@ public class SrcContextPattern extends IbexBasePattern {
 
 	private boolean isLocalEdge(TGGRuleEdge e) {
 		return e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CONTEXT;
+	}
+	
+	private void createPatternNetwork(PatternFactory factory) {
+		// Leaf pattern
 	}
 
 	@Override
