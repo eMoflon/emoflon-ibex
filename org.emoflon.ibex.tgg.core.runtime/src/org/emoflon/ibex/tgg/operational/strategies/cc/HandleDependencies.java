@@ -62,24 +62,27 @@ public class HandleDependencies {
 	}
 
 	private ArrayList<Integer> findDirectDependences(Bundle bundle) {
-		ArrayList<Integer> dependeces = new ArrayList<Integer>();
+		ArrayList<Integer> dependecies = new ArrayList<Integer>();
 		for (EObject node : bundle.getBundleContextNodes()) {
 			TIntHashSet matches = nodeToMarkingMatches.get(node);
-			for (Integer match : matches.toArray()) {
-				if(!dependeces.contains(matchToBundle(match)))
-					dependeces.add(matchToBundle(match));
-			}
+			putDependedContext(dependecies, matches);
 		}
 		
 		for (RuntimeEdge edge : bundle.getBundleContextEdges()) {
 			TIntHashSet matches = edgeToMarkingMatches.get(edge);
-			for (Integer match : matches.toArray()) {
-				if(!dependeces.contains(matchToBundle(match)))
-					dependeces.add(matchToBundle(match));
-			}
+			putDependedContext(dependecies, matches);
 		}
-		return dependeces;
+		return dependecies;
 	}
+
+	private void putDependedContext(ArrayList<Integer> dependecies, TIntHashSet matches) {	
+		matches.forEach(match -> {
+			if(!dependecies.contains(matchToBundle(match)))
+				dependecies.add(matchToBundle(match));
+			return true;
+		});
+	}
+
 
 	private int matchToBundle(Integer match) {
 		return appliedBundles.stream()
@@ -118,16 +121,17 @@ public class HandleDependencies {
 				if(!visited.get(contextBundle)) {
 					examineDependences(contextBundle, recursiveStack, visited);
 				}
-				
 				else if(recursiveStack.contains(contextBundle)) {
-					ArrayList<Integer> cyclicBundles = new ArrayList<Integer>();
+					ArrayList<Integer> cyclicContextBundles = new ArrayList<Integer>();
 					int pop = recursiveStack.size() - 1;
-					cyclicBundles.add(recursiveStack.get(pop));
+					// add node that caused cycle
+					cyclicContextBundles.add(recursiveStack.get(pop));
+					// add all other nodes from stack until the same node that caused the cycle is reached
 					while(recursiveStack.get(pop) != contextBundle) {
 						pop--;
-						cyclicBundles.add(recursiveStack.get(pop));
+						cyclicContextBundles.add(recursiveStack.get(pop));
 					}
-					cyclicDependencies.put(cyclicDependencyId, cyclicBundles);
+					cyclicDependencies.put(cyclicDependencyId, cyclicContextBundles);
 					cyclicDependencyId++;
 				}
 			}
@@ -139,39 +143,51 @@ public class HandleDependencies {
 	/**
 	 * Detect concrete rule applications that caused dependencies between bundles
 	 * @param detectedCycle - specific cycle between bundles
-	 * @return Collection of all rule applications causing dependencies
+	 * @return Collection of all rule applications causing dependencies for detectedCycle
 	 */
 	public HashMap<Integer, HashSet<Integer>> getDependedRuleApplications(int detectedCycle) {
-		HashMap<Integer, HashSet<Integer>> bundleToDependRuleApplication = new HashMap<Integer, HashSet<Integer>>();
+		HashMap<Integer, HashSet<Integer>> bundleToDependedRuleApplication = new HashMap<Integer, HashSet<Integer>>();
 		
 		//this list contains bundles sorted in way where next bundle depend on previous one; last then depend on first in the list
 		ArrayList<Integer> detectedCycles = cyclicDependencies.get(detectedCycle);
 			for (int i=0; i < detectedCycles.size(); i++) {
 				if(i==detectedCycles.size()-1) {
-					HashSet<Integer> dependedRuleApplications = getRuleApplicationDependences(detectedCycles.get(i), detectedCycles.get(0));
-					bundleToDependRuleApplication.put(detectedCycles.get(0), dependedRuleApplications);
+					HashSet<Integer> dependedRuleApplications = getRuleApplicationDependencies(detectedCycles.get(i), detectedCycles.get(0));
+					bundleToDependedRuleApplication.put(detectedCycles.get(0), dependedRuleApplications);
 				}
 				else {
-					HashSet<Integer> dependedRuleApplications = getRuleApplicationDependences(detectedCycles.get(i), detectedCycles.get(i+1));
-					bundleToDependRuleApplication.put(detectedCycles.get(i+1), dependedRuleApplications);
+					HashSet<Integer> dependedRuleApplications = getRuleApplicationDependencies(detectedCycles.get(i), detectedCycles.get(i+1));
+					bundleToDependedRuleApplication.put(detectedCycles.get(i+1), dependedRuleApplications);
 				}
 			}
-		return bundleToDependRuleApplication;
+		return bundleToDependedRuleApplication;
 	}
 	
-	private HashSet<Integer> getRuleApplicationDependences(int bundleOrgin, int bundleDepend) {
+	private HashSet<Integer> getRuleApplicationDependencies(int bundleTarget, int bundleSource) {
 		HashSet<Integer> dependedRuleApplications = new HashSet<Integer>();
-		Bundle bundleContext = getBundle(bundleOrgin);
-		Bundle bundleCreate = getBundle(bundleDepend);
+		Bundle bundleContext = getBundle(bundleTarget);
+		Bundle bundleCreate = getBundle(bundleSource);
 		for (Integer match : bundleCreate.getAllMatches()) {
-			for (EObject node : matchToContextNodes.get(match)) {
-				for (Integer matchCreatedNode : nodeToMarkingMatches.get(node).toArray()) {
-					if(bundleContext.getAllMatches().contains(matchCreatedNode))
-						dependedRuleApplications.add(match);
-				}
-			}
+			determineRuleApplicationDependencies(match, dependedRuleApplications, bundleContext);
 		}
 		return dependedRuleApplications;
+	}
+
+	private void determineRuleApplicationDependencies(Integer match, HashSet<Integer> dependedRuleApplications, Bundle bundleContext) {
+		for (EObject node : matchToContextNodes.get(match)) {
+			for (Integer matchCreatedNode : nodeToMarkingMatches.get(node).toArray()) {
+				if(bundleContext.getAllMatches().contains(matchCreatedNode))
+					dependedRuleApplications.add(match);
+			}
+		}
+		
+		for (RuntimeEdge edge : matchToContextEdges.get(match)) {
+			for (Integer matchCreatedNode : edgeToMarkingMatches.get(edge).toArray()) {
+				if(bundleContext.getAllMatches().contains(matchCreatedNode))
+					dependedRuleApplications.add(match);
+			}
+		}
+		
 	}
 
 
