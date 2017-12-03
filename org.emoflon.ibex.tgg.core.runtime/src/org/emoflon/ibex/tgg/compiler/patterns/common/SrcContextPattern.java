@@ -1,42 +1,55 @@
 package org.emoflon.ibex.tgg.compiler.patterns.common;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 import language.BindingType;
 import language.DomainType;
+import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class SrcContextPattern extends IbexPattern {
+public class SrcContextPattern extends IbexBasePattern {
 
+	protected SrcContextPattern() {
+		
+	}
+	
 	public SrcContextPattern(PatternFactory factory) {
-		super(factory.getRule());
+		initialise(factory.getRule());
+	}
+	
+	protected void initialise(TGGRule rule) {
+		String name = rule.getName() + PatternSuffixes.SRC_CONTEXT;
+		
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
+					   .filter(this::isSignatureNode)
+					   .collect(Collectors.toList());
+		
+		Collection<TGGRuleEdge> localEdges = rule.getEdges().stream()
+				   .filter(this::isLocalEdge)
+				   .collect(Collectors.toList());
+		
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
+	}
+	
+	private boolean isSignatureNode(TGGRuleNode n) {
+		return n.getDomainType() == DomainType.SRC && n.getBindingType() == BindingType.CONTEXT;
 	}
 
-	@Override
-	public boolean isRelevantForSignature(TGGRuleNode e) {
+	private boolean isLocalEdge(TGGRuleEdge e) {
 		return e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CONTEXT;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.SRC_CONTEXT;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CONTEXT;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return isRelevantForSignature(n);
 	}
 
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
+		// Leaf pattern so we have to check injectivity here
 		return false;
 	}
-
 }
