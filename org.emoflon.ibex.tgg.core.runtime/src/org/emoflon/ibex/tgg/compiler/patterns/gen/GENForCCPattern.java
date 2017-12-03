@@ -12,7 +12,7 @@ public class GENForCCPattern extends GENPattern{
 	
 	@Override
 	protected String getPatternNameSuffix() {
-		return "_CONTEXT" + PatternSuffixes.CC;
+		return PatternSuffixes.GENForCC + PatternSuffixes.CC;
 	}
 
 }

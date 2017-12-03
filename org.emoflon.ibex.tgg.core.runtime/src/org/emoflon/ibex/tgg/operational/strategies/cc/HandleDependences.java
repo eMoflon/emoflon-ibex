@@ -5,12 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 

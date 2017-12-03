@@ -19,7 +19,6 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import gnu.trove.map.TIntObjectMap;
@@ -63,11 +62,23 @@ public abstract class CC<E> extends OperationalStrategy {
 	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
-	//collection of constraints for same CR belonging to same kernel
+	/**
+	 * Collection of constraints to guarantee uniqueness property: 
+	 * key: ComplementRule (CR) match; 
+	 * value: other CR matches of the same CR using the same context as CR match
+	 */
 	THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
 
+	/**
+	 * Collection of constraints to guarantee maximality property
+	 * value: kernels whose complement rules did not fulfill maximality property
+	 */
 	TIntHashSet invalidKernels = new TIntHashSet();
 	
+	/**
+	 * Collection of constraints to guarantee cyclic dependences are avoided
+	 * value: correctly applied bundles (kernel match + its CRs matches)
+	 */
 	HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
 	Bundle appliedBundle;
 	
@@ -123,41 +134,27 @@ public abstract class CC<E> extends OperationalStrategy {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		
 		HashMap<String, EObject> comatch = processOperationalRuleMatch(ruleName, match);
-		if (comatch != null && isKernelMatch(ruleName)) {
-					processComplementRuleMatches(comatch);
-				}
-		
+		if (comatch != null && isKernelMatch(ruleName))
+			processComplementRuleMatches(comatch);
 		removeOperationalRuleMatch(match);
-
 		return true;
 	}
 	
 	private void processComplementRuleMatches(HashMap<String, EObject> comatch) {
 		engine.updateMatches();
-		int kernelMatch = idToMatch.size();
+		int kernelMatchID = idToMatch.size();
 		Set<IMatch> contextRuleMatches = findAllContextRuleMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		
-		//has to be one hashmap per kernel to  correct matches
 		THashMap<Integer, THashSet<EObject>> contextNodesMatches = new THashMap<>();
 		// TODO [Milica]: implement check for contextEdgeMatches for same CR!
 		THashMap<Integer, THashSet<EObject>> contextEdgeMatches = new THashMap<>();
 		
 		while (complementRuleMatches.iterator().hasNext()) {
-				IMatch match = complementRuleMatches.iterator().next();
-				String ruleName = operationalMatchContainer.getRuleName(match);
-				
-				if (processOperationalRuleMatch(ruleName, match) != null) {
-					TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
-					int matchID = idToMatch.size();
-					
-					if(rule.isBounded()) {
-						findIdenticalMatches(rule, match, matchID, contextNodesMatches);
-					}
-			
-				}
-				complementRuleMatches.remove(match);
-				removeOperationalRuleMatch(match);
+			IMatch match = complementRuleMatches.iterator().next();
+			handleUniqueness(match, contextNodesMatches);
+			complementRuleMatches.remove(match);
+			removeOperationalRuleMatch(match);
 		}
 		
 		while (contextRuleMatches.iterator().hasNext()) {
@@ -167,7 +164,7 @@ public abstract class CC<E> extends OperationalStrategy {
 			if(rule.isBounded()) {
 				THashSet<EObject> contextNodes = getContextNodes(match);
 				if (!matchToContextNodes.containsValue(contextNodes)){
-					invalidKernels.add(kernelMatch);
+					invalidKernels.add(kernelMatchID);
 				}
 			}
 			contextRuleMatches.remove(match);
@@ -179,19 +176,23 @@ public abstract class CC<E> extends OperationalStrategy {
 		application.setAmalgamated(true);
 	}
 	
-	private String removeAllSuffixes(String name) {
-		if(name.indexOf("_CONTEXT") == -1)
-			return name;
-		return name.substring(0, name.indexOf("_CONTEXT"));
+	private void handleUniqueness(IMatch match, THashMap<Integer, THashSet<EObject>> contextNodesMatches) {
+		String ruleName = operationalMatchContainer.getRuleName(match);
+		if (processOperationalRuleMatch(ruleName, match) != null) {
+			TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
+			if(rule.isBounded())
+				findIdenticalMatches(idToMatch.size(), contextNodesMatches);
+		}
 	}
 
-	private void findIdenticalMatches(TGGRule rule, IMatch match, int matchID, THashMap<Integer, THashSet<EObject>> contextNodesMatches) { 
-		THashSet<EObject> contextNodes = matchToContextNodes.get(matchID);
+	private void findIdenticalMatches(int matchID, THashMap<Integer, THashSet<EObject>> contextNodesMatches) { 
+		THashSet<EObject> contextNodesForMatchID = matchToContextNodes.get(matchID);
 
 		for (Integer id : contextNodesMatches.keySet()) {
+		//check if matches belong to the same complement rule
 			if (matchIdToRuleName.get(matchID).equals(matchIdToRuleName.get(id))) {
-				if(matchToContextNodes.get(id).equals(contextNodes)) {
-					if (sameCRmatches.get(matchID) == null) {
+				if(matchToContextNodes.get(id).equals(contextNodesForMatchID)) {
+					if (!sameCRmatches.containsKey(matchID)) {
 						sameCRmatches.put(matchID, new TIntHashSet());
 						sameCRmatches.get(matchID).add(matchID);
 						sameCRmatches.get(matchID).add(id);
@@ -202,7 +203,13 @@ public abstract class CC<E> extends OperationalStrategy {
 				}
 			}
 		}
-		contextNodesMatches.put(matchID, contextNodes);
+		contextNodesMatches.put(matchID, contextNodesForMatchID);
+	}
+	
+	private String removeAllSuffixes(String name) {
+		if(name.indexOf(PatternSuffixes.GENForCC) == -1)
+			return name;
+		return name.substring(0, name.indexOf(PatternSuffixes.GENForCC));
 	}
 
 	private THashSet<EObject> getContextNodes(IMatch match){
@@ -223,11 +230,13 @@ public abstract class CC<E> extends OperationalStrategy {
 		return contextNodesNames;
 	}
 	
+	/**
+	 * @return Collection of all matches that has to be applied.
+	 */
 	private Set<IMatch> findAllContextRuleMatches() {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> m.patternName().contains("CONTEXT"))
+				.filter(m -> m.patternName().contains(PatternSuffixes.GENForCC))
 				.collect(Collectors.toSet());
-
 		return allComplementRuleMatches;
 	}
 	
@@ -235,7 +244,6 @@ public abstract class CC<E> extends OperationalStrategy {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
 				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.patternName())))
 				.collect(Collectors.toSet());
-
 		return allComplementRuleMatches;
 	}
 
