@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.SrcRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TrgRefinementsPattern;
@@ -20,7 +20,6 @@ import language.DomainType;
 import language.TGG;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class ForbidAllFilterACsPattern extends RulePartPattern {
@@ -57,7 +56,7 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 	}
 
 	protected void addDECPatternsAsTGGNegativeInvocations(TGGRule rule, DomainType domain) {
-		final Collection<IbexPattern> filterNACs = new ArrayList<>();
+		final Collection<IPattern> filterNACs = new ArrayList<>();
 		
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
@@ -82,7 +81,7 @@ public class ForbidAllFilterACsPattern extends RulePartPattern {
 		}
 		
 		// Use optimiser to remove some of the filter NACs
-		final Collection<IbexPattern> optimisedFilterNACs = filterNACs.stream()
+		final Collection<IPattern> optimisedFilterNACs = filterNACs.stream()
 							   .filter(nac -> !optimiser.isRedundantDueToEMFContainmentSemantics(nac))
 							   .collect(Collectors.toList());
 		

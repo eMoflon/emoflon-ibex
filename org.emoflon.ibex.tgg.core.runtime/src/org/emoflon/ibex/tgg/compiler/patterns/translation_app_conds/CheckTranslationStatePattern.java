@@ -9,7 +9,6 @@ import language.DomainType;
 import language.LanguageFactory;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 import runtime.RuntimePackage;
 

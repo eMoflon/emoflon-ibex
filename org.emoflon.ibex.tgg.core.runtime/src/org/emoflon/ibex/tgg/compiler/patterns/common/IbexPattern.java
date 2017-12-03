@@ -15,10 +15,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public abstract class IbexPattern {
+public abstract class IbexPattern implements IPattern {
 
 	protected TGGRule rule;
 	
@@ -71,11 +70,11 @@ public abstract class IbexPattern {
 		return result;
 	}
 
-	public Collection<TGGRuleNode> getBodyNodes() {
+	public Collection<TGGRuleNode> getLocalNodes() {
 		return bodyNodes;
 	}
 
-	public Collection<TGGRuleCorr> getBodyCorrNodes() {
+	public Collection<TGGRuleCorr> getLocalCorrNodes() {
 		Collection<TGGRuleCorr> corrs = new HashSet<>();
 		bodyNodes.stream().filter(n -> n instanceof TGGRuleCorr).forEach(n -> corrs.add((TGGRuleCorr) n));
 		return corrs;
@@ -83,11 +82,11 @@ public abstract class IbexPattern {
 
 	public Collection<TGGRuleNode> getBodySrcTrgNodes() {
 		Collection<TGGRuleNode> srcTrgNodes = new HashSet<TGGRuleNode>(bodyNodes);
-		srcTrgNodes.removeAll(getBodyCorrNodes());
+		srcTrgNodes.removeAll(getLocalCorrNodes());
 		return srcTrgNodes;
 	}
 
-	public Collection<TGGRuleEdge> getBodyEdges() {
+	public Collection<TGGRuleEdge> getLocalEdges() {
 		return bodyEdges;
 	}
 
@@ -110,7 +109,7 @@ public abstract class IbexPattern {
 		positiveInvocations.add(pi);
 	}
 	
-	public void addCustomPositiveInvocation(IbexPattern pattern, Map<TGGRuleElement, TGGRuleElement> mapping) {
+	public void addPositiveInvocation(IbexPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		positiveInvocations.add(pi);
 	}
@@ -119,24 +118,24 @@ public abstract class IbexPattern {
 		return negativeInvocations;
 	}
 	
-	public void addTGGNegativeInvocation(IbexPattern pattern) {
+	public void addTGGNegativeInvocation(IPattern pattern) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, getTGGVariableMapping(this, pattern));
 		negativeInvocations.add(pi);
 	}
 		
-	public void addTGGNegativeInvocations(Collection<IbexPattern> patterns){
-		for (IbexPattern n : patterns)
+	public void addTGGNegativeInvocations(Collection<IPattern> patterns){
+		for (IPattern n : patterns)
 			addTGGNegativeInvocation(n);
 	}
 	
-	public void addCustomNegativeInvocation(IbexPattern pattern, Map<TGGRuleElement, TGGRuleElement> mapping) {
+	public void addNegativeInvocation(IbexPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		negativeInvocations.add(pi);
 	}
 	
-	private Map<TGGRuleElement, TGGRuleElement> getTGGVariableMapping(IbexPattern rootPattern, IbexPattern invocationpattern) {
-		Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
-		Set<TGGRuleElement> rootElements = Stream.concat(rootPattern.getSignatureNodes().stream(), rootPattern.getBodyNodes().stream()).collect(Collectors.toSet());
+	private Map<TGGRuleNode, TGGRuleNode> getTGGVariableMapping(IPattern rootPattern, IPattern invocationpattern) {
+		Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
+		Set<TGGRuleNode> rootElements = Stream.concat(rootPattern.getSignatureNodes().stream(), rootPattern.getLocalNodes().stream()).collect(Collectors.toSet());
 		Collection<TGGRuleNode> invocationElements = invocationpattern.getSignatureNodes();
 
 		// map invocation elements to root elements based on their name

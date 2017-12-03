@@ -35,7 +35,7 @@ public class ConsistencyPattern extends IbexPattern {
 		super(rule);
 		this.factory = factory;
 		protocolNode = createProtocolNode(rule);
-		this.getBodyNodes().add(protocolNode);
+		this.getLocalNodes().add(protocolNode);
 		
 		createPatternNetwork();
 	}
@@ -85,11 +85,11 @@ public class ConsistencyPattern extends IbexPattern {
 						.findFirst()
 						.get();
 				
-				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
+				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
 				mapping.put(ruleApplicationNode, invokedRuleApplicationNode);
 				mapping.put(node, invokedObject);
 				
-				addCustomPositiveInvocation(markedPattern, mapping);
+				addPositiveInvocation(markedPattern, mapping);
 			}
 		});
 	}

@@ -10,7 +10,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import language.BindingType;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class GENPattern extends RulePartPattern {

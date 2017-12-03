@@ -6,7 +6,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import language.BindingType;
 import language.DomainType;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class TrgContextPattern extends RulePartPattern {

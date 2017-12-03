@@ -9,7 +9,6 @@ import language.BindingType;
 import language.DomainType;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class CorrContextPattern extends RulePartPattern {

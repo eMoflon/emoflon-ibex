@@ -8,7 +8,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class TrgRefinementsPattern extends RulePartPattern {

@@ -87,13 +87,13 @@ public class NacPattern extends RulePartPattern {
 	}
 	
 	@Override
-	public Collection<TGGRuleNode> getBodyNodes() {
+	public Collection<TGGRuleNode> getLocalNodes() {
 		return this.bodyNodes;
 	}
 
 	
 	@Override
-	public Collection<TGGRuleEdge> getBodyEdges() {
+	public Collection<TGGRuleEdge> getLocalEdges() {
 		return this.bodyEdges;
 	}
 

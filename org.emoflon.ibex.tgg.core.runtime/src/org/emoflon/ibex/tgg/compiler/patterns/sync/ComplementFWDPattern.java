@@ -52,14 +52,14 @@ public class ComplementFWDPattern extends RulePartPattern {
 				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
 
-				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
+				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
 				mapping.put(node, invokedObject);
 
 				if (node.getBindingType() == BindingType.CONTEXT)
-					addCustomNegativeInvocation(markedPattern, mapping);
+					addNegativeInvocation(markedPattern, mapping);
 				
 				else if (node.getBindingType() == BindingType.CREATE) {
-					addCustomPositiveInvocation(markedPattern, mapping);
+					addPositiveInvocation(markedPattern, mapping);
 				}
 					
 			}

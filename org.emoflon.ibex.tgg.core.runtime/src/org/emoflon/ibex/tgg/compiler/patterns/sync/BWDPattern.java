@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
@@ -58,8 +59,8 @@ public class BWDPattern extends RulePartPattern {
 		addTGGNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
 	}
 	
-	protected Collection<IbexPattern> collectGeneratedNACs() {
-		Collection<IbexPattern> nacs = factory.createPatternsForMultiplicityConstraints();
+	protected Collection<IPattern> collectGeneratedNACs() {
+		Collection<IPattern> nacs = factory.createPatternsForMultiplicityConstraints();
 		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
 		
 		return nacs.stream().filter(n -> {
@@ -80,19 +81,19 @@ public class BWDPattern extends RulePartPattern {
 				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
 
-				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
+				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
 				mapping.put(node, invokedObject);
 
 				if (positive)
-					addCustomPositiveInvocation(markedPattern, mapping);
+					addPositiveInvocation(markedPattern, mapping);
 				else
-					addCustomNegativeInvocation(markedPattern, mapping);
+					addNegativeInvocation(markedPattern, mapping);
 			}
 		}
 	}
 
 	protected void addFilterNACPatterns(DomainType domain) {
-		final Collection<IbexPattern> filterNACs = new ArrayList<>();
+		final Collection<IPattern> filterNACs = new ArrayList<>();
 		
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
@@ -117,7 +118,7 @@ public class BWDPattern extends RulePartPattern {
 		}
 		
 		// Use optimiser to remove some of the filter NACs
-		final Collection<IbexPattern> optimisedFilterNACs = filterNACs.stream()
+		final Collection<IPattern> optimisedFilterNACs = filterNACs.stream()
 							   .filter(nac -> !optimiser.isRedundantDueToEMFContainmentSemantics(nac))
 							   .collect(Collectors.toList());
 		

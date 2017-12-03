@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -109,13 +109,13 @@ public class IbexPatternOptimiser {
 	 * @return true if e either does not have an eOpposite in the body edges, or
 	 *         if it has an eOpposite but it is alphabetically "larger" than it.
 	 */
-	public boolean retainAsOpposite(TGGRuleEdge edge, IbexPattern ibexPattern) {
+	public boolean retainAsOpposite(TGGRuleEdge edge, IPattern ibexPattern) {
 		EReference eOpposite = edge.getType().getEOpposite();
 		
 		// No eOpposite possible anyway
 		if(eOpposite == null) return true;
 				
-		List<TGGRuleEdge> eOpposites = ibexPattern.getBodyEdges()
+		List<TGGRuleEdge> eOpposites = ibexPattern.getLocalEdges()
 				.stream()
 				.filter(otherEdge -> eOpposite.equals(otherEdge.getType()) &&
 						             edge.getSrcNode().equals(otherEdge.getTrgNode()) &&
@@ -142,14 +142,14 @@ public class IbexPatternOptimiser {
 	 * @param filterNAC
 	 * @return true if filter NAC is redundant
 	 */
-	public boolean isRedundantDueToEMFContainmentSemantics(IbexPattern filterNAC) {
+	public boolean isRedundantDueToEMFContainmentSemantics(IPattern filterNAC) {
 		// Premise is the only positive invocation
 		assert(filterNAC.getPositiveInvocations().size() == 1);
-		IbexPattern premise = premise(filterNAC);
+		IPattern premise = premise(filterNAC);
 		
 		// Check for expected structure:  three nodes and two edges
-		if(premise.getBodyNodes().size() == 3 && premise.getBodyEdges().size() == 2){
-			Iterator<TGGRuleEdge> iterator = premise.getBodyEdges().iterator();
+		if(premise.getLocalNodes().size() == 3 && premise.getLocalEdges().size() == 2){
+			Iterator<TGGRuleEdge> iterator = premise.getLocalEdges().iterator();
 			TGGRuleEdge edge1 = iterator.next();
 			TGGRuleEdge edge2 = iterator.next();
 		
@@ -173,8 +173,8 @@ public class IbexPatternOptimiser {
 	 * @param allFilterNACs
 	 * @return filter NACs that can be safely ignored
 	 */
-	public Collection<IbexPattern> ignoreDueToEOppositeSemantics(Collection<IbexPattern> allFilterNACs) {
-		List<IbexPattern> candidates = allFilterNACs
+	public Collection<IPattern> ignoreDueToEOppositeSemantics(Collection<IPattern> allFilterNACs) {
+		List<IPattern> candidates = allFilterNACs
 			.stream()
 			.filter(nac -> nac.getPositiveInvocations().size() == 1)
 			.filter(nac -> premiseHasTwoNodesAndOneEdge(nac.getPositiveInvocations().iterator().next().getInvokedPattern()))
@@ -188,9 +188,9 @@ public class IbexPatternOptimiser {
 				.collect(Collectors.toList());
 	}
 
-	private boolean isGreaterEOpposite(IbexPattern premise1, IbexPattern premise2) {
-		TGGRuleEdge e1 = premise1.getBodyEdges().iterator().next();
-		TGGRuleEdge e2 = premise2.getBodyEdges().iterator().next();
+	private boolean isGreaterEOpposite(IPattern premise1, IPattern premise2) {
+		TGGRuleEdge e1 = premise1.getLocalEdges().iterator().next();
+		TGGRuleEdge e2 = premise2.getLocalEdges().iterator().next();
 		
 		if(e2.getType().equals(e1.getType().getEOpposite())){
 			if(e1.getSrcNode().getName().equals(e2.getTrgNode().getName()) || 
@@ -202,12 +202,12 @@ public class IbexPatternOptimiser {
 		return false;
 	}
 
-	private IbexPattern premise(IbexPattern nac) {
+	private IPattern premise(IPattern nac) {
 		return nac.getPositiveInvocations().iterator().next().getInvokedPattern();
 	}
 
-	private boolean premiseHasTwoNodesAndOneEdge(IbexPattern premise) {
-		return premise.getBodyNodes().size() == 2 && premise.getBodyEdges().size() == 1;
+	private boolean premiseHasTwoNodesAndOneEdge(IPattern premise) {
+		return premise.getLocalNodes().size() == 2 && premise.getLocalEdges().size() == 1;
 	}
 	
 }

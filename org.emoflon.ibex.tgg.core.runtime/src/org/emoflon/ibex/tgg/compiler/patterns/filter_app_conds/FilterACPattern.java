@@ -8,7 +8,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class FilterACPattern extends RulePartPattern {
@@ -32,7 +31,7 @@ public class FilterACPattern extends RulePartPattern {
 	}
 	
 	private void addDECAsBodyNode() {
-		getBodyNodes().add(EcoreUtil.copy(FilterACHelper.getDECNode(premise.getRule())));
+		getLocalNodes().add(EcoreUtil.copy(FilterACHelper.getDECNode(premise.getRule())));
 	}
 
 	@Override
