@@ -79,16 +79,10 @@ public abstract class CC<E> extends OperationalStrategy {
 	 * value: correctly applied bundles (kernel match + its CRs matches)
 	 */
 	HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
-	Bundle appliedBundle;
+	Bundle lastAppliedBundle;
 	
 	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 	
-	HandleDependences hd;
-	HashMap<Integer, ArrayList<Integer>> b;
-	HashMap<Integer, ArrayList<Integer>> con;
-	//testGuava();
-	
-
 	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
 	}
@@ -146,7 +140,6 @@ public abstract class CC<E> extends OperationalStrategy {
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		
 		THashMap<Integer, THashSet<EObject>> crMatchToContextNodes = new THashMap<>();
-		THashMap<Integer, THashSet<EObject>> crMatchToContextEdges = new THashMap<>();
 		
 		while (complementRuleMatches.iterator().hasNext()) {
 			IMatch match = complementRuleMatches.iterator().next();
@@ -302,10 +295,15 @@ public abstract class CC<E> extends OperationalStrategy {
 	}
 
 	private void handleBundles(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+		Bundle appliedBundle;
 		TGGRule rule = getRule(ruleName);
 		if(! (rule instanceof TGGComplementRule)) {
 			appliedBundle = new Bundle(idCounter);
 			appliedBundles.add(appliedBundle);
+			lastAppliedBundle = appliedBundle;
+		}
+		else {
+			appliedBundle = lastAppliedBundle;
 		}
 		appliedBundle.addMatch(idCounter);
 		appliedBundle.addBundleContextNodes(getBlackNodes(match, comatch, ruleName));
@@ -466,13 +464,12 @@ public abstract class CC<E> extends OperationalStrategy {
 			}
 		}
 		
-		hd = new HandleDependences(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
-		b = hd.getBundlesDirectDependences();
-		con = hd.detectCycles();
+		HandleDependences handleCycles = new HandleDependences(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
+		HashMap<Integer, ArrayList<Integer>> cyclicBundles = handleCycles.detectAllBundleCycles();
 
-		for (int cycle : con.keySet()) {
-			Set<List<Integer>> raConstraints = generateConstraints(hd.getBundleWithDependedRuleApplication(cycle));
-			for (List<Integer> vars : raConstraints) {
+		for (int cycle : cyclicBundles.keySet()) {
+			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getDependedRuleApplications(cycle));
+			for (List<Integer> vars : cyclicConstraints) {
 				GRBLinExpr expr = new GRBLinExpr();
 				vars.forEach(v -> {
 					expr.addTerm(1.0, gurobiVars.get(v));
@@ -486,14 +483,12 @@ public abstract class CC<E> extends OperationalStrategy {
 		}
 	}
 
-	private Set<List<Integer>> generateConstraints(HashMap<Integer, HashSet<Integer>> bundleWithDependedRuleApplication) {
-		List<HashSet<Integer>> excludeRuleApplication = new ArrayList<>();
-		Set<List<Integer>> cartesianProduct = new HashSet<List<Integer>>();
-		for (HashSet<Integer> raX : bundleWithDependedRuleApplication.values()) {
-			excludeRuleApplication.add(raX);
+	private Set<List<Integer>> getCyclicConstraints(HashMap<Integer, HashSet<Integer>> dependedRuleApplications) {
+		List<HashSet<Integer>> ruleApplicationsToExclude = new ArrayList<>();
+		for (HashSet<Integer> ruleApplication : dependedRuleApplications.values()) {
+			ruleApplicationsToExclude.add(ruleApplication);
 		}
-		cartesianProduct = Sets.cartesianProduct(excludeRuleApplication);
-		return cartesianProduct;
+		return Sets.cartesianProduct(ruleApplicationsToExclude);
 	}
 
 	private void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {

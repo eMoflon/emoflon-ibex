@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.cc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -80,7 +79,7 @@ public class HandleDependences {
 	int cyclicDependceId = 1;
 	HashMap<Integer, ArrayList<Integer>> directDependences;
 
-	public HashMap<Integer, ArrayList<Integer>> detectCycles() {
+	public HashMap<Integer, ArrayList<Integer>> detectAllBundleCycles() {
 		directDependences = getBundlesDirectDependences();
 		//directDependences = getFakeDepedences();
 		HashMap<Integer, Boolean> visitedBundle = new HashMap<Integer, Boolean>();
@@ -124,7 +123,7 @@ public class HandleDependences {
 		
 	}
 	
-	public HashMap<Integer, HashSet<Integer>> getBundleWithDependedRuleApplication(int detectedCycle) {
+	public HashMap<Integer, HashSet<Integer>> getDependedRuleApplications(int detectedCycle) {
 		HashMap<Integer, HashSet<Integer>> bundleToDependRuleApplication = new HashMap<Integer, HashSet<Integer>>();
 		
 		ArrayList<Integer> detectedCycles = cyclicDependeces.get(detectedCycle);
@@ -165,29 +164,6 @@ public class HandleDependences {
 		return null;
 	}
 
-
-	private HashMap<Integer, ArrayList<Integer>> getFakeDepedences() {
-		HashMap<Integer, ArrayList<Integer>> fakeDependences = new HashMap<Integer, ArrayList<Integer>>();
-		ArrayList<Integer> v0 = new ArrayList<Integer>();
-		fakeDependences.put(0, v0);
-		ArrayList<Integer> v1 = new ArrayList<Integer>(Arrays.asList(0));
-		fakeDependences.put(1, v1);
-		ArrayList<Integer> v2 = new ArrayList<Integer>(Arrays.asList(0, 1));
-		fakeDependences.put(2, v2);
-		ArrayList<Integer> v3 = new ArrayList<Integer>(Arrays.asList(1, 8));
-		fakeDependences.put(3, v3);
-		ArrayList<Integer> v4 = new ArrayList<Integer>(Arrays.asList(2));
-		fakeDependences.put(4, v4);
-		ArrayList<Integer> v5 = new ArrayList<Integer>(Arrays.asList(2, 3));
-		fakeDependences.put(5, v5);
-		ArrayList<Integer> v6 = new ArrayList<Integer>(Arrays.asList(3));
-		fakeDependences.put(6, v6);
-		ArrayList<Integer> v7 = new ArrayList<Integer>(Arrays.asList(5, 6));
-		fakeDependences.put(7, v7);
-		ArrayList<Integer> v8 = new ArrayList<Integer>(Arrays.asList(5, 6));
-		fakeDependences.put(8, v8);
-		return fakeDependences;
-	}
 }
 
 
