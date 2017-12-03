@@ -143,51 +143,53 @@ public abstract class CC<E> extends OperationalStrategy {
 	private void processComplementRuleMatches(HashMap<String, EObject> comatch) {
 		engine.updateMatches();
 		int kernelMatchID = idToMatch.size();
-		Set<IMatch> contextRuleMatches = findAllContextRuleMatches();
+		Set<IMatch> contextRuleMatches = findAllComplementRuleContextMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		
-		THashMap<Integer, THashSet<EObject>> contextNodesMatches = new THashMap<>();
-		// TODO [Milica]: implement check for contextEdgeMatches for same CR!
-		THashMap<Integer, THashSet<EObject>> contextEdgeMatches = new THashMap<>();
+		THashMap<Integer, THashSet<EObject>> crMatchToContextNodes = new THashMap<>();
+		THashMap<Integer, THashSet<EObject>> crMatchToContextEdges = new THashMap<>();
 		
 		while (complementRuleMatches.iterator().hasNext()) {
 			IMatch match = complementRuleMatches.iterator().next();
-			handleUniqueness(match, contextNodesMatches);
+			applyMatchAndHandleUniqueness(match, crMatchToContextNodes);
 			complementRuleMatches.remove(match);
 			removeOperationalRuleMatch(match);
 		}
 		
+		//check if all found CR matches are really applied
 		while (contextRuleMatches.iterator().hasNext()) {
 			IMatch match = contextRuleMatches.iterator().next();
-			String ruleName = removeAllSuffixes(match.patternName());
-			TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
-			if(rule.isBounded()) {
-				THashSet<EObject> contextNodes = getContextNodes(match);
-				if (!matchToContextNodes.containsValue(contextNodes)){
-					invalidKernels.add(kernelMatchID);
-				}
-			}
+			handleMaximality(match, contextRuleMatches, kernelMatchID);
 			contextRuleMatches.remove(match);
-			removeOperationalRuleMatch(match);
 		}
 		
-		//close the kernel, so other complement rules cannot find this match anymore
+		//close the kernel, so other complement rules of another kernel cannot find this match anymore
 		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
 		application.setAmalgamated(true);
 	}
 	
-	private void handleUniqueness(IMatch match, THashMap<Integer, THashSet<EObject>> contextNodesMatches) {
+	private void handleMaximality(IMatch match, Set<IMatch> contextRuleMatches, int kernelMatchID) {
+		String ruleName = removeAllSuffixes(match.patternName());
+		TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
+		if(rule.isBounded()) {
+		//check if the complement rule was applied. If not, mark its kernel as invalid.
+			THashSet<EObject> contextNodes = getGenContextNodes(match);
+			if (!matchToContextNodes.containsValue(contextNodes))
+				invalidKernels.add(kernelMatchID);
+		}
+	}
+
+	private void applyMatchAndHandleUniqueness(IMatch match, THashMap<Integer, THashSet<EObject>> contextNodesMatches) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		if (processOperationalRuleMatch(ruleName, match) != null) {
 			TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
 			if(rule.isBounded())
-				findIdenticalMatches(idToMatch.size(), contextNodesMatches);
+				findDuplicatedMatches(idToMatch.size(), contextNodesMatches);
 		}
 	}
 
-	private void findIdenticalMatches(int matchID, THashMap<Integer, THashSet<EObject>> contextNodesMatches) { 
+	private void findDuplicatedMatches(int matchID, THashMap<Integer, THashSet<EObject>> contextNodesMatches) { 
 		THashSet<EObject> contextNodesForMatchID = matchToContextNodes.get(matchID);
-
 		for (Integer id : contextNodesMatches.keySet()) {
 		//check if matches belong to the same complement rule
 			if (matchIdToRuleName.get(matchID).equals(matchIdToRuleName.get(id))) {
@@ -212,28 +214,16 @@ public abstract class CC<E> extends OperationalStrategy {
 		return name.substring(0, name.indexOf(PatternSuffixes.GENForCC));
 	}
 
-	private THashSet<EObject> getContextNodes(IMatch match){
-		THashSet<EObject> contextNodes = new THashSet<EObject>();
-		for (String nodeName : match.parameterNames()) {
-			//if (getContextNodesNames(rule).contains(nodeName)) {
-				contextNodes.add(match.get(nodeName));
-			//}
-		}
+	private THashSet<EObject> getGenContextNodes(IMatch match){
+		THashSet<EObject> contextNodes = match.parameterNames().stream()
+				.map(n -> match.get(n)).collect(Collectors.toCollection(THashSet<EObject>::new));
 		return contextNodes;
-	}
-	
-	protected Set<String> getContextNodesNames(TGGRule rule) {
-		Set<String> contextNodesNames = rule.getNodes().stream()
-				.filter(r -> r.getBindingType() == BindingType.CONTEXT)
-				.map(n -> n.getName())
-				.collect(Collectors.toSet());
-		return contextNodesNames;
 	}
 	
 	/**
 	 * @return Collection of all matches that has to be applied.
 	 */
-	private Set<IMatch> findAllContextRuleMatches() {
+	private Set<IMatch> findAllComplementRuleContextMatches() {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
 				.filter(m -> m.patternName().contains(PatternSuffixes.GENForCC))
 				.collect(Collectors.toSet());
