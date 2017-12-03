@@ -40,6 +40,7 @@ import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
 import language.TGG;
 import language.TGGComplementRule;
+import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -613,6 +614,16 @@ public abstract class OperationalStrategy {
 
 	public TGG getTGG() {
 		return options.tgg();
+	}
+	
+	protected TGGRule getRule(String ruleName) {
+		TGGRule rule = getTGG().getRules().stream()
+				.filter(r -> r.getName().equals(ruleName)).findFirst().get();
+		return rule;
+	}
+	
+	protected boolean isKernelMatch(String kernelName) {
+		return getKernelRulesNames().contains(kernelName);
 	}
 	
 	protected Set<String> getComplementRulesNames(){
