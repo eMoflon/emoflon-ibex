@@ -49,7 +49,7 @@ public class HandleDependences {
 
 	private ArrayList<Integer> findDirectDependences(Bundle bundle) {
 		ArrayList<Integer> dependeces = new ArrayList<Integer>();
-		for (EObject node : bundle.getContextNodes()) {
+		for (EObject node : bundle.getBundleContextNodes()) {
 			TIntHashSet matches = nodeToMarkingMatches.get(node);
 			for (Integer match : matches.toArray()) {
 				if(!dependeces.contains(matchToBundle(match)))
@@ -57,7 +57,7 @@ public class HandleDependences {
 			}
 		}
 		
-		for (RuntimeEdge edge : bundle.getContextEdges()) {
+		for (RuntimeEdge edge : bundle.getBundleContextEdges()) {
 			TIntHashSet matches = edgeToMarkingMatches.get(edge);
 			for (Integer match : matches.toArray()) {
 				if(!dependeces.contains(matchToBundle(match)))
@@ -159,7 +159,7 @@ public class HandleDependences {
 
 	private Bundle getBundle(int b) {
 		for (Bundle bundle : appliedBundles) {
-			if(bundle.kernelMatch == b)
+			if(bundle.getKernelMatch() == b)
 				return bundle;
 		}
 		return null;

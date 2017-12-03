@@ -4,45 +4,46 @@ import java.util.HashSet;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
-import org.emoflon.ibex.tgg.operational.util.IMatch;
 
 import gnu.trove.set.hash.THashSet;
 
 public class Bundle {
 	
-	int kernelMatch;
-
-	HashSet<Integer> allMatches;
-	// Bookeeping of context and created elements(nodes&edges) with bundle
-	HashSet<EObject> contextNodes;
-	HashSet<RuntimeEdge> contextEdges;
+	/**
+	 * Collection of all matches belonging to the bundle (kernel and its complement matches)
+	 */
+	private HashSet<Integer> allMatches;
+	private int kernelMatch;
+	
+	private HashSet<EObject> bundleContextNodes;
+	private HashSet<RuntimeEdge> bundleContextEdges;
 
 	
 	public Bundle(int kernelMatch) {
 		this.kernelMatch = kernelMatch;
 		allMatches = new HashSet<Integer>();
-		contextNodes = new HashSet<EObject>();
-		contextEdges = new HashSet<RuntimeEdge>();
+		bundleContextNodes = new HashSet<EObject>();
+		bundleContextEdges = new HashSet<RuntimeEdge>();
 	}
 	
 	public void addMatch(Integer complementMatch) {
 		allMatches.add(complementMatch);
 	}
 	
-	public void addContextNodes(THashSet<EObject> blackNodes) {
-		contextNodes.addAll(blackNodes);
+	public void addBundleContextNodes(THashSet<EObject> blackNodes) {
+		bundleContextNodes.addAll(blackNodes);
 	}
 	
-	public void addContextEdges(THashSet<RuntimeEdge> blackEdges) {
-		contextEdges.addAll(blackEdges);
+	public void addBundleContextEdges(THashSet<RuntimeEdge> blackEdges) {
+		bundleContextEdges.addAll(blackEdges);
 	}
 	
-	public HashSet<EObject> getContextNodes() {
-		return contextNodes;
+	public HashSet<EObject> getBundleContextNodes() {
+		return bundleContextNodes;
 	}
 
-	public HashSet<RuntimeEdge> getContextEdges() {
-		return contextEdges;
+	public HashSet<RuntimeEdge> getBundleContextEdges() {
+		return bundleContextEdges;
 	}
 	
 	public HashSet<Integer> getAllMatches(){

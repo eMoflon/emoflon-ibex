@@ -35,7 +35,6 @@ import gurobi.GRBException;
 import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
-import language.BindingType;
 import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleNode;
@@ -63,20 +62,20 @@ public abstract class CC<E> extends OperationalStrategy {
 	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
 	/**
-	 * Collection of constraints to guarantee uniqueness property: 
+	 * Collection of constraints to guarantee uniqueness property;
 	 * key: ComplementRule (CR) match; 
 	 * value: other CR matches of the same CR using the same context as CR match
 	 */
 	THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
 
 	/**
-	 * Collection of constraints to guarantee maximality property
+	 * Collection of constraints to guarantee maximality property;
 	 * value: kernels whose complement rules did not fulfill maximality property
 	 */
 	TIntHashSet invalidKernels = new TIntHashSet();
 	
 	/**
-	 * Collection of constraints to guarantee cyclic dependences are avoided
+	 * Collection of constraints to guarantee cyclic dependences are avoided;
 	 * value: correctly applied bundles (kernel match + its CRs matches)
 	 */
 	HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
@@ -245,10 +244,6 @@ public abstract class CC<E> extends OperationalStrategy {
 			   if (v < 0)
 			    comatch.values().forEach(EcoreUtil::delete);
 		  }
-		  for (int match : idToMatch.keys()) {
-			System.out.println("Primenio: " + match + "  " + idToMatch.get(match));
-		}
-		  System.out.println();
 		  consistencyReporter.init(s, t, p, ruleInfos);
 	}
 
@@ -299,18 +294,22 @@ public abstract class CC<E> extends OperationalStrategy {
 		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(match, comatch, ruleName));
 		
+		handleBundles(match, comatch, ruleName);
+
+		idCounter++;
+		
+		super.prepareProtocol(ruleName, match, comatch);
+	}
+
+	private void handleBundles(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
 		TGGRule rule = getRule(ruleName);
 		if(! (rule instanceof TGGComplementRule)) {
 			appliedBundle = new Bundle(idCounter);
 			appliedBundles.add(appliedBundle);
 		}
 		appliedBundle.addMatch(idCounter);
-		appliedBundle.addContextNodes(getBlackNodes(match, comatch, ruleName));
-		appliedBundle.addContextEdges(getBlackEdges(match, comatch, ruleName));
-
-		idCounter++;
-		
-		super.prepareProtocol(ruleName, match, comatch);
+		appliedBundle.addBundleContextNodes(getBlackNodes(match, comatch, ruleName));
+		appliedBundle.addBundleContextEdges(getBlackEdges(match, comatch, ruleName));
 	}
 
 	private THashSet<EObject> getGreenNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
@@ -437,25 +436,6 @@ public abstract class CC<E> extends OperationalStrategy {
 			}
 		}
 		
-		hd = new HandleDependences(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
-		b = hd.getBundlesDirectDependences();
-		con = hd.detectCycles();
-		//testGuava();
-		for (int cycle : con.keySet()) {
-			Set<List<Integer>> raConstraints = generateConstraints(hd.getBundleWithDependedRuleApplication(cycle), gurobiVars, model);
-			for (List<Integer> vars : raConstraints) {
-				GRBLinExpr expr = new GRBLinExpr();
-				vars.forEach(v -> {
-					expr.addTerm(1.0, gurobiVars.get(v));
-					});
-				try {
-					model.addConstr(expr, GRB.LESS_EQUAL, vars.size()-1, "EXCL" + nameCounter++);
-				} catch (GRBException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
 		for (Integer match : sameCRmatches.keySet()) {
 			TIntHashSet vars = sameCRmatches.get(match);
 		
@@ -485,20 +465,28 @@ public abstract class CC<E> extends OperationalStrategy {
 				e.printStackTrace();
 			}
 		}
+		
+		hd = new HandleDependences(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
+		b = hd.getBundlesDirectDependences();
+		con = hd.detectCycles();
+
+		for (int cycle : con.keySet()) {
+			Set<List<Integer>> raConstraints = generateConstraints(hd.getBundleWithDependedRuleApplication(cycle));
+			for (List<Integer> vars : raConstraints) {
+				GRBLinExpr expr = new GRBLinExpr();
+				vars.forEach(v -> {
+					expr.addTerm(1.0, gurobiVars.get(v));
+					});
+				try {
+					model.addConstr(expr, GRB.LESS_EQUAL, vars.size()-1, "EXCL" + nameCounter++);
+				} catch (GRBException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
-	private void testGuava() {
-		List<HashSet<Integer>> excludeRuleApplication = new ArrayList<>();
-		Set<List<Integer>> cartesianProduct = new HashSet<List<Integer>>();
-		HashSet<Integer> first = Sets.newHashSet(4, 5);
-	    HashSet<Integer> second = Sets.newHashSet(7, 8);
-	    excludeRuleApplication.add(first);
-	    excludeRuleApplication.add(second);
-	    cartesianProduct = Sets.cartesianProduct(excludeRuleApplication);
-	    System.out.println("Bla");
-	}
-
-	private Set<List<Integer>> generateConstraints(HashMap<Integer, HashSet<Integer>> bundleWithDependedRuleApplication, TIntObjectHashMap<GRBVar> gurobiVars, GRBModel model) {
+	private Set<List<Integer>> generateConstraints(HashMap<Integer, HashSet<Integer>> bundleWithDependedRuleApplication) {
 		List<HashSet<Integer>> excludeRuleApplication = new ArrayList<>();
 		Set<List<Integer>> cartesianProduct = new HashSet<List<Integer>>();
 		for (HashSet<Integer> raX : bundleWithDependedRuleApplication.values()) {
