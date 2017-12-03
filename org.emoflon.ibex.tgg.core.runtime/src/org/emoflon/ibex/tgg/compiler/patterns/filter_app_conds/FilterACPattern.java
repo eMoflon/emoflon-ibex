@@ -4,6 +4,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 
 import language.TGGRuleEdge;
@@ -14,7 +15,7 @@ public class FilterACPattern extends IbexPattern {
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
-	private IbexPattern premise;
+	private IPattern premise;
 
 	public FilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());
@@ -30,7 +31,7 @@ public class FilterACPattern extends IbexPattern {
 	}
 	
 	private void addDECAsBodyNode() {
-		getLocalNodes().add(EcoreUtil.copy(FilterACHelper.getDECNode(premise.getRule())));
+		getLocalNodes().add(EcoreUtil.copy(FilterACHelper.getDECNode(((IbexPattern) premise).getRule())));
 	}
 
 	@Override

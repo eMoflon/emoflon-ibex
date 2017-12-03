@@ -2,30 +2,35 @@ package org.emoflon.ibex.tgg.compiler.patterns.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class IbexBasePattern implements IPattern {
-	protected String name;
+public abstract class IbexBasePattern implements IPattern {
+	private String name;
 	
-	protected Collection<TGGRuleNode> signatureNodes;
+	private Collection<TGGRuleNode> signatureNodes;
 	
-	protected Collection<TGGRuleNode> localNodes;
-	protected Collection<TGGRuleEdge> localEdges;
+	private Collection<TGGRuleNode> localNodes;
+	private Collection<TGGRuleEdge> localEdges;
 	
-	protected Collection<PatternInvocation> positiveInvocations;
-	protected Collection<PatternInvocation> negativeInvocations;
+	private Collection<PatternInvocation> positiveInvocations;
+	private Collection<PatternInvocation> negativeInvocations;
 	
-	protected IbexPatternOptimiser optimiser;
+	private IbexPatternOptimiser optimiser;
 
-	private IbexBasePattern(String name) {
-		this.name = name;
+	protected IbexBasePattern() {
+		this.name = "NO_NAME";
 		
 		signatureNodes = new ArrayList<>();
 		
@@ -63,12 +68,18 @@ public class IbexBasePattern implements IPattern {
 		return localEdges;
 	}
 
-	public Collection<TGGRuleNode> getBodySrcTrgNodes() {
+	public Collection<TGGRuleNode> getLocalSrcTrgNodes() {
 		Collection<TGGRuleNode> srcTrgNodes = new ArrayList<>(localNodes);
 		srcTrgNodes.removeAll(getLocalCorrNodes());
 		return srcTrgNodes;
 	}
 
+	public Collection<TGGRuleNode> getAllNodes(){
+		Collection<TGGRuleNode> allNodes = new ArrayList<>(signatureNodes);
+		allNodes.addAll(localNodes);
+		return allNodes;
+	}
+	
 	public Collection<PatternInvocation> getPositiveInvocations() {
 		return positiveInvocations;
 	}
@@ -77,36 +88,96 @@ public class IbexBasePattern implements IPattern {
 		return negativeInvocations;
 	}
 	
-	public void addPositiveInvocation(IbexBasePattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
+	public void addPositiveInvocation(IPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		positiveInvocations.add(pi);
 	}
 
-	public void addNegativeInvocation(IbexBasePattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
+	public void addNegativeInvocation(IPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		negativeInvocations.add(pi);
 	}
 
-	/* Factory method to create pattern */
+	/* Pattern initialisation */
 	
-	public static IbexBasePattern create(String name, ArrayList<TGGRuleNode> signatureNodes, ArrayList<TGGRuleNode> localNodes, ArrayList<TGGRuleEdge> localEdges) {
-		// Validation
+	protected void initialise(String name, Collection<TGGRuleNode> signatureNodes, Collection<TGGRuleNode> localNodes, Collection<TGGRuleEdge> localEdges) {
+		// Validation: local and signature nodes must be disjunct
 		Collection<TGGRuleNode> intersection = new ArrayList<>(signatureNodes);
 		intersection.retainAll(localNodes);
 		if(!intersection.isEmpty())
 			throw new IllegalArgumentException("Signature and local nodes must be disjunct but have an intersection: " + intersection);
 		
-		// Create pattern
-		IbexBasePattern pattern = new IbexBasePattern(name);
-		pattern.signatureNodes.addAll(signatureNodes);
-		pattern.localNodes.addAll(localNodes);
+		// Initialise pattern
+		this.name = name;
+		this.signatureNodes.addAll(signatureNodes);
+		this.localNodes.addAll(localNodes);
 		
 		// Optimise: only add one of two opposite edges
-		pattern.localEdges.addAll(
+		this.localEdges.addAll(
 			localEdges.stream()
-				     .filter(e -> pattern.optimiser.retainAsOpposite(e, pattern))
-				     .collect(Collectors.toList()));
+				     .filter(e -> optimiser.retainAsOpposite(e, this))
+				     .collect(Collectors.toList()));		
+	}
+	
+	/* Extra functionality */
+	
+	public Collection<Pair<TGGRuleNode, TGGRuleNode>> getInjectivityChecks() {
+		List<TGGRuleNode> nodes = new ArrayList<TGGRuleNode>(localNodes);
+		nodes.addAll(signatureNodes);
 		
-		return pattern;
+		Collection<Pair<TGGRuleNode, TGGRuleNode>> injectivityCheckPairs = new ArrayList<>();
+		IbexPatternOptimiser optimiser = new IbexPatternOptimiser();
+		for(int i = 0; i < nodes.size(); i++){
+			for(int j = i+1; j < nodes.size(); j++){
+				TGGRuleNode nodeI = nodes.get(i);
+				TGGRuleNode nodeJ = nodes.get(j);
+				if(compatibleTypes(nodeI.getType(), nodeJ.getType()))
+					if(!injectivityIsAlreadyChecked(nodeI, nodeJ))
+						if (optimiser.unequalConstraintNecessary(nodeI, nodeJ))
+							injectivityCheckPairs.add(MutablePair.of(nodeI, nodeJ));
+			}
+		}
+		
+		return injectivityCheckPairs;
+	}
+	
+	private boolean compatibleTypes(EClass class1, EClass class2){
+		return class1 == class2 || class1.getEAllSuperTypes().contains(class2) || class2.getEAllSuperTypes().contains(class1);
+	}
+	
+	/**
+	 * Based on knowledge about how this pattern is invoked or used, you can
+	 * choose to filter out pairs for which you know injectivity has already
+	 * been checked. This speeds up the matching process as this pair of
+	 * variables is excluded from {@link #getInjectivityChecks()} and does not
+	 * have to be checked.
+	 * 
+	 * @param node1
+	 * @param node2
+	 * @return true if this pair can be excluded from the injectivity check for
+	 *         this pattern.
+	 */
+	abstract protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2);
+	
+	public Map<TGGRuleNode, TGGRuleNode> getNameBasedMapping(IPattern invoker, IPattern invokee) {
+		Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
+		Collection<TGGRuleNode> preimages = invoker.getAllNodes();
+		Collection<TGGRuleNode> images = invokee.getSignatureNodes();
+
+		for (TGGRuleNode image : images) {
+			List<TGGRuleNode> preimage = preimages.stream()
+			         .filter(preimg -> image.getName().equals(preimg.getName()))
+			         .collect(Collectors.toList());
+			
+			if(preimage.isEmpty())
+				throw new IllegalStateException("The node " + image.getName() + " is missing in the Pattern " + invoker.getName() + " [" + preimages + "]");
+			
+			if(preimage.size() != 1)
+				throw new IllegalStateException("The node " + image.getName() + " does not have a unique preimage in the Pattern " + invoker.getName() + " [" + preimages + "]");
+			
+			mapping.put(preimage.get(0), image);
+		}
+		
+		return mapping;
 	}
 }

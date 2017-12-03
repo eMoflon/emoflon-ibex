@@ -109,7 +109,7 @@ public abstract class IbexPattern implements IPattern {
 		return positiveInvocations;
 	}
 	
-	public void addTGGPositiveInvocation(IbexPattern pattern) {
+	public void addTGGPositiveInvocation(IPattern pattern) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, getTGGVariableMapping(this, pattern));
 		positiveInvocations.add(pi);
 	}
@@ -211,4 +211,9 @@ public abstract class IbexPattern implements IPattern {
 		return rule instanceof TGGComplementRule;
 	}
 
+	public Collection<TGGRuleNode> getAllNodes(){
+		Collection<TGGRuleNode> allNodes = new ArrayList<>(getSignatureNodes());
+		allNodes.addAll(getLocalNodes());
+		return allNodes;
+	}
 }

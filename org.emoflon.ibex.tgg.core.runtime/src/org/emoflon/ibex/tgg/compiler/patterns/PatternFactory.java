@@ -35,7 +35,7 @@ import language.TGGRuleNode;
 
 public class PatternFactory {
 	private TGGRule rule;
-	private Map<String, IbexPattern> patterns;
+	private Map<String, IPattern> patterns;
 	private TGGCompiler compiler;
 	private static final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
 	
@@ -47,11 +47,11 @@ public class PatternFactory {
 		patterns = new LinkedHashMap<>();
 	}
 
-	public Map<String, IbexPattern> getPatternMap(){
+	public Map<String, IPattern> getPatternMap(){
 		return patterns;
 	}
 	
-	public Collection<IbexPattern> getPatterns() {
+	public Collection<IPattern> getPatterns() {
 		return Collections.unmodifiableCollection(patterns.values());
 	}
 	
@@ -225,10 +225,10 @@ public class PatternFactory {
 	
 	/**********  Generic Pattern Creation Methods ************/
 	
-	public IbexPattern create(Class<?> c) {
+	public IPattern create(Class<?> c) {
 		return createPattern(c.getName(), () -> {
 			try {
-				return (IbexPattern) c.getConstructor(PatternFactory.class).newInstance(this);
+				return (IPattern) c.getConstructor(PatternFactory.class).newInstance(this);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
@@ -237,9 +237,9 @@ public class PatternFactory {
 		});
 	}
 	
-	private IbexPattern createPattern(String key, Supplier<IbexPattern> creator){		
+	private IPattern createPattern(String key, Supplier<IPattern> creator){		
 		if (!patterns.containsKey(key)) {
-			IbexPattern newValue = creator.get();
+			IPattern newValue = creator.get();
 			if (newValue != null)
 				patterns.put(key, newValue);
 		}
@@ -252,15 +252,15 @@ public class PatternFactory {
 
 	/**********  Specific Pattern Creation Methods ************/	
 	
-	public IbexPattern createFilterACPatterns(DomainType domain) {
+	public IPattern createFilterACPatterns(DomainType domain) {
 		return createPattern(rule.getName() + ForbidAllFilterACsPattern.getPatternNameSuffix(domain), () -> new ForbidAllFilterACsPattern(domain, this));
 	}
 
-	public IbexPattern createFilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
+	public IPattern createFilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
 		return createPattern(rule.getName() + FilterACPattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new FilterACPattern(entryPoint, edgeType, eDirection, this));
 	}
 
-	public IbexPattern createSearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
+	public IPattern createSearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
 		return createPattern(rule.getName() + SearchEdgePattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new SearchEdgePattern(entryPoint, edgeType, eDirection, this));
 	}
 
