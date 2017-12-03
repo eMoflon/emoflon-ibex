@@ -21,17 +21,17 @@ public abstract class IbexBasePattern implements IPattern {
 	
 	// These are the nodes that need to be mapped when invoking this pattern
 	// Signature nodes are also the nodes that can be accessed from matches of this pattern
-	private Collection<TGGRuleNode> signatureNodes;
+	protected Collection<TGGRuleNode> signatureNodes;
 	
 	// Local nodes and edges are all other elements in the pattern
 	// Note that every node in the pattern is xor signature or local!
-	private Collection<TGGRuleNode> localNodes;
-	private Collection<TGGRuleEdge> localEdges;
+	protected Collection<TGGRuleNode> localNodes;
+	protected Collection<TGGRuleEdge> localEdges;
 	
-	private Collection<PatternInvocation> positiveInvocations;
-	private Collection<PatternInvocation> negativeInvocations;
+	protected Collection<PatternInvocation> positiveInvocations;
+	protected Collection<PatternInvocation> negativeInvocations;
 	
-	private IbexPatternOptimiser optimiser;
+	protected IbexPatternOptimiser optimiser;
 
 	protected IbexBasePattern() {
 		this.name = "NO_NAME";
