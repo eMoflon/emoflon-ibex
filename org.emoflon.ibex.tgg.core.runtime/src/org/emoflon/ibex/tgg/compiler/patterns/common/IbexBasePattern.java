@@ -19,8 +19,12 @@ import language.TGGRuleNode;
 public abstract class IbexBasePattern implements IPattern {
 	private String name;
 	
+	// These are the nodes that need to be mapped when invoking this pattern
+	// Signature nodes are also the nodes that can be accessed from matches of this pattern
 	private Collection<TGGRuleNode> signatureNodes;
 	
+	// Local nodes and edges are all other elements in the pattern
+	// Note that every node in the pattern is xor signature or local!
 	private Collection<TGGRuleNode> localNodes;
 	private Collection<TGGRuleEdge> localEdges;
 	
@@ -45,45 +49,47 @@ public abstract class IbexBasePattern implements IPattern {
 
 	/* Getters and setters */
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public Collection<TGGRuleNode> getSignatureNodes() {
 		return signatureNodes;
 	}
 	
+	@Override
 	public Collection<TGGRuleNode> getLocalNodes() {
 		return localNodes;
 	}
 
-	public Collection<TGGRuleCorr> getLocalCorrNodes() {
-		return localNodes.stream()
-						.filter(TGGRuleCorr.class::isInstance)
-						.map(TGGRuleCorr.class::cast)
-				        .collect(Collectors.toList());
+	@Override
+	public Collection<TGGRuleCorr> getAllCorrNodes() {
+		return getAllNodes().stream()
+						    .filter(TGGRuleCorr.class::isInstance)
+						    .map(TGGRuleCorr.class::cast)
+				            .collect(Collectors.toList());
 	}
 
+	@Override
 	public Collection<TGGRuleEdge> getLocalEdges() {
 		return localEdges;
 	}
 
-	public Collection<TGGRuleNode> getLocalSrcTrgNodes() {
-		Collection<TGGRuleNode> srcTrgNodes = new ArrayList<>(localNodes);
-		srcTrgNodes.removeAll(getLocalCorrNodes());
-		return srcTrgNodes;
-	}
-
+	@Override
 	public Collection<TGGRuleNode> getAllNodes(){
 		Collection<TGGRuleNode> allNodes = new ArrayList<>(signatureNodes);
 		allNodes.addAll(localNodes);
 		return allNodes;
 	}
 	
+	@Override
 	public Collection<PatternInvocation> getPositiveInvocations() {
 		return positiveInvocations;
 	}
 
+	@Override
 	public Collection<PatternInvocation> getNegativeInvocations() {
 		return negativeInvocations;
 	}
@@ -131,6 +137,7 @@ public abstract class IbexBasePattern implements IPattern {
 	
 	/* Extra functionality */
 	
+	@Override
 	public Collection<Pair<TGGRuleNode, TGGRuleNode>> getInjectivityChecks() {
 		List<TGGRuleNode> nodes = new ArrayList<TGGRuleNode>(localNodes);
 		nodes.addAll(signatureNodes);

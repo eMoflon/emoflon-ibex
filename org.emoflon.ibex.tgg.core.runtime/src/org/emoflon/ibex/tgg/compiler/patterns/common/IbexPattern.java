@@ -79,7 +79,7 @@ public abstract class IbexPattern implements IPattern {
 		return bodyNodes;
 	}
 
-	public Collection<TGGRuleCorr> getLocalCorrNodes() {
+	public Collection<TGGRuleCorr> getAllCorrNodes() {
 		Collection<TGGRuleCorr> corrs = new HashSet<>();
 		bodyNodes.stream().filter(n -> n instanceof TGGRuleCorr).forEach(n -> corrs.add((TGGRuleCorr) n));
 		return corrs;
@@ -87,7 +87,7 @@ public abstract class IbexPattern implements IPattern {
 
 	public Collection<TGGRuleNode> getBodySrcTrgNodes() {
 		Collection<TGGRuleNode> srcTrgNodes = new HashSet<TGGRuleNode>(bodyNodes);
-		srcTrgNodes.removeAll(getLocalCorrNodes());
+		srcTrgNodes.removeAll(getAllCorrNodes());
 		return srcTrgNodes;
 	}
 

@@ -14,7 +14,7 @@ public interface IPattern {
 	Collection<TGGRuleNode> getSignatureNodes();
 	Collection<TGGRuleNode> getLocalNodes();
 	Collection<TGGRuleEdge> getLocalEdges();
-	Collection<TGGRuleCorr> getLocalCorrNodes();
+	Collection<TGGRuleCorr> getAllCorrNodes();
 	Collection<TGGRuleNode> getAllNodes();
 	
 	Collection<PatternInvocation> getPositiveInvocations();
