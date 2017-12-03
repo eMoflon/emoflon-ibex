@@ -22,6 +22,7 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
+@Deprecated
 public abstract class IbexPattern implements IPattern {
 
 	protected TGGRule rule;
