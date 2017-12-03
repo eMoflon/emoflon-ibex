@@ -306,6 +306,7 @@ public abstract class CC<E> extends OperationalStrategy {
 			appliedBundle = lastAppliedBundle;
 		}
 		appliedBundle.addMatch(idCounter);
+		// add context nodes and edges of this concrete match to its bundle
 		appliedBundle.addBundleContextNodes(getBlackNodes(match, comatch, ruleName));
 		appliedBundle.addBundleContextEdges(getBlackEdges(match, comatch, ruleName));
 	}
@@ -464,8 +465,8 @@ public abstract class CC<E> extends OperationalStrategy {
 			}
 		}
 		
-		HandleDependences handleCycles = new HandleDependences(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
-		HashMap<Integer, ArrayList<Integer>> cyclicBundles = handleCycles.detectAllBundleCycles();
+		HandleDependencies handleCycles = new HandleDependencies(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
+		HashMap<Integer, ArrayList<Integer>> cyclicBundles = handleCycles.getCyclicDependenciesBetweenBundles();
 
 		for (int cycle : cyclicBundles.keySet()) {
 			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getDependedRuleApplications(cycle));
@@ -484,11 +485,11 @@ public abstract class CC<E> extends OperationalStrategy {
 	}
 
 	private Set<List<Integer>> getCyclicConstraints(HashMap<Integer, HashSet<Integer>> dependedRuleApplications) {
-		List<HashSet<Integer>> ruleApplicationsToExclude = new ArrayList<>();
+		List<HashSet<Integer>> excludedRuleApplications = new ArrayList<>();
 		for (HashSet<Integer> ruleApplication : dependedRuleApplications.values()) {
-			ruleApplicationsToExclude.add(ruleApplication);
+			excludedRuleApplications.add(ruleApplication);
 		}
-		return Sets.cartesianProduct(ruleApplicationsToExclude);
+		return Sets.cartesianProduct(excludedRuleApplications);
 	}
 
 	private void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
