@@ -15,24 +15,25 @@ import language.TGGRuleNode;
 
 public class SrcContextPattern extends IbexBasePattern {
 
-	protected SrcContextPattern() {
-		
-	}
-	
 	public SrcContextPattern(PatternFactory factory) {
 		initialise(factory.getRule());
+		createPatternNetwork(factory);
+	}
+	
+	private void createPatternNetwork(PatternFactory factory) {
+		// Leaf pattern
 	}
 	
 	protected void initialise(TGGRule rule) {
 		String name = rule.getName() + PatternSuffixes.SRC_CONTEXT;
 		
 		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
-					   .filter(this::isSignatureNode)
-					   .collect(Collectors.toList());
+					.filter(this::isSignatureNode)
+					.collect(Collectors.toList());
 		
 		Collection<TGGRuleEdge> localEdges = rule.getEdges().stream()
-				   .filter(this::isLocalEdge)
-				   .collect(Collectors.toList());
+					.filter(this::isLocalEdge)
+					.collect(Collectors.toList());
 		
 		Collection<TGGRuleNode> localNodes = Collections.emptyList();
 		

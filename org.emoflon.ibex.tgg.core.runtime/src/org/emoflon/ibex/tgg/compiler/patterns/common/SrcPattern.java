@@ -21,8 +21,7 @@ public class SrcPattern extends IbexBasePattern {
 	}
 	
 	private void createPatternNetwork(PatternFactory factory) {
-		IPattern invokee = factory.create(SrcContextPattern.class);
-		addPositiveInvocation(invokee, getNameBasedMapping(this, invokee));
+		addPositiveInvocation(factory.create(SrcContextPattern.class));
 	}
 
 	protected void initialise(TGGRule rule) {
