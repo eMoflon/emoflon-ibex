@@ -11,7 +11,6 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class FilterACPattern extends IbexPattern {
-
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
