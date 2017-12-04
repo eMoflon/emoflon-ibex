@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -153,7 +154,7 @@ public class FilterACHelper {
 				.filter(r -> r.getEType().equals(nodeClass) || r.eContainer().equals(nodeClass)).collect(Collectors.toList());
 	}
 
-	protected static TGGRuleNode getDECNode(TGGRule rule) {
-		return rule.getNodes().stream().filter(n -> n.getName().endsWith(DEC_NODE)).findFirst().get();
+	protected static TGGRuleNode getDECNode(IPattern p) {
+		return p.getAllNodes().stream().filter(n -> n.getName().endsWith(DEC_NODE)).findFirst().get();
 	}
 }
