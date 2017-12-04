@@ -129,11 +129,6 @@ public class PatternSuffixes {
 	 * fragments.
 	 */
 	public static final String CC = SEP + "CC";
-	
-	/** Used for consistency checking ONLY. No new links are created, only
-	 *  consistency checking of existing links. 
-	 */
-	public static final String CO = SEP + "CO";
 
 	/**
 	 * Contains the entire original TGG rule except for the created corr-elements

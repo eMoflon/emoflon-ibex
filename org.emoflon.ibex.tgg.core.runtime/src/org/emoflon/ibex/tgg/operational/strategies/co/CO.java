@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
@@ -13,7 +14,7 @@ import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 import runtime.TGGRuleApplication;
 
-public abstract class CO<E> extends OperationalStrategy {
+public abstract class CO extends OperationalStrategy {
 	
 	public CO(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
@@ -31,17 +32,22 @@ public abstract class CO<E> extends OperationalStrategy {
 
 	@Override
 	public void loadModels() throws IOException {
+		s = loadResource(projectPath + "/instances/src.xmi");
+		t = loadResource(projectPath + "/instances/trg.xmi");
+		c = loadResource(projectPath + "/instances/corr.xmi");
+		p = createResource(projectPath + "/instances/protocol.xmi");
 
+		EcoreUtil.resolveAll(rs);
 	}
 
 	@Override
 	public void saveModels() throws IOException {
-
+		p.save(null);		
 	}
 
 	@Override
 	public boolean isPatternRelevant(String patternName) {
-		return patternName.endsWith(PatternSuffixes.CO);
+		return patternName.endsWith(PatternSuffixes.WHOLE);
 	}
 	
 	@Override
@@ -52,6 +58,13 @@ public abstract class CO<E> extends OperationalStrategy {
 	@Override
 	protected void wrapUp() {
 		 
+	}
+	
+	@Override
+	public void run() throws IOException {
+		engine.updateMatches();
+		
+		wrapUp();
 	}
 
 	@Override
@@ -76,8 +89,8 @@ public abstract class CO<E> extends OperationalStrategy {
 
 	@Override
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
-		return library.getSorted_CO();
+		// With respect to attribute constraints, there is no difference between CC and CO!
+		return library.getSorted_CC();
 	}
-
 
 }
