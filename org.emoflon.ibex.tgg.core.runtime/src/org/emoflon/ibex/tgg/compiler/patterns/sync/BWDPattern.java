@@ -77,7 +77,7 @@ public class BWDPattern extends IbexPattern {
 		for (TGGRuleElement el : getSignatureNodes()) {
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && node.getDomainType().equals(DomainType.TRG)) {
-				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
+				IPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
 
 				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();

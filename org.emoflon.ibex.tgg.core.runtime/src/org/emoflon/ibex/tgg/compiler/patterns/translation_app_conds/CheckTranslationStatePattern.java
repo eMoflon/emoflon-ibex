@@ -1,19 +1,21 @@
 package org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
-import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
-public class CheckTranslationStatePattern extends IbexPattern {
-	
+public class CheckTranslationStatePattern extends IbexBasePattern {
 	private static final String PROTOCOL_NAME = "protocol";
 	private static final String OBJECT_NAME = "checkedObject";
 	
@@ -23,33 +25,46 @@ public class CheckTranslationStatePattern extends IbexPattern {
 	private static final String CONTEXT_SRC_NAME = "contextSrc";
 	private static final String CONTEXT_TRG_NAME = "contextTrg";
 	
-	private boolean localProtocol = false;
-	private boolean marksContext = false; 
-	
+	private boolean localProtocol;
+	private boolean marksContext; 
 	private DomainType domain;
 	
 	public CheckTranslationStatePattern(DomainType domain, boolean localProtocol, boolean context) {
-		super(createMarkedPatternRule(domain, localProtocol, context));
 		this.localProtocol = localProtocol;
 		this.marksContext = context;
 		this.domain = domain;
-		initialize();
+		
+		initialise(domain, localProtocol, context);
 	}
 	
 	public CheckTranslationStatePattern(CheckTranslationStatePattern localPattern, DomainType domain, boolean localProtocol) {
-		super(createMarkedPatternRule(localPattern, domain));
 		this.localProtocol = localProtocol;
+		this.marksContext = false;
 		this.domain = domain;
-		initialize();
+		
+		initialise(localPattern);
 	}
 	
-	private static TGGRule createMarkedPatternRule(CheckTranslationStatePattern localPattern, DomainType domain) {
-		return localPattern.getRule();
+	private void initialise(CheckTranslationStatePattern localPattern) {
+		Collection<TGGRuleNode> signatureNodes = localPattern.getSignatureNodes().stream()
+				   .filter(this::isSignatureNode)
+				   .collect(Collectors.toList());
+	
+		Collection<TGGRuleEdge> localEdges = localPattern.getLocalEdges();
+	
+		Collection<TGGRuleNode> localNodes = localPattern.getSignatureNodes().stream()
+				   .filter(node -> !isSignatureNode(node))
+				   .collect(Collectors.toList());
+	
+		super.initialise(determineName(), signatureNodes, localNodes, localEdges);
 	}
 
-	private static TGGRule createMarkedPatternRule(DomainType domain, boolean localProtocol, boolean context) {
+	private boolean isSignatureNode(TGGRuleNode node) {
+		return localProtocol ? !(node.getName().equals(PROTOCOL_NAME)) : true;
+	}
+	
+	private void initialise(DomainType domain, boolean localProtocol, boolean context) {
 		LanguageFactory factory = LanguageFactory.eINSTANCE;
-		TGGRule rule = factory.createTGGRule();
 		
 		TGGRuleNode protocol = factory.createTGGRuleNode();
 		TGGRuleNode checkedObject = factory.createTGGRuleNode();
@@ -88,36 +103,23 @@ public class CheckTranslationStatePattern extends IbexPattern {
 		edge.setSrcNode(protocol);
 		edge.setTrgNode(checkedObject);
 		
-		rule.getNodes().add(protocol);
-		rule.getNodes().add(checkedObject);
-		rule.getEdges().add(edge);
-		
-		return rule;
-	}
+		Collection<TGGRuleNode> signatureNodes = Arrays.asList(protocol, checkedObject).stream()
+				   .filter(this::isSignatureNode)
+				   .collect(Collectors.toList());
 
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return true;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return true;
-	}
-
-	@Override
-	public boolean isRelevantForSignature(TGGRuleNode e) {
-		return localProtocol ? !(e.getName().equals(PROTOCOL_NAME)) : true;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return (localProtocol ? PatternSuffixes.LOCAL_MARKED : "") + PatternSuffixes.SEP + domain.getName();
-	}
+		Collection<TGGRuleNode> localNodes = Arrays.asList(protocol, checkedObject).stream()
+				   .filter(node -> !isSignatureNode(node))
+				   .collect(Collectors.toList());
 	
-	@Override
-	public String getName() {
-		return (marksContext ? "ContextMarkedPattern" : "MarkedPattern") + getPatternNameSuffix();
+		Collection<TGGRuleEdge> localEdges = Arrays.asList(edge);
+	
+		super.initialise(determineName(), signatureNodes, localNodes, localEdges);
+	}
+
+	public String determineName() {
+		return (marksContext ? "ContextMarkedPattern" : "MarkedPattern") +
+			   (localProtocol ? PatternSuffixes.LOCAL_MARKED : "") +
+			   PatternSuffixes.SEP + domain.getName();
 	}
 
 	public DomainType getDomain() {
