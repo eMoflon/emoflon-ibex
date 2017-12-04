@@ -111,6 +111,22 @@ public interface TGGAttributeConstraintLibrary extends EObject {
 	EList<TGGAttributeConstraint> getSorted_CC();
 
 	/**
+	 * Returns the value of the '<em><b>Sorted CO</b></em>' reference list.
+	 * The list contents are of type {@link language.csp.TGGAttributeConstraint}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Sorted CO</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Sorted CO</em>' reference list.
+	 * @see language.csp.CspPackage#getTGGAttributeConstraintLibrary_Sorted_CO()
+	 * @model
+	 * @generated
+	 */
+	EList<TGGAttributeConstraint> getSorted_CO();
+	
+	/**
 	 * Returns the value of the '<em><b>Sorted MODELGEN</b></em>' reference list.
 	 * The list contents are of type {@link language.csp.TGGAttributeConstraint}.
 	 * <!-- begin-user-doc -->
