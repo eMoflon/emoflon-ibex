@@ -113,6 +113,14 @@ public abstract class IbexBasePattern implements IPattern {
 		PatternInvocation pi = new PatternInvocation(this, pattern, getNameBasedMapping(this, pattern));
 		negativeInvocations.add(pi);
 	}
+	
+	public void addPositiveInvocations(Collection<IPattern> patterns) {
+		for (IPattern p : patterns) addPositiveInvocation(p);
+	}
+	
+	public void addNegativeInvocations(Collection<IPattern> patterns) {
+		for (IPattern p : patterns) addNegativeInvocation(p);
+	}
 
 	/* Pattern initialisation */
 	
