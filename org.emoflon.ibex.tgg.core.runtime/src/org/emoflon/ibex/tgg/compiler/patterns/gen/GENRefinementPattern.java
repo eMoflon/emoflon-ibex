@@ -76,16 +76,16 @@ public class GENRefinementPattern extends GENPattern {
 	private void embedKernelConsistencyPatternNodes() {
 		Collection<TGGRuleNode> kernelNodes = ((TGGComplementRule) rule).getKernel().getNodes();
 			
-		this.getBodyNodes().add(createProtocolNode());
+		this.getLocalNodes().add(createProtocolNode());
 		
 		for (TGGRuleElement kernelNode : kernelNodes) {
 			if(kernelNodeIsNotInComplement(kernelNode) && kernelNode instanceof TGGRuleNode)
-				this.getBodyNodes().add(createProxyNode((TGGRuleNode) kernelNode));
+				this.getLocalNodes().add(createProxyNode((TGGRuleNode) kernelNode));
 			}
 		}
 	
 	private boolean kernelNodeIsNotInComplement(TGGRuleElement kernelNode) {
-		return getSignatureElements(rule).stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
+		return getSignatureNodes(rule).stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
 	}
 
 	/* Creates a simple node with just the same name and type of kernelNode */

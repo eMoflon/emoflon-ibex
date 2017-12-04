@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="org/emoflon/ibex/tgg/compiler/pattern/rulepart/support/DEC/DECTrackingHelper.java" kind="src" path="src"/>
+	<classpathentry excluding="org/emoflon/ibex/tgg/compiler/pattern/rulepart/support/DEC/DECTrackingHelper.java|org/emoflon/ibex/tgg/compiler/patterns/common/RulePartPattern.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="xtend-gen"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="lib" path="lib/gurobi.jar"/>

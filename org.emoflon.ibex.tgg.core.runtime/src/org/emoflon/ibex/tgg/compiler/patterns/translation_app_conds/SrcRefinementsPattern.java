@@ -2,16 +2,15 @@ package org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class SrcRefinementsPattern extends RulePartPattern {
+public class SrcRefinementsPattern extends IbexPattern {
 
 	public SrcRefinementsPattern(PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());
@@ -44,7 +43,7 @@ public class SrcRefinementsPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return e.getDomainType() == DomainType.SRC;
 	}
 

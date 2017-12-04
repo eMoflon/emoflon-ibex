@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ComplementBWDPattern;
@@ -21,7 +22,7 @@ import language.TGGComplementRule;
 import language.TGGRule;
 
 public class TGGCompiler {	
-	private Map<String, Collection<IbexPattern>> ruleToPatterns;
+	private Map<String, Collection<IPattern>> ruleToPatterns;
 	private IbexOptions options;
 	private Map<String, PatternFactory> factories;
 		
@@ -31,7 +32,7 @@ public class TGGCompiler {
 		ruleToPatterns = new LinkedHashMap<>();
 	}
 	
-	public Map<String, Collection<IbexPattern>> getRuleToPatternMap(){
+	public Map<String, Collection<IPattern>> getRuleToPatternMap(){
 		return Collections.unmodifiableMap(ruleToPatterns);
 	}
 
@@ -44,6 +45,8 @@ public class TGGCompiler {
 
 			// Consistency checking
 			factory.create(CCPattern.class);
+			if (rule instanceof TGGComplementRule)
+				factory.create(GENForCCPattern.class);
 
 			// Synchronisation
 			factory.create(FWDPattern.class);

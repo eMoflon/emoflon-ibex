@@ -3,8 +3,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.CorrPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
@@ -12,10 +11,9 @@ import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class WholeRulePattern extends RulePartPattern {
+public class WholeRulePattern extends IbexPattern {
 	protected PatternFactory factory;
 
 	public WholeRulePattern(PatternFactory factory) {
@@ -32,8 +30,7 @@ public class WholeRulePattern extends RulePartPattern {
 	protected void createPatternNetwork() {
 		addTGGPositiveInvocation(factory.create(SrcPattern.class));
 		addTGGPositiveInvocation(factory.create(TrgPattern.class));
-		// addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
-		addTGGPositiveInvocation(factory.create(CorrPattern.class));
+		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addTGGPositiveInvocation(factory.getFactory(superRule).create(WholeRulePattern.class));
@@ -51,12 +48,11 @@ public class WholeRulePattern extends RulePartPattern {
 
 	@Override
 	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return true;
-		//return n.getBindingType() == BindingType.CREATE && n.getDomainType() == DomainType.CORR;
+		return n.getBindingType() == BindingType.CREATE && n.getDomainType() == DomainType.CORR;
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return true;
 	}
 

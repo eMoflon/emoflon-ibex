@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -20,9 +19,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class ComplementBWDPattern extends RulePartPattern {
+public class ComplementBWDPattern extends IbexPattern {
 	protected PatternFactory factory;
-	private Collection<TGGRuleElement> signatureElements;
+	private Collection<TGGRuleNode> signatureElements;
 
 	public ComplementBWDPattern(PatternFactory factory) {
 		this(factory.getFlattenedVersionOfRule(), factory);
@@ -45,20 +44,20 @@ public class ComplementBWDPattern extends RulePartPattern {
 	}
 
 	protected void createMarkedInvocations() {
-		for (TGGRuleElement e : getSignatureElements()) {
+		for (TGGRuleElement e : getSignatureNodes()) {
 			TGGRuleNode node = (TGGRuleNode) e;
 			if (nodeIsNotInKernel(node) && node.getDomainType().equals(DomainType.TRG)) {
 				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
-				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findAny().get();
+				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findAny().get();
 
-				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
+				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
 				mapping.put(node, invokedObject);
 
 				if (node.getBindingType() == BindingType.CREATE)
-					addCustomNegativeInvocation(markedPattern, mapping);
+					addNegativeInvocation(markedPattern, mapping);
 				
 				else if (node.getBindingType() == BindingType.CONTEXT) {
-					addCustomPositiveInvocation(markedPattern, mapping);
+					addPositiveInvocation(markedPattern, mapping);
 				}
 					
 			}
@@ -66,7 +65,7 @@ public class ComplementBWDPattern extends RulePartPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		throw new IllegalStateException();
 	}
 
@@ -117,14 +116,14 @@ public class ComplementBWDPattern extends RulePartPattern {
 		Collection<TGGRuleNode> kernelNodes = ((TGGComplementRule) rule).getKernel().getNodes();
 		for (TGGRuleNode n : kernelNodes) {
 			if(n.getDomainType() == DomainType.TRG || n.getBindingType() == BindingType.CONTEXT)
-				getSignatureElements().add(createProxyNode(n));
+				getSignatureNodes().add(createProxyNode(n));
 			}
 	}
 
 	private void addComplementTargetAndContextNodes() {
 		for (TGGRuleNode n : rule.getNodes()) {
 			if(nodeIsNotInKernel(n) && (n.getDomainType() == DomainType.TRG || n.getBindingType() == BindingType.CONTEXT))
-				getSignatureElements().add(createProxyNode(n));
+				getSignatureNodes().add(createProxyNode(n));
 		}
 	}
 	
@@ -142,9 +141,9 @@ public class ComplementBWDPattern extends RulePartPattern {
 	}
 	
 	@Override
-	public Collection<TGGRuleElement> getSignatureElements() {
+	public Collection<TGGRuleNode> getSignatureNodes() {
 		if (signatureElements == null) {
-			signatureElements = new HashSet<TGGRuleElement>();
+			signatureElements = new HashSet<TGGRuleNode>();
 		}
 		return signatureElements;
 	}

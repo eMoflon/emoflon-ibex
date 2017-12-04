@@ -9,7 +9,6 @@ import language.DomainType;
 import language.LanguageFactory;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
@@ -106,7 +105,7 @@ public class CheckTranslationStatePattern extends IbexPattern {
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
+	public boolean isRelevantForSignature(TGGRuleNode e) {
 		return localProtocol ? !(e.getName().equals(PROTOCOL_NAME)) : true;
 	}
 
@@ -130,5 +129,10 @@ public class CheckTranslationStatePattern extends IbexPattern {
 	
 	public boolean marksContext() {
 		return marksContext;
+	}
+
+	@Override
+	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
+		return true;
 	}
 }

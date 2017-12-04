@@ -5,20 +5,25 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public abstract class IbexPattern {
+@Deprecated
+public abstract class IbexPattern implements IPattern {
 
 	protected TGGRule rule;
 	
@@ -49,49 +54,13 @@ public abstract class IbexPattern {
 				   			 .collect(Collectors.toSet());
 	}
 	
-	/**
-	 * Auxiliary method used by {@link #calculateBodyEdges(Collection)} to
-	 * decide if e should be part of this pattern or not.
-	 * 
-	 * @param e
-	 *            An edge of the underlying TGG rule of this pattern
-	 * @return true if e should be a body edge of the pattern, otherwise e is
-	 *         not part of the pattern
-	 */
 	protected abstract boolean isRelevantForBody(TGGRuleEdge e);
 
-	/**
-	 * Auxiliary method used by {@link #calculateBodyNodes(Collection)} to
-	 * decide if n should be part of this pattern or not.
-	 * 
-	 * @param n
-	 *            A node of the underlying TGG rule of this pattern
-	 * @return true if n should be a body node of the pattern, otherwise n is
-	 *         not part of the pattern
-	 */
 	protected abstract boolean isRelevantForBody(TGGRuleNode n);
 
-	/**
-	 * Used by {@link #getSignatureElements()} to determine the signature of
-	 * this pattern. All variables in a pattern are divided into either local
-	 * variables or signature variables. This distinction is based on if any
-	 * external component is interested in the computed values of a certain
-	 * variable or not. If this is not the case then the variable should be
-	 * declared as being local to the pattern as this improves efficiency.
-	 * 
-	 * @param e
-	 *            An edge or a node of the underlying TGG rule.
-	 * @return true if e should be part of the patterns signature or not.
-	 */
-	public abstract boolean isRelevantForSignature(TGGRuleElement e);
+	public abstract boolean isRelevantForSignature(TGGRuleNode e);
 
-
-	/**
-	 * Each signature element e of a pattern corresponds to a parameter:
-	 * 
-	 * pattern(e1 : <type of e1>, e2: <type of e2,...)
-	 */
-	protected Collection<TGGRuleElement> getSignatureElements(TGGRule rule) {
+	protected Collection<TGGRuleNode> getSignatureNodes(TGGRule rule) {
 		return rule.getNodes().stream().filter(e -> isRelevantForSignature(e)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
@@ -107,11 +76,11 @@ public abstract class IbexPattern {
 		return result;
 	}
 
-	public Collection<TGGRuleNode> getBodyNodes() {
+	public Collection<TGGRuleNode> getLocalNodes() {
 		return bodyNodes;
 	}
 
-	public Collection<TGGRuleCorr> getBodyCorrNodes() {
+	public Collection<TGGRuleCorr> getAllCorrNodes() {
 		Collection<TGGRuleCorr> corrs = new HashSet<>();
 		bodyNodes.stream().filter(n -> n instanceof TGGRuleCorr).forEach(n -> corrs.add((TGGRuleCorr) n));
 		return corrs;
@@ -119,11 +88,11 @@ public abstract class IbexPattern {
 
 	public Collection<TGGRuleNode> getBodySrcTrgNodes() {
 		Collection<TGGRuleNode> srcTrgNodes = new HashSet<TGGRuleNode>(bodyNodes);
-		srcTrgNodes.removeAll(getBodyCorrNodes());
+		srcTrgNodes.removeAll(getAllCorrNodes());
 		return srcTrgNodes;
 	}
 
-	public Collection<TGGRuleEdge> getBodyEdges() {
+	public Collection<TGGRuleEdge> getLocalEdges() {
 		return bodyEdges;
 	}
 
@@ -133,20 +102,20 @@ public abstract class IbexPattern {
 
 	abstract protected String getPatternNameSuffix();
 
-	public Collection<TGGRuleElement> getSignatureElements() {
-		return getSignatureElements(getRule());
+	public Collection<TGGRuleNode> getSignatureNodes() {
+		return getSignatureNodes(getRule());
 	}
 
 	public Collection<PatternInvocation> getPositiveInvocations() {
 		return positiveInvocations;
 	}
 	
-	public void addTGGPositiveInvocation(IbexPattern pattern) {
+	public void addTGGPositiveInvocation(IPattern pattern) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, getTGGVariableMapping(this, pattern));
 		positiveInvocations.add(pi);
 	}
 	
-	public void addCustomPositiveInvocation(IbexPattern pattern, Map<TGGRuleElement, TGGRuleElement> mapping) {
+	public void addPositiveInvocation(IbexPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		positiveInvocations.add(pi);
 	}
@@ -155,28 +124,31 @@ public abstract class IbexPattern {
 		return negativeInvocations;
 	}
 	
-	public void addTGGNegativeInvocation(IbexPattern pattern) {
+	public void addTGGNegativeInvocation(IPattern pattern) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, getTGGVariableMapping(this, pattern));
 		negativeInvocations.add(pi);
 	}
 		
-	public void addTGGNegativeInvocations(Collection<IbexPattern> patterns){
-		for (IbexPattern n : patterns)
+	public void addTGGNegativeInvocations(Collection<IPattern> patterns){
+		for (IPattern n : patterns)
 			addTGGNegativeInvocation(n);
 	}
 	
-	public void addCustomNegativeInvocation(IbexPattern pattern, Map<TGGRuleElement, TGGRuleElement> mapping) {
+	public void addNegativeInvocation(IbexPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		negativeInvocations.add(pi);
 	}
 	
-	private Map<TGGRuleElement, TGGRuleElement> getTGGVariableMapping(IbexPattern rootPattern, IbexPattern invocationpattern) {
-		Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
-		Set<TGGRuleElement> rootElements = Stream.concat(rootPattern.getSignatureElements().stream(), rootPattern.getBodyNodes().stream()).collect(Collectors.toSet());
-		Collection<TGGRuleElement> invocationElements = invocationpattern.getSignatureElements();
+	private Map<TGGRuleNode, TGGRuleNode> getTGGVariableMapping(IPattern rootPattern, IPattern invocationpattern) {
+		Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
+		Set<TGGRuleNode> rootElements = Stream.concat(rootPattern.getSignatureNodes().stream(), rootPattern.getLocalNodes().stream()).collect(Collectors.toSet());
+		Collection<TGGRuleNode> invocationElements = invocationpattern.getSignatureNodes();
 
 		// map invocation elements to root elements based on their name
-		invocationElements.stream().forEach(iEl -> mapping.put(rootElements.stream().filter(rEl -> rEl.getName().equals(iEl.getName())).findFirst().get(), iEl));
+		invocationElements.stream().forEach(iEl -> mapping.put(rootElements.stream().filter(rEl -> rEl.getName().equals(iEl.getName()))
+		                                                                            .findFirst()
+		                                                                            .orElseThrow(() -> new IllegalStateException("The node " + iEl.getName() + " is missing in the Pattern [" + rootElements + "]")), 
+		                                                       iEl));
 		return mapping;
 	}
 	
@@ -187,5 +159,62 @@ public abstract class IbexPattern {
 	public TGGRule getRule() {
 		return rule;
 	}
+	
+	public Collection<Pair<TGGRuleNode, TGGRuleNode>> getInjectivityChecks() {
+		List<TGGRuleNode> nodes = new ArrayList<TGGRuleNode>(this.getLocalNodes());
+		nodes.addAll(this.getSignatureNodes().stream()
+												.filter(e -> e instanceof TGGRuleNode)
+												.map(TGGRuleNode.class::cast)
+												.collect(Collectors.toList()));
+		
+		// Remove duplicates
+		nodes = nodes.stream().distinct().collect(Collectors.toList());
+		
+		Collection<Pair<TGGRuleNode, TGGRuleNode>> injectivityCheckPairs = new ArrayList<>();
+		IbexPatternOptimiser optimiser = new IbexPatternOptimiser();
+		for(int i = 0; i < nodes.size(); i++){
+			for(int j = i+1; j < nodes.size(); j++){
+				TGGRuleNode nodeI = nodes.get(i);
+				TGGRuleNode nodeJ = nodes.get(j);
+				if(compatibleTypes(nodeI.getType(), nodeJ.getType())){
+					if(!injectivityIsAlreadyChecked(nodeI, nodeJ)){
+						if (optimiser.unequalConstraintNecessary(nodeI, nodeJ)) {
+							injectivityCheckPairs.add(MutablePair.of(nodeI, nodeJ));
+						}
+					}
+				}
+			}
+		}
+		
+		return injectivityCheckPairs;
+	}
+	
+	/**
+	 * Based on knowledge about how this pattern is invoked or used, you can
+	 * choose to filter out pairs for which you know injectivity has already
+	 * been checked. This speeds up the matching process as this pair of
+	 * variables is excluded from {@link #getInjectivityChecks()} and does not
+	 * have to be checked.
+	 * 
+	 * @param node1
+	 * @param node2
+	 * @return true if this pair can be excluded from the injectivity check for
+	 *         this pattern.
+	 */
+	abstract protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2);
+	
 
+	private boolean compatibleTypes(EClass class1, EClass class2){
+		return class1 == class2 || class1.getEAllSuperTypes().contains(class2) || class2.getEAllSuperTypes().contains(class1);
+	}
+	
+	protected boolean isComplementRule() {
+		return rule instanceof TGGComplementRule;
+	}
+
+	public Collection<TGGRuleNode> getAllNodes(){
+		Collection<TGGRuleNode> allNodes = new ArrayList<>(getSignatureNodes());
+		allNodes.addAll(getLocalNodes());
+		return allNodes;
+	}
 }

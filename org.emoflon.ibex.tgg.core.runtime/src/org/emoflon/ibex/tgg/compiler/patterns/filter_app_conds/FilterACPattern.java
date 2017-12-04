@@ -4,19 +4,18 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class FilterACPattern extends RulePartPattern {
+public class FilterACPattern extends IbexPattern {
 
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
-	private IbexPattern premise;
+	private IPattern premise;
 
 	public FilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, PatternFactory factory) {
 		super(factory.getFlattenedVersionOfRule());
@@ -32,7 +31,7 @@ public class FilterACPattern extends RulePartPattern {
 	}
 	
 	private void addDECAsBodyNode() {
-		getBodyNodes().add(EcoreUtil.copy(FilterACHelper.getDECNode(premise.getRule())));
+		getLocalNodes().add(EcoreUtil.copy(FilterACHelper.getDECNode(((IbexPattern) premise).getRule())));
 	}
 
 	@Override
@@ -51,8 +50,8 @@ public class FilterACPattern extends RulePartPattern {
 	}
 	
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return premise.getSignatureElements().stream().filter(element -> element.getName().equals(e.getName())).count() != 0;
+	public boolean isRelevantForSignature(TGGRuleNode e) {
+		return premise.getSignatureNodes().stream().filter(element -> element.getName().equals(e.getName())).count() != 0;
 	}
 
 	@Override

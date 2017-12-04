@@ -10,7 +10,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -156,21 +155,5 @@ public class FilterACHelper {
 
 	protected static TGGRuleNode getDECNode(TGGRule rule) {
 		return rule.getNodes().stream().filter(n -> n.getName().endsWith(DEC_NODE)).findFirst().get();
-	}
-
-	/**
-	 * Here we get all DECPatterns and search for external patterns that we have to import into the viatra pattern generated for the given rule
-	 * 
-	 * @param rule
-	 * @param collect
-	 * @return
-	 */
-	public static Collection<String> determineImports(TGGRule rule, List<IbexPattern> decPatterns) {
-		return decPatterns.stream()
-					      .flatMap(p -> p.getNegativeInvocations().stream())
-					      .map(inv -> inv.getInvokedPattern())
-					      .filter(p -> !(p instanceof SearchEdgePattern))
-					      .map(p -> p.getRule().getName().toLowerCase() + "." + p.getName())
-					      .collect(Collectors.toSet());
 	}
 }

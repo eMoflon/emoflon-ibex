@@ -2,25 +2,25 @@ package org.emoflon.ibex.tgg.compiler.patterns.common;
 
 import java.util.Map;
 
-import language.TGGRuleElement;
+import language.TGGRuleNode;
 
 public class PatternInvocation {
-	private IbexPattern invoking;
-	private IbexPattern invoked;
-	private Map<TGGRuleElement, TGGRuleElement> mapping;
+	private IPattern invoking;
+	private IPattern invoked;
+	private Map<TGGRuleNode, TGGRuleNode> mapping;
 	
-	public PatternInvocation(IbexPattern invoking, IbexPattern invoked, Map<TGGRuleElement, TGGRuleElement> mappings) {
+	public PatternInvocation(IPattern invoking, IPattern invoked, Map<TGGRuleNode, TGGRuleNode> mappings) {
 		this.invoking = invoking;
 		this.invoked = invoked;
 		this.mapping = mappings;
 	}
 
-	public IbexPattern getInvokedPattern() {
+	public IPattern getInvokedPattern() {
 		return invoked;
 	}
 
-	public TGGRuleElement getPreImage(TGGRuleElement image) {
-		for (TGGRuleElement preImage : mapping.keySet()) {
+	public TGGRuleNode getPreImage(TGGRuleNode image) {
+		for (TGGRuleNode preImage : mapping.keySet()) {
 			if(mapping.get(preImage).equals(image))
 				return preImage;
 		}

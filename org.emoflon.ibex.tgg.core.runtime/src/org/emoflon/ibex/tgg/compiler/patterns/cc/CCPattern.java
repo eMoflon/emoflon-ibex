@@ -5,20 +5,19 @@ import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class CCPattern extends RulePartPattern {
+public class CCPattern extends IbexPattern {
 
 	protected PatternFactory factory;
-	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
+	private Collection<TGGRuleNode> signatureElements = new HashSet<TGGRuleNode>();
 
 
 	public CCPattern(PatternFactory factory) {
@@ -28,7 +27,7 @@ public class CCPattern extends RulePartPattern {
 	private CCPattern(TGGRule rule, PatternFactory factory) {
 		super(rule);
 		this.factory = factory;
-		signatureElements = getSignatureElements(getRule());
+		signatureElements = getSignatureNodes(getRule());
 		
 		createPatternNetwork();
 	}
@@ -39,13 +38,12 @@ public class CCPattern extends RulePartPattern {
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
-			//addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.CORR));
 		}
 	}
 
 	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getBindingType() != BindingType.CREATE || e.getDomainType() == DomainType.SRC || e.getDomainType() == DomainType.TRG; // || e.getDomainType() == DomainType.CORR;
+	public boolean isRelevantForSignature(TGGRuleNode e) {
+		return e.getBindingType() != BindingType.CREATE || e.getDomainType() == DomainType.SRC || e.getDomainType() == DomainType.TRG;
 	}
 
 	@Override
@@ -59,7 +57,7 @@ public class CCPattern extends RulePartPattern {
 	}
 
 	@Override
-	public Collection<TGGRuleElement> getSignatureElements() {
+	public Collection<TGGRuleNode> getSignatureNodes() {
 		return signatureElements;
 	}
 
