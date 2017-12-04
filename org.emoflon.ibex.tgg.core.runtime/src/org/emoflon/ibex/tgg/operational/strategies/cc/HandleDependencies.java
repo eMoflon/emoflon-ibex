@@ -178,16 +178,20 @@ public class HandleDependencies {
 
 	private void determineRuleApplicationDependencies(Integer match, HashSet<Integer> dependedRuleApplications, Bundle bundleContext) {
 		for (EObject node : matchToContextNodes.get(match)) {
-			for (Integer matchCreatedNode : nodeToMarkingMatches.get(node).toArray()) {
-				if(bundleContext.getAllMatches().contains(matchCreatedNode))
-					dependedRuleApplications.add(match);
+			if (nodeToMarkingMatches.contains(node)) {
+				for (Integer matchCreatedNode : nodeToMarkingMatches.get(node).toArray()) {
+					if(bundleContext.getAllMatches().contains(matchCreatedNode))
+						dependedRuleApplications.add(match);
+				}
 			}
 		}
 		
 		for (RuntimeEdge edge : matchToContextEdges.get(match)) {
-			for (Integer matchCreatedNode : edgeToMarkingMatches.get(edge).toArray()) {
-				if(bundleContext.getAllMatches().contains(matchCreatedNode))
-					dependedRuleApplications.add(match);
+			if (edgeToMarkingMatches.contains(edge)) {
+				for (Integer matchCreatedNode : edgeToMarkingMatches.get(edge).toArray()) {
+					if(bundleContext.getAllMatches().contains(matchCreatedNode))
+						dependedRuleApplications.add(match);
+				}
 			}
 		}
 		
