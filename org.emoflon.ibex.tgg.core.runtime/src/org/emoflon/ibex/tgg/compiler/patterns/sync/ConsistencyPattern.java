@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 
 		protocolNode = createProtocolNode(rule);
 
-		Collection<TGGRuleNode> signatureNodes = rule.getNodes();
+		Collection<TGGRuleNode> signatureNodes = new ArrayList<>(rule.getNodes());
 		signatureNodes.add(protocolNode);
 		
 		Collection<TGGRuleEdge> localEdges = Collections.emptyList();

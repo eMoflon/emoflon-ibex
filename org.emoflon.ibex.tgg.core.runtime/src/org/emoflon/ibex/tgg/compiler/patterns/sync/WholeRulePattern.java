@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -26,7 +27,7 @@ public class WholeRulePattern extends IbexBasePattern {
 	protected void initialise(TGGRule rule) {
 		String name = rule.getName() + PatternSuffixes.WHOLE;
 
-		Collection<TGGRuleNode> signatureNodes = rule.getNodes();
+		Collection<TGGRuleNode> signatureNodes = new ArrayList<>(rule.getNodes());
 		
 		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
 		Collection<TGGRuleNode> localNodes = Collections.emptyList();
