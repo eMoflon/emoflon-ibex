@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +40,7 @@ public class FilterACPattern extends IbexBasePattern {
 	
 		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
 	
-		Collection<TGGRuleNode> localNodes = Arrays.asList(FilterACHelper.getDECNode(premise));
+		Collection<TGGRuleNode> localNodes = new ArrayList<>(Arrays.asList(FilterACHelper.getDECNode(premise)));
 		
 		super.initialise(name, signatureNodes, localNodes, localEdges);		
 	}
