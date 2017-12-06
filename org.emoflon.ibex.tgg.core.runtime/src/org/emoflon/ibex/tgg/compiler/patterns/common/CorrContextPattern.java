@@ -32,7 +32,7 @@ public class CorrContextPattern extends IbexBasePattern {
 					.filter(this::isSignatureNode)
 					.collect(Collectors.toList());
 		
-		// There are currently no edges between corr and the src/trg connections 
+		// There are currently no edges between corrs, and the src/trg connections 
 		// between corrs and  src/trg objects are modelled as part of the corr itself
 		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
 		

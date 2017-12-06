@@ -202,7 +202,32 @@ class DefaultFilesGenerator {
 			'''
 		)	
 	}
-	
+
+	static def generateCOAppFile(String projectName, String fileName, String engine, String additionalImports){
+		return generateBasicStructure(
+			'''
+			import org.emoflon.ibex.tgg.operational.strategies.co.CO;
+			«additionalImports»
+			''',
+			fileName,
+			"CO",
+			engine,
+			projectName,
+			'''
+			«fileName» co = new «fileName»("«projectName»", "./../", false);
+			
+			logger.info("Starting CO");
+			long tic = System.currentTimeMillis();
+			co.run();
+			long toc = System.currentTimeMillis();
+			logger.info("Completed CO in: " + (toc - tic) + " ms");
+
+			co.saveModels();
+			co.terminate();
+			'''
+		)	
+	}
+		
 	def static generateMetamodelRegistration() {
 		'''
 		protected void registerUserMetamodels() throws IOException {

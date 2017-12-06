@@ -42,7 +42,7 @@ import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 import runtime.TGGRuleApplication;
 
-public abstract class CC<E> extends OperationalStrategy {
+public abstract class CC extends OperationalStrategy {
 
 	private int nameCounter = 0;
 

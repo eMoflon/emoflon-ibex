@@ -93,7 +93,6 @@ public class CheckTranslationStatePattern extends IbexBasePattern {
 			edge.setName(context? CONTEXT_TRG_NAME : CREATED_TRG_NAME);
 			edge.setType(context? RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_TRG : RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_TRG);
 			break;
-			
 		default:
 			throw new IllegalArgumentException("Domain can only be src or trg!");
 		}

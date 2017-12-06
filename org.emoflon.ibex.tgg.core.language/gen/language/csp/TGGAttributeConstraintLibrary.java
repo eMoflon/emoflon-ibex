@@ -109,7 +109,7 @@ public interface TGGAttributeConstraintLibrary extends EObject {
 	 * @generated
 	 */
 	EList<TGGAttributeConstraint> getSorted_CC();
-
+	
 	/**
 	 * Returns the value of the '<em><b>Sorted MODELGEN</b></em>' reference list.
 	 * The list contents are of type {@link language.csp.TGGAttributeConstraint}.
