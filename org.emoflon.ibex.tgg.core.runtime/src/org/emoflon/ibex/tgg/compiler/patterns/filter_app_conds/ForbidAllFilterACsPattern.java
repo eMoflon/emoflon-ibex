@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.SrcRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TrgRefinementsPattern;
 
@@ -22,32 +23,43 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class ForbidAllFilterACsPattern extends IbexPattern {
+public class ForbidAllFilterACsPattern extends IbexBasePattern {
 	protected DomainType domain;
 	protected PatternFactory factory;
 	protected IbexPatternOptimiser optimiser;
 
 	public ForbidAllFilterACsPattern(DomainType domain, PatternFactory factory) {
-		super(factory.getFlattenedVersionOfRule());
 		this.factory = factory;
 		this.domain = domain;
 		optimiser = new IbexPatternOptimiser();
 
-		initialize();
-		
+		initialise();
 		createPatternNetwork();
 	}
 	
+	private void initialise() {
+		String name = factory.getRule().getName() + getPatternNameSuffix(domain);
+		
+		Collection<TGGRuleNode> signatureNodes = factory.getFlattenedVersionOfRule().getNodes().stream()
+				   .filter(node -> node.getDomainType() == domain)
+				   .collect(Collectors.toList());
+	
+		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);		
+	}
+
 	protected void createPatternNetwork() {
-		addDECPatternsAsTGGNegativeInvocations(rule, domain);
+		addDECPatternsAsTGGNegativeInvocations(factory.getFlattenedVersionOfRule(), domain);
 		
 		switch (domain) {
 		case SRC:
-			addTGGPositiveInvocation(factory.create(SrcRefinementsPattern.class));			
+			addPositiveInvocation(factory.create(SrcRefinementsPattern.class));			
 			break;
 
 		case TRG:
-			addTGGPositiveInvocation(factory.create(TrgRefinementsPattern.class));			
+			addPositiveInvocation(factory.create(TrgRefinementsPattern.class));			
 			break;
 			
 		default:
@@ -55,7 +67,7 @@ public class ForbidAllFilterACsPattern extends IbexPattern {
 		}
 	}
 
-	protected void addDECPatternsAsTGGNegativeInvocations(TGGRule rule, DomainType domain) {
+	private void addDECPatternsAsTGGNegativeInvocations(TGGRule rule, DomainType domain) {
 		final Collection<IPattern> filterNACs = new ArrayList<>();
 		
 		for (TGGRuleNode n : rule.getNodes()) {
@@ -88,7 +100,7 @@ public class ForbidAllFilterACsPattern extends IbexPattern {
 		optimisedFilterNACs.removeAll(optimiser.ignoreDueToEOppositeSemantics(optimisedFilterNACs));
 		
 		// Add all remaining filter NACs now as negative invocations
-		addTGGNegativeInvocations(optimisedFilterNACs);
+		addNegativeInvocations(optimisedFilterNACs);
 	}
 
 	private boolean thereIsNoSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
@@ -100,7 +112,7 @@ public class ForbidAllFilterACsPattern extends IbexPattern {
 	}
 
 	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
-		int numOfEdges = FilterACHelper.countEdgeInRule(rule, n, eType, eDirection, false, domain).getLeft();
+		int numOfEdges = FilterACHelper.countEdgeInRule(factory.getFlattenedVersionOfRule(), n, eType, eDirection, false, domain).getLeft();
 		return eType.getUpperBound() == 1 && numOfEdges == 1;
 	}
 
@@ -131,31 +143,7 @@ public class ForbidAllFilterACsPattern extends IbexPattern {
 		return true;
 	}
 
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
-	}
-
-	@Override
-	public boolean isRelevantForSignature(TGGRuleNode e) {
-		return e.getDomainType() == domain;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return getPatternNameSuffix(domain);
-	}
-	
 	public static String getPatternNameSuffix(DomainType domain){
 		return PatternSuffixes.NO_FILTER_ACs(domain);
-	}
-
-	public boolean isEmpty() {
-		return getPositiveInvocations().isEmpty() && getNegativeInvocations().isEmpty();
 	}
 }

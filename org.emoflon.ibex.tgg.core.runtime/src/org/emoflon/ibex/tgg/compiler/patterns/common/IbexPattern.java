@@ -115,7 +115,7 @@ public abstract class IbexPattern implements IPattern {
 		positiveInvocations.add(pi);
 	}
 	
-	public void addPositiveInvocation(IbexPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
+	public void addPositiveInvocation(IPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		positiveInvocations.add(pi);
 	}
@@ -134,7 +134,7 @@ public abstract class IbexPattern implements IPattern {
 			addTGGNegativeInvocation(n);
 	}
 	
-	public void addNegativeInvocation(IbexPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
+	public void addNegativeInvocation(IPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		negativeInvocations.add(pi);
 	}

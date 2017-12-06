@@ -1,72 +1,56 @@
 package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 
 import language.BindingType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class GENPattern extends IbexPattern {
+public class GENPattern extends IbexBasePattern {
 	
-	protected PatternFactory factory;
-	private Collection<TGGRuleNode> signatureElements = new HashSet<TGGRuleNode>();
-
 	public GENPattern(PatternFactory factory) {
-		this(factory.getFlattenedVersionOfRule(), factory); 
+		initialise(factory.getFlattenedVersionOfRule());
+		createPatternNetwork(factory);
 	}
 	
-	private GENPattern(TGGRule rule, PatternFactory factory) {
-		super(rule);
-		this.factory = factory;
-		signatureElements = getSignatureNodes(getRule());
-
-		createPatternNetwork();
-	}
-
-	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(GENRefinementPattern.class));
+	protected void initialise(TGGRule rule) {
+		String name = rule.getName() + PatternSuffixes.GEN;
 		
-		addTGGNegativeInvocations(factory.createPatternsForMultiplicityConstraints());
-		addTGGNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints());
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
+					   .filter(this::isSignatureNode)
+					   .collect(Collectors.toList());
 		
-		addTGGNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
-		addTGGNegativeInvocations(factory.createPatternsForUserDefinedTargetNACs());
+		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
+		
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 
-	@Override
-	public boolean isRelevantForSignature(TGGRuleNode e) {
-		return e.getBindingType() == BindingType.CONTEXT;
+	private boolean isSignatureNode(TGGRuleNode n) {
+		return n.getBindingType() == BindingType.CONTEXT;
 	}
 
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.GEN;
-	}
-
-	@Override
-	public Collection<TGGRuleNode> getSignatureNodes() {
-		return signatureElements;
+	protected void createPatternNetwork(PatternFactory factory) {
+		addPositiveInvocation(factory.create(GENRefinementPattern.class));
+		
+		addNegativeInvocations(factory.createPatternsForMultiplicityConstraints());
+		addNegativeInvocations(factory.createPatternsForContainmentReferenceConstraints());
+		
+		addNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
+		addNegativeInvocations(factory.createPatternsForUserDefinedTargetNACs());
 	}
 	
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
+		// Root pattern
 		return true;
 	}
-	
 }

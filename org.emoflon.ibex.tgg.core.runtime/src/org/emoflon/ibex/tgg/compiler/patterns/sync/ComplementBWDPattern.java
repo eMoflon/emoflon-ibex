@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 
 import language.BindingType;
@@ -47,7 +48,7 @@ public class ComplementBWDPattern extends IbexPattern {
 		for (TGGRuleElement e : getSignatureNodes()) {
 			TGGRuleNode node = (TGGRuleNode) e;
 			if (nodeIsNotInKernel(node) && node.getDomainType().equals(DomainType.TRG)) {
-				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
+				IPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findAny().get();
 
 				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
