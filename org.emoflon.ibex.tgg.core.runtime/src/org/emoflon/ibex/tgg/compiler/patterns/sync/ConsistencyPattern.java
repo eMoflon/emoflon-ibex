@@ -1,11 +1,9 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -42,14 +40,11 @@ public class ConsistencyPattern extends IbexBasePattern {
 
 		protocolNode = createProtocolNode(rule);
 
-		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
-				   .filter(this::isSignatureNode)
-				   .collect(Collectors.toList());
-		
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes();
 		signatureNodes.add(protocolNode);
 		
 		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
-		Collection<TGGRuleNode> localNodes = new ArrayList<>();
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
 		
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
@@ -84,7 +79,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 	public void createMarkedInvocations() {
 		TGGRuleNode ruleApplicationNode = getRuleApplicationNode(getSignatureNodes());
 		
-		getSignatureNodes()
+		signatureNodes
 		.stream()
 		.filter(e -> !e.equals(ruleApplicationNode))
 		.forEach(el ->
@@ -121,10 +116,6 @@ public class ConsistencyPattern extends IbexBasePattern {
 
 	private boolean isRuleApplicationNode(TGGRuleElement e) {
 		return ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication());
-	}
-	
-	private boolean isSignatureNode(TGGRuleNode n) {
-		return true;
 	}
 	
 	public static String getProtocolNodeName() {

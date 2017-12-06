@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -27,9 +26,7 @@ public class WholeRulePattern extends IbexBasePattern {
 	protected void initialise(TGGRule rule) {
 		String name = rule.getName() + PatternSuffixes.WHOLE;
 
-		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
-				   .filter(this::isSignatureNode)
-				   .collect(Collectors.toList());
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes();
 		
 		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
 		Collection<TGGRuleNode> localNodes = Collections.emptyList();
@@ -48,10 +45,6 @@ public class WholeRulePattern extends IbexBasePattern {
 
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		return true;
-	}
-
-	private boolean isSignatureNode(TGGRuleNode n) {
 		return true;
 	}
 }
