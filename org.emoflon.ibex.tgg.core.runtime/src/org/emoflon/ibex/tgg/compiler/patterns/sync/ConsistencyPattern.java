@@ -17,7 +17,6 @@ import language.DomainType;
 import language.LanguageFactory;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.basic.expressions.ExpressionsFactory;
 import language.basic.expressions.TGGLiteralExpression;
@@ -109,14 +108,14 @@ public class ConsistencyPattern extends IbexBasePattern {
 	}
 
 	private TGGRuleNode getRuleApplicationNode(Collection<TGGRuleNode> elements) {
-		return (TGGRuleNode) elements.stream()
-					   			     .filter(this::isRuleApplicationNode)
-					   			     .findAny()
-					   			     .get();
+		return elements.stream()
+				.filter(this::isRuleApplicationNode)
+				.findAny()
+				.get();
 	}
 
-	private boolean isRuleApplicationNode(TGGRuleElement e) {
-		return ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication());
+	private boolean isRuleApplicationNode(TGGRuleNode n) {
+		return n.getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 	}
 	
 	public static String getProtocolNodeName() {

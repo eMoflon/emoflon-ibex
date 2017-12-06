@@ -1,9 +1,9 @@
 package org.emoflon.ibex.tgg.compiler.patterns.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -14,7 +14,7 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class CorrPattern extends IbexBasePattern {
+public class CorrPattern extends AbstractCorrPattern {
 
 	public CorrPattern(PatternFactory factory) {
 		initialise(factory.getRule());
@@ -28,7 +28,11 @@ public class CorrPattern extends IbexBasePattern {
 					   .filter(this::isSignatureNode)
 					   .collect(Collectors.toList());
 		
-		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
+		Collection<TGGRuleEdge> localEdges = new ArrayList<>();
+		rule.getNodes().stream()
+			.filter(this::isCorr)
+			.map(TGGRuleCorr.class::cast)
+			.forEach(corr -> extractSourceAndTargetEdges(corr));
 		
 		Collection<TGGRuleNode> localNodes = Collections.emptyList();
 		
@@ -41,15 +45,6 @@ public class CorrPattern extends IbexBasePattern {
 
 	private void createPatternNetwork(PatternFactory factory) {
 		addPositiveInvocation(factory.create(CorrContextPattern.class));
-	}
-
-	private boolean isConnectedToACorr(TGGRuleNode n) {
-		return Stream.concat(n.getIncomingCorrsSource().stream(), n.getIncomingCorrsTarget().stream())
-			         .anyMatch(this::isCorr);
-	}
-
-	private boolean isCorr(TGGRuleNode n) {
-		return n instanceof TGGRuleCorr;
 	}
 	
 	@Override
