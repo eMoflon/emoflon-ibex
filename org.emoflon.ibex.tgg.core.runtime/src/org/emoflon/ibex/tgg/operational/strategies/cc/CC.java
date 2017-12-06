@@ -155,11 +155,12 @@ public abstract class CC extends OperationalStrategy {
 			contextRuleMatches.remove(match);
 		}
 		
-		//close the kernel, so other complement rules of another kernel cannot find this match anymore
+		//FIXME:[Milica] Check if this is really needed
 		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
 		application.setAmalgamated(true);
 	}
 	
+	//FIXME:[Milica] Check if maximality need to be done for edges as well
 	private void handleMaximality(IMatch match, Set<IMatch> contextRuleMatches, int kernelMatchID) {
 		String ruleName = removeAllSuffixes(match.patternName());
 		TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
@@ -171,6 +172,7 @@ public abstract class CC extends OperationalStrategy {
 		}
 	}
 
+	//FIXME:[Milica] Check if uniqueness need to be done for edges as well
 	private void applyMatchAndHandleUniqueness(IMatch match, THashMap<Integer, THashSet<EObject>> contextNodesMatches) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		if (processOperationalRuleMatch(ruleName, match) != null) {

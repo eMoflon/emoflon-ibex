@@ -16,7 +16,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
@@ -67,8 +66,8 @@ public class PatternFactory {
 		CheckTranslationStatePattern localProtocolSrcMarkedPattern = new CheckTranslationStatePattern(signProtocolSrcMarkedPattern, DomainType.SRC, true);
 		CheckTranslationStatePattern localProtocolTrgMarkedPattern = new CheckTranslationStatePattern(signProtocolTrgMarkedPattern, DomainType.TRG, true);
 		
-		localProtocolSrcMarkedPattern.addTGGPositiveInvocation(signProtocolSrcMarkedPattern);
-		localProtocolTrgMarkedPattern.addTGGPositiveInvocation(signProtocolTrgMarkedPattern);
+		localProtocolSrcMarkedPattern.addPositiveInvocation(signProtocolSrcMarkedPattern);
+		localProtocolTrgMarkedPattern.addPositiveInvocation(signProtocolTrgMarkedPattern);
 		
 		markedPatterns.add(localProtocolSrcMarkedPattern);
 		markedPatterns.add(localProtocolTrgMarkedPattern);
@@ -84,7 +83,7 @@ public class PatternFactory {
 		return markedPatterns;
 	}
 	
-	public static IbexPattern getMarkedPattern(DomainType domain, boolean local, boolean context) {
+	public static IPattern getMarkedPattern(DomainType domain, boolean local, boolean context) {
 		return markedPatterns.stream()
 							 .filter(p -> p.getDomain().equals(domain) && (p.isLocal() == local) && (p.marksContext() == context))
 							 .findFirst()

@@ -1,8 +1,12 @@
 package org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
 import language.DomainType;
@@ -10,40 +14,41 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class TrgRefinementsPattern extends IbexPattern {
+public class TrgRefinementsPattern extends IbexBasePattern {
 
 	public TrgRefinementsPattern(PatternFactory factory) {
-		super(factory.getFlattenedVersionOfRule());
-		
-		// Create pattern network
-		addTGGPositiveInvocation(factory.create(TrgPattern.class));
-		
-		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(TrgRefinementsPattern.class));
+		initialise(factory.getFlattenedVersionOfRule());
+		createPatternNetwork(factory);
 	}
 
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.TRG_REFINEMENT_INVOCATIONS;
+	private void createPatternNetwork(PatternFactory factory) {
+		addPositiveInvocation(factory.create(TrgPattern.class));
+		
+		for (TGGRule superRule : factory.getRule().getRefines())
+			addPositiveInvocation(factory.getFactory(superRule).create(TrgRefinementsPattern.class));
 	}
+	
+	private void initialise(TGGRule rule) {
+		String name = rule.getName() + PatternSuffixes.TRG_REFINEMENT_INVOCATIONS;
+		
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
+				   .filter(this::isSignatureNode)
+				   .collect(Collectors.toList());
+	
+		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
+	
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
+	}
+	
 
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
 	}
 
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
-	}
-
-	@Override
-	public boolean isRelevantForSignature(TGGRuleNode e) {
+	private boolean isSignatureNode(TGGRuleNode e) {
 		return e.getDomainType() == DomainType.TRG;
 	}
 

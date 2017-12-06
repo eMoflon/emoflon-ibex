@@ -11,23 +11,19 @@ import language.TGGRule;
 public class BWDRefinementPattern extends BWDPattern {
 
 	public BWDRefinementPattern(PatternFactory factory) {
-		super(factory);		
+		super(factory);
+		name = factory.getRule().getName() + PatternSuffixes.BWD_REFINEMENT_INVOCATIONS;
 	}
 	
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(TrgPattern.class));
-		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
-		addTGGPositiveInvocation(factory.create(SrcContextPattern.class));
+		addPositiveInvocation(factory.create(TrgPattern.class));
+		addPositiveInvocation(factory.create(CorrContextPattern.class));
+		addPositiveInvocation(factory.create(SrcContextPattern.class));
 
 		createMarkedInvocations(true);
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(BWDRefinementPattern.class));
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.BWD_REFINEMENT_INVOCATIONS;
+			addPositiveInvocation(factory.getFactory(superRule).create(BWDRefinementPattern.class));
 	}
 	
 
