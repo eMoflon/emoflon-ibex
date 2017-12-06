@@ -6,15 +6,11 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
-import language.BindingType;
-import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -42,9 +38,9 @@ public class WholeRulePattern extends IbexBasePattern {
 	}
 
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(SrcPattern.class));
-		addTGGPositiveInvocation(factory.create(TrgPattern.class));
-		addTGGPositiveInvocation(factory.create(CorrPattern.class));
+		addPositiveInvocation(factory.create(SrcPattern.class));
+		addPositiveInvocation(factory.create(TrgPattern.class));
+		addPositiveInvocation(factory.create(CorrPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addPositiveInvocation(factory.getFactory(superRule).create(WholeRulePattern.class));
