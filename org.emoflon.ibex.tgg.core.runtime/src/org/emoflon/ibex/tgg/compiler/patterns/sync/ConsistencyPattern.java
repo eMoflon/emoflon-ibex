@@ -1,13 +1,16 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
 import language.BindingType;
@@ -24,30 +27,40 @@ import language.inplaceAttributes.TGGAttributeConstraintOperators;
 import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
-public class ConsistencyPattern extends IbexPattern {
+public class ConsistencyPattern extends IbexBasePattern {
 	protected PatternFactory factory;
 	private TGGRuleNode protocolNode;
 	
 	public ConsistencyPattern(PatternFactory factory) {
-		this(factory.getFlattenedVersionOfRule(), factory);
+		this.factory = factory;
+		initialise(factory.getFlattenedVersionOfRule());
+		createPatternNetwork();
 	}
 	
-	private ConsistencyPattern(TGGRule rule, PatternFactory factory) {
-		super(rule);
-		this.factory = factory;
+	protected void initialise(TGGRule rule) {
+		String name = rule.getName() + PatternSuffixes.CONSISTENCY;
+
 		protocolNode = createProtocolNode(rule);
-		this.getLocalNodes().add(protocolNode);
+
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
+				   .filter(this::isSignatureNode)
+				   .collect(Collectors.toList());
 		
-		createPatternNetwork();
+		signatureNodes.add(protocolNode);
+		
+		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
+		Collection<TGGRuleNode> localNodes = new ArrayList<>();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 	
 	protected void createPatternNetwork() {
 		createMarkedInvocations();
-		addTGGPositiveInvocation(factory.create(WholeRulePattern.class));
+		addPositiveInvocation(factory.create(WholeRulePattern.class));
 		
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
-			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
-			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
+			addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
+			addPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
 		}
 	}
 	
@@ -110,39 +123,12 @@ public class ConsistencyPattern extends IbexPattern {
 		return ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 	}
 	
-	@Override
-	public boolean isRelevantForSignature(TGGRuleNode e) {
+	private boolean isSignatureNode(TGGRuleNode n) {
 		return true;
 	}
 	
-	@Override
-	public Collection<TGGRuleNode> getSignatureNodes() {
-	 Collection<TGGRuleNode> signatureElements = super.getSignatureNodes();
-	 signatureElements.add(protocolNode);
-	 return signatureElements;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.CONSISTENCY;
-	}
-
 	public static String getProtocolNodeName() {
 		return "eMoflon_ProtocolNode";
-	}
-
-	public String getRuleName() {
-		return rule.getName();
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return n.getDomainType() != DomainType.CORR;
 	}
 
 	@Override

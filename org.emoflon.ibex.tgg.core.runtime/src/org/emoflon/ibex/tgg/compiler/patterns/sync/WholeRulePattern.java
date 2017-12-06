@@ -1,9 +1,13 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 
@@ -13,27 +17,35 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class WholeRulePattern extends IbexPattern {
+public class WholeRulePattern extends IbexBasePattern {
 	protected PatternFactory factory;
 
 	public WholeRulePattern(PatternFactory factory) {
-		this(factory.getFlattenedVersionOfRule(), factory);
-	}
-
-	private WholeRulePattern(TGGRule rule, PatternFactory factory) {
-		super(rule);
 		this.factory = factory;
-		
-		createPatternNetwork();
+		initialise(factory.getFlattenedVersionOfRule());
+		createPatternNetwork();	
 	}
 	
+	protected void initialise(TGGRule rule) {
+		String name = rule.getName() + PatternSuffixes.WHOLE;
+
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
+				   .filter(this::isSignatureNode)
+				   .collect(Collectors.toList());
+		
+		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
+	}
+
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(SrcPattern.class));
-		addTGGPositiveInvocation(factory.create(TrgPattern.class));
-		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
+		addPositiveInvocation(factory.create(SrcPattern.class));
+		addPositiveInvocation(factory.create(TrgPattern.class));
+		addPositiveInvocation(factory.create(CorrContextPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(WholeRulePattern.class));
+			addPositiveInvocation(factory.getFactory(superRule).create(WholeRulePattern.class));
 	}
 
 	@Override
@@ -41,24 +53,7 @@ public class WholeRulePattern extends IbexPattern {
 		return true;
 	}
 
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return n.getBindingType() == BindingType.CREATE && n.getDomainType() == DomainType.CORR;
-	}
-
-	@Override
-	public boolean isRelevantForSignature(TGGRuleNode e) {
+	private boolean isSignatureNode(TGGRuleNode n) {
 		return true;
 	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.WHOLE;
-	}
-
 }
