@@ -2,20 +2,20 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
@@ -28,23 +28,31 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class BWDPattern extends RulePartPattern {
+public class BWDPattern extends IbexBasePattern {
 	protected PatternFactory factory;
 
 	public BWDPattern(PatternFactory factory) {
-		this(factory.getFlattenedVersionOfRule(), factory);
+		this.factory = factory;
+		initialise(factory.getFlattenedVersionOfRule());
+		createPatternNetwork();
 	}
 
-	private BWDPattern(TGGRule rule, PatternFactory factory) {
-		super(rule);
-		this.factory = factory;
+	protected void initialise(TGGRule rule) {
+		String name = rule.getName() + PatternSuffixes.BWD;
+
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
+				   .filter(this::isSignatureNode)
+				   .collect(Collectors.toList());
 		
-		createPatternNetwork();
+		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 	
 	protected void createPatternNetwork() {
 		// Rule Patterns
-		addTGGPositiveInvocation(factory.create(BWDRefinementPattern.class));
+		addPositiveInvocation(factory.create(BWDRefinementPattern.class));
 
 		// Marked Patterns
 		createMarkedInvocations(false);
@@ -54,16 +62,16 @@ public class BWDPattern extends RulePartPattern {
 			addFilterNACPatterns(DomainType.TRG);
 		
 		// NACs
-		addTGGNegativeInvocations(collectGeneratedNACs());
-		addTGGNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
+		addNegativeInvocations(collectGeneratedNACs());
+		addNegativeInvocations(factory.createPatternsForUserDefinedSourceNACs());
 	}
 	
-	protected Collection<IbexPattern> collectGeneratedNACs() {
-		Collection<IbexPattern> nacs = factory.createPatternsForMultiplicityConstraints();
+	protected Collection<IPattern> collectGeneratedNACs() {
+		Collection<IPattern> nacs = factory.createPatternsForMultiplicityConstraints();
 		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
 		
 		return nacs.stream().filter(n -> {
-			Optional<TGGRuleElement> e = ((NacPattern)n).getSignatureElements().stream().findAny();
+			Optional<TGGRuleNode> e = ((NacPattern)n).getSignatureNodes().stream().findAny();
 			DomainType domain = DomainType.TRG;
 			if (e.isPresent()) {
 				domain = e.get().getDomainType();
@@ -74,25 +82,26 @@ public class BWDPattern extends RulePartPattern {
 	}
 
 	protected void createMarkedInvocations(boolean positive) {
-		for (TGGRuleElement el : getSignatureElements()) {
+		for (TGGRuleElement el : getSignatureNodes()) {
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && node.getDomainType().equals(DomainType.TRG)) {
-				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
-				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findFirst().get();
+				IPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
+				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
 
-				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
+				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
 				mapping.put(node, invokedObject);
 
 				if (positive)
-					addCustomPositiveInvocation(markedPattern, mapping);
+					addPositiveInvocation(markedPattern, mapping);
 				else
-					addCustomNegativeInvocation(markedPattern, mapping);
+					addNegativeInvocation(markedPattern, mapping);
 			}
 		}
 	}
 
 	protected void addFilterNACPatterns(DomainType domain) {
-		final Collection<IbexPattern> filterNACs = new ArrayList<>();
+		final Collection<IPattern> filterNACs = new ArrayList<>();
+		TGGRule rule = factory.getFlattenedVersionOfRule();
 		
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
@@ -117,14 +126,14 @@ public class BWDPattern extends RulePartPattern {
 		}
 		
 		// Use optimiser to remove some of the filter NACs
-		final Collection<IbexPattern> optimisedFilterNACs = filterNACs.stream()
+		final Collection<IPattern> optimisedFilterNACs = filterNACs.stream()
 							   .filter(nac -> !optimiser.isRedundantDueToEMFContainmentSemantics(nac))
 							   .collect(Collectors.toList());
 		
 		optimisedFilterNACs.removeAll(optimiser.ignoreDueToEOppositeSemantics(optimisedFilterNACs));
 		
 		// Add all remaining filter NACs now as negative invocations
-		addTGGNegativeInvocations(optimisedFilterNACs);
+		addNegativeInvocations(optimisedFilterNACs);
 	}
 
 	private boolean thereIsNoSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
@@ -136,7 +145,7 @@ public class BWDPattern extends RulePartPattern {
 	}
 
 	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
-		int numOfEdges = FilterACHelper.countEdgeInRule(rule, n, eType, eDirection, false, DomainType.TRG).getLeft();
+		int numOfEdges = FilterACHelper.countEdgeInRule(factory.getFlattenedVersionOfRule(), n, eType, eDirection, false, DomainType.TRG).getLeft();
 		return eType.getUpperBound() == 1 && numOfEdges == 1;
 	}
 
@@ -161,31 +170,9 @@ public class BWDPattern extends RulePartPattern {
 	private boolean isSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGGRule r) {
 		return FilterACHelper.countEdgeInRule(r, eType, eDirection, true, domain).getLeft() > 0;
 	}
-
-	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getDomainType() == DomainType.TRG || e.getBindingType() == BindingType.CONTEXT;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.BWD;
-	}
 	
-	@Override
-	public boolean ignored() {
-		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
-				.noneMatch(e -> e.getDomainType() == DomainType.TRG && e.getBindingType() == BindingType.CREATE);
+	private boolean isSignatureNode(TGGRuleNode n) {
+		return n.getDomainType() == DomainType.TRG || n.getBindingType() == BindingType.CONTEXT;
 	}
 	
 	@Override

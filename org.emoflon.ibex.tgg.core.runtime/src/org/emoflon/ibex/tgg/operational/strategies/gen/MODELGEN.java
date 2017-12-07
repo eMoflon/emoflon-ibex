@@ -157,16 +157,6 @@ public abstract class MODELGEN extends OperationalStrategy {
 		return allComplementRuleMatches;
 	}
 
-	private TGGRule getRule(String ruleName) {
-		TGGRule rule = getTGG().getRules().stream()
-				.filter(r -> r.getName().equals(ruleName)).findFirst().get();
-		return rule;
-	}
-	
-	private boolean isKernelMatch(String kernelName) {
-		return getKernelRulesNames().contains(kernelName);
-	}
-
 	private void updateStopCriterion(String ruleName) {
 		stopCriterion.update(
 				ruleName,

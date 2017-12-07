@@ -1,51 +1,53 @@
 package org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class SrcRefinementsPattern extends RulePartPattern {
+public class SrcRefinementsPattern extends IbexBasePattern {
 
 	public SrcRefinementsPattern(PatternFactory factory) {
-		super(factory.getFlattenedVersionOfRule());
+		initialise(factory.getFlattenedVersionOfRule());
+		createPatternNetwork(factory);
+ 	}
+
+	private void initialise(TGGRule rule) {
+		String name = rule.getName() + PatternSuffixes.SRC_REFINEMENT_INVOCATIONS;
 		
-		// Create pattern network
-		addTGGPositiveInvocation(factory.create(SrcPattern.class));
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
+				   .filter(this::isSignatureNode)
+				   .collect(Collectors.toList());
+	
+		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
+	
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
+	}
+
+	private void createPatternNetwork(PatternFactory factory){
+		addPositiveInvocation(factory.create(SrcPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(SrcRefinementsPattern.class));
+			addPositiveInvocation(factory.getFactory(superRule).create(SrcRefinementsPattern.class));
 	}
 
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.SRC_REFINEMENT_INVOCATIONS;
-	}
-
+	private boolean isSignatureNode(TGGRuleNode node) {
+		return node.getDomainType() == DomainType.SRC;
+	}	
+	
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
 	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
-	}
-
-	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getDomainType() == DomainType.SRC;
-	}
-
 }

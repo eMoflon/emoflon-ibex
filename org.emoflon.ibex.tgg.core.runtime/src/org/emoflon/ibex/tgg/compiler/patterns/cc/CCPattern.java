@@ -1,88 +1,62 @@
 package org.emoflon.ibex.tgg.compiler.patterns.cc;
 
+import static org.emoflon.ibex.tgg.compiler.patterns.RuleRefinementUtil.checkInjectivityInSubRule;
+
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class CCPattern extends RulePartPattern {
-
-	protected PatternFactory factory;
-	private Collection<TGGRuleElement> signatureElements = new HashSet<TGGRuleElement>();
-
+public class CCPattern extends IbexBasePattern {
+	
+	private PatternFactory factory;
 
 	public CCPattern(PatternFactory factory) {
-		this(factory.getFlattenedVersionOfRule(), factory);
+		this.factory = factory;
+		initialise(factory.getFlattenedVersionOfRule());
+		createPatternNetwork(factory);
 	}
 	
-	private CCPattern(TGGRule rule, PatternFactory factory) {
-		super(rule);
-		this.factory = factory;
-		signatureElements = getSignatureElements(getRule());
+	protected void initialise(TGGRule rule) {
+		String name = rule.getName() + PatternSuffixes.CC;
 		
-		createPatternNetwork();
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
+					   .filter(this::isSignatureNode)
+					   .collect(Collectors.toList());
+		
+		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
+		
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 
-	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(CCRefinementPattern.class));
+	protected void createPatternNetwork(PatternFactory factory) {
+		addPositiveInvocation(factory.create(CCRefinementPattern.class));
 		
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
-			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
-			addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
+			addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
+			addPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
 		}
 	}
 
-	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return e.getBindingType() != BindingType.CREATE || e.getDomainType() == DomainType.SRC || e.getDomainType() == DomainType.TRG;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
-	}
-
-	@Override
-	public Collection<TGGRuleElement> getSignatureElements() {
-		return signatureElements;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.CC;
+	private boolean isSignatureNode(TGGRuleNode n) {
+		return n.getBindingType() != BindingType.CREATE || n.getDomainType() == DomainType.SRC || n.getDomainType() == DomainType.TRG;
 	}
 	
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		if (!rule.getNodes().contains(node1) && !rule.getNodes().contains(node2)) {
-			// if both nodes are from super-rule, then super-rule takes care of injectivity
-			return true;
-		} else if (rule.getNodes().contains(node1) && !rule.getNodes().contains(node2)
-				|| rule.getNodes().contains(node2) && !rule.getNodes().contains(node1)) {
-			// if one node is from super-rule while the other is not, injectivity has probably (depending on invocations) not been checked yet
-			return false;
-		} else if (node1.getDomainType() != node2.getDomainType()) {
-			// if nodes are from different domains, injectivity cannot have been checked yet
-			return false;
-		} else {
-			// if both are from this rule and from the same domain, they have been checked in context-patterns
-			return true;
-		}
+		return checkInjectivityInSubRule(factory.getRule(), node1, node2);
 	}
 
 }

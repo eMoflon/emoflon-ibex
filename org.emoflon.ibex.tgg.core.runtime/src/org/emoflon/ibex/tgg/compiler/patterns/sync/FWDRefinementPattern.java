@@ -12,23 +12,17 @@ public class FWDRefinementPattern extends FWDPattern {
 
 	public FWDRefinementPattern(PatternFactory factory) {
 		super(factory);		
+		name = factory.getRule().getName() + PatternSuffixes.FWD_REFINEMENT_INVOCATIONS;
 	}
 	
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(SrcPattern.class));
-		addTGGPositiveInvocation(factory.create(CorrContextPattern.class));
-		addTGGPositiveInvocation(factory.create(TrgContextPattern.class));
+		addPositiveInvocation(factory.create(SrcPattern.class));
+		addPositiveInvocation(factory.create(CorrContextPattern.class));
+		addPositiveInvocation(factory.create(TrgContextPattern.class));
 		
 		createMarkedInvocations(true);
 
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addTGGPositiveInvocation(factory.getFactory(superRule).create(FWDRefinementPattern.class));
+			addPositiveInvocation(factory.getFactory(superRule).create(FWDRefinementPattern.class));
 	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.FWD_REFINEMENT_INVOCATIONS;
-	}
-	
-
 }

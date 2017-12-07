@@ -1,53 +1,46 @@
 package org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 
+import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class SearchEdgePattern extends RulePartPattern {
-	
+public class SearchEdgePattern extends IbexBasePattern {
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
 
 	public SearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, PatternFactory factory) {
-		super(FilterACHelper.createCheckEdgeRule(factory.getFlattenedVersionOfRule(), entryPoint, edgeType, eDirection));
 		this.entryPoint = entryPoint;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
+		
+		initialise(factory.getFlattenedVersionOfRule());
+	}
+
+	private void initialise(TGGRule rule) {
+		TGGRule checkEdgeRule = FilterACHelper.createCheckEdgeRule(rule, entryPoint, edgeType, eDirection);
+		
+		String name = checkEdgeRule.getName() + getPatternNameSuffix(entryPoint, edgeType, eDirection);
+		
+		Collection<TGGRuleNode> signatureNodes = new ArrayList<>(checkEdgeRule.getNodes());
+		Collection<TGGRuleEdge> localEdges = new ArrayList<>(checkEdgeRule.getEdges());
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		if(FilterACHelper.isDECNode(node1) || FilterACHelper.isDECNode(node2)) 
-			return false;
-		
-		return true;	
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return true;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return true;
-	}
-
-	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		return true;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return getPatternNameSuffix(entryPoint, edgeType, eDirection);
+		return !(FilterACHelper.isDECNode(node1) || FilterACHelper.isDECNode(node2));
 	}
 
 	public static String getPatternNameSuffix(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {

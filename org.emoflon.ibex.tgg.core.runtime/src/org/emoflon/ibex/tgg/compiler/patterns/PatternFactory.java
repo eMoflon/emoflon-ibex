@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.TGGCompiler;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
@@ -34,7 +34,7 @@ import language.TGGRuleNode;
 
 public class PatternFactory {
 	private TGGRule rule;
-	private Map<String, IbexPattern> patterns;
+	private Map<String, IPattern> patterns;
 	private TGGCompiler compiler;
 	private static final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
 	
@@ -46,11 +46,11 @@ public class PatternFactory {
 		patterns = new LinkedHashMap<>();
 	}
 
-	public Map<String, IbexPattern> getPatternMap(){
+	public Map<String, IPattern> getPatternMap(){
 		return patterns;
 	}
 	
-	public Collection<IbexPattern> getPatterns() {
+	public Collection<IPattern> getPatterns() {
 		return Collections.unmodifiableCollection(patterns.values());
 	}
 	
@@ -59,15 +59,15 @@ public class PatternFactory {
 		
 		CheckTranslationStatePattern signProtocolSrcMarkedPattern = new CheckTranslationStatePattern(DomainType.SRC, false, false);
 		CheckTranslationStatePattern signProtocolTrgMarkedPattern = new CheckTranslationStatePattern(DomainType.TRG, false, false);
-		
+				
 		CheckTranslationStatePattern signProtocolSrcMarkedContextPattern = new CheckTranslationStatePattern(DomainType.SRC, false, true);
 		CheckTranslationStatePattern signProtocolTrgMarkedContextPattern = new CheckTranslationStatePattern(DomainType.TRG, false, true);
 		
 		CheckTranslationStatePattern localProtocolSrcMarkedPattern = new CheckTranslationStatePattern(signProtocolSrcMarkedPattern, DomainType.SRC, true);
 		CheckTranslationStatePattern localProtocolTrgMarkedPattern = new CheckTranslationStatePattern(signProtocolTrgMarkedPattern, DomainType.TRG, true);
 		
-		localProtocolSrcMarkedPattern.addTGGPositiveInvocation(signProtocolSrcMarkedPattern);
-		localProtocolTrgMarkedPattern.addTGGPositiveInvocation(signProtocolTrgMarkedPattern);
+		localProtocolSrcMarkedPattern.addPositiveInvocation(signProtocolSrcMarkedPattern);
+		localProtocolTrgMarkedPattern.addPositiveInvocation(signProtocolTrgMarkedPattern);
 		
 		markedPatterns.add(localProtocolSrcMarkedPattern);
 		markedPatterns.add(localProtocolTrgMarkedPattern);
@@ -83,7 +83,7 @@ public class PatternFactory {
 		return markedPatterns;
 	}
 	
-	public static IbexPattern getMarkedPattern(DomainType domain, boolean local, boolean context) {
+	public static IPattern getMarkedPattern(DomainType domain, boolean local, boolean context) {
 		return markedPatterns.stream()
 							 .filter(p -> p.getDomain().equals(domain) && (p.isLocal() == local) && (p.marksContext() == context))
 							 .findFirst()
@@ -97,7 +97,7 @@ public class PatternFactory {
 	 * 
 	 * @return All patterns that should be negatively invoked to prevent violations of all 0..n multiplicities.
 	 */    
-	public Collection<IbexPattern> createPatternsForMultiplicityConstraints() {
+	public Collection<IPattern> createPatternsForMultiplicityConstraints() {
 		TGGRule flattenedRule = compiler.getFlattenedVersionOfRule(rule);
 		
         // collect edges that need a multiplicity NAC
@@ -108,7 +108,7 @@ public class PatternFactory {
         													   .collect(Collectors.toList());
 
         HashMap<TGGRuleNode, HashSet<EReference>> sourceToProcessedEdgeTypes = new HashMap<TGGRuleNode, HashSet<EReference>>();
-        Collection<IbexPattern> negativePatterns = new ArrayList<>();
+        Collection<IPattern> negativePatterns = new ArrayList<>();
         for (TGGRuleEdge e : relevantEdges) {
 			TGGRuleNode src = e.getSrcNode();
 			
@@ -131,7 +131,7 @@ public class PatternFactory {
 															 				&& edge.getBindingType() == BindingType.CREATE)
 															 .count();
 
-			Collection<TGGRuleElement> signatureElements = new ArrayList<TGGRuleElement>();
+			Collection<TGGRuleNode> signatureElements = new ArrayList<TGGRuleNode>();
 			Collection<TGGRuleElement> bodyElements = new ArrayList<TGGRuleElement>();
 
 			// create/add elements to the pattern
@@ -170,7 +170,7 @@ public class PatternFactory {
 	 * 
 	 * @return All patterns that should be negatively invoked to prevent violations of containment.
 	 */
-	public Collection<IbexPattern> createPatternsForContainmentReferenceConstraints() {
+	public Collection<IPattern> createPatternsForContainmentReferenceConstraints() {
 		TGGRule flattenedRule = compiler.getFlattenedVersionOfRule(rule);
 
         // collect edges that need a multiplicity NAC
@@ -180,11 +180,11 @@ public class PatternFactory {
         															   && e.getTrgNode().getBindingType() == BindingType.CONTEXT)
         													   .collect(Collectors.toList());
 
-        Collection<IbexPattern> negativePatterns = new ArrayList<>();
+        Collection<IPattern> negativePatterns = new ArrayList<>();
         for (TGGRuleEdge e : relevantEdges) {
 			TGGRuleNode trg = e.getTrgNode();
 			
-			Collection<TGGRuleElement> signatureElements = new ArrayList<TGGRuleElement>();
+			Collection<TGGRuleNode> signatureElements = new ArrayList<TGGRuleNode>();
 			Collection<TGGRuleElement> bodyElements = new ArrayList<TGGRuleElement>();
 
 			// create/add elements to the pattern
@@ -224,10 +224,10 @@ public class PatternFactory {
 	
 	/**********  Generic Pattern Creation Methods ************/
 	
-	public IbexPattern create(Class<?> c) {
+	public IPattern create(Class<?> c) {
 		return createPattern(c.getName(), () -> {
 			try {
-				return (IbexPattern) c.getConstructor(PatternFactory.class).newInstance(this);
+				return (IPattern) c.getConstructor(PatternFactory.class).newInstance(this);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
@@ -236,9 +236,9 @@ public class PatternFactory {
 		});
 	}
 	
-	private IbexPattern createPattern(String key, Supplier<IbexPattern> creator){		
+	private IPattern createPattern(String key, Supplier<IPattern> creator){		
 		if (!patterns.containsKey(key)) {
-			IbexPattern newValue = creator.get();
+			IPattern newValue = creator.get();
 			if (newValue != null)
 				patterns.put(key, newValue);
 		}
@@ -251,31 +251,31 @@ public class PatternFactory {
 
 	/**********  Specific Pattern Creation Methods ************/	
 	
-	public IbexPattern createFilterACPatterns(DomainType domain) {
+	public IPattern createFilterACPatterns(DomainType domain) {
 		return createPattern(rule.getName() + ForbidAllFilterACsPattern.getPatternNameSuffix(domain), () -> new ForbidAllFilterACsPattern(domain, this));
 	}
 
-	public IbexPattern createFilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
+	public IPattern createFilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
 		return createPattern(rule.getName() + FilterACPattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new FilterACPattern(entryPoint, edgeType, eDirection, this));
 	}
 
-	public IbexPattern createSearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
+	public IPattern createSearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
 		return createPattern(rule.getName() + SearchEdgePattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new SearchEdgePattern(entryPoint, edgeType, eDirection, this));
 	}
 
-	private Collection<IbexPattern> createPatternsForUserDefinedNACs(DomainType domain){
+	private Collection<IPattern> createPatternsForUserDefinedNACs(DomainType domain){
 		return rule.getNacs().stream()
 				.filter(nac -> hasElementWithDomain(nac, domain))
 				.map(nac -> createPattern(nac.getName(), () -> new NacPattern(rule, getSignatureElementsFromNAC(nac), getBodyElementsFromNAC(nac), nac.getName())))
 				.collect(Collectors.toList());
 	}
 	
-	public Collection<IbexPattern> createPatternsForUserDefinedSourceNACs() {		
+	public Collection<IPattern> createPatternsForUserDefinedSourceNACs() {		
 		return createPatternsForUserDefinedNACs(DomainType.SRC);
 	}
 	
-	private Collection<TGGRuleElement> getSignatureElementsFromNAC(NAC nac) {
-		ArrayList<TGGRuleElement> sigElements = new ArrayList<>();
+	private Collection<TGGRuleNode> getSignatureElementsFromNAC(NAC nac) {
+		ArrayList<TGGRuleNode> sigElements = new ArrayList<>();
 		sigElements.addAll(nac.getNodes());
 		sigElements.removeAll(getBodyElementsFromNAC(nac));
 		return sigElements;
@@ -294,7 +294,7 @@ public class PatternFactory {
 		       nac.getEdges().stream().anyMatch(edge -> edge.getDomainType().equals(domain));
 	}
 
-	public Collection<IbexPattern> createPatternsForUserDefinedTargetNACs() {
+	public Collection<IPattern> createPatternsForUserDefinedTargetNACs() {
 		return createPatternsForUserDefinedNACs(DomainType.TRG);
 	}
 }

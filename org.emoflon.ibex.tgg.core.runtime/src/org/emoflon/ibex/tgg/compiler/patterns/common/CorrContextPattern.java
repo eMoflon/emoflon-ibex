@@ -1,56 +1,53 @@
 package org.emoflon.ibex.tgg.compiler.patterns.common;
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
-import language.BindingType;
-import language.DomainType;
+import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class CorrContextPattern extends RulePartPattern {
+public class CorrContextPattern extends AbstractCorrPattern {
 
 	public CorrContextPattern(PatternFactory factory) {
-		super(factory.getRule());
+		initialise(factory.getRule());
+		createPatternNetwork(factory);
 	}
 
-	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-
-		if (e.getBindingType() == BindingType.CREATE)
-			return false;
-		if (e instanceof TGGRuleCorr)
-			return true;
-		if (e instanceof TGGRuleNode) {
-			TGGRuleNode n = (TGGRuleNode) e;
-			return Stream.concat(n.getIncomingCorrsSource().stream(), n.getIncomingCorrsTarget().stream())
-					.anyMatch(c -> c.getBindingType() == BindingType.CONTEXT);
-		}
-		return false;
+	private void createPatternNetwork(PatternFactory factory) {
+		// Leaf pattern
 	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
+	
+	protected void initialise(TGGRule rule) {
+		String name = rule.getName() + PatternSuffixes.CORR_CONTEXT;
+		
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
+					.filter(this::isSignatureNode)
+					.collect(Collectors.toList());
+		
+		Collection<TGGRuleEdge> localEdges = new ArrayList<>();
+		rule.getNodes().stream()
+			.filter(this::isContextCorr)
+			.map(TGGRuleCorr.class::cast)
+			.forEach(corr -> extractSourceAndTargetEdges(corr));
+		
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return PatternSuffixes.CORR_CONTEXT;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return isRelevantForSignature(n) && n.getDomainType() == DomainType.CORR;
+	
+	private boolean isSignatureNode(TGGRuleNode n) {
+		return isContextCorr(n) || isConnectedToAContextCorr(n);
 	}
 
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		return !(node1.getDomainType() == DomainType.CORR && node2.getDomainType() == DomainType.CORR);
+		return !(isContextCorr(node1) && isContextCorr(node2));
 	}
-
 }

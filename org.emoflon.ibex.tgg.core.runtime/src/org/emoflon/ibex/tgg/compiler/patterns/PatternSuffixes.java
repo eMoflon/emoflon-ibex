@@ -37,6 +37,9 @@ public class PatternSuffixes {
 	
 	/** Contains the entire target component of the pattern */
 	public static final String TRG = SEP + "TRG";
+	
+	/** Contains the entire correspondence component of the pattern */
+	public static final String CORR = SEP + "CORR";
 
 	/**
 	 * Contains the entire target of the original TGG rule
@@ -132,6 +135,12 @@ public class PatternSuffixes {
 	 * and invocations to the corresponding patterns of super-rules.
 	 */
 	public static final String CC_REFINEMENT_INVOCATIONS = SEP + "CC_REFINEMENT_INVOCATIONS";
+	
+	/**
+	 * Contains the entire GEN pattern (together with all its invocations) of the original 
+	 * TGG rule. This pattern is needed to ensure maximality for CC of complement rules is met.
+	 */
+	public static final String GENForCC = "_GenForCC";
 
 	/**
 	 * This suffix indicates a marked pattern with a local protocol node, i.e.,

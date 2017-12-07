@@ -1,152 +1,53 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
+import static org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil.addComplementOutputAndContextNodes;
+import static org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil.addKernelOutputAndContextNodes;
+import static org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil.createMarkedInvocations;
+
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Collections;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.RulePartPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 
-import language.BindingType;
 import language.DomainType;
-import language.LanguageFactory;
 import language.TGGComplementRule;
-import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class ComplementBWDPattern extends RulePartPattern {
-	protected PatternFactory factory;
-	private Collection<TGGRuleElement> signatureElements;
-
+public class ComplementBWDPattern extends IbexBasePattern {
+	private TGGComplementRule flattenedComplementRule;
+	
 	public ComplementBWDPattern(PatternFactory factory) {
-		this(factory.getFlattenedVersionOfRule(), factory);
-	}
-
-	private ComplementBWDPattern(TGGRule rule, PatternFactory factory) {
-		super(rule);
-		this.factory = factory;
+		assert(factory.getRule() instanceof TGGComplementRule);
+		flattenedComplementRule = (TGGComplementRule)factory.getFlattenedVersionOfRule();
 		
-		createPatternNetwork();
+		initialise();
+		createPatternNetwork(factory);
 	}
 	
-	protected void createPatternNetwork() {
-		// Rule Patterns
-		if (rule instanceof TGGComplementRule)
-			addTGGPositiveInvocation(factory.getFactory(((TGGComplementRule) rule).getKernel()).create(BWDPattern.class));
+	protected void initialise() {		
+		String name = flattenedComplementRule.getName() + "_" + flattenedComplementRule.getKernel().getName() + PatternSuffixes.BWD;
 		
-		// Marked Patterns
-		createMarkedInvocations();
-	}
-
-	protected void createMarkedInvocations() {
-		for (TGGRuleElement e : getSignatureElements()) {
-			TGGRuleNode node = (TGGRuleNode) e;
-			if (nodeIsNotInKernel(node) && node.getDomainType().equals(DomainType.TRG)) {
-				IbexPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
-				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureElements().stream().findAny().get();
-
-				Map<TGGRuleElement, TGGRuleElement> mapping = new HashMap<>();
-				mapping.put(node, invokedObject);
-
-				if (node.getBindingType() == BindingType.CREATE)
-					addCustomNegativeInvocation(markedPattern, mapping);
-				
-				else if (node.getBindingType() == BindingType.CONTEXT) {
-					addCustomPositiveInvocation(markedPattern, mapping);
-				}
-					
-			}
-		}
-	}
-
-	@Override
-	public boolean isRelevantForSignature(TGGRuleElement e) {
-		throw new IllegalStateException();
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleEdge e) {
-		return false;
-	}
-
-	@Override
-	protected boolean isRelevantForBody(TGGRuleNode n) {
-		return false;
-	}
-
-	@Override
-	protected String getPatternNameSuffix() {
-		return "_" + ((TGGComplementRule)rule).getKernel().getName() + PatternSuffixes.BWD;
+		Collection<TGGRuleNode> signatureNodes = new ArrayList<>();
+		addKernelOutputAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.TRG);
+		addComplementOutputAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.TRG);
+		
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
+		Collection<TGGRuleEdge> localEdges = Collections.emptyList();		
+		
+		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 	
-	@Override
-	public boolean ignored() {
-		return Stream.concat(rule.getNodes().stream(), rule.getEdges().stream())
-				.noneMatch(e -> e.getDomainType() == DomainType.TRG && e.getBindingType() == BindingType.CREATE);
+	protected void createPatternNetwork(PatternFactory factory) {
+		addPositiveInvocation(factory.getFactory(flattenedComplementRule.getKernel()).create(BWDPattern.class));
+		createMarkedInvocations(DomainType.TRG, flattenedComplementRule, this);
 	}
 	
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getDomainType() == node2.getDomainType();
 	}
-
-	
-	@Override
-	protected void initialize() {
-		super.initialize();
-		
-		if (rule instanceof TGGComplementRule) {
-			createSignatureNodes();
-		}
-	}
-
-	private void createSignatureNodes() {
-		
-		addKernelTargetAndContextNodes();
-		addComplementTargetAndContextNodes();
-		
-	}
-	
-	private void addKernelTargetAndContextNodes() {
-		Collection<TGGRuleNode> kernelNodes = ((TGGComplementRule) rule).getKernel().getNodes();
-		for (TGGRuleNode n : kernelNodes) {
-			if(n.getDomainType() == DomainType.TRG || n.getBindingType() == BindingType.CONTEXT)
-				getSignatureElements().add(createProxyNode(n));
-			}
-	}
-
-	private void addComplementTargetAndContextNodes() {
-		for (TGGRuleNode n : rule.getNodes()) {
-			if(nodeIsNotInKernel(n) && (n.getDomainType() == DomainType.TRG || n.getBindingType() == BindingType.CONTEXT))
-				getSignatureElements().add(createProxyNode(n));
-		}
-	}
-	
-	private boolean nodeIsNotInKernel(TGGRuleElement node) {
-		return ((TGGComplementRule) rule).getKernel().getNodes().stream().noneMatch(re -> re.getName().equals(node.getName()));
-	}
-
-	private TGGRuleNode createProxyNode(TGGRuleNode node) {
-		TGGRuleNode copiedNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		copiedNode.setName(node.getName());
-		copiedNode.setType(node.getType());
-		copiedNode.setBindingType(node.getBindingType());
-		copiedNode.setDomainType(node.getDomainType());
-		return copiedNode;
-	}
-	
-	@Override
-	public Collection<TGGRuleElement> getSignatureElements() {
-		if (signatureElements == null) {
-			signatureElements = new HashSet<TGGRuleElement>();
-		}
-		return signatureElements;
-	}
-
 }
