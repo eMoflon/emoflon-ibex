@@ -42,9 +42,9 @@ public class WholeRulePattern extends IbexBasePattern {
 	}
 
 	protected void createPatternNetwork() {
-		addTGGPositiveInvocation(factory.create(SrcPattern.class));
-		addTGGPositiveInvocation(factory.create(TrgPattern.class));
-		addTGGPositiveInvocation(factory.create(CorrPattern.class));
+		addPositiveInvocation(factory.create(SrcPattern.class));
+		addPositiveInvocation(factory.create(TrgPattern.class));
+		addPositiveInvocation(factory.create(CorrPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addPositiveInvocation(factory.getFactory(superRule).create(WholeRulePattern.class));

@@ -44,22 +44,22 @@ import runtime.TGGRuleApplication;
 
 public abstract class CC extends OperationalStrategy {
 
-	private int nameCounter = 0;
+	protected int nameCounter = 0;
 
-	private int idCounter = 1;
-	TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
+	protected int idCounter = 1;
+	protected TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
 	TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 
 	TIntIntHashMap weights = new TIntIntHashMap();
 
-	THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
+	protected THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
 
-	TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
+	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
 			new RuntimeEdgeHashingStrategy());
-	THashMap<EObject, TIntHashSet> nodeToMarkingMatches = new THashMap<>();
+	protected THashMap<EObject, TIntHashSet> nodeToMarkingMatches = new THashMap<>();
 
-	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
-	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
+	protected TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
+	protected TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
 	/**
 	 * Collection of constraints to guarantee uniqueness property;
@@ -81,7 +81,7 @@ public abstract class CC extends OperationalStrategy {
 	HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
 	Bundle lastAppliedBundle;
 	
-	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
+	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 	
 	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
@@ -394,7 +394,7 @@ public abstract class CC extends OperationalStrategy {
 		return null;
 	}
 
-	private TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
+	protected TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
 		TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<>();
 		idToMatch.keySet().forEach(v -> {
 			try {
@@ -407,7 +407,7 @@ public abstract class CC extends OperationalStrategy {
 		return gurobiVariables;
 	}
 	
-	private void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
+	protected void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
@@ -494,7 +494,7 @@ public abstract class CC extends OperationalStrategy {
 		return Sets.cartesianProduct(excludedRuleApplications);
 	}
 
-	private void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
+	protected void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 
 		for (int v : idToMatch.keySet().toArray()) {
 
@@ -548,7 +548,7 @@ public abstract class CC extends OperationalStrategy {
 		}
 	}
 
-	private void defineGurobiObjective(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
+	protected void defineGurobiObjective(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 
 		GRBLinExpr expr = new GRBLinExpr();
 		idToMatch.keySet().forEach(v -> {
