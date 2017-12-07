@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
@@ -16,7 +15,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACHelper;

@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -28,10 +29,10 @@ public class SearchEdgePattern extends IbexBasePattern {
 	private void initialise(TGGRule rule) {
 		TGGRule checkEdgeRule = FilterACHelper.createCheckEdgeRule(rule, entryPoint, edgeType, eDirection);
 		
-		String name = checkEdgeRule + getPatternNameSuffix(entryPoint, edgeType, eDirection);
+		String name = checkEdgeRule.getName() + getPatternNameSuffix(entryPoint, edgeType, eDirection);
 		
-		Collection<TGGRuleNode> signatureNodes = checkEdgeRule.getNodes();
-		Collection<TGGRuleEdge> localEdges = checkEdgeRule.getEdges();
+		Collection<TGGRuleNode> signatureNodes = new ArrayList<>(checkEdgeRule.getNodes());
+		Collection<TGGRuleEdge> localEdges = new ArrayList<>(checkEdgeRule.getEdges());
 		Collection<TGGRuleNode> localNodes = Collections.emptyList();
 		
 		super.initialise(name, signatureNodes, localNodes, localEdges);

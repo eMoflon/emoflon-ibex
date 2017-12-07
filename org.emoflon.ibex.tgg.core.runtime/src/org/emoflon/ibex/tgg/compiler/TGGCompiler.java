@@ -51,11 +51,12 @@ public class TGGCompiler {
 			// Synchronisation
 			factory.create(FWDPattern.class);
 			factory.create(BWDPattern.class);
-			factory.create(ConsistencyPattern.class);
 			if (rule instanceof TGGComplementRule) {
 				factory.create(ComplementBWDPattern.class);
 				factory.create(ComplementFWDPattern.class);
 			}
+			factory.create(ConsistencyPattern.class);
+			
 			ruleToPatterns.put(rule.getName(), factory.getPatterns());
 		}
 	

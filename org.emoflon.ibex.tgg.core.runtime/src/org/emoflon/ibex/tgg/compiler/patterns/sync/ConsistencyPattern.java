@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -18,7 +17,6 @@ import language.DomainType;
 import language.LanguageFactory;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.basic.expressions.ExpressionsFactory;
 import language.basic.expressions.TGGLiteralExpression;
@@ -42,14 +40,11 @@ public class ConsistencyPattern extends IbexBasePattern {
 
 		protocolNode = createProtocolNode(rule);
 
-		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
-				   .filter(this::isSignatureNode)
-				   .collect(Collectors.toList());
-		
+		Collection<TGGRuleNode> signatureNodes = new ArrayList<>(rule.getNodes());
 		signatureNodes.add(protocolNode);
 		
 		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
-		Collection<TGGRuleNode> localNodes = new ArrayList<>();
+		Collection<TGGRuleNode> localNodes = Collections.emptyList();
 		
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
@@ -61,7 +56,6 @@ public class ConsistencyPattern extends IbexBasePattern {
 		if (PatternFactory.strategy != FilterACStrategy.NONE) {
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
-			//addTGGPositiveInvocation(factory.createFilterACPatterns(DomainType.CORR));
 		}
 	}
 	
@@ -85,7 +79,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 	public void createMarkedInvocations() {
 		TGGRuleNode ruleApplicationNode = getRuleApplicationNode(getSignatureNodes());
 		
-		getSignatureNodes()
+		signatureNodes
 		.stream()
 		.filter(e -> !e.equals(ruleApplicationNode))
 		.forEach(el ->
@@ -114,18 +108,14 @@ public class ConsistencyPattern extends IbexBasePattern {
 	}
 
 	private TGGRuleNode getRuleApplicationNode(Collection<TGGRuleNode> elements) {
-		return (TGGRuleNode) elements.stream()
-					   			     .filter(this::isRuleApplicationNode)
-					   			     .findAny()
-					   			     .get();
+		return elements.stream()
+				.filter(this::isRuleApplicationNode)
+				.findAny()
+				.get();
 	}
 
-	private boolean isRuleApplicationNode(TGGRuleElement e) {
-		return ((TGGRuleNode) e).getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication());
-	}
-	
-	private boolean isSignatureNode(TGGRuleNode n) {
-		return true;
+	private boolean isRuleApplicationNode(TGGRuleNode n) {
+		return n.getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 	}
 	
 	public static String getProtocolNodeName() {

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns.common;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -22,4 +23,6 @@ public interface IPattern {
 
 	Collection<Pair<TGGRuleNode, TGGRuleNode>> getInjectivityChecks();
 
+	void addNegativeInvocation(IPattern markedPattern, Map<TGGRuleNode, TGGRuleNode> mapping);
+	void addPositiveInvocation(IPattern markedPattern, Map<TGGRuleNode, TGGRuleNode> mapping);
 }
