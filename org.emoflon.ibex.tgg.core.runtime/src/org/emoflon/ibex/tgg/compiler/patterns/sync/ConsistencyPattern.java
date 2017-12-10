@@ -126,4 +126,9 @@ public class ConsistencyPattern extends IbexBasePattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
 	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
+	}
 }

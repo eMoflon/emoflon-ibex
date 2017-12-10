@@ -70,4 +70,9 @@ public class GENRefinementPattern extends IbexBasePattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return checkInjectivityInSubRule(factory.getRule(), node1, node2);
 	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
+	}
 }

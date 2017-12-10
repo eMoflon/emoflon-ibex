@@ -19,6 +19,7 @@ import language.TGGRuleNode;
 
 public class ComplementFWDPattern extends IbexBasePattern {
 	private TGGComplementRule flattenedComplementRule;
+	private PatternFactory factory;
 	
 	public ComplementFWDPattern(PatternFactory factory) {
 		assert(factory.getRule() instanceof TGGComplementRule);
@@ -49,5 +50,10 @@ public class ComplementFWDPattern extends IbexBasePattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getDomainType() == node2.getDomainType();
+	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
 	}
 }

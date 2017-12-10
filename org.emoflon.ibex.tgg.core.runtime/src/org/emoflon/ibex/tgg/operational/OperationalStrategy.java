@@ -20,12 +20,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
@@ -33,7 +34,6 @@ import org.emoflon.ibex.tgg.operational.util.MatchContainer;
 import org.emoflon.ibex.tgg.operational.util.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
 import org.emoflon.ibex.tgg.operational.util.UpdatePolicy;
-import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TCustomHashSet;
@@ -352,10 +352,10 @@ public abstract class OperationalStrategy {
 		
 		ra.getNodeMappings().putAll(createdElements);
 		match.parameterNames().stream()
-			.filter(n -> !IbexPattern.isAttrNode(n))
+			.filter(n -> !IbexBasePattern.isAttrNode(n))
 			.forEach(n -> {
-				ra.getNodeMappings().put(n, (EObject) match.get(n));
-			});
+			ra.getNodeMappings().put(n, (EObject) match.get(n));
+		});
 
 		setIsRuleApplicationFinal(ra);
 		createdElements.put(ConsistencyPattern.getProtocolNodeName(), ra);

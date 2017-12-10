@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCCPattern;
@@ -71,7 +72,7 @@ public class TGGCompiler {
 				.collect(Collectors.toList());
 
 		Collection<String> duplicates = allNames.stream()
-				.filter(p -> Collections.frequency(allNames, p) > 1)
+				.filter(p -> Collections.frequency(allNames, p) > 1)	
 				.collect(Collectors.toSet());
 		
 		if(!duplicates.isEmpty())
@@ -93,7 +94,7 @@ public class TGGCompiler {
 	}
 	
 	//FIXME[Anjorin]: Would be better to integrate into IbexPatterns
-	public static boolean isRootPattern(IbexPattern pattern) {
+	public static boolean isRootPattern(IPattern pattern) {
 		return pattern.getName().endsWith(PatternSuffixes.GEN) ||
 				pattern.getName().endsWith(PatternSuffixes.CC)  ||
 				pattern.getName().endsWith(PatternSuffixes.FWD) ||

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EcorePackage;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 
@@ -136,5 +137,10 @@ public class CheckTranslationStatePattern extends IbexBasePattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
+	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return null;
 	}
 }

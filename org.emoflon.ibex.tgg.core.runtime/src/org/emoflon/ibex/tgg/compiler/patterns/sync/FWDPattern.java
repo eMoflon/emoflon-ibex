@@ -180,4 +180,8 @@ public class FWDPattern extends IbexBasePattern {
 		return node1.getDomainType() == node2.getDomainType();
 	}
 
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
+	}
 }

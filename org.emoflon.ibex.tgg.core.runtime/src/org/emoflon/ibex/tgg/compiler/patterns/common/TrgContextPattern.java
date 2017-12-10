@@ -14,8 +14,10 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class TrgContextPattern extends IbexBasePattern {
-
+	private PatternFactory factory;
+	
 	public TrgContextPattern(PatternFactory factory) {
+		this.factory = factory;
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
 	}
@@ -52,5 +54,10 @@ public class TrgContextPattern extends IbexBasePattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		// Leaf pattern so we have to check injectivity here
 		return false;
+	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
 	}
 }

@@ -15,7 +15,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 
 import language.TGGRuleCorr;
@@ -146,7 +146,7 @@ public class ManipulationUtil {
 	private static void applyAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
 		Collection<String> attributeNames = match.parameterNames().stream()
 			.filter(pname -> { 
-				Optional<Pair<String, String>> o = IbexPattern.getNodeAndAttrFromVarName(pname);
+				Optional<Pair<String, String>> o = IbexBasePattern.getNodeAndAttrFromVarName(pname);
 				Optional<Boolean> check = o.map(node_attr -> node_attr.getLeft().equals(node.getName()));
 				return check.orElse(false);
 			})
@@ -154,7 +154,7 @@ public class ManipulationUtil {
 		
 		for (String node_attr : attributeNames) {
 			Object attributeValue = match.get(node_attr);
-			Pair<String, String> node_attr_pair = IbexPattern.getNodeAndAttrFromVarName(node_attr).orElseThrow(() -> new IllegalStateException("Missing attribute value"));
+			Pair<String, String> node_attr_pair = IbexBasePattern.getNodeAndAttrFromVarName(node_attr).orElseThrow(() -> new IllegalStateException("Missing attribute value"));
 			String attributeName = node_attr_pair.getRight();
 			
 			EStructuralFeature feature = node.getType().getEStructuralFeature(attributeName);
