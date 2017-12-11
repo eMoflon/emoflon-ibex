@@ -455,6 +455,9 @@ public abstract class OperationalStrategy {
 		}
 		if (markingTrg()) {
 			for (TGGRuleNode gtn : ruleInfos.getGreenTrgNodes(ruleName)) {
+				org.eclipse.emf.ecore.EClass type = gtn.getType();
+				org.eclipse.emf.ecore.EClass object = ((EObject)match.get(gtn.getName())).eClass();
+				
 				if (gtn.getType() != ((EObject) match.get(gtn.getName())).eClass())
 					return false;
 			}

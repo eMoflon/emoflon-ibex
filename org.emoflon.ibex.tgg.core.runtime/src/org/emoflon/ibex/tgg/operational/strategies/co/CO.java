@@ -70,7 +70,9 @@ public abstract class CO extends CC {
 	
 	@Override
 	protected void wrapUp() {
-		  for (int v : chooseTGGRuleApplications()) {
+		int[] ruleApplications = chooseTGGRuleApplications();
+		
+		  for (int v : ruleApplications) {
 			   IMatch match = idToMatch.get(v < 0 ? -v : v);
 			   HashMap<String, EObject> comatch = matchToCoMatch.get(match);
 			   if (v < 0)
