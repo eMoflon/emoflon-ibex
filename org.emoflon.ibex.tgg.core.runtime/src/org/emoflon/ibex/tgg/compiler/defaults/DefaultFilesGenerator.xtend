@@ -199,6 +199,7 @@ class DefaultFilesGenerator {
 
 			cc.saveModels();
 			cc.terminate();
+			logger.info(cc.generateConsistencyReport());			
 			'''
 		)	
 	}
