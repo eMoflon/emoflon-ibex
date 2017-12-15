@@ -14,7 +14,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class BWDPattern extends SyncPatternHelper {
+public class BWDPattern extends BasicSyncPattern {
 	protected PatternFactory factory;
 
 	public BWDPattern(PatternFactory factory) {

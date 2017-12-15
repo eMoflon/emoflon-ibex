@@ -17,7 +17,7 @@ import language.TGGComplementRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class ComplementFWDPattern extends SyncPatternHelper {
+public class ComplementFWDPattern extends BasicSyncPattern {
 	private TGGComplementRule flattenedComplementRule;
 	
 	public ComplementFWDPattern(PatternFactory factory) {

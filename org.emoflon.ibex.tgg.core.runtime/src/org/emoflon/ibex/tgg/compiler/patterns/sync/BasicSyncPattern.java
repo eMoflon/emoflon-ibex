@@ -25,7 +25,7 @@ import language.TGGRule;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public abstract class SyncPatternHelper extends IbexBasePattern{
+public abstract class BasicSyncPattern extends IbexBasePattern{
 	
 	protected void addFilterNACPatterns(DomainType domain, PatternFactory factory, IbexPatternOptimiser optimiser) {
 		final Collection<IPattern> filterNACs = new ArrayList<>();
