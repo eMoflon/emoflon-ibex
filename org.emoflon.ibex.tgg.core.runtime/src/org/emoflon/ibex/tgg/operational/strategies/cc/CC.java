@@ -17,7 +17,9 @@ import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
+import org.emoflon.ibex.tgg.operational.util.UpdatePolicy;
 
 import com.google.common.collect.Sets;
 
@@ -86,7 +88,10 @@ public abstract class CC extends OperationalStrategy {
 	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
 		super(projectName, workspacePath, debug);
 	}
-
+	
+	public CC(String projectPath, String workspacePath, boolean debug, IUpdatePolicy policy) {
+		super(projectPath, workspacePath, debug, policy);
+	}
 	@Override
 	protected boolean manipulateSrc() {
 		return false;
@@ -95,6 +100,11 @@ public abstract class CC extends OperationalStrategy {
 	@Override
 	protected boolean manipulateTrg() {
 		return false;
+	}
+	
+	@Override
+	protected boolean manipulateCorr() {
+		return true;
 	}
 
 	@Override
@@ -297,20 +307,17 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	private void handleBundles(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
-		Bundle appliedBundle;
-		TGGRule rule = getRule(ruleName);
-		if(! (rule instanceof TGGComplementRule)) {
-			appliedBundle = new Bundle(idCounter);
+		if(!(getRule(ruleName) instanceof TGGComplementRule)) {
+			Bundle appliedBundle = new Bundle(idCounter);
 			appliedBundles.add(appliedBundle);
 			lastAppliedBundle = appliedBundle;
 		}
-		else {
-			appliedBundle = lastAppliedBundle;
-		}
-		appliedBundle.addMatch(idCounter);
+		
+		lastAppliedBundle.addMatch(idCounter);
+		
 		// add context nodes and edges of this concrete match to its bundle
-		appliedBundle.addBundleContextNodes(getBlackNodes(match, comatch, ruleName));
-		appliedBundle.addBundleContextEdges(getBlackEdges(match, comatch, ruleName));
+		lastAppliedBundle.addBundleContextNodes(getBlackNodes(match, comatch, ruleName));
+		lastAppliedBundle.addBundleContextEdges(getBlackEdges(match, comatch, ruleName));
 	}
 
 	private THashSet<EObject> getGreenNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
@@ -395,11 +402,11 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	protected TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
-		System.out.println("Define Gurobi Variables: \n");
+		//logger.debug("Define Gurobi Variables: \n");
 		TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<>();
 		idToMatch.keySet().forEach(v -> {
 			try {
-				System.out.println("Variable " + v + " for match " + idToMatch.get(v).patternName());
+				//logger.debug("Variable " + v + " for match " + idToMatch.get(v).patternName());
 				gurobiVariables.put(v, model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x" + v));
 			} catch (GRBException e) {
 				e.printStackTrace();
@@ -410,16 +417,16 @@ public abstract class CC extends OperationalStrategy {
 	}
 	
 	protected void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-		System.out.println("\nDefine Gurobi Exclusions: \n");
+		//logger.debug("\nDefine Gurobi Exclusions: \n");
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
 			GRBLinExpr expr = new GRBLinExpr();
 			variables.forEach(v -> {
-				System.out.print(idToMatch.get(v).patternName() + " || ");
+				//logger.debug(idToMatch.get(v).patternName() + " || ");
 				expr.addTerm(1.0, gurobiVars.get(v));
 				return true;
 			});
-			System.out.println();
+			//logger.debug("\n");
 			try {
 				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
 			} catch (GRBException e) {
@@ -431,11 +438,11 @@ public abstract class CC extends OperationalStrategy {
 			TIntHashSet variables = edgeToMarkingMatches.get(edge);
 			GRBLinExpr expr = new GRBLinExpr();
 			variables.forEach(v -> {
-				System.out.print(idToMatch.get(v).patternName() + " || ");
+				//logger.debug(idToMatch.get(v).patternName() + " || ");
 				expr.addTerm(1.0, gurobiVars.get(v));
 				return true;
 			});
-			System.out.println();
+			//logger.debug("\n");
 			try {
 				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
 			} catch (GRBException e) {
@@ -501,26 +508,26 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	protected void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-		System.out.println("\nDefine Gurobi Implications: \n");
+		//logger.debug("\nDefine Gurobi Implications: \n");
 		for (int v : idToMatch.keySet().toArray()) {
 			
 			THashSet<EObject> contextNodes = matchToContextNodes.get(v);
 			for (EObject node : contextNodes) {
 				GRBLinExpr expr = new GRBLinExpr();
 				expr.addTerm(1.0, gurobiVars.get(v));
-				System.out.print(idToMatch.get(v).patternName() + " --> ");
+				//logger.debug(idToMatch.get(v).patternName() + " --> ");
 				if (!nodeToMarkingMatches.contains(node)) {
 					try {
 						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "IMPL" + nameCounter++);
 					} catch (GRBException e) {
 						e.printStackTrace();
 					}
-					System.out.println();
+					//logger.debug("\n");
 					continue;
 				}
 
 				for (int v2 : nodeToMarkingMatches.get(node).toArray()) {
-					System.out.print(idToMatch.get(v2).patternName() + ", ");
+					//logger.debug(idToMatch.get(v2).patternName() + ", ");
 					expr.addTerm(-1.0, gurobiVars.get(v2));
 				}
 
@@ -529,26 +536,26 @@ public abstract class CC extends OperationalStrategy {
 				} catch (GRBException e) {
 					e.printStackTrace();
 				}
-				System.out.println();
+				//logger.debug("\n");
 			}
 
 			TCustomHashSet<RuntimeEdge> contextEdges = matchToContextEdges.get(v);
 			for (RuntimeEdge edge : contextEdges) {
 				GRBLinExpr expr = new GRBLinExpr();
 				expr.addTerm(1.0, gurobiVars.get(v));
-				System.out.print(idToMatch.get(v).patternName() + " --> ");
+				//logger.debug(idToMatch.get(v).patternName() + " --> ");
 				if (!edgeToMarkingMatches.contains(edge)) {
 					try {
 						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "IMPL" + nameCounter++);
 					} catch (GRBException e) {
 						e.printStackTrace();
 					}
-					System.out.println();
+					//logger.debug("\n");
 					continue;
 				}
 
 				for (int v2 : edgeToMarkingMatches.get(edge).toArray()) {
-					System.out.print(idToMatch.get(v2).patternName() + ", ");
+					//logger.debug(idToMatch.get(v2).patternName() + ", ");
 					expr.addTerm(-1.0, gurobiVars.get(v2));
 				}
 
@@ -557,7 +564,7 @@ public abstract class CC extends OperationalStrategy {
 				} catch (GRBException e) {
 					e.printStackTrace();
 				}
-				System.out.println();
+				//logger.debug("\n");
 			}
 		}
 	}

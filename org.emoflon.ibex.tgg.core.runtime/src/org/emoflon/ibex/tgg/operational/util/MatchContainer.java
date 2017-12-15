@@ -5,11 +5,15 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
+import org.eclipse.emf.common.util.EList;
+import org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil;
+
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import language.TGG;
+import language.TGGComplementRule;
 import language.TGGRule;
 
 /**
@@ -74,7 +78,24 @@ public class MatchContainer {
 		}
 		return it.next();
 	}
-
+	
+	public IMatch getNextRandomKernel(EList<TGGRule> rules) {
+		Iterator<IMatch> it = matchToRuleNameID.keySet().iterator();
+		
+		while (it.hasNext()) {
+			IMatch m = it.next();
+			String ruleName = getRuleName(m);
+			
+			for (TGGRule r : rules) {
+				if (r.getName().equals(ruleName) && !(r instanceof TGGComplementRule)) {
+					return m;
+				}
+			}
+		}
+		//FIXME Throw appropriate exception
+		return null;
+	}
+	
 	public boolean isEmpty() {
 		return matchToRuleNameID.isEmpty();
 	}

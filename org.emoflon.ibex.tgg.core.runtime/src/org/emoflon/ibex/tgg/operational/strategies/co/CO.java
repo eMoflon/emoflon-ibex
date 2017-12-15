@@ -3,12 +3,17 @@ package org.emoflon.ibex.tgg.operational.strategies.co;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+
+import org.apache.log4j.BasicConfigurator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.util.RandomKernelMatchUpdatePolicy;
+
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
@@ -23,12 +28,20 @@ import language.TGGRuleCorr;
 public abstract class CO extends CC {
 
 	public CO(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug);
+		super(projectName, workspacePath, debug, new RandomKernelMatchUpdatePolicy());
+		RandomKernelMatchUpdatePolicy policy = (RandomKernelMatchUpdatePolicy)getUpdatePolicy();
+		policy.setOptions(options);
+		BasicConfigurator.configure();
 	}
 
 	@Override
 	public boolean isPatternRelevant(String patternName) {
 		return patternName.endsWith(PatternSuffixes.WHOLE);
+	}
+	
+	@Override
+	protected boolean manipulateCorr() {
+		return false;
 	}
 	
 	@Override
@@ -50,7 +63,7 @@ public abstract class CO extends CC {
 			   if (v < 0)
 			    comatch.values().forEach(EcoreUtil::delete);
 		  }
-		  consistencyReporter.init(s, t, p, ruleInfos);
+		  consistencyReporter.init(s, t, c, p, ruleInfos);
 	}
 		
 		private int[] chooseTGGRuleApplications() {
@@ -119,7 +132,7 @@ public abstract class CO extends CC {
 					expr.addTerm(1.0, gurobiVars.get(v2));
 					try {
 						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
-						System.out.println(idToMatch.get(v).patternName() + " || " + idToMatch.get(v2).patternName());
+						//logger.debug(idToMatch.get(v).patternName() + " || " + idToMatch.get(v2).patternName());
 					} catch (GRBException e) {
 						e.printStackTrace();
 					}
@@ -136,6 +149,16 @@ public abstract class CO extends CC {
 		p = createResource(projectPath + "/instances/protocol.xmi");
 
 		EcoreUtil.resolveAll(rs);
+	}
+	
+	@Override
+	public boolean modelsAreConsistent() {
+		return getInconsistentSrcNodes().size() + getInconsistentTrgNodes().size() + getInconsistentSrcEdges().size()
+				+ getInconsistentTrgEdges().size() + getInconsistentCorrNodes().size() == 0;
+	}
+	
+	public Collection<EObject> getInconsistentCorrNodes() {
+		return consistencyReporter.getInconsistentCorrNodes();
 	}
 }
 
