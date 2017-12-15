@@ -6,6 +6,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 
+import language.DomainType;
 import language.TGGRule;
 
 public class FWDRefinementPattern extends FWDPattern {
@@ -20,7 +21,7 @@ public class FWDRefinementPattern extends FWDPattern {
 		addPositiveInvocation(factory.create(CorrContextPattern.class));
 		addPositiveInvocation(factory.create(TrgContextPattern.class));
 		
-		createMarkedInvocations(true);
+		createMarkedInvocations(true, DomainType.SRC);
 
 		for (TGGRule superRule : factory.getRule().getRefines())
 			addPositiveInvocation(factory.getFactory(superRule).create(FWDRefinementPattern.class));

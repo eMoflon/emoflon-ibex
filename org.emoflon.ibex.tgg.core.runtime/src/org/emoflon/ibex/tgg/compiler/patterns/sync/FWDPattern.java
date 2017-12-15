@@ -2,25 +2,19 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class FWDPattern extends IbexBasePattern {
+public class FWDPattern extends SyncPatternHelper {
 	protected PatternFactory factory;
 
 	public FWDPattern(PatternFactory factory) {
@@ -47,43 +41,15 @@ public class FWDPattern extends IbexBasePattern {
 		addPositiveInvocation(factory.create(FWDRefinementPattern.class));
 		
 		// Marked Patterns
-		createMarkedInvocations(false);
+		createMarkedInvocations(false, DomainType.SRC);
 
 		// FilterNACs
 		if(PatternFactory.strategy != FilterACStrategy.NONE)
 			addFilterNACPatterns(DomainType.SRC, factory, optimiser);
 		
 		// NACs
-		addNegativeInvocations(collectGeneratedNACs());
+		addNegativeInvocations(collectGeneratedNACs(factory, DomainType.SRC, DomainType.TRG));
 		addNegativeInvocations(factory.createPatternsForUserDefinedTargetNACs());
-	}
-	
-	protected Collection<IPattern> collectGeneratedNACs() {
-		Collection<IPattern> pattern = SyncACUtil.collectGeneratedNACs(factory, DomainType.SRC, DomainType.TRG);
-		return pattern;
-	}
-
-	protected void createMarkedInvocations(boolean positive) {
-		for (TGGRuleElement el : getSignatureNodes()) {
-			TGGRuleNode node = (TGGRuleNode) el;
-			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && node.getDomainType().equals(DomainType.SRC)) {
-				IPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), true, false);
-				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
-
-				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
-				mapping.put(node, invokedObject);
-
-				if (positive)
-					addPositiveInvocation(markedPattern, mapping);
-				else
-					addNegativeInvocation(markedPattern, mapping);
-			}
-		}
-	}
-	
-	private void addFilterNACPatterns(DomainType domain, PatternFactory factory, IbexPatternOptimiser optimiser) {
-		Collection<IPattern> optimisedFilterNACs = SyncACUtil.addFilterNACPatterns(domain, factory, optimiser);
-		addNegativeInvocations(optimisedFilterNACs);
 	}
 
 	private boolean isSignatureNode(TGGRuleNode n) {
