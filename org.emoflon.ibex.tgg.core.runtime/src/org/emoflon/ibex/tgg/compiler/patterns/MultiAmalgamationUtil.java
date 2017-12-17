@@ -76,7 +76,7 @@ public class MultiAmalgamationUtil {
 	
 	public static void addComplementOutputAndContextNodes(TGGComplementRule rule, Collection<TGGRuleNode> signatureNodes, DomainType domain) {
 		for (TGGRuleNode n : rule.getNodes()) {
-			if(nodeIsNotInKernel(rule, n) && (n.getDomainType() == DomainType.SRC || n.getBindingType() == BindingType.CONTEXT))
+			if(nodeIsNotInKernel(rule, n) && (n.getDomainType() == domain || n.getBindingType() == BindingType.CONTEXT))
 				signatureNodes.add(createProxyNode(n));
 		}
 	}
