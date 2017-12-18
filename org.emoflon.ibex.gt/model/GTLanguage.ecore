@@ -2,26 +2,36 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="GTLanguage" nsURI="platform:/plugin/org.emoflon.ibex.gt/model/GTLanguage.ecore"
     nsPrefix="org.emoflon.ibex.gt">
-  <eClassifiers xsi:type="ecore:EClass" name="RuleSet">
+  <eClassifiers xsi:type="ecore:EClass" name="GTRuleSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"
-        eType="#//Rule" containment="true"/>
+        eType="#//GTRule" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Rule">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="graph" eType="#//Graph"
+  <eClassifiers xsi:type="ecore:EClass" name="GTRule" eSuperTypes="#//GTNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="graph" eType="#//GTGraph"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Graph">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" eType="#//Node"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GTGraph">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
+        eType="#//GTNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
-        eType="#//Edge"/>
+        eType="#//GTEdge"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Node" eSuperTypes="#//GraphElement">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GTNode" eSuperTypes="#//GTGraphElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingEdges" upperBound="-1"
+        eType="#//GTEdge" eOpposite="#//GTEdge/targetNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
+        eType="#//GTEdge" eOpposite="#//GTEdge/sourceNode"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Edge" eSuperTypes="#//GraphElement">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GTEdge" eSuperTypes="#//GTGraphElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetNode" eType="#//GTNode"
+        eOpposite="#//GTNode/incomingEdges"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceNode" eType="#//GTNode"
+        eOpposite="#//GTNode/outgoingEdges"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GraphElement">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GTGraphElement" eSuperTypes="#//GTNamedElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GTNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
 </ecore:EPackage>

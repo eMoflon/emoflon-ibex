@@ -7,24 +7,25 @@
     importOrganizing="true">
   <foreignModel>GTLanguage.ecore</foreignModel>
   <genPackages prefix="GTLanguage" disposableProviderFactory="true" ecorePackage="GTLanguage.ecore#/">
-    <genClasses ecoreClass="GTLanguage.ecore#//RuleSet">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//RuleSet/rules"/>
+    <genClasses ecoreClass="GTLanguage.ecore#//GTRuleSet">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTRuleSet/rules"/>
     </genClasses>
-    <genClasses ecoreClass="GTLanguage.ecore#//Rule">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//Rule/graph"/>
+    <genClasses ecoreClass="GTLanguage.ecore#//GTRule">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTRule/graph"/>
     </genClasses>
     <genClasses ecoreClass="GTLanguage.ecore#//Graph">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//Graph/nodes"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//Graph/edges"/>
     </genClasses>
+    <genClasses ecoreClass="GTLanguage.ecore#//GraphElement"/>
     <genClasses ecoreClass="GTLanguage.ecore#//Node">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//Node/type"/>
     </genClasses>
     <genClasses ecoreClass="GTLanguage.ecore#//Edge">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//Edge/type"/>
     </genClasses>
-    <genClasses ecoreClass="GTLanguage.ecore#//GraphElement">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute GTLanguage.ecore#//GraphElement/name"/>
+    <genClasses ecoreClass="GTLanguage.ecore#//NamedElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute GTLanguage.ecore#//NamedElement/name"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>
