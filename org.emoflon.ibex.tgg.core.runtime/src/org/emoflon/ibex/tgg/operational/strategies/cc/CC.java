@@ -402,11 +402,9 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	protected TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
-		//logger.debug("Define Gurobi Variables: \n");
 		TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<>();
 		idToMatch.keySet().forEach(v -> {
 			try {
-				//logger.debug("Variable " + v + " for match " + idToMatch.get(v).patternName());
 				gurobiVariables.put(v, model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x" + v));
 			} catch (GRBException e) {
 				e.printStackTrace();
@@ -417,16 +415,13 @@ public abstract class CC extends OperationalStrategy {
 	}
 	
 	protected void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-		//logger.debug("\nDefine Gurobi Exclusions: \n");
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
 			GRBLinExpr expr = new GRBLinExpr();
 			variables.forEach(v -> {
-				//logger.debug(idToMatch.get(v).patternName() + " || ");
 				expr.addTerm(1.0, gurobiVars.get(v));
 				return true;
 			});
-			//logger.debug("\n");
 			try {
 				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
 			} catch (GRBException e) {
@@ -438,11 +433,9 @@ public abstract class CC extends OperationalStrategy {
 			TIntHashSet variables = edgeToMarkingMatches.get(edge);
 			GRBLinExpr expr = new GRBLinExpr();
 			variables.forEach(v -> {
-				//logger.debug(idToMatch.get(v).patternName() + " || ");
 				expr.addTerm(1.0, gurobiVars.get(v));
 				return true;
 			});
-			//logger.debug("\n");
 			try {
 				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
 			} catch (GRBException e) {
@@ -508,26 +501,22 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	protected void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-		//logger.debug("\nDefine Gurobi Implications: \n");
 		for (int v : idToMatch.keySet().toArray()) {
 			
 			THashSet<EObject> contextNodes = matchToContextNodes.get(v);
 			for (EObject node : contextNodes) {
 				GRBLinExpr expr = new GRBLinExpr();
 				expr.addTerm(1.0, gurobiVars.get(v));
-				//logger.debug(idToMatch.get(v).patternName() + " --> ");
 				if (!nodeToMarkingMatches.contains(node)) {
 					try {
 						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "IMPL" + nameCounter++);
 					} catch (GRBException e) {
 						e.printStackTrace();
 					}
-					//logger.debug("\n");
 					continue;
 				}
 
 				for (int v2 : nodeToMarkingMatches.get(node).toArray()) {
-					//logger.debug(idToMatch.get(v2).patternName() + ", ");
 					expr.addTerm(-1.0, gurobiVars.get(v2));
 				}
 
@@ -536,26 +525,22 @@ public abstract class CC extends OperationalStrategy {
 				} catch (GRBException e) {
 					e.printStackTrace();
 				}
-				//logger.debug("\n");
 			}
 
 			TCustomHashSet<RuntimeEdge> contextEdges = matchToContextEdges.get(v);
 			for (RuntimeEdge edge : contextEdges) {
 				GRBLinExpr expr = new GRBLinExpr();
 				expr.addTerm(1.0, gurobiVars.get(v));
-				//logger.debug(idToMatch.get(v).patternName() + " --> ");
 				if (!edgeToMarkingMatches.contains(edge)) {
 					try {
 						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "IMPL" + nameCounter++);
 					} catch (GRBException e) {
 						e.printStackTrace();
 					}
-					//logger.debug("\n");
 					continue;
 				}
 
 				for (int v2 : edgeToMarkingMatches.get(edge).toArray()) {
-					//logger.debug(idToMatch.get(v2).patternName() + ", ");
 					expr.addTerm(-1.0, gurobiVars.get(v2));
 				}
 
@@ -564,7 +549,6 @@ public abstract class CC extends OperationalStrategy {
 				} catch (GRBException e) {
 					e.printStackTrace();
 				}
-				//logger.debug("\n");
 			}
 		}
 	}

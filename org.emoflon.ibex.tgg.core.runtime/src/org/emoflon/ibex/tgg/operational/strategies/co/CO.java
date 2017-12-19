@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.apache.log4j.BasicConfigurator;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -17,6 +18,7 @@ import org.emoflon.ibex.tgg.operational.util.RandomKernelMatchUpdatePolicy;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
+import gnu.trove.set.hash.TIntHashSet;
 import gurobi.GRB;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
@@ -24,6 +26,7 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import language.TGGRuleCorr;
+import language.TGGRuleNode;
 
 public abstract class CO extends CC {
 
@@ -106,39 +109,6 @@ public abstract class CO extends CC {
 		}
 
 		return null;
-	}
-		
-	@Override
-	protected void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-		super.defineGurobiImplications(model, gurobiVars);
-	}
-	
-	@Override
-	protected void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-		super.defineGurobiExclusions(model, gurobiVars);
-		
-		int[] matchId = idToMatch.keySet().toArray();
-		
-		for (int v : matchId) {
-			Collection<TGGRuleCorr> greenCorrNodes = ruleInfos.getGreenCorrNodes(matchIdToRuleName.get(v));
-			
-			for (int v2 : matchId) {
-				Collection<TGGRuleCorr> greenCorrNodes2 = ruleInfos.getGreenCorrNodes(matchIdToRuleName.get(v2));
-				greenCorrNodes2.retainAll(greenCorrNodes);
-				
-				if (!greenCorrNodes2.isEmpty() && v != v2) {
-					GRBLinExpr expr = new GRBLinExpr();
-					expr.addTerm(1.0, gurobiVars.get(v));
-					expr.addTerm(1.0, gurobiVars.get(v2));
-					try {
-						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
-						//logger.debug(idToMatch.get(v).patternName() + " || " + idToMatch.get(v2).patternName());
-					} catch (GRBException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
 	}
 	
 	@Override
