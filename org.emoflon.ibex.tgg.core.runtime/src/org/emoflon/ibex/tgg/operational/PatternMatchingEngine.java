@@ -13,4 +13,5 @@ public interface PatternMatchingEngine {
 	public void updateMatches();
 
 	public void terminate();
+	public boolean supportsAttributeConstraints();
 }

@@ -20,7 +20,15 @@ public class IbexOptions {
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private RuleInfos ruleInfos;
 	private boolean isModelGen;
+	private boolean useAttributeConditions;
 	
+	public IbexOptions() {
+		debug = false;
+		projectPath = "/";
+		workspacePath = "./../";
+		useAttributeConditions = false;
+	}
+
 	public boolean isModelGen() {
 		return isModelGen;
 	}
@@ -39,11 +47,6 @@ public class IbexOptions {
 		return this;
 	}
 
-	public IbexOptions() {
-		debug = false;
-		projectPath = "/";
-		workspacePath = "./../";
-	}
 	
 	public IbexOptions debug(boolean debug) {
 		this.debug = debug;
@@ -130,5 +133,14 @@ public class IbexOptions {
 	
 	public RuntimeTGGAttrConstraintFactory userDefinedConstraints() {
 		return userDefinedConstraints;
+	}
+	
+	public boolean useAttributeConstraints() {
+		return useAttributeConditions;
+	}
+	
+	public IbexOptions useAttributeConstraints(boolean useAttributeConstraints) {
+		this.useAttributeConditions = useAttributeConstraints;
+		return this;
 	}
 }
