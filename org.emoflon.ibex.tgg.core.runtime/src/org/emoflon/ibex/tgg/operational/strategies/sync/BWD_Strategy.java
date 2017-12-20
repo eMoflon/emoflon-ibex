@@ -18,6 +18,11 @@ public class BWD_Strategy extends SYNC_Strategy {
 	}
 
 	@Override
+	public boolean manipulateCorr() {
+		return true;
+	}
+	
+	@Override
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
 		return library.getSorted_BWD();
 	}

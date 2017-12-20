@@ -22,6 +22,7 @@ public class ConsistencyReporter {
 	
 	private Collection<EObject> inconsistentSrcNodes;
 	private Collection<EObject> inconsistentTrgNodes;
+	private Collection<EObject> inconsistentCorrNodes;
 	
 	private Collection<RuntimeEdge> inconsistentSrcEdges;
 	private Collection<RuntimeEdge> inconsistentTrgEdges;
@@ -32,6 +33,16 @@ public class ConsistencyReporter {
 		inconsistentTrgNodes = extractInconsistentNodes(trg, protocol, Domain.TRG);
 		inconsistentSrcEdges = extractInconsistentEdges(src, protocol, Domain.SRC);
 		inconsistentTrgEdges = extractInconsistentEdges(trg, protocol, Domain.TRG);
+	}
+	
+	public void init(Resource src, Resource trg, Resource corr, Resource protocol, RuleInfos ruleInfos) {
+		this.ruleInfos = ruleInfos;
+		inconsistentSrcNodes = extractInconsistentNodes(src, protocol, Domain.SRC);
+		inconsistentTrgNodes = extractInconsistentNodes(trg, protocol, Domain.TRG);
+		inconsistentCorrNodes = extractInconsistentNodes(corr, protocol, Domain.CORR);
+		inconsistentSrcEdges = extractInconsistentEdges(src, protocol, Domain.SRC);
+		inconsistentTrgEdges = extractInconsistentEdges(trg, protocol, Domain.TRG);
+		
 	}
 	
 	public Collection<EObject> getInconsistentSrcNodes() {
@@ -49,6 +60,10 @@ public class ConsistencyReporter {
 	public Collection<RuntimeEdge> getInconsistentTrgEdges() {
 		return inconsistentTrgEdges;
 	}
+	
+	public Collection<EObject> getInconsistentCorrNodes() {
+		return inconsistentCorrNodes;
+	}
 
 	private Collection<EObject> extractInconsistentNodes(Resource resource, Resource protocol, Domain domain) {
 		Iterator<EObject> it = resource.getAllContents();
@@ -61,7 +76,15 @@ public class ConsistencyReporter {
 		protocol.getContents().forEach(c -> {
 			if (c instanceof TGGRuleApplication) {
 				TGGRuleApplication ra = (TGGRuleApplication) c;
-				Collection<EObject> createdNodes = domain == Domain.SRC ? ra.getCreatedSrc() : ra.getCreatedTrg();
+				Collection<EObject> createdNodes;
+				
+				switch(domain) {
+				case SRC: createdNodes = ra.getCreatedSrc(); break;
+				case TRG: createdNodes = ra.getCreatedTrg(); break;
+				case CORR: createdNodes = ra.getCreatedCorr(); break;
+				default: createdNodes = null; break;
+				}
+
 				nodes.removeAll(createdNodes);
 			}
 
@@ -114,7 +137,7 @@ public class ConsistencyReporter {
 	
 
 	private enum Domain {
-		SRC, TRG
+		SRC, TRG, CORR
 	}
 
 }

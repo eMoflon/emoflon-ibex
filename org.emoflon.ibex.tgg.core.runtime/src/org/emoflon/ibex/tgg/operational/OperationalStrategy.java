@@ -317,8 +317,10 @@ public abstract class OperationalStrategy {
 
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
 		applyCSPValues(comatch, cspValues);
-
-		ManipulationUtil.createCorrs(match, comatch, ruleInfos.getGreenCorrNodes(ruleName), c);
+		
+		if (manipulateCorr()) {
+			ManipulationUtil.createCorrs(match, comatch, ruleInfos.getGreenCorrNodes(ruleName), c);
+		}
 
 		markedEdges.addAll(srcEdges);
 		markedEdges.addAll(trgEdges);
@@ -455,6 +457,9 @@ public abstract class OperationalStrategy {
 		}
 		if (markingTrg()) {
 			for (TGGRuleNode gtn : ruleInfos.getGreenTrgNodes(ruleName)) {
+				org.eclipse.emf.ecore.EClass type = gtn.getType();
+				org.eclipse.emf.ecore.EClass object = ((EObject)match.get(gtn.getName())).eClass();
+				
 				if (gtn.getType() != ((EObject) match.get(gtn.getName())).eClass())
 					return false;
 			}
@@ -592,9 +597,7 @@ public abstract class OperationalStrategy {
 
 	abstract protected boolean manipulateTrg();
 
-	protected boolean manipulateCorr() {
-		return true;
-	}
+	abstract protected boolean manipulateCorr(); 
 
 	protected boolean markingSrc() {
 		return !manipulateSrc();
@@ -648,5 +651,9 @@ public abstract class OperationalStrategy {
 			throw new NullPointerException("UpdatePolicy must not be set to null.");
 		else
 			this.updatePolicy = updatePolicy;
+	}
+	
+	public IUpdatePolicy getUpdatePolicy() {
+		return updatePolicy;
 	}
 }

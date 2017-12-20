@@ -192,6 +192,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 	
 	@Override
+	protected boolean manipulateCorr() {
+		return true;
+	}
+	
+	@Override
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
 		return library.getSorted_MODELGEN();
 	}

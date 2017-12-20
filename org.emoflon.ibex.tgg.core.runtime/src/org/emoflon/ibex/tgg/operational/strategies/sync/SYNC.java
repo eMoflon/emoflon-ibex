@@ -27,7 +27,12 @@ public abstract class SYNC extends OperationalStrategy {
 	protected boolean manipulateTrg() {
 		return strategy.manipulateTrg();
 	}
-
+	
+	@Override
+	protected boolean manipulateCorr() {
+		return strategy.manipulateCorr();
+	}
+	
 	@Override
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
 		return strategy.getConstraints(library);
