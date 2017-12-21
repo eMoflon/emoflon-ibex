@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.common;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 import language.TGGRule;
@@ -52,5 +53,10 @@ public class NacPattern extends IbexBasePattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return signatureNodes.contains(node1) && signatureNodes.contains(node2);
+	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return null;
 	}
 }

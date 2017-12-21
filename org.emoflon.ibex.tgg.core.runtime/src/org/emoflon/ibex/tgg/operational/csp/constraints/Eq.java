@@ -11,6 +11,7 @@ public class Eq extends RuntimeTGGAttributeConstraint {
 	 */
 	@Override
 	public void solve() {
+
 		if (variables.size() != 2)
 			throw new RuntimeException("The CSP " + getClass().getName() + " needs exactly two variables");
 

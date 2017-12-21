@@ -17,11 +17,13 @@ public class SearchEdgePattern extends IbexBasePattern {
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
-
+	private PatternFactory factory;
+	
 	public SearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, PatternFactory factory) {
 		this.entryPoint = entryPoint;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
+		this.factory = factory;
 		
 		initialise(factory.getFlattenedVersionOfRule());
 	}
@@ -47,4 +49,8 @@ public class SearchEdgePattern extends IbexBasePattern {
 		return PatternSuffixes.SEP + entryPoint.getName() +"_" + edgeType.getName() + "_" + eDirection.name().toLowerCase() +  "_SearchEdge_" + entryPoint.getDomainType().getName();
 	}
 
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
+	}
 }

@@ -18,8 +18,8 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
-import org.emoflon.ibex.tgg.operational.util.UpdatePolicy;
 
 import com.google.common.collect.Sets;
 
@@ -38,7 +38,6 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import language.TGGComplementRule;
-import language.TGGRule;
 import language.TGGRuleNode;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
@@ -84,14 +83,15 @@ public abstract class CC extends OperationalStrategy {
 	Bundle lastAppliedBundle;
 	
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
-	
-	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug);
+
+	public CC(IbexOptions options) throws IOException {
+		super(options);
 	}
 	
-	public CC(String projectPath, String workspacePath, boolean debug, IUpdatePolicy policy) {
-		super(projectPath, workspacePath, debug, policy);
+	public CC(IbexOptions options, IUpdatePolicy policy) {
+		super(options, policy);
 	}
+	
 	@Override
 	protected boolean manipulateSrc() {
 		return false;

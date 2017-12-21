@@ -14,8 +14,10 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class TrgPattern extends IbexBasePattern {
-
+	private PatternFactory factory;
+	
 	public TrgPattern(PatternFactory factory) {
+		this.factory = factory;
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
 	}
@@ -54,4 +56,8 @@ public class TrgPattern extends IbexBasePattern {
 		return node1.getBindingType() == BindingType.CONTEXT && node2.getBindingType() == BindingType.CONTEXT;
 	}
 
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
+	}
 }

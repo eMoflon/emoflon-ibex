@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -11,6 +12,8 @@ import language.TGGRuleNode;
 
 public interface IPattern {
 	String getName();
+	
+	PatternFactory getPatternFactory();
 	
 	Collection<TGGRuleNode> getSignatureNodes();
 	Collection<TGGRuleNode> getLocalNodes();

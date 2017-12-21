@@ -59,4 +59,9 @@ public class CCPattern extends IbexBasePattern {
 		return checkInjectivityInSubRule(factory.getRule(), node1, node2);
 	}
 
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
+	}
+
 }

@@ -3,37 +3,33 @@ package org.emoflon.ibex.tgg.operational.strategies.co;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
-import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
-import org.emoflon.ibex.tgg.operational.util.RandomKernelMatchUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.set.hash.TCustomHashSet;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.set.hash.TIntHashSet;
 import gurobi.GRB;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
-import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
-import language.TGGRuleCorr;
-import language.TGGRuleNode;
+import language.csp.TGGAttributeConstraint;
+import language.csp.TGGAttributeConstraintLibrary;
 
 public abstract class CO extends CC {
+	
+	public CO(IbexOptions options) throws IOException {
+		super(options);
+	}
 
-	public CO(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug, new RandomKernelMatchUpdatePolicy());
-		RandomKernelMatchUpdatePolicy policy = (RandomKernelMatchUpdatePolicy)getUpdatePolicy();
-		policy.setOptions(options);
+	@Override
+	public void saveModels() throws IOException {
 		BasicConfigurator.configure();
 	}
 
@@ -69,8 +65,7 @@ public abstract class CO extends CC {
 		  consistencyReporter.init(s, t, c, p, ruleInfos);
 	}
 		
-		private int[] chooseTGGRuleApplications() {
-
+	private int[] chooseTGGRuleApplications() {
 		try {
 			GRBEnv env = new GRBEnv("Gurobi_ILP.log");
 			GRBModel model = new GRBModel(env);
@@ -129,6 +124,12 @@ public abstract class CO extends CC {
 	
 	public Collection<EObject> getInconsistentCorrNodes() {
 		return consistencyReporter.getInconsistentCorrNodes();
+	}
+
+	@Override
+	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
+		// With respect to attribute constraints, there is no difference between CC and CO!
+		return library.getSorted_CC();
 	}
 }
 
