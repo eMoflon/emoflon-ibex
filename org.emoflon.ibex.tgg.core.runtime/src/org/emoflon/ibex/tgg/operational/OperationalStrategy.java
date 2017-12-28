@@ -35,7 +35,6 @@ import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
 import org.emoflon.ibex.tgg.operational.util.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
-import org.emoflon.ibex.tgg.operational.util.UpdatePolicy;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TCustomHashSet;
@@ -269,7 +268,6 @@ public abstract class OperationalStrategy {
 	}
 
 	protected IMatch chooseOneMatch() {
-		
 		IMatch match = updatePolicy.chooseOneMatch(new ImmutableMatchContainer(operationalMatchContainer));
 		if(match == null)
 			throw new IllegalStateException("Update policies should never return null!");
@@ -476,9 +474,6 @@ public abstract class OperationalStrategy {
 		}
 		if (markingTrg()) {
 			for (TGGRuleNode gtn : ruleInfos.getGreenTrgNodes(ruleName)) {
-				org.eclipse.emf.ecore.EClass type = gtn.getType();
-				org.eclipse.emf.ecore.EClass object = ((EObject)match.get(gtn.getName())).eClass();
-				
 				if (gtn.getType() != ((EObject) match.get(gtn.getName())).eClass())
 					return false;
 			}
