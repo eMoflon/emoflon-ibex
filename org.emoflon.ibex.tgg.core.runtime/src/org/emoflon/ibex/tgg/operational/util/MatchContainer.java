@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
-import org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
