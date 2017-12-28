@@ -13,5 +13,6 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.emoflon.ibex.gt.editor,
- org.emoflon.ibex.gt.editor.ide
+ org.emoflon.ibex.gt.editor.ide,
+ org.junit
 Bundle-ClassPath: .

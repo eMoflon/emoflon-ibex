@@ -17,77 +17,70 @@ import GTLanguage.GTNode;
 import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
 
+/**
+ * Transformation from the editor model (which conforms to the GT.ecore
+ * meta-model generated from the Xtext specification) to the internal GT model
+ * (which conforms to the GTLanguage.ecore meta-model).
+ * 
+ * @author Patrick Robrecht
+ * @version 0.1
+ */
 public class EditorToInternalGT {
 	private static GTLanguageFactory factory = GTLanguageFactory.eINSTANCE;
 
-	public GTRuleSet transformRuleSet(Model editorModel) {
+	public static GTRuleSet transformRuleSet(final Model editorModel) {
 		GTRuleSet gtRuleSet = factory.createGTRuleSet();
-		editorModel.getRules()
-			.forEach(
-					rule -> gtRuleSet.getRules().add(this.transformRule(rule))
-			);
+		editorModel.getRules().forEach(rule -> gtRuleSet.getRules().add(transformRule(rule)));
 		return gtRuleSet;
 	}
 
-	public GTRule transformRule(Rule rule) {
+	public static GTRule transformRule(final Rule editorRule) {
 		GTRule gtRule = factory.createGTRule();
-		gtRule.setName(rule.getName());
+		gtRule.setName(editorRule.getName());
 
 		GTGraph gtGraph = factory.createGTGraph();
-		List<Node> nodes = rule.getConstraints().stream()
-			.filter(c -> c instanceof Node)
-			.map(c -> (Node) c)
-			.collect(Collectors.toList());
-		nodes.forEach(
-				node -> gtGraph.getNodes().add(this.transformNode(node))
-		);
-		nodes.forEach(
-				node -> gtGraph.getEdges().addAll(this.transformReferencesOfNode(node, gtGraph.getNodes()))
-		);
+		List<Node> editorNodes = editorRule.getNodes();
+		editorNodes.forEach(editorNode -> gtGraph.getNodes().add(transformNode(editorNode)));
+		editorNodes.forEach(editorNode -> {
+			gtGraph.getEdges().addAll(transformReferencesToEdges(editorNode, gtGraph.getNodes()));
+		});
 		gtRule.setGraph(gtGraph);
 
 		return gtRule;
 	}
 
-	public GTNode transformNode(Node node) {
+	public static GTNode transformNode(final Node editorNode) {
 		GTNode gtNode = factory.createGTNode();
-		gtNode.setName(node.getVariable().getName());
-		// gtNode.setType(node.getVariable().getType()); TODO Set node type to EClass
+		gtNode.setName(editorNode.getName());
+		gtNode.setType(editorNode.getType());
 		return gtNode;
 	}
 
-	public List<GTEdge> transformReferencesOfNode(Node node, List<GTNode> nodes) {
+	public static List<GTEdge> transformReferencesToEdges(final Node editorNode, final List<GTNode> gtNodes) {
 		List<GTEdge> gtEdges = new ArrayList<GTEdge>();
-		List<Reference> references = node.getConstraints().stream()
-			.filter(x -> x instanceof Reference)
-			.map(x -> (Reference) x)
-			.collect(Collectors.toList());
-		references.forEach(
-				reference -> {
-					GTEdge gtEdge = factory.createGTEdge();
-					gtEdge.setName(reference.getName());
-					// gtEdge.setType(); TODO Set edge type to EReference
-					this.findNodeWithName(nodes, node.getVariable().getName())
-						.ifPresent(
-								gtSourceNode -> {
-									gtEdge.setSourceNode(gtSourceNode);
-									gtSourceNode.getOutgoingEdges().add(gtEdge);
-								}
-						);
-					this.findNodeWithName(nodes, reference.getValue())
-						.ifPresent(
-								gtTargetNode -> {
-									gtEdge.setTargetNode(gtTargetNode);
-									gtTargetNode.getIncomingEdges().add(gtEdge);
-								}
-						);
-					gtEdges.add(gtEdge);
-				}
-		);
+		List<Reference> references = extractReferences(editorNode);
+		references.forEach(reference -> {
+			GTEdge gtEdge = factory.createGTEdge();
+			gtEdge.setType(reference.getType());
+			findGTNodeWithName(gtNodes, editorNode.getName()).ifPresent(gtSourceNode -> {
+				gtEdge.setSourceNode(gtSourceNode);
+				gtSourceNode.getOutgoingEdges().add(gtEdge);
+			});
+			findGTNodeWithName(gtNodes, reference.getValue()).ifPresent(gtTargetNode -> {
+				gtEdge.setTargetNode(gtTargetNode);
+				gtTargetNode.getIncomingEdges().add(gtEdge);
+			});
+			gtEdges.add(gtEdge);
+		});
 		return gtEdges;
 	}
 
-	public Optional<GTNode> findNodeWithName(List<GTNode> nodes, String name) {
+	public static Optional<GTNode> findGTNodeWithName(final List<GTNode> nodes, final String name) {
 		return nodes.stream().filter(gtNode -> name.equals(gtNode.getName())).findAny();
+	}
+
+	public static List<Reference> extractReferences(final Node editorNode) {
+		return editorNode.getConstraints().stream().filter(x -> x instanceof Reference).map(x -> (Reference) x)
+				.collect(Collectors.toList());
 	}
 }
