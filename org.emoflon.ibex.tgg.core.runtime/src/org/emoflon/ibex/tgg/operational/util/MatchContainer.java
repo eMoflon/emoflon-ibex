@@ -39,7 +39,7 @@ public class MatchContainer {
 	}
 
 	private void assignIDsToRuleNames(TGG tgg) {
-		int id = 0;
+		int id = 1;
 		for (TGGRule rule : tgg.getRules()) {
 			ruleNameToId.put(rule.getName(), id);
 			idToRuleName.put(id, rule.getName());

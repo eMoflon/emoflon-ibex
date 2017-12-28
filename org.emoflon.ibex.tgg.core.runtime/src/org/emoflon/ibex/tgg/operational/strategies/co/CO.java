@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.operational.strategies.co;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
 import org.eclipse.emf.ecore.EObject;
@@ -12,6 +11,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
+import org.emoflon.ibex.tgg.operational.util.RandomKernelMatchUpdatePolicy;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gurobi.GRB;
@@ -19,17 +19,13 @@ import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 
 public abstract class CO extends CC {
 	
 	public CO(IbexOptions options) throws IOException {
-		super(options);
-	}
-
-	@Override
-	public void saveModels() throws IOException {
+		super(options, new RandomKernelMatchUpdatePolicy());
+		RandomKernelMatchUpdatePolicy policy = (RandomKernelMatchUpdatePolicy)getUpdatePolicy();
+		policy.setOptions(options);
 		BasicConfigurator.configure();
 	}
 
@@ -124,12 +120,6 @@ public abstract class CO extends CC {
 	
 	public Collection<EObject> getInconsistentCorrNodes() {
 		return consistencyReporter.getInconsistentCorrNodes();
-	}
-
-	@Override
-	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
-		// With respect to attribute constraints, there is no difference between CC and CO!
-		return library.getSorted_CC();
 	}
 }
 
