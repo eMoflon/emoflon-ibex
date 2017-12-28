@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.operational.csp.helper.LoremIpsum;
@@ -44,6 +45,13 @@ public abstract class RuntimeTGGAttributeConstraint {
 		return satisfied;
 	}
 
+	public void initialize(RuntimeTGGAttributeConstraintContainer cont, TGGAttributeConstraint constraint) {
+		this.constraint = constraint;
+
+		variables = constraint.getParameters().stream().map(p -> cont.params2runtimeVariable.get(p))
+				.collect(Collectors.toList());
+	}
+	
 	public List<RuntimeTGGAttributeConstraintVariable> getVariables() {
 		return variables;
 	}
