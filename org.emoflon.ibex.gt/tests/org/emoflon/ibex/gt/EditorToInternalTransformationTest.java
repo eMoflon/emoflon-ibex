@@ -41,11 +41,16 @@ public class EditorToInternalTransformationTest {
 		Node node1 = createEditorNode(BindingType.CONTEXT, "operation", ep.getEOperation());
 		Node node2 = createEditorNode(BindingType.CONTEXT, "typeParam", ep.getETypeParameter());
 		Node node3 = createEditorNode(BindingType.CONTEXT, "type", ep.getEGenericType());
-		createReferenceForEditorNode(node1, BindingType.CONTEXT, ep.getEOperation_ETypeParameters(), "typeParam");
-		createReferenceForEditorNode(node2, BindingType.CONTEXT, ep.getETypeParameter_EBounds(), "type");
+		createReferenceForEditorNode(node1, BindingType.CONTEXT, ep.getEOperation_ETypeParameters(), node2);
+		createReferenceForEditorNode(node2, BindingType.CONTEXT, ep.getETypeParameter_EBounds(), node3);
 		Rule ruleA = createEditorRule("A", node1, node2, node3);
 
-		Rule ruleB = createEditorRule("B");
+		Node node4 = createEditorNode(BindingType.CONTEXT, "object1", ep.getEObject());
+		Node node5 = createEditorNode(BindingType.CONTEXT, "object2", ep.getEObject());
+		Node node6 = createEditorNode(BindingType.CONTEXT, "annotation", ep.getEAnnotation());
+		createReferenceForEditorNode(node6, BindingType.CONTEXT, ep.getEAnnotation_References(), node4);
+		createReferenceForEditorNode(node6, BindingType.CONTEXT, ep.getEAnnotation_References(), node5);
+		Rule ruleB = createEditorRule("B", node4, node5, node6);
 
 		Model editorModel = createEditorModel(ruleA, ruleB);
 		transformAndCheck(editorModel);
@@ -73,11 +78,11 @@ public class EditorToInternalTransformationTest {
 	}
 
 	private static Reference createReferenceForEditorNode(final Node editorNode, final BindingType bindingType,
-			final EReference type, final String value) {
+			final EReference type, final Node target) {
 		Reference reference = GTFactory.eINSTANCE.createReference();
 		reference.setBindingType(bindingType);
 		reference.setType(type);
-		reference.setValue(value);
+		reference.setTarget(target);
 		editorNode.getConstraints().add(reference);
 		return reference;
 	}
@@ -132,11 +137,19 @@ public class EditorToInternalTransformationTest {
 	}
 
 	private static void checkEdge(final Node editorNode, final Reference reference, final GTGraph gtGraph) {
+		Node targetNode = reference.getTarget();
 		Optional<GTEdge> gtEdgeOptional = gtGraph.getEdges().stream()
 				.filter(e -> e.getType().equals(reference.getType())) // correct type
-				.filter(e -> editorNode.getName().equals(e.getSourceNode().getName())) // correct source
-				.filter(e -> reference.getValue().equals(e.getTargetNode().getName())) // correct target
+				.filter(e -> editorNode.getName().equals(getNodeName(e.getSourceNode()))) // correct source
+				.filter(e -> targetNode.getName().equals(getNodeName(e.getTargetNode()))) // correct target
 				.findAny();
 		assertTrue(gtEdgeOptional.isPresent());
+	}
+
+	private static String getNodeName(final GTNode gtNode) {
+		if (null == gtNode) {
+			return "";
+		}
+		return gtNode.getName();
 	}
 }

@@ -66,7 +66,7 @@ public class EditorToInternalGT {
 				gtEdge.setSourceNode(gtSourceNode);
 				gtSourceNode.getOutgoingEdges().add(gtEdge);
 			});
-			findGTNodeWithName(gtNodes, reference.getValue()).ifPresent(gtTargetNode -> {
+			findGTNodeWithName(gtNodes, reference.getTarget().getName()).ifPresent(gtTargetNode -> {
 				gtEdge.setTargetNode(gtTargetNode);
 				gtTargetNode.getIncomingEdges().add(gtEdge);
 			});
