@@ -146,4 +146,9 @@ public class ForbidAllFilterACsPattern extends IbexBasePattern {
 	public static String getPatternNameSuffix(DomainType domain){
 		return PatternSuffixes.NO_FILTER_ACs(domain);
 	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
+	}
 }

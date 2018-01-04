@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
@@ -14,8 +15,8 @@ public abstract class SYNC extends OperationalStrategy {
 
 	private SYNC_Strategy strategy;
 	
-	public SYNC(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug);
+	public SYNC(IbexOptions options) throws IOException {
+		super(options);
 	}
 
 	@Override
@@ -27,7 +28,12 @@ public abstract class SYNC extends OperationalStrategy {
 	protected boolean manipulateTrg() {
 		return strategy.manipulateTrg();
 	}
-
+	
+	@Override
+	protected boolean manipulateCorr() {
+		return strategy.manipulateCorr();
+	}
+	
 	@Override
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
 		return strategy.getConstraints(library);

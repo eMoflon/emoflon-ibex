@@ -5,10 +5,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 
@@ -204,5 +206,22 @@ public abstract class IbexBasePattern implements IPattern {
 		}
 		
 		return mapping;
+	}
+	
+	public final static String getVarName(TGGRuleNode node, EAttribute attr) {
+		return "__" + node.getName() + "__" + attr.getName() + "__";
+	}
+	
+	public final static Optional<Pair<String, String>> getNodeAndAttrFromVarName(String varName){
+		String[] node_attr = varName.split("__");
+		
+		if(node_attr.length != 3)
+			return Optional.empty();
+		
+		return Optional.of(Pair.of(node_attr[1], node_attr[2]));
+	}
+	
+	public final static boolean isAttrNode(String nodeName) {
+		return nodeName.split("__").length == 3;
 	}
 }

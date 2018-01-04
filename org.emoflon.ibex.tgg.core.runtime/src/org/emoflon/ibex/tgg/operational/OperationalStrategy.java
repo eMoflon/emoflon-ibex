@@ -21,19 +21,20 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 import org.emoflon.ibex.tgg.operational.util.MatchContainer;
 import org.emoflon.ibex.tgg.operational.util.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.util.RuleInfos;
-import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TCustomHashSet;
@@ -71,7 +72,7 @@ public abstract class OperationalStrategy {
 	protected MatchContainer operationalMatchContainer;
 	protected IUpdatePolicy updatePolicy;
 
-	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider();
+	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 
 	protected TCustomHashSet<RuntimeEdge> markedEdges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 	protected THashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new THashMap<>();
@@ -84,20 +85,24 @@ public abstract class OperationalStrategy {
 	protected PatternMatchingEngine engine;
 	private boolean domainsHaveNoSharedTypes;
 
-	public OperationalStrategy(String projectPath, String workspacePath, boolean debug) {
-		this(projectPath, workspacePath, debug, new RandomMatchUpdatePolicy());
+	public OperationalStrategy(IbexOptions options) {
+		this(options, new RandomMatchUpdatePolicy());
 	}
 
-	public OperationalStrategy(String projectPath, String workspacePath, boolean debug, IUpdatePolicy policy) {
+	public OperationalStrategy(IbexOptions options,  IUpdatePolicy policy) {
 		base = URI.createPlatformResourceURI("/", true);
-		this.workspacePath = workspacePath;
-		this.projectPath = projectPath;
+		this.workspacePath = options.workspacePath();
+		this.projectPath = options.projectPath();
 
-		options = new IbexOptions();
-		options.debug(debug);
-		options.projectPath(projectPath);
+		this.options = options;
+		
+		setModelGen();
 		
 		this.updatePolicy = policy;
+	}
+	
+	protected void setModelGen() {
+		options.setModelGen(false);
 	}
 
 	public void registerPatternMatchingEngine(PatternMatchingEngine engine) throws IOException {
@@ -155,7 +160,7 @@ public abstract class OperationalStrategy {
 	}
 
 	private boolean nodeIsInResource(IMatch match, String name, Resource r) {
-		return match.get(name).eResource().equals(r);
+		return ((EObject) match.get(name)).eResource().equals(r);
 	}
 
 	public void removeOperationalRuleMatch(IMatch match) {
@@ -183,7 +188,13 @@ public abstract class OperationalStrategy {
 
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-
+		
+		// instantiate runtime constraint provider with loaded constraint definition library
+		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(options.tgg().getAttributeConstraintDefinitionLibrary());
+		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
+		options.setConstraintProvider(runtimeConstraintProvider);
+		
+		
 		rs.getResources().remove(res);
 		rs.getResources().remove(flattenedRes);
 
@@ -257,7 +268,6 @@ public abstract class OperationalStrategy {
 	}
 
 	protected IMatch chooseOneMatch() {
-		
 		IMatch match = updatePolicy.chooseOneMatch(new ImmutableMatchContainer(operationalMatchContainer));
 		if(match == null)
 			throw new IllegalStateException("Update policies should never return null!");
@@ -285,12 +295,15 @@ public abstract class OperationalStrategy {
 
 		if (someElementsAlreadyProcessed(ruleName, match))
 			return null;
-
-		RuntimeTGGAttributeConstraintContainer cspContainer = new RuntimeTGGAttributeConstraintContainer(
-				ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
-		if (!cspContainer.solve())
-			return null;
-
+		
+		RuntimeTGGAttributeConstraintContainer cspContainer = null;
+		if (!engine.supportsAttributeConstraints() || !options.useAttributeConstraints()) {
+			 cspContainer = new RuntimeTGGAttributeConstraintContainer(
+					ruleInfos.getRuleCSPConstraintLibrary(ruleName), match, this, runtimeConstraintProvider);
+			if (!cspContainer.solve())
+				return null;
+		}
+		
 		if (!conformTypesOfGreenNodes(match, ruleName))
 			return null;
 
@@ -315,10 +328,14 @@ public abstract class OperationalStrategy {
 		Collection<RuntimeEdge> trgEdges = ManipulationUtil.createEdges(match, comatch,
 				ruleInfos.getGreenTrgEdges(ruleName), manipulateTrg());
 
-		Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
-		applyCSPValues(comatch, cspValues);
-
-		ManipulationUtil.createCorrs(match, comatch, ruleInfos.getGreenCorrNodes(ruleName), c);
+		if (!engine.supportsAttributeConstraints() || !options.useAttributeConstraints()) {
+			Collection<Pair<TGGAttributeExpression, Object>> cspValues = cspContainer.getBoundAttributeExpValues();
+			applyCSPValues(comatch, cspValues);
+		}
+		
+		if (manipulateCorr()) {
+			ManipulationUtil.createCorrs(match, comatch, ruleInfos.getGreenCorrNodes(ruleName), c);
+		}
 
 		markedEdges.addAll(srcEdges);
 		markedEdges.addAll(trgEdges);
@@ -350,7 +367,9 @@ public abstract class OperationalStrategy {
 
 		
 		ra.getNodeMappings().putAll(createdElements);
-		match.parameterNames().forEach(n -> {
+		match.parameterNames().stream()
+			.filter(n -> !IbexBasePattern.isAttrNode(n))
+			.forEach(n -> {
 			ra.getNodeMappings().put(n, (EObject) match.get(n));
 		});
 
@@ -435,7 +454,7 @@ public abstract class OperationalStrategy {
 		}
 		return true;
 	}
-
+	
 	protected void applyCSPValues(HashMap<String, EObject> comatch,
 			Collection<Pair<TGGAttributeExpression, Object>> cspValues) {
 		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
@@ -592,9 +611,7 @@ public abstract class OperationalStrategy {
 
 	abstract protected boolean manipulateTrg();
 
-	protected boolean manipulateCorr() {
-		return true;
-	}
+	abstract protected boolean manipulateCorr(); 
 
 	protected boolean markingSrc() {
 		return !manipulateSrc();
@@ -648,5 +665,9 @@ public abstract class OperationalStrategy {
 			throw new NullPointerException("UpdatePolicy must not be set to null.");
 		else
 			this.updatePolicy = updatePolicy;
+	}
+	
+	public IUpdatePolicy getUpdatePolicy() {
+		return updatePolicy;
 	}
 }

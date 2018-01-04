@@ -17,6 +17,8 @@ import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
 
 import com.google.common.collect.Sets;
@@ -36,7 +38,6 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import language.TGGComplementRule;
-import language.TGGRule;
 import language.TGGRuleNode;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
@@ -44,49 +45,53 @@ import runtime.TGGRuleApplication;
 
 public abstract class CC extends OperationalStrategy {
 
-	private int nameCounter = 0;
+	protected int nameCounter = 0;
 
-	private int idCounter = 1;
-	TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
-	TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
+	protected int idCounter = 1;
+	protected TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
+	protected TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 
-	TIntIntHashMap weights = new TIntIntHashMap();
+	private TIntIntHashMap weights = new TIntIntHashMap();
 
-	THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
+	protected THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
 
-	TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
+	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
 			new RuntimeEdgeHashingStrategy());
-	THashMap<EObject, TIntHashSet> nodeToMarkingMatches = new THashMap<>();
+	protected THashMap<EObject, TIntHashSet> nodeToMarkingMatches = new THashMap<>();
 
-	TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
-	TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
+	protected TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
+	protected TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
 	/**
 	 * Collection of constraints to guarantee uniqueness property;
 	 * key: ComplementRule (CR) match; 
 	 * value: other CR matches of the same CR using the same context as CR match
 	 */
-	THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
+	private THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
 
 	/**
 	 * Collection of constraints to guarantee maximality property;
 	 * value: kernels whose complement rules did not fulfill maximality property
 	 */
-	TIntHashSet invalidKernels = new TIntHashSet();
+	private TIntHashSet invalidKernels = new TIntHashSet();
 	
 	/**
 	 * Collection of constraints to guarantee cyclic dependences are avoided;
 	 * value: correctly applied bundles (kernel match + its CRs matches)
 	 */
-	HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
-	Bundle lastAppliedBundle;
+	private HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
+	private Bundle lastAppliedBundle;
 	
-	ConsistencyReporter consistencyReporter = new ConsistencyReporter();
-	
-	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug);
-	}
+	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 
+	public CC(IbexOptions options) throws IOException {
+		super(options);
+	}
+	
+	public CC(IbexOptions options, IUpdatePolicy policy) {
+		super(options, policy);
+	}
+	
 	@Override
 	protected boolean manipulateSrc() {
 		return false;
@@ -95,6 +100,11 @@ public abstract class CC extends OperationalStrategy {
 	@Override
 	protected boolean manipulateTrg() {
 		return false;
+	}
+	
+	@Override
+	protected boolean manipulateCorr() {
+		return true;
 	}
 
 	@Override
@@ -122,9 +132,18 @@ public abstract class CC extends OperationalStrategy {
 	protected boolean processOneOperationalRuleMatch() {
 		if (operationalMatchContainer.isEmpty())
 			return false;
+		
+		if(operationalMatchContainer.getMatches().stream()
+				.allMatch(m -> m.patternName().contains(PatternSuffixes.GENForCC))) {
+			//FIXME[Anjorin]:  Find an elegant way of properly discarding GENForCC matches!
+			return false;
+		}
 
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
+		
+		if(ruleName == null)
+			return true;  //FIXME[Anjorin]:  This should be avoided (all matches that do not correspond to rules should be filtered)
 		
 		HashMap<String, EObject> comatch = processOperationalRuleMatch(ruleName, match);
 		if (comatch != null && isKernelMatch(ruleName))
@@ -297,20 +316,17 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	private void handleBundles(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
-		Bundle appliedBundle;
-		TGGRule rule = getRule(ruleName);
-		if(! (rule instanceof TGGComplementRule)) {
-			appliedBundle = new Bundle(idCounter);
+		if(!(getRule(ruleName) instanceof TGGComplementRule)) {
+			Bundle appliedBundle = new Bundle(idCounter);
 			appliedBundles.add(appliedBundle);
 			lastAppliedBundle = appliedBundle;
 		}
-		else {
-			appliedBundle = lastAppliedBundle;
-		}
-		appliedBundle.addMatch(idCounter);
+		
+		lastAppliedBundle.addMatch(idCounter);
+		
 		// add context nodes and edges of this concrete match to its bundle
-		appliedBundle.addBundleContextNodes(getBlackNodes(match, comatch, ruleName));
-		appliedBundle.addBundleContextEdges(getBlackEdges(match, comatch, ruleName));
+		lastAppliedBundle.addBundleContextNodes(getBlackNodes(match, comatch, ruleName));
+		lastAppliedBundle.addBundleContextEdges(getBlackEdges(match, comatch, ruleName));
 	}
 
 	private THashSet<EObject> getGreenNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
@@ -394,7 +410,7 @@ public abstract class CC extends OperationalStrategy {
 		return null;
 	}
 
-	private TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
+	protected TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
 		TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<>();
 		idToMatch.keySet().forEach(v -> {
 			try {
@@ -407,8 +423,7 @@ public abstract class CC extends OperationalStrategy {
 		return gurobiVariables;
 	}
 	
-	private void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-
+	protected void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
 			GRBLinExpr expr = new GRBLinExpr();
@@ -494,17 +509,16 @@ public abstract class CC extends OperationalStrategy {
 		return Sets.cartesianProduct(excludedRuleApplications);
 	}
 
-	private void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-
+	protected void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 		for (int v : idToMatch.keySet().toArray()) {
-
+			
 			THashSet<EObject> contextNodes = matchToContextNodes.get(v);
 			for (EObject node : contextNodes) {
 				GRBLinExpr expr = new GRBLinExpr();
 				expr.addTerm(1.0, gurobiVars.get(v));
 				if (!nodeToMarkingMatches.contains(node)) {
 					try {
-						model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "IMPL" + nameCounter++);
+						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "IMPL" + nameCounter++);
 					} catch (GRBException e) {
 						e.printStackTrace();
 					}
@@ -528,7 +542,7 @@ public abstract class CC extends OperationalStrategy {
 				expr.addTerm(1.0, gurobiVars.get(v));
 				if (!edgeToMarkingMatches.contains(edge)) {
 					try {
-						model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "IMPL" + nameCounter++);
+						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "IMPL" + nameCounter++);
 					} catch (GRBException e) {
 						e.printStackTrace();
 					}
@@ -548,7 +562,7 @@ public abstract class CC extends OperationalStrategy {
 		}
 	}
 
-	private void defineGurobiObjective(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
+	protected void defineGurobiObjective(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 
 		GRBLinExpr expr = new GRBLinExpr();
 		idToMatch.keySet().forEach(v -> {

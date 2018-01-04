@@ -16,7 +16,12 @@ public class FWD_Strategy extends SYNC_Strategy {
 	public boolean manipulateTrg() {
 		return true;
 	}
-
+	
+	@Override
+	public boolean manipulateCorr() {
+		return true;
+	}
+	
 	@Override
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
 		return library.getSorted_FWD();

@@ -19,8 +19,10 @@ import language.TGGRuleNode;
 
 public class ComplementBWDPattern extends BasicSyncPattern {
 	private TGGComplementRule flattenedComplementRule;
+	private PatternFactory factory;
 	
 	public ComplementBWDPattern(PatternFactory factory) {
+		this.factory = factory;
 		assert(factory.getRule() instanceof TGGComplementRule);
 		flattenedComplementRule = (TGGComplementRule)factory.getFlattenedVersionOfRule();
 		
@@ -52,5 +54,10 @@ public class ComplementBWDPattern extends BasicSyncPattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getDomainType() == node2.getDomainType();
+	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
 	}
 }
