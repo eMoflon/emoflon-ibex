@@ -42,7 +42,7 @@ public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstra
 		creators.put("max", () -> new Max());
 		creators.put("multiply", () -> new Multiply());
 		creators.put("setDefaultNumber", () -> new SetDefaultNumber());
-		creators.put("setefaultString", () -> new SetDefaultString());
+		creators.put("setDefaultString", () -> new SetDefaultString());
 		creators.put("smallerOrEqual", () -> new SmallerOrEqual());
 		creators.put("stringToInt", () -> new StringToInt());
 		creators.put("stringToDouble", () -> new StringToDouble());
