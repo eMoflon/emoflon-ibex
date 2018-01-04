@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt;
+package org.emoflon.ibex.gt.transformation;
 
 import static org.junit.Assert.*;
 
@@ -27,8 +27,7 @@ import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
 
 /**
- * JUnit tests for the transformation from the editor to the internal
- * meta-model.
+ * JUnit tests for the transformation from the editor to the internal GT model.
  * 
  * @author Patrick Robrecht
  * @version 0.1
@@ -93,10 +92,7 @@ public class EditorToInternalTransformationTest {
 	}
 
 	private static void checkRules(final Model editorModel, final GTRuleSet gtRuleSet) {
-		// Correct number of rules.
-		assertEquals(editorModel.getRules().size(), gtRuleSet.getRules().size());
-
-		// Correct rules.
+		assertEquals("number of rules", editorModel.getRules().size(), gtRuleSet.getRules().size());
 		editorModel.getRules().forEach(editorRule -> checkRule(editorRule, gtRuleSet.getRules()));
 	}
 
@@ -110,40 +106,33 @@ public class EditorToInternalTransformationTest {
 	}
 
 	private static void checkNodes(final EList<Node> editorNodes, final EList<GTNode> gtNodes) {
-		// Correct number of nodes.
-		assertEquals(editorNodes.size(), gtNodes.size());
-
-		// Correct nodes.
+		assertEquals("number of nodes", editorNodes.size(), gtNodes.size());
 		editorNodes.forEach(editorNode -> checkNode(editorNode, gtNodes));
 	}
 
 	private static void checkNode(final Node editorNode, final EList<GTNode> gtNodes) {
-		Optional<GTNode> gtNodeOptional = EditorToInternalGT.findGTNodeWithName(gtNodes, editorNode.getName());
-		assertTrue(gtNodeOptional.isPresent());
-		assertEquals(editorNode.getType(), gtNodeOptional.get().getType());
+		Optional<GTNode> gtNode = EditorToInternalGT.findGTNodeWithName(gtNodes, editorNode.getName());
+		assertTrue(gtNode.isPresent());
+		assertEquals(editorNode.getType(), gtNode.get().getType());
 	}
 
 	private static void checkEdges(final EList<Node> editorNodes, final GTGraph gtGraph) {
 		List<Reference> references = editorNodes.stream().map(n -> n.getConstraints()).flatMap(c -> c.stream())
 				.filter(c -> c instanceof Reference).map(r -> (Reference) r).collect(Collectors.toList());
-		// Correct number of edges.
-		assertEquals(references.size(), gtGraph.getEdges().size());
-
-		// Correct edges.
-		editorNodes.forEach(editorNode -> {
-			editorNode.getConstraints().stream().filter(c -> c instanceof Reference).map(r -> (Reference) r)
-					.forEach(reference -> checkEdge(editorNode, reference, gtGraph));
-		});
+		assertEquals("number of edges", references.size(), gtGraph.getEdges().size());
+		editorNodes.forEach(editorNode -> editorNode.getConstraints().stream() //
+				.filter(c -> c instanceof Reference).map(r -> (Reference) r) // only References
+				.forEach(reference -> checkEdge(editorNode, reference, gtGraph)));
 	}
 
 	private static void checkEdge(final Node editorNode, final Reference reference, final GTGraph gtGraph) {
 		Node targetNode = reference.getTarget();
-		Optional<GTEdge> gtEdgeOptional = gtGraph.getEdges().stream()
-				.filter(e -> e.getType().equals(reference.getType())) // correct type
+		Optional<GTEdge> gtEdge = gtGraph.getEdges().stream() //
+				.filter(edge -> edge.getType().equals(reference.getType())) // correct type
 				.filter(e -> editorNode.getName().equals(getNodeName(e.getSourceNode()))) // correct source
 				.filter(e -> targetNode.getName().equals(getNodeName(e.getTargetNode()))) // correct target
 				.findAny();
-		assertTrue(gtEdgeOptional.isPresent());
+		assertTrue(gtEdge.isPresent());
 	}
 
 	private static String getNodeName(final GTNode gtNode) {

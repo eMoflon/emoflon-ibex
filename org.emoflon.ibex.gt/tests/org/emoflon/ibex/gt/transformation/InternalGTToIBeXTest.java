@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt;
+package org.emoflon.ibex.gt.transformation;
 
 import static org.junit.Assert.*;
 
@@ -22,6 +22,12 @@ import IBeXLanguage.IBeXGraph;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPattern;
 
+/**
+ * JUnit tests for the transformation from the internal GT model to IBeXPatterns.
+ * 
+ * @author Patrick Robrecht
+ * @version 0.1
+ */
 public class InternalGTToIBeXTest {
 	private static EcorePackage ep = EcorePackage.eINSTANCE;
 
@@ -135,9 +141,11 @@ public class InternalGTToIBeXTest {
 	}
 
 	private static void assertEdge(final GTEdge gtEdge, final EList<IBeXEdge> ibexEdges) {
-		Optional<IBeXEdge> ibexEdge = ibexEdges.stream().filter(e -> e.getType().equals(gtEdge.getType()))
-				.filter(e -> e.getSourceNode().getName().equals(gtEdge.getSourceNode().getName()))
-				.filter(e -> e.getTargetNode().getName().equals(gtEdge.getTargetNode().getName())).findAny();
+		Optional<IBeXEdge> ibexEdge = ibexEdges.stream() //
+				.filter(e -> e.getType().equals(gtEdge.getType())) // correct type
+				.filter(e -> e.getSourceNode().getName().equals(gtEdge.getSourceNode().getName())) // correct source
+				.filter(e -> e.getTargetNode().getName().equals(gtEdge.getTargetNode().getName())) // correct target
+				.findAny();
 		assertTrue(ibexEdge.isPresent());
 	}
 }

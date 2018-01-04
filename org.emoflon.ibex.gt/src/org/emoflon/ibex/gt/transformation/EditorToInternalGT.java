@@ -2,6 +2,7 @@ package org.emoflon.ibex.gt.transformation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,41 +27,77 @@ import GTLanguage.GTRuleSet;
  * @version 0.1
  */
 public class EditorToInternalGT {
-	private static GTLanguageFactory factory = GTLanguageFactory.eINSTANCE;
 
+	/**
+	 * Transforms an editor model into a GTRuleSet of the internal GT model.
+	 * 
+	 * @param editorModel
+	 *            the editor model, must not be <code>null</code>
+	 * @return the GTRuleSet
+	 */
 	public static GTRuleSet transformRuleSet(final Model editorModel) {
-		GTRuleSet gtRuleSet = factory.createGTRuleSet();
+		Objects.requireNonNull(editorModel, "model must not be null!");
+		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
 		editorModel.getRules().forEach(rule -> gtRuleSet.getRules().add(transformRule(rule)));
 		return gtRuleSet;
 	}
 
+	/**
+	 * Transforms an editor rule into a GTRule of the internal GT model.
+	 * 
+	 * @param editorRule
+	 *            the editor model, must not be <code>null</code>
+	 * @return the GTRule
+	 */
 	public static GTRule transformRule(final Rule editorRule) {
-		GTRule gtRule = factory.createGTRule();
+		Objects.requireNonNull(editorRule, "rule must not be null!");
+		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
 		gtRule.setName(editorRule.getName());
 
-		GTGraph gtGraph = factory.createGTGraph();
-		List<Node> editorNodes = editorRule.getNodes();
-		editorNodes.forEach(editorNode -> gtGraph.getNodes().add(transformNode(editorNode)));
-		editorNodes.forEach(editorNode -> {
+		GTGraph gtGraph = GTLanguageFactory.eINSTANCE.createGTGraph();
+		gtRule.setGraph(gtGraph);
+
+		// Transform nodes and edges.
+		editorRule.getNodes().forEach(editorNode -> gtGraph.getNodes().add(transformNode(editorNode)));
+		editorRule.getNodes().forEach(editorNode -> {
 			gtGraph.getEdges().addAll(transformReferencesToEdges(editorNode, gtGraph.getNodes()));
 		});
-		gtRule.setGraph(gtGraph);
 
 		return gtRule;
 	}
 
-	public static GTNode transformNode(final Node editorNode) {
-		GTNode gtNode = factory.createGTNode();
+	/**
+	 * Transforms an editor node into a GTNode.
+	 * 
+	 * @param editorNode
+	 *            the editor node, must not be <code>null</code>
+	 * @return the GTNode
+	 */
+	private static GTNode transformNode(final Node editorNode) {
+		Objects.requireNonNull(editorNode, "node must not be null!");
+		GTNode gtNode = GTLanguageFactory.eINSTANCE.createGTNode();
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
 		return gtNode;
 	}
 
-	public static List<GTEdge> transformReferencesToEdges(final Node editorNode, final List<GTNode> gtNodes) {
+	/**
+	 * Transforms the edges of an editor node into GTEdges.
+	 * 
+	 * @param editorNode
+	 *            the editor node to transform, must not be <code>null</code>
+	 * @param gtNodes
+	 *            the list of GTNodes, which maybe source and target nodes of the
+	 *            edges to be created
+	 * @return the list of GTEdges
+	 */
+	private static List<GTEdge> transformReferencesToEdges(final Node editorNode, final List<GTNode> gtNodes) {
+		Objects.requireNonNull(editorNode, "editor node must not be null!");
+		Objects.requireNonNull(gtNodes, "node list must not be null!");
 		List<GTEdge> gtEdges = new ArrayList<GTEdge>();
 		List<Reference> references = extractReferences(editorNode);
 		references.forEach(reference -> {
-			GTEdge gtEdge = factory.createGTEdge();
+			GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
 			gtEdge.setType(reference.getType());
 			findGTNodeWithName(gtNodes, editorNode.getName()).ifPresent(gtSourceNode -> {
 				gtEdge.setSourceNode(gtSourceNode);
@@ -75,11 +112,31 @@ public class EditorToInternalGT {
 		return gtEdges;
 	}
 
+	/**
+	 * Searches for a GTNode with the given name in the given list.
+	 * 
+	 * @param nodes
+	 *            the node list to search in. The list can be empty, but must not be
+	 *            <code>null</code>.
+	 * @param name
+	 *            the node name to search for, must not be <code>null</code>.
+	 * @return an Optional for the node to find
+	 */
 	public static Optional<GTNode> findGTNodeWithName(final List<GTNode> nodes, final String name) {
+		Objects.requireNonNull(nodes, "node list must not be null!");
+		Objects.requireNonNull(name, "name must not be null!");
 		return nodes.stream().filter(gtNode -> name.equals(gtNode.getName())).findAny();
 	}
 
+	/**
+	 * Returns all references of an editor node.
+	 * 
+	 * @param editorNode
+	 *            the editor node, must not be <code>null</code>
+	 * @return the References which are the constraint list of the editor node
+	 */
 	public static List<Reference> extractReferences(final Node editorNode) {
+		Objects.requireNonNull(editorNode, "node must not be null!");
 		return editorNode.getConstraints().stream().filter(x -> x instanceof Reference).map(x -> (Reference) x)
 				.collect(Collectors.toList());
 	}
