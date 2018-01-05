@@ -20,12 +20,14 @@ public class FilterACPattern extends IbexBasePattern {
 	private EReference edgeType;
 	private EdgeDirection eDirection;
 	private IPattern premise;
+	private PatternFactory factory;
 
 	public FilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, PatternFactory factory) {
 		this.entryPoint = entryPoint;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
-
+		this.factory = factory;
+		
 		initialise(factory);
 		createPatternNetwork();
 	}
@@ -60,5 +62,10 @@ public class FilterACPattern extends IbexBasePattern {
 	
 	public static String getPatternNameSuffix(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection){
 		return PatternSuffixes.SEP + entryPoint.getName() + "_" + edgeType.getName() + "_" + eDirection.toString().toLowerCase() + "_DEC_" + entryPoint.getDomainType().getName();
+	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
 	}
 }

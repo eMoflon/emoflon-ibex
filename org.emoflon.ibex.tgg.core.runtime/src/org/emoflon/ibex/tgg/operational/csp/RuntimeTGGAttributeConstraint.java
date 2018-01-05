@@ -11,15 +11,15 @@ import org.emoflon.ibex.tgg.operational.csp.helper.LoremIpsum;
 
 import language.basic.expressions.TGGAttributeExpression;
 import language.csp.TGGAttributeConstraint;
+import language.csp.definition.TGGAttributeConstraintAdornment;
 
 public abstract class RuntimeTGGAttributeConstraint {
 	private static final char B = 'B';
 	private static final char F = 'F';
 
 	private boolean satisfied = false;
-
-	private TGGAttributeConstraint constraint;
 	protected List<RuntimeTGGAttributeConstraintVariable> variables;
+	private TGGAttributeConstraint constraint;
 
 	public RuntimeTGGAttributeConstraint() {
 		variables = new ArrayList<>();
@@ -45,11 +45,18 @@ public abstract class RuntimeTGGAttributeConstraint {
 		return satisfied;
 	}
 
+	public void initialize(RuntimeTGGAttributeConstraintContainer cont, TGGAttributeConstraint constraint) {
+		this.constraint = constraint;
+
+		variables = constraint.getParameters().stream().map(p -> cont.params2runtimeVariable.get(p))
+				.collect(Collectors.toList());
+	}
+	
 	public List<RuntimeTGGAttributeConstraintVariable> getVariables() {
 		return variables;
 	}
 
-	protected abstract void solve();
+	public abstract void solve();
 
 	public Collection<Pair<TGGAttributeExpression, Object>> getBoundAttrExprValues() {
 		Collection<Pair<TGGAttributeExpression, Object>> tuples = new ArrayList<Pair<TGGAttributeExpression, Object>>();
@@ -62,14 +69,7 @@ public abstract class RuntimeTGGAttributeConstraint {
 		return tuples;
 	}
 
-	public void initialize(RuntimeTGGAttributeConstraintContainer cont, TGGAttributeConstraint constraint) {
-		this.constraint = constraint;
-
-		variables = constraint.getParameters().stream().map(p -> cont.params2runtimeVariable.get(p))
-				.collect(Collectors.toList());
-	}
-
-	protected Object generateValue(String type) {
+	public static Object generateValue(String type) {
 
 		if (type.equals("java.lang.String"))
 			return LoremIpsum.getInstance().randomWord();
@@ -88,5 +88,12 @@ public abstract class RuntimeTGGAttributeConstraint {
 
 		throw new RuntimeException("The type " + type + " is not supported for random value generation");
 
+	}
+
+	public List<TGGAttributeConstraintAdornment> getAllowedAdornments(boolean isModelGen) {
+		if(isModelGen)
+			return constraint.getDefinition().getGenAdornments();
+		else
+			return constraint.getDefinition().getSyncAdornments();
 	}
 }

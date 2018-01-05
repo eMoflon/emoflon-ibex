@@ -15,8 +15,10 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class TrgRefinementsPattern extends IbexBasePattern {
-
+	private PatternFactory factory;
+	
 	public TrgRefinementsPattern(PatternFactory factory) {
+		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);
 	}
@@ -52,4 +54,8 @@ public class TrgRefinementsPattern extends IbexBasePattern {
 		return e.getDomainType() == DomainType.TRG;
 	}
 
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
+	}
 }

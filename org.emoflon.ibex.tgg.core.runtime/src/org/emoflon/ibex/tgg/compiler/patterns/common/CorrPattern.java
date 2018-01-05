@@ -15,8 +15,10 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class CorrPattern extends AbstractCorrPattern {
-
+	private PatternFactory factory;
+	
 	public CorrPattern(PatternFactory factory) {
+		this.factory = factory;
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
 	}
@@ -50,5 +52,10 @@ public class CorrPattern extends AbstractCorrPattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getBindingType() == BindingType.CONTEXT && node2.getBindingType() == BindingType.CONTEXT;
+	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
 	}
 }

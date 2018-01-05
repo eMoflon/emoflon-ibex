@@ -71,7 +71,7 @@ public class TGGCompiler {
 				.collect(Collectors.toList());
 
 		Collection<String> duplicates = allNames.stream()
-				.filter(p -> Collections.frequency(allNames, p) > 1)
+				.filter(p -> Collections.frequency(allNames, p) > 1)	
 				.collect(Collectors.toSet());
 		
 		if(!duplicates.isEmpty())

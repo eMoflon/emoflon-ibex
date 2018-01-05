@@ -14,8 +14,10 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class GENPattern extends IbexBasePattern {
+	private PatternFactory factory;
 	
 	public GENPattern(PatternFactory factory) {
+		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);
 	}
@@ -52,5 +54,10 @@ public class GENPattern extends IbexBasePattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		// Root pattern
 		return true;
+	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
 	}
 }

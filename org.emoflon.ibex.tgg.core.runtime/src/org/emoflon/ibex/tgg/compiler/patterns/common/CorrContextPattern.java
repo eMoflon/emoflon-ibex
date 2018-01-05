@@ -14,8 +14,10 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class CorrContextPattern extends AbstractCorrPattern {
-
+	private PatternFactory factory;
+	
 	public CorrContextPattern(PatternFactory factory) {
+		this.factory = factory;
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
 	}
@@ -49,5 +51,10 @@ public class CorrContextPattern extends AbstractCorrPattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return !(isContextCorr(node1) && isContextCorr(node2));
+	}
+	
+	@Override
+	public PatternFactory getPatternFactory() {
+		return factory;
 	}
 }

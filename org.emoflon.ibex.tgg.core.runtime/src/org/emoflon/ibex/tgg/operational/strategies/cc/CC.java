@@ -18,8 +18,8 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
 import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
-import org.emoflon.ibex.tgg.operational.util.UpdatePolicy;
 
 import com.google.common.collect.Sets;
 
@@ -38,7 +38,6 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import language.TGGComplementRule;
-import language.TGGRule;
 import language.TGGRuleNode;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
@@ -52,7 +51,7 @@ public abstract class CC extends OperationalStrategy {
 	protected TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
 	protected TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 
-	TIntIntHashMap weights = new TIntIntHashMap();
+	private TIntIntHashMap weights = new TIntIntHashMap();
 
 	protected THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
 
@@ -68,30 +67,31 @@ public abstract class CC extends OperationalStrategy {
 	 * key: ComplementRule (CR) match; 
 	 * value: other CR matches of the same CR using the same context as CR match
 	 */
-	THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
+	private THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
 
 	/**
 	 * Collection of constraints to guarantee maximality property;
 	 * value: kernels whose complement rules did not fulfill maximality property
 	 */
-	TIntHashSet invalidKernels = new TIntHashSet();
+	private TIntHashSet invalidKernels = new TIntHashSet();
 	
 	/**
 	 * Collection of constraints to guarantee cyclic dependences are avoided;
 	 * value: correctly applied bundles (kernel match + its CRs matches)
 	 */
-	HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
-	Bundle lastAppliedBundle;
+	private HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
+	private Bundle lastAppliedBundle;
 	
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
-	
-	public CC(String projectName, String workspacePath, boolean debug) throws IOException {
-		super(projectName, workspacePath, debug);
+
+	public CC(IbexOptions options) throws IOException {
+		super(options);
 	}
 	
-	public CC(String projectPath, String workspacePath, boolean debug, IUpdatePolicy policy) {
-		super(projectPath, workspacePath, debug, policy);
+	public CC(IbexOptions options, IUpdatePolicy policy) {
+		super(options, policy);
 	}
+	
 	@Override
 	protected boolean manipulateSrc() {
 		return false;
@@ -132,9 +132,18 @@ public abstract class CC extends OperationalStrategy {
 	protected boolean processOneOperationalRuleMatch() {
 		if (operationalMatchContainer.isEmpty())
 			return false;
+		
+		if(operationalMatchContainer.getMatches().stream()
+				.allMatch(m -> m.patternName().contains(PatternSuffixes.GENForCC))) {
+			//FIXME[Anjorin]:  Find an elegant way of properly discarding GENForCC matches!
+			return false;
+		}
 
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
+		
+		if(ruleName == null)
+			return true;  //FIXME[Anjorin]:  This should be avoided (all matches that do not correspond to rules should be filtered)
 		
 		HashMap<String, EObject> comatch = processOperationalRuleMatch(ruleName, match);
 		if (comatch != null && isKernelMatch(ruleName))
