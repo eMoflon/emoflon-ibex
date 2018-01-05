@@ -11,14 +11,14 @@ public class SetRandomString extends RuntimeTGGAttributeConstraint {
 	@Override
 	public void solve() {
 		if (variables.size() != 1)
-			throw new RuntimeException("The CSP -STRING_TO_INT- needs exactly one variables");
+			throw new RuntimeException("The CSP -SET_RANDOM_STRING- needs exactly one variables");
 
 		RuntimeTGGAttributeConstraintVariable v0 = variables.get(0);
 
 		String bindingStates = getBindingStates(v0);
 
 		if (bindingStates.equals("B")) {
-				setSatisfied(false);
+				setSatisfied(true);
 				
 		} else if (bindingStates.equals("F")) {
 			v0.bindToValue(generateValue(v0.getType()));
