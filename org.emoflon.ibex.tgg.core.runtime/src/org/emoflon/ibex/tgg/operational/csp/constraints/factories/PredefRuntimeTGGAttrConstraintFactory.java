@@ -13,6 +13,7 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.Max;
 import org.emoflon.ibex.tgg.operational.csp.constraints.Multiply;
 import org.emoflon.ibex.tgg.operational.csp.constraints.SetDefaultNumber;
 import org.emoflon.ibex.tgg.operational.csp.constraints.SetDefaultString;
+import org.emoflon.ibex.tgg.operational.csp.constraints.SetRandomString;
 import org.emoflon.ibex.tgg.operational.csp.constraints.SmallerOrEqual;
 import org.emoflon.ibex.tgg.operational.csp.constraints.StringToDouble;
 import org.emoflon.ibex.tgg.operational.csp.constraints.StringToInt;
@@ -42,11 +43,12 @@ public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstra
 		creators.put("max", () -> new Max());
 		creators.put("multiply", () -> new Multiply());
 		creators.put("setDefaultNumber", () -> new SetDefaultNumber());
-		creators.put("setefaultString", () -> new SetDefaultString());
+		creators.put("setDefaultString", () -> new SetDefaultString());
 		creators.put("smallerOrEqual", () -> new SmallerOrEqual());
 		creators.put("stringToInt", () -> new StringToInt());
 		creators.put("stringToDouble", () -> new StringToDouble());
 		creators.put("sub", () -> new Sub());
+		creators.put("setRandomString", () -> new SetRandomString());
 
 		
 		constraints = new HashSet<String>();
