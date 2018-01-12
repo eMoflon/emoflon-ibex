@@ -2,9 +2,7 @@ package org.emoflon.ibex.gt.transformation;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -18,12 +16,13 @@ import GTLanguage.GTLanguageFactory;
 import GTLanguage.GTNode;
 import GTLanguage.GTRule;
 import IBeXLanguage.IBeXEdge;
-import IBeXLanguage.IBeXGraph;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPattern;
+import IBeXLanguage.IBeXPatternInvocation;
 
 /**
- * JUnit tests for the transformation from the internal GT model to IBeXPatterns.
+ * JUnit tests for the transformation from the internal GT model to IBeX
+ * Patterns.
  * 
  * @author Patrick Robrecht
  * @version 0.1
@@ -46,7 +45,8 @@ public class InternalGTToIBeXTest {
 		addGTEdge(gtRule, ep.getEOperation_ETypeParameters(), node4, node5);
 		addGTEdge(gtRule, ep.getETypeParameter_EBounds(), node5, node6);
 
-		transformAndCheck(gtRule);
+		checkSimpleRuleToPattern(gtRule);
+		checkRuleToPattern(gtRule);
 	}
 
 	@Test
@@ -58,8 +58,11 @@ public class InternalGTToIBeXTest {
 		addGTEdge(gtRule, ep.getEAnnotation_References(), node3, node1);
 		addGTEdge(gtRule, ep.getEAnnotation_References(), node3, node2);
 
-		transformAndCheck(gtRule);
+		checkSimpleRuleToPattern(gtRule);
+		checkRuleToPattern(gtRule);
 	}
+
+	// Utility methods to create examples
 
 	private static GTEdge addGTEdge(final GTRule gtRule, final EReference edgeType, final GTNode sourceNode,
 			final GTNode targetNode) {
@@ -86,58 +89,46 @@ public class InternalGTToIBeXTest {
 		return gtRule;
 	}
 
-	private static void transformAndCheck(final GTRule gtRule) {
-		assertEquivalence(gtRule, InternalGTToIBeX.transformRuleToIBeX(gtRule));
-	}
+	// Utility methods for assertions
 
-	private static void assertEquivalence(final GTRule gtRule, final IBeXPattern ibexPattern) {
+	private static void checkSimpleRuleToPattern(final GTRule gtRule) {
+		IBeXPattern ibexPattern = InternalGTToIBeX.transformRule(gtRule, false);
 		assertEquals(gtRule.getName(), ibexPattern.getName());
 
-		// Assert nodes.
-		assertEquals(gtRule.getGraph().getNodes().size(), ibexPattern.getNodes().size());
-		gtRule.getGraph().getNodes().forEach(gtNode -> assertNode(gtNode, ibexPattern.getNodes()));
+		assertNodes(gtRule.getGraph().getNodes(), ibexPattern.getLocalNodes());
+		assertEquals(0, ibexPattern.getSignatureNodes().size());
+		assertEdges(gtRule.getGraph().getEdges(), ibexPattern.getLocalEdges());
 
-		// Assert edges.
-		assertEquals(gtRule.getGraph().getEdges().size(), ibexPattern.getEdges().size());
-		gtRule.getGraph().getEdges().forEach(gtEdge -> assertEdge(gtEdge, ibexPattern.getEdges()));
+		assertEquals(0, ibexPattern.getNegativeInvocations().size());
+		assertEquals(0, ibexPattern.getPositiveInvocations().size());
+	}
 
-		// Assert graph with all nodes.
-		Optional<IBeXGraph> allNodesGraph = ibexPattern.getGraphs().stream()
-				.filter(g -> g.getName().equals("all-nodes")).findAny();
-		assertTrue(allNodesGraph.isPresent());
-		assertEquals(gtRule.getGraph().getNodes().size(), allNodesGraph.get().getNodes().size());
-		gtRule.getGraph().getNodes().forEach(gtNode -> assertNode(gtNode, allNodesGraph.get().getNodes()));
+	private static void checkRuleToPattern(final GTRule gtRule) {
+		IBeXPattern ibexPattern = InternalGTToIBeX.transformRule(gtRule);
+		assertEquals(gtRule.getName(), ibexPattern.getName());
 
-		// Per edge type, assert graphs with all references a graph with all edges and
-		// the nodes involved.
-		gtRule.getGraph().getEdges().stream().map(e -> e.getType()).forEach(edgeType -> {
-			Optional<IBeXGraph> ibexGraph = ibexPattern.getGraphs().stream()
-					.filter(g -> g.getName().equals("edges-" + edgeType.getName())).findAny();
-			assertTrue(ibexGraph.isPresent());
+		assertNodes(gtRule.getGraph().getNodes(), ibexPattern.getLocalNodes());
+		assertEquals(0, ibexPattern.getSignatureNodes().size());
+		assertEquals(0, ibexPattern.getLocalEdges().size());
 
-			List<GTEdge> gtEdges = gtRule.getGraph().getEdges().stream().filter(e -> e.getType().equals(edgeType))
-					.collect(Collectors.toList());
-			assertEquals(gtEdges.size(), ibexGraph.get().getEdges().size());
-			gtEdges.forEach(gtEdge -> assertEdge(gtEdge, ibexGraph.get().getEdges()));
+		assertEquals(0, ibexPattern.getNegativeInvocations().size());
+		assertInvocationsForEdges(gtRule.getGraph().getEdges(), ibexPattern);
+	}
 
-			gtRule.getGraph().getNodes().stream().forEach(gtNode -> {
-				boolean isSourceNode = gtNode.getOutgoingEdges().stream().anyMatch(e -> e.getType().equals(edgeType));
-				boolean isTargetNode = gtNode.getIncomingEdges().stream().anyMatch(e -> e.getType().equals(edgeType));
-				assertNode(gtNode, ibexGraph.get().getNodes(), isSourceNode || isTargetNode);
-			});
-		});
+	private static void assertNodes(final EList<GTNode> gtNodes, final EList<IBeXNode> ibexNodes) {
+		assertEquals(gtNodes.size(), ibexNodes.size());
+		gtNodes.forEach(gtNode -> assertNode(gtNode, ibexNodes));
 	}
 
 	private static void assertNode(final GTNode gtNode, final EList<IBeXNode> ibexNodes) {
-		assertNode(gtNode, ibexNodes, true);
+		Optional<IBeXNode> ibexNode = ibexNodes.stream().filter(n -> gtNode.getName().equals(n.getName())).findAny();
+		assertTrue(ibexNode.isPresent());
+		assertEquals(gtNode.getType(), ibexNode.get().getType());
 	}
 
-	private static void assertNode(final GTNode gtNode, final EList<IBeXNode> ibexNodes, boolean isPresent) {
-		Optional<IBeXNode> ibexNode = ibexNodes.stream().filter(n -> gtNode.getName().equals(n.getName())).findAny();
-		assertEquals(isPresent, ibexNode.isPresent());
-		if (isPresent) {
-			assertEquals(gtNode.getType(), ibexNode.get().getType());
-		}
+	private static void assertEdges(final EList<GTEdge> gtEdges, final EList<IBeXEdge> ibexEdges) {
+		assertEquals(gtEdges.size(), ibexEdges.size());
+		gtEdges.forEach(gtEdge -> assertEdge(gtEdge, ibexEdges));
 	}
 
 	private static void assertEdge(final GTEdge gtEdge, final EList<IBeXEdge> ibexEdges) {
@@ -147,5 +138,36 @@ public class InternalGTToIBeXTest {
 				.filter(e -> e.getTargetNode().getName().equals(gtEdge.getTargetNode().getName())) // correct target
 				.findAny();
 		assertTrue(ibexEdge.isPresent());
+	}
+
+	private static void assertInvocationsForEdges(final EList<GTEdge> gtEdges, final IBeXPattern ibexPattern) {
+		assertEquals(gtEdges.size(), ibexPattern.getPositiveInvocations().size());
+		gtEdges.forEach(gtEdge -> {
+			String patternName = "edge-" + gtEdge.getSourceNode().getType().getName() + "-" + gtEdge.getType().getName()
+					+ "-" + gtEdge.getTargetNode().getType().getName();
+			Optional<IBeXNode> sourceNodeOfEdge = InternalGTToIBeX.findIBeXNodeWithName(ibexPattern,
+					gtEdge.getSourceNode().getName());
+			Optional<IBeXNode> targetNodeOfEdge = InternalGTToIBeX.findIBeXNodeWithName(ibexPattern,
+					gtEdge.getTargetNode().getName());
+
+			assertTrue(sourceNodeOfEdge.isPresent());
+			assertTrue(targetNodeOfEdge.isPresent());
+
+			Optional<IBeXPatternInvocation> ibexPatternInvocation = ibexPattern.getPositiveInvocations().stream() //
+					.filter(invocation -> invocation.getInvoking().getName().equals(patternName)) // correct pattern
+					.filter(invocation -> invocation.getMapping().containsKey(sourceNodeOfEdge.get())) // source node
+					.filter(invocation -> invocation.getMapping().containsKey(targetNodeOfEdge.get())) // target node
+					.findAny();
+			assertTrue(ibexPatternInvocation.isPresent());
+
+			assertEquals(0, ibexPatternInvocation.get().getInvoking().getLocalNodes().size());
+			assertEquals(2, ibexPatternInvocation.get().getInvoking().getSignatureNodes().size());
+			assertEquals(1, ibexPatternInvocation.get().getInvoking().getLocalEdges().size());
+
+			assertEquals(ibexPattern, ibexPatternInvocation.get().getInvokedBy());
+
+			assertEquals("src", ibexPatternInvocation.get().getMapping().get(sourceNodeOfEdge.get()).getName());
+			assertEquals("trg", ibexPatternInvocation.get().getMapping().get(targetNodeOfEdge.get()).getName());
+		});
 	}
 }
