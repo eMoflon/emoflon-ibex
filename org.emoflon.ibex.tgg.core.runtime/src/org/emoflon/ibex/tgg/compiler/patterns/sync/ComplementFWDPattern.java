@@ -1,16 +1,16 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil.addComplementOutputAndContextNodes;
-import static org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil.addKernelOutputAndContextNodes;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addComplementOutputAndContextNodes;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addKernelOutputAndContextNodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
+import org.emoflon.ibex.tgg.util.MultiAmalgamationUtil;
 
 import language.DomainType;
 import language.TGGComplementRule;
@@ -19,9 +19,9 @@ import language.TGGRuleNode;
 
 public class ComplementFWDPattern extends BasicSyncPattern {
 	private TGGComplementRule flattenedComplementRule;
-	private PatternFactory factory;
+	private BlackPatternFactory factory;
 	
-	public ComplementFWDPattern(PatternFactory factory) {
+	public ComplementFWDPattern(BlackPatternFactory factory) {
 		assert(factory.getRule() instanceof TGGComplementRule);
 		flattenedComplementRule = (TGGComplementRule)factory.getFlattenedVersionOfRule();
 		
@@ -42,11 +42,11 @@ public class ComplementFWDPattern extends BasicSyncPattern {
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 
-	protected void createPatternNetwork(PatternFactory factory) {
-		addPositiveInvocation(factory.getFactory(flattenedComplementRule.getKernel()).create(FWDPattern.class));		
+	protected void createPatternNetwork(BlackPatternFactory factory) {
+		addPositiveInvocation(factory.getFactory(flattenedComplementRule.getKernel()).createBlackPattern(FWDBlackPattern.class));		
 		MultiAmalgamationUtil.createMarkedInvocations(DomainType.SRC, flattenedComplementRule, this);
 	
-		if(PatternFactory.strategy != FilterACStrategy.NONE)
+		if(BlackPatternFactory.strategy != FilterACStrategy.NONE)
 			addFilterNACPatterns(DomainType.SRC, factory, optimiser);
 	}
 	
@@ -56,7 +56,7 @@ public class ComplementFWDPattern extends BasicSyncPattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

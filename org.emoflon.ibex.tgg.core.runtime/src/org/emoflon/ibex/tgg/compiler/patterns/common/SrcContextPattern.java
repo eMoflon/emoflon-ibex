@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 import language.BindingType;
@@ -14,9 +14,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class SrcContextPattern extends IbexBasePattern {
-	private PatternFactory factory;
+	private BlackPatternFactory factory;
 	
-	public SrcContextPattern(PatternFactory factory) {
+	public SrcContextPattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
@@ -46,7 +46,7 @@ public class SrcContextPattern extends IbexBasePattern {
 		return e.getDomainType() == DomainType.SRC && e.getBindingType() == BindingType.CONTEXT;
 	}
 	
-	private void createPatternNetwork(PatternFactory factory) {
+	private void createPatternNetwork(BlackPatternFactory factory) {
 		// Leaf pattern
 	}
 
@@ -57,7 +57,7 @@ public class SrcContextPattern extends IbexBasePattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

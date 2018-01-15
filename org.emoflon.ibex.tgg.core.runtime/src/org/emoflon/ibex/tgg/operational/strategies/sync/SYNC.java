@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.operational.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.util.IbexOptions;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
@@ -40,10 +40,15 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	@Override
-	public boolean isPatternRelevant(String patternName) {
+	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.BWD) 
 			|| patternName.endsWith(PatternSuffixes.FWD)
 			|| patternName.endsWith(PatternSuffixes.CONSISTENCY);
+	}
+	
+	@Override
+	public boolean isPatternRelevantForInterpreter(String patternName) {
+		return strategy.isPatternRelevantForInterpreter(patternName);
 	}
 
 	@Override

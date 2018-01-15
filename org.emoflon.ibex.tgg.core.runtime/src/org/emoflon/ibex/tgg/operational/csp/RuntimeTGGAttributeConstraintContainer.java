@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.tgg.operational.util.IMatch;
-import org.emoflon.ibex.tgg.operational.util.String2EPrimitive;
+import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import language.basic.expressions.TGGAttributeExpression;
 import language.basic.expressions.TGGEnumExpression;
@@ -22,7 +22,7 @@ import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 import language.csp.TGGAttributeVariable;
 
-public class RuntimeTGGAttributeConstraintContainer {
+public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrConstrContainer {
 
 	private List<RuntimeTGGAttributeConstraint> constraints;
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
@@ -69,9 +69,12 @@ public class RuntimeTGGAttributeConstraintContainer {
 	private Object calculateValue(TGGParamValue value) {
 		if(value instanceof TGGAttributeExpression) {
 			TGGAttributeExpression tae = (TGGAttributeExpression) value;
-			EObject obj = (EObject) match.get(tae.getObjectVar().getName());
-			if(obj != null) 
+			String varName = tae.getObjectVar().getName();
+			if(match.isInMatch(varName)) {
+				EObject obj = (EObject) match.get(varName);
 				return obj.eGet(tae.getAttribute());
+			}
+			
 			return null;
 		}
 		if(value instanceof TGGLiteralExpression) {
@@ -105,11 +108,22 @@ public class RuntimeTGGAttributeConstraintContainer {
 			if(!constraint.isSatisfied())
 				return false;
 		}
+		
 		return true;
 	}
 	
-	public Collection<Pair<TGGAttributeExpression, Object>> getBoundAttributeExpValues() {
+	private Collection<Pair<TGGAttributeExpression, Object>> getBoundAttributeExpValues() {
 		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream().map(constraint -> constraint.getBoundAttrExprValues()).reduce(new ArrayList<Pair<TGGAttributeExpression, Object>>(), (a, b) -> a.addAll(b) ? a : a);
 		return col == null ? new ArrayList<Pair<TGGAttributeExpression,Object>>() : col;
+	}
+	
+	@Override
+	public void applyCSPValues(IMatch comatch) {
+		Collection<Pair<TGGAttributeExpression, Object>> cspValues = getBoundAttributeExpValues();
+
+		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
+			EObject entry = (EObject) comatch.get(cspVal.getLeft().getObjectVar().getName());
+			entry.eSet(cspVal.getLeft().getAttribute(), cspVal.getRight());
+		}
 	}
 }

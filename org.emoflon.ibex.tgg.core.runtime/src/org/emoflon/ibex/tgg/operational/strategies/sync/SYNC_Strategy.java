@@ -10,4 +10,5 @@ public abstract class SYNC_Strategy {
 	public abstract boolean manipulateTrg();
 	public abstract boolean manipulateCorr();
 	public abstract List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library);
+	public abstract boolean isPatternRelevantForInterpreter(String patternName);
 }

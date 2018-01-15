@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
@@ -26,10 +26,10 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
 public class ConsistencyPattern extends IbexBasePattern {
-	protected PatternFactory factory;
+	protected BlackPatternFactory factory;
 	private TGGRuleNode protocolNode;
 	
-	public ConsistencyPattern(PatternFactory factory) {
+	public ConsistencyPattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();
@@ -51,9 +51,9 @@ public class ConsistencyPattern extends IbexBasePattern {
 	
 	protected void createPatternNetwork() {
 		createMarkedInvocations();
-		addPositiveInvocation(factory.create(WholeRulePattern.class));
+		addPositiveInvocation(factory.createBlackPattern(WholeRulePattern.class));
 		
-		if (PatternFactory.strategy != FilterACStrategy.NONE) {
+		if (BlackPatternFactory.strategy != FilterACStrategy.NONE) {
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
 		}
@@ -86,7 +86,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 		{
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (nodeIsConnectedToRuleApplicationNode(node)) {
-				IPattern markedPattern = PatternFactory.getMarkedPattern(node.getDomainType(), false, node.getBindingType().equals(BindingType.CONTEXT));
+				IBlackPattern markedPattern = BlackPatternFactory.getMarkedPattern(node.getDomainType(), false, node.getBindingType().equals(BindingType.CONTEXT));
 				TGGRuleNode invokedRuleApplicationNode = getRuleApplicationNode(markedPattern.getSignatureNodes());
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes()
 						.stream()
@@ -128,7 +128,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

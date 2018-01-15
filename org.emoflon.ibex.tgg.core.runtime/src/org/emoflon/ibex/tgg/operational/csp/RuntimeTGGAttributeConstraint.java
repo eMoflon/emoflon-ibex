@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.emoflon.ibex.tgg.operational.csp.helper.LoremIpsum;
+import org.emoflon.ibex.tgg.util.LoremIpsum;
 
 import language.basic.expressions.TGGAttributeExpression;
 import language.csp.TGGAttributeConstraint;

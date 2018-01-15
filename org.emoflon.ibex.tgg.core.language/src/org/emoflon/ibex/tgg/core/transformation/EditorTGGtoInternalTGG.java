@@ -488,7 +488,6 @@ public class EditorTGGtoInternalTGG {
 
 		corrModel.setName(xtextTGG.getSchema().getName());
 		corrModel.setNsPrefix(xtextTGG.getSchema().getName());
-		// TODO[Anjorin]: This makes it impossible to have schema != project name
 		corrModel.setNsURI("platform:/resource/" + corrModel.getName() + "/model/" + corrModel.getName() + ".ecore");
 
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
@@ -560,7 +559,6 @@ public class EditorTGGtoInternalTGG {
 		return tggModel;
 	}
 
-	//FIXME[Anjorin]:  Remove after transferring CSPs to PM
 	private TGG sortTGGAttributeConstraints(TGG tggModel) {
 		SearchPlanAction spa = new SearchPlanAction();
 		for (TGGRule rule : tggModel.getRules()) {
@@ -586,5 +584,4 @@ public class EditorTGGtoInternalTGG {
 
 		return tggModel;
 	}
-	// Remove
 }

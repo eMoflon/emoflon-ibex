@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 import language.BindingType;
@@ -15,9 +15,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class CorrPattern extends AbstractCorrPattern {
-	private PatternFactory factory;
+	private BlackPatternFactory factory;
 	
-	public CorrPattern(PatternFactory factory) {
+	public CorrPattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
@@ -45,8 +45,8 @@ public class CorrPattern extends AbstractCorrPattern {
 		return isCorr(n) || isConnectedToACorr(n);
 	}
 
-	private void createPatternNetwork(PatternFactory factory) {
-		addPositiveInvocation(factory.create(CorrContextPattern.class));
+	private void createPatternNetwork(BlackPatternFactory factory) {
+		addPositiveInvocation(factory.createBlackPattern(CorrContextPattern.class));
 	}
 	
 	@Override
@@ -55,7 +55,7 @@ public class CorrPattern extends AbstractCorrPattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

@@ -3,19 +3,20 @@ package org.emoflon.ibex.tgg.operational.strategies.gen;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
-import org.emoflon.ibex.tgg.operational.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.util.EmptyMatch;
-import org.emoflon.ibex.tgg.operational.util.IMatch;
-import org.emoflon.ibex.tgg.operational.util.IbexOptions;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.BindingType;
 import language.TGGComplementRule;
@@ -68,7 +69,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	protected abstract void registerUserMetamodels() throws IOException;
 
 	@Override
-	public boolean isPatternRelevant(String patternName) {
+	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.GEN);
 	}
 	
@@ -94,19 +95,19 @@ public abstract class MODELGEN extends OperationalStrategy {
 		if (stopCriterion.dont(ruleName))
 			removeOperationalRuleMatch(match);
 		else {
-			HashMap<String, EObject> comatch = processOperationalRuleMatch(ruleName, match);
-			if (comatch != null) {
+			Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+			comatch.ifPresent(cm -> {
 				updateStopCriterion(ruleName);
-				if (isKernelMatch(ruleName)) 
-					processComplementRuleMatches(comatch);
-			}
+				if (isKernelMatch(ruleName))
+					processComplementRuleMatches(cm);
+			});
 		}
 		return true;
 	}
 
 
-	private void processComplementRuleMatches(HashMap<String, EObject> comatch) {
-		engine.updateMatches();
+	private void processComplementRuleMatches(IMatch comatch) {
+		blackInterpreter.updateMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		
 		if (! complementRuleMatches.isEmpty()) {
@@ -160,8 +161,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 	private void updateStopCriterion(String ruleName) {
 		stopCriterion.update(
 				ruleName,
-				ruleInfos.getGreenSrcNodes(ruleName).size() + ruleInfos.getGreenSrcEdges(ruleName).size(),
-				ruleInfos.getGreenTrgNodes(ruleName).size() + ruleInfos.getGreenTrgEdges(ruleName).size()
+				getFactory(ruleName).getGreenSrcNodesInRule().size() + getFactory(ruleName).getGreenSrcEdgesInRule().size(),
+				getFactory(ruleName).getGreenTrgNodesInRule().size() + getFactory(ruleName).getGreenTrgEdgesInRule().size()
 		);
 	}
 
@@ -182,8 +183,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	private void collectMatchesForAxioms() {
-		options.tgg().getRules().stream().filter(r -> ruleInfos.isAxiom(r.getName())).forEach(r -> {			
-			addOperationalRuleMatch(r.getName(), new EmptyMatch(r));
+		options.tgg().getRules().stream().filter(r -> getFactory(r.getName()).isAxiom()).forEach(r -> {			
+			addOperationalRuleMatch(r.getName(), new SimpleMatch(GENBlackPattern.getName(r.getName())));
 		});
 	}
 	

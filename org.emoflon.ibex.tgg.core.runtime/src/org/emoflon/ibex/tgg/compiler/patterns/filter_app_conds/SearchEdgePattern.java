@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 
@@ -17,9 +17,9 @@ public class SearchEdgePattern extends IbexBasePattern {
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
-	private PatternFactory factory;
+	private BlackPatternFactory factory;
 	
-	public SearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, PatternFactory factory) {
+	public SearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, BlackPatternFactory factory) {
 		this.entryPoint = entryPoint;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
@@ -50,7 +50,7 @@ public class SearchEdgePattern extends IbexBasePattern {
 	}
 
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

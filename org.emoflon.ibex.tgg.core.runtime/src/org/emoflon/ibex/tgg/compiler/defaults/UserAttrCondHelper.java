@@ -18,8 +18,12 @@ public class UserAttrCondHelper {
 		return result;
 	}
 
-	// TODO[Fritsche]: is genAdornments here correct?
 	public static Collection<String> getAdorments(TGGAttributeConstraintDefinition definition) {
-		return definition.getGenAdornments().stream().map(a -> a.getValue()).map(s -> s.stream().map(st -> st.trim()).reduce("", (a,b) -> a + b)).collect(Collectors.toList());
+		return definition.getGenAdornments().stream()
+				.map(a -> a.getValue())
+				.map(s -> s.stream()
+						.map(st -> st.trim())
+						.reduce("", (a,b) -> a + b))
+				.collect(Collectors.toList());
 	}
 }

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
@@ -15,19 +15,19 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class TrgRefinementsPattern extends IbexBasePattern {
-	private PatternFactory factory;
+	private BlackPatternFactory factory;
 	
-	public TrgRefinementsPattern(PatternFactory factory) {
+	public TrgRefinementsPattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);
 	}
 
-	private void createPatternNetwork(PatternFactory factory) {
-		addPositiveInvocation(factory.create(TrgPattern.class));
+	private void createPatternNetwork(BlackPatternFactory factory) {
+		addPositiveInvocation(factory.createBlackPattern(TrgPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addPositiveInvocation(factory.getFactory(superRule).create(TrgRefinementsPattern.class));
+			addPositiveInvocation(factory.getFactory(superRule).createBlackPattern(TrgRefinementsPattern.class));
 	}
 	
 	private void initialise(TGGRule rule) {
@@ -55,7 +55,7 @@ public class TrgRefinementsPattern extends IbexBasePattern {
 	}
 
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

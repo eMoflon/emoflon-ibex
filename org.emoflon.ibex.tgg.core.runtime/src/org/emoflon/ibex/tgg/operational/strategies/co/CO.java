@@ -2,16 +2,15 @@ package org.emoflon.ibex.tgg.operational.strategies.co;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 
 import org.apache.log4j.BasicConfigurator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
-import org.emoflon.ibex.tgg.operational.util.IMatch;
-import org.emoflon.ibex.tgg.operational.util.IbexOptions;
-import org.emoflon.ibex.tgg.operational.util.RandomKernelMatchUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.updatepolicy.RandomKernelMatchUpdatePolicy;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gurobi.GRB;
@@ -30,7 +29,7 @@ public abstract class CO extends CC {
 	}
 
 	@Override
-	public boolean isPatternRelevant(String patternName) {
+	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.WHOLE);
 	}
 	
@@ -41,24 +40,21 @@ public abstract class CO extends CC {
 	
 	@Override
 	public void run() throws IOException {
-		engine.updateMatches();
-		
+		blackInterpreter.updateMatches();
 		while (processOneOperationalRuleMatch());
-		
 		wrapUp();
 	}
 	
 	@Override
 	protected void wrapUp() {
-		int[] ruleApplications = chooseTGGRuleApplications();
-		
-		  for (int v : ruleApplications) {
-			   IMatch match = idToMatch.get(v < 0 ? -v : v);
-			   HashMap<String, EObject> comatch = matchToCoMatch.get(match);
-			   if (v < 0)
-			    comatch.values().forEach(EcoreUtil::delete);
-		  }
-		  consistencyReporter.init(s, t, c, p, ruleInfos);
+		for (int v : chooseTGGRuleApplications()) {
+			int id = v < 0 ? -v : v;
+			IMatch comatch = idToMatch.get(id);
+			if (v < 0)
+				EcoreUtil.delete(getRuleApplicationNode(comatch));
+		}
+
+		consistencyReporter.initWithCorr(this);
 	}
 		
 	private int[] chooseTGGRuleApplications() {

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
@@ -16,16 +16,16 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class WholeRulePattern extends IbexBasePattern {
-	protected PatternFactory factory;
+	protected BlackPatternFactory factory;
 
-	public WholeRulePattern(PatternFactory factory) {
+	public WholeRulePattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();	
 	}
 	
 	protected void initialise(TGGRule rule) {
-		String name = rule.getName() + PatternSuffixes.WHOLE;
+		String name = getName(rule.getName());
 
 		Collection<TGGRuleNode> signatureNodes = new ArrayList<>(rule.getNodes());
 		
@@ -35,13 +35,17 @@ public class WholeRulePattern extends IbexBasePattern {
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 
+	public static String getName(String ruleName) {
+		return ruleName + PatternSuffixes.WHOLE;
+	}
+
 	protected void createPatternNetwork() {
-		addPositiveInvocation(factory.create(SrcPattern.class));
-		addPositiveInvocation(factory.create(TrgPattern.class));
-		addPositiveInvocation(factory.create(CorrPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(SrcPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(TrgPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(CorrPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addPositiveInvocation(factory.getFactory(superRule).create(WholeRulePattern.class));
+			addPositiveInvocation(factory.getFactory(superRule).createBlackPattern(WholeRulePattern.class));
 	}
 
 	@Override
@@ -50,7 +54,7 @@ public class WholeRulePattern extends IbexBasePattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }
