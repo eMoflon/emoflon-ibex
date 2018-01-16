@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 
@@ -23,6 +24,7 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
 public class MultiAmalgamationUtil {
+	public static final String FUSED = "+++";
 
 	public static void embedKernelConsistencyPatternNodes(TGGComplementRule complementRule, IBlackPattern pattern) {
 		Collection<TGGRuleNode> kernelNodes = complementRule.getKernel().getNodes();
@@ -105,5 +107,23 @@ public class MultiAmalgamationUtil {
 					
 			}
 		}
+	}
+	
+	public static String setFusedName(String complementName, String kernelName) {
+		return complementName + FUSED + kernelName;
+	}
+	
+	public static String getKernelName(String fusedName) {
+		String name = PatternSuffixes.removeSuffix(fusedName);
+		return name.split(FUSED)[1];
+	}
+	
+	public static String getComplementName(String fusedName) {
+		String name = PatternSuffixes.removeSuffix(fusedName);
+		return name.split(FUSED)[0];
+	}
+	
+	public static boolean isFusedPatternMatch(String patternName) {
+		return patternName.contains(FUSED);
 	}
 }

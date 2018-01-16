@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
 import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addComplementOutputAndContextNodes;
 import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addKernelOutputAndContextNodes;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.setFusedName;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,11 +18,11 @@ import language.TGGComplementRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class ComplementBWDPattern extends BasicSyncPattern {
+public class BWDFusedPattern extends BasicSyncPattern {
 	private TGGComplementRule flattenedComplementRule;
 	private BlackPatternFactory factory;
 	
-	public ComplementBWDPattern(BlackPatternFactory factory) {
+	public BWDFusedPattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		assert(factory.getRule() instanceof TGGComplementRule);
 		flattenedComplementRule = (TGGComplementRule)factory.getFlattenedVersionOfRule();
@@ -31,7 +32,7 @@ public class ComplementBWDPattern extends BasicSyncPattern {
 	}
 	
 	protected void initialise() {		
-		String name = flattenedComplementRule.getName() + "_" + flattenedComplementRule.getKernel().getName() + PatternSuffixes.BWD;
+		String name = setFusedName(flattenedComplementRule.getName(), flattenedComplementRule.getKernel().getName()) + PatternSuffixes.BWD;
 		
 		Collection<TGGRuleNode> signatureNodes = new ArrayList<>();
 		addKernelOutputAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.TRG);
