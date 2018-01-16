@@ -10,25 +10,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.tgg.operational.defaults.GreenInterpreter;
+import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -46,13 +44,11 @@ import language.TGG;
 import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
 import language.impl.LanguagePackageImpl;
 import runtime.RuntimeFactory;
-import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
@@ -108,16 +104,12 @@ public abstract class OperationalStrategy {
 		
 		factories = new HashMap<>();
 		
-		greenInterpreter = new GreenInterpreter(this);
+		greenInterpreter = new IbexGreenInterpreter(this);
+		redInterpreter = new IbexRedInterpreter(this);
 	}
 	
 	protected void setModelGen() {
 		options.setModelGen(false);
-	}
-
-	public void registerPatternMatchingEngine(IBlackInterpreter blackInterpreter) throws IOException {
-		//FIXME[Anjorin] Remove this wrapper method eventually and refactor tests
-		registerBlackInterpreter(blackInterpreter);
 	}
 	
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
@@ -137,6 +129,10 @@ public abstract class OperationalStrategy {
 	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
 		this.greenInterpreter = greenInterpreter;
 	}
+	
+	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
+		this.redInterpreter = redInterpreter;
+	}
 
 	protected abstract void registerUserMetamodels() throws IOException;
 
@@ -154,8 +150,12 @@ public abstract class OperationalStrategy {
 	}
 	
 	public void addOperationalRuleMatch(String ruleName, IMatch match) {
-		if(matchIsDomainConform(ruleName, match) && matchIsValidIsomorphism(ruleName, match))
+		if(matchIsDomainConform(ruleName, match) && matchIsValidIsomorphism(ruleName, match)) {
 			operationalMatchContainer.addMatch(ruleName, match);
+			if (options.debug()) logger.debug("Received and added " + match.patternName());
+		} else {
+			if (options.debug()) logger.debug("Received but rejected " + match.patternName());
+		}
 	}
 
 	private boolean matchIsValidIsomorphism(String ruleName, IMatch match) {
@@ -171,10 +171,10 @@ public abstract class OperationalStrategy {
 	private boolean matchIsDomainConform(String ruleName, IMatch match) {
 		if(domainsHaveNoSharedTypes) return true;
 	
-		return matchedNodesAreInCorrectResource(s, getFactory(ruleName).getBlackSrcNodesInRule(), match) &&
-			   matchedNodesAreInCorrectResource(s, getFactory(ruleName).getGreenSrcNodesInRule(), match) &&
-			   matchedNodesAreInCorrectResource(t, getFactory(ruleName).getBlackTrgNodesInRule(), match) &&
-			   matchedNodesAreInCorrectResource(t, getFactory(ruleName).getGreenTrgNodesInRule(), match);
+		return matchedNodesAreInCorrectResource(s, getGreenFactory(ruleName).getBlackSrcNodesInRule(), match) &&
+			   matchedNodesAreInCorrectResource(s, getGreenFactory(ruleName).getGreenSrcNodesInRule(), match) &&
+			   matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getBlackTrgNodesInRule(), match) &&
+			   matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getGreenTrgNodesInRule(), match);
 	}
 	
 	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, IMatch match){
@@ -296,65 +296,32 @@ public abstract class OperationalStrategy {
 		return match;
 	}
 
-	public Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
+	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
 		if(!isPatternRelevantForInterpreter(match.patternName())) {
 			return Optional.empty();
 		}
 		
-		GreenPatternFactory factory = getFactory(ruleName);
+		GreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.patternName());
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);	
 		
 		comatch.ifPresent(cm -> {
 			if (options.debug()) logger.debug("Successfully applied: " + match.patternName());
 			markedAndCreatedEdges.addAll(cm.getCreatedEdges());
-			greenPattern.getEdgesToBeMarked().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
-			if(protocol()) prepareProtocol(ruleName, cm);
+			greenPattern.getEdgesMarkedByPattern().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
+			createMarkers(greenPattern, cm, ruleName);
 		});
 		
 		return comatch;
 	}
 
-	protected void prepareProtocol(String ruleName, IMatch comatch) {
-		RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
-
-		TGGRuleApplication ra = (TGGRuleApplication) EcoreUtil.create(runtimePackage.getTGGRuleApplication());
-		p.getContents().add(ra);
-
-		ra.setName(ruleName);
-
-		fillProtocolInfo(getFactory(ruleName).getGreenSrcNodesInRule(), ra, runtimePackage.getTGGRuleApplication_CreatedSrc(), comatch);
-		fillProtocolInfo(getFactory(ruleName).getGreenTrgNodesInRule(), ra, runtimePackage.getTGGRuleApplication_CreatedTrg(), comatch);
-		fillProtocolInfo(getFactory(ruleName).getGreenCorrNodesInRule(), ra, runtimePackage.getTGGRuleApplication_CreatedCorr(), comatch);
-
-		addProtocolContextEdges(getFactory(ruleName).getBlackSrcNodesInRule(), ra, runtimePackage.getTGGRuleApplication_ContextSrc(), comatch);
-		addProtocolContextEdges(getFactory(ruleName).getBlackTrgNodesInRule(), ra, runtimePackage.getTGGRuleApplication_ContextTrg(), comatch);
-
-		comatch.parameterNames().stream()
-			.filter(n -> !IbexBasePattern.isAttrNode(n))
-			.forEach(n -> ra.getNodeMappings().put(n, (EObject) comatch.get(n)));
-
-		setIsRuleApplicationFinal(ra);
-		comatch.put(ConsistencyPattern.getProtocolNodeName(), ra);
+	protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+		greenPattern.createMarkers(ruleName, comatch);
 	}
 
-	protected void setIsRuleApplicationFinal(TGGRuleApplication ra) {
+	public void setIsRuleApplicationFinal(TGGRuleApplication ra) {
 		ra.setFinal(true);
 	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void fillProtocolInfo(Collection<? extends TGGRuleElement> ruleInfos, TGGRuleApplication protocol, EStructuralFeature feature, IMatch comatch) {
-		ruleInfos.forEach(e -> {
-			((EList) protocol.eGet(feature)).add(comatch.get(e.getName()));
-		});
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void addProtocolContextEdges(Collection<? extends TGGRuleElement> ruleInfos, TGGRuleApplication protocol, EStructuralFeature feature, IMatch match) {
-		ruleInfos.forEach(e -> {
-			((EList) protocol.eGet(feature)).add(match.get(e.getName()));
-		});
-	}	
 	
 	public boolean allEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IMatch match) {
 		for (TGGRuleEdge edge : specificationEdges) {
@@ -390,12 +357,12 @@ public abstract class OperationalStrategy {
 
 	/***** Methods for reacting to broken matches of consistency patterns ******/
 
-	protected TGGRuleApplication getRuleApplicationNode(IMatch match) {
-		return (TGGRuleApplication) match.get("eMoflon_ProtocolNode");
+	public TGGRuleApplication getRuleApplicationNode(IMatch match) {
+		return (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName());
 	}
 	
 	public void addBrokenMatch(IMatch match) {
-		TGGRuleApplication ra = (TGGRuleApplication) match.get("eMoflon_ProtocolNode");
+		TGGRuleApplication ra = getRuleApplicationNode(match);
 		brokenRuleApplications.put(ra, match);
 	}
 
@@ -412,7 +379,7 @@ public abstract class OperationalStrategy {
 		while (!brokenRuleApplications.isEmpty()) {
 			THashSet<TGGRuleApplication> revoked = new THashSet<>();
 			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
-				revokeOperationalRule(ra, brokenRuleApplications.get(ra));
+				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
 				revoked.add(ra);
 			}
 			for (TGGRuleApplication revokedRA : revoked)
@@ -420,77 +387,7 @@ public abstract class OperationalStrategy {
 		}
 	}
 
-	protected void revokeOperationalRule(TGGRuleApplication ruleApplication, IMatch match) {
-		revokeCorrs(ruleApplication);
-		revokeNodes(ruleApplication);
-		revokeEdges(ruleApplication, match);
-		
-		EcoreUtil.delete(ruleApplication);
-	}
-
-	private void revokeEdges(TGGRuleApplication ruleApplication, IMatch match) {
-		revokeEdges(getFactory(ruleApplication.getName()).getGreenSrcEdgesInRule(), match, manipulateSrc());
-		revokeEdges(getFactory(ruleApplication.getName()).getGreenTrgEdgesInRule(), match, manipulateTrg());
-	}
-
-	private void revokeEdges(Collection<TGGRuleEdge> specificationEdges, IMatch match, boolean delete) {
-		specificationEdges.forEach(se -> {
-			RuntimeEdge runtimeEdge = getRuntimeEdge(match, se);
-			markedAndCreatedEdges.remove(runtimeEdge);
-			if (delete)
-				GreenInterpreter.deleteEdge(runtimeEdge.getSrc(), runtimeEdge.getTrg(), runtimeEdge.getRef());
-		});
-	}
-
-	protected void revokeNodes(TGGRuleApplication ra) {
-		revokeNodes(ra.getCreatedSrc(), manipulateSrc());
-		revokeNodes(ra.getCreatedTrg(), manipulateTrg());
-	}
-
-	private void revokeCorrs(TGGRuleApplication ra) {
-		EList<EObject> createdCorr = ra.getCreatedCorr();
-		if(manipulateCorr()) {
-			for(EObject corr : createdCorr) {
-				EStructuralFeature srcFeature = corr.eClass().getEStructuralFeature("source");
-				EStructuralFeature trgFeature = corr.eClass().getEStructuralFeature("target");
-				
-				EObject src = (EObject) corr.eGet(srcFeature);
-				EObject trg = (EObject) corr.eGet(trgFeature);
-				
-				if(isDanglingNode(Optional.ofNullable(src))) addToTrash(src);
-				if(isDanglingNode(Optional.ofNullable(trg))) addToTrash(trg);
-				
-				corr.eUnset(srcFeature);
-				corr.eUnset(trgFeature);
-			}
-		}
-		
-		revokeNodes(createdCorr, manipulateCorr());
-	}
-
-	private void addToTrash(EObject o) {
-		TempContainer c = (TempContainer) trash.getContents().get(0);
-		c.getObjects().add(EcoreUtil.getRootContainer(o));
-	}
-
-	private boolean isDanglingNode(EObject o) {
-		return o.eResource() == null;
-	}
-	
-	private boolean isDanglingNode(Optional<EObject> o) {
-		return o.map(this::isDanglingNode).orElse(false);
-	}
-
-	private void revokeNodes(Collection<EObject> nodes, boolean delete) {
-		if (delete) {
-			for (EObject n : nodes) if(isDanglingNode(n)) addToTrash(n);
-			
-			// Now safe to delete
-			GreenInterpreter.deleteNodes(new THashSet<>(nodes));
-		}
-	}
-
-	private RuntimeEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
+	public RuntimeEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
 		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
 		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
 		EReference ref = specificationEdge.getType();
@@ -521,33 +418,6 @@ public abstract class OperationalStrategy {
 
 	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
 		return runtimeConstraintProvider;
-	}
-
-	protected boolean protocol() {
-		return true;
-	}
-
-	//FIXME[Anjorin] Git rid of these methods as patterns used by their interpreter decide what is to be done
-	@Deprecated
-	abstract protected boolean manipulateSrc();
-	@Deprecated
-	abstract protected boolean manipulateTrg();
-	@Deprecated
-	abstract protected boolean manipulateCorr(); 
-
-	@Deprecated
-	protected boolean markingSrc() {
-		return !manipulateSrc();
-	}
-
-	@Deprecated
-	protected boolean markingTrg() {
-		return !manipulateTrg();
-	}
-
-	@Deprecated
-	protected boolean markingCorr() {
-		return !manipulateCorr();
 	}
 
 	abstract protected void wrapUp();
@@ -596,10 +466,27 @@ public abstract class OperationalStrategy {
 		return updatePolicy;
 	}
 	
-	public GreenPatternFactory getFactory(String ruleName) {
+	public GreenPatternFactory getGreenFactory(String ruleName) {
 		if(!factories.containsKey(ruleName))
 			factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
 
 		return factories.get(ruleName);
+	}
+
+	public void removeCreatedEdge(RuntimeEdge runtimeEdge) {
+		markedAndCreatedEdges.remove(runtimeEdge);
+	}
+	
+	public void removeMarkedEdge(RuntimeEdge runtimeEdge) {
+		markedAndCreatedEdges.remove(runtimeEdge);
+	}
+
+	public void addToTrash(EObject o) {
+		TempContainer c = (TempContainer) trash.getContents().get(0);
+		c.getObjects().add(EcoreUtil.getRootContainer(o));
+	}
+
+	public IGreenPattern revokes(IMatch match) {
+		throw new IllegalStateException("Not clear how to revoke a match of " + match.patternName());
 	}
 }

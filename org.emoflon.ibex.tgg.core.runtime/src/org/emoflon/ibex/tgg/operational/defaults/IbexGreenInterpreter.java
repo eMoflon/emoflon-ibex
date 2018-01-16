@@ -11,9 +11,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
@@ -36,10 +34,10 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
  * @author leblebici Util class for creating EObjects, Edges, and
  *         Correspondences for a given set of green TGGRuleElement
  */
-public class GreenInterpreter implements IGreenInterpreter {
+public class IbexGreenInterpreter implements IGreenInterpreter {
 	private OperationalStrategy operationalStrategy;
 
-	public GreenInterpreter(OperationalStrategy operationalStrategy) {
+	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
 		this.operationalStrategy = operationalStrategy;
 	}
 
@@ -68,50 +66,8 @@ public class GreenInterpreter implements IGreenInterpreter {
 		}
 	}
 
-	public static void deleteNodes(Collection<EObject> elements) {
-		for (EObject eob : elements) {
-			delete(eob);
-		}
-	}
-	
-	// This method is exactly what is in EcoreUtil.delete (apart from the Fixme below)
-	public static void delete(EObject eObject)
-	  {
-	    EObject rootEObject = EcoreUtil.getRootContainer(eObject);
-	    Resource resource = rootEObject.eResource();
-
-	    Collection<EStructuralFeature.Setting> usages;
-	    if (resource == null)
-	    {
-	      usages = UsageCrossReferencer.find(eObject, rootEObject);
-	    }
-	    else
-	    {
-	      ResourceSet resourceSet = resource.getResourceSet();
-	      if (resourceSet == null)
-	      {
-	        usages = UsageCrossReferencer.find(eObject, resource);
-	      }
-	      else
-	      {
-	        usages = UsageCrossReferencer.find(eObject, resourceSet);
-	      }
-	    }
-
-	    for (EStructuralFeature.Setting setting : usages)
-	    {
-	      if (setting.getEStructuralFeature().isChangeable())
-	      {
-	        EcoreUtil.remove(setting, eObject);
-	      }
-	    }
-
-	    //FIXME [Greg] Why doesn't this work?
-	    //EcoreUtil.remove(eObject);
-	  }
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void createEMFEdge(TGGRuleEdge e, EObject src, EObject trg) {
+	private void createEMFEdge(TGGRuleEdge e, EObject src, EObject trg) {
 		EReference ref = e.getType();
 		if (ref.isMany())
 			((EList) src.eGet(ref)).add(trg);
@@ -119,23 +75,7 @@ public class GreenInterpreter implements IGreenInterpreter {
 			src.eSet(ref, trg);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static void deleteEdge(EObject src, EObject trg, EReference ref) {
-		if(src.eResource() == null)
-			return;
-		
-		if (ref.isMany()) {
-			EList list = ((EList) src.eGet(ref));
-			if(list.contains(trg))
-				list.remove(trg);
-		}
-		else {
-			if(src.eGet(ref) != null)
-				src.eUnset(ref);
-		}
-	}
-
-	private static EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
+	private EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
 		EObject newObj = EcoreUtil.create(node.getType());
 		handlePlacementInResource(node, resource, newObj);
 		
@@ -145,7 +85,7 @@ public class GreenInterpreter implements IGreenInterpreter {
 		return newObj;
 	}
 
-	private static void applyAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
+	private void applyAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
 		Collection<String> attributeNames = match.parameterNames().stream()
 			.filter(pname -> { 
 				Optional<Pair<String, String>> o = IbexBasePattern.getNodeAndAttrFromVarName(pname);
@@ -164,7 +104,7 @@ public class GreenInterpreter implements IGreenInterpreter {
 		}
 	}
 
-	private static void applyInPlaceAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
+	private void applyInPlaceAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
 		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
 			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
@@ -189,11 +129,11 @@ public class GreenInterpreter implements IGreenInterpreter {
 		}
 	}
 
-	private static void handlePlacementInResource(TGGRuleNode node, Resource resource, EObject newObj) {
+	private void handlePlacementInResource(TGGRuleNode node, Resource resource, EObject newObj) {
 		resource.getContents().add(newObj);
 	}
 
-	private static EObject createCorr(IMatch comatch, TGGRuleNode node, Object src, Object trg, Resource corrR) {
+	private EObject createCorr(IMatch comatch, TGGRuleNode node, Object src, Object trg, Resource corrR) {
 		EObject corr = createNode(comatch, node, corrR);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
@@ -237,11 +177,11 @@ public class GreenInterpreter implements IGreenInterpreter {
 	}
 	
 	protected boolean someElementsAlreadyProcessed(String ruleName, IGreenPattern greenPattern, IMatch match) {
-		return operationalStrategy.someEdgesAlreadyProcessed(greenPattern.getEdgesToBeMarked(), match);
+		return operationalStrategy.someEdgesAlreadyProcessed(greenPattern.getEdgesMarkedByPattern(), match);
 	}
 
 	protected boolean conformTypesOfGreenNodes(IMatch match, IGreenPattern greenPattern, String ruleName) {
-		for (TGGRuleNode gsn : greenPattern.getNodesToBeMarked()) {
+		for (TGGRuleNode gsn : greenPattern.getNodesMarkedByPattern()) {
 			if (gsn.getType() != ((EObject) match.get(gsn.getName())).eClass())
 				return false;
 		}

@@ -57,8 +57,8 @@ public class GreenPatternFactory {
 				.map(TGGRuleCorr.class::cast)
 				.collect(Collectors.toList());
 		
-		greenSrcEdgesInRule = getEdges(BindingType.CREATE, DomainType.SRC);
-		greenTrgEdgesInRule = getEdges(BindingType.CREATE, DomainType.TRG);
+		greenSrcEdgesInRule = validate(getEdges(BindingType.CREATE, DomainType.SRC));
+		greenTrgEdgesInRule = validate(getEdges(BindingType.CREATE, DomainType.TRG));
 		
 		blackSrcNodesInRule = getNodes(BindingType.CONTEXT, DomainType.SRC);
 		blackTrgNodesInRule = getNodes(BindingType.CONTEXT, DomainType.TRG);
@@ -67,13 +67,22 @@ public class GreenPatternFactory {
 				.map(TGGRuleCorr.class::cast)
 				.collect(Collectors.toList());
 		
-		blackSrcEdgesInRule = getEdges(BindingType.CONTEXT, DomainType.SRC);
-		blackTrgEdgesInRule = getEdges(BindingType.CONTEXT, DomainType.TRG);
+		blackSrcEdgesInRule = validate(getEdges(BindingType.CONTEXT, DomainType.SRC));
+		blackTrgEdgesInRule = validate(getEdges(BindingType.CONTEXT, DomainType.TRG));
 		
 		this.options = options;
 		this.strategy = strategy;
 		
 		patterns = new HashMap<>();
+	}
+
+	private Collection<TGGRuleEdge> validate(Collection<TGGRuleEdge> edges) {
+		for(TGGRuleEdge e : edges) {
+			assert(e.getSrcNode() != null);
+			assert(e.getTrgNode() != null);
+		}
+		
+		return edges;
 	}
 
 	private Collection<TGGRuleNode> getNodes(BindingType bt, DomainType dt) {

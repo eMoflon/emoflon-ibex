@@ -34,11 +34,6 @@ public abstract class CO extends CC {
 	}
 	
 	@Override
-	protected boolean manipulateCorr() {
-		return false;
-	}
-	
-	@Override
 	public void run() throws IOException {
 		blackInterpreter.updateMatches();
 		while (processOneOperationalRuleMatch());

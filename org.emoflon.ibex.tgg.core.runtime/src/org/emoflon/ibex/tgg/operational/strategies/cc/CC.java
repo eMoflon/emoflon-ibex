@@ -14,11 +14,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
-import org.emoflon.ibex.tgg.operational.defaults.GreenInterpreter;
+import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
@@ -90,21 +91,6 @@ public abstract class CC extends OperationalStrategy {
 	
 	public CC(IbexOptions options, IUpdatePolicy policy) {
 		super(options, policy);
-	}
-	
-	@Override
-	protected boolean manipulateSrc() {
-		return false;
-	}
-
-	@Override
-	protected boolean manipulateTrg() {
-		return false;
-	}
-	
-	@Override
-	protected boolean manipulateCorr() {
-		return true;
 	}
 
 	@Override
@@ -259,7 +245,7 @@ public abstract class CC extends OperationalStrategy {
 			int id = v < 0 ? -v : v;
 			IMatch comatch = idToMatch.get(id);
 			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					EcoreUtil.delete((EObject) comatch.get(createdCorr.getName()));
 				
 				EcoreUtil.delete(getRuleApplicationNode(comatch));
@@ -270,20 +256,20 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	@Override
-	protected void setIsRuleApplicationFinal(TGGRuleApplication ra) {
+	public void setIsRuleApplicationFinal(TGGRuleApplication ra) {
 		ra.setFinal(false);
 	}
 
 	@Override
-	protected void prepareProtocol(String ruleName, IMatch comatch) {
+	protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 
 		int weight = 
-				getFactory(ruleName).getGreenSrcEdgesInRule().size() + 
-				getFactory(ruleName).getGreenSrcNodesInRule().size() + 
-				getFactory(ruleName).getGreenTrgEdgesInRule().size() + 
-				getFactory(ruleName).getGreenTrgNodesInRule().size();
+				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
 
 		weights.put(idCounter, weight);
 
@@ -310,7 +296,7 @@ public abstract class CC extends OperationalStrategy {
 
 		idCounter++;
 		
-		super.prepareProtocol(ruleName, comatch);
+		super.createMarkers(greenPattern, comatch, ruleName);
 	}
 
 	private void handleBundles(IMatch comatch, String ruleName) {
@@ -329,17 +315,17 @@ public abstract class CC extends OperationalStrategy {
 
 	private THashSet<EObject> getGreenNodes(IMatch comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
-		result.addAll(getNodes(comatch, getFactory(ruleName).getGreenSrcNodesInRule()));
-		result.addAll(getNodes(comatch, getFactory(ruleName).getGreenTrgNodesInRule()));
-		result.addAll(getNodes(comatch, getFactory(ruleName).getGreenCorrNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenSrcNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenTrgNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenCorrNodesInRule()));
 		return result;
 	}
 
 	private THashSet<EObject> getBlackNodes(IMatch comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
-		result.addAll(getNodes(comatch, getFactory(ruleName).getBlackSrcNodesInRule()));
-		result.addAll(getNodes(comatch, getFactory(ruleName).getBlackTrgNodesInRule()));
-		result.addAll(getNodes(comatch, getFactory(ruleName).getBlackCorrNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackSrcNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackTrgNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackCorrNodesInRule()));
 		return result;
 	}
 
@@ -354,15 +340,15 @@ public abstract class CC extends OperationalStrategy {
 
 	private THashSet<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(((GreenInterpreter)greenInterpreter).createEdges(comatch, getFactory(ruleName).getGreenSrcEdgesInRule(), false));
-		result.addAll(((GreenInterpreter)greenInterpreter).createEdges(comatch, getFactory(ruleName).getGreenTrgEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
 		return result;
 	}
 
 	private THashSet<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(((GreenInterpreter)greenInterpreter).createEdges(comatch, getFactory(ruleName).getBlackSrcEdgesInRule(), false));
-		result.addAll(((GreenInterpreter)greenInterpreter).createEdges(comatch, getFactory(ruleName).getBlackTrgEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
 		return result;
 	}
 

@@ -43,7 +43,7 @@ public class FWDGreenPattern extends IbexGreenPattern {
 	}
 	
 	@Override
-	public Collection<TGGRuleEdge> getEdgesToBeMarked() {
+	public Collection<TGGRuleEdge> getEdgesMarkedByPattern() {
 		return factory.getGreenSrcEdgesInRule();
 	}
 
@@ -53,7 +53,7 @@ public class FWDGreenPattern extends IbexGreenPattern {
 	}
 
 	@Override
-	public Collection<TGGRuleNode> getNodesToBeMarked() {
+	public Collection<TGGRuleNode> getNodesMarkedByPattern() {
 		return factory.getGreenSrcNodesInRule();
 	}
 	
@@ -67,6 +67,6 @@ public class FWDGreenPattern extends IbexGreenPattern {
 	
 	@Override
 	public boolean isToBeIgnored(IMatch match) {
-		return getNodesToBeMarked().isEmpty() && getEdgesToBeMarked().isEmpty();
+		return getNodesMarkedByPattern().isEmpty() && getEdgesMarkedByPattern().isEmpty();
 	}
 }

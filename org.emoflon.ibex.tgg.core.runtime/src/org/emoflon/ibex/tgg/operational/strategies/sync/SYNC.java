@@ -6,6 +6,8 @@ import java.util.List;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.csp.TGGAttributeConstraint;
@@ -17,21 +19,6 @@ public abstract class SYNC extends OperationalStrategy {
 	
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);
-	}
-
-	@Override
-	protected boolean manipulateSrc() {
-		return strategy.manipulateSrc();
-	}
-
-	@Override
-	protected boolean manipulateTrg() {
-		return strategy.manipulateTrg();
-	}
-	
-	@Override
-	protected boolean manipulateCorr() {
-		return strategy.manipulateCorr();
 	}
 	
 	@Override
@@ -82,5 +69,11 @@ public abstract class SYNC extends OperationalStrategy {
 	public void backward() throws IOException {
 		strategy = new BWD_Strategy();
 		run();
+	}
+	
+	@Override
+	public IGreenPattern revokes(IMatch match) {
+		String ruleName = getRuleApplicationNode(match).getName();
+		return strategy.revokes(getGreenFactory(ruleName), match.patternName(), ruleName);
 	}
 }

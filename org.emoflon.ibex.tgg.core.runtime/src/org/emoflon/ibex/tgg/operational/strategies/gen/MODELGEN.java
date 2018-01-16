@@ -161,14 +161,9 @@ public abstract class MODELGEN extends OperationalStrategy {
 	private void updateStopCriterion(String ruleName) {
 		stopCriterion.update(
 				ruleName,
-				getFactory(ruleName).getGreenSrcNodesInRule().size() + getFactory(ruleName).getGreenSrcEdgesInRule().size(),
-				getFactory(ruleName).getGreenTrgNodesInRule().size() + getFactory(ruleName).getGreenTrgEdgesInRule().size()
+				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + getGreenFactory(ruleName).getGreenSrcEdgesInRule().size(),
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size() + getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
 		);
-	}
-
-	@Override
-	protected boolean protocol() {
-		return true;
 	}
 	
 	@Override
@@ -183,24 +178,9 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	private void collectMatchesForAxioms() {
-		options.tgg().getRules().stream().filter(r -> getFactory(r.getName()).isAxiom()).forEach(r -> {			
+		options.tgg().getRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom()).forEach(r -> {			
 			addOperationalRuleMatch(r.getName(), new SimpleMatch(GENBlackPattern.getName(r.getName())));
 		});
-	}
-	
-	@Override
-	protected boolean manipulateSrc() {
-		 return true;	
-	}
-	
-	@Override
-	protected boolean manipulateTrg() {
-		return true;
-	}
-	
-	@Override
-	protected boolean manipulateCorr() {
-		return true;
 	}
 	
 	@Override

@@ -36,7 +36,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 	}
 	
 	protected void initialise(TGGRule rule) {
-		String name = rule.getName() + PatternSuffixes.CONSISTENCY;
+		String name = getName(rule.getName());
 
 		protocolNode = createProtocolNode(rule);
 
@@ -130,5 +130,9 @@ public class ConsistencyPattern extends IbexBasePattern {
 	@Override
 	public BlackPatternFactory getPatternFactory() {
 		return factory;
+	}
+
+	public static String getName(String ruleName) {
+		return ruleName + PatternSuffixes.CONSISTENCY;
 	}
 }
