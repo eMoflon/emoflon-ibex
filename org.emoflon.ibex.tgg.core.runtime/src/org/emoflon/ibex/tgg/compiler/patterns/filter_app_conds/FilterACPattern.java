@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 
 import language.TGGRuleEdge;
@@ -19,10 +19,10 @@ public class FilterACPattern extends IbexBasePattern {
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
-	private IPattern premise;
-	private PatternFactory factory;
+	private IBlackPattern premise;
+	private BlackPatternFactory factory;
 
-	public FilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, PatternFactory factory) {
+	public FilterACPattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, BlackPatternFactory factory) {
 		this.entryPoint = entryPoint;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
@@ -32,7 +32,7 @@ public class FilterACPattern extends IbexBasePattern {
 		createPatternNetwork();
 	}
 	
-	private void initialise(PatternFactory factory) {
+	private void initialise(BlackPatternFactory factory) {
 		String name = factory.getRule().getName() + getPatternNameSuffix(entryPoint, edgeType, eDirection);
 		premise = factory.createSearchEdgePattern(entryPoint, edgeType, eDirection);
 		
@@ -65,7 +65,7 @@ public class FilterACPattern extends IbexBasePattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

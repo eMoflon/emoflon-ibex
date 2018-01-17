@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
@@ -9,21 +9,21 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 import language.DomainType;
 import language.TGGRule;
 
-public class FWDRefinementPattern extends FWDPattern {
+public class FWDRefinementPattern extends FWDBlackPattern {
 
-	public FWDRefinementPattern(PatternFactory factory) {
+	public FWDRefinementPattern(BlackPatternFactory factory) {
 		super(factory);		
 		name = factory.getRule().getName() + PatternSuffixes.FWD_REFINEMENT_INVOCATIONS;
 	}
 	
 	protected void createPatternNetwork() {
-		addPositiveInvocation(factory.create(SrcPattern.class));
-		addPositiveInvocation(factory.create(CorrContextPattern.class));
-		addPositiveInvocation(factory.create(TrgContextPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(SrcPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(CorrContextPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(TrgContextPattern.class));
 		
 		createMarkedInvocations(true, DomainType.SRC);
 
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addPositiveInvocation(factory.getFactory(superRule).create(FWDRefinementPattern.class));
+			addPositiveInvocation(factory.getFactory(superRule).createBlackPattern(FWDRefinementPattern.class));
 	}
 }

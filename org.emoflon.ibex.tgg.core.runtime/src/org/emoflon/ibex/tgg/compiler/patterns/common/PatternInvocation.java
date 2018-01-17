@@ -5,17 +5,17 @@ import java.util.Map;
 import language.TGGRuleNode;
 
 public class PatternInvocation {
-	private IPattern invoking;
-	private IPattern invoked;
+	private IBlackPattern invoking;
+	private IBlackPattern invoked;
 	private Map<TGGRuleNode, TGGRuleNode> mapping;
 	
-	public PatternInvocation(IPattern invoking, IPattern invoked, Map<TGGRuleNode, TGGRuleNode> mappings) {
+	public PatternInvocation(IBlackPattern invoking, IBlackPattern invoked, Map<TGGRuleNode, TGGRuleNode> mappings) {
 		this.invoking = invoking;
 		this.invoked = invoked;
 		this.mapping = mappings;
 	}
 
-	public IPattern getInvokedPattern() {
+	public IBlackPattern getInvokedPattern() {
 		return invoked;
 	}
 

@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.common;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 import language.TGGRule;
@@ -56,7 +56,7 @@ public class NacPattern extends IbexBasePattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return null;
 	}
 }

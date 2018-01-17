@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
@@ -15,9 +15,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class SrcRefinementsPattern extends IbexBasePattern {
-	private PatternFactory factory;
+	private BlackPatternFactory factory;
 	
-	public SrcRefinementsPattern(PatternFactory factory) {
+	public SrcRefinementsPattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);
@@ -37,11 +37,11 @@ public class SrcRefinementsPattern extends IbexBasePattern {
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 
-	private void createPatternNetwork(PatternFactory factory){
-		addPositiveInvocation(factory.create(SrcPattern.class));
+	private void createPatternNetwork(BlackPatternFactory factory){
+		addPositiveInvocation(factory.createBlackPattern(SrcPattern.class));
 		
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addPositiveInvocation(factory.getFactory(superRule).create(SrcRefinementsPattern.class));
+			addPositiveInvocation(factory.getFactory(superRule).createBlackPattern(SrcRefinementsPattern.class));
 	}
 
 	private boolean isSignatureNode(TGGRuleNode node) {
@@ -54,7 +54,7 @@ public class SrcRefinementsPattern extends IbexBasePattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

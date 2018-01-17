@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 import language.TGGRule;
@@ -14,15 +14,15 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class CorrContextPattern extends AbstractCorrPattern {
-	private PatternFactory factory;
+	private BlackPatternFactory factory;
 	
-	public CorrContextPattern(PatternFactory factory) {
+	public CorrContextPattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
 	}
 
-	private void createPatternNetwork(PatternFactory factory) {
+	private void createPatternNetwork(BlackPatternFactory factory) {
 		// Leaf pattern
 	}
 	
@@ -54,7 +54,7 @@ public class CorrContextPattern extends AbstractCorrPattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

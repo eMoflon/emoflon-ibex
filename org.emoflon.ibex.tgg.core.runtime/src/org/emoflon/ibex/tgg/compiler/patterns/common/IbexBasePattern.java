@@ -18,7 +18,7 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public abstract class IbexBasePattern implements IPattern {
+public abstract class IbexBasePattern implements IBlackPattern {
 	protected String name;
 	
 	// These are the nodes that need to be mapped when invoking this pattern
@@ -96,32 +96,32 @@ public abstract class IbexBasePattern implements IPattern {
 		return negativeInvocations;
 	}
 	
-	public void addPositiveInvocation(IPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
+	public void addPositiveInvocation(IBlackPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		positiveInvocations.add(pi);
 	}
 
-	public void addNegativeInvocation(IPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
+	public void addNegativeInvocation(IBlackPattern pattern, Map<TGGRuleNode, TGGRuleNode> mapping) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, mapping);
 		negativeInvocations.add(pi);
 	}
 	
-	public void addPositiveInvocation(IPattern pattern) {
+	public void addPositiveInvocation(IBlackPattern pattern) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, getNameBasedMapping(this, pattern));
 		positiveInvocations.add(pi);
 	}
 
-	public void addNegativeInvocation(IPattern pattern) {
+	public void addNegativeInvocation(IBlackPattern pattern) {
 		PatternInvocation pi = new PatternInvocation(this, pattern, getNameBasedMapping(this, pattern));
 		negativeInvocations.add(pi);
 	}
 	
-	public void addPositiveInvocations(Collection<IPattern> patterns) {
-		for (IPattern p : patterns) addPositiveInvocation(p);
+	public void addPositiveInvocations(Collection<IBlackPattern> patterns) {
+		for (IBlackPattern p : patterns) addPositiveInvocation(p);
 	}
 	
-	public void addNegativeInvocations(Collection<IPattern> patterns) {
-		for (IPattern p : patterns) addNegativeInvocation(p);
+	public void addNegativeInvocations(Collection<IBlackPattern> patterns) {
+		for (IBlackPattern p : patterns) addNegativeInvocation(p);
 	}
 
 	/* Pattern initialisation */
@@ -186,7 +186,7 @@ public abstract class IbexBasePattern implements IPattern {
 	 */
 	abstract protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2);
 	
-	public Map<TGGRuleNode, TGGRuleNode> getNameBasedMapping(IPattern invoker, IPattern invokee) {
+	public Map<TGGRuleNode, TGGRuleNode> getNameBasedMapping(IBlackPattern invoker, IBlackPattern invokee) {
 		Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
 		Collection<TGGRuleNode> preimages = invoker.getAllNodes();
 		Collection<TGGRuleNode> images = invokee.getSignatureNodes();
