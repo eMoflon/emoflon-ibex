@@ -99,8 +99,7 @@ public class InternalGTToIBeXTest {
 		assertEquals(0, ibexPattern.getSignatureNodes().size());
 		assertEdges(gtRule.getGraph().getEdges(), ibexPattern.getLocalEdges());
 
-		assertEquals(0, ibexPattern.getNegativeInvocations().size());
-		assertEquals(0, ibexPattern.getPositiveInvocations().size());
+		assertEquals(0, ibexPattern.getInvocations().size());
 	}
 
 	private static void checkRuleToPattern(final GTRule gtRule) {
@@ -111,7 +110,6 @@ public class InternalGTToIBeXTest {
 		assertEquals(0, ibexPattern.getSignatureNodes().size());
 		assertEquals(0, ibexPattern.getLocalEdges().size());
 
-		assertEquals(0, ibexPattern.getNegativeInvocations().size());
 		assertInvocationsForEdges(gtRule.getGraph().getEdges(), ibexPattern);
 	}
 
@@ -141,7 +139,7 @@ public class InternalGTToIBeXTest {
 	}
 
 	private static void assertInvocationsForEdges(final EList<GTEdge> gtEdges, final IBeXPattern ibexPattern) {
-		assertEquals(gtEdges.size(), ibexPattern.getPositiveInvocations().size());
+		assertEquals(gtEdges.size(), ibexPattern.getInvocations().size());
 		gtEdges.forEach(gtEdge -> {
 			String patternName = "edge-" + gtEdge.getSourceNode().getType().getName() + "-" + gtEdge.getType().getName()
 					+ "-" + gtEdge.getTargetNode().getType().getName();
@@ -153,16 +151,16 @@ public class InternalGTToIBeXTest {
 			assertTrue(sourceNodeOfEdge.isPresent());
 			assertTrue(targetNodeOfEdge.isPresent());
 
-			Optional<IBeXPatternInvocation> ibexPatternInvocation = ibexPattern.getPositiveInvocations().stream() //
-					.filter(invocation -> invocation.getInvoking().getName().equals(patternName)) // correct pattern
+			Optional<IBeXPatternInvocation> ibexPatternInvocation = ibexPattern.getInvocations().stream() //
+					.filter(invocation -> invocation.getInvokedPattern().getName().equals(patternName)) // correct pattern
 					.filter(invocation -> invocation.getMapping().containsKey(sourceNodeOfEdge.get())) // source node
 					.filter(invocation -> invocation.getMapping().containsKey(targetNodeOfEdge.get())) // target node
 					.findAny();
 			assertTrue(ibexPatternInvocation.isPresent());
-
-			assertEquals(0, ibexPatternInvocation.get().getInvoking().getLocalNodes().size());
-			assertEquals(2, ibexPatternInvocation.get().getInvoking().getSignatureNodes().size());
-			assertEquals(1, ibexPatternInvocation.get().getInvoking().getLocalEdges().size());
+			assertTrue(ibexPatternInvocation.get().isPositive());
+			assertEquals(0, ibexPatternInvocation.get().getInvokedPattern().getLocalNodes().size());
+			assertEquals(2, ibexPatternInvocation.get().getInvokedPattern().getSignatureNodes().size());
+			assertEquals(1, ibexPatternInvocation.get().getInvokedPattern().getLocalEdges().size());
 
 			assertEquals(ibexPattern, ibexPatternInvocation.get().getInvokedBy());
 

@@ -78,6 +78,8 @@ public class InternalGTToIBeX {
 								.forEach(gtEdge -> {
 									IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE
 											.createIBeXPatternInvocation();
+									invocation.setPositive(true);
+
 									Optional<IBeXNode> ibexLocalSourceNode = findIBeXNodeWithName(ibexPattern,
 											gtEdge.getSourceNode().getName());
 									Optional<IBeXNode> ibexLocalTargetNode = findIBeXNodeWithName(ibexPattern,
@@ -85,17 +87,16 @@ public class InternalGTToIBeX {
 
 									if (!ibexLocalSourceNode.isPresent()) {
 										throw new IllegalStateException(
-												"Node " + gtEdge.getSourceNode().getName() + " doesn't exist");
+												"Could not find node " + gtEdge.getSourceNode().getName() + "!");
 									}
 									if (!ibexLocalTargetNode.isPresent()) {
 										throw new IllegalStateException(
-												"Node " + gtEdge.getTargetNode().getName() + " doesn't exist");
+												"Could not find node " + gtEdge.getTargetNode().getName() + "!");
 									}
 									invocation.getMapping().put(ibexLocalSourceNode.get(), ibexSignatureSourceNode);
 									invocation.getMapping().put(ibexLocalTargetNode.get(), ibexSignatureTargetNode);
-									invocation.setInvokedBy(ibexPattern);
-									invocation.setInvoking(edgePattern);
-									ibexPattern.getPositiveInvocations().add(invocation);
+									invocation.setInvokedPattern(edgePattern);
+									ibexPattern.getInvocations().add(invocation);
 								});
 					});
 		} else {
