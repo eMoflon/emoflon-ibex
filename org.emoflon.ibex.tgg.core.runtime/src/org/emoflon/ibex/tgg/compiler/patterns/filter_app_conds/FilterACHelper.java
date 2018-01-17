@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 
 import language.BindingType;
 import language.DomainType;
@@ -36,7 +36,6 @@ public class FilterACHelper {
 		return rule.getNodes().stream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection, findRescuePattern, mode)).max((t1, t2) -> Integer.compare(t1.getLeft(),  t2.getLeft())).orElseGet(() -> new Triple<Integer, TGGRuleNode, TGGRuleNode>(0, null, null));
 	}
 
-	// TODO[Fritsche] can be merged into the upper method
 	public static Triple<Integer, TGGRuleNode, TGGRuleNode> countEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
 		return eDirection == EdgeDirection.INCOMING ? countIncomingEdgeInRule(rule, edgeType, findRescuePattern, mode) : countOutgoingEdgeInRule(rule, edgeType, findRescuePattern, mode);
 	}
@@ -154,7 +153,7 @@ public class FilterACHelper {
 				.filter(r -> r.getEType().equals(nodeClass) || r.eContainer().equals(nodeClass)).collect(Collectors.toList());
 	}
 
-	protected static TGGRuleNode getDECNode(IPattern p) {
+	protected static TGGRuleNode getDECNode(IBlackPattern p) {
 		return p.getAllNodes().stream().filter(n -> n.getName().endsWith(DEC_NODE)).findFirst().get();
 	}
 }

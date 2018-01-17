@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.SrcRefinementsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.TrgRefinementsPattern;
@@ -25,10 +25,10 @@ import language.TGGRuleNode;
 
 public class ForbidAllFilterACsPattern extends IbexBasePattern {
 	protected DomainType domain;
-	protected PatternFactory factory;
+	protected BlackPatternFactory factory;
 	protected IbexPatternOptimiser optimiser;
 
-	public ForbidAllFilterACsPattern(DomainType domain, PatternFactory factory) {
+	public ForbidAllFilterACsPattern(DomainType domain, BlackPatternFactory factory) {
 		this.factory = factory;
 		this.domain = domain;
 		optimiser = new IbexPatternOptimiser();
@@ -55,11 +55,11 @@ public class ForbidAllFilterACsPattern extends IbexBasePattern {
 		
 		switch (domain) {
 		case SRC:
-			addPositiveInvocation(factory.create(SrcRefinementsPattern.class));			
+			addPositiveInvocation(factory.createBlackPattern(SrcRefinementsPattern.class));			
 			break;
 
 		case TRG:
-			addPositiveInvocation(factory.create(TrgRefinementsPattern.class));			
+			addPositiveInvocation(factory.createBlackPattern(TrgRefinementsPattern.class));			
 			break;
 			
 		default:
@@ -68,7 +68,7 @@ public class ForbidAllFilterACsPattern extends IbexBasePattern {
 	}
 
 	private void addDECPatternsAsTGGNegativeInvocations(TGGRule rule, DomainType domain) {
-		final Collection<IPattern> filterNACs = new ArrayList<>();
+		final Collection<IBlackPattern> filterNACs = new ArrayList<>();
 		
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
@@ -93,7 +93,7 @@ public class ForbidAllFilterACsPattern extends IbexBasePattern {
 		}
 		
 		// Use optimiser to remove some of the filter NACs
-		final Collection<IPattern> optimisedFilterNACs = filterNACs.stream()
+		final Collection<IBlackPattern> optimisedFilterNACs = filterNACs.stream()
 							   .filter(nac -> !optimiser.isRedundantDueToEMFContainmentSemantics(nac))
 							   .collect(Collectors.toList());
 		
@@ -148,7 +148,7 @@ public class ForbidAllFilterACsPattern extends IbexBasePattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,13 +14,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
-import org.emoflon.ibex.tgg.operational.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
-import org.emoflon.ibex.tgg.operational.util.IMatch;
-import org.emoflon.ibex.tgg.operational.util.IUpdatePolicy;
-import org.emoflon.ibex.tgg.operational.util.IbexOptions;
-import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
+import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 import com.google.common.collect.Sets;
 
@@ -38,6 +40,7 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import language.TGGComplementRule;
+import language.TGGRuleCorr;
 import language.TGGRuleNode;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
@@ -52,8 +55,6 @@ public abstract class CC extends OperationalStrategy {
 	protected TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 
 	private TIntIntHashMap weights = new TIntIntHashMap();
-
-	protected THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
 
 	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
 			new RuntimeEdgeHashingStrategy());
@@ -91,21 +92,6 @@ public abstract class CC extends OperationalStrategy {
 	public CC(IbexOptions options, IUpdatePolicy policy) {
 		super(options, policy);
 	}
-	
-	@Override
-	protected boolean manipulateSrc() {
-		return false;
-	}
-
-	@Override
-	protected boolean manipulateTrg() {
-		return false;
-	}
-	
-	@Override
-	protected boolean manipulateCorr() {
-		return true;
-	}
 
 	@Override
 	public void loadModels() throws IOException {
@@ -124,7 +110,7 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	@Override
-	public boolean isPatternRelevant(String patternName) {
+	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.CC);
 	}
 	
@@ -145,15 +131,18 @@ public abstract class CC extends OperationalStrategy {
 		if(ruleName == null)
 			return true;  //FIXME[Anjorin]:  This should be avoided (all matches that do not correspond to rules should be filtered)
 		
-		HashMap<String, EObject> comatch = processOperationalRuleMatch(ruleName, match);
-		if (comatch != null && isKernelMatch(ruleName))
-			processComplementRuleMatches(comatch);
+		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+		comatch.ifPresent(cm -> {
+			if (isKernelMatch(ruleName))
+				processComplementRuleMatches(cm);
+		});
+		
 		removeOperationalRuleMatch(match);
 		return true;
 	}
 	
-	private void processComplementRuleMatches(HashMap<String, EObject> comatch) {
-		engine.updateMatches();
+	private void processComplementRuleMatches(IMatch comatch) {
+		blackInterpreter.updateMatches();
 		int kernelMatchID = idToMatch.size();
 		Set<IMatch> contextRuleMatches = findAllComplementRuleContextMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
@@ -252,50 +241,45 @@ public abstract class CC extends OperationalStrategy {
 
 	@Override
 	protected void wrapUp() {
-		  for (int v : chooseTGGRuleApplications()) {
-			   IMatch match = idToMatch.get(v < 0 ? -v : v);
-			   HashMap<String, EObject> comatch = matchToCoMatch.get(match);
-			   if (v < 0)
-			    comatch.values().forEach(EcoreUtil::delete);
-		  }
-		  consistencyReporter.init(s, t, p, ruleInfos);
+		for (int v : chooseTGGRuleApplications()) {
+			int id = v < 0 ? -v : v;
+			IMatch comatch = idToMatch.get(id);
+			if (v < 0) {
+				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+					EcoreUtil.delete((EObject) comatch.get(createdCorr.getName()));
+				
+				EcoreUtil.delete(getRuleApplicationNode(comatch));
+			}
+		}
+
+		consistencyReporter.init(this);
 	}
 
 	@Override
-	protected boolean allContextElementsalreadyProcessed(IMatch match, String ruleName) {
-		return true;
-	}
-
-	@Override
-	protected boolean someElementsAlreadyProcessed(String ruleName, IMatch match) {
-		return false;
-	}
-
-	@Override
-	protected void setIsRuleApplicationFinal(TGGRuleApplication ra) {
+	public void setIsRuleApplicationFinal(TGGRuleApplication ra) {
 		ra.setFinal(false);
 	}
 
 	@Override
-	protected void prepareProtocol(String ruleName, IMatch match, HashMap<String, EObject> comatch) {
-
-		idToMatch.put(idCounter, match);
+	protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 
-		int weight = ruleInfos.getGreenSrcEdges(ruleName).size() + ruleInfos.getGreenSrcNodes(ruleName).size()
-				+ ruleInfos.getGreenTrgEdges(ruleName).size() + ruleInfos.getGreenTrgNodes(ruleName).size();
+		int weight = 
+				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
 
 		weights.put(idCounter, weight);
 
-		matchToCoMatch.put(match, comatch);
-
-		getGreenNodes(match, comatch, ruleName).forEach(e -> {
+		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
 				nodeToMarkingMatches.put(e, new TIntHashSet());
 			nodeToMarkingMatches.get(e).add(idCounter);
 		});
 
-		getGreenEdges(match, comatch, ruleName).forEach(e -> {
+		getGreenEdges(comatch, ruleName).forEach(e -> {
 			if (!edgeToMarkingMatches.containsKey(e)) {
 				edgeToMarkingMatches.put(e, new TIntHashSet());
 			}
@@ -303,19 +287,19 @@ public abstract class CC extends OperationalStrategy {
 		});
 
 		matchToContextNodes.put(idCounter, new THashSet<>());
-		matchToContextNodes.get(idCounter).addAll(getBlackNodes(match, comatch, ruleName));
+		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
 
 		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
-		matchToContextEdges.get(idCounter).addAll(getBlackEdges(match, comatch, ruleName));
+		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 		
-		handleBundles(match, comatch, ruleName);
+		handleBundles(comatch, ruleName);
 
 		idCounter++;
 		
-		super.prepareProtocol(ruleName, match, comatch);
+		super.createMarkers(greenPattern, comatch, ruleName);
 	}
 
-	private void handleBundles(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private void handleBundles(IMatch comatch, String ruleName) {
 		if(!(getRule(ruleName) instanceof TGGComplementRule)) {
 			Bundle appliedBundle = new Bundle(idCounter);
 			appliedBundles.add(appliedBundle);
@@ -325,46 +309,46 @@ public abstract class CC extends OperationalStrategy {
 		lastAppliedBundle.addMatch(idCounter);
 		
 		// add context nodes and edges of this concrete match to its bundle
-		lastAppliedBundle.addBundleContextNodes(getBlackNodes(match, comatch, ruleName));
-		lastAppliedBundle.addBundleContextEdges(getBlackEdges(match, comatch, ruleName));
+		lastAppliedBundle.addBundleContextNodes(getBlackNodes(comatch, ruleName));
+		lastAppliedBundle.addBundleContextEdges(getBlackEdges(comatch, ruleName));
 	}
 
-	private THashSet<EObject> getGreenNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<EObject> getGreenNodes(IMatch comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
-		result.addAll(getNodes(match, comatch, ruleInfos.getGreenSrcNodes(ruleName)));
-		result.addAll(getNodes(match, comatch, ruleInfos.getGreenTrgNodes(ruleName)));
-		result.addAll(getNodes(match, comatch, ruleInfos.getGreenCorrNodes(ruleName)));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenSrcNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenTrgNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenCorrNodesInRule()));
 		return result;
 	}
 
-	private THashSet<EObject> getBlackNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<EObject> getBlackNodes(IMatch comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
-		result.addAll(getNodes(match, comatch, ruleInfos.getBlackSrcNodes(ruleName)));
-		result.addAll(getNodes(match, comatch, ruleInfos.getBlackTrgNodes(ruleName)));
-		result.addAll(getNodes(match, comatch, ruleInfos.getBlackCorrNodes(ruleName)));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackSrcNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackTrgNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackCorrNodesInRule()));
 		return result;
 	}
 
-	private THashSet<EObject> getNodes(IMatch match, HashMap<String, EObject> comatch,
+	private THashSet<EObject> getNodes(IMatch comatch,
 			Collection<? extends TGGRuleNode> specNodes) {
 		THashSet<EObject> result = new THashSet<>();
 		specNodes.forEach(n -> {
-			result.add(ManipulationUtil.getVariableByName(n.getName(), comatch, match));
+			result.add((EObject) comatch.get(n.getName()));
 		});
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getGreenEdges(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenSrcEdges(ruleName), false));
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenTrgEdges(ruleName), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getBlackEdges(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getBlackSrcEdges(ruleName), false));
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getBlackTrgEdges(ruleName), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
 		return result;
 	}
 

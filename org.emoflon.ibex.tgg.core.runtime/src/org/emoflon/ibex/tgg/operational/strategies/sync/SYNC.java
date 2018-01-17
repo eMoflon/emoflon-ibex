@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.operational.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.util.IbexOptions;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
@@ -18,21 +20,6 @@ public abstract class SYNC extends OperationalStrategy {
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);
 	}
-
-	@Override
-	protected boolean manipulateSrc() {
-		return strategy.manipulateSrc();
-	}
-
-	@Override
-	protected boolean manipulateTrg() {
-		return strategy.manipulateTrg();
-	}
-	
-	@Override
-	protected boolean manipulateCorr() {
-		return strategy.manipulateCorr();
-	}
 	
 	@Override
 	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
@@ -40,10 +27,15 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	@Override
-	public boolean isPatternRelevant(String patternName) {
+	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.BWD) 
 			|| patternName.endsWith(PatternSuffixes.FWD)
 			|| patternName.endsWith(PatternSuffixes.CONSISTENCY);
+	}
+	
+	@Override
+	public boolean isPatternRelevantForInterpreter(String patternName) {
+		return strategy.isPatternRelevantForInterpreter(patternName);
 	}
 
 	@Override
@@ -77,5 +69,11 @@ public abstract class SYNC extends OperationalStrategy {
 	public void backward() throws IOException {
 		strategy = new BWD_Strategy();
 		run();
+	}
+	
+	@Override
+	public IGreenPattern revokes(IMatch match) {
+		String ruleName = getRuleApplicationNode(match).getName();
+		return strategy.revokes(getGreenFactory(ruleName), match.patternName(), ruleName);
 	}
 }

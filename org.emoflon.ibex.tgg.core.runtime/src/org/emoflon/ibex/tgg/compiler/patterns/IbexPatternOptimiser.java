@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -109,7 +109,7 @@ public class IbexPatternOptimiser {
 	 * @return true if e either does not have an eOpposite in the body edges, or
 	 *         if it has an eOpposite but it is alphabetically "larger" than it.
 	 */
-	public boolean retainAsOpposite(TGGRuleEdge edge, IPattern ibexPattern) {
+	public boolean retainAsOpposite(TGGRuleEdge edge, IBlackPattern ibexPattern) {
 		EReference eOpposite = edge.getType().getEOpposite();
 		
 		// No eOpposite possible anyway
@@ -142,10 +142,10 @@ public class IbexPatternOptimiser {
 	 * @param filterNAC
 	 * @return true if filter NAC is redundant
 	 */
-	public boolean isRedundantDueToEMFContainmentSemantics(IPattern filterNAC) {
+	public boolean isRedundantDueToEMFContainmentSemantics(IBlackPattern filterNAC) {
 		// Premise is the only positive invocation
 		assert(filterNAC.getPositiveInvocations().size() == 1);
-		IPattern premise = premise(filterNAC);
+		IBlackPattern premise = premise(filterNAC);
 		
 		// Check for expected structure:  three nodes and two edges
 		if(premise.getLocalNodes().size() == 3 && premise.getLocalEdges().size() == 2){
@@ -173,8 +173,8 @@ public class IbexPatternOptimiser {
 	 * @param allFilterNACs
 	 * @return filter NACs that can be safely ignored
 	 */
-	public Collection<IPattern> ignoreDueToEOppositeSemantics(Collection<IPattern> allFilterNACs) {
-		List<IPattern> candidates = allFilterNACs
+	public Collection<IBlackPattern> ignoreDueToEOppositeSemantics(Collection<IBlackPattern> allFilterNACs) {
+		List<IBlackPattern> candidates = allFilterNACs
 			.stream()
 			.filter(nac -> nac.getPositiveInvocations().size() == 1)
 			.filter(nac -> premiseHasTwoNodesAndOneEdge(nac.getPositiveInvocations().iterator().next().getInvokedPattern()))
@@ -188,7 +188,7 @@ public class IbexPatternOptimiser {
 				.collect(Collectors.toList());
 	}
 
-	private boolean isGreaterEOpposite(IPattern premise1, IPattern premise2) {
+	private boolean isGreaterEOpposite(IBlackPattern premise1, IBlackPattern premise2) {
 		TGGRuleEdge e1 = premise1.getLocalEdges().iterator().next();
 		TGGRuleEdge e2 = premise2.getLocalEdges().iterator().next();
 		
@@ -202,11 +202,11 @@ public class IbexPatternOptimiser {
 		return false;
 	}
 
-	private IPattern premise(IPattern nac) {
+	private IBlackPattern premise(IBlackPattern nac) {
 		return nac.getPositiveInvocations().iterator().next().getInvokedPattern();
 	}
 
-	private boolean premiseHasTwoNodesAndOneEdge(IPattern premise) {
+	private boolean premiseHasTwoNodesAndOneEdge(IBlackPattern premise) {
 		return premise.getLocalNodes().size() == 2 && premise.getLocalEdges().size() == 1;
 	}
 	

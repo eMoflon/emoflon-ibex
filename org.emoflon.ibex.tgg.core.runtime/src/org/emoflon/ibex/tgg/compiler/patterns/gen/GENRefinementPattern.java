@@ -1,14 +1,14 @@
 package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil.embedKernelConsistencyPatternNodes;
-import static org.emoflon.ibex.tgg.compiler.patterns.MultiAmalgamationUtil.isComplementRule;
-import static org.emoflon.ibex.tgg.compiler.patterns.RuleRefinementUtil.checkInjectivityInSubRule;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.embedKernelConsistencyPatternNodes;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.isComplementRule;
+import static org.emoflon.ibex.tgg.util.RuleRefinementUtil.checkInjectivityInSubRule;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
@@ -23,9 +23,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class GENRefinementPattern extends IbexBasePattern {
-	private PatternFactory factory;
+	private BlackPatternFactory factory;
 	
-	public GENRefinementPattern(PatternFactory factory) {
+	public GENRefinementPattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);	
@@ -52,18 +52,18 @@ public class GENRefinementPattern extends IbexBasePattern {
 		return n.getBindingType() == BindingType.CONTEXT;
 	}
 
-	protected void createPatternNetwork(PatternFactory factory) {
-		addPositiveInvocation(factory.create(SrcContextPattern.class));
-		addPositiveInvocation(factory.create(CorrContextPattern.class));
-		addPositiveInvocation(factory.create(TrgContextPattern.class));
+	protected void createPatternNetwork(BlackPatternFactory factory) {
+		addPositiveInvocation(factory.createBlackPattern(SrcContextPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(CorrContextPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(TrgContextPattern.class));
 		
 		if (isComplementRule(factory.getRule())) { 
 			TGGComplementRule compRule = (TGGComplementRule) factory.getRule();
-			addPositiveInvocation(factory.getFactory(compRule.getKernel()).create(ConsistencyPattern.class));
+			addPositiveInvocation(factory.getFactory(compRule.getKernel()).createBlackPattern(ConsistencyPattern.class));
 		}
 			
 		for (TGGRule superRule : factory.getRule().getRefines())
-			addPositiveInvocation(factory.getFactory(superRule).create(GENRefinementPattern.class));
+			addPositiveInvocation(factory.getFactory(superRule).createBlackPattern(GENRefinementPattern.class));
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class GENRefinementPattern extends IbexBasePattern {
 	}
 	
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 }
