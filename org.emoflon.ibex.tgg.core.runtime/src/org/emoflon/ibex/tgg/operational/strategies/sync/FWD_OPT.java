@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.sync_opt;
+package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,15 +15,15 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.cc.Bundle;
 import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
 import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
-import org.emoflon.ibex.tgg.operational.util.IMatch;
-import org.emoflon.ibex.tgg.operational.util.IbexOptions;
-import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 
 import com.google.common.collect.Sets;
 
@@ -44,7 +44,7 @@ import gurobi.GRBVar;
 import language.TGGComplementRule;
 import language.TGGRuleNode;
 
-public abstract class SYNC extends org.emoflon.ibex.tgg.operational.strategies.sync.SYNC {
+public abstract class FWD_OPT extends SYNC {
 
 	protected TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
 	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
@@ -63,7 +63,7 @@ public abstract class SYNC extends org.emoflon.ibex.tgg.operational.strategies.s
 	protected TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 	protected int idCounter = 1;
 	
-	public SYNC(IbexOptions options) throws IOException {
+	public FWD_OPT(IbexOptions options) throws IOException {
 		super(options);
 	}
 	
@@ -103,13 +103,13 @@ public abstract class SYNC extends org.emoflon.ibex.tgg.operational.strategies.s
 			   if (v < 0)
 			    comatch.values().forEach(EcoreUtil::delete);
 		  }
-		  consistencyReporter.init(s, t, p, ruleInfos);
+		  consistencyReporter.init(this);
 	}
 	
-	@Override
+	/*@Override
 	public boolean isPatternRelevant(String patternName) {
 		return patternName.endsWith(PatternSuffixes.FWD_OPT);
-	}
+	}*/
 
 	protected TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
 		TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<>();
@@ -320,7 +320,7 @@ public abstract class SYNC extends org.emoflon.ibex.tgg.operational.strategies.s
 		return null;
 	}
 	
-	private void handleBundles(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private void handleBundles(IMatch comatch, String ruleName) {
 		if(!(getRule(ruleName) instanceof TGGComplementRule)) {
 			Bundle appliedBundle = new Bundle(idCounter);
 			appliedBundles.add(appliedBundle);
@@ -330,69 +330,69 @@ public abstract class SYNC extends org.emoflon.ibex.tgg.operational.strategies.s
 		lastAppliedBundle.addMatch(idCounter);
 		
 		// add context nodes and edges of this concrete match to its bundle
-		lastAppliedBundle.addBundleContextNodes(getBlackNodes(match, comatch, ruleName));
-		lastAppliedBundle.addBundleContextEdges(getBlackEdges(match, comatch, ruleName));
+		lastAppliedBundle.addBundleContextNodes(getBlackNodes(comatch, ruleName));
+		lastAppliedBundle.addBundleContextEdges(getBlackEdges(comatch, ruleName));
 	}
 
-	private THashSet<EObject> getGreenNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<EObject> getGreenNodes(IMatch comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
-		result.addAll(getNodes(match, comatch, ruleInfos.getGreenSrcNodes(ruleName)));
-		result.addAll(getNodes(match, comatch, ruleInfos.getGreenTrgNodes(ruleName)));
-		result.addAll(getNodes(match, comatch, ruleInfos.getGreenCorrNodes(ruleName)));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenSrcNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenTrgNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenCorrNodesInRule()));
 		return result;
 	}
 
-	private THashSet<EObject> getBlackNodes(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<EObject> getBlackNodes(IMatch comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
-		result.addAll(getNodes(match, comatch, ruleInfos.getBlackSrcNodes(ruleName)));
-		result.addAll(getNodes(match, comatch, ruleInfos.getBlackTrgNodes(ruleName)));
-		result.addAll(getNodes(match, comatch, ruleInfos.getBlackCorrNodes(ruleName)));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackSrcNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackTrgNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackCorrNodesInRule()));
 		return result;
 	}
 
-	private THashSet<EObject> getNodes(IMatch match, HashMap<String, EObject> comatch,
+	private THashSet<EObject> getNodes(IMatch comatch,
 			Collection<? extends TGGRuleNode> specNodes) {
 		THashSet<EObject> result = new THashSet<>();
 		specNodes.forEach(n -> {
-			result.add(ManipulationUtil.getVariableByName(n.getName(), comatch, match));
+			result.add((EObject) comatch.get(n.getName()));
 		});
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getGreenEdges(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenSrcEdges(ruleName), false));
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getGreenTrgEdges(ruleName), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getBlackEdges(IMatch match, HashMap<String, EObject> comatch, String ruleName) {
+	private THashSet<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getBlackSrcEdges(ruleName), false));
-		result.addAll(ManipulationUtil.createEdges(match, comatch, ruleInfos.getBlackTrgEdges(ruleName), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
 		return result;
 	}
 	
 	@Override
-	protected void prepareProtocol(String ruleName, IMatch match, HashMap<String, EObject> comatch) {
-
-		idToMatch.put(idCounter, match);
+	protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 
-		int weight = ruleInfos.getGreenSrcEdges(ruleName).size() + ruleInfos.getGreenSrcNodes(ruleName).size()
-				+ ruleInfos.getGreenTrgEdges(ruleName).size() + ruleInfos.getGreenTrgNodes(ruleName).size();
+		int weight = 
+				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
 
 		weights.put(idCounter, weight);
 
-		matchToCoMatch.put(match, comatch);
-
-		getGreenNodes(match, comatch, ruleName).forEach(e -> {
+		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
 				nodeToMarkingMatches.put(e, new TIntHashSet());
 			nodeToMarkingMatches.get(e).add(idCounter);
 		});
 
-		getGreenEdges(match, comatch, ruleName).forEach(e -> {
+		getGreenEdges(comatch, ruleName).forEach(e -> {
 			if (!edgeToMarkingMatches.containsKey(e)) {
 				edgeToMarkingMatches.put(e, new TIntHashSet());
 			}
@@ -400,16 +400,16 @@ public abstract class SYNC extends org.emoflon.ibex.tgg.operational.strategies.s
 		});
 
 		matchToContextNodes.put(idCounter, new THashSet<>());
-		matchToContextNodes.get(idCounter).addAll(getBlackNodes(match, comatch, ruleName));
+		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
 
 		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
-		matchToContextEdges.get(idCounter).addAll(getBlackEdges(match, comatch, ruleName));
+		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 		
-		handleBundles(match, comatch, ruleName);
+		handleBundles(comatch, ruleName);
 
 		idCounter++;
 		
-		super.prepareProtocol(ruleName, match, comatch);
+		super.createMarkers(greenPattern, comatch, ruleName);
 	}
 	
 	@Override
@@ -418,3 +418,4 @@ public abstract class SYNC extends org.emoflon.ibex.tgg.operational.strategies.s
 		super.run();
 	}
 }
+

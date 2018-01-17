@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 
@@ -14,11 +14,11 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class FWDOptPattern extends BasicSyncPattern {
+public class FWDOptBlackPattern extends BasicSyncPattern {
 
-	protected PatternFactory factory;
+	protected BlackPatternFactory factory;
 
-	public FWDOptPattern(PatternFactory factory) {
+	public FWDOptBlackPattern(BlackPatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();
@@ -39,10 +39,10 @@ public class FWDOptPattern extends BasicSyncPattern {
 	
 	protected void createPatternNetwork() {
 		// Rule Patterns
-		addPositiveInvocation(factory.create(FWDRefinementOptPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(FWDRefinementOptPattern.class));
 
 		// FilterNACs
-		if(PatternFactory.strategy != FilterACStrategy.NONE)
+		if(BlackPatternFactory.strategy != FilterACStrategy.NONE)
 			addFilterNACPatterns(DomainType.SRC, factory, optimiser);
 	}
 
@@ -56,7 +56,7 @@ public class FWDOptPattern extends BasicSyncPattern {
 	}
 
 	@Override
-	public PatternFactory getPatternFactory() {
+	public BlackPatternFactory getPatternFactory() {
 		return factory;
 	}
 	
