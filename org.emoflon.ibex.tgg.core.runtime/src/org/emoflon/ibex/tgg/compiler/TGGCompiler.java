@@ -15,6 +15,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ComplementBWDPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ComplementFWDPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDPattern;
 import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 
@@ -51,6 +52,7 @@ public class TGGCompiler {
 			// Synchronisation
 			factory.create(FWDPattern.class);
 			factory.create(BWDPattern.class);
+			factory.create(FWDOptPattern.class);
 			if (rule instanceof TGGComplementRule) {
 				factory.create(ComplementBWDPattern.class);
 				factory.create(ComplementFWDPattern.class);

@@ -14,17 +14,18 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class FWDPattern extends BasicSyncPattern {
+public class FWDOptPattern extends BasicSyncPattern {
+
 	protected PatternFactory factory;
 
-	public FWDPattern(PatternFactory factory) {
+	public FWDOptPattern(PatternFactory factory) {
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();
 	}
 
 	protected void initialise(TGGRule rule) {
-		String name = rule.getName() + PatternSuffixes.FWD;
+		String name = rule.getName() + PatternSuffixes.FWD_OPT;
 
 		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
 				   .filter(this::isSignatureNode)
@@ -38,18 +39,11 @@ public class FWDPattern extends BasicSyncPattern {
 	
 	protected void createPatternNetwork() {
 		// Rule Patterns
-		addPositiveInvocation(factory.create(FWDRefinementPattern.class));
-		
-		// Marked Patterns
-		createMarkedInvocations(false, DomainType.SRC);
+		addPositiveInvocation(factory.create(FWDRefinementOptPattern.class));
 
 		// FilterNACs
 		if(PatternFactory.strategy != FilterACStrategy.NONE)
 			addFilterNACPatterns(DomainType.SRC, factory, optimiser);
-		
-		// NACs
-		addNegativeInvocations(collectGeneratedNACs(factory, DomainType.SRC, DomainType.TRG));
-		addNegativeInvocations(factory.createPatternsForUserDefinedTargetNACs());
 	}
 
 	protected boolean isSignatureNode(TGGRuleNode n) {
@@ -65,5 +59,5 @@ public class FWDPattern extends BasicSyncPattern {
 	public PatternFactory getPatternFactory() {
 		return factory;
 	}
-
+	
 }

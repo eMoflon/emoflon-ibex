@@ -21,7 +21,9 @@ import org.emoflon.ibex.tgg.operational.strategies.cc.Bundle;
 import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
 import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.util.IMatch;
+import org.emoflon.ibex.tgg.operational.util.IbexOptions;
 import org.emoflon.ibex.tgg.operational.util.ManipulationUtil;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 import com.google.common.collect.Sets;
 
@@ -42,7 +44,7 @@ import gurobi.GRBVar;
 import language.TGGComplementRule;
 import language.TGGRuleNode;
 
-public class SYNC extends org.emoflon.ibex.tgg.operational.strategies.sync.SYNC {
+public abstract class SYNC extends org.emoflon.ibex.tgg.operational.strategies.sync.SYNC {
 
 	protected TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
 	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
@@ -61,8 +63,8 @@ public class SYNC extends org.emoflon.ibex.tgg.operational.strategies.sync.SYNC 
 	protected TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 	protected int idCounter = 1;
 	
-	public SYNC(String projectPath, String workspacePath, boolean debug) throws IOException {
-		super(projectPath, workspacePath, debug);
+	public SYNC(IbexOptions options) throws IOException {
+		super(options);
 	}
 	
 	public void relaxReferences(EList<EPackage> model) {
@@ -80,7 +82,7 @@ public class SYNC extends org.emoflon.ibex.tgg.operational.strategies.sync.SYNC 
 					for (EReference reference : nextEClassImpl.getEAllReferences()) {
 						reference.setUpperBound(-1);
 						reference.setLowerBound(0);
-						reference.setEOpposite(null);
+						//reference.setEOpposite(null);
 						reference.setContainment(false);
 					}
 				}
@@ -94,12 +96,6 @@ public class SYNC extends org.emoflon.ibex.tgg.operational.strategies.sync.SYNC 
 	}
 	
 	@Override
-	protected void registerUserMetamodels() throws IOException {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
 	protected void wrapUp() {
 		  for (int v : chooseTGGRuleApplications()) {
 			   IMatch match = idToMatch.get(v < 0 ? -v : v);
@@ -110,6 +106,10 @@ public class SYNC extends org.emoflon.ibex.tgg.operational.strategies.sync.SYNC 
 		  consistencyReporter.init(s, t, p, ruleInfos);
 	}
 	
+	@Override
+	public boolean isPatternRelevant(String patternName) {
+		return patternName.endsWith(PatternSuffixes.FWD_OPT);
+	}
 
 	protected TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
 		TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<>();
@@ -410,5 +410,11 @@ public class SYNC extends org.emoflon.ibex.tgg.operational.strategies.sync.SYNC 
 		idCounter++;
 		
 		super.prepareProtocol(ruleName, match, comatch);
+	}
+	
+	@Override
+	public void run() throws IOException {
+		relaxModels();
+		super.run();
 	}
 }
