@@ -24,7 +24,7 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
 public class MultiAmalgamationUtil {
-	public static final String FUSED = "+++";
+	public static final String FUSED = "FFF";
 
 	public static void embedKernelConsistencyPatternNodes(TGGComplementRule complementRule, IBlackPattern pattern) {
 		Collection<TGGRuleNode> kernelNodes = complementRule.getKernel().getNodes();
@@ -69,7 +69,7 @@ public class MultiAmalgamationUtil {
 		return copiedNode;
 	}
 	
-	public static void addKernelOutputAndContextNodes(TGGComplementRule rule, Collection<TGGRuleNode> signatureNodes, DomainType domain) {
+	public static void addKernelGivenDomainAndContextNodes(TGGComplementRule rule, Collection<TGGRuleNode> signatureNodes, DomainType domain) {
 		Collection<TGGRuleNode> kernelNodes = rule.getKernel().getNodes();
 		for (TGGRuleNode n : kernelNodes) {
 			if(n.getDomainType() == domain || n.getBindingType() == BindingType.CONTEXT)
@@ -77,7 +77,7 @@ public class MultiAmalgamationUtil {
 		}
 	}
 	
-	public static void addComplementOutputAndContextNodes(TGGComplementRule rule, Collection<TGGRuleNode> signatureNodes, DomainType domain) {
+	public static void addComplementGivenDomainAndContextNodes(TGGComplementRule rule, Collection<TGGRuleNode> signatureNodes, DomainType domain) {
 		for (TGGRuleNode n : rule.getNodes()) {
 			if(nodeIsNotInKernel(rule, n) && (n.getDomainType() == domain || n.getBindingType() == BindingType.CONTEXT))
 				signatureNodes.add(createProxyNode(n));

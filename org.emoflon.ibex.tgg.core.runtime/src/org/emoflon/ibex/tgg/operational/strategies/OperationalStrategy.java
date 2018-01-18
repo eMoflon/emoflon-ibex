@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.isFusedPatternMatch;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,8 +34,10 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
+import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 
@@ -84,8 +88,10 @@ public abstract class OperationalStrategy {
 	protected IRedInterpreter redInterpreter;
 	
 	private boolean domainsHaveNoSharedTypes;
+	
+	private boolean isFused;
 
-	private Map<String, GreenPatternFactory> factories;
+	private Map<String, IGreenPatternFactory> factories;
 	
 	public OperationalStrategy(IbexOptions options) {
 		this(options, new RandomMatchUpdatePolicy());
@@ -282,9 +288,12 @@ public abstract class OperationalStrategy {
 
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		processOperationalRuleMatch(ruleName, match);
+		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+		comatch.ifPresent(cm -> {
+			if (isKernelMatch(ruleName))
+				processComplementRuleMatches(cm, ruleName);
+		});
 		removeOperationalRuleMatch(match);
-
 		return true;
 	}
 
@@ -301,7 +310,7 @@ public abstract class OperationalStrategy {
 			return Optional.empty();
 		}
 		
-		GreenPatternFactory factory = getGreenFactory(ruleName);
+		IGreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.patternName());
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);	
 		
@@ -435,7 +444,16 @@ public abstract class OperationalStrategy {
 	}
 	
 	protected boolean isKernelMatch(String kernelName) {
+		//add here that fused kernels are kernel matches
 		return getKernelRulesNames().contains(kernelName);
+	}
+	
+	protected Set<String> getComplementRulesNames(String kernelName){
+		Set<String> complementRulesNames = getTGG().getRules().stream()
+												.filter(r -> r instanceof TGGComplementRule && ((TGGComplementRule) r).getKernel().getName().equals(kernelName))
+												.map(n -> n.getName())
+												.collect(Collectors.toSet());
+		return complementRulesNames;
 	}
 	
 	protected Set<String> getComplementRulesNames(){
@@ -455,6 +473,31 @@ public abstract class OperationalStrategy {
 		return kernelRulesNames;
 	}
 	
+	private void processComplementRuleMatches(IMatch comatch, String kernelName) {
+		blackInterpreter.updateMatches();
+		//add check to see if it is kernel or if it is fused match!
+		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches(kernelName);
+			while (! complementRuleMatches.isEmpty()) {
+					IMatch match = complementRuleMatches.iterator().next();
+					String ruleName = operationalMatchContainer.getRuleName(match);
+					processOperationalRuleMatch(ruleName, match);
+					complementRuleMatches.remove(match);
+					removeOperationalRuleMatch(match);
+			}
+		
+		//close the kernel, so other complement rules cannot find this match anymore
+		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
+		application.setAmalgamated(true);
+	}
+	
+	private Set<IMatch> findAllComplementRuleMatches(String kernelName) {
+		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
+				.filter(m -> getComplementRulesNames(kernelName).contains(PatternSuffixes.removeSuffix(m.patternName())))
+				.collect(Collectors.toSet());
+
+		return allComplementRuleMatches;
+	}
+	
 	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
 		if (updatePolicy == null)
 			throw new NullPointerException("UpdatePolicy must not be set to null.");
@@ -466,10 +509,15 @@ public abstract class OperationalStrategy {
 		return updatePolicy;
 	}
 	
-	public GreenPatternFactory getGreenFactory(String ruleName) {
-		if(!factories.containsKey(ruleName))
-			factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
-
+	public IGreenPatternFactory getGreenFactory(String ruleName) {
+		if(!factories.containsKey(ruleName)) {
+			if (isFusedPatternMatch(ruleName)){
+				factories.put(ruleName, new GreenFusedPatternFactory(ruleName, options, this));
+			}
+			else {
+				factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
+			}
+		}
 		return factories.get(ruleName);
 	}
 

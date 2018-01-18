@@ -18,7 +18,7 @@ import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 
 public abstract class IbexGreenPattern implements IGreenPattern {
-	protected GreenPatternFactory factory;
+	protected IGreenPatternFactory factory;
 	protected OperationalStrategy strategy;
 	
 	public IbexGreenPattern(GreenPatternFactory factory) {
