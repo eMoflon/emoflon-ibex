@@ -6,15 +6,14 @@ import java.util.Collections;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDBlackPattern;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.util.MultiAmalgamationUtil;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class FWDFusedGreenPattern extends IbexGreenPattern {
-
+public class FWDFusedGreenPattern extends FusedGreenPattern {
+	
 	public FWDFusedGreenPattern(GreenFusedPatternFactory factory) {
 		super(factory);
 	}
@@ -69,7 +68,6 @@ public class FWDFusedGreenPattern extends IbexGreenPattern {
 	
 	@Override
 	public void createMarkers(String ruleName, IMatch match) {
-		((GreenFusedPatternFactory)factory).getKernelFactory().create(FWDBlackPattern.getName(MultiAmalgamationUtil.getKernelName(match.patternName()))).createMarkers(MultiAmalgamationUtil.getKernelName(match.patternName()), match);
-		((GreenFusedPatternFactory)factory).getComplementFactory().create(FWDBlackPattern.getName(MultiAmalgamationUtil.getComplementName(match.patternName()))).createMarkers(MultiAmalgamationUtil.getComplementName(match.patternName()), match);
+		createMarkers(ruleName, match, FWDBlackPattern::getName);
 	}
 }

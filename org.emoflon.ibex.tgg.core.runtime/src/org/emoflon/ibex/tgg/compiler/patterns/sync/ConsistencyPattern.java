@@ -61,7 +61,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 	
 	public static TGGRuleNode createProtocolNode(TGGRule rule) {
 		TGGRuleNode protocolNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		protocolNode.setName(getProtocolNodeName());
+		protocolNode.setName(getProtocolNodeName(rule.getName()));
 		protocolNode.setType(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 		
 		TGGInplaceAttributeExpression tae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
@@ -118,8 +118,8 @@ public class ConsistencyPattern extends IbexBasePattern {
 		return n.getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 	}
 	
-	public static String getProtocolNodeName() {
-		return "eMoflon_ProtocolNode";
+	public static String getProtocolNodeName(String ruleName) {
+		return ruleName + "_eMoflon_ProtocolNode";
 	}
 
 	@Override

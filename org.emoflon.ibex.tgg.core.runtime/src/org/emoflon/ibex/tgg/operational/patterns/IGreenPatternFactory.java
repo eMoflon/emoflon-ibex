@@ -5,12 +5,10 @@ import java.util.Collection;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-import language.csp.TGGAttributeConstraintLibrary;
-import language.TGGComplementRule;
-import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import language.csp.TGGAttributeConstraintLibrary;
 
 public interface IGreenPatternFactory {
 

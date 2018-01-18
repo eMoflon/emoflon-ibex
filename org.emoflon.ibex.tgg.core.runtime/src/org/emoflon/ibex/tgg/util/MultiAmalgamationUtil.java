@@ -1,11 +1,14 @@
 package org.emoflon.ibex.tgg.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.AbstractCorrPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 
@@ -14,6 +17,8 @@ import language.DomainType;
 import language.LanguageFactory;
 import language.TGGComplementRule;
 import language.TGGRule;
+import language.TGGRuleCorr;
+import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.basic.expressions.ExpressionsFactory;
@@ -75,6 +80,47 @@ public class MultiAmalgamationUtil {
 			if(n.getDomainType() == domain || n.getBindingType() == BindingType.CONTEXT)
 				signatureNodes.add(createProxyNode(n));
 		}
+	}
+	
+	public static Collection<TGGRuleEdge> getComplementGivenDomainAndContextEdgesNotInKernel(TGGComplementRule rule, Collection<TGGRuleNode> signatureNodes, DomainType domain) {
+		return rule.getEdges().stream()
+				.filter(e -> e.getDomainType() == domain)
+				.filter(e -> e.getBindingType() == BindingType.CONTEXT)
+				.filter(e -> !rule.getKernel().getEdges().contains(e))
+				.map(e -> createProxyEdge(signatureNodes, e))
+				.collect(Collectors.toList());
+	}
+
+	private static TGGRuleEdge createProxyEdge(Collection<TGGRuleNode> signatureNodes, TGGRuleEdge e) {
+		TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+		edge.setName(e.getName());
+		edge.setType(e.getType());
+		edge.setBindingType(e.getBindingType());
+		edge.setDomainType(e.getDomainType());
+		edge.setSrcNode(signatureNodes.stream()
+				.filter(n -> n.getName().equals(e.getSrcNode().getName()))
+				.findFirst()
+				.orElseThrow(() -> new IllegalStateException("Unable to find " + e.getSrcNode().getName() + " in signature nodes!")));
+		edge.setTrgNode(signatureNodes.stream()
+				.filter(n -> n.getName().equals(e.getTrgNode().getName()))
+				.findFirst()
+				.orElseThrow(() -> new IllegalStateException("Unable to find " + e.getTrgNode().getName() + " in signature nodes!")));
+		return edge;
+	}
+	
+	public static Collection<TGGRuleEdge> getComplementCorrContextEdgesNotInKernel(TGGComplementRule rule, Collection<TGGRuleNode> signatureNodes){
+		ArrayList<TGGRuleEdge> edges = new ArrayList<>();
+		
+		rule.getNodes().stream()
+				.filter(TGGRuleCorr.class::isInstance)
+				.filter(c -> c.getBindingType() == BindingType.CONTEXT)
+				.filter(c -> !rule.getKernel().getNodes().contains(c))
+				.map(TGGRuleCorr.class::cast)
+				.forEach(c -> AbstractCorrPattern.extractSourceAndTargetEdges(c, edges));
+
+		return edges.stream()
+				.map(e -> createProxyEdge(signatureNodes, e))
+				.collect(Collectors.toList());
 	}
 	
 	public static void addComplementGivenDomainAndContextNodes(TGGComplementRule rule, Collection<TGGRuleNode> signatureNodes, DomainType domain) {

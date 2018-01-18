@@ -3,6 +3,8 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addComplementGivenDomainAndContextNodes;
 import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addKernelGivenDomainAndContextNodes;
 import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.setFusedName;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.getComplementCorrContextEdgesNotInKernel;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.getComplementGivenDomainAndContextEdgesNotInKernel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,8 +12,6 @@ import java.util.Collections;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 import org.emoflon.ibex.tgg.util.MultiAmalgamationUtil;
@@ -40,18 +40,20 @@ public class BWDFusedPattern extends BasicSyncPattern {
 		Collection<TGGRuleNode> signatureNodes = new ArrayList<>();
 		addKernelGivenDomainAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.TRG);
 		addComplementGivenDomainAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.TRG);
-		
+				
 		Collection<TGGRuleNode> localNodes = Collections.emptyList();
-		Collection<TGGRuleEdge> localEdges = Collections.emptyList();		
+		Collection<TGGRuleEdge> localEdges = new ArrayList<>();		
+		
+		// Add corr and src edges that are context but not in kernel
+		localEdges.addAll(getComplementGivenDomainAndContextEdgesNotInKernel(flattenedComplementRule, signatureNodes, DomainType.TRG));
+		localEdges.addAll(getComplementCorrContextEdgesNotInKernel(flattenedComplementRule, signatureNodes));
 		
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 	
 	protected void createPatternNetwork(BlackPatternFactory factory) {
-		//TODO: [Milica] This is causing exceptions. Check it out!
-//		addPositiveInvocation(factory.createBlackPattern(TrgPattern.class));
-//		addPositiveInvocation(factory.createBlackPattern(CorrContextPattern.class));
-//		addPositiveInvocation(factory.createBlackPattern(SrcContextPattern.class));
+		// This is BWD so everything in the target is context
+		addPositiveInvocation(factory.createBlackPattern(TrgPattern.class));
 		
 		addPositiveInvocation(factory.getFactory(flattenedComplementRule.getKernel()).createBlackPattern(BWDBlackPattern.class));
 		MultiAmalgamationUtil.createMarkedInvocations(DomainType.TRG, flattenedComplementRule, this);

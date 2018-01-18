@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns.common;
 
+import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EReference;
@@ -14,6 +15,10 @@ import language.TGGRuleNode;
 public abstract class AbstractCorrPattern extends IbexBasePattern {
 
 	protected void extractSourceAndTargetEdges(TGGRuleCorr corr) {
+		extractSourceAndTargetEdges(corr, localEdges);
+	}
+	
+	public static void extractSourceAndTargetEdges(TGGRuleCorr corr, Collection<TGGRuleEdge> localEdges) {
 		TGGRuleEdge source = LanguageFactory.eINSTANCE.createTGGRuleEdge();
 		source.setBindingType(corr.getBindingType());
 		source.setDomainType(DomainType.SRC);

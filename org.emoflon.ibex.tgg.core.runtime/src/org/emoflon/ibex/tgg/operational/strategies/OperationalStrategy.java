@@ -88,8 +88,6 @@ public abstract class OperationalStrategy {
 	protected IRedInterpreter redInterpreter;
 	
 	private boolean domainsHaveNoSharedTypes;
-	
-	private boolean isFused;
 
 	private Map<String, IGreenPatternFactory> factories;
 	
@@ -167,7 +165,7 @@ public abstract class OperationalStrategy {
 	private boolean matchIsValidIsomorphism(String ruleName, IMatch match) {
 		if(match.patternName().endsWith(PatternSuffixes.CONSISTENCY)) {
 			// Make sure that node mappings comply to bindings in match
-			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName());
+			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(ruleName));
 			return ruleAppNode.getNodeMappings().keySet().stream().noneMatch(n -> ruleAppNode.getNodeMappings().get(n) != match.get(n));
 		}
 		
@@ -182,7 +180,7 @@ public abstract class OperationalStrategy {
 			   matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getBlackTrgNodesInRule(), match) &&
 			   matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getGreenTrgNodesInRule(), match);
 	}
-	
+
 	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, IMatch match){
 		return nodes.stream().noneMatch(n -> match.isInMatch(n.getName()) && 
 											 !nodeIsInResource(match, n.getName(), r));
@@ -367,7 +365,7 @@ public abstract class OperationalStrategy {
 	/***** Methods for reacting to broken matches of consistency patterns ******/
 
 	public TGGRuleApplication getRuleApplicationNode(IMatch match) {
-		return (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName());
+		return (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.patternName())));
 	}
 	
 	public void addBrokenMatch(IMatch match) {
@@ -475,7 +473,7 @@ public abstract class OperationalStrategy {
 	
 	private void processComplementRuleMatches(IMatch comatch, String kernelName) {
 		blackInterpreter.updateMatches();
-		//add check to see if it is kernel or if it is fused match!
+		// Add check to see if it is kernel or if it is fused match!
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches(kernelName);
 			while (! complementRuleMatches.isEmpty()) {
 					IMatch match = complementRuleMatches.iterator().next();
@@ -485,8 +483,8 @@ public abstract class OperationalStrategy {
 					removeOperationalRuleMatch(match);
 			}
 		
-		//close the kernel, so other complement rules cannot find this match anymore
-		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
+		// Close the kernel, so other complement rules cannot find this match anymore
+		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(kernelName));
 		application.setAmalgamated(true);
 	}
 	

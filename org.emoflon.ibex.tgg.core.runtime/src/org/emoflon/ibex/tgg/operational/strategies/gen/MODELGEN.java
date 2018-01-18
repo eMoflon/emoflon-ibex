@@ -120,8 +120,9 @@ public abstract class MODELGEN extends OperationalStrategy {
 					removeOperationalRuleMatch(match);
 				}
 		}
-		//close the kernel, so other complement rules cannot find this match anymore
-		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
+		
+		// Close the kernel, so other complement rules cannot find this match anymore
+		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.patternName())));
 		application.setAmalgamated(true);
 	}
 

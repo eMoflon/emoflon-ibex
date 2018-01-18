@@ -76,6 +76,6 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 			.forEach(n -> ra.getNodeMappings().put(n, (EObject) match.get(n)));
 
 		strategy.setIsRuleApplicationFinal(ra);
-		match.put(ConsistencyPattern.getProtocolNodeName(), ra);
+		match.put(ConsistencyPattern.getProtocolNodeName(ruleName), ra);
 	}
 }

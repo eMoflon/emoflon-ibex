@@ -164,7 +164,7 @@ public abstract class CC extends OperationalStrategy {
 		}
 		
 		//FIXME:[Milica] Check if this is really needed
-		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
+		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.patternName())));
 		application.setAmalgamated(true);
 	}
 	

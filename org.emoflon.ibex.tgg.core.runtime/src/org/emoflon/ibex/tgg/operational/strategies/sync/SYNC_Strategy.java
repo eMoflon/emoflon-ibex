@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.util.List;
 
-import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 

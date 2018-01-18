@@ -2,6 +2,8 @@ package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
 import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addComplementGivenDomainAndContextNodes;
 import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addKernelGivenDomainAndContextNodes;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.getComplementCorrContextEdgesNotInKernel;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.getComplementGivenDomainAndContextEdgesNotInKernel;
 import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.setFusedName;
 
 import java.util.ArrayList;
@@ -10,9 +12,7 @@ import java.util.Collections;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 import org.emoflon.ibex.tgg.util.MultiAmalgamationUtil;
 
@@ -41,15 +41,18 @@ public class FWDFusedPattern extends BasicSyncPattern {
 		addComplementGivenDomainAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.SRC);
 		
 		Collection<TGGRuleNode> localNodes = Collections.emptyList();
-		Collection<TGGRuleEdge> localEdges = Collections.emptyList();		
+		Collection<TGGRuleEdge> localEdges = new ArrayList<>();		
+
+		// Add corr and trg edges that are context but not in kernel
+		localEdges.addAll(getComplementGivenDomainAndContextEdgesNotInKernel(flattenedComplementRule, signatureNodes, DomainType.TRG));
+		localEdges.addAll(getComplementCorrContextEdgesNotInKernel(flattenedComplementRule, signatureNodes));
 		
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 
 	protected void createPatternNetwork(BlackPatternFactory factory) {
+		// This is FWD so everything in the source is context
 		addPositiveInvocation(factory.createBlackPattern(SrcPattern.class));
-		addPositiveInvocation(factory.createBlackPattern(CorrContextPattern.class));
-		addPositiveInvocation(factory.createBlackPattern(TrgContextPattern.class));
 		
 		addPositiveInvocation(factory.getFactory(flattenedComplementRule.getKernel()).createBlackPattern(FWDBlackPattern.class));		
 		MultiAmalgamationUtil.createMarkedInvocations(DomainType.SRC, flattenedComplementRule, this);
