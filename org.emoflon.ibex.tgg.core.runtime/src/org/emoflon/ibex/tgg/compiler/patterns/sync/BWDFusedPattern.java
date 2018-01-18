@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addComplementOutputAndContextNodes;
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addKernelOutputAndContextNodes;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addComplementGivenDomainAndContextNodes;
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addKernelGivenDomainAndContextNodes;
 import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.setFusedName;
 
 import java.util.ArrayList;
@@ -10,6 +10,9 @@ import java.util.Collections;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.CorrContextPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.SrcContextPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 import org.emoflon.ibex.tgg.util.MultiAmalgamationUtil;
 
@@ -35,8 +38,8 @@ public class BWDFusedPattern extends BasicSyncPattern {
 		String name = setFusedName(flattenedComplementRule.getName(), flattenedComplementRule.getKernel().getName()) + PatternSuffixes.BWD;
 		
 		Collection<TGGRuleNode> signatureNodes = new ArrayList<>();
-		addKernelOutputAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.TRG);
-		addComplementOutputAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.TRG);
+		addKernelGivenDomainAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.TRG);
+		addComplementGivenDomainAndContextNodes(flattenedComplementRule, signatureNodes, DomainType.TRG);
 		
 		Collection<TGGRuleNode> localNodes = Collections.emptyList();
 		Collection<TGGRuleEdge> localEdges = Collections.emptyList();		
@@ -45,6 +48,11 @@ public class BWDFusedPattern extends BasicSyncPattern {
 	}
 	
 	protected void createPatternNetwork(BlackPatternFactory factory) {
+		//TODO: [Milica] This is causing exceptions. Check it out!
+//		addPositiveInvocation(factory.createBlackPattern(TrgPattern.class));
+//		addPositiveInvocation(factory.createBlackPattern(CorrContextPattern.class));
+//		addPositiveInvocation(factory.createBlackPattern(SrcContextPattern.class));
+		
 		addPositiveInvocation(factory.getFactory(flattenedComplementRule.getKernel()).createBlackPattern(BWDBlackPattern.class));
 		MultiAmalgamationUtil.createMarkedInvocations(DomainType.TRG, flattenedComplementRule, this);
 		
@@ -60,5 +68,9 @@ public class BWDFusedPattern extends BasicSyncPattern {
 	@Override
 	public BlackPatternFactory getPatternFactory() {
 		return factory;
+	}
+	
+	public static String getName(String ruleName) {
+		return ruleName + PatternSuffixes.BWD;
 	}
 }
