@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.matches;
 
+import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.isFusedPatternMatch;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
@@ -100,6 +102,8 @@ public class MatchContainer {
 	}
 
 	public String getRuleName(IMatch match) {
+		if (isFusedPatternMatch(match.patternName()))
+				return match.patternName();
 		return idToRuleName.get(matchToRuleNameID.get(match));
 	}
 
