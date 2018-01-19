@@ -45,7 +45,7 @@ public class BWDFusedPattern extends BasicSyncPattern {
 		Collection<TGGRuleEdge> localEdges = new ArrayList<>();		
 		
 		// Add corr and src edges that are context but not in kernel
-		localEdges.addAll(getComplementGivenDomainAndContextEdgesNotInKernel(flattenedComplementRule, signatureNodes, DomainType.TRG));
+		localEdges.addAll(getComplementGivenDomainAndContextEdgesNotInKernel(flattenedComplementRule, signatureNodes, DomainType.SRC));
 		localEdges.addAll(getComplementCorrContextEdgesNotInKernel(flattenedComplementRule, signatureNodes));
 		
 		super.initialise(name, signatureNodes, localNodes, localEdges);

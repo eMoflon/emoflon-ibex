@@ -4,13 +4,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDBlackPattern;
-import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class BWDFusedGreenPattern extends FusedGreenPattern {
 
@@ -56,14 +54,6 @@ public class BWDFusedGreenPattern extends FusedGreenPattern {
 	@Override
 	public Collection<TGGRuleNode> getNodesMarkedByPattern() {
 		return factory.getGreenTrgNodesInRule();
-	}
-	
-	@Override
-	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
-		if (factory.blackInterpSupportsAttrConstrs())
-			throw new NotImplementedException(); // Have to split csp into black and green parts
-		else
-			return super.getAttributeConstraintContainer(match);
 	}
 	
 	@Override

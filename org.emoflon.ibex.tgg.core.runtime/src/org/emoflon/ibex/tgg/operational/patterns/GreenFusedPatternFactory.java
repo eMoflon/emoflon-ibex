@@ -7,6 +7,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.util.MultiAmalgamationUtil;
 
+import language.csp.CspFactory;
 import language.csp.TGGAttributeConstraintLibrary;
 
 public class GreenFusedPatternFactory extends GreenPatternFactory{
@@ -82,7 +83,16 @@ public class GreenFusedPatternFactory extends GreenPatternFactory{
 	
 	@Override
 	public TGGAttributeConstraintLibrary getRuleCSPConstraintLibrary() {
-		return kernelFactory.getRuleCSPConstraintLibrary(); 
+		TGGAttributeConstraintLibrary kernelLib = kernelFactory.getRuleCSPConstraintLibrary();
+		TGGAttributeConstraintLibrary complementLib = complementFactory.getRuleCSPConstraintLibrary();
+		
+		TGGAttributeConstraintLibrary fusedLib = CspFactory.eINSTANCE.createTGGAttributeConstraintLibrary();
+		fusedLib.getTggAttributeConstraints().addAll(kernelLib.getTggAttributeConstraints());
+		fusedLib.getTggAttributeConstraints().addAll(complementLib.getTggAttributeConstraints());
+		fusedLib.getParameterValues().addAll(kernelLib.getParameterValues());
+		fusedLib.getParameterValues().addAll(complementLib.getParameterValues());
+		
+		return fusedLib;
 	}
 	
 	public IGreenPatternFactory getKernelFactory() {

@@ -2,6 +2,14 @@
  */
 package language.impl;
 
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.impl.EPackageImpl;
+
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
@@ -12,36 +20,16 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
-
 import language.basic.BasicPackage;
-
 import language.basic.expressions.ExpressionsPackage;
-
 import language.basic.expressions.impl.ExpressionsPackageImpl;
-
 import language.basic.impl.BasicPackageImpl;
-
 import language.csp.CspPackage;
-
 import language.csp.definition.DefinitionPackage;
-
 import language.csp.definition.impl.DefinitionPackageImpl;
-
 import language.csp.impl.CspPackageImpl;
-
 import language.inplaceAttributes.InplaceAttributesPackage;
-
 import language.inplaceAttributes.impl.InplaceAttributesPackageImpl;
-
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EcorePackage;
-
-import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.eclipse.emf.ecore.impl.EcorePackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -169,6 +157,9 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 
 		isInited = true;
 
+		// Initialize simple dependencies
+		EcorePackage.eINSTANCE.eClass();
+
 		// Obtain or create and register interdependencies
 		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(InplaceAttributesPackage.eNS_URI) instanceof InplaceAttributesPackageImpl
@@ -190,10 +181,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
-		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
-						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theLanguagePackage.createPackageContents();
@@ -202,7 +189,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		theDefinitionPackage.createPackageContents();
 		theBasicPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
-		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theLanguagePackage.initializePackageContents();
@@ -211,7 +197,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		theDefinitionPackage.initializePackageContents();
 		theBasicPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
-		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theLanguagePackage.freeze();

@@ -3,13 +3,9 @@ package org.emoflon.ibex.tgg.operational.patterns;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
-
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class CCGreenPattern extends IbexGreenPattern {
 
@@ -40,13 +36,5 @@ public class CCGreenPattern extends IbexGreenPattern {
 	@Override
 	public Collection<TGGRuleCorr> getCorrNodes() {
 		return factory.getGreenCorrNodesInRule();
-	}
-	
-	@Override
-	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
-		if (factory.blackInterpSupportsAttrConstrs())
-			throw new NotImplementedException(); // Have to split csp into black and green parts
-		else
-			return super.getAttributeConstraintContainer(match);
 	}
 }

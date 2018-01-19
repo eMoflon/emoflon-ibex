@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.patterns;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -9,11 +10,14 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
+import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import language.csp.TGGAttributeConstraint;
+import language.csp.TGGAttributeConstraintLibrary;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 
@@ -28,13 +32,20 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	
 	@Override
 	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
+		List<TGGAttributeConstraint> sortedConstraints = sortConstraints(factory.getRuleCSPConstraintLibrary());
+		
 		return new RuntimeTGGAttributeConstraintContainer(
 				factory.getRuleCSPConstraintLibrary(), 
-				match, 
-				strategy, 
+				sortedConstraints,
+				match,
 				factory.getOptions().constraintProvider());
 	}
 	
+	protected List<TGGAttributeConstraint> sortConstraints(TGGAttributeConstraintLibrary lib) {
+		SearchPlanAction spa = new SearchPlanAction(lib, false, getNodesCreatedByPattern());
+		return spa.sortConstraints();
+	}
+
 	@Override
 	public Collection<TGGRuleEdge> getEdgesMarkedByPattern() {
 		return Collections.emptyList();

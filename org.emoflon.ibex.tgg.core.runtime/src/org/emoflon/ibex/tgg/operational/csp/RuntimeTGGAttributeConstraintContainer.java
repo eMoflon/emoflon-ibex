@@ -11,7 +11,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import language.basic.expressions.TGGAttributeExpression;
@@ -31,18 +30,17 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	private IMatch match;
 	private Collection<String> boundObjectNames;
 		
-	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IMatch match, OperationalStrategy strategy, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
+	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, List<TGGAttributeConstraint> sortedConstraints, IMatch match, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.parameterNames();
 		this.constraintProvider = runtimeConstraintProvider;
 		
 		extractRuntimeParameters(library);
-		extractRuntimeConstraints(library, strategy);
+		extractRuntimeConstraints(sortedConstraints);
 	}
 
-	private void extractRuntimeConstraints(TGGAttributeConstraintLibrary library, OperationalStrategy strategy) {
-		List<TGGAttributeConstraint> sortedSpecificationConstraints = strategy.getConstraints(library);
-		constraints = sortedSpecificationConstraints.stream().map(c -> extractRuntimeConstraint(c)).collect(Collectors.toList());
+	private void extractRuntimeConstraints(List<TGGAttributeConstraint> sortedConstraints) {
+		constraints = sortedConstraints.stream().map(c -> extractRuntimeConstraint(c)).collect(Collectors.toList());
 	}
 	
 	private RuntimeTGGAttributeConstraint extractRuntimeConstraint(TGGAttributeConstraint c) {

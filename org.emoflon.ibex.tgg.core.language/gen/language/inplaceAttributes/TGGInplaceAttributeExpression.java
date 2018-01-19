@@ -80,7 +80,7 @@ public interface TGGInplaceAttributeExpression extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Operator</b></em>' attribute.
-	 * The default value is <code>""</code>.
+	 * The default value is <code>"EQUAL"</code>.
 	 * The literals are from the enumeration {@link language.inplaceAttributes.TGGAttributeConstraintOperators}.
 	 * <!-- begin-user-doc -->
 	 * <p>
@@ -92,7 +92,7 @@ public interface TGGInplaceAttributeExpression extends EObject {
 	 * @see language.inplaceAttributes.TGGAttributeConstraintOperators
 	 * @see #setOperator(TGGAttributeConstraintOperators)
 	 * @see language.inplaceAttributes.InplaceAttributesPackage#getTGGInplaceAttributeExpression_Operator()
-	 * @model default="" required="true"
+	 * @model default="EQUAL" required="true"
 	 * @generated
 	 */
 	TGGAttributeConstraintOperators getOperator();

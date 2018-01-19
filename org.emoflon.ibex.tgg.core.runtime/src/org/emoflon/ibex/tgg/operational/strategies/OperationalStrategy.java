@@ -5,7 +5,6 @@ import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.isFusedPatternMatc
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -49,8 +48,6 @@ import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 import language.impl.LanguagePackageImpl;
 import runtime.RuntimeFactory;
 import runtime.TGGRuleApplication;
@@ -428,8 +425,6 @@ public abstract class OperationalStrategy {
 	}
 
 	abstract protected void wrapUp();
-
-	abstract public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library);
 
 	public TGG getTGG() {
 		return options.tgg();

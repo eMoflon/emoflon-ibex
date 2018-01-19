@@ -11,10 +11,10 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class EmptyGreenPattern extends IbexGreenPattern {
+public class EmptyGreenPattern implements IGreenPattern {
 	
 	public EmptyGreenPattern(GreenPatternFactory factory) {
-		super(factory);
+		
 	}
 	
 	@Override
@@ -45,5 +45,30 @@ public class EmptyGreenPattern extends IbexGreenPattern {
 	@Override
 	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
 		return new EmptyRuntimeTGGAttributeConstraintContainer();
+	}
+
+	@Override
+	public Collection<TGGRuleEdge> getEdgesMarkedByPattern() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public Collection<TGGRuleEdge> getMarkedContextEdges() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public Collection<TGGRuleNode> getNodesMarkedByPattern() {
+		return Collections.emptyList();
+	}
+	
+	@Override
+	public boolean isToBeIgnored(IMatch match) {
+		return false;
+	}
+
+	@Override
+	public void createMarkers(String ruleName, IMatch match) {
+		
 	}
 }

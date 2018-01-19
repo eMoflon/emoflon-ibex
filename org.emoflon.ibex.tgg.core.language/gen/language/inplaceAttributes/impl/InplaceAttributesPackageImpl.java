@@ -2,40 +2,28 @@
  */
 package language.inplaceAttributes.impl;
 
-import language.LanguagePackage;
-
-import language.basic.BasicPackage;
-
-import language.basic.expressions.ExpressionsPackage;
-
-import language.basic.expressions.impl.ExpressionsPackageImpl;
-
-import language.basic.impl.BasicPackageImpl;
-
-import language.csp.CspPackage;
-
-import language.csp.definition.DefinitionPackage;
-
-import language.csp.definition.impl.DefinitionPackageImpl;
-
-import language.csp.impl.CspPackageImpl;
-
-import language.impl.LanguagePackageImpl;
-
-import language.inplaceAttributes.InplaceAttributesFactory;
-import language.inplaceAttributes.InplaceAttributesPackage;
-import language.inplaceAttributes.TGGAttributeConstraintOperators;
-import language.inplaceAttributes.TGGInplaceAttributeExpression;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.eclipse.emf.ecore.impl.EcorePackageImpl;
+
+import language.LanguagePackage;
+import language.basic.BasicPackage;
+import language.basic.expressions.ExpressionsPackage;
+import language.basic.expressions.impl.ExpressionsPackageImpl;
+import language.basic.impl.BasicPackageImpl;
+import language.csp.CspPackage;
+import language.csp.definition.DefinitionPackage;
+import language.csp.definition.impl.DefinitionPackageImpl;
+import language.csp.impl.CspPackageImpl;
+import language.impl.LanguagePackageImpl;
+import language.inplaceAttributes.InplaceAttributesFactory;
+import language.inplaceAttributes.InplaceAttributesPackage;
+import language.inplaceAttributes.TGGAttributeConstraintOperators;
+import language.inplaceAttributes.TGGInplaceAttributeExpression;
 
 /**
  * <!-- begin-user-doc -->
@@ -107,6 +95,9 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 
 		isInited = true;
 
+		// Initialize simple dependencies
+		EcorePackage.eINSTANCE.eClass();
+
 		// Obtain or create and register interdependencies
 		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
@@ -128,10 +119,6 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
-		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
-						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theInplaceAttributesPackage.createPackageContents();
@@ -140,7 +127,6 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 		theDefinitionPackage.createPackageContents();
 		theBasicPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
-		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theInplaceAttributesPackage.initializePackageContents();
@@ -149,7 +135,6 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 		theDefinitionPackage.initializePackageContents();
 		theBasicPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
-		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theInplaceAttributesPackage.freeze();
@@ -287,8 +272,8 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 				"valueExpr", null, 0, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getTGGInplaceAttributeExpression_Operator(), this.getTGGAttributeConstraintOperators(),
-				"operator", "", 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+				"operator", "EQUAL", 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.class,

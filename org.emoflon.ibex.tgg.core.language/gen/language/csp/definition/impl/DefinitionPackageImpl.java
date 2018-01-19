@@ -2,41 +2,29 @@
  */
 package language.csp.definition.impl;
 
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.impl.EPackageImpl;
+
 import language.LanguagePackage;
-
 import language.basic.BasicPackage;
-
 import language.basic.expressions.ExpressionsPackage;
-
 import language.basic.expressions.impl.ExpressionsPackageImpl;
-
 import language.basic.impl.BasicPackageImpl;
-
 import language.csp.CspPackage;
-
 import language.csp.definition.DefinitionFactory;
 import language.csp.definition.DefinitionPackage;
 import language.csp.definition.TGGAttributeConstraintAdornment;
 import language.csp.definition.TGGAttributeConstraintDefinition;
 import language.csp.definition.TGGAttributeConstraintDefinitionLibrary;
 import language.csp.definition.TGGAttributeConstraintParameterDefinition;
-
 import language.csp.impl.CspPackageImpl;
-
 import language.impl.LanguagePackageImpl;
-
 import language.inplaceAttributes.InplaceAttributesPackage;
-
 import language.inplaceAttributes.impl.InplaceAttributesPackageImpl;
-
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EcorePackage;
-
-import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.eclipse.emf.ecore.impl.EcorePackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -122,6 +110,9 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 
 		isInited = true;
 
+		// Initialize simple dependencies
+		EcorePackage.eINSTANCE.eClass();
+
 		// Obtain or create and register interdependencies
 		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
@@ -143,10 +134,6 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
-		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
-						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theDefinitionPackage.createPackageContents();
@@ -155,7 +142,6 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 		theCspPackage.createPackageContents();
 		theBasicPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
-		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theDefinitionPackage.initializePackageContents();
@@ -164,7 +150,6 @@ public class DefinitionPackageImpl extends EPackageImpl implements DefinitionPac
 		theCspPackage.initializePackageContents();
 		theBasicPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
-		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theDefinitionPackage.freeze();

@@ -42,8 +42,6 @@ import gurobi.GRBVar;
 import language.TGGComplementRule;
 import language.TGGRuleCorr;
 import language.TGGRuleNode;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 import runtime.TGGRuleApplication;
 
 public abstract class CC extends OperationalStrategy {
@@ -559,11 +557,6 @@ public abstract class CC extends OperationalStrategy {
 		} catch (GRBException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
-		return library.getSorted_CC();
 	}
 
 	public boolean modelsAreConsistent() {

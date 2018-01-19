@@ -19,8 +19,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.tgg.core.transformation.csp.sorting.CSPSearchPlanMode;
-import org.emoflon.ibex.tgg.core.transformation.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
 import org.moflon.tgg.mosl.tgg.Adornment;
 import org.moflon.tgg.mosl.tgg.AttrCond;
@@ -136,7 +134,6 @@ public class EditorTGGtoInternalTGG {
 		translateXTextNacsToTGGNacs(xtextTGG, tgg);
 
 		tgg = addOppositeEdges(tgg);
-		tgg = sortTGGAttributeConstraints(tgg);
 
 		return tgg;
 	}
@@ -556,32 +553,6 @@ public class EditorTGGtoInternalTGG {
 			}
 
 		});
-		return tggModel;
-	}
-
-	private TGG sortTGGAttributeConstraints(TGG tggModel) {
-		SearchPlanAction spa = new SearchPlanAction();
-		for (TGGRule rule : tggModel.getRules()) {
-			TGGAttributeConstraintLibrary libraryOfTheRule = rule.getAttributeConditionLibrary();
-			if (!libraryOfTheRule.getTggAttributeConstraints().isEmpty()) {
-				libraryOfTheRule.getSorted_FWD()
-						.addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-								libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.FWD));
-
-				libraryOfTheRule.getSorted_BWD()
-						.addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-								libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.BWD));
-
-				libraryOfTheRule.getSorted_CC()
-						.addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-								libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.CC));
-
-				libraryOfTheRule.getSorted_MODELGEN()
-						.addAll(spa.sortConstraints(libraryOfTheRule.getTggAttributeConstraints(),
-								libraryOfTheRule.getParameterValues(), CSPSearchPlanMode.MODELGEN));
-			}
-		}
-
 		return tggModel;
 	}
 }
