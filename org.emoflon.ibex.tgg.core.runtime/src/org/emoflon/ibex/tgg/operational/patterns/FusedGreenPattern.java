@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational.patterns;
 import java.util.function.Function;
 
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.util.MultiAmalgamationUtil;
+import org.emoflon.ibex.tgg.util.MAUtil;
 
 public abstract class FusedGreenPattern extends IbexGreenPattern {
 	protected GreenFusedPatternFactory fusedFactory;
@@ -14,8 +14,8 @@ public abstract class FusedGreenPattern extends IbexGreenPattern {
 	}
 	
 	protected void createMarkers(String ruleName, IMatch match, Function<String, String> getName) {
-		String kernelName = MultiAmalgamationUtil.getKernelName(match.patternName());
-		String complementName = MultiAmalgamationUtil.getComplementName(match.patternName());
+		String kernelName = MAUtil.getKernelName(match.patternName());
+		String complementName = MAUtil.getComplementName(match.patternName());
 		
 		fusedFactory.getKernelFactory()
 			.create(getName.apply(kernelName))

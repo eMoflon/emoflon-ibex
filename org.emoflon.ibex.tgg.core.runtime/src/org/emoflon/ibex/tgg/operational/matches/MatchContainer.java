@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.matches;
 
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.isFusedPatternMatch;
+import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.util.Collection;
 import java.util.Iterator;

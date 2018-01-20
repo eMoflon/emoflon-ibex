@@ -1,10 +1,10 @@
 package org.emoflon.ibex.tgg.compiler.patterns.sync;
 
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addComplementGivenDomainAndContextNodes;
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.addKernelGivenDomainAndContextNodes;
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.setFusedName;
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.getComplementCorrContextEdgesNotInKernel;
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.getComplementGivenDomainAndContextEdgesNotInKernel;
+import static org.emoflon.ibex.tgg.util.MAUtil.addComplementGivenDomainAndContextNodes;
+import static org.emoflon.ibex.tgg.util.MAUtil.addKernelGivenDomainAndContextNodes;
+import static org.emoflon.ibex.tgg.util.MAUtil.setFusedName;
+import static org.emoflon.ibex.tgg.util.MAUtil.getComplementCorrContextEdgesNotInKernel;
+import static org.emoflon.ibex.tgg.util.MAUtil.getComplementGivenDomainAndContextEdgesNotInKernel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.TrgPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
-import org.emoflon.ibex.tgg.util.MultiAmalgamationUtil;
+import org.emoflon.ibex.tgg.util.MAUtil;
 
 import language.DomainType;
 import language.TGGComplementRule;
@@ -56,7 +56,7 @@ public class BWDFusedPattern extends BasicSyncPattern {
 		addPositiveInvocation(factory.createBlackPattern(TrgPattern.class));
 		
 		addPositiveInvocation(factory.getFactory(flattenedComplementRule.getKernel()).createBlackPattern(BWDBlackPattern.class));
-		MultiAmalgamationUtil.createMarkedInvocations(DomainType.TRG, flattenedComplementRule, this);
+		MAUtil.createMarkedInvocations(DomainType.TRG, flattenedComplementRule, this);
 		
 		if(BlackPatternFactory.strategy != FilterACStrategy.NONE)
 			addFilterNACPatterns(DomainType.TRG, factory, optimiser);

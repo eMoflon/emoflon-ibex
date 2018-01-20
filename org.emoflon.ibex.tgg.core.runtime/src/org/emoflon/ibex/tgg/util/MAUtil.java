@@ -22,13 +22,18 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.basic.expressions.ExpressionsFactory;
+import language.basic.expressions.TGGAttributeExpression;
+import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGLiteralExpression;
+import language.basic.expressions.TGGParamValue;
+import language.csp.TGGAttributeConstraint;
+import language.csp.TGGAttributeVariable;
 import language.inplaceAttributes.InplaceAttributesFactory;
 import language.inplaceAttributes.TGGAttributeConstraintOperators;
 import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
-public class MultiAmalgamationUtil {
+public class MAUtil {
 	public static final String FUSED = "FFF";
 
 	public static void embedKernelConsistencyPatternNodes(TGGComplementRule complementRule, IBlackPattern pattern) {
@@ -114,7 +119,7 @@ public class MultiAmalgamationUtil {
 		rule.getNodes().stream()
 				.filter(TGGRuleCorr.class::isInstance)
 				.filter(c -> c.getBindingType() == BindingType.CONTEXT)
-				.filter(c -> !rule.getKernel().getNodes().contains(c))
+				.filter(c -> nodeIsNotInKernel(rule, c))
 				.map(TGGRuleCorr.class::cast)
 				.forEach(c -> AbstractCorrPattern.extractSourceAndTargetEdges(c, edges));
 
@@ -171,5 +176,41 @@ public class MultiAmalgamationUtil {
 	
 	public static boolean isFusedPatternMatch(String patternName) {
 		return patternName.contains(FUSED);
+	}
+	
+	public static void replaceWith(TGGAttributeConstraint constraint, TGGParamValue toBeReplaced, TGGParamValue useToReplace) {
+		assert(constraint.getParameters().contains(toBeReplaced));
+		constraint.getParameters().replaceAll(p -> p.equals(toBeReplaced)? useToReplace : p);
+	}
+
+	public static boolean equal(TGGParamValue p1, TGGParamValue p2) {
+		// Enums
+		if(p1 instanceof TGGEnumExpression) {
+			return ((TGGEnumExpression) p1).getEenum().equals(((TGGEnumExpression) p2).getEenum()) &&
+					((TGGEnumExpression) p1).getLiteral().equals(((TGGEnumExpression) p2).getLiteral());
+		}
+		
+		// Literals
+		if(p1 instanceof TGGLiteralExpression) {
+			return ((TGGLiteralExpression) p1).getValue().equals(((TGGLiteralExpression) p2).getValue());
+		}
+		
+		// Locals
+		if(p1 instanceof TGGAttributeVariable) {
+			return ((TGGAttributeVariable) p1).getName().equals(((TGGAttributeVariable) p2).getName());
+		}
+		
+		// Attribute expressions
+		if(p1 instanceof TGGAttributeExpression) {
+			return attributeAccess(p1).equals(attributeAccess(p2));
+		}
+		
+		return false;
+	}
+
+	public static String attributeAccess(TGGParamValue p) {
+		assert(p instanceof TGGAttributeExpression);
+		TGGAttributeExpression exp = (TGGAttributeExpression) p;
+		return exp.getObjectVar().getName() + "." + exp.getAttribute().getName();
 	}
 }

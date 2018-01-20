@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns.cc;
 
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.embedKernelConsistencyPatternNodes;
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.isComplementRule;
+import static org.emoflon.ibex.tgg.util.MAUtil.embedKernelConsistencyPatternNodes;
+import static org.emoflon.ibex.tgg.util.MAUtil.isComplementRule;
 import static org.emoflon.ibex.tgg.util.RuleRefinementUtil.checkInjectivityInSubRule;
 
 import java.util.Collection;

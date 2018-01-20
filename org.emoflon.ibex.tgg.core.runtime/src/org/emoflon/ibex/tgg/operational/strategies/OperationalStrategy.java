@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.isFusedPatternMatch;
+import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -503,6 +503,7 @@ public abstract class OperationalStrategy {
 	}
 	
 	public IGreenPatternFactory getGreenFactory(String ruleName) {
+		assert(ruleName != null);
 		if(!factories.containsKey(ruleName)) {
 			if (isFusedPatternMatch(ruleName)){
 				factories.put(ruleName, new GreenFusedPatternFactory(ruleName, options, this));
@@ -511,6 +512,7 @@ public abstract class OperationalStrategy {
 				factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
 			}
 		}
+		
 		return factories.get(ruleName);
 	}
 
