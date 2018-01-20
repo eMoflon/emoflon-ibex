@@ -18,7 +18,6 @@ import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGLiteralExpression;
 import language.basic.expressions.TGGParamValue;
 import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 import language.csp.TGGAttributeVariable;
 
 public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrConstrContainer {
@@ -30,12 +29,12 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	private IMatch match;
 	private Collection<String> boundObjectNames;
 		
-	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, List<TGGAttributeConstraint> sortedConstraints, IMatch match, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
+	public RuntimeTGGAttributeConstraintContainer(List<TGGParamValue> variables, List<TGGAttributeConstraint> sortedConstraints, IMatch match, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.parameterNames();
 		this.constraintProvider = runtimeConstraintProvider;
 		
-		extractRuntimeParameters(library);
+		extractRuntimeParameters(variables);
 		extractRuntimeConstraints(sortedConstraints);
 	}
 
@@ -49,8 +48,8 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 		return runtimeConstraint;
 	}
 
-	private void extractRuntimeParameters(TGGAttributeConstraintLibrary library) {
-		library.getParameterValues().stream().forEach(p -> params2runtimeVariable.put(p, new RuntimeTGGAttributeConstraintVariable(calculateBoundState(p), calculateValue(p), calculateType(p))));
+	private void extractRuntimeParameters(List<TGGParamValue> variables) {
+		variables.forEach(p -> params2runtimeVariable.put(p, new RuntimeTGGAttributeConstraintVariable(calculateBoundState(p), calculateValue(p), calculateType(p))));
 	}
 	
 	private boolean calculateBoundState(TGGParamValue value) {

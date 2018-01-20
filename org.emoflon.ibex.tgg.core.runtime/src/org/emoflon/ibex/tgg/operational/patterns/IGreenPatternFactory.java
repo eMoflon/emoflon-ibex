@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.patterns;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -8,7 +9,8 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.csp.TGGAttributeConstraintLibrary;
+import language.basic.expressions.TGGParamValue;
+import language.csp.TGGAttributeConstraint;
 
 public interface IGreenPatternFactory {
 
@@ -21,8 +23,6 @@ public interface IGreenPatternFactory {
 	public OperationalStrategy getStrategy();
 
 	public boolean blackInterpSupportsAttrConstrs();
-
-	public TGGAttributeConstraintLibrary getRuleCSPConstraintLibrary();
 	
 	public Collection<TGGRuleNode> getGreenSrcNodesInRule();
 	
@@ -46,5 +46,9 @@ public interface IGreenPatternFactory {
 	
 	public boolean isAxiom();
 	
-	public boolean isComplimentRule();
+	public boolean isComplementRule();
+
+	public List<TGGAttributeConstraint> getAttributeConstraints();
+
+	public List<TGGParamValue> getAttributeCSPVariables();
 }

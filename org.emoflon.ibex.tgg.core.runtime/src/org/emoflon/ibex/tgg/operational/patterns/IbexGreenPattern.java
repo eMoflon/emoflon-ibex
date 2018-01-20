@@ -16,8 +16,8 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import language.basic.expressions.TGGParamValue;
 import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 
@@ -32,17 +32,21 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	
 	@Override
 	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
-		List<TGGAttributeConstraint> sortedConstraints = sortConstraints(factory.getRuleCSPConstraintLibrary());
-		
-		return new RuntimeTGGAttributeConstraintContainer(
-				factory.getRuleCSPConstraintLibrary(), 
-				sortedConstraints,
-				match,
-				factory.getOptions().constraintProvider());
+		try {
+			List<TGGAttributeConstraint> sortedConstraints = sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints());
+			
+			return new RuntimeTGGAttributeConstraintContainer(
+					factory.getAttributeCSPVariables(), 
+					sortedConstraints,
+					match,
+					factory.getOptions().constraintProvider());
+		} catch (Exception e) {
+			throw new IllegalStateException("Unable to sort attribute constraints for " + this.getClass().getName() + ", " + e.getMessage(), e);
+		}
 	}
 	
-	protected List<TGGAttributeConstraint> sortConstraints(TGGAttributeConstraintLibrary lib) {
-		SearchPlanAction spa = new SearchPlanAction(lib, false, getNodesCreatedByPattern());
+	protected List<TGGAttributeConstraint> sortConstraints(List<TGGParamValue> variables, List<TGGAttributeConstraint> constraints) {
+		SearchPlanAction spa = new SearchPlanAction(variables, constraints, false, getSrcTrgNodesCreatedByPattern());
 		return spa.sortConstraints();
 	}
 

@@ -21,7 +21,6 @@ import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGLiteralExpression;
 import language.basic.expressions.TGGParamValue;
 import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 import language.csp.TGGAttributeVariable;
 import language.csp.definition.TGGAttributeConstraintAdornment;
 
@@ -32,9 +31,9 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	private boolean useGenAdornments;
 	private Collection<String> nodesCreatedByPattern;
 
-	public SearchPlanAction(TGGAttributeConstraintLibrary library, boolean useGenAdornments, Collection<TGGRuleNode> nodesCreatedByPattern) {
-		variables = library.getParameterValues();
-		constraints = library.getTggAttributeConstraints();		
+	public SearchPlanAction(List<TGGParamValue> variables, List<TGGAttributeConstraint> constraints, boolean useGenAdornments, Collection<TGGRuleNode> nodesCreatedByPattern) {
+		this.variables = variables;
+		this.constraints = constraints;
 		this.useGenAdornments = useGenAdornments;
 		this.nodesCreatedByPattern = nodesCreatedByPattern.stream()
 				.map(TGGRuleNode::getName)
@@ -76,6 +75,10 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 				c = c.getNext();
 			}
 			return Lists.reverse(sortedList);
+		} catch(Exception e) {
+			throw new IllegalStateException(constraints.stream()
+					.map(c -> c.getDefinition().getName())
+					.collect(Collectors.toList()) + ", " + e.getMessage());
 		} finally {
 			System.setOut(out);
 			System.setErr(err);
@@ -108,7 +111,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 		if (variable instanceof TGGLiteralExpression || variable instanceof TGGEnumExpression)
 			return true;
 
-		throw new RuntimeException("Unable to handle " + variable);
+		throw new IllegalStateException("Unable to handle " + variable);
 	}
 
 	/**

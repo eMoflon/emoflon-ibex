@@ -8,8 +8,8 @@ import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import language.basic.expressions.TGGParamValue;
 import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 
 public class GenGreenPattern extends IbexGreenPattern {
 	
@@ -43,8 +43,8 @@ public class GenGreenPattern extends IbexGreenPattern {
 	}
 
 	@Override
-	protected List<TGGAttributeConstraint> sortConstraints(TGGAttributeConstraintLibrary library) {
-		SearchPlanAction spa = new SearchPlanAction(library, true, getNodesCreatedByPattern());
+	protected List<TGGAttributeConstraint> sortConstraints(List<TGGParamValue> variables, List<TGGAttributeConstraint> constraints) {
+		SearchPlanAction spa = new SearchPlanAction(variables, constraints, true, getSrcTrgNodesCreatedByPattern());
 		return spa.sortConstraints();
 	}
 }

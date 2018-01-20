@@ -1,8 +1,10 @@
 package org.emoflon.ibex.tgg.operational.patterns;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -22,28 +24,34 @@ import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.csp.TGGAttributeConstraintLibrary;
+import language.basic.expressions.TGGParamValue;
+import language.csp.TGGAttributeConstraint;
 
 public class GreenPatternFactory implements IGreenPatternFactory {
-	private String ruleName;
+	protected String ruleName;
+	protected IbexOptions options;
+	protected List<TGGParamValue> variables = new ArrayList<>();
+	protected List<TGGAttributeConstraint> constraints = new ArrayList<>();
+	
 	private Map<String, IGreenPattern> patterns;
-	private IbexOptions options;
 	private OperationalStrategy strategy;
 	private TGGRule rule;
 	
-	protected Collection<TGGRuleNode> greenSrcNodesInRule;
-	protected Collection<TGGRuleNode> greenTrgNodesInRule;
-	protected Collection<TGGRuleCorr> greenCorrNodesInRule;
-	protected Collection<TGGRuleEdge> greenSrcEdgesInRule;
-	protected Collection<TGGRuleEdge> greenTrgEdgesInRule;
+	
+	protected Collection<TGGRuleNode> greenSrcNodesInRule = new ArrayList<>();
+	protected Collection<TGGRuleNode> greenTrgNodesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleCorr> greenCorrNodesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> greenSrcEdgesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> greenTrgEdgesInRule = new ArrayList<>();;
 
-	protected Collection<TGGRuleNode> blackSrcNodesInRule;
-	protected Collection<TGGRuleNode> blackTrgNodesInRule;
-	protected Collection<TGGRuleCorr> blackCorrNodesInRule;
-	protected Collection<TGGRuleEdge> blackSrcEdgesInRule;
-	protected Collection<TGGRuleEdge> blackTrgEdgesInRule;
+	protected Collection<TGGRuleNode> blackSrcNodesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleNode> blackTrgNodesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleCorr> blackCorrNodesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> blackSrcEdgesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> blackTrgEdgesInRule = new ArrayList<>();;
 	
 	public GreenPatternFactory(String ruleName, IbexOptions options, OperationalStrategy strategy) {
+		this(options, strategy);
 		this.ruleName = ruleName;
 		
 		rule = options.flattenedTGG().getRules().stream()
@@ -51,36 +59,33 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 			.findAny()
 			.orElseThrow(() -> new IllegalStateException("Could not find " + ruleName + " in the TGG."));
 		
-		greenSrcNodesInRule = getNodes(BindingType.CREATE, DomainType.SRC);
-		greenTrgNodesInRule = getNodes(BindingType.CREATE, DomainType.TRG);
-		greenCorrNodesInRule = getNodes(BindingType.CREATE, DomainType.CORR)
+		greenSrcNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.SRC));
+		greenTrgNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.TRG));
+		greenCorrNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.CORR)
 				.stream()
 				.map(TGGRuleCorr.class::cast)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()));
 		
-		greenSrcEdgesInRule = validate(getEdges(BindingType.CREATE, DomainType.SRC));
-		greenTrgEdgesInRule = validate(getEdges(BindingType.CREATE, DomainType.TRG));
+		greenSrcEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.SRC)));
+		greenTrgEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.TRG)));
 		
-		blackSrcNodesInRule = getNodes(BindingType.CONTEXT, DomainType.SRC);
-		blackTrgNodesInRule = getNodes(BindingType.CONTEXT, DomainType.TRG);
-		blackCorrNodesInRule = getNodes(BindingType.CONTEXT, DomainType.CORR)
+		blackSrcNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.SRC));
+		blackTrgNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.TRG));
+		blackCorrNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.CORR)
 				.stream()
 				.map(TGGRuleCorr.class::cast)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()));
 		
-		blackSrcEdgesInRule = validate(getEdges(BindingType.CONTEXT, DomainType.SRC));
-		blackTrgEdgesInRule = validate(getEdges(BindingType.CONTEXT, DomainType.TRG));
+		blackSrcEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.SRC)));
+		blackTrgEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.TRG)));
 		
-		this.options = options;
-		this.strategy = strategy;
-		
-		patterns = new HashMap<>();
+		constraints.addAll(rule.getAttributeConditionLibrary().getTggAttributeConstraints());
+		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
 	}
 	
 	public GreenPatternFactory(IbexOptions options, OperationalStrategy strategy) {
 		this.options = options;
 		this.strategy = strategy;
-		
 		patterns = new HashMap<>();
 	}
 
@@ -169,70 +174,90 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		return patterns.get(key);
 	}
 	
+	@Override
 	public IbexOptions getOptions() {
 		return options;
 	}
 	
+	@Override
 	public OperationalStrategy getStrategy() {
 		return strategy;
 	}
 
+	@Override
 	public boolean blackInterpSupportsAttrConstrs() {
 		return options.blackInterpSupportsAttrConstrs();
 	}
 
-	public TGGAttributeConstraintLibrary getRuleCSPConstraintLibrary() {
-		return rule.getAttributeConditionLibrary();
-	}
-	
+	@Override
 	public Collection<TGGRuleNode> getGreenSrcNodesInRule() {
 		return greenSrcNodesInRule;
 	}
 	
+	@Override
 	public Collection<TGGRuleNode> getGreenTrgNodesInRule() {
 		return greenTrgNodesInRule;
 	}
 	
+	@Override
 	public Collection<TGGRuleCorr> getGreenCorrNodesInRule() {
 		return greenCorrNodesInRule;
 	}
 	
+	@Override
 	public Collection<TGGRuleEdge> getGreenSrcEdgesInRule() {
 		return greenSrcEdgesInRule;
 	}
 	
+	@Override
 	public Collection<TGGRuleEdge> getGreenTrgEdgesInRule() {
 		return greenTrgEdgesInRule;
 	}
 	
+	@Override
 	public Collection<TGGRuleNode> getBlackSrcNodesInRule() {
 		return blackSrcNodesInRule;
 	}
 
+	@Override
 	public Collection<TGGRuleNode> getBlackTrgNodesInRule() {
 		return blackTrgNodesInRule;
 	}
 
+	@Override
 	public Collection<TGGRuleCorr> getBlackCorrNodesInRule() {
 		return blackCorrNodesInRule;
 	}
 
+	@Override
 	public Collection<TGGRuleEdge> getBlackSrcEdgesInRule() {
 		return blackSrcEdgesInRule;
 	}
 
+	@Override
 	public Collection<TGGRuleEdge> getBlackTrgEdgesInRule() {
 		return blackTrgEdgesInRule;
 	}
 
+	@Override
 	public boolean isAxiom() {
 		return blackSrcNodesInRule.isEmpty() &&
 			   blackTrgNodesInRule.isEmpty() && 
 			   blackCorrNodesInRule.isEmpty();
 	}
 	
-	public boolean isComplimentRule() {
+	@Override
+	public boolean isComplementRule() {
 		return (rule instanceof TGGComplementRule);
 	}
 	
+	@Override
+	public List<TGGAttributeConstraint> getAttributeConstraints() {
+		return constraints;
+	}
+
+	@Override
+	public List<TGGParamValue> getAttributeCSPVariables() {
+		return variables;
+	}
 }
