@@ -26,11 +26,12 @@ public class NacPattern extends IbexBasePattern {
 	 *            The {@link TGGElements} that shall be part of this constraint,
 	 *            but not part of the signature).
 	 */
-	public NacPattern(TGGRule rule, Collection<TGGRuleNode> signatureNodes, Collection<TGGRuleElement> localElements, String name) {
+	public NacPattern(BlackPatternFactory factory, TGGRule rule, Collection<TGGRuleNode> signatureNodes, Collection<TGGRuleElement> localElements, String name) {
+		super(factory);
 		initialise(rule, signatureNodes, localElements, name);
 	}
 	
-	protected void initialise(TGGRule rule, Collection<TGGRuleNode> signatureNodes, Collection<TGGRuleElement> localElements, String n) {
+	protected void initialise(TGGRule rule, Collection<TGGRuleNode> signatureNodes, Collection<TGGRuleElement> localElements, String n) {		
 		String name = rule.getName() + "_" + n + PatternSuffixes.CONSTRAINT;
 		
 		Collection<TGGRuleNode> localNodes = localElements.stream()
@@ -53,10 +54,5 @@ public class NacPattern extends IbexBasePattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return signatureNodes.contains(node1) && signatureNodes.contains(node2);
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return null;
 	}
 }

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 
 import language.TGGRuleCorr;
@@ -25,6 +26,8 @@ public abstract class IbexBasePattern implements IBlackPattern {
 	// Signature nodes are also the nodes that can be accessed from matches of this pattern
 	protected Collection<TGGRuleNode> signatureNodes;
 	
+	protected BlackPatternFactory factory;
+	
 	// Local nodes and edges are all other elements in the pattern
 	// Note that every node in the pattern is xor signature or local!
 	protected Collection<TGGRuleNode> localNodes;
@@ -35,7 +38,8 @@ public abstract class IbexBasePattern implements IBlackPattern {
 	
 	protected IbexPatternOptimiser optimiser;
 
-	protected IbexBasePattern() {
+	protected IbexBasePattern(BlackPatternFactory factory) {
+		this.factory = factory;
 		this.name = "NO_NAME";
 		
 		signatureNodes = new ArrayList<>();
@@ -223,5 +227,10 @@ public abstract class IbexBasePattern implements IBlackPattern {
 	
 	public final static boolean isAttrNode(String nodeName) {
 		return nodeName.split("__").length == 3;
+	}
+	
+	@Override
+	public final BlackPatternFactory getPatternFactory() {
+		return factory;
 	}
 }

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.AbstractCorrPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
@@ -143,7 +142,7 @@ public class MAUtil {
 		for (TGGRuleElement e : pattern.getSignatureNodes()) {
 			TGGRuleNode node = (TGGRuleNode) e;
 			if (nodeIsNotInKernel(rule, node) && node.getDomainType().equals(domain)) {
-				IBlackPattern markedPattern = BlackPatternFactory.getMarkedPattern(node.getDomainType(), true, false);
+				IBlackPattern markedPattern = pattern.getPatternFactory().getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findAny().get();
 
 				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
@@ -184,6 +183,9 @@ public class MAUtil {
 	}
 
 	public static boolean equal(TGGParamValue p1, TGGParamValue p2) {
+		if(!p1.eClass().getName().equals(p2.eClass().getName()))
+			return false;
+		
 		// Enums
 		if(p1 instanceof TGGEnumExpression) {
 			return ((TGGEnumExpression) p1).getEenum().equals(((TGGEnumExpression) p2).getEenum()) &&

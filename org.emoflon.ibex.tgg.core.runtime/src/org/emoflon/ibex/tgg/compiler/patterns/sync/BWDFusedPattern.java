@@ -23,10 +23,9 @@ import language.TGGRuleNode;
 
 public class BWDFusedPattern extends BasicSyncPattern {
 	private TGGComplementRule flattenedComplementRule;
-	private BlackPatternFactory factory;
 	
 	public BWDFusedPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		assert(factory.getRule() instanceof TGGComplementRule);
 		flattenedComplementRule = (TGGComplementRule)factory.getFlattenedVersionOfRule();
 		
@@ -65,11 +64,6 @@ public class BWDFusedPattern extends BasicSyncPattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getDomainType() == node2.getDomainType();
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 	
 	public static String getName(String ruleName) {

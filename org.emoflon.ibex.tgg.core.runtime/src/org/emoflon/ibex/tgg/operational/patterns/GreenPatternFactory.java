@@ -185,11 +185,6 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	}
 
 	@Override
-	public boolean blackInterpSupportsAttrConstrs() {
-		return options.blackInterpSupportsAttrConstrs();
-	}
-
-	@Override
 	public Collection<TGGRuleNode> getGreenSrcNodesInRule() {
 		return greenSrcNodesInRule;
 	}

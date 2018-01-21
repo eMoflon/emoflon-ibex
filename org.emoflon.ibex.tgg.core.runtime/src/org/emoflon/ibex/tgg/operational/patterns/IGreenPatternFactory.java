@@ -22,8 +22,6 @@ public interface IGreenPatternFactory {
 	
 	public OperationalStrategy getStrategy();
 
-	public boolean blackInterpSupportsAttrConstrs();
-	
 	public Collection<TGGRuleNode> getGreenSrcNodesInRule();
 	
 	public Collection<TGGRuleNode> getGreenTrgNodesInRule();

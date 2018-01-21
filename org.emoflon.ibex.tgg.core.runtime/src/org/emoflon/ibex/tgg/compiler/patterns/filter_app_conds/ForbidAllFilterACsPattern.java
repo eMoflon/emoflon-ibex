@@ -25,11 +25,10 @@ import language.TGGRuleNode;
 
 public class ForbidAllFilterACsPattern extends IbexBasePattern {
 	protected DomainType domain;
-	protected BlackPatternFactory factory;
 	protected IbexPatternOptimiser optimiser;
 
 	public ForbidAllFilterACsPattern(DomainType domain, BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		this.domain = domain;
 		optimiser = new IbexPatternOptimiser();
 
@@ -145,10 +144,5 @@ public class ForbidAllFilterACsPattern extends IbexBasePattern {
 
 	public static String getPatternNameSuffix(DomainType domain){
 		return PatternSuffixes.NO_FILTER_ACs(domain);
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 }

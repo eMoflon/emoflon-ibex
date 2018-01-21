@@ -27,6 +27,10 @@ import language.TGGRuleNode;
 
 public abstract class BasicSyncPattern extends IbexBasePattern{
 	
+	protected BasicSyncPattern(BlackPatternFactory factory) {
+		super(factory);
+	}
+
 	protected void addFilterNACPatterns(DomainType domain, BlackPatternFactory factory, IbexPatternOptimiser optimiser) {
 		final Collection<IBlackPattern> filterNACs = new ArrayList<>();
 		TGGRule rule = factory.getFlattenedVersionOfRule();
@@ -118,7 +122,7 @@ public abstract class BasicSyncPattern extends IbexBasePattern{
 		for (TGGRuleElement el : getSignatureNodes()) {
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && node.getDomainType().equals(domain)) {
-				IBlackPattern markedPattern = BlackPatternFactory.getMarkedPattern(node.getDomainType(), true, false);
+				IBlackPattern markedPattern = getPatternFactory().getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
 
 				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();

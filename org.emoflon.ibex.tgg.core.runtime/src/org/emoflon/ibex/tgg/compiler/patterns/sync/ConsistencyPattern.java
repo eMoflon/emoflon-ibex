@@ -26,11 +26,10 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
 public class ConsistencyPattern extends IbexBasePattern {
-	protected BlackPatternFactory factory;
 	private TGGRuleNode protocolNode;
 	
 	public ConsistencyPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();
 	}
@@ -86,7 +85,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 		{
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (nodeIsConnectedToRuleApplicationNode(node)) {
-				IBlackPattern markedPattern = BlackPatternFactory.getMarkedPattern(node.getDomainType(), false, node.getBindingType().equals(BindingType.CONTEXT));
+				IBlackPattern markedPattern = getPatternFactory().getMarkedPattern(node.getDomainType(), false, node.getBindingType().equals(BindingType.CONTEXT));
 				TGGRuleNode invokedRuleApplicationNode = getRuleApplicationNode(markedPattern.getSignatureNodes());
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes()
 						.stream()
@@ -125,11 +124,6 @@ public class ConsistencyPattern extends IbexBasePattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 
 	public static String getName(String ruleName) {
