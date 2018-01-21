@@ -1,473 +1,167 @@
 <?xml version="1.0" encoding="ASCII"?>
-<ecore:EPackage
-    xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    name="language"
-    nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/"
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="language" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/"
     nsPrefix="org.emoflon.ibex.tgg.core.language">
-  <eClassifiers
-      xsi:type="ecore:EClass"
-      name="TGG"
-      eSuperTypes="#//basic/TGGNamedElement">
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="src"
-        upperBound="-1"
-        eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="trg"
-        upperBound="-1"
-        eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="corr"
-        eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="rules"
-        upperBound="-1"
-        eType="#//TGGRule"
-        containment="true"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="attributeConstraintDefinitionLibrary"
-        lowerBound="1"
-        eType="#//csp/definition/TGGAttributeConstraintDefinitionLibrary"
+  <eClassifiers xsi:type="ecore:EClass" name="TGG" eSuperTypes="#//basic/TGGNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="src" upperBound="-1" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trg" upperBound="-1" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="corr" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"
+        eType="#//TGGRule" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraintDefinitionLibrary"
+        lowerBound="1" eType="#//csp/definition/TGGAttributeConstraintDefinitionLibrary"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers
-      xsi:type="ecore:EClass"
-      name="TGGRule"
-      eSuperTypes="#//basic/TGGNamedElement">
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="refines"
-        upperBound="-1"
+  <eClassifiers xsi:type="ecore:EClass" name="TGGRule" eSuperTypes="#//basic/TGGNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refines" upperBound="-1"
         eType="#//TGGRule"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="nacs"
-        upperBound="-1"
-        eType="#//NAC"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nacs" upperBound="-1" eType="#//NAC"
         containment="true"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="nodes"
-        upperBound="-1"
-        eType="#//TGGRuleNode"
-        containment="true"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="edges"
-        upperBound="-1"
-        eType="#//TGGRuleEdge"
-        containment="true"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="attributeConditionLibrary"
-        lowerBound="1"
-        eType="#//csp/TGGAttributeConstraintLibrary"
-        containment="true"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EAttribute"
-        name="abstract"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
+        eType="#//TGGRuleNode" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
+        eType="#//TGGRuleEdge" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConditionLibrary"
+        lowerBound="1" eType="#//csp/TGGAttributeConstraintLibrary" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
-  <eClassifiers
-      xsi:type="ecore:EClass"
-      name="TGGRuleElement"
-      abstract="true"
-      eSuperTypes="#//basic/TGGNamedElement">
-    <eStructuralFeatures
-        xsi:type="ecore:EAttribute"
-        name="domainType"
-        eType="#//DomainType"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EAttribute"
-        name="bindingType"
-        eType="#//BindingType"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGRuleElement" abstract="true" eSuperTypes="#//basic/TGGNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="domainType" eType="#//DomainType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bindingType" eType="#//BindingType"/>
   </eClassifiers>
-  <eClassifiers
-      xsi:type="ecore:EClass"
-      name="TGGRuleNode"
-      eSuperTypes="#//TGGRuleElement">
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="incomingEdges"
-        upperBound="-1"
-        eType="#//TGGRuleEdge"
-        eOpposite="#//TGGRuleEdge/trgNode"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="outgoingEdges"
-        upperBound="-1"
-        eType="#//TGGRuleEdge"
-        eOpposite="#//TGGRuleEdge/srcNode"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="type"
-        eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="incomingCorrsSource"
-        upperBound="-1"
-        eType="#//TGGRuleCorr"
-        eOpposite="#//TGGRuleCorr/source"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="incomingCorrsTarget"
-        upperBound="-1"
-        eType="#//TGGRuleCorr"
-        eOpposite="#//TGGRuleCorr/target"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="attrExpr"
-        upperBound="-1"
-        eType="#//inplaceAttributes/TGGInplaceAttributeExpression"
-        containment="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGRuleNode" eSuperTypes="#//TGGRuleElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingEdges" upperBound="-1"
+        eType="#//TGGRuleEdge" eOpposite="#//TGGRuleEdge/trgNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
+        eType="#//TGGRuleEdge" eOpposite="#//TGGRuleEdge/srcNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingCorrsSource" upperBound="-1"
+        eType="#//TGGRuleCorr" eOpposite="#//TGGRuleCorr/source"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingCorrsTarget" upperBound="-1"
+        eType="#//TGGRuleCorr" eOpposite="#//TGGRuleCorr/target"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attrExpr" upperBound="-1"
+        eType="#//inplaceAttributes/TGGInplaceAttributeExpression" containment="true"/>
   </eClassifiers>
-  <eClassifiers
-      xsi:type="ecore:EClass"
-      name="TGGRuleCorr"
-      eSuperTypes="#//TGGRuleNode">
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="source"
-        eType="#//TGGRuleNode"
+  <eClassifiers xsi:type="ecore:EClass" name="TGGRuleCorr" eSuperTypes="#//TGGRuleNode">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="#//TGGRuleNode"
         eOpposite="#//TGGRuleNode/incomingCorrsSource"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="target"
-        eType="#//TGGRuleNode"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="#//TGGRuleNode"
         eOpposite="#//TGGRuleNode/incomingCorrsTarget"/>
   </eClassifiers>
-  <eClassifiers
-      xsi:type="ecore:EClass"
-      name="TGGRuleEdge"
-      eSuperTypes="#//TGGRuleElement">
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="srcNode"
-        eType="#//TGGRuleNode"
+  <eClassifiers xsi:type="ecore:EClass" name="TGGRuleEdge" eSuperTypes="#//TGGRuleElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="srcNode" eType="#//TGGRuleNode"
         eOpposite="#//TGGRuleNode/outgoingEdges"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="trgNode"
-        eType="#//TGGRuleNode"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trgNode" eType="#//TGGRuleNode"
         eOpposite="#//TGGRuleNode/incomingEdges"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="type"
-        eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
   </eClassifiers>
-  <eClassifiers
-      xsi:type="ecore:EEnum"
-      name="DomainType">
-    <eLiterals
-        name="SRC"
-        literal="SRC"/>
-    <eLiterals
-        name="TRG"
-        value="1"
-        literal="TRG"/>
-    <eLiterals
-        name="CORR"
-        value="2"
-        literal="CORR"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="DomainType">
+    <eLiterals name="SRC" literal="SRC"/>
+    <eLiterals name="TRG" value="1" literal="TRG"/>
+    <eLiterals name="CORR" value="2" literal="CORR"/>
   </eClassifiers>
-  <eClassifiers
-      xsi:type="ecore:EEnum"
-      name="BindingType">
-    <eLiterals
-        name="CONTEXT"
-        literal="CONTEXT"/>
-    <eLiterals
-        name="CREATE"
-        value="1"
-        literal="CREATE"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="BindingType">
+    <eLiterals name="CONTEXT" literal="CONTEXT"/>
+    <eLiterals name="CREATE" value="1" literal="CREATE"/>
   </eClassifiers>
-  <eClassifiers
-      xsi:type="ecore:EClass"
-      name="NAC"
-      eSuperTypes="#//basic/TGGNamedElement">
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="nodes"
-        upperBound="-1"
-        eType="#//TGGRuleNode"
-        containment="true"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="edges"
-        upperBound="-1"
-        eType="#//TGGRuleEdge"
-        containment="true"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="attributeConditionLibrary"
-        lowerBound="1"
-        eType="#//csp/TGGAttributeConstraintLibrary"
-        containment="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="NAC" eSuperTypes="#//basic/TGGNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
+        eType="#//TGGRuleNode" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
+        eType="#//TGGRuleEdge" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConditionLibrary"
+        lowerBound="1" eType="#//csp/TGGAttributeConstraintLibrary" containment="true"/>
   </eClassifiers>
-  <eClassifiers
-      xsi:type="ecore:EClass"
-      name="TGGComplementRule"
-      eSuperTypes="#//TGGRule">
-    <eStructuralFeatures
-        xsi:type="ecore:EAttribute"
-        name="bounded"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures
-        xsi:type="ecore:EReference"
-        name="kernel"
-        eType="#//TGGRule"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGComplementRule" eSuperTypes="#//TGGRule">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bounded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="kernel" eType="#//TGGRule"/>
   </eClassifiers>
-  <eSubpackages
-      name="inplaceAttributes"
-      nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//inplaceAttributes"
+  <eSubpackages name="inplaceAttributes" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//inplaceAttributes"
       nsPrefix="org.emoflon.ibex.tgg.core.language.inplaceAttributes">
-    <eClassifiers
-        xsi:type="ecore:EClass"
-        name="TGGInplaceAttributeExpression">
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="attribute"
-          lowerBound="1"
-          eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EAttribute"/>
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="valueExpr"
-          eType="#//basic/expressions/TGGExpression"
+    <eClassifiers xsi:type="ecore:EClass" name="TGGInplaceAttributeExpression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" lowerBound="1"
+          eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EAttribute"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="valueExpr" eType="#//basic/expressions/TGGExpression"
           containment="true"/>
-      <eStructuralFeatures
-          xsi:type="ecore:EAttribute"
-          name="operator"
-          lowerBound="1"
-          eType="#//inplaceAttributes/TGGAttributeConstraintOperators"
-          defaultValueLiteral=""/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="operator" lowerBound="1"
+          eType="#//inplaceAttributes/TGGAttributeConstraintOperators" defaultValueLiteral="EQUAL"/>
     </eClassifiers>
-    <eClassifiers
-        xsi:type="ecore:EEnum"
-        name="TGGAttributeConstraintOperators">
-      <eLiterals
-          name="EQUAL"
-          literal="EQUAL"/>
-      <eLiterals
-          name="UNEQUAL"
-          value="1"
-          literal="UNEQUAL"/>
-      <eLiterals
-          name="GR_EQUAL"
-          value="2"
-          literal="GR_EQUAL"/>
-      <eLiterals
-          name="LE_EQUAL"
-          value="3"
-          literal="LE_EQUAL"/>
-      <eLiterals
-          name="GREATER"
-          value="4"
-          literal="GREATER"/>
-      <eLiterals
-          name="LESSER"
-          value="5"
-          literal="LESSER"/>
+    <eClassifiers xsi:type="ecore:EEnum" name="TGGAttributeConstraintOperators">
+      <eLiterals name="EQUAL" literal="EQUAL"/>
+      <eLiterals name="UNEQUAL" value="1" literal="UNEQUAL"/>
+      <eLiterals name="GR_EQUAL" value="2" literal="GR_EQUAL"/>
+      <eLiterals name="LE_EQUAL" value="3" literal="LE_EQUAL"/>
+      <eLiterals name="GREATER" value="4" literal="GREATER"/>
+      <eLiterals name="LESSER" value="5" literal="LESSER"/>
     </eClassifiers>
   </eSubpackages>
-  <eSubpackages
-      name="csp"
-      nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp"
+  <eSubpackages name="csp" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp"
       nsPrefix="org.emoflon.ibex.tgg.core.language.csp">
-    <eClassifiers
-        xsi:type="ecore:EClass"
-        name="TGGAttributeConstraintLibrary">
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="tggAttributeConstraints"
-          upperBound="-1"
-          eType="#//csp/TGGAttributeConstraint"
-          containment="true"/>
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="parameterValues"
-          upperBound="-1"
-          eType="#//basic/expressions/TGGParamValue"
-          containment="true"/>
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="sorted_BWD"
-          upperBound="-1"
-          eType="#//csp/TGGAttributeConstraint"/>
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="sorted_FWD"
-          upperBound="-1"
-          eType="#//csp/TGGAttributeConstraint"/>
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="sorted_CC"
-          upperBound="-1"
-          eType="#//csp/TGGAttributeConstraint"/>
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="sorted_MODELGEN"
-          upperBound="-1"
-          eType="#//csp/TGGAttributeConstraint"/>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintLibrary">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraints"
+          upperBound="-1" eType="#//csp/TGGAttributeConstraint" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="parameterValues" upperBound="-1"
+          eType="#//basic/expressions/TGGParamValue" containment="true"/>
     </eClassifiers>
-    <eClassifiers
-        xsi:type="ecore:EClass"
-        name="TGGAttributeConstraint">
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="definition"
-          eType="#//csp/definition/TGGAttributeConstraintDefinition"/>
-      <eStructuralFeatures
-          xsi:type="ecore:EReference"
-          name="parameters"
-          upperBound="-1"
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraint">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="definition" eType="#//csp/definition/TGGAttributeConstraintDefinition"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
           eType="#//basic/expressions/TGGParamValue"/>
     </eClassifiers>
-    <eClassifiers
-        xsi:type="ecore:EClass"
-        name="TGGAttributeVariable"
-        eSuperTypes="#//basic/expressions/TGGParamValue">
-      <eStructuralFeatures
-          xsi:type="ecore:EAttribute"
-          name="name"
-          eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeVariable" eSuperTypes="#//basic/expressions/TGGParamValue">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
     </eClassifiers>
-    <eSubpackages
-        name="definition"
-        nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp//definition"
+    <eSubpackages name="definition" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp//definition"
         nsPrefix="org.emoflon.ibex.tgg.core.language.csp.definition">
-      <eClassifiers
-          xsi:type="ecore:EClass"
-          name="TGGAttributeConstraintDefinitionLibrary">
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="tggAttributeConstraintDefinitions"
-            upperBound="-1"
-            eType="#//csp/definition/TGGAttributeConstraintDefinition"
+      <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinitionLibrary">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraintDefinitions"
+            upperBound="-1" eType="#//csp/definition/TGGAttributeConstraintDefinition"
             containment="true"/>
       </eClassifiers>
-      <eClassifiers
-          xsi:type="ecore:EClass"
-          name="TGGAttributeConstraintDefinition"
+      <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinition"
           eSuperTypes="#//basic/TGGNamedElement">
-        <eStructuralFeatures
-            xsi:type="ecore:EAttribute"
-            name="userDefined"
-            eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="userDefined" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"
             defaultValueLiteral="true"/>
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="parameterDefinitions"
-            upperBound="-1"
-            eType="#//csp/definition/TGGAttributeConstraintParameterDefinition"
+        <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinitions"
+            upperBound="-1" eType="#//csp/definition/TGGAttributeConstraintParameterDefinition"
             containment="true"/>
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="syncAdornments"
-            upperBound="-1"
-            eType="#//csp/definition/TGGAttributeConstraintAdornment"
-            containment="true"/>
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="genAdornments"
-            upperBound="-1"
-            eType="#//csp/definition/TGGAttributeConstraintAdornment"
-            containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="syncAdornments" upperBound="-1"
+            eType="#//csp/definition/TGGAttributeConstraintAdornment" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="genAdornments" upperBound="-1"
+            eType="#//csp/definition/TGGAttributeConstraintAdornment" containment="true"/>
       </eClassifiers>
-      <eClassifiers
-          xsi:type="ecore:EClass"
-          name="TGGAttributeConstraintParameterDefinition">
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="type"
-            eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EDataType"/>
-        <eStructuralFeatures
-            xsi:type="ecore:EAttribute"
-            name="name"
-            eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+      <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintParameterDefinition">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EDataType"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
       </eClassifiers>
-      <eClassifiers
-          xsi:type="ecore:EClass"
-          name="TGGAttributeConstraintAdornment">
-        <eStructuralFeatures
-            xsi:type="ecore:EAttribute"
-            name="value"
-            unique="false"
-            upperBound="-1"
-            eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+      <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintAdornment">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" unique="false"
+            upperBound="-1" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
       </eClassifiers>
     </eSubpackages>
   </eSubpackages>
-  <eSubpackages
-      name="basic"
-      nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//basic"
+  <eSubpackages name="basic" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//basic"
       nsPrefix="org.emoflon.ibex.tgg.core.language.basic">
-    <eClassifiers
-        xsi:type="ecore:EClass"
-        name="TGGNamedElement">
-      <eStructuralFeatures
-          xsi:type="ecore:EAttribute"
-          name="name"
-          eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGNamedElement">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
     </eClassifiers>
-    <eSubpackages
-        name="expressions"
-        nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions"
+    <eSubpackages name="expressions" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions"
         nsPrefix="org.emoflon.ibex.tgg.core.language.misc.expressions">
-      <eClassifiers
-          xsi:type="ecore:EClass"
-          name="TGGParamValue">
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="parameterDefinition"
+      <eClassifiers xsi:type="ecore:EClass" name="TGGParamValue">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinition"
             eType="#//csp/definition/TGGAttributeConstraintParameterDefinition"/>
       </eClassifiers>
-      <eClassifiers
-          xsi:type="ecore:EClass"
-          name="TGGExpression"
-          abstract="true"
-          eSuperTypes="#//basic/expressions/TGGParamValue"/>
-      <eClassifiers
-          xsi:type="ecore:EClass"
-          name="TGGLiteralExpression"
-          eSuperTypes="#//basic/expressions/TGGExpression">
-        <eStructuralFeatures
-            xsi:type="ecore:EAttribute"
-            name="value"
-            eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eClassifiers xsi:type="ecore:EClass" name="TGGExpression" abstract="true" eSuperTypes="#//basic/expressions/TGGParamValue"/>
+      <eClassifiers xsi:type="ecore:EClass" name="TGGLiteralExpression" eSuperTypes="#//basic/expressions/TGGExpression">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
       </eClassifiers>
-      <eClassifiers
-          xsi:type="ecore:EClass"
-          name="TGGAttributeExpression"
-          eSuperTypes="#//basic/expressions/TGGExpression">
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="objectVar"
-            eType="#//TGGRuleNode"/>
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="attribute"
-            eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EAttribute"/>
+      <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeExpression" eSuperTypes="#//basic/expressions/TGGExpression">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="objectVar" eType="#//TGGRuleNode"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EAttribute"/>
       </eClassifiers>
-      <eClassifiers
-          xsi:type="ecore:EClass"
-          name="TGGEnumExpression"
-          eSuperTypes="#//basic/expressions/TGGExpression">
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="eenum"
-            eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EEnum"/>
-        <eStructuralFeatures
-            xsi:type="ecore:EReference"
-            name="literal"
-            eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EEnumLiteral"/>
+      <eClassifiers xsi:type="ecore:EClass" name="TGGEnumExpression" eSuperTypes="#//basic/expressions/TGGExpression">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="eenum" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EEnum"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="literal" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EEnumLiteral"/>
       </eClassifiers>
     </eSubpackages>
   </eSubpackages>

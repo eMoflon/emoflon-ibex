@@ -2,37 +2,25 @@
  */
 package language.basic.impl;
 
-import language.LanguagePackage;
-
-import language.basic.BasicFactory;
-import language.basic.BasicPackage;
-import language.basic.TGGNamedElement;
-
-import language.basic.expressions.ExpressionsPackage;
-
-import language.basic.expressions.impl.ExpressionsPackageImpl;
-
-import language.csp.CspPackage;
-
-import language.csp.definition.DefinitionPackage;
-
-import language.csp.definition.impl.DefinitionPackageImpl;
-
-import language.csp.impl.CspPackageImpl;
-
-import language.impl.LanguagePackageImpl;
-
-import language.inplaceAttributes.InplaceAttributesPackage;
-
-import language.inplaceAttributes.impl.InplaceAttributesPackageImpl;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.eclipse.emf.ecore.impl.EcorePackageImpl;
+
+import language.LanguagePackage;
+import language.basic.BasicFactory;
+import language.basic.BasicPackage;
+import language.basic.TGGNamedElement;
+import language.basic.expressions.ExpressionsPackage;
+import language.basic.expressions.impl.ExpressionsPackageImpl;
+import language.csp.CspPackage;
+import language.csp.definition.DefinitionPackage;
+import language.csp.definition.impl.DefinitionPackageImpl;
+import language.csp.impl.CspPackageImpl;
+import language.impl.LanguagePackageImpl;
+import language.inplaceAttributes.InplaceAttributesPackage;
+import language.inplaceAttributes.impl.InplaceAttributesPackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -97,6 +85,9 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 
 		isInited = true;
 
+		// Initialize simple dependencies
+		EcorePackage.eINSTANCE.eClass();
+
 		// Obtain or create and register interdependencies
 		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
@@ -118,10 +109,6 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
-		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
-						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theBasicPackage.createPackageContents();
@@ -130,7 +117,6 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		theCspPackage.createPackageContents();
 		theDefinitionPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
-		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theBasicPackage.initializePackageContents();
@@ -139,7 +125,6 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		theCspPackage.initializePackageContents();
 		theDefinitionPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
-		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theBasicPackage.freeze();

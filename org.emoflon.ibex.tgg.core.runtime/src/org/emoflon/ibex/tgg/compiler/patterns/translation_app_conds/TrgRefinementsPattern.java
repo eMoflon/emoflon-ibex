@@ -15,10 +15,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class TrgRefinementsPattern extends IbexBasePattern {
-	private BlackPatternFactory factory;
 	
 	public TrgRefinementsPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);
 	}
@@ -52,10 +51,5 @@ public class TrgRefinementsPattern extends IbexBasePattern {
 
 	private boolean isSignatureNode(TGGRuleNode e) {
 		return e.getDomainType() == DomainType.TRG;
-	}
-
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 }

@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns.cc;
 
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.embedKernelConsistencyPatternNodes;
-import static org.emoflon.ibex.tgg.util.MultiAmalgamationUtil.isComplementRule;
+import static org.emoflon.ibex.tgg.util.MAUtil.embedKernelConsistencyPatternNodes;
+import static org.emoflon.ibex.tgg.util.MAUtil.isComplementRule;
 import static org.emoflon.ibex.tgg.util.RuleRefinementUtil.checkInjectivityInSubRule;
 
 import java.util.Collection;
@@ -24,10 +24,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class CCRefinementPattern extends IbexBasePattern{
-	private BlackPatternFactory factory;
 	
 	public CCRefinementPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);			
 	}
@@ -71,10 +70,5 @@ public class CCRefinementPattern extends IbexBasePattern{
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return checkInjectivityInSubRule(factory.getRule(), node1, node2);
-	}
-
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 }

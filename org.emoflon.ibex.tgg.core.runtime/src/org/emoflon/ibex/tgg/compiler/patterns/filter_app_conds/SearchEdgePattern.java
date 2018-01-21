@@ -17,13 +17,13 @@ public class SearchEdgePattern extends IbexBasePattern {
 	private TGGRuleNode entryPoint;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
-	private BlackPatternFactory factory;
 	
 	public SearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, BlackPatternFactory factory) {
+		super(factory);
+		
 		this.entryPoint = entryPoint;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
-		this.factory = factory;
 		
 		initialise(factory.getFlattenedVersionOfRule());
 	}
@@ -47,10 +47,5 @@ public class SearchEdgePattern extends IbexBasePattern {
 
 	public static String getPatternNameSuffix(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
 		return PatternSuffixes.SEP + entryPoint.getName() +"_" + edgeType.getName() + "_" + eDirection.name().toLowerCase() +  "_SearchEdge_" + entryPoint.getDomainType().getName();
-	}
-
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 }
