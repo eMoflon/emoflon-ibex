@@ -7,7 +7,9 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: GTLanguage,
  GTLanguage.impl,
- GTLanguage.util
+ GTLanguage.util,
+ org.emoflon.ibex.gt.api,
+ org.emoflon.ibex.gt.engine
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
