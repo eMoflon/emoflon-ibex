@@ -30,7 +30,8 @@ public class CheckTranslationStatePattern extends IbexBasePattern {
 	private boolean marksContext; 
 	private DomainType domain;
 	
-	public CheckTranslationStatePattern(DomainType domain, boolean localProtocol, boolean context) {
+	public CheckTranslationStatePattern(BlackPatternFactory factory, DomainType domain, boolean localProtocol, boolean context) {
+		super(factory);
 		this.localProtocol = localProtocol;
 		this.marksContext = context;
 		this.domain = domain;
@@ -38,7 +39,8 @@ public class CheckTranslationStatePattern extends IbexBasePattern {
 		initialise(domain, localProtocol, context);
 	}
 	
-	public CheckTranslationStatePattern(CheckTranslationStatePattern localPattern, DomainType domain, boolean localProtocol) {
+	public CheckTranslationStatePattern(BlackPatternFactory factory, CheckTranslationStatePattern localPattern, DomainType domain, boolean localProtocol) {
+		super(factory);
 		this.localProtocol = localProtocol;
 		this.marksContext = false;
 		this.domain = domain;
@@ -137,10 +139,5 @@ public class CheckTranslationStatePattern extends IbexBasePattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return null;
 	}
 }

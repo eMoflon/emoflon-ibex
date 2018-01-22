@@ -15,10 +15,10 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class SrcRefinementsPattern extends IbexBasePattern {
-	private BlackPatternFactory factory;
 	
 	public SrcRefinementsPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
+		
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);
  	}
@@ -51,10 +51,5 @@ public class SrcRefinementsPattern extends IbexBasePattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 }

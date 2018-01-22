@@ -15,10 +15,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class BWDBlackPattern extends BasicSyncPattern {
-	protected BlackPatternFactory factory;
 
 	public BWDBlackPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();
 	}
@@ -59,11 +58,6 @@ public class BWDBlackPattern extends BasicSyncPattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getDomainType() == node2.getDomainType();
-	}
-
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 
 	public static String getName(String ruleName) {

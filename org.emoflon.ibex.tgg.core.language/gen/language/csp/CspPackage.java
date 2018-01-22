@@ -87,49 +87,13 @@ public interface CspPackage extends EPackage {
 	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES = 1;
 
 	/**
-	 * The feature id for the '<em><b>Sorted BWD</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_BWD = 2;
-
-	/**
-	 * The feature id for the '<em><b>Sorted FWD</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_FWD = 3;
-
-	/**
-	 * The feature id for the '<em><b>Sorted CC</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_CC = 4;
-
-	/**
-	 * The feature id for the '<em><b>Sorted MODELGEN</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_MODELGEN = 5;
-
-	/**
 	 * The number of structural features of the '<em>TGG Attribute Constraint Library</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY_FEATURE_COUNT = 6;
+	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY_FEATURE_COUNT = 2;
 
 	/**
 	 * The number of operations of the '<em>TGG Attribute Constraint Library</em>' class.
@@ -265,50 +229,6 @@ public interface CspPackage extends EPackage {
 	EReference getTGGAttributeConstraintLibrary_ParameterValues();
 
 	/**
-	 * Returns the meta object for the reference list '{@link language.csp.TGGAttributeConstraintLibrary#getSorted_BWD <em>Sorted BWD</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Sorted BWD</em>'.
-	 * @see language.csp.TGGAttributeConstraintLibrary#getSorted_BWD()
-	 * @see #getTGGAttributeConstraintLibrary()
-	 * @generated
-	 */
-	EReference getTGGAttributeConstraintLibrary_Sorted_BWD();
-
-	/**
-	 * Returns the meta object for the reference list '{@link language.csp.TGGAttributeConstraintLibrary#getSorted_FWD <em>Sorted FWD</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Sorted FWD</em>'.
-	 * @see language.csp.TGGAttributeConstraintLibrary#getSorted_FWD()
-	 * @see #getTGGAttributeConstraintLibrary()
-	 * @generated
-	 */
-	EReference getTGGAttributeConstraintLibrary_Sorted_FWD();
-
-	/**
-	 * Returns the meta object for the reference list '{@link language.csp.TGGAttributeConstraintLibrary#getSorted_CC <em>Sorted CC</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Sorted CC</em>'.
-	 * @see language.csp.TGGAttributeConstraintLibrary#getSorted_CC()
-	 * @see #getTGGAttributeConstraintLibrary()
-	 * @generated
-	 */
-	EReference getTGGAttributeConstraintLibrary_Sorted_CC();
-
-	/**
-	 * Returns the meta object for the reference list '{@link language.csp.TGGAttributeConstraintLibrary#getSorted_MODELGEN <em>Sorted MODELGEN</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Sorted MODELGEN</em>'.
-	 * @see language.csp.TGGAttributeConstraintLibrary#getSorted_MODELGEN()
-	 * @see #getTGGAttributeConstraintLibrary()
-	 * @generated
-	 */
-	EReference getTGGAttributeConstraintLibrary_Sorted_MODELGEN();
-
-	/**
 	 * Returns the meta object for class '{@link language.csp.TGGAttributeConstraint <em>TGG Attribute Constraint</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -411,41 +331,6 @@ public interface CspPackage extends EPackage {
 		 */
 		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES = eINSTANCE
 				.getTGGAttributeConstraintLibrary_ParameterValues();
-
-		/**
-		 * The meta object literal for the '<em><b>Sorted BWD</b></em>' reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_BWD = eINSTANCE
-				.getTGGAttributeConstraintLibrary_Sorted_BWD();
-
-		/**
-		 * The meta object literal for the '<em><b>Sorted FWD</b></em>' reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_FWD = eINSTANCE
-				.getTGGAttributeConstraintLibrary_Sorted_FWD();
-
-		/**
-		 * The meta object literal for the '<em><b>Sorted CC</b></em>' reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_CC = eINSTANCE.getTGGAttributeConstraintLibrary_Sorted_CC();
-
-		/**
-		 * The meta object literal for the '<em><b>Sorted MODELGEN</b></em>' reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_MODELGEN = eINSTANCE
-				.getTGGAttributeConstraintLibrary_Sorted_MODELGEN();
 
 		/**
 		 * The meta object literal for the '{@link language.csp.impl.TGGAttributeConstraintImpl <em>TGG Attribute Constraint</em>}' class.

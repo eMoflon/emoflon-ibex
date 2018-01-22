@@ -1,14 +1,15 @@
 package org.emoflon.ibex.tgg.operational.patterns;
 
 import java.util.Collection;
+import java.util.List;
 
-import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import language.basic.expressions.TGGParamValue;
+import language.csp.TGGAttributeConstraint;
 
 public class GenGreenPattern extends IbexGreenPattern {
 	
@@ -42,10 +43,8 @@ public class GenGreenPattern extends IbexGreenPattern {
 	}
 
 	@Override
-	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
-		if (factory.blackInterpSupportsAttrConstrs())
-			throw new NotImplementedException(); // Have to split csp into black and green parts
-		else
-			return super.getAttributeConstraintContainer(match);
+	protected List<TGGAttributeConstraint> sortConstraints(List<TGGParamValue> variables, List<TGGAttributeConstraint> constraints) {
+		SearchPlanAction spa = new SearchPlanAction(variables, constraints, true, getSrcTrgNodesCreatedByPattern());
+		return spa.sortConstraints();
 	}
 }

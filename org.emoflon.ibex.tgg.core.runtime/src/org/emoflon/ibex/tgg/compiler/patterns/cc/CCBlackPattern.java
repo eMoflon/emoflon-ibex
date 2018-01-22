@@ -19,10 +19,8 @@ import language.TGGRuleNode;
 
 public class CCBlackPattern extends IbexBasePattern {
 	
-	private BlackPatternFactory factory;
-
 	public CCBlackPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);
 	}
@@ -62,10 +60,4 @@ public class CCBlackPattern extends IbexBasePattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return checkInjectivityInSubRule(factory.getRule(), node1, node2);
 	}
-
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
-	}
-
 }

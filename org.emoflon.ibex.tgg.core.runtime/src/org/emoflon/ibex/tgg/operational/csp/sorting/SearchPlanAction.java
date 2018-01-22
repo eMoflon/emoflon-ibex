@@ -1,19 +1,22 @@
-package org.emoflon.ibex.tgg.core.transformation.csp.sorting;
+package org.emoflon.ibex.tgg.operational.csp.sorting;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import org.gervarro.democles.common.Adornment;
-import org.gervarro.democles.plan.Algorithm;
-import org.gervarro.democles.plan.WeightedOperation;
+import org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.common.Adornment;
+import org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.plan.Algorithm;
+import org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.plan.WeightedOperation;
 
 import com.google.common.collect.Lists;
 
-import language.BindingType;
-import language.DomainType;
+import language.TGGRuleNode;
 import language.basic.expressions.TGGAttributeExpression;
 import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGLiteralExpression;
@@ -24,29 +27,42 @@ import language.csp.definition.TGGAttributeConstraintAdornment;
 
 public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeConstraint> {
 
-	private List<TGGParamValue> variables;
+	private final List<TGGParamValue> variables = new ArrayList<>();
+	private final List<TGGAttributeConstraint> constraints = new ArrayList<>();
+	private final boolean useGenAdornments;
+	private final Collection<String> nodesCreatedByPattern = new ArrayList<>();
 
-	// Unsorted list of our constraints => return a new List where constraints
-	// are sorted according to the search plan
-	public List<TGGAttributeConstraint> sortConstraints(final List<TGGAttributeConstraint> constraints,
-			final List<TGGParamValue> variables, final CSPSearchPlanMode mode) {
-		this.variables = variables;
+	/**
+	 * @param variables
+	 * @param constraints
+	 * @param useGenAdornments
+	 * @param availableNodes
+	 *            Nodes from which bound values for parameters are taken.
+	 */
+	public SearchPlanAction(List<TGGParamValue> variables, List<TGGAttributeConstraint> constraints,
+			boolean useGenAdornments, Collection<TGGRuleNode> availableNodes) {
+		this.variables.addAll(variables);
+		this.constraints.addAll(constraints);
+		this.useGenAdornments = useGenAdornments;
+		this.nodesCreatedByPattern.addAll(availableNodes.stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
+	}
 
-		// Create Combiner
-		SimpleCombiner combiner = new SimpleCombiner();
+	// Unsorted list of our constraints => return a new List where constraints are
+	// sorted according to the search plan
+	public List<TGGAttributeConstraint> sortConstraints() {
+		if (constraints.isEmpty())
+			return Collections.emptyList();
 
-		// 1. Determine inputAdornment (initial binding information) from sorted
-		// (!) list of variables
-		Adornment inputAdornment = determineInputAdornment(mode);
+		// 1. Determine inputAdornment (initial binding information) from sorted (!)
+		// list of variables
+		Adornment inputAdornment = determineInputAdornment();
 
 		// 2. Create weighted operations, one for each allowed adornment of each
 		// constraint
-		List<WeightedOperation<TGGAttributeConstraint>> weightedOperations = createWeightedOperations(constraints,
-				mode);
+		List<WeightedOperation<TGGAttributeConstraint>> weightedOperations = createWeightedOperations(constraints);
 
 		// 3. Call search plan algorithm to sort weighted operations
-		SimpleCombiner sc;
-		List<TGGAttributeConstraint> sortedList;
+
 		PrintStream out = System.out;
 		PrintStream err = System.err;
 		System.setOut(new PrintStream(new OutputStream() {
@@ -59,27 +75,30 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 			public void write(int b) throws IOException {
 			}
 		}));
+
 		try {
-			sc = generatePlan(combiner, weightedOperations, inputAdornment);
-			sortedList = new ArrayList<>();
+			SimpleCombiner sc = generatePlan(new SimpleCombiner(), weightedOperations, inputAdornment);
+			List<TGGAttributeConstraint> sortedList = new ArrayList<>();
 			Chain<?> c = sc.getRoot();
-			while(c!= null){
+			while (c != null) {
 				sortedList.add((TGGAttributeConstraint) c.getValue());
 				c = c.getNext();
 			}
+			return Lists.reverse(sortedList);
+		} catch (Exception e) {
+			throw new IllegalStateException(
+					constraints.stream().map(c -> c.getDefinition().getName()).collect(Collectors.toList()) + ", "
+							+ e.getMessage());
 		} finally {
 			System.setOut(out);
 			System.setErr(err);
 		}
-		sortedList = Lists.reverse(sortedList);
-
-		return sortedList;
 	}
 
-	private Adornment determineInputAdornment(CSPSearchPlanMode mode) {
+	private Adornment determineInputAdornment() {
 		boolean[] bits = new boolean[variables.size()];
 		for (int i = 0; i < variables.size(); i++) {
-			if (isBoundForMode(variables.get(i), mode)) {
+			if (isBoundInPattern(variables.get(i), n -> !nodesCreatedByPattern.contains(n))) {
 				bits[i] = Adornment.B; // Bound <-> false !
 			} else {
 				bits[i] = Adornment.F; // Unbound <-> true !
@@ -89,24 +108,11 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 		return inputAdornment;
 	}
 
-	private boolean isBoundForMode(TGGParamValue variable, CSPSearchPlanMode mode) {
+	public static boolean isBoundInPattern(TGGParamValue variable, Predicate<String> patternContainsNode) {
 		if (variable instanceof TGGAttributeExpression) {
 			TGGAttributeExpression attrExp = (TGGAttributeExpression) variable;
-			if (attrExp.getObjectVar().getBindingType() == BindingType.CONTEXT)
-				return true;
-
-			switch (mode) {
-			case FWD:
-				return attrExp.getObjectVar().getDomainType() == DomainType.SRC;
-			case BWD:
-				return attrExp.getObjectVar().getDomainType() == DomainType.TRG;
-			case CC:
-				return true;
-			case MODELGEN:
-				return false;
-			default:
-				break;
-			}
+			String nameOfObj = attrExp.getObjectVar().getName();
+			return patternContainsNode.test(nameOfObj);
 		}
 
 		if (variable instanceof TGGAttributeVariable)
@@ -115,9 +121,13 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 		if (variable instanceof TGGLiteralExpression || variable instanceof TGGEnumExpression)
 			return true;
 
-		throw new RuntimeException("Variable Typ is not known");
+		throw new IllegalStateException("Unable to handle " + variable);
 	}
 
+	public static boolean isConnectedToPattern(TGGParamValue variable, Predicate<String> patternContainsNode) {
+		return (variable instanceof TGGAttributeExpression) && isBoundInPattern(variable, patternContainsNode);
+	}
+	
 	/**
 	 * Create weighted operations from constraints
 	 * 
@@ -125,21 +135,20 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	 * @return
 	 */
 	private List<WeightedOperation<TGGAttributeConstraint>> createWeightedOperations(
-			final List<TGGAttributeConstraint> constraints, CSPSearchPlanMode mode) {
+			final List<TGGAttributeConstraint> constraints) {
 		List<WeightedOperation<TGGAttributeConstraint>> result = new ArrayList<WeightedOperation<TGGAttributeConstraint>>();
 		// for each constraint ...
 		for (TGGAttributeConstraint constraint : constraints) {
 			// and each allowed adornment ...
-			for (TGGAttributeConstraintAdornment adornment : getAllowedAdornmentsForMode(constraint, mode)) {
+			for (TGGAttributeConstraintAdornment adornment : getAllowedAdornmentsForMode(constraint)) {
 				result.add(createWeightedOperationForConstraintWithAdornment(constraint, adornment));
 			}
 		}
 		return result;
 	}
 
-	private List<TGGAttributeConstraintAdornment> getAllowedAdornmentsForMode(TGGAttributeConstraint constraint,
-			CSPSearchPlanMode mode) {
-		if (mode == CSPSearchPlanMode.MODELGEN)
+	private List<TGGAttributeConstraintAdornment> getAllowedAdornmentsForMode(TGGAttributeConstraint constraint) {
+		if (useGenAdornments)
 			return constraint.getDefinition().getGenAdornments();
 		else
 			return constraint.getDefinition().getSyncAdornments();
@@ -153,21 +162,6 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 		return createOperation(constraint, createBoundMask(constraint, adornment),
 				createFreeMask(constraint, adornment), weight);
 	}
-
-	// private TGGAttributeConstraintAdornment createBoundAdornment(final
-	// RuntimeTGGAttributeConstraint constraint)
-	// {
-	// final String adornmentValue = StringUtils.repeat("B",
-	// constraint.getVariables().size());
-	//
-	// TGGAttributeConstraintAdornment boundAdornment =
-	// DefinitionFactory.eINSTANCE.createTGGAttributeConstraintAdornment();
-	// for(int i = 0; i < constraint.getVariables().size(); i++){
-	// boundAdornment.getValue().add("B");
-	// }
-	//
-	// return boundAdornment;
-	// }
 
 	private Adornment createBoundMask(final TGGAttributeConstraint constraint,
 			final TGGAttributeConstraintAdornment adornment) {

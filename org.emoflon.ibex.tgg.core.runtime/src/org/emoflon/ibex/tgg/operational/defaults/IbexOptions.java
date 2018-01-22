@@ -10,6 +10,8 @@ import language.TGG;
 import language.TGGRule;
 
 public class IbexOptions {
+	public static boolean blackInterpSupportsAttrConstrs = false;
+	
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -19,13 +21,11 @@ public class IbexOptions {
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private boolean isModelGen;
-	private boolean blackInterpSupportsAttrConstrs;
 	
 	public IbexOptions() {
 		debug = false;
 		projectPath = "/";
 		workspacePath = "./../";
-		blackInterpSupportsAttrConstrs = false;
 	}
 
 	public boolean isModelGen() {
@@ -126,10 +126,5 @@ public class IbexOptions {
 	
 	public boolean blackInterpSupportsAttrConstrs() {
 		return blackInterpSupportsAttrConstrs;
-	}
-	
-	public IbexOptions blackInterpSupportsAttrConstrs(boolean blackInterpSupportsAttrConstrs) {
-		this.blackInterpSupportsAttrConstrs = blackInterpSupportsAttrConstrs;
-		return this;
 	}
 }

@@ -2,40 +2,28 @@
  */
 package language.csp.impl;
 
-import language.LanguagePackage;
-
-import language.basic.BasicPackage;
-
-import language.basic.expressions.ExpressionsPackage;
-
-import language.basic.expressions.impl.ExpressionsPackageImpl;
-
-import language.basic.impl.BasicPackageImpl;
-
-import language.csp.CspFactory;
-import language.csp.CspPackage;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
-import language.csp.TGGAttributeVariable;
-
-import language.csp.definition.DefinitionPackage;
-
-import language.csp.definition.impl.DefinitionPackageImpl;
-
-import language.impl.LanguagePackageImpl;
-
-import language.inplaceAttributes.InplaceAttributesPackage;
-
-import language.inplaceAttributes.impl.InplaceAttributesPackageImpl;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.eclipse.emf.ecore.impl.EcorePackageImpl;
+
+import language.LanguagePackage;
+import language.basic.BasicPackage;
+import language.basic.expressions.ExpressionsPackage;
+import language.basic.expressions.impl.ExpressionsPackageImpl;
+import language.basic.impl.BasicPackageImpl;
+import language.csp.CspFactory;
+import language.csp.CspPackage;
+import language.csp.TGGAttributeConstraint;
+import language.csp.TGGAttributeConstraintLibrary;
+import language.csp.TGGAttributeVariable;
+import language.csp.definition.DefinitionPackage;
+import language.csp.definition.impl.DefinitionPackageImpl;
+import language.impl.LanguagePackageImpl;
+import language.inplaceAttributes.InplaceAttributesPackage;
+import language.inplaceAttributes.impl.InplaceAttributesPackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -114,6 +102,9 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 
 		isInited = true;
 
+		// Initialize simple dependencies
+		EcorePackage.eINSTANCE.eClass();
+
 		// Obtain or create and register interdependencies
 		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
 				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
@@ -135,10 +126,6 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
 						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
 						: ExpressionsPackage.eINSTANCE);
-		EcorePackageImpl theEcorePackage = (EcorePackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(EcorePackage.eNS_URI) instanceof EcorePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI)
-						: EcorePackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theCspPackage.createPackageContents();
@@ -147,7 +134,6 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		theDefinitionPackage.createPackageContents();
 		theBasicPackage.createPackageContents();
 		theExpressionsPackage.createPackageContents();
-		theEcorePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theCspPackage.initializePackageContents();
@@ -156,7 +142,6 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		theDefinitionPackage.initializePackageContents();
 		theBasicPackage.initializePackageContents();
 		theExpressionsPackage.initializePackageContents();
-		theEcorePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theCspPackage.freeze();
@@ -191,42 +176,6 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 	 */
 	public EReference getTGGAttributeConstraintLibrary_ParameterValues() {
 		return (EReference) tggAttributeConstraintLibraryEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getTGGAttributeConstraintLibrary_Sorted_BWD() {
-		return (EReference) tggAttributeConstraintLibraryEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getTGGAttributeConstraintLibrary_Sorted_FWD() {
-		return (EReference) tggAttributeConstraintLibraryEClass.getEStructuralFeatures().get(3);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getTGGAttributeConstraintLibrary_Sorted_CC() {
-		return (EReference) tggAttributeConstraintLibraryEClass.getEStructuralFeatures().get(4);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getTGGAttributeConstraintLibrary_Sorted_MODELGEN() {
-		return (EReference) tggAttributeConstraintLibraryEClass.getEStructuralFeatures().get(5);
 	}
 
 	/**
@@ -307,10 +256,6 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		createEReference(tggAttributeConstraintLibraryEClass,
 				TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
 		createEReference(tggAttributeConstraintLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES);
-		createEReference(tggAttributeConstraintLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_BWD);
-		createEReference(tggAttributeConstraintLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_FWD);
-		createEReference(tggAttributeConstraintLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_CC);
-		createEReference(tggAttributeConstraintLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_MODELGEN);
 
 		tggAttributeConstraintEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT);
 		createEReference(tggAttributeConstraintEClass, TGG_ATTRIBUTE_CONSTRAINT__DEFINITION);
@@ -371,18 +316,6 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		initEReference(getTGGAttributeConstraintLibrary_ParameterValues(), theExpressionsPackage.getTGGParamValue(),
 				null, "parameterValues", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraintLibrary_Sorted_BWD(), this.getTGGAttributeConstraint(), null,
-				"sorted_BWD", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraintLibrary_Sorted_FWD(), this.getTGGAttributeConstraint(), null,
-				"sorted_FWD", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraintLibrary_Sorted_CC(), this.getTGGAttributeConstraint(), null,
-				"sorted_CC", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraintLibrary_Sorted_MODELGEN(), this.getTGGAttributeConstraint(), null,
-				"sorted_MODELGEN", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggAttributeConstraintEClass, TGGAttributeConstraint.class, "TGGAttributeConstraint", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

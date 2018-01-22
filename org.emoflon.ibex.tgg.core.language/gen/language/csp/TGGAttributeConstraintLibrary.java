@@ -19,10 +19,6 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getTggAttributeConstraints <em>Tgg Attribute Constraints</em>}</li>
  *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getParameterValues <em>Parameter Values</em>}</li>
- *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getSorted_BWD <em>Sorted BWD</em>}</li>
- *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getSorted_FWD <em>Sorted FWD</em>}</li>
- *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getSorted_CC <em>Sorted CC</em>}</li>
- *   <li>{@link language.csp.TGGAttributeConstraintLibrary#getSorted_MODELGEN <em>Sorted MODELGEN</em>}</li>
  * </ul>
  *
  * @see language.csp.CspPackage#getTGGAttributeConstraintLibrary()
@@ -61,69 +57,5 @@ public interface TGGAttributeConstraintLibrary extends EObject {
 	 * @generated
 	 */
 	EList<TGGParamValue> getParameterValues();
-
-	/**
-	 * Returns the value of the '<em><b>Sorted BWD</b></em>' reference list.
-	 * The list contents are of type {@link language.csp.TGGAttributeConstraint}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Sorted BWD</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Sorted BWD</em>' reference list.
-	 * @see language.csp.CspPackage#getTGGAttributeConstraintLibrary_Sorted_BWD()
-	 * @model
-	 * @generated
-	 */
-	EList<TGGAttributeConstraint> getSorted_BWD();
-
-	/**
-	 * Returns the value of the '<em><b>Sorted FWD</b></em>' reference list.
-	 * The list contents are of type {@link language.csp.TGGAttributeConstraint}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Sorted FWD</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Sorted FWD</em>' reference list.
-	 * @see language.csp.CspPackage#getTGGAttributeConstraintLibrary_Sorted_FWD()
-	 * @model
-	 * @generated
-	 */
-	EList<TGGAttributeConstraint> getSorted_FWD();
-
-	/**
-	 * Returns the value of the '<em><b>Sorted CC</b></em>' reference list.
-	 * The list contents are of type {@link language.csp.TGGAttributeConstraint}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Sorted CC</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Sorted CC</em>' reference list.
-	 * @see language.csp.CspPackage#getTGGAttributeConstraintLibrary_Sorted_CC()
-	 * @model
-	 * @generated
-	 */
-	EList<TGGAttributeConstraint> getSorted_CC();
-	
-	/**
-	 * Returns the value of the '<em><b>Sorted MODELGEN</b></em>' reference list.
-	 * The list contents are of type {@link language.csp.TGGAttributeConstraint}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Sorted MODELGEN</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Sorted MODELGEN</em>' reference list.
-	 * @see language.csp.CspPackage#getTGGAttributeConstraintLibrary_Sorted_MODELGEN()
-	 * @model
-	 * @generated
-	 */
-	EList<TGGAttributeConstraint> getSorted_MODELGEN();
 
 } // TGGAttributeConstraintLibrary

@@ -11,7 +11,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import language.basic.expressions.TGGAttributeExpression;
@@ -19,7 +18,6 @@ import language.basic.expressions.TGGEnumExpression;
 import language.basic.expressions.TGGLiteralExpression;
 import language.basic.expressions.TGGParamValue;
 import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 import language.csp.TGGAttributeVariable;
 
 public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrConstrContainer {
@@ -31,18 +29,17 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	private IMatch match;
 	private Collection<String> boundObjectNames;
 		
-	public RuntimeTGGAttributeConstraintContainer(TGGAttributeConstraintLibrary library, IMatch match, OperationalStrategy strategy, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
+	public RuntimeTGGAttributeConstraintContainer(List<TGGParamValue> variables, List<TGGAttributeConstraint> sortedConstraints, IMatch match, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.parameterNames();
 		this.constraintProvider = runtimeConstraintProvider;
 		
-		extractRuntimeParameters(library);
-		extractRuntimeConstraints(library, strategy);
+		extractRuntimeParameters(variables);
+		extractRuntimeConstraints(sortedConstraints);
 	}
 
-	private void extractRuntimeConstraints(TGGAttributeConstraintLibrary library, OperationalStrategy strategy) {
-		List<TGGAttributeConstraint> sortedSpecificationConstraints = strategy.getConstraints(library);
-		constraints = sortedSpecificationConstraints.stream().map(c -> extractRuntimeConstraint(c)).collect(Collectors.toList());
+	private void extractRuntimeConstraints(List<TGGAttributeConstraint> sortedConstraints) {
+		constraints = sortedConstraints.stream().map(c -> extractRuntimeConstraint(c)).collect(Collectors.toList());
 	}
 	
 	private RuntimeTGGAttributeConstraint extractRuntimeConstraint(TGGAttributeConstraint c) {
@@ -51,8 +48,8 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 		return runtimeConstraint;
 	}
 
-	private void extractRuntimeParameters(TGGAttributeConstraintLibrary library) {
-		library.getParameterValues().stream().forEach(p -> params2runtimeVariable.put(p, new RuntimeTGGAttributeConstraintVariable(calculateBoundState(p), calculateValue(p), calculateType(p))));
+	private void extractRuntimeParameters(List<TGGParamValue> variables) {
+		variables.forEach(p -> params2runtimeVariable.put(p, new RuntimeTGGAttributeConstraintVariable(calculateBoundState(p), calculateValue(p), calculateType(p))));
 	}
 	
 	private boolean calculateBoundState(TGGParamValue value) {

@@ -26,11 +26,10 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
 public class ConsistencyPattern extends IbexBasePattern {
-	protected BlackPatternFactory factory;
 	private TGGRuleNode protocolNode;
 	
 	public ConsistencyPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();
 	}
@@ -61,7 +60,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 	
 	public static TGGRuleNode createProtocolNode(TGGRule rule) {
 		TGGRuleNode protocolNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		protocolNode.setName(getProtocolNodeName());
+		protocolNode.setName(getProtocolNodeName(rule.getName()));
 		protocolNode.setType(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 		
 		TGGInplaceAttributeExpression tae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
@@ -86,7 +85,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 		{
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (nodeIsConnectedToRuleApplicationNode(node)) {
-				IBlackPattern markedPattern = BlackPatternFactory.getMarkedPattern(node.getDomainType(), false, node.getBindingType().equals(BindingType.CONTEXT));
+				IBlackPattern markedPattern = getPatternFactory().getMarkedPattern(node.getDomainType(), false, node.getBindingType().equals(BindingType.CONTEXT));
 				TGGRuleNode invokedRuleApplicationNode = getRuleApplicationNode(markedPattern.getSignatureNodes());
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes()
 						.stream()
@@ -118,18 +117,13 @@ public class ConsistencyPattern extends IbexBasePattern {
 		return n.getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication());
 	}
 	
-	public static String getProtocolNodeName() {
-		return "eMoflon_ProtocolNode";
+	public static String getProtocolNodeName(String ruleName) {
+		return ruleName + "_eMoflon_ProtocolNode";
 	}
 
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 
 	public static String getName(String ruleName) {
