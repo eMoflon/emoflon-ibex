@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.gt.editor.gT.Model;
+import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
 import org.emoflon.ibex.gt.editor.gT.Node;
 import org.emoflon.ibex.gt.editor.gT.Reference;
 import org.emoflon.ibex.gt.editor.gT.Rule;
@@ -19,7 +19,7 @@ import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
 
 /**
- * Transformation from the editor model (which conforms to the GT.ecore
+ * Transformation from the editor file (which conforms to the GT.ecore
  * meta-model generated from the Xtext specification) to the internal GT model
  * (which conforms to the GTLanguage.ecore meta-model).
  * 
@@ -29,16 +29,16 @@ import GTLanguage.GTRuleSet;
 public class EditorToInternalGT {
 
 	/**
-	 * Transforms an editor model into a GTRuleSet of the internal GT model.
+	 * Transforms an editor file into a GTRuleSet of the internal GT model.
 	 * 
-	 * @param editorModel
-	 *            the editor model, must not be <code>null</code>
+	 * @param file
+	 *            the editor file model, must not be <code>null</code>
 	 * @return the GTRuleSet
 	 */
-	public static GTRuleSet transformRuleSet(final Model editorModel) {
-		Objects.requireNonNull(editorModel, "model must not be null!");
+	public static GTRuleSet transformRuleSet(final GraphTransformationFile file) {
+		Objects.requireNonNull(file, "file must not be null!");
 		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
-		editorModel.getRules().forEach(rule -> gtRuleSet.getRules().add(transformRule(rule)));
+		file.getRules().forEach(rule -> gtRuleSet.getRules().add(transformRule(rule)));
 		return gtRuleSet;
 	}
 
@@ -46,7 +46,7 @@ public class EditorToInternalGT {
 	 * Transforms an editor rule into a GTRule of the internal GT model.
 	 * 
 	 * @param editorRule
-	 *            the editor model, must not be <code>null</code>
+	 *            the editor rule, must not be <code>null</code>
 	 * @return the GTRule
 	 */
 	public static GTRule transformRule(final Rule editorRule) {

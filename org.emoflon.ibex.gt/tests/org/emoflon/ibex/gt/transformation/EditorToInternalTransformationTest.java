@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.gt.editor.gT.BindingType;
 import org.emoflon.ibex.gt.editor.gT.GTFactory;
-import org.emoflon.ibex.gt.editor.gT.Model;
+import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
 import org.emoflon.ibex.gt.editor.gT.Node;
 import org.emoflon.ibex.gt.editor.gT.Reference;
 import org.emoflon.ibex.gt.editor.gT.Rule;
@@ -51,14 +51,14 @@ public class EditorToInternalTransformationTest {
 		createReferenceForEditorNode(node6, BindingType.CONTEXT, ep.getEAnnotation_References(), node5);
 		Rule ruleB = createEditorRule("B", node4, node5, node6);
 
-		Model editorModel = createEditorModel(ruleA, ruleB);
-		transformAndCheck(editorModel);
+		GraphTransformationFile editorFile = createFile(ruleA, ruleB);
+		transformAndCheck(editorFile);
 	}
 
-	private static Model createEditorModel(final Rule... rules) {
-		Model editorModel = GTFactory.eINSTANCE.createModel();
-		Arrays.stream(rules).forEach(r -> editorModel.getRules().add(r));
-		return editorModel;
+	private static GraphTransformationFile createFile(final Rule... rules) {
+		GraphTransformationFile file = GTFactory.eINSTANCE.createGraphTransformationFile();
+		Arrays.stream(rules).forEach(r -> file.getRules().add(r));
+		return file;
 	}
 
 	private static Rule createEditorRule(final String name, final Node... nodes) {
@@ -86,14 +86,14 @@ public class EditorToInternalTransformationTest {
 		return reference;
 	}
 
-	private static void transformAndCheck(final Model editorModel) {
-		GTRuleSet gtRuleSet = EditorToInternalGT.transformRuleSet(editorModel);
-		checkRules(editorModel, gtRuleSet);
+	private static void transformAndCheck(final GraphTransformationFile editorFile) {
+		GTRuleSet gtRuleSet = EditorToInternalGT.transformRuleSet(editorFile);
+		checkRules(editorFile, gtRuleSet);
 	}
 
-	private static void checkRules(final Model editorModel, final GTRuleSet gtRuleSet) {
-		assertEquals("number of rules", editorModel.getRules().size(), gtRuleSet.getRules().size());
-		editorModel.getRules().forEach(editorRule -> checkRule(editorRule, gtRuleSet.getRules()));
+	private static void checkRules(final GraphTransformationFile editorFile, final GTRuleSet gtRuleSet) {
+		assertEquals("number of rules", editorFile.getRules().size(), gtRuleSet.getRules().size());
+		editorFile.getRules().forEach(editorRule -> checkRule(editorRule, gtRuleSet.getRules()));
 	}
 
 	private static void checkRule(final Rule editorRule, final EList<GTRule> gtRules) {
