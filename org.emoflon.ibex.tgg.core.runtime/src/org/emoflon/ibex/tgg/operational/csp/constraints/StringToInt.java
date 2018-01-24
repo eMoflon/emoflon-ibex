@@ -42,7 +42,6 @@ public class StringToInt extends RuntimeTGGAttributeConstraint {
 						"This case in the constraint has not been implemented yet: " + bindingStates);
 			}
 		} catch (NumberFormatException e) {
-			logger.warn("NumberFormatException during csp solving");
 			setSatisfied(false);
 		}
 	}

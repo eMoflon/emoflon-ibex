@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.compiler.patterns.common;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
@@ -28,4 +29,11 @@ public interface IBlackPattern {
 
 	void addNegativeInvocation(IBlackPattern markedPattern, Map<TGGRuleNode, TGGRuleNode> mapping);
 	void addPositiveInvocation(IBlackPattern markedPattern, Map<TGGRuleNode, TGGRuleNode> mapping);
+	
+	default TGGRuleNode getNode(String nodeName) {
+		return Stream.concat(getAllNodes().stream(), getAllCorrNodes().stream())
+			  .filter(n -> n.getName().equals(nodeName))
+			  .findAny()
+			  .orElseThrow(() -> new IllegalStateException("Not able to find " + nodeName + " in " + getName()));
+	}
 }
