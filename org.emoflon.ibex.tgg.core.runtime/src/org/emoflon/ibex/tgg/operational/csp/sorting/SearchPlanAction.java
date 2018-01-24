@@ -125,7 +125,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	}
 
 	public static boolean isConnectedToPattern(TGGParamValue variable, Predicate<String> patternContainsNode) {
-		return (variable instanceof TGGAttributeExpression) && isBoundInPattern(variable, patternContainsNode);
+		return (variable instanceof TGGAttributeVariable) || isBoundInPattern(variable, patternContainsNode);
 	}
 	
 	/**
