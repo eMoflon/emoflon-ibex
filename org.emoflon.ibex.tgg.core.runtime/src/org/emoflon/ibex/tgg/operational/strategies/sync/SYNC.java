@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -9,9 +8,6 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 
 public abstract class SYNC extends OperationalStrategy {
 
@@ -21,11 +17,6 @@ public abstract class SYNC extends OperationalStrategy {
 		super(options);
 	}
 	
-	@Override
-	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
-		return strategy.getConstraints(library);
-	}
-
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.BWD) 

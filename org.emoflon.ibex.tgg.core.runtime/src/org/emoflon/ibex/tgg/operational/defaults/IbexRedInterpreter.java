@@ -41,7 +41,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	}
 
 	private void revokeEdges(IMatch match, IGreenPattern pattern) {
-		pattern.getEdgesCreatedByPattern().forEach(e -> {
+		pattern.getSrcTrgEdgesCreatedByPattern().forEach(e -> {
 			RuntimeEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
 			strategy.removeCreatedEdge(runtimeEdge);
 			deleteEdge(runtimeEdge.getSrc(), runtimeEdge.getTrg(), runtimeEdge.getRef());
@@ -54,7 +54,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	}
 
 	private void revokeNodes(IMatch match, IGreenPattern pattern) {
-		pattern.getNodesCreatedByPattern().stream()
+		pattern.getSrcTrgNodesCreatedByPattern().stream()
 			.map(TGGRuleNode::getName)
 			.map(match::get)
 			.map(EObject.class::cast)

@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,8 +21,6 @@ import language.BindingType;
 import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
 import runtime.TGGRuleApplication;
 
 /**
@@ -120,8 +117,9 @@ public abstract class MODELGEN extends OperationalStrategy {
 					removeOperationalRuleMatch(match);
 				}
 		}
-		//close the kernel, so other complement rules cannot find this match anymore
-		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName());
+		
+		// Close the kernel, so other complement rules cannot find this match anymore
+		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.patternName())));
 		application.setAmalgamated(true);
 	}
 
@@ -183,12 +181,6 @@ public abstract class MODELGEN extends OperationalStrategy {
 		});
 	}
 	
-	@Override
-	public List<TGGAttributeConstraint> getConstraints(TGGAttributeConstraintLibrary library) {
-		return library.getSorted_MODELGEN();
-	}
-	
-
 	private void checkComplianceWithSchema(HashMap<String, Integer> complementRulesBounds) {
 		HashMap<EReference, Integer> edgesToBeCreated = new HashMap<EReference, Integer>();
 		

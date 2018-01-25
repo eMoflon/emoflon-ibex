@@ -16,10 +16,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class WholeRulePattern extends IbexBasePattern {
-	protected BlackPatternFactory factory;
 
 	public WholeRulePattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();	
 	}
@@ -51,10 +50,5 @@ public class WholeRulePattern extends IbexBasePattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return true;
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 }

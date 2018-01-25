@@ -18,31 +18,28 @@
  * Contributors:
  * 		Gergely Varro <gervarro@cs.bme.hu> - initial API and implementation and/or initial documentation
  */
-package org.emoflon.ibex.tgg.core.transformation.csp.sorting;
+package org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.plan;
 
-import language.csp.TGGAttributeConstraint;
-import org.gervarro.democles.common.Combiner;
+import org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.common.Adornment;
 
-public class SimpleCombiner implements Combiner<SimpleCombiner, TGGAttributeConstraint> {
-	private final Chain<TGGAttributeConstraint> last;
+public class WeightedOperation<T> implements Comparable<WeightedOperation<T>> {
+	T operation;
+	float weight;
+	Adornment freeMask;
+	Adornment boundMask;
 	
-	public SimpleCombiner() {
-		this.last = null;
+	public int compareTo(WeightedOperation<T> o) {
+		return weight < o.weight ? -1 : (weight == o.weight ? 0 : 1);
 	}
 	
-	private SimpleCombiner(final SimpleCombiner src, final TGGAttributeConstraint second) {
-		this.last = new Chain<TGGAttributeConstraint>(second, src.last);
-	}
-	
-	public final SimpleCombiner combine(final TGGAttributeConstraint second) {
-		return new SimpleCombiner(this, second);
-	}
-
-	public final boolean hasSameOrigin(TGGAttributeConstraint operation) {
-		return last != null && last.getValue() == operation;
-	}
-	
-	public final Chain<TGGAttributeConstraint> getRoot() {
-		return last;
+	public String toString() {
+		if (operation != null && freeMask != null && boundMask != null) {
+			StringBuilder result = new StringBuilder(operation.toString());
+			result.append(" : ");
+			result.append(weight);
+			return result.toString();
+		} else {
+			return super.toString();
+		}
 	}
 }

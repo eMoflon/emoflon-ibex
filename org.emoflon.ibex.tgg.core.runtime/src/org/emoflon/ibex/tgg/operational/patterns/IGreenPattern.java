@@ -45,14 +45,14 @@ public interface IGreenPattern {
 	/** Decide how to create markers for match **/
 	void createMarkers(String ruleName, IMatch match);
 	
-	default Collection<TGGRuleEdge> getEdgesCreatedByPattern(){
+	default Collection<TGGRuleEdge> getSrcTrgEdgesCreatedByPattern(){
 		ArrayList<TGGRuleEdge> allCreatedEdges = new ArrayList<>();
 		allCreatedEdges.addAll(getSrcEdges());
 		allCreatedEdges.addAll(getTrgEdges());
 		return allCreatedEdges;
 	}
 
-	default Collection<TGGRuleNode> getNodesCreatedByPattern(){
+	default Collection<TGGRuleNode> getSrcTrgNodesCreatedByPattern(){
 		ArrayList<TGGRuleNode> allCreatedNodes = new ArrayList<>();
 		allCreatedNodes.addAll(getSrcNodes());
 		allCreatedNodes.addAll(getTrgNodes());

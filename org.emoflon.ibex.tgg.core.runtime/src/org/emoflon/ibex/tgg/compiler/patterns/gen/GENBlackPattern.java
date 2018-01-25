@@ -14,14 +14,13 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class GENBlackPattern extends IbexBasePattern {
-	private BlackPatternFactory factory;
 	
 	public static String getName(String ruleName) {
 		return ruleName + PatternSuffixes.GEN;
 	}
 	
 	public GENBlackPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork(factory);
 	}
@@ -58,10 +57,5 @@ public class GENBlackPattern extends IbexBasePattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		// Root pattern
 		return true;
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 }

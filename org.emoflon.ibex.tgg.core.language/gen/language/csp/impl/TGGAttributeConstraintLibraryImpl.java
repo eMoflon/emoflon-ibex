@@ -4,24 +4,18 @@ package language.csp.impl;
 
 import java.util.Collection;
 
-import language.basic.expressions.TGGParamValue;
+import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 
+import language.basic.expressions.TGGParamValue;
 import language.csp.CspPackage;
 import language.csp.TGGAttributeConstraint;
 import language.csp.TGGAttributeConstraintLibrary;
-
-import org.eclipse.emf.common.notify.NotificationChain;
-
-import org.eclipse.emf.common.util.EList;
-
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.InternalEObject;
-
-import org.eclipse.emf.ecore.impl.EObjectImpl;
-
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
-import org.eclipse.emf.ecore.util.EObjectResolvingEList;
-import org.eclipse.emf.ecore.util.InternalEList;
 
 /**
  * <!-- begin-user-doc -->
@@ -33,10 +27,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <ul>
  *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getTggAttributeConstraints <em>Tgg Attribute Constraints</em>}</li>
  *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getParameterValues <em>Parameter Values</em>}</li>
- *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getSorted_BWD <em>Sorted BWD</em>}</li>
- *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getSorted_FWD <em>Sorted FWD</em>}</li>
- *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getSorted_CC <em>Sorted CC</em>}</li>
- *   <li>{@link language.csp.impl.TGGAttributeConstraintLibraryImpl#getSorted_MODELGEN <em>Sorted MODELGEN</em>}</li>
  * </ul>
  *
  * @generated
@@ -61,46 +51,6 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 	 * @ordered
 	 */
 	protected EList<TGGParamValue> parameterValues;
-
-	/**
-	 * The cached value of the '{@link #getSorted_BWD() <em>Sorted BWD</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getSorted_BWD()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<TGGAttributeConstraint> sorted_BWD;
-
-	/**
-	 * The cached value of the '{@link #getSorted_FWD() <em>Sorted FWD</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getSorted_FWD()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<TGGAttributeConstraint> sorted_FWD;
-
-	/**
-	 * The cached value of the '{@link #getSorted_CC() <em>Sorted CC</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getSorted_CC()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<TGGAttributeConstraint> sorted_CC;
-
-	/**
-	 * The cached value of the '{@link #getSorted_MODELGEN() <em>Sorted MODELGEN</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getSorted_MODELGEN()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<TGGAttributeConstraint> sorted_MODELGEN;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -152,58 +102,6 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<TGGAttributeConstraint> getSorted_BWD() {
-		if (sorted_BWD == null) {
-			sorted_BWD = new EObjectResolvingEList<TGGAttributeConstraint>(TGGAttributeConstraint.class, this,
-					CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_BWD);
-		}
-		return sorted_BWD;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList<TGGAttributeConstraint> getSorted_FWD() {
-		if (sorted_FWD == null) {
-			sorted_FWD = new EObjectResolvingEList<TGGAttributeConstraint>(TGGAttributeConstraint.class, this,
-					CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_FWD);
-		}
-		return sorted_FWD;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList<TGGAttributeConstraint> getSorted_CC() {
-		if (sorted_CC == null) {
-			sorted_CC = new EObjectResolvingEList<TGGAttributeConstraint>(TGGAttributeConstraint.class, this,
-					CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_CC);
-		}
-		return sorted_CC;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList<TGGAttributeConstraint> getSorted_MODELGEN() {
-		if (sorted_MODELGEN == null) {
-			sorted_MODELGEN = new EObjectResolvingEList<TGGAttributeConstraint>(TGGAttributeConstraint.class, this,
-					CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_MODELGEN);
-		}
-		return sorted_MODELGEN;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -227,14 +125,6 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 			return getTggAttributeConstraints();
 		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES:
 			return getParameterValues();
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_BWD:
-			return getSorted_BWD();
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_FWD:
-			return getSorted_FWD();
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_CC:
-			return getSorted_CC();
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_MODELGEN:
-			return getSorted_MODELGEN();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -256,22 +146,6 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 			getParameterValues().clear();
 			getParameterValues().addAll((Collection<? extends TGGParamValue>) newValue);
 			return;
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_BWD:
-			getSorted_BWD().clear();
-			getSorted_BWD().addAll((Collection<? extends TGGAttributeConstraint>) newValue);
-			return;
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_FWD:
-			getSorted_FWD().clear();
-			getSorted_FWD().addAll((Collection<? extends TGGAttributeConstraint>) newValue);
-			return;
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_CC:
-			getSorted_CC().clear();
-			getSorted_CC().addAll((Collection<? extends TGGAttributeConstraint>) newValue);
-			return;
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_MODELGEN:
-			getSorted_MODELGEN().clear();
-			getSorted_MODELGEN().addAll((Collection<? extends TGGAttributeConstraint>) newValue);
-			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -290,18 +164,6 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES:
 			getParameterValues().clear();
 			return;
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_BWD:
-			getSorted_BWD().clear();
-			return;
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_FWD:
-			getSorted_FWD().clear();
-			return;
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_CC:
-			getSorted_CC().clear();
-			return;
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_MODELGEN:
-			getSorted_MODELGEN().clear();
-			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -318,14 +180,6 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 			return tggAttributeConstraints != null && !tggAttributeConstraints.isEmpty();
 		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES:
 			return parameterValues != null && !parameterValues.isEmpty();
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_BWD:
-			return sorted_BWD != null && !sorted_BWD.isEmpty();
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_FWD:
-			return sorted_FWD != null && !sorted_FWD.isEmpty();
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_CC:
-			return sorted_CC != null && !sorted_CC.isEmpty();
-		case CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__SORTED_MODELGEN:
-			return sorted_MODELGEN != null && !sorted_MODELGEN.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

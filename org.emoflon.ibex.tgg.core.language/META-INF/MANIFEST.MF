@@ -1,6 +1,20 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.emoflon.ibex.tgg.core.language;singleton:=tru
  e
+Bundle-Name: org.emoflon.ibex.tgg.core.language
+Bundle-Version: 1.0.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: TU Darmstadt
+Require-Bundle: org.eclipse.emf.ecore,
+ com.google.guava;bundle-version="15.0.0",
+ org.emoflon.ibex.tgg.editor;bundle-version="1.0.0",
+ org.emoflon.ibex.tgg.ide,
+ org.eclipse.core.resources,
+ org.apache.log4j,
+ org.eclipse.core.runtime;bundle-version="3.12.0"
+Bundle-ClassPath: .
 Export-Package: language,
  language.basic,
  language.basic.expressions,
@@ -19,31 +33,4 @@ Export-Package: language,
  language.inplaceAttributes.impl,
  language.inplaceAttributes.util,
  language.util,
- net.sf.javabdd,
- org.emoflon.ibex.tgg.core.transformation,
- org.emoflon.ibex.tgg.core.transformation.csp.sorting,
- org.gervarro.democles.common,
- org.gervarro.democles.common.emf,
- org.gervarro.democles.common.runtime,
- org.gervarro.democles.event,
- org.gervarro.democles.plan,
- org.gervarro.democles.plan.common,
- org.gervarro.democles.specification,
- org.gervarro.democles.specification.impl,
- org.gervarro.extension
-Bundle-Name: org.emoflon.ibex.tgg.core.language
-Bundle-Version: 1.0.0.qualifier
-Bundle-ManifestVersion: 2
-Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: TU Darmstadt
-Require-Bundle: org.eclipse.emf.ecore,
- com.google.guava;bundle-version="15.0.0",
- org.emoflon.ibex.tgg.editor;bundle-version="1.0.0",
- org.emoflon.ibex.tgg.ide,
- org.eclipse.core.resources,
- org.apache.log4j,
- org.eclipse.core.runtime;bundle-version="3.12.0"
-Bundle-ClassPath: lib/democles.jar,
- lib/javabdd-1.0b2.jar,
- .
+ org.emoflon.ibex.tgg.core.transformation

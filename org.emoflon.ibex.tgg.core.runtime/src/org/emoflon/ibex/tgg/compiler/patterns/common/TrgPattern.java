@@ -14,10 +14,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class TrgPattern extends IbexBasePattern {
-	private BlackPatternFactory factory;
 	
 	public TrgPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
 	}
@@ -54,10 +53,5 @@ public class TrgPattern extends IbexBasePattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		// If both nodes are context then this has been checked in TrgContext
 		return node1.getBindingType() == BindingType.CONTEXT && node2.getBindingType() == BindingType.CONTEXT;
-	}
-
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 }

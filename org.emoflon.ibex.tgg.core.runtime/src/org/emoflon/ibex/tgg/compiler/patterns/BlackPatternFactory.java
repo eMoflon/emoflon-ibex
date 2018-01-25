@@ -36,7 +36,7 @@ public class BlackPatternFactory {
 	private TGGRule rule;
 	private Map<String, IBlackPattern> patterns;
 	private BlackPatternCompiler compiler;
-	private static final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
+	private final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
 	
 	public static final FilterACStrategy strategy = FilterACStrategy.NONE;
 
@@ -54,17 +54,17 @@ public class BlackPatternFactory {
 		return Collections.unmodifiableCollection(patterns.values());
 	}
 	
-	private static Collection<CheckTranslationStatePattern> createMarkedPatterns() {
+	private Collection<CheckTranslationStatePattern> createMarkedPatterns() {
 		List<CheckTranslationStatePattern> markedPatterns = new ArrayList<>();
 		
-		CheckTranslationStatePattern signProtocolSrcMarkedPattern = new CheckTranslationStatePattern(DomainType.SRC, false, false);
-		CheckTranslationStatePattern signProtocolTrgMarkedPattern = new CheckTranslationStatePattern(DomainType.TRG, false, false);
+		CheckTranslationStatePattern signProtocolSrcMarkedPattern = new CheckTranslationStatePattern(this, DomainType.SRC, false, false);
+		CheckTranslationStatePattern signProtocolTrgMarkedPattern = new CheckTranslationStatePattern(this, DomainType.TRG, false, false);
 				
-		CheckTranslationStatePattern signProtocolSrcMarkedContextPattern = new CheckTranslationStatePattern(DomainType.SRC, false, true);
-		CheckTranslationStatePattern signProtocolTrgMarkedContextPattern = new CheckTranslationStatePattern(DomainType.TRG, false, true);
+		CheckTranslationStatePattern signProtocolSrcMarkedContextPattern = new CheckTranslationStatePattern(this, DomainType.SRC, false, true);
+		CheckTranslationStatePattern signProtocolTrgMarkedContextPattern = new CheckTranslationStatePattern(this, DomainType.TRG, false, true);
 		
-		CheckTranslationStatePattern localProtocolSrcMarkedPattern = new CheckTranslationStatePattern(signProtocolSrcMarkedPattern, DomainType.SRC, true);
-		CheckTranslationStatePattern localProtocolTrgMarkedPattern = new CheckTranslationStatePattern(signProtocolTrgMarkedPattern, DomainType.TRG, true);
+		CheckTranslationStatePattern localProtocolSrcMarkedPattern = new CheckTranslationStatePattern(this, signProtocolSrcMarkedPattern, DomainType.SRC, true);
+		CheckTranslationStatePattern localProtocolTrgMarkedPattern = new CheckTranslationStatePattern(this, signProtocolTrgMarkedPattern, DomainType.TRG, true);
 		
 		localProtocolSrcMarkedPattern.addPositiveInvocation(signProtocolSrcMarkedPattern);
 		localProtocolTrgMarkedPattern.addPositiveInvocation(signProtocolTrgMarkedPattern);
@@ -79,11 +79,11 @@ public class BlackPatternFactory {
 		return Collections.unmodifiableCollection(markedPatterns);
 	}
 	
-	public static Collection<CheckTranslationStatePattern> getMarkedPatterns() {
+	public Collection<CheckTranslationStatePattern> getMarkedPatterns() {
 		return markedPatterns;
 	}
 	
-	public static IBlackPattern getMarkedPattern(DomainType domain, boolean local, boolean context) {
+	public IBlackPattern getMarkedPattern(DomainType domain, boolean local, boolean context) {
 		return markedPatterns.stream()
 							 .filter(p -> p.getDomain().equals(domain) && (p.isLocal() == local) && (p.marksContext() == context))
 							 .findFirst()
@@ -156,7 +156,7 @@ public class BlackPatternFactory {
 					+ "Edge"
 					+ "_Multiplicity";
 			
-			negativePatterns.add(createPattern(patternName, () -> new NacPattern(rule, signatureElements, bodyElements, patternName)));
+			negativePatterns.add(createPattern(patternName, () -> new NacPattern(this, rule, signatureElements, bodyElements, patternName)));
         }
         
         return negativePatterns;
@@ -204,7 +204,7 @@ public class BlackPatternFactory {
 					+ e.getTrgNode().getName()
 					+ "_Containment";
 			
-			negativePatterns.add(createPattern(patternName, () -> new NacPattern(rule, signatureElements, bodyElements, patternName)));
+			negativePatterns.add(createPattern(patternName, () -> new NacPattern(this, rule, signatureElements, bodyElements, patternName)));
         }
         
         return negativePatterns;
@@ -266,7 +266,7 @@ public class BlackPatternFactory {
 	private Collection<IBlackPattern> createPatternsForUserDefinedNACs(DomainType domain){
 		return rule.getNacs().stream()
 				.filter(nac -> hasElementWithDomain(nac, domain))
-				.map(nac -> createPattern(nac.getName(), () -> new NacPattern(rule, getSignatureElementsFromNAC(nac), getBodyElementsFromNAC(nac), nac.getName())))
+				.map(nac -> createPattern(nac.getName(), () -> new NacPattern(this, rule, getSignatureElementsFromNAC(nac), getBodyElementsFromNAC(nac), nac.getName())))
 				.collect(Collectors.toList());
 	}
 	

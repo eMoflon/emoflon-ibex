@@ -14,10 +14,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class CorrContextPattern extends AbstractCorrPattern {
-	private BlackPatternFactory factory;
 	
 	public CorrContextPattern(BlackPatternFactory factory) {
-		this.factory = factory;
+		super(factory);
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
 	}
@@ -51,10 +50,5 @@ public class CorrContextPattern extends AbstractCorrPattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return !(isContextCorr(node1) && isContextCorr(node2));
-	}
-	
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 }
