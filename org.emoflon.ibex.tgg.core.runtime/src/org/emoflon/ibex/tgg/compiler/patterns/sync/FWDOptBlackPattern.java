@@ -19,6 +19,7 @@ public class FWDOptBlackPattern extends BasicSyncPattern {
 	protected BlackPatternFactory factory;
 
 	public FWDOptBlackPattern(BlackPatternFactory factory) {
+		super(factory);
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();
@@ -53,11 +54,6 @@ public class FWDOptBlackPattern extends BasicSyncPattern {
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getDomainType() == node2.getDomainType();
-	}
-
-	@Override
-	public BlackPatternFactory getPatternFactory() {
-		return factory;
 	}
 	
 	public static String getName(String ruleName) {
