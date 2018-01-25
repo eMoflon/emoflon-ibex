@@ -60,4 +60,7 @@ public class FWDOptBlackPattern extends BasicSyncPattern {
 		return factory;
 	}
 	
+	public static String getName(String ruleName) {
+		return ruleName + PatternSuffixes.FWD_OPT;
+	}
 }

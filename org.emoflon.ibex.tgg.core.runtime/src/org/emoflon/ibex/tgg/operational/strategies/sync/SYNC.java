@@ -15,7 +15,7 @@ import language.csp.TGGAttributeConstraintLibrary;
 
 public abstract class SYNC extends OperationalStrategy {
 
-	private SYNC_Strategy strategy;
+	protected SYNC_Strategy strategy;
 	
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);

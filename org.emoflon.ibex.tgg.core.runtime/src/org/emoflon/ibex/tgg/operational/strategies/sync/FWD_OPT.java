@@ -8,13 +8,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EContentsEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
@@ -63,6 +67,12 @@ public abstract class FWD_OPT extends SYNC {
 	protected TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 	protected int idCounter = 1;
 	
+	//Hash maps to save the old metamodel state
+	THashMap<EReference, Integer> referenceToUpperBound = new THashMap<EReference, Integer>();
+	THashMap<EReference, Integer> referenceToLowerBound = new THashMap<EReference, Integer>();
+	THashMap<EReference, EReference> referenceToEOpposite = new THashMap<EReference, EReference>();
+	THashMap<EReference, Boolean> referenceToContainment = new THashMap<EReference, Boolean>();
+	
 	public FWD_OPT(IbexOptions options) throws IOException {
 		super(options);
 	}
@@ -80,9 +90,16 @@ public abstract class FWD_OPT extends SYNC {
 					EClassImpl nextEClassImpl = (EClassImpl)next;
 					
 					for (EReference reference : nextEClassImpl.getEAllReferences()) {
+						//Save metamodel values
+						referenceToUpperBound.put(reference, reference.getUpperBound());
+						referenceToLowerBound.put(reference, reference.getLowerBound());
+						referenceToEOpposite.put(reference, reference.getEOpposite());
+						referenceToContainment.put(reference, reference.isContainment());
+						
+						//Change metamodel values
 						reference.setUpperBound(-1);
 						reference.setLowerBound(0);
-						//reference.setEOpposite(null);
+						reference.setEOpposite(null);
 						reference.setContainment(false);
 					}
 				}
@@ -90,9 +107,39 @@ public abstract class FWD_OPT extends SYNC {
 		}		
 	}
 	
-	public void relaxModels() {
-		relaxReferences(options.tgg().getSrc());
-		relaxReferences(options.tgg().getTrg());
+	public void unrelaxReferences(EList<EPackage> model) {
+
+		EPackage[] packages = (EPackage[])model.toArray();
+		
+		for (EPackage p : packages) {
+			TreeIterator<EObject> it = p.eAllContents();
+			
+			while (it.hasNext()) {
+				EObject next = it.next();
+				if (next instanceof EClassImpl) {
+					EClassImpl nextEClassImpl = (EClassImpl)next;
+					
+					for (EReference reference : nextEClassImpl.getEAllReferences()) {
+						//Get old metamodel values
+						int upperBound = referenceToUpperBound.get(reference);
+						int lowerBound = referenceToLowerBound.get(reference);
+						EReference eOpposite = referenceToEOpposite.get(reference);
+						boolean containment = referenceToContainment.get(reference);
+						
+						//Change metamodel values
+						reference.setUpperBound(upperBound);
+						reference.setLowerBound(lowerBound);
+						reference.setEOpposite(eOpposite);
+						reference.setContainment(containment);
+					}
+				}
+			}
+			
+			EPackage newP = EcoreUtil.copy(p);
+			model.remove(p);
+			model.add(newP);
+		}	
+		//return (EList<EPackage>)EcoreUtil.copyAll(model);
 	}
 	
 	@Override
@@ -106,11 +153,16 @@ public abstract class FWD_OPT extends SYNC {
 		  consistencyReporter.init(this);
 	}
 	
-	/*@Override
-	public boolean isPatternRelevant(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD_OPT);
-	}*/
-
+	@Override
+	public boolean isPatternRelevantForCompiler(String patternName) {
+		return patternName.endsWith(PatternSuffixes.FWD);
+	}
+	
+	@Override
+	public boolean isPatternRelevantForInterpreter(String patternName) {
+		return strategy.isPatternRelevantForInterpreter(patternName);
+	}
+	
 	protected TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
 		TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<>();
 		idToMatch.keySet().forEach(v -> {
@@ -127,6 +179,7 @@ public abstract class FWD_OPT extends SYNC {
 	protected void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
+			
 			GRBLinExpr expr = new GRBLinExpr();
 			variables.forEach(v -> {
 				expr.addTerm(1.0, gurobiVars.get(v));
@@ -375,6 +428,7 @@ public abstract class FWD_OPT extends SYNC {
 	
 	@Override
 	protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+		
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 
@@ -412,10 +466,56 @@ public abstract class FWD_OPT extends SYNC {
 		super.createMarkers(greenPattern, comatch, ruleName);
 	}
 	
+	public void forward() throws IOException {
+		strategy = new FWD_OPT_Strategy();
+		run();
+	}
+	
 	@Override
 	public void run() throws IOException {
-		relaxModels();
-		super.run();
+		strategy = new FWD_OPT_Strategy();
+		
+		do {
+			blackInterpreter.updateMatches();
+		} while (processBrokenMatches());
+
+		do {
+			blackInterpreter.updateMatches();
+		} while (processOneOperationalRuleMatch());
+
+		wrapUp();
+	}
+	
+	@Override
+	public void loadTGG() throws IOException {
+		super.loadTGG();
+		relaxReferences(options.tgg().getTrg());
+	}
+	
+	@Override
+	public void saveModels() throws IOException {
+		unrelaxReferences(options.tgg().getTrg());
+		
+		TreeIterator<EObject> chosenObjects = t.getAllContents();
+		ArrayList<EObject> objectList = new ArrayList<EObject>();
+		
+		while (chosenObjects.hasNext())
+			objectList.add(chosenObjects.next());
+		
+		Collection<Pair<String, Pair<EObject, EObject>>> refs = new HashSet<>();
+		
+		// Collect old references
+		for (EObject o : objectList) {
+			for (EContentsEList.FeatureIterator featureIterator = (EContentsEList.FeatureIterator) o.eCrossReferences().iterator(); featureIterator.hasNext();) {
+				EObject eObject = (EObject) featureIterator.next();
+				EReference eReference = (EReference) featureIterator.feature();
+				
+				if(objectList.contains(eObject))
+					refs.add(Pair.of(eReference.getName(), Pair.of(o, eObject)));
+			}
+		}
+		
+		super.saveModels();
 	}
 }
 
