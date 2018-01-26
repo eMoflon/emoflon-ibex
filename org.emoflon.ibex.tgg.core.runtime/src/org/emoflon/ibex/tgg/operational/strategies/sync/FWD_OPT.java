@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,6 +15,7 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentsEList;
@@ -501,21 +503,50 @@ public abstract class FWD_OPT extends SYNC {
 		
 		while (chosenObjects.hasNext())
 			objectList.add(chosenObjects.next());
-		
-		Collection<Pair<String, Pair<EObject, EObject>>> refs = new HashSet<>();
-		
-		// Collect old references
-		for (EObject o : objectList) {
-			for (EContentsEList.FeatureIterator featureIterator = (EContentsEList.FeatureIterator) o.eCrossReferences().iterator(); featureIterator.hasNext();) {
-				EObject eObject = (EObject) featureIterator.next();
-				EReference eReference = (EReference) featureIterator.feature();
 				
-				if(objectList.contains(eObject))
-					refs.add(Pair.of(eReference.getName(), Pair.of(o, eObject)));
+		// Collect old references
+		for (EObject o : objectList) {			
+			for(EStructuralFeature feature : o.eClass().getEAllStructuralFeatures()) {
+				Object value = o.eGet(feature);
+				System.out.println("Feature: " + feature);
+				System.out.println("Value: " + value);
+				
+				o.eAdapters().clear();
+				if(!feature.isMany() && !(value instanceof EObject)) {
+					//o.eUnset(feature);
+					try {
+						if(((List<?>) value).isEmpty())
+							o.eSet(feature, null);
+						else
+							o.eSet(feature, ((List<?>) value).get(0));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				value = o.eGet(feature);
+				System.out.println("Feature: " + feature);
+				System.out.println("Value: " + value);
 			}
 		}
 		
 		super.saveModels();
 	}
+	
+	/*@Override
+	protected boolean processOneOperationalRuleMatch() {
+		if (operationalMatchContainer.isEmpty())
+			return false;
+
+		IMatch match = chooseOneMatch();
+		String ruleName = operationalMatchContainer.getRuleName(match);
+		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+		comatch.ifPresent(cm -> {
+			if (isKernelMatch(ruleName))
+				processComplementRuleMatches(cm, ruleName);
+		});
+		//removeOperationalRuleMatch(match);
+		return true;
+	}*/
 }
 

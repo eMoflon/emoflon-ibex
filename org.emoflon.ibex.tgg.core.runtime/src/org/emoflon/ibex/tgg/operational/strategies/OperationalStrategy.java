@@ -479,7 +479,7 @@ public abstract class OperationalStrategy {
 		return kernelRulesNames;
 	}
 	
-	private void processComplementRuleMatches(IMatch comatch, String kernelName) {
+	public void processComplementRuleMatches(IMatch comatch, String kernelName) {
 		blackInterpreter.updateMatches();
 		// Add check to see if it is kernel or if it is fused match!
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches(kernelName);
