@@ -40,32 +40,35 @@ public abstract class RuleApplication<M extends Match<M, R>, R extends RuleAppli
 	 * 
 	 * @return the model to query/transform
 	 */
-	public File getModel() {
+	public final File getModel() {
 		return model;
 	}
+
+	/**
+	 * Executes the rule application on the given match.
+	 */
+	public abstract void execute(final M match);
 
 	/**
 	 * Executes the rule application on an arbitrary match.
 	 * 
 	 * @return an {@link Optional} for the match the rule was executed on
 	 */
-	public abstract Optional<M> execute();
+	public final Optional<M> execute() {
+		Optional<M> anyMatch = this.findAnyMatch();
+		anyMatch.ifPresent(match -> this.execute(match));
+		return anyMatch;
+	}
 
 	/**
 	 * Executes the rule application on all matches.
 	 * 
 	 * @return the list of matches the rule was executed on
 	 */
-	public abstract Collection<M> executeAll();
-
-	/**
-	 * Executes the rule application on all matches.
-	 * 
-	 * @param action
-	 *            a Consumer for the matches
-	 */
-	public void forEachExecution(final Consumer<M> action) {
-		this.executeAll().forEach(action);
+	public final Collection<M> executeAll() {
+		Collection<M> matches = this.findMatches();
+		matches.forEach(match -> this.execute(match));
+		return matches;
 	}
 
 	/**
@@ -73,14 +76,14 @@ public abstract class RuleApplication<M extends Match<M, R>, R extends RuleAppli
 	 * 
 	 * @return an {@link Optional} for the match
 	 */
-	public abstract Optional<M> match();
+	public abstract Optional<M> findAnyMatch();
 
 	/**
 	 * Finds all matches for the rule application.
 	 * 
 	 * @return the list of matches
 	 */
-	public abstract Collection<M> matchAll();
+	public abstract Collection<M> findMatches();
 
 	/**
 	 * Finds all matches for the rule application.
@@ -88,8 +91,17 @@ public abstract class RuleApplication<M extends Match<M, R>, R extends RuleAppli
 	 * @param action
 	 *            a Consumer for the matches found
 	 */
-	public void forEachMatch(final Consumer<M> action) {
-		this.matchAll().forEach(action);
+	public final void forEachMatch(final Consumer<M> action) {
+		this.findMatches().forEach(action);
+	}
+
+	/**
+	 * Returns whether matches for the rule application exist.
+	 * 
+	 * @return <code>true</code> if and only if there is at least one match
+	 */
+	public final boolean hasMatches() {
+		return this.findAnyMatch().isPresent();
 	}
 
 	/**
@@ -97,25 +109,9 @@ public abstract class RuleApplication<M extends Match<M, R>, R extends RuleAppli
 	 * 
 	 * @return the number of matches
 	 */
-	public int countMatches() {
-		return this.matchAll().size();
+	public final int countMatches() {
+		return this.findMatches().size();
 	}
-
-	/**
-	 * Registers a Consumer for any matches which may be found in the future.
-	 * 
-	 * @param action
-	 *            the Consumer for the matches
-	 */
-	public abstract void notifyIfMatched(final Consumer<M> action);
-
-	/**
-	 * Registers a Consumer to notify if there are no matches found.
-	 * 
-	 * @param action
-	 *            the Consumer
-	 */
-	public abstract void notifyIfNotMatchingAnymore(final Consumer<M> action);
 
 	/**
 	 * Returns whether the rule application is a query (i. e. only context to match)
