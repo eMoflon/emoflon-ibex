@@ -196,8 +196,21 @@ public abstract class OperationalStrategy {
 	abstract public void loadModels() throws IOException;
 
 	protected void initialiseBlackInterpreter() throws IOException {
-		blackInterpreter.initialise(rs.getPackageRegistry(), this, options);
-		blackInterpreter.monitor(rs);
+		// Attempt initialisation
+		Optional<RuntimeException> initExcep = Optional.empty();
+		try {
+			blackInterpreter.initialise(rs.getPackageRegistry(), this, options);
+		} catch (RuntimeException e) {
+			initExcep = Optional.of(e); 
+		}
+		
+		// Even if init failed still attempt to monitor before failing
+		try {
+			blackInterpreter.monitor(rs);
+		} finally {
+			if(initExcep.isPresent())
+				throw initExcep.get();			
+		}
 	}
 
 	public void terminate() throws IOException {

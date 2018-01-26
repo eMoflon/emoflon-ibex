@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.operational.strategies.co;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.apache.log4j.BasicConfigurator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -25,7 +24,6 @@ public abstract class CO extends CC {
 		super(options, new RandomKernelMatchUpdatePolicy());
 		RandomKernelMatchUpdatePolicy policy = (RandomKernelMatchUpdatePolicy)getUpdatePolicy();
 		policy.setOptions(options);
-		BasicConfigurator.configure();
 	}
 
 	@Override
