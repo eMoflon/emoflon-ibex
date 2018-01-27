@@ -1,9 +1,10 @@
 package org.emoflon.ibex.gt.api;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
+
+import org.eclipse.emf.ecore.resource.ResourceSet;
 
 /**
  * This is the abstraction for all rule applications.
@@ -23,7 +24,7 @@ public abstract class RuleApplication<M extends Match<M, R>, R extends RuleAppli
 	/**
 	 * The model to query/transform with this rule application.
 	 */
-	private File model;
+	private ResourceSet model;
 
 	/**
 	 * Creates a new rule application for the given model.
@@ -31,7 +32,7 @@ public abstract class RuleApplication<M extends Match<M, R>, R extends RuleAppli
 	 * @param model
 	 *            the model to query/transform
 	 */
-	public RuleApplication(final File model) {
+	public RuleApplication(final ResourceSet model) {
 		this.model = model;
 	}
 
@@ -40,7 +41,7 @@ public abstract class RuleApplication<M extends Match<M, R>, R extends RuleAppli
 	 * 
 	 * @return the model to query/transform
 	 */
-	public final File getModel() {
+	public final ResourceSet getModel() {
 		return model;
 	}
 
