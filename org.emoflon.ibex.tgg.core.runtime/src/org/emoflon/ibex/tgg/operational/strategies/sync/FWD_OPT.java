@@ -87,17 +87,29 @@ public abstract class FWD_OPT extends SYNC {
 					EClassImpl nextEClassImpl = (EClassImpl)next;
 					
 					for (EReference reference : nextEClassImpl.getEAllReferences()) {
+						if (referenceToUpperBound.containsKey(reference) &&
+							referenceToLowerBound.containsKey(reference) &&
+							referenceToContainment.containsKey(reference) &&
+							referenceToEOpposite.containsKey(reference)) {
+							// Reference already exists, values must not be overwritten
+								continue;
+						}
+						
+						//Print out which reference is edited
+						System.out.println("Relax Reference: " + reference.toString()); 
+						
 						//Save metamodel values
 						referenceToUpperBound.put(reference, reference.getUpperBound());
 						referenceToLowerBound.put(reference, reference.getLowerBound());
-						referenceToEOpposite.put(reference, reference.getEOpposite());
 						referenceToContainment.put(reference, reference.isContainment());
+						referenceToEOpposite.put(reference, reference.getEOpposite());
+						
 						
 						//Change metamodel values
 						reference.setUpperBound(-1);
 						reference.setLowerBound(0);
-						reference.setEOpposite(null);
 						reference.setContainment(false);
+						reference.setEOpposite(null);						
 					}
 				}
 			}
@@ -117,11 +129,14 @@ public abstract class FWD_OPT extends SYNC {
 					EClassImpl nextEClassImpl = (EClassImpl)next;
 					
 					for (EReference reference : nextEClassImpl.getEAllReferences()) {
+						//Print out which reference is edited
+						System.out.println("Unrelax Reference: " + reference.toString()); 
+						
 						//Get old metamodel values
 						int upperBound = referenceToUpperBound.get(reference);
 						int lowerBound = referenceToLowerBound.get(reference);
-						EReference eOpposite = referenceToEOpposite.get(reference);
 						boolean containment = referenceToContainment.get(reference);
+						EReference eOpposite = referenceToEOpposite.get(reference);
 						
 						//Change metamodel values
 						reference.setUpperBound(upperBound);
