@@ -13,7 +13,6 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -127,15 +126,15 @@ public abstract class FWD_OPT extends SYNC {
 						//Change metamodel values
 						reference.setUpperBound(upperBound);
 						reference.setLowerBound(lowerBound);
-						reference.setEOpposite(eOpposite);
 						reference.setContainment(containment);
+						reference.setEOpposite(eOpposite);
 					}
 				}
 			}
 			
-			EPackage newP = EcoreUtil.copy(p);
-			model.remove(p);
-			model.add(newP);
+//			EPackage newP = EcoreUtil.copy(p);
+//			model.remove(p);
+//			model.add(newP);
 		}	
 		//return (EList<EPackage>)EcoreUtil.copyAll(model);
 	}
@@ -492,41 +491,21 @@ public abstract class FWD_OPT extends SYNC {
 	
 	@Override
 	public void saveModels() throws IOException {
+		c.save(null);
+	 	p.save(null);
+		
+	 	// Fix target before saving
 		unrelaxReferences(options.tgg().getTrg());
 		
-		TreeIterator<EObject> chosenObjects = t.getAllContents();
-		ArrayList<EObject> objectList = new ArrayList<EObject>();
+		t.eAdapters().clear();
+		t.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
 		
-		while (chosenObjects.hasNext())
-			objectList.add(chosenObjects.next());
-				
-		// Collect old references
-		for (EObject o : objectList) {			
-			for(EStructuralFeature feature : o.eClass().getEAllStructuralFeatures()) {
-				Object value = o.eGet(feature);
-				System.out.println("Feature: " + feature);
-				System.out.println("Value: " + value);
-				
-				o.eAdapters().clear();
-				if(!feature.isMany() && !(value instanceof EObject)) {
-					//o.eUnset(feature);
-					try {
-						if(((List<?>) value).isEmpty())
-							o.eSet(feature, null);
-						else
-							o.eSet(feature, ((List<?>) value).get(0));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				
-				value = o.eGet(feature);
-				System.out.println("Feature: " + feature);
-				System.out.println("Value: " + value);
-			}
-		}
+		Collection<EObject> roots = t.getContents();
+		Collection<EObject> fixedRoots = FixingCopier.fixAll(roots);
 		
-		super.saveModels();
+		t.getContents().clear();
+		t.getContents().addAll(fixedRoots);		
+		t.save(null);
 	}
 	
 	/*@Override
