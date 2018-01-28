@@ -8,8 +8,8 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
+import org.eclipse.emf.ecore.util.InternalEList;
 
 public class FixingCopier extends Copier {
 
@@ -34,13 +34,15 @@ public class FixingCopier extends Copier {
 			EStructuralFeature.Setting setting = getTarget(eReference, eObject, copyEObject);
 			if (setting != null) {
 				Object value = eObject.eGet(eReference);
-				@SuppressWarnings("unchecked")
-				List<EObject> target = (List<EObject>) value;
-
+				
 				if (eReference.isMany()) {
-					setting.set(fixAll(target));
+					@SuppressWarnings("unchecked")
+					List<EObject> target = (List<EObject>) value;
+					setting.set(copyAll(target));
 				} else {
 					// Fixing has to be done here as value is a list with exactly one element!
+					@SuppressWarnings("unchecked")
+					List<EObject> target = (List<EObject>) value;
 					setting.set(copy((EObject) target.get(0)));
 				}
 			}
@@ -89,19 +91,19 @@ public class FixingCopier extends Copier {
 				} else {
 					// Feature is 0..1 so a fix might be necessary
 					if (value == null) {
-						copyEObject.eSet(eReference, null);
+						setting.set(null);
 					} else if (value instanceof List) {
 						// Fix: value is actually the only element in the list!
 						@SuppressWarnings("unchecked")
 						List<EObject> list = (List<EObject>) value;
-						value = list.isEmpty() ? null : list.get(0);
-						Object copyReferencedEObject = get(value);
+						EObject fixedValue = list.isEmpty() ? null : list.get(0);
+						Object copyReferencedEObject = get(fixedValue);
 						if (copyReferencedEObject == null) {
 							if (useOriginalReferences && eReference.getEOpposite() == null) {
-								copyEObject.eSet(eReference, value);
+								setting.set(fixedValue);
 							}
 						} else {
-							copyEObject.eSet(eReference, copyReferencedEObject);
+							setting.set(copyReferencedEObject);
 						}
 					}
 				}
