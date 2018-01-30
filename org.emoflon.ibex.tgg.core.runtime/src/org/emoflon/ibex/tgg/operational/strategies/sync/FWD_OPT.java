@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
+import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
@@ -130,28 +131,26 @@ public abstract class FWD_OPT extends SYNC {
 					
 					for (EReference reference : nextEClassImpl.getEAllReferences()) {
 						//Print out which reference is edited
-						System.out.println("Unrelax Reference: " + reference.toString()); 
+						logger.debug("Unrelax Reference: " + reference.toString()); 
 						
-						//Get old metamodel values
+						// Get old metamodel values
 						int upperBound = referenceToUpperBound.get(reference);
 						int lowerBound = referenceToLowerBound.get(reference);
 						boolean containment = referenceToContainment.get(reference);
 						EReference eOpposite = referenceToEOpposite.get(reference);
 						
-						//Change metamodel values
+						// Change metamodel values
 						reference.setUpperBound(upperBound);
 						reference.setLowerBound(lowerBound);
 						reference.setContainment(containment);
 						reference.setEOpposite(eOpposite);
+						
+						// Reset setting for reference
+						((EStructuralFeatureImpl) reference).setSettingDelegate(null);
 					}
 				}
 			}
-			
-//			EPackage newP = EcoreUtil.copy(p);
-//			model.remove(p);
-//			model.add(newP);
-		}	
-		//return (EList<EPackage>)EcoreUtil.copyAll(model);
+		}
 	}
 	
 	@Override
@@ -510,33 +509,22 @@ public abstract class FWD_OPT extends SYNC {
 	 	p.save(null);
 		
 	 	// Fix target before saving
+	 	
+	 	// Unrelax the metamodel
 		unrelaxReferences(options.tgg().getTrg());
 		
+		// Remove adapters to avoid problems with notifications
 		t.eAdapters().clear();
 		t.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
 		
+		// Copy and fix the model in the process
 		Collection<EObject> roots = t.getContents();
 		Collection<EObject> fixedRoots = FixingCopier.fixAll(roots);
 		
+		// Now reload contents and save
 		t.getContents().clear();
 		t.getContents().addAll(fixedRoots);		
 		t.save(null);
 	}
-	
-	/*@Override
-	protected boolean processOneOperationalRuleMatch() {
-		if (operationalMatchContainer.isEmpty())
-			return false;
-
-		IMatch match = chooseOneMatch();
-		String ruleName = operationalMatchContainer.getRuleName(match);
-		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
-		comatch.ifPresent(cm -> {
-			if (isKernelMatch(ruleName))
-				processComplementRuleMatches(cm, ruleName);
-		});
-		//removeOperationalRuleMatch(match);
-		return true;
-	}*/
 }
 
