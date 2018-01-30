@@ -10,7 +10,7 @@ import language.TGG;
 import language.TGGRule;
 
 public class IbexOptions {
-	public static boolean blackInterpSupportsAttrConstrs = false;
+	public static boolean blackInterpSupportsAttrConstrs = true;
 	
 	private boolean debug;
 	private String workspacePath;
