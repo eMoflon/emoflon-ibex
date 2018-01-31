@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.emf.ecore.util.InternalEList;
 
@@ -30,11 +31,13 @@ public class FixingCopier extends Copier {
 
 	@Override
 	protected void copyContainment(EReference eReference, EObject eObject, EObject copyEObject) {
+		int dynamicFeatureID = eObject.eClass().getFeatureID(eReference);
 		if (eObject.eIsSet(eReference)) {
 			EStructuralFeature.Setting setting = getTarget(eReference, eObject, copyEObject);
 			if (setting != null) {
-				Object value = eObject.eGet(eReference);
-				
+				DynamicEObjectImpl dynObj = ((DynamicEObjectImpl) eObject);
+				Object value = dynObj.dynamicGet(dynamicFeatureID);
+
 				if (eReference.isMany()) {
 					@SuppressWarnings("unchecked")
 					List<EObject> target = (List<EObject>) value;
@@ -43,17 +46,21 @@ public class FixingCopier extends Copier {
 					// Fixing has to be done here as value is a list with exactly one element!
 					@SuppressWarnings("unchecked")
 					List<EObject> target = (List<EObject>) value;
-					setting.set(copy((EObject) target.get(0)));
+					if(!target.isEmpty())
+						setting.set(copy((EObject) target.get(0)));
 				}
 			}
 		}
 	}
 
 	protected void copyReference(EReference eReference, EObject eObject, EObject copyEObject) {
+		int dynamicFeatureID = eObject.eClass().getFeatureID(eReference);
+		DynamicEObjectImpl dynObj = ((DynamicEObjectImpl) eObject);
+		Object value = dynObj.dynamicGet(dynamicFeatureID);
+		
 		if (eObject.eIsSet(eReference)) {
 			EStructuralFeature.Setting setting = getTarget(eReference, eObject, copyEObject);
 			if (setting != null) {
-				Object value = eObject.eGet(eReference, resolveProxies);
 				if (eReference.isMany()) {
 					@SuppressWarnings("unchecked")
 					InternalEList<EObject> source = (InternalEList<EObject>) value;
