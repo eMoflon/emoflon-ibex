@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
+import static org.emoflon.ibex.tgg.util.RuleRefinementUtil.*;
 
 import language.BindingType;
 import language.DomainType;
@@ -14,7 +16,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class FWDOptBlackPattern extends BasicSyncPattern {
+public class FWDOptBlackPattern extends IbexBasePattern {
 
 	protected BlackPatternFactory factory;
 
@@ -43,20 +45,26 @@ public class FWDOptBlackPattern extends BasicSyncPattern {
 		addPositiveInvocation(factory.createBlackPattern(FWDRefinementOptPattern.class));
 
 		// FilterNACs
-		if(BlackPatternFactory.strategy != FilterACStrategy.NONE)
-			addFilterNACPatterns(DomainType.SRC, factory, optimiser);
+		if(BlackPatternFactory.strategy != FilterACStrategy.NONE) {
+			//addFilterNACPatterns(DomainType.SRC, factory, optimiser);
+			addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
+		}
 	}
 
 	protected boolean isSignatureNode(TGGRuleNode n) {
-		return n.getDomainType() == DomainType.SRC || n.getBindingType() == BindingType.CONTEXT;
+		//return n.getDomainType() == DomainType.SRC || n.getBindingType() == BindingType.CONTEXT || n.getDomainType() == DomainType.TRG;
+		return n.getBindingType() != BindingType.CREATE || n.getDomainType() == DomainType.SRC || n.getDomainType() == DomainType.TRG;
 	}
 	
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		return node1.getDomainType() == node2.getDomainType();
+		//return node1.getDomainType() == node2.getDomainType();
+		return checkInjectivityInSubRule(factory.getRule(), node1, node2);
 	}
 	
 	public static String getName(String ruleName) {
 		return ruleName + PatternSuffixes.FWD_OPT;
 	}
+	
+	
 }

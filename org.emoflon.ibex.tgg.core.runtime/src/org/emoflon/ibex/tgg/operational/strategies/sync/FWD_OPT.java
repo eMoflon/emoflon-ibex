@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
@@ -22,6 +23,7 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.cc.Bundle;
 import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
 import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
@@ -493,6 +495,7 @@ public abstract class FWD_OPT extends SYNC {
 
 		do {
 			blackInterpreter.updateMatches();
+			System.out.println("Container contains " + operationalMatchContainer.getMatches().size() + " matches");
 		} while (processOneOperationalRuleMatch());
 
 		wrapUp();
@@ -523,20 +526,25 @@ public abstract class FWD_OPT extends SYNC {
 		t.save(null);
 	}
 	
-	/*@Override
-	protected boolean processOneOperationalRuleMatch() {
-		if (operationalMatchContainer.isEmpty())
-			return false;
-
-		IMatch match = chooseOneMatch();
-		String ruleName = operationalMatchContainer.getRuleName(match);
-		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+	
+	@Override
+	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
+		if(!isPatternRelevantForInterpreter(match.patternName())) {
+			return Optional.empty();
+		}
+		
+		IGreenPatternFactory factory = getGreenFactory(ruleName);
+		IGreenPattern greenPattern = factory.create(match.patternName());
+		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);	
+		
 		comatch.ifPresent(cm -> {
-			if (isKernelMatch(ruleName))
-				processComplementRuleMatches(cm, ruleName);
+			if (options.debug()) logger.debug("Successfully applied: " + match.patternName());
+			markedAndCreatedEdges.addAll(cm.getCreatedEdges());
+			greenPattern.getEdgesMarkedByPattern().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
+			createMarkers(greenPattern, cm, ruleName);
 		});
-		//removeOperationalRuleMatch(match);
-		return true;
-	}*/
+		
+		return comatch;
+	}
 }
 
