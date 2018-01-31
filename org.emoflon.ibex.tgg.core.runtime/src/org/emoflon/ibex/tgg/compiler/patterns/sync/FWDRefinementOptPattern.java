@@ -9,7 +9,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.TrgContextPattern;
 
 import language.TGGRule;
 
-public class FWDRefinementOptPattern extends CCRefinementPattern {
+public class FWDRefinementOptPattern extends FWDRefinementPattern {
 
 	public FWDRefinementOptPattern(BlackPatternFactory factory) {
 		super(factory);

@@ -45,6 +45,8 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import language.TGGComplementRule;
+import language.TGGRuleCorr;
+import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public abstract class FWD_OPT extends OperationalStrategy {
@@ -157,10 +159,20 @@ public abstract class FWD_OPT extends OperationalStrategy {
 	@Override
 	protected void wrapUp() {
 		  for (int v : chooseTGGRuleApplications()) {
-			   IMatch match = idToMatch.get(v < 0 ? -v : v);
-			   HashMap<String, EObject> comatch = matchToCoMatch.get(match);
-			   if (v < 0)
-			    comatch.values().forEach(EcoreUtil::delete);
+			  int id = v < 0 ? -v : v;
+			  IMatch comatch = idToMatch.get(id);
+			   if (v < 0) {
+					for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+						EcoreUtil.delete((EObject) comatch.get(createdCorr.getName()));
+					
+					//for (TGGRuleEdge createdTrgEdge : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgEdgesInRule())
+					//	EcoreUtil.delete((EObject) comatch.get(createdTrgEdge.getName()));
+					
+					for (TGGRuleNode createdTrgNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
+						EcoreUtil.delete((EObject) comatch.get(createdTrgNode.getName()));
+					
+					EcoreUtil.delete(getRuleApplicationNode(comatch));
+				}
 		  }
 		  consistencyReporter.init(this);
 	}
@@ -484,6 +496,7 @@ public abstract class FWD_OPT extends OperationalStrategy {
 	
 	@Override
 	public void run() throws IOException {	
+ 
 		do {
 			blackInterpreter.updateMatches();
 		} while (processOneOperationalRuleMatch());
@@ -499,7 +512,7 @@ public abstract class FWD_OPT extends OperationalStrategy {
 	
 	@Override
 	public void saveModels() throws IOException {
-		c.save(null);
+		//c.save(null);
 	 	p.save(null);
 		
 	 	// Fix target before saving
@@ -512,13 +525,11 @@ public abstract class FWD_OPT extends OperationalStrategy {
 		t.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
 		
 		// Copy and fix the model in the process
-		Collection<EObject> roots = t.getContents();
-		Collection<EObject> fixedRoots = FixingCopier.fixAll(roots);
+		FixingCopier.fixAll(t, c);
 		
-		// Now reload contents and save
-		t.getContents().clear();
-		t.getContents().addAll(fixedRoots);		
+		// Now save fixed models
 		t.save(null);
+		c.save(null);
 	}
 }
 

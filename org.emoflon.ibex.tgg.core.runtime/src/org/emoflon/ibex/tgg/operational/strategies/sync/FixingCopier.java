@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.emf.ecore.util.InternalEList;
 
@@ -16,17 +18,49 @@ public class FixingCopier extends Copier {
 
 	private static final long serialVersionUID = 1L;
 
-	public static Collection<EObject> fixAll(Collection<? extends EObject> eObjects) {
+	public static void fixAll(Resource t, Resource c) {
+		
+		Collection<EObject> trgObjects = t.getContents();
+		Collection<EObject> corrObjects = c.getContents();
+		
 		FixingCopier copier = new FixingCopier();
-		Collection<EObject> result = new ArrayList<>();
+		Collection<EObject> trgResult = new ArrayList<>();
+		Collection<EObject> corrResult = new ArrayList<>();
+		
+		HashMap<EObject,EObject> originalToCopy = new HashMap<EObject, EObject>();
 
-		for (EObject t : eObjects) {
-			if (!copier.containsKey(t))
-				result.add(copier.copy(t));
+		// Collect new target objects
+		for (EObject tOld : trgObjects) {
+			if (!copier.containsKey(tOld)) {
+				EObject tNew = copier.copy(tOld);
+				trgResult.add(tNew);
+				originalToCopy.put(tOld, tNew);
+			}
 		}
 
+		// Change correspondences to new target objects
+		for (EObject cOld : corrObjects) {
+			if (!copier.containsKey(cOld)) {
+				EStructuralFeature trgFeature = cOld.eClass().getEStructuralFeature("target");
+				EObject tOld = (EObject)cOld.eGet(trgFeature);
+				EObject tNew = originalToCopy.get(tOld);
+				
+				EStructuralFeature srcFeature = cOld.eClass().getEStructuralFeature("source");
+				EObject sOld = (EObject)cOld.eGet(srcFeature);
+				
+				EObject cNew = copier.copy(cOld);
+				cNew.eSet(trgFeature, tNew);
+				cNew.eSet(srcFeature, sOld);
+				corrResult.add(cNew);
+			}
+		}
+		
 		copier.copyReferences();
-		return result;
+		
+		t.getContents().clear();
+		t.getContents().addAll(trgResult);		
+		c.getContents().clear();
+		c.getContents().addAll(corrResult);
 	}
 
 	@Override
@@ -53,6 +87,7 @@ public class FixingCopier extends Copier {
 		}
 	}
 
+	@Override
 	protected void copyReference(EReference eReference, EObject eObject, EObject copyEObject) {
 		int dynamicFeatureID = eObject.eClass().getFeatureID(eReference);
 		DynamicEObjectImpl dynObj = ((DynamicEObjectImpl) eObject);

@@ -16,7 +16,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class FWDOptBlackPattern extends IbexBasePattern {
+public class FWDOptBlackPattern extends BasicSyncPattern {
 
 	protected BlackPatternFactory factory;
 
@@ -46,20 +46,20 @@ public class FWDOptBlackPattern extends IbexBasePattern {
 
 		// FilterNACs
 		if(BlackPatternFactory.strategy != FilterACStrategy.NONE) {
-			//addFilterNACPatterns(DomainType.SRC, factory, optimiser);
-			addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
+			addFilterNACPatterns(DomainType.SRC, factory, optimiser);
+			//addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 		}
 	}
 
 	protected boolean isSignatureNode(TGGRuleNode n) {
-		//return n.getDomainType() == DomainType.SRC || n.getBindingType() == BindingType.CONTEXT || n.getDomainType() == DomainType.TRG;
-		return n.getBindingType() != BindingType.CREATE || n.getDomainType() == DomainType.SRC || n.getDomainType() == DomainType.TRG;
+		return n.getDomainType() == DomainType.SRC || n.getBindingType() == BindingType.CONTEXT; // || n.getDomainType() == DomainType.TRG;
+		//return n.getBindingType() != BindingType.CREATE || n.getDomainType() == DomainType.SRC || n.getDomainType() == DomainType.TRG;
 	}
 	
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		//return node1.getDomainType() == node2.getDomainType();
-		return checkInjectivityInSubRule(factory.getRule(), node1, node2);
+		return node1.getDomainType() == node2.getDomainType();
+		//return checkInjectivityInSubRule(factory.getRule(), node1, node2);
 	}
 	
 	public static String getName(String ruleName) {
