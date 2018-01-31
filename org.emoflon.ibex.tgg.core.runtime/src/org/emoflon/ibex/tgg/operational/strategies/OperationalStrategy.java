@@ -296,11 +296,8 @@ public abstract class OperationalStrategy {
 
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
-		comatch.ifPresent(cm -> {
-			if (isKernelMatch(ruleName))
-				processComplementRuleMatches(cm, ruleName);
-		});
+		
+		processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 		return true;
 	}
@@ -450,16 +447,11 @@ public abstract class OperationalStrategy {
 	}
 	
 	protected boolean isKernelMatch(String kernelName) {
-		//add here that fused kernels are kernel matches
 		return getKernelRulesNames().contains(kernelName);
 	}
 	
-	protected Set<String> getComplementRulesNames(String kernelName){
-		Set<String> complementRulesNames = getTGG().getRules().stream()
-												.filter(r -> r instanceof TGGComplementRule && ((TGGComplementRule) r).getKernel().getName().equals(kernelName))
-												.map(n -> n.getName())
-												.collect(Collectors.toSet());
-		return complementRulesNames;
+	protected boolean isComplementMatch(String complementName) {				
+		return getComplementRulesNames().contains(complementName);
 	}
 	
 	protected Set<String> getComplementRulesNames(){
@@ -479,29 +471,8 @@ public abstract class OperationalStrategy {
 		return kernelRulesNames;
 	}
 	
-	private void processComplementRuleMatches(IMatch comatch, String kernelName) {
-		blackInterpreter.updateMatches();
-		// Add check to see if it is kernel or if it is fused match!
-		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches(kernelName);
-			while (! complementRuleMatches.isEmpty()) {
-					IMatch match = complementRuleMatches.iterator().next();
-					String ruleName = operationalMatchContainer.getRuleName(match);
-					processOperationalRuleMatch(ruleName, match);
-					complementRuleMatches.remove(match);
-					removeOperationalRuleMatch(match);
-			}
-		
-		// Close the kernel, so other complement rules cannot find this match anymore
-		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(kernelName));
-		application.setAmalgamated(true);
-	}
-	
-	private Set<IMatch> findAllComplementRuleMatches(String kernelName) {
-		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> getComplementRulesNames(kernelName).contains(PatternSuffixes.removeSuffix(m.patternName())))
-				.collect(Collectors.toSet());
-
-		return allComplementRuleMatches;
+	protected boolean tggContainsComplementRules() {
+		return ! getComplementRulesNames().isEmpty();
 	}
 	
 	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
