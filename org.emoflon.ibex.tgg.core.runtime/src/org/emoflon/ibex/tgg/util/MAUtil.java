@@ -35,9 +35,13 @@ import runtime.RuntimePackage;
 public class MAUtil {
 	public static final String FUSED = "FFF";
 
+	public static void embedKernelRuleAppAndConsistencyPatternNodes(TGGComplementRule complementRule, IBlackPattern pattern) {
+		pattern.getLocalNodes().add(createProtocolNodeForAmalgamation(complementRule));
+		embedKernelConsistencyPatternNodes(complementRule, pattern);
+	}
+	
 	public static void embedKernelConsistencyPatternNodes(TGGComplementRule complementRule, IBlackPattern pattern) {
 		Collection<TGGRuleNode> kernelNodes = complementRule.getKernel().getNodes();
-		pattern.getLocalNodes().add(createProtocolNodeForAmalgamation(complementRule));
 
 		for (TGGRuleNode kernelNode : kernelNodes) {
 			if (kernelNodeIsNotInComplement(kernelNode, pattern))
@@ -49,7 +53,7 @@ public class MAUtil {
 		return pattern.getSignatureNodes().stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
 	}
 
-	private static TGGRuleNode createProtocolNodeForAmalgamation(TGGComplementRule rule) {
+	public static TGGRuleNode createProtocolNodeForAmalgamation(TGGComplementRule rule) {
 		TGGRuleNode node = ConsistencyPattern.createProtocolNode(rule.getKernel());
 
 		TGGInplaceAttributeExpression tae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();

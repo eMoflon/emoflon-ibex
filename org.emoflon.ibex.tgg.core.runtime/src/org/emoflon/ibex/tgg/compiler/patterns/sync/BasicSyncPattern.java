@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
@@ -21,6 +21,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACHelper;
 import language.BindingType;
 import language.DomainType;
 import language.TGG;
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -120,8 +121,9 @@ public abstract class BasicSyncPattern extends IbexBasePattern{
 	
 	protected void createMarkedInvocations(boolean positive, DomainType domain) {
 		for (TGGRuleElement el : getSignatureNodes()) {
+
 			TGGRuleNode node = (TGGRuleNode) el;
-			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && node.getDomainType().equals(domain)) {
+			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && node.getDomainType().equals(domain) && isKernelProtocolNode(node)) {
 				IBlackPattern markedPattern = getPatternFactory().getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
 
@@ -134,6 +136,16 @@ public abstract class BasicSyncPattern extends IbexBasePattern{
 					addNegativeInvocation(markedPattern, mapping);
 			}
 		}
+	}
+	
+	public boolean isKernelProtocolNode(TGGRuleNode node) {
+		TGGRule complRule = factory.getFlattenedVersionOfRule();
+		if (! (complRule instanceof TGGComplementRule))
+			return true;
+		
+		if (node.getName().equals(ConsistencyPattern.getProtocolNodeName(((TGGComplementRule)complRule).getKernel().getName())))
+			return false;
+		return true;
 	}
 
 }
