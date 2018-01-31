@@ -166,7 +166,7 @@ public abstract class FWD_OPT extends SYNC {
 	
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD);
+		return patternName.endsWith(PatternSuffixes.FWD_OPT);
 	}
 	
 	@Override
