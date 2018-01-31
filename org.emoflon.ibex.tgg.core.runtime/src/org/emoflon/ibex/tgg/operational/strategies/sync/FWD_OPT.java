@@ -23,6 +23,7 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.cc.Bundle;
 import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
 import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
@@ -46,7 +47,7 @@ import gurobi.GRBVar;
 import language.TGGComplementRule;
 import language.TGGRuleNode;
 
-public abstract class FWD_OPT extends SYNC {
+public abstract class FWD_OPT extends OperationalStrategy {
 
 	protected TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
 	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
@@ -171,7 +172,7 @@ public abstract class FWD_OPT extends SYNC {
 	
 	@Override
 	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return strategy.isPatternRelevantForInterpreter(patternName);
+		return patternName.endsWith(PatternSuffixes.FWD_OPT);
 	}
 	
 	protected TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
@@ -478,18 +479,11 @@ public abstract class FWD_OPT extends SYNC {
 	}
 	
 	public void forward() throws IOException {
-		strategy = new FWD_OPT_Strategy();
 		run();
 	}
 	
 	@Override
-	public void run() throws IOException {
-		strategy = new FWD_OPT_Strategy();
-		
-		do {
-			blackInterpreter.updateMatches();
-		} while (processBrokenMatches());
-
+	public void run() throws IOException {	
 		do {
 			blackInterpreter.updateMatches();
 		} while (processOneOperationalRuleMatch());

@@ -128,7 +128,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 			return createGreenPattern(BWDGreenPattern.class);
 		
 		if(isFWDOptBlackPattern(patternName))
-			return createGreenPattern(FWDOptGreenPattern.class);
+			return createGreenPattern(FWDGreenPattern.class);
 		
 		return createGreenPattern(EmptyGreenPattern.class);
 	}
