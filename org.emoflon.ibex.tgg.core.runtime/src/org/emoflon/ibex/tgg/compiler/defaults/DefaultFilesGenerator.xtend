@@ -220,6 +220,31 @@ class DefaultFilesGenerator {
 			'''
 		)	
 	}
+	
+	static def generateFWDOptAppFile(String projectName, String fileName, String engine, String additionalImports){
+		return generateBasicStructure(
+			'''
+			import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_OPT;
+			«additionalImports»
+			''',
+			fileName,
+			"FWD_OPT",
+			engine,
+			projectName,
+			'''
+			«fileName» fwd_opt = new «fileName»();
+			
+			logger.info("Starting FWD_OPT");
+			long tic = System.currentTimeMillis();
+			fwd_opt.run();
+			long toc = System.currentTimeMillis();
+			logger.info("Completed FWD_OPT in: " + (toc - tic) + " ms");
+
+			fwd_opt.saveModels();
+			fwd_opt.terminate();
+			'''
+		)	
+	}
 		
 	def static generateMetamodelRegistration() {
 		'''

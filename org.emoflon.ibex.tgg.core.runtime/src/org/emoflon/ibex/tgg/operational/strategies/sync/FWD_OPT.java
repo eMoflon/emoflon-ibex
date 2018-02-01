@@ -99,9 +99,6 @@ public abstract class FWD_OPT extends OperationalStrategy {
 								continue;
 						}
 						
-						//Print out which reference is edited
-						System.out.println("Relax Reference: " + reference.toString()); 
-						
 						//Save metamodel values
 						referenceToUpperBound.put(reference, reference.getUpperBound());
 						referenceToLowerBound.put(reference, reference.getLowerBound());
@@ -132,10 +129,7 @@ public abstract class FWD_OPT extends OperationalStrategy {
 				if (next instanceof EClassImpl) {
 					EClassImpl nextEClassImpl = (EClassImpl)next;
 					
-					for (EReference reference : nextEClassImpl.getEAllReferences()) {
-						//Print out which reference is edited
-						logger.debug("Unrelax Reference: " + reference.toString()); 
-						
+					for (EReference reference : nextEClassImpl.getEAllReferences()) {				
 						// Get old metamodel values
 						int upperBound = referenceToUpperBound.get(reference);
 						int lowerBound = referenceToLowerBound.get(reference);

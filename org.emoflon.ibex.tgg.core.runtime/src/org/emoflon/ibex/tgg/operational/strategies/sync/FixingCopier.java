@@ -27,14 +27,14 @@ public class FixingCopier extends Copier {
 		Collection<EObject> trgResult = new ArrayList<>();
 		Collection<EObject> corrResult = new ArrayList<>();
 		
-		HashMap<EObject,EObject> originalToCopy = new HashMap<EObject, EObject>();
+		//HashMap<EObject,EObject> originalToCopy = new HashMap<EObject, EObject>();
 
 		// Collect new target objects
 		for (EObject tOld : trgObjects) {
 			if (!copier.containsKey(tOld)) {
 				EObject tNew = copier.copy(tOld);
 				trgResult.add(tNew);
-				originalToCopy.put(tOld, tNew);
+				//originalToCopy.put(tOld, tNew);
 			}
 		}
 
@@ -43,15 +43,15 @@ public class FixingCopier extends Copier {
 			if (!copier.containsKey(cOld)) {
 				EStructuralFeature trgFeature = cOld.eClass().getEStructuralFeature("target");
 				EObject tOld = (EObject)cOld.eGet(trgFeature);
-				EObject tNew = originalToCopy.get(tOld);
+				EObject tNew = copier.get(tOld);
 				
 				EStructuralFeature srcFeature = cOld.eClass().getEStructuralFeature("source");
 				EObject sOld = (EObject)cOld.eGet(srcFeature);
-				
-				EObject cNew = copier.copy(cOld);
-				cNew.eSet(trgFeature, tNew);
-				cNew.eSet(srcFeature, sOld);
-				corrResult.add(cNew);
+			
+				//EObject cNew = copier.copy(cOld);
+				cOld.eSet(trgFeature, tNew);
+				//cNew.eSet(srcFeature, sOld);
+				corrResult.add(cOld);
 			}
 		}
 		
