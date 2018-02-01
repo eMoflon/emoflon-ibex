@@ -22,38 +22,36 @@ import language.TGGComplementRule;
 import runtime.TGGRuleApplication;
 
 public abstract class SYNC extends OperationalStrategy {
-	
+
 	protected HashMap<TGGRuleApplication, Integer> protocolNodeToID;
 	protected HashMap<EObject, Integer> nodeToProtocolID = new HashMap<>();
 	private int idCounter = 0;
 	private boolean multiamalgamatedTgg;
 
 	private SYNC_Strategy strategy;
-	
+
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);
 	}
-	
+
 	@Override
-	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException{
+	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
 		super.registerBlackInterpreter(blackInterpreter);
-		// TODO: [Milica] Check if this is necessary!
+		// TODO: [Milica] Check if filling protocol is necessary!
 		fillInProtocolReport();
 		multiamalgamatedTgg = tggContainsComplementRules();
 	}
-	
-	private void fillInProtocolReport() {		
-		protocolNodeToID = new HashMap<TGGRuleApplication, Integer>();		
-		//fill in previous protocol!!!		
+
+	private void fillInProtocolReport() {
+		protocolNodeToID = new HashMap<TGGRuleApplication, Integer>();
 	}
-	
+
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.BWD) 
-			|| patternName.endsWith(PatternSuffixes.FWD)
-			|| patternName.endsWith(PatternSuffixes.CONSISTENCY);
+		return patternName.endsWith(PatternSuffixes.BWD) || patternName.endsWith(PatternSuffixes.FWD)
+				|| patternName.endsWith(PatternSuffixes.CONSISTENCY);
 	}
-	
+
 	@Override
 	public boolean isPatternRelevantForInterpreter(String patternName) {
 		return strategy.isPatternRelevantForInterpreter(patternName);
@@ -61,127 +59,130 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	protected void wrapUp() {
-		
+
 	}
-	
+
 	@Override
 	public void saveModels() throws IOException {
 		s.save(null);
-	 	t.save(null);
-	 	c.save(null);
-	 	p.save(null);
+		t.save(null);
+		c.save(null);
+		p.save(null);
 	}
-	
+
 	@Override
 	public void loadModels() throws IOException {
 		s = loadResource(projectPath + "/instances/src.xmi");
 		t = loadResource(projectPath + "/instances/trg.xmi");
 		c = loadResource(projectPath + "/instances/corr.xmi");
 		p = loadResource(projectPath + "/instances/protocol.xmi");
-		
+
 		EcoreUtil.resolveAll(rs);
 	}
-	
+
 	public void forward() throws IOException {
 		strategy = new FWD_Strategy();
 		run();
 	}
-	
+
 	public void backward() throws IOException {
 		strategy = new BWD_Strategy();
 		run();
 	}
-	
+
 	@Override
 	public IGreenPattern revokes(IMatch match) {
 		String ruleName = getRuleApplicationNode(match).getName();
 		return strategy.revokes(getGreenFactory(ruleName), match.patternName(), ruleName);
 	}
-	
-	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {		
+
+	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
 		Optional<IMatch> comatch;
-		
+
 		// if TGG does not contain complement rules, bookkeeping is not necessary
-		if (! multiamalgamatedTgg) {
+		if (!multiamalgamatedTgg) {
 			comatch = super.processOperationalRuleMatch(ruleName, match);
 		}
-		
+
 		else {
-			if(isComplementMatch(ruleName))
-				if (! isComplementRuleApplicable(match, ruleName))
+			if (isComplementMatch(ruleName))
+				if (!isComplementRuleApplicable(match, ruleName))
 					return Optional.empty();
-			
+
 			comatch = super.processOperationalRuleMatch(ruleName, match);
-	
+
 			comatch.ifPresent(cm -> {
 				doBookkeepingForKernelAndComplementMatches(ruleName, cm);
 				if (MAUtil.isFusedPatternMatch(ruleName)) {
 					removeDuplicatedComplementMatches(ruleName, cm);
 				}
-				
+
 			});
 		}
 		return comatch;
 	}
-	
+
 	/***** Methods for handling kernels, complements and fused matches ******/
-	
+
 	private void removeDuplicatedComplementMatches(String ruleName, IMatch comatch) {
 		blackInterpreter.updateMatches();
 		Set<IMatch> complementMatches = findAllComplementRuleMatches();
-		
+
 		for (IMatch match : complementMatches) {
-			if (! isComplementMatchRelevant(match, comatch))		
+			if (!isComplementMatchRelevant(match, comatch))
 				continue;
-			THashSet<EObject> fusedNodes = comatch.parameterNames().stream()		
-					.map(n -> comatch.get(n)).collect(Collectors.toCollection(THashSet<EObject>::new));		
-			THashSet<EObject> complementNodes = match.parameterNames().stream()		
-					.map(n -> match.get(n)).collect(Collectors.toCollection(THashSet<EObject>::new));		
-					
+			THashSet<EObject> fusedNodes = comatch.parameterNames().stream().map(n -> comatch.get(n))
+					.collect(Collectors.toCollection(THashSet<EObject>::new));
+			THashSet<EObject> complementNodes = match.parameterNames().stream().map(n -> match.get(n))
+					.collect(Collectors.toCollection(THashSet<EObject>::new));
+
 			if (fusedNodes.containsAll(complementNodes))
 				removeOperationalRuleMatch(match);
 		}
-		
+
 	}
-	
+
 	private boolean isComplementMatchRelevant(IMatch match, IMatch comatch) {
-		// removes complement matches that were not in fused match, and irrelevant complement matches
-		if (! match.patternName().contains(PatternSuffixes.removeSuffix(match.patternName()))
+		// removes complement matches that were not in fused match, and irrelevant
+		// complement matches
+		if (!match.patternName().contains(PatternSuffixes.removeSuffix(match.patternName()))
 				|| !isPatternRelevantForInterpreter(match.patternName()))
-				return false;
+			return false;
 		return true;
 	}
 
 	private void doBookkeepingForKernelAndComplementMatches(String ruleName, IMatch comatch) {
 		TGGRuleApplication protocolNode;
 		int localCounter;
-		
-		if (MAUtil.isFusedPatternMatch(ruleName)) {		
-			protocolNode = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getKernelName(ruleName)));
-		}		
-		else {	
+
+		if (MAUtil.isFusedPatternMatch(ruleName)) {
+			protocolNode = (TGGRuleApplication) comatch
+					.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getKernelName(ruleName)));
+		} else {
 			// if it is a kernel or a complement rule
-			protocolNode = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.patternName())));
+			protocolNode = (TGGRuleApplication) comatch
+					.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.patternName())));
 		}
-		
-		if(isComplementMatch(ruleName)) {
+
+		if (isComplementMatch(ruleName)) {
 			// complement protocol has to have same ID as its kernel protocol
-			TGGRuleApplication kernelProtocolNode = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(((TGGComplementRule) getRule(ruleName)).getKernel().getName()));	
+			TGGRuleApplication kernelProtocolNode = (TGGRuleApplication) comatch.get(ConsistencyPattern
+					.getProtocolNodeName(((TGGComplementRule) getRule(ruleName)).getKernel().getName()));
 			localCounter = protocolNodeToID.get(kernelProtocolNode);
-		}
-		else {
-			idCounter ++;
+		} else {
+			idCounter++;
 			localCounter = idCounter;
 		}
-			
+
 		protocolNodeToID.put(protocolNode, localCounter);
 		fillInProtocolData(protocolNode, localCounter);
-		
+
 		if (MAUtil.isFusedPatternMatch(ruleName)) {
-			TGGRuleApplication complProtocolNode = ((TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getComplementName(ruleName))));
+			TGGRuleApplication complProtocolNode = ((TGGRuleApplication) comatch
+					.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getComplementName(ruleName))));
 			fillInProtocolData(complProtocolNode, localCounter);
 		}
-				
+
 	}
 
 	private void fillInProtocolData(TGGRuleApplication protocolNode, int protocolNodeID) {
@@ -191,32 +192,33 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	private boolean isComplementRuleApplicable(IMatch match, String ruleName) {
-		if(!isPatternRelevantForInterpreter(match.patternName())) {
+		if (!isPatternRelevantForInterpreter(match.patternName())) {
 			return false;
 		}
-		
+
 		TGGComplementRule cr = (TGGComplementRule) getRule(ruleName);
-		if (! cr.isBounded())
+		if (!cr.isBounded())
 			return true;
-	
+
 		EObject kernelProtocol = (EObject) match.get(ConsistencyPattern.getProtocolNodeName(cr.getKernel().getName()));
 		THashSet<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
-		
-		//check if any node from additional context for bounded CR was created after its kernel was applied. If it was, this CR is not applicable!
+
+		// check if any node from additional context for bounded CR was created after
+		// its kernel was applied. If it was, this CR is not applicable!
 		for (EObject contextNode : contextNodes) {
-			if(nodeToProtocolID.get(contextNode) > protocolNodeToID.get(kernelProtocol))
+			if (nodeToProtocolID.get(contextNode) > protocolNodeToID.get(kernelProtocol))
 				return false;
 		}
 		return true;
 	}
-	
-	private THashSet<EObject> getContextNodesWithoutProtocolNode(IMatch match){
+
+	private THashSet<EObject> getContextNodesWithoutProtocolNode(IMatch match) {
 		THashSet<EObject> contextNodes = match.parameterNames().stream()
-				.filter(n -> !(match.get(n) instanceof TGGRuleApplication))
-				.map(n -> match.get(n)).collect(Collectors.toCollection(THashSet<EObject>::new));
+				.filter(n -> !(match.get(n) instanceof TGGRuleApplication)).map(n -> match.get(n))
+				.collect(Collectors.toCollection(THashSet<EObject>::new));
 		return contextNodes;
 	}
-	
+
 	private Set<IMatch> findAllComplementRuleMatches() {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
 				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.patternName())))
