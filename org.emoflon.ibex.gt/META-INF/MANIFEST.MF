@@ -14,6 +14,7 @@ Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.xtext,
  org.emoflon.ibex.common,
  org.emoflon.ibex.gt.editor,
  org.emoflon.ibex.gt.editor.ide,
