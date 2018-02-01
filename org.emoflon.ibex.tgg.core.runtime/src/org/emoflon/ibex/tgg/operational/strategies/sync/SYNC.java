@@ -96,6 +96,7 @@ public abstract class SYNC extends OperationalStrategy {
 		return strategy.revokes(getGreenFactory(ruleName), match.patternName(), ruleName);
 	}
 
+	@Override
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
 		Optional<IMatch> comatch;
 
@@ -124,6 +125,10 @@ public abstract class SYNC extends OperationalStrategy {
 
 	/***** Methods for handling kernels, complements and fused matches ******/
 
+	/*
+	 * removes complement match that was already applied together in kernel in the
+	 * fused match
+	 */
 	private void removeDuplicatedComplementMatches(String ruleName, IMatch comatch) {
 		blackInterpreter.updateMatches();
 		Set<IMatch> complementMatches = findAllComplementRuleMatches();
@@ -142,9 +147,11 @@ public abstract class SYNC extends OperationalStrategy {
 
 	}
 
+	/*
+	 * removes complement matches that were not part of the fused match, and also
+	 * irrelevant complement matches
+	 */
 	private boolean isComplementMatchRelevant(IMatch match, IMatch comatch) {
-		// removes complement matches that were not in fused match, and irrelevant
-		// complement matches
 		if (!match.patternName().contains(PatternSuffixes.removeSuffix(match.patternName()))
 				|| !isPatternRelevantForInterpreter(match.patternName()))
 			return false;
@@ -203,8 +210,8 @@ public abstract class SYNC extends OperationalStrategy {
 		EObject kernelProtocol = (EObject) match.get(ConsistencyPattern.getProtocolNodeName(cr.getKernel().getName()));
 		THashSet<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
 
-		// check if any node from additional context for bounded CR was created after
-		// its kernel was applied. If it was, this CR is not applicable!
+		// If any node from bounded CR context was created after
+		// its kernel was applied, CR is not applicable!
 		for (EObject contextNode : contextNodes) {
 			if (nodeToProtocolID.get(contextNode) > protocolNodeToID.get(kernelProtocol))
 				return false;
