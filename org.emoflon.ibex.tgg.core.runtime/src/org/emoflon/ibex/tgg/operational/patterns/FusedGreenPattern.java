@@ -25,4 +25,9 @@ public abstract class FusedGreenPattern extends IbexGreenPattern {
 			.create(getName.apply(complementName))
 			.createMarkers(complementName, match);
 	}
+	
+	@Override
+	public boolean isToBeIgnored(IMatch match) {
+		return getNodesMarkedByPattern().isEmpty() && getEdgesMarkedByPattern().isEmpty();
+	}
 }
