@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns.gen;
 
-import static org.emoflon.ibex.tgg.util.MAUtil.embedKernelConsistencyPatternNodes;
+import static org.emoflon.ibex.tgg.util.MAUtil.embedKernelRuleAppAndConsistencyPatternNodes;
 import static org.emoflon.ibex.tgg.util.MAUtil.isComplementRule;
 import static org.emoflon.ibex.tgg.util.RuleRefinementUtil.checkInjectivityInSubRule;
 
@@ -43,7 +43,7 @@ public class GENRefinementPattern extends IbexBasePattern {
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 		
 		if (isComplementRule(rule)) {
-			embedKernelConsistencyPatternNodes((TGGComplementRule)rule, this);
+			embedKernelRuleAppAndConsistencyPatternNodes((TGGComplementRule)rule, this);
 		}
 	}
 	

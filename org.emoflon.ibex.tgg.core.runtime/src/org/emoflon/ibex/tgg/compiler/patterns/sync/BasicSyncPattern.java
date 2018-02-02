@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
@@ -21,49 +21,55 @@ import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACHelper;
 import language.BindingType;
 import language.DomainType;
 import language.TGG;
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public abstract class BasicSyncPattern extends IbexBasePattern{
-	
+public abstract class BasicSyncPattern extends IbexBasePattern {
+
 	protected BasicSyncPattern(BlackPatternFactory factory) {
 		super(factory);
 	}
 
-	protected void addFilterNACPatterns(DomainType domain, BlackPatternFactory factory, IbexPatternOptimiser optimiser) {
+	protected void addFilterNACPatterns(DomainType domain, BlackPatternFactory factory,
+			IbexPatternOptimiser optimiser) {
 		final Collection<IBlackPattern> filterNACs = new ArrayList<>();
 		TGGRule rule = factory.getFlattenedVersionOfRule();
-		
+
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
 
-			if (nodeIsNotTranslatedByThisRule(n)) continue;
-			if (nodeIsNotRelevant(domain, n)) continue;
+			if (nodeIsNotTranslatedByThisRule(n))
+				continue;
+			if (nodeIsNotRelevant(domain, n))
+				continue;
 
 			// Create DECPatterns as negative children in the network
 			for (EReference eType : FilterACHelper.extractEReferences(nodeClass)) {
 				for (EdgeDirection eDirection : EdgeDirection.values()) {
 					TGG tgg = (TGG) rule.eContainer();
 
-					if (typeDoesNotFitToDirection(n, eType, eDirection)) continue;
-					if (onlyPossibleEdgeIsAlreadyTranslatedInRule(n, eType, eDirection, domain, factory)) continue;
-					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg)) continue;
-		
+					if (typeDoesNotFitToDirection(n, eType, eDirection))
+						continue;
+					if (onlyPossibleEdgeIsAlreadyTranslatedInRule(n, eType, eDirection, domain, factory))
+						continue;
+					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg))
+						continue;
+
 					// Collect all Filter NACs, but do not add them yet as negative invocations
-					if(thereIsNoSavingRule(domain, eType, eDirection, tgg))
-						filterNACs.add(factory.createFilterACPattern(n, eType, eDirection));					
+					if (thereIsNoSavingRule(domain, eType, eDirection, tgg))
+						filterNACs.add(factory.createFilterACPattern(n, eType, eDirection));
 				}
 			}
 		}
-		
+
 		// Use optimiser to remove some of the filter NACs
 		final Collection<IBlackPattern> optimisedFilterNACs = filterNACs.stream()
-							   .filter(nac -> !optimiser.isRedundantDueToEMFContainmentSemantics(nac))
-							   .collect(Collectors.toList());
-		
+				.filter(nac -> !optimiser.isRedundantDueToEMFContainmentSemantics(nac)).collect(Collectors.toList());
+
 		optimisedFilterNACs.removeAll(optimiser.ignoreDueToEOppositeSemantics(optimisedFilterNACs));
-		
+
 		// Add all remaining filter NACs now as negative invocations
 		addNegativeInvocations(optimisedFilterNACs);
 	}
@@ -76,8 +82,10 @@ public abstract class BasicSyncPattern extends IbexBasePattern{
 		return !FilterACHelper.isEdgeInTGG(tgg, eType, eDirection, false, domain);
 	}
 
-	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRuleNode n, EReference eType, EdgeDirection eDirection, DomainType domain, BlackPatternFactory factory) {
-		int numOfEdges = FilterACHelper.countEdgeInRule(factory.getFlattenedVersionOfRule(), n, eType, eDirection, false, domain).getLeft();
+	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRuleNode n, EReference eType, EdgeDirection eDirection,
+			DomainType domain, BlackPatternFactory factory) {
+		int numOfEdges = FilterACHelper
+				.countEdgeInRule(factory.getFlattenedVersionOfRule(), n, eType, eDirection, false, domain).getLeft();
 		return eType.getUpperBound() == 1 && numOfEdges == 1;
 	}
 
@@ -94,34 +102,36 @@ public abstract class BasicSyncPattern extends IbexBasePattern{
 	}
 
 	private List<TGGRule> determineSavingRules(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
-		return tgg.getRules().stream()
-				.filter(r -> isSavingRule(domain, eType, eDirection, r))
+		return tgg.getRules().stream().filter(r -> isSavingRule(domain, eType, eDirection, r))
 				.collect(Collectors.toList());
 	}
 
 	private boolean isSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGGRule r) {
 		return FilterACHelper.countEdgeInRule(r, eType, eDirection, true, domain).getLeft() > 0;
 	}
-	
-	protected Collection<IBlackPattern> collectGeneratedNACs(BlackPatternFactory factory, DomainType domain1, DomainType domain2) {
+
+	protected Collection<IBlackPattern> collectGeneratedNACs(BlackPatternFactory factory, DomainType domain1,
+			DomainType domain2) {
 		Collection<IBlackPattern> nacs = factory.createPatternsForMultiplicityConstraints();
 		nacs.addAll(factory.createPatternsForContainmentReferenceConstraints());
-		
+
 		return nacs.stream().filter(n -> {
-			Optional<TGGRuleNode> e = ((NacPattern)n).getSignatureNodes().stream().findAny();
+			Optional<TGGRuleNode> e = ((NacPattern) n).getSignatureNodes().stream().findAny();
 			DomainType domain = domain1;
 			if (e.isPresent()) {
 				domain = e.get().getDomainType();
 			}
-			
+
 			return domain.equals(domain2);
 		}).collect(Collectors.toList());
 	}
-	
+
 	protected void createMarkedInvocations(boolean positive, DomainType domain) {
 		for (TGGRuleElement el : getSignatureNodes()) {
+
 			TGGRuleNode node = (TGGRuleNode) el;
-			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE) && node.getDomainType().equals(domain)) {
+			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE)
+					&& node.getDomainType().equals(domain) && isKernelProtocolNode(node)) {
 				IBlackPattern markedPattern = getPatternFactory().getMarkedPattern(node.getDomainType(), true, false);
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
 
@@ -134,6 +144,17 @@ public abstract class BasicSyncPattern extends IbexBasePattern{
 					addNegativeInvocation(markedPattern, mapping);
 			}
 		}
+	}
+
+	public boolean isKernelProtocolNode(TGGRuleNode node) {
+		TGGRule complRule = factory.getFlattenedVersionOfRule();
+		if (!(complRule instanceof TGGComplementRule))
+			return true;
+
+		if (node.getName()
+				.equals(ConsistencyPattern.getProtocolNodeName(((TGGComplementRule) complRule).getKernel().getName())))
+			return false;
+		return true;
 	}
 
 }
