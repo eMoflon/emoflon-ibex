@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -27,16 +28,16 @@ import IBeXLanguage.IBeXPattern;
  * @version 0.1
  */
 public abstract class GTEngine {
-	protected boolean debug = false;
+	protected Optional<String> debugPath = Optional.ofNullable(null);
 
 	/**
-	 * Enables or disables the debugging mode.
+	 * Enables the debugging mode if the given path is not <code>null</null>.
 	 * 
-	 * @param debug
-	 *            the new value for the debugging flag
+	 * @param debugPath
+	 *            the path for the debugging output
 	 */
-	public void setDebug(final boolean debug) {
-		this.debug = debug;
+	public void setDebug(final String debugPath) {
+		this.debugPath = Optional.ofNullable(debugPath);
 	}
 
 	/**
@@ -72,9 +73,11 @@ public abstract class GTEngine {
 
 		// Transform into internal GT model.
 		GTRuleSet gtRuleSet = EditorToInternalGT.transformRuleSet(model);
-		if (this.debug) {
-			ModelPersistenceUtils.saveModel(gtRuleSet, "debug/gt/" + file.getName());
-		}
+		
+		// Output for debugging.
+		this.debugPath.ifPresent(path -> {
+			ModelPersistenceUtils.saveModel(gtRuleSet, path + "/gt/" + file.getName());
+		});
 	}
 
 	/**

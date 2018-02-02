@@ -1,5 +1,7 @@
 package org.emoflon.ibex.gt.api;
 
+import java.util.Objects;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -36,7 +38,7 @@ public abstract class GraphTransformationAPI {
 	 *            the resource set containing the model file
 	 */
 	public GraphTransformationAPI(final GTEngine engine, final ResourceSet model) {
-		this.initialize(engine, model, false);
+		this.initialize(engine, model, null);
 	}
 
 	/**
@@ -47,11 +49,12 @@ public abstract class GraphTransformationAPI {
 	 *            the engine to use for queries and transformations
 	 * @param model
 	 *            the resource set containing the model file
-	 * @param debug
-	 *            <code>true</code> enables debugging, <code>false</code> to disable
+	 * @param debugPath
+	 *            the path for the debugging output
 	 */
-	public GraphTransformationAPI(final GTEngine engine, final ResourceSet model, final boolean debug) {
-		this.initialize(engine, model, debug);
+	public GraphTransformationAPI(final GTEngine engine, final ResourceSet model, final String debugPath) {
+		Objects.requireNonNull(debugPath, "The debug path must not be null!");
+		this.initialize(engine, model, debugPath);
 	}
 
 	/**
@@ -64,7 +67,7 @@ public abstract class GraphTransformationAPI {
 	 *            the path to the model file
 	 */
 	public GraphTransformationAPI(final GTEngine engine, final String filePath) {
-		this.initialize(engine, filePath, false);
+		this.initialize(engine, filePath, null);
 	}
 
 	/**
@@ -75,23 +78,24 @@ public abstract class GraphTransformationAPI {
 	 *            the engine to use for queries and transformations
 	 * @param filePath
 	 *            the path to the model file
-	 * @param debug
-	 *            <code>true</code> enables debugging, <code>false</code> to disable
+	 * @param debugPath
+	 *            the path for the debugging output
 	 */
-	public GraphTransformationAPI(final GTEngine engine, final String filePath, final boolean debug) {
-		this.initialize(engine, filePath, debug);
+	public GraphTransformationAPI(final GTEngine engine, final String filePath, final String debugPath) {
+		Objects.requireNonNull(debugPath, "The debug path must not be null!");
+		this.initialize(engine, filePath, debugPath);
 	}
 
-	private void initialize(final GTEngine engine, final ResourceSet model, final boolean debug) {
+	private void initialize(final GTEngine engine, final ResourceSet model, final String debugPath) {
 		this.engine = engine;
-		this.engine.setDebug(debug);
+		this.engine.setDebug(debugPath);
 		this.model = model;
 	}
 
-	private void initialize(final GTEngine engine, final String filePath, final boolean debug) {
+	private void initialize(final GTEngine engine, final String filePath, final String debugPath) {
 		ResourceSetImpl model = new ResourceSetImpl();
 		model.createResource(URI.createURI(filePath));
-		this.initialize(engine, model, debug);
+		this.initialize(engine, model, debugPath);
 	}
 
 	/**

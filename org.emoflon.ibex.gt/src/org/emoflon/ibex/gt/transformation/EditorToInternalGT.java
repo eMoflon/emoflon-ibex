@@ -97,16 +97,25 @@ public class EditorToInternalGT {
 		List<GTEdge> gtEdges = new ArrayList<GTEdge>();
 		List<Reference> references = extractReferences(editorNode);
 		references.forEach(reference -> {
+			String sourceNodeName = editorNode.getName();
+			String targetNodeName = reference.getTarget().getName();
+
+			Optional<GTNode> gtSourceNode = findGTNodeWithName(gtNodes, sourceNodeName);
+			Optional<GTNode> gtTargetNode = findGTNodeWithName(gtNodes, targetNodeName);
+			if (!gtSourceNode.isPresent()) {
+				throw new IllegalStateException("Could not find node " + sourceNodeName + "!");
+			}
+			/* TODO: This can fail for rules with refinement if the target is from parent rule
+			if (!gtTargetNode.isPresent()) {
+				throw new IllegalStateException("Could not find node " + targetNodeName + "!");
+			}*/
+
 			GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
 			gtEdge.setType(reference.getType());
-			findGTNodeWithName(gtNodes, editorNode.getName()).ifPresent(gtSourceNode -> {
-				gtEdge.setSourceNode(gtSourceNode);
-				gtSourceNode.getOutgoingEdges().add(gtEdge);
-			});
-			findGTNodeWithName(gtNodes, reference.getTarget().getName()).ifPresent(gtTargetNode -> {
-				gtEdge.setTargetNode(gtTargetNode);
-				gtTargetNode.getIncomingEdges().add(gtEdge);
-			});
+			gtEdge.setName(sourceNodeName + "-" + gtEdge.getType().getName() + "-" + targetNodeName);
+			gtSourceNode.ifPresent(node -> gtEdge.setSourceNode(node));
+			gtTargetNode.ifPresent(node -> gtEdge.setTargetNode(node));
+
 			gtEdges.add(gtEdge);
 		});
 		return gtEdges;
