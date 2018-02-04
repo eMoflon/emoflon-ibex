@@ -10,6 +10,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import language.csp.TGGAttributeConstraint;
 
 public interface IBlackPattern {
 	String getName();
@@ -26,6 +27,8 @@ public interface IBlackPattern {
 	Collection<PatternInvocation> getNegativeInvocations();
 
 	Collection<Pair<TGGRuleNode, TGGRuleNode>> getInjectivityChecks();
+	
+	Collection<TGGAttributeConstraint> getAttributeConstraints();
 
 	void addNegativeInvocation(IBlackPattern markedPattern, Map<TGGRuleNode, TGGRuleNode> mapping);
 	void addPositiveInvocation(IBlackPattern markedPattern, Map<TGGRuleNode, TGGRuleNode> mapping);
