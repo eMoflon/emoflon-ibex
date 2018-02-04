@@ -7,17 +7,17 @@
         eOpposite="#//IBeXNode/outgoingEdges"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetNode" eType="#//IBeXNode"
         eOpposite="#//IBeXNode/incomingEdges"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBexNamedElement">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXNode" eSuperTypes="#//IBexNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingEdges" upperBound="-1"
         eType="#//IBeXEdge" eOpposite="#//IBeXEdge/targetNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
         eType="#//IBeXEdge" eOpposite="#//IBeXEdge/sourceNode"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXNodeToNodeMapping" instanceClassName="java.util.Map$Entry">
     <eStructuralFeatures xsi:type="ecore:EReference" name="key" eType="#//IBeXNode"/>
@@ -25,20 +25,24 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXPattern" eSuperTypes="#//IBexNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="localEdges" upperBound="-1"
-        eType="#//IBeXEdge"/>
+        eType="#//IBeXEdge" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="localNodes" upperBound="-1"
-        eType="#//IBeXNode"/>
+        eType="#//IBeXNode" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="invocations" upperBound="-1"
-        eType="#//IBeXPatternInvocation" eOpposite="#//IBeXPatternInvocation/invokedBy"/>
+        eType="#//IBeXPatternInvocation" containment="true" eOpposite="#//IBeXPatternInvocation/invokedBy"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="signatureNodes" upperBound="-1"
-        eType="#//IBeXNode"/>
+        eType="#//IBeXNode" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternInvocation">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="positive" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="positive" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="invokedBy" eType="#//IBeXPattern"
         eOpposite="#//IBeXPattern/invocations"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="invokedPattern" eType="#//IBeXPattern"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="mapping" upperBound="-1"
         eType="#//IBeXNodeToNodeMapping" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternSet">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patterns" upperBound="-1"
+        eType="#//IBeXPattern" containment="true"/>
   </eClassifiers>
 </ecore:EPackage>

@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.transformation;
+package org.emoflon.ibex.gt.engine.transformations;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -11,6 +11,7 @@ import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXPatternInvocation;
+import IBeXLanguage.IBeXPatternSet;
 
 /**
  * Transformation from the internal GT model to IBeX Patterns.
@@ -21,31 +22,34 @@ import IBeXLanguage.IBeXPatternInvocation;
 public class InternalGTToIBeX {
 
 	/**
-	 * Transforms a GTRule into an IBeXPattern with pattern invocations.
+	 * Transforms a GTRule into a set of IBeXPatterns with pattern invocations.
 	 * 
 	 * @param gtRule
 	 *            the rule, must not be <code>null</code>
-	 * @return the IBeXPattern
+	 * @return the IBeXPatternSet
 	 */
-	public static IBeXPattern transformRule(final GTRule gtRule) {
+	public static IBeXPatternSet transformRule(final GTRule gtRule) {
 		return transformRule(gtRule, true);
 	}
 
 	/**
-	 * Transforms a GTRule into an IBeXPattern.
+	 * Transforms a GTRule into a set of IBeXPatterns.
 	 * 
 	 * @param gtRule
 	 *            the rule, must not be <code>null</code>
 	 * @param useInvocations
-	 *            whether to use invocations or not. If set to <code>false</false>,
+	 *            whether to use invocations or not. If set to <code>false</code>,
 	 *            one large pattern will be created, otherwise the pattern will use
 	 *            invocations.
-	 * @return the IBeXPattern
+	 * @return the IBeXPatternSet
 	 */
-	public static IBeXPattern transformRule(final GTRule gtRule, final boolean useInvocations) {
+	public static IBeXPatternSet transformRule(final GTRule gtRule, final boolean useInvocations) {
 		Objects.requireNonNull(gtRule, "rule must not be null!");
+
+		IBeXPatternSet ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet();
 		IBeXPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXPattern();
 		ibexPattern.setName(gtRule.getName());
+		ibexPatternSet.getPatterns().add(ibexPattern);
 
 		gtRule.getGraph().getNodes().forEach(gtNode -> {
 			ibexPattern.getLocalNodes().add(transformNode(gtNode));
@@ -57,6 +61,7 @@ public class InternalGTToIBeX {
 						IBeXPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXPattern();
 						edgePattern.setName("edge-" + edgeType.getEContainingClass().getName() + "-"
 								+ edgeType.getName() + "-" + edgeType.getEReferenceType().getName());
+						ibexPatternSet.getPatterns().add(edgePattern);
 
 						IBeXNode ibexSignatureSourceNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
 						ibexSignatureSourceNode.setName("src");
@@ -106,7 +111,7 @@ public class InternalGTToIBeX {
 			});
 		}
 
-		return ibexPattern;
+		return ibexPatternSet;
 	}
 
 	private static IBeXNode transformNode(final GTNode gtNode) {

@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.transformation;
+package org.emoflon.ibex.gt.engine.transformations;
 
 import java.util.ArrayList;
 import java.util.List;

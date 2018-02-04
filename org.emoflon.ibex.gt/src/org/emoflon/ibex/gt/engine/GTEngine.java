@@ -6,19 +6,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.gt.editor.GTStandaloneSetup;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
-import org.emoflon.ibex.gt.transformation.EditorToInternalGT;
+import org.emoflon.ibex.gt.engine.transformations.EditorToInternalGT;
+import org.emoflon.ibex.gt.engine.transformations.InternalGTToIBeX;
 import org.emoflon.ibex.gt.utils.ModelPersistenceUtils;
 
 import com.google.inject.Injector;
 
 import GTLanguage.GTRuleSet;
+import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXPattern;
+import IBeXLanguage.IBeXPatternSet;
 
 /**
  * Engine for Unidirectional Graph Transformations which needs to be implemented
@@ -73,10 +77,23 @@ public abstract class GTEngine {
 
 		// Transform into internal GT model.
 		GTRuleSet gtRuleSet = EditorToInternalGT.transformRuleSet(model);
-		
-		// Output for debugging.
 		this.debugPath.ifPresent(path -> {
 			ModelPersistenceUtils.saveModel(gtRuleSet, path + "/gt/" + file.getName());
+		});
+
+		// Transform into IBeXPatterns.
+		IBeXPatternSet ibexPatterns = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet();
+		gtRuleSet.getRules().forEach(gtRule -> {
+			EList<IBeXPattern> ibexPatternsForRule = InternalGTToIBeX.transformRule(gtRule).getPatterns();
+			ibexPatterns.getPatterns().addAll(ibexPatternsForRule);
+		});
+		this.debugPath.ifPresent(path -> {
+			ModelPersistenceUtils.saveModel(ibexPatterns, path + "/ibex-patterns");
+		});
+
+		// TODO: transform into patterns of the concrete engine.
+		this.debugPath.ifPresent(path -> {
+			// TODO output concrete patterns
 		});
 	}
 
