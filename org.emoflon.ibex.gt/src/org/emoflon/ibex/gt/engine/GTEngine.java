@@ -11,11 +11,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
+import org.emoflon.ibex.common.utils.ModelPersistenceUtils;
 import org.emoflon.ibex.gt.editor.GTStandaloneSetup;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
 import org.emoflon.ibex.gt.engine.transformations.EditorToInternalGT;
 import org.emoflon.ibex.gt.engine.transformations.InternalGTToIBeX;
-import org.emoflon.ibex.gt.utils.ModelPersistenceUtils;
 
 import com.google.inject.Injector;
 
@@ -92,8 +92,8 @@ public abstract class GTEngine {
 		});
 
 		// TODO: transform into patterns of the concrete engine.
-		this.debugPath.ifPresent(path -> {
-			// TODO output concrete patterns
+		ibexPatterns.getPatterns().forEach(ibexPattern -> {
+			this.createPattern(ibexPattern);
 		});
 	}
 

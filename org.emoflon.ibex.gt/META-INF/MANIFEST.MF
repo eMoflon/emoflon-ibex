@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.emoflon.ibex.gt;singleton:=true
-Bundle-Name: %pluginName
+Bundle-Name: eMoflon::IBeX Graph Transformations
 Bundle-Version: 1.0.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
