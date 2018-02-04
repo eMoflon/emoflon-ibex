@@ -91,17 +91,23 @@ public abstract class GTEngine {
 			ModelPersistenceUtils.saveModel(ibexPatterns, path + "/ibex-patterns");
 		});
 
-		// TODO: transform into patterns of the concrete engine.
+		// Transform into patterns of the concrete engine.
 		ibexPatterns.getPatterns().forEach(ibexPattern -> {
-			this.createPattern(ibexPattern);
+			this.transformPattern(ibexPattern);
 		});
+		this.savePatternsForDebugging();
 	}
 
 	/**
-	 * Adds the IBeXPattern to the patterns of the engine.
+	 * Transforms the IBeXPattern to the patterns of the engine.
 	 * 
 	 * @param ibexPattern
 	 *            the IBeXPattern to add
 	 */
-	public abstract void createPattern(final IBeXPattern ibexPattern);
+	protected abstract void transformPattern(final IBeXPattern ibexPattern);
+	
+	/**
+	 * Serializes the output for debugging.
+	 */
+	protected abstract void savePatternsForDebugging();
 }
