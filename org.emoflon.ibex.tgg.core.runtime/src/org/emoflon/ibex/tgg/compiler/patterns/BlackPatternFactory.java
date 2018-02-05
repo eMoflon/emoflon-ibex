@@ -38,7 +38,7 @@ public class BlackPatternFactory {
 	private BlackPatternCompiler compiler;
 	private final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
 	
-	public static final FilterACStrategy strategy = FilterACStrategy.NONE;
+	public static final FilterACStrategy strategy = FilterACStrategy.FILTER_NACS;
 
 	public BlackPatternFactory(TGGRule rule, BlackPatternCompiler compiler) {
 		this.rule = rule;
