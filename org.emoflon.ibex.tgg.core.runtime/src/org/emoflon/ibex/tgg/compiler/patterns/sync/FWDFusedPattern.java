@@ -65,4 +65,8 @@ public class FWDFusedPattern extends BasicSyncPattern {
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		return node1.getDomainType() == node2.getDomainType();
 	}
+	
+	public static String getName(String ruleName) {
+		return ruleName + PatternSuffixes.FWD;
+	}
 }
