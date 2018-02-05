@@ -14,10 +14,13 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
+import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 
+import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import language.csp.TGGAttributeConstraint;
 
 public abstract class IbexBasePattern implements IBlackPattern {
 	protected String name;
@@ -37,6 +40,8 @@ public abstract class IbexBasePattern implements IBlackPattern {
 	protected Collection<PatternInvocation> negativeInvocations;
 	
 	protected IbexPatternOptimiser optimiser;
+
+	private Collection<TGGAttributeConstraint>  extractedConstraints;
 
 	protected IbexBasePattern(BlackPatternFactory factory) {
 		this.factory = factory;
@@ -232,5 +237,37 @@ public abstract class IbexBasePattern implements IBlackPattern {
 	@Override
 	public final BlackPatternFactory getPatternFactory() {
 		return factory;
+	}
+	
+	/* Attribute Constraints */
+	
+	@Override
+	public Collection<TGGAttributeConstraint> getAttributeConstraints() {
+		if (extractedConstraints == null) {
+			assert (getPatternFactory() != null);
+
+			TGGRule rule = getPatternFactory().getFlattenedVersionOfRule();
+			assert (rule != null && rule.getAttributeConditionLibrary() != null);
+
+			Collection<TGGAttributeConstraint>  attributeConstraints = rule.getAttributeConditionLibrary().getTggAttributeConstraints();
+			extractedConstraints = attributeConstraints.stream()
+					.filter(c -> isBlackAttributeConstraint(c))
+					.collect(Collectors.toList());
+			
+			// Remove all constraints already ensured in invoked patterns
+			getPositiveInvocations().stream()
+				.map(pi -> pi.getInvokedPattern())
+				.forEach(p -> extractedConstraints.removeAll(p.getAttributeConstraints()));
+		}
+
+		return extractedConstraints;
+	}
+	
+	protected boolean isBlackAttributeConstraint(TGGAttributeConstraint constraint) {
+		return constraint.getParameters().stream().allMatch(p -> 
+			SearchPlanAction.isConnectedToPattern(
+					p, 
+					n -> getAllNodes().stream()
+							          .anyMatch(node -> node.getName().contentEquals(n))));
 	}
 }
