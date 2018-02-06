@@ -8,10 +8,14 @@ import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
+import org.emoflon.ibex.tgg.util.MAUtil;
+
+import static org.emoflon.ibex.tgg.util.MAUtil.isComplementRule;
 import static org.emoflon.ibex.tgg.util.RuleRefinementUtil.*;
 
 import language.BindingType;
 import language.DomainType;
+import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -24,7 +28,13 @@ public class FWDOptBlackPattern extends BasicSyncPattern {
 		super(factory);
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
+		embedKernelProtocolNode(factory.getFlattenedVersionOfRule());
 		createPatternNetwork();
+	}
+	
+	private void embedKernelProtocolNode(TGGRule rule) {
+		if (isComplementRule(rule))
+			signatureNodes.add(MAUtil.createProtocolNodeForAmalgamation((TGGComplementRule)rule));
 	}
 
 	protected void initialise(TGGRule rule) {
