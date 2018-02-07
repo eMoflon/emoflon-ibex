@@ -7,29 +7,29 @@
     importOrganizing="true">
   <foreignModel>GTLanguage.ecore</foreignModel>
   <genPackages prefix="GTLanguage" disposableProviderFactory="true" ecorePackage="GTLanguage.ecore#/">
-    <genClasses ecoreClass="GTLanguage.ecore#//GTRuleSet">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTRuleSet/rules"/>
-    </genClasses>
-    <genClasses ecoreClass="GTLanguage.ecore#//GTRule">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTRule/graph"/>
+    <genClasses ecoreClass="GTLanguage.ecore#//GTEdge">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTEdge/type"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTEdge/targetNode"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTEdge/sourceNode"/>
     </genClasses>
     <genClasses ecoreClass="GTLanguage.ecore#//GTGraph">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTGraph/nodes"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTGraph/edges"/>
+    </genClasses>
+    <genClasses ecoreClass="GTLanguage.ecore#//GTGraphElement"/>
+    <genClasses ecoreClass="GTLanguage.ecore#//GTNamedElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute GTLanguage.ecore#//GTNamedElement/name"/>
     </genClasses>
     <genClasses ecoreClass="GTLanguage.ecore#//GTNode">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTNode/type"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTNode/incomingEdges"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTNode/outgoingEdges"/>
     </genClasses>
-    <genClasses ecoreClass="GTLanguage.ecore#//GTEdge">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTEdge/type"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTEdge/targetNode"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTEdge/sourceNode"/>
+    <genClasses ecoreClass="GTLanguage.ecore#//GTRule">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTRule/graph"/>
     </genClasses>
-    <genClasses ecoreClass="GTLanguage.ecore#//GTGraphElement"/>
-    <genClasses ecoreClass="GTLanguage.ecore#//GTNamedElement">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute GTLanguage.ecore#//GTNamedElement/name"/>
+    <genClasses ecoreClass="GTLanguage.ecore#//GTRuleSet">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference GTLanguage.ecore#//GTRuleSet/rules"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

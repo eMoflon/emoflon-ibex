@@ -20,11 +20,15 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXLanguage.ecore#//IBeXNode/outgoingEdges"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXLanguage.ecore#//IBeXNode/type"/>
     </genClasses>
+    <genClasses ecoreClass="IBeXLanguage.ecore#//IBeXNodePair">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXLanguage.ecore#//IBeXNodePair/values"/>
+    </genClasses>
     <genClasses ecoreClass="IBeXLanguage.ecore#//IBeXNodeToNodeMapping">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXLanguage.ecore#//IBeXNodeToNodeMapping/key"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXLanguage.ecore#//IBeXNodeToNodeMapping/value"/>
     </genClasses>
     <genClasses ecoreClass="IBeXLanguage.ecore#//IBeXPattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXLanguage.ecore#//IBeXPattern/injectivityConstraints"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXLanguage.ecore#//IBeXPattern/localEdges"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXLanguage.ecore#//IBeXPattern/localNodes"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXLanguage.ecore#//IBeXPattern/invocations"/>

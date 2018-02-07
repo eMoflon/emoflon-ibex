@@ -3,12 +3,15 @@ package org.emoflon.ibex.gt.engine.transformations;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.EClass;
+
 import GTLanguage.GTEdge;
 import GTLanguage.GTNode;
 import GTLanguage.GTRule;
 import IBeXLanguage.IBeXEdge;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
+import IBeXLanguage.IBeXNodePair;
 import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXPatternSet;
@@ -51,12 +54,30 @@ public class InternalGTToIBeX {
 		ibexPattern.setName(gtRule.getName());
 		ibexPatternSet.getPatterns().add(ibexPattern);
 
-		gtRule.getGraph().getNodes().forEach(gtNode -> {
-			ibexPattern.getLocalNodes().add(transformNode(gtNode));
-		});
+		gtRule.getGraph().getNodes().stream() //
+				.sorted((n1, n2) -> n1.getName().compareTo(n2.getName())) // alphabetically by name
+				.forEach(gtNode -> {
+					ibexPattern.getLocalNodes().add(transformNode(gtNode));
+				});
+
+		// Ensure that all nodes must be disjoint even if they have the same type.
+		for (int i = 0; i < ibexPattern.getLocalNodes().size(); i++) {
+			for (int j = i + 1; j < ibexPattern.getLocalNodes().size(); j++) {
+				IBeXNode node1 = ibexPattern.getLocalNodes().get(i);
+				IBeXNode node2 = ibexPattern.getLocalNodes().get(j);
+				if (canInstancesBeTheSame(node1.getType(), node2.getType())) {
+					IBeXNodePair nodePair = IBeXLanguageFactory.eINSTANCE.createIBeXNodePair();
+					nodePair.getValues().add(node1);
+					nodePair.getValues().add(node2);
+					ibexPattern.getInjectivityConstraints().add(nodePair);
+				}
+			}
+		}
 
 		if (useInvocations) {
-			gtRule.getGraph().getEdges().stream().map(edge -> edge.getType()).distinct() // all types of EReference
+			gtRule.getGraph().getEdges().stream() //
+					.map(edge -> edge.getType()).distinct() // all types of EReference
+					.sorted((t1, t2) -> t1.getName().compareTo(t2.getName())) // in alphabetical order
 					.forEach(edgeType -> {
 						IBeXPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXPattern();
 						edgePattern.setName("edge-" + edgeType.getEContainingClass().getName() + "-"
@@ -112,6 +133,11 @@ public class InternalGTToIBeX {
 		}
 
 		return ibexPatternSet;
+	}
+
+	private static boolean canInstancesBeTheSame(final EClass class1, final EClass class2) {
+		return class1 == class2 || class1.getEAllSuperTypes().contains(class2)
+				|| class2.getEAllSuperTypes().contains(class1);
 	}
 
 	private static IBeXNode transformNode(final GTNode gtNode) {
