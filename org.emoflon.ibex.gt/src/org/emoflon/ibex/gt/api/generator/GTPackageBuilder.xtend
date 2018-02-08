@@ -9,7 +9,12 @@ import org.eclipse.core.resources.IFolder
 import org.eclipse.core.resources.IProject
 import org.eclipse.core.runtime.IPath
 import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.resource.ResourceSet
 import org.eclipse.emf.ecore.util.EcoreUtil
+import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl
+import org.eclipse.emf.ecore.xmi.XMIResource
+import org.eclipse.emf.ecore.xmi.XMLResource
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder
@@ -17,6 +22,9 @@ import org.emoflon.ibex.gt.engine.transformations.EditorToInternalGT
 import org.emoflon.ibex.gt.engine.transformations.InternalGTToIBeX
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.resource.XtextResourceSet
+
+import GTLanguage.GTLanguageFactory
+import IBeXLanguage.IBeXLanguageFactory
 
 /**
  * Code generation for the API.
@@ -36,7 +44,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 
 		this.log("Start generation")
 		this.ensureSourceGenPackageExists
-		this.generateModel
+		this.generateModels
 		this.generateAPI
 		this.log("Finished generation")
 	}
@@ -54,47 +62,54 @@ class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
-	 * Creates the model.
+	 * Creates the models.
 	 */
-	private def generateModel() {
+	private def generateModels() {
 		val modelFolder = this.ensureFolderExists(this.sourceGenPackage.getFolder('model'))
 		val allFiles = this.project.getFolder(GTBuilder.SOURCE_FOLDER).getFolder(this.path).members
 		val gtFiles = allFiles.filter[it instanceof IFile].map[it as IFile].filter["gt" == it.fileExtension].toList
 
-		// Files to editor models.
+		// Load files into editor models.
 		val editorModels = newHashMap()
 		val resourceSet = new XtextResourceSet();
 		gtFiles.forEach [
-			val xtextResource = resourceSet.createResource(
-				URI.createPlatformResourceURI(it.getFullPath().toString(), false))
-			xtextResource.load(null);
-			EcoreUtil2.resolveLazyCrossReferences(xtextResource, [false]);
+			val file = resourceSet.createResource(URI.createPlatformResourceURI(it.getFullPath().toString(), false))
+			file.load(null);
+			EcoreUtil2.resolveLazyCrossReferences(file, [false]);
 			EcoreUtil.resolveAll(resourceSet);
 
-			val editorModel = xtextResource.contents.get(0) as GraphTransformationFile
+			val editorModel = file.contents.get(0) as GraphTransformationFile
 			editorModels.put(it, editorModel)
 		]
 
-		// Editor models to internal models.
-		val internalRules = newHashSet()
+		// Transform Editor models to rules of the internal GT model.
+		val gtRules = newHashSet()
 		editorModels.forEach [ gtFile, editorModel |
 			val internalModel = EditorToInternalGT.transformRuleSet(editorModel)
-			internalRules.addAll(internalModel.rules)
+			gtRules.addAll(internalModel.rules)
 		]
 
-		// Collected rules rules from internal models to IBeXPatterns.
+		val gtRulesSet = GTLanguageFactory.eINSTANCE.createGTRuleSet
+		gtRulesSet.rules.addAll(gtRules.sortBy[it.name])
+		this.saveModelFile(modelFolder.getFile("gt-rules.xmi"), resourceSet, gtRulesSet)
+
+		// Transform rules rules from internal models to IBeXPatterns.
 		val ibexPatterns = newHashSet()
 		val ruleToPatternCount = newHashMap()
-		internalRules.forEach [ internalRule, index |
+		gtRules.forEach [ internalRule, index |
 			val patterns = InternalGTToIBeX.transformRule(internalRule).getPatterns()
 			ibexPatterns.addAll(patterns)
 			ruleToPatternCount.put(internalRule.name, patterns.size)
 		]
 
+		val ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet
+		ibexPatternSet.patterns.addAll(ibexPatterns.sortBy[it.name])
+		this.saveModelFile(modelFolder.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet)
+
 		// Write debug file.
 		val debugFileContent = '''
 			# «this.packageName»
-			«internalRules.size» rules from «gtFiles.size» files
+			«gtRules.size» rules from «gtFiles.size» files
 			«ibexPatterns.size» patterns
 			
 			«FOR file : gtFiles»
@@ -106,6 +121,24 @@ class GTPackageBuilder implements GTBuilderExtension {
 			«ENDFOR»
 		'''
 		this.writeFile(modelFolder.getFile("log.md"), debugFileContent)
+	}
+
+	/**
+	 * Saves the model in the file.
+	 */
+	private def saveModelFile(IFile file, ResourceSet rs, EObject model) {
+		val uri = URI.createPlatformResourceURI(this.project.name + "/" + file.projectRelativePath.toString, true);
+		val resource = rs.createResource(uri);
+		resource.getContents().add(model);
+
+		val options = (resource as XMLResource).getDefaultSaveOptions();
+		options.put(XMIResource.OPTION_SAVE_ONLY_IF_CHANGED, XMIResource.OPTION_SAVE_ONLY_IF_CHANGED_MEMORY_BUFFER);
+		options.put(XMLResource.OPTION_URI_HANDLER, new URIHandlerImpl() {
+			override deresolve(URI uri) {
+				return uri
+			}
+		});
+		resource.save(options);
 	}
 
 	/**
