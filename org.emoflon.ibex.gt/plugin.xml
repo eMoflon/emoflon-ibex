@@ -13,5 +13,11 @@
             class="GTLanguage.GTLanguagePackage"
             genModel="model/GTLanguage.genmodel"/>
    </extension>
+   <extension
+         point="org.emoflon.ibex.gt.editor.ui.GTBuilderExtension">
+      <builder_extension
+            class="org.emoflon.ibex.gt.api.generator.GTPackageBuilder">
+      </builder_extension>
+   </extension>
 
 </plugin>
