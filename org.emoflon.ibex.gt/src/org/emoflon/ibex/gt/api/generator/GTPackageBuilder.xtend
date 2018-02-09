@@ -24,10 +24,19 @@ import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.resource.XtextResourceSet
 
 import GTLanguage.GTLanguageFactory
+import GTLanguage.GTRule
+import GTLanguage.GTRuleSet
 import IBeXLanguage.IBeXLanguageFactory
+import IBeXLanguage.IBeXPatternSet
 
 /**
- * Code generation for the API.
+ * This GTPackageBuilder implements
+ * <ul>
+ * <li>transforms the editor files into the internal model and IBeXPatterns</li>
+ * <li>and generates code for the API.</li>
+ * </ul>
+ * 
+ * Each package is considered as an rule module with an API.
  */
 class GTPackageBuilder implements GTBuilderExtension {
 	static val SOURCE_GEN_FOLDER = 'src-gen'
@@ -36,6 +45,8 @@ class GTPackageBuilder implements GTBuilderExtension {
 	IPath path
 	String packageName
 	IFolder sourceGenPackage
+	GTRuleSet gtRuleSet
+	IBeXPatternSet ibexPatternSet
 
 	override void run(IProject project, IPath packagePath) {
 		this.project = project
@@ -89,9 +100,9 @@ class GTPackageBuilder implements GTBuilderExtension {
 			gtRules.addAll(internalModel.rules)
 		]
 
-		val gtRulesSet = GTLanguageFactory.eINSTANCE.createGTRuleSet
-		gtRulesSet.rules.addAll(gtRules.sortBy[it.name])
-		this.saveModelFile(modelFolder.getFile("gt-rules.xmi"), resourceSet, gtRulesSet)
+		this.gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet
+		this.gtRuleSet.rules.addAll(gtRules.sortBy[it.name])
+		this.saveModelFile(modelFolder.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet)
 
 		// Transform rules rules from internal models to IBeXPatterns.
 		val ibexPatterns = newHashSet()
@@ -102,9 +113,9 @@ class GTPackageBuilder implements GTBuilderExtension {
 			ruleToPatternCount.put(internalRule.name, patterns.size)
 		]
 
-		val ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet
-		ibexPatternSet.patterns.addAll(ibexPatterns.sortBy[it.name])
-		this.saveModelFile(modelFolder.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet)
+		this.ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet
+		this.ibexPatternSet.patterns.addAll(ibexPatterns.sortBy[it.name])
+		this.saveModelFile(modelFolder.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet)
 
 		// Write debug file.
 		val debugFileContent = '''
@@ -146,8 +157,141 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private def generateAPI() {
 		val apiPackage = this.ensureFolderExists(this.sourceGenPackage.getFolder('api'))
-		this.ensureFolderExists(apiPackage.getFolder('matches'))
-		this.ensureFolderExists(apiPackage.getFolder('rules'))
+		val matchesPackage = this.ensureFolderExists(apiPackage.getFolder('matches'))
+		val rulesPackage = this.ensureFolderExists(apiPackage.getFolder('rules'))
+
+		this.gtRuleSet.rules.forEach [
+			this.generateMatchJavaFile(matchesPackage, it)
+			this.generateRuleJavaFile(rulesPackage, it)
+		]
+		this.generateAPIJavaFile(apiPackage)
+	}
+
+	private def generateAPIJavaFile(IFolder apiPackage) {
+		val apiClassName = this.packageName.replace('.', '').toFirstUpper + "API"
+		val apiSourceCode = '''
+			package «this.packageName».api;
+			
+			import org.eclipse.emf.ecore.resource.ResourceSet;
+			import org.emoflon.ibex.gt.api.GraphTransformationAPI;
+			import org.emoflon.ibex.gt.engine.GTEngine;
+			
+			«FOR rule : this.gtRuleSet.rules»
+				import «this.packageName».api.rules.«this.getRuleClassName(rule)»;
+			«ENDFOR»
+			
+			/**
+			 * The «apiClassName»
+			 */
+			public class «apiClassName» extends GraphTransformationAPI {
+				/**
+				 * Create a new «apiClassName».
+				 * 
+				 * @param engine
+				 *            the engine to use for queries and transformations
+				 * @param model
+				 *            the resource set containing the model file
+				 */
+				public «apiClassName»(final GTEngine engine, final ResourceSet model) {
+					super(engine, model);
+				}
+			«FOR rule : this.gtRuleSet.rules»
+			
+				/**
+				 * Create a new rule «rule.name»().
+				 * 
+				 * @return the created rule
+				 */
+				public «this.getRuleClassName(rule)» «rule.name»() {
+					return new «this.getRuleClassName(rule)»(this.model);
+				}
+			«ENDFOR»
+			}
+		'''
+		this.writeFile(apiPackage.getFile(apiClassName + '.java'), apiSourceCode)
+	}
+
+	private def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
+		val matchSourceCode = '''
+			package «this.packageName».api.matches;
+			
+			import org.emoflon.ibex.gt.api.Match;
+			
+			import «this.packageName».api.rules.«this.getRuleClassName(rule)»;
+			
+			/**
+			 * A match for the rule «rule.name»().
+			 */
+			public class «this.getMatchClassName(rule)» extends Match<«this.getMatchClassName(rule)», «this.getRuleClassName(rule)»> {
+				/**
+				 * Create a new match for a match for the rule «rule.name»().
+				 * 
+				 * @param rule
+				 *            the rule
+				 */
+				public «this.getMatchClassName(rule)»(final «this.getRuleClassName(rule)» rule) {
+					super(rule);
+				}
+			}
+		'''
+		this.writeFile(apiMatchesPackage.getFile(this.getMatchClassName(rule) + ".java"), matchSourceCode)
+	}
+
+	private def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
+		val ruleSourceCode = '''
+			package «this.packageName».api.rules;
+			
+			import java.util.Collection;
+			import java.util.Optional;
+			
+			import org.eclipse.emf.ecore.resource.ResourceSet;
+			import org.emoflon.ibex.gt.api.RuleApplication;
+			
+			import «this.packageName».api.matches.«this.getMatchClassName(rule)»;
+			
+			/**
+			 * The rule «rule.name»().
+			 */
+			public class «this.getRuleClassName(rule)» extends RuleApplication<«this.getMatchClassName(rule)», «this.getRuleClassName(rule)»> {
+				/**
+				 * Create a rule «rule.name»().
+				 * 
+				 * @param model
+				 *            the resource set
+				 */
+				public «this.getRuleClassName(rule)»(final ResourceSet model) {
+					super(model);
+				}
+			
+				@Override
+				public void execute(final «this.getMatchClassName(rule)» match) {
+				}
+			
+				@Override
+				public Optional<«this.getMatchClassName(rule)»> findAnyMatch() {
+					return null;
+				}
+			
+				@Override
+				public Collection<«this.getMatchClassName(rule)»> findMatches() {
+					return null;
+				}
+			
+				@Override
+				public boolean isQuery() {
+					return false;
+				}
+			}
+		'''
+		this.writeFile(rulesPackage.getFile(this.getRuleClassName(rule) + ".java"), ruleSourceCode)
+	}
+
+	private def getMatchClassName(GTRule rule) {
+		return rule.name.toFirstUpper + "Match"
+	}
+
+	private def getRuleClassName(GTRule rule) {
+		return rule.name.toFirstUpper + "Rule"
 	}
 
 	/**
