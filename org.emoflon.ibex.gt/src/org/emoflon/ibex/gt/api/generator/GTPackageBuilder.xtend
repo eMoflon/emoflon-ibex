@@ -2,7 +2,8 @@ package org.emoflon.ibex.gt.api.generator
 
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
-import java.util.Set
+import java.util.HashMap
+import java.util.HashSet
 
 import org.apache.log4j.Logger
 import org.eclipse.core.resources.IFile
@@ -10,7 +11,9 @@ import org.eclipse.core.resources.IFolder
 import org.eclipse.core.resources.IProject
 import org.eclipse.core.runtime.IPath
 import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.resource.ResourceSet
 import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl
@@ -52,7 +55,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 	// The model.
 	GTRuleSet gtRuleSet
 	IBeXPatternSet ibexPatternSet
-	Set<String> metaModels = newHashSet()
+	HashMap<String, String> eClassNameToMetaModelName = newHashMap()
 
 	override void run(IProject project, IPath packagePath) {
 		this.project = project
@@ -89,6 +92,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 		// Load files into editor models.
 		val editorModels = newHashMap()
 		val resourceSet = new XtextResourceSet();
+		val HashSet<String> metaModels = newHashSet()
 		gtFiles.forEach [
 			val file = resourceSet.createResource(URI.createPlatformResourceURI(it.getFullPath().toString(), false))
 			file.load(null);
@@ -97,7 +101,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 
 			val editorModel = file.contents.get(0) as GraphTransformationFile
 			editorModels.put(it, editorModel)
-			this.metaModels.addAll(editorModel.imports.map[it.name])
+			metaModels.addAll(editorModel.imports.map[it.name])
 		]
 
 		// Transform Editor models to rules of the internal GT model.
@@ -107,6 +111,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			gtRules.addAll(internalModel.rules)
 		]
 
+		// Save internal GT model (rules ordered alphabetically by their name).
 		this.gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet
 		this.gtRuleSet.rules.addAll(gtRules.sortBy[it.name])
 		this.saveModelFile(modelFolder.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet)
@@ -120,18 +125,32 @@ class GTPackageBuilder implements GTBuilderExtension {
 			ruleToPatternCount.put(internalRule.name, patterns.size)
 		]
 
+		// Save IBexPatterns (patterns ordered alphabetically by their name).
 		this.ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet
 		this.ibexPatternSet.patterns.addAll(ibexPatterns.sortBy[it.name])
 		this.saveModelFile(modelFolder.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet)
 
+		// Load meta-models.
+		val metaModelPackages = newHashMap()
+		metaModels.forEach [
+			metaModelPackages.put(it, this.loadMetaModelClasses(it, resourceSet))
+		]
+
 		// Write debug file.
 		val debugFileContent = '''
 			# «this.packageName»
-			«gtRules.size» rules from «gtFiles.size» files
-			«ibexPatterns.size» patterns
+			- «gtRules.size» rules from «gtFiles.size» files
+			- «ibexPatterns.size» patterns
+			
+			## Meta-Models
+			«FOR metaModel : metaModels»
+				- «metaModel» (package «metaModelPackages.get(metaModel)»)
+			«ENDFOR»
+			
+			## Rules
 			
 			«FOR file : gtFiles»
-				## «file.name» (with «editorModels.get(file).rules.size» rules)
+				### «file.name» (with «editorModels.get(file).rules.size» rules)
 				«FOR rule : editorModels.get(file).rules»
 					- «IF rule.abstract»abstract «ENDIF»rule «rule.name» (transformed to «ruleToPatternCount.get(rule.name)» patterns)
 				«ENDFOR»
@@ -160,6 +179,28 @@ class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
+	 * Loads the EClasses from the meta-model.
+	 */
+	private def loadMetaModelClasses(String metaModelUri, ResourceSet resourceSet) {
+		val ecoreFile = resourceSet.getResource(URI.createURI(metaModelUri), true)
+		ecoreFile.load(null)
+		EcoreUtil2.resolveLazyCrossReferences(ecoreFile, [false]);
+		EcoreUtil.resolveAll(resourceSet);
+
+		val rootElement = ecoreFile.contents.get(0)
+		if (rootElement instanceof EPackage) {
+			val ePackage = rootElement as EPackage
+			val metaModelPackageName = if('ecore'.equals(ePackage.name)) 'org.eclipse.emf.ecore' else ePackage.name
+			val eClassesFromMetaModel = ePackage.EClassifiers.filter[it instanceof EClass].map[it as EClass].toSet
+			eClassesFromMetaModel.forEach [
+				eClassNameToMetaModelName.put(it.name, metaModelPackageName)
+			]
+			return metaModelPackageName
+		}
+		return null
+	}
+
+	/**
 	 * Generates the API.
 	 */
 	private def generateAPI() {
@@ -174,6 +215,9 @@ class GTPackageBuilder implements GTBuilderExtension {
 		this.generateAPIJavaFile(apiPackage)
 	}
 
+	/**
+	 * Generates the Java API class.
+	 */
 	private def generateAPIJavaFile(IFolder apiPackage) {
 		val apiClassName = this.packageName.replace('.', '').toFirstUpper + "API"
 		val apiSourceCode = '''
@@ -218,6 +262,9 @@ class GTPackageBuilder implements GTBuilderExtension {
 		this.writeFile(apiPackage.getFile(apiClassName + '.java'), apiSourceCode)
 	}
 
+	/**
+	 * Generates the Java Rule class for the given rule.
+	 */
 	private def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = getImportsForTypes(rule)
 		val matchSourceCode = '''
@@ -263,6 +310,9 @@ class GTPackageBuilder implements GTBuilderExtension {
 		this.writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
 	}
 
+	/**
+	 * Generates the Java Rule class for the given rule.
+	 */
 	private def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
 		val ruleSourceCode = '''
 			package «this.packageName».api.rules;
@@ -312,6 +362,21 @@ class GTPackageBuilder implements GTBuilderExtension {
 		this.writeFile(rulesPackage.getFile(getRuleClassName(rule) + ".java"), ruleSourceCode)
 	}
 
+	/**
+	 * Determines the set of necessary imports for a rule.
+	 */
+	private def getImportsForTypes(GTRule rule) {
+		val imports = newHashSet()
+		val types = rule.graph.nodes.map[it.type].toSet
+		types.forEach [
+			val typePackageName = this.eClassNameToMetaModelName.get(it.name)
+			if (typePackageName !== null) {
+				imports.add(typePackageName + '.' + it.name)
+			}
+		]
+		return imports.sortBy[it]
+	}
+
 	// class names
 	private static def getMatchClassName(GTRule rule) {
 		return rule.name.toFirstUpper + "Match"
@@ -337,13 +402,6 @@ class GTPackageBuilder implements GTBuilderExtension {
 
 	private static def getVariableType(GTNode node) {
 		return node.type.name
-	}
-	
-	private static def getImportsForTypes(GTRule rule) {
-		return newArrayList(
-			'SimpleFamilies.*',
-			'org.eclipse.emf.ecore.*'
-		)
 	}
 
 	/**
