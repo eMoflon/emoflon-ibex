@@ -2,6 +2,7 @@ package org.emoflon.ibex.gt.api.generator
 
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
+import java.util.Set
 
 import org.apache.log4j.Logger
 import org.eclipse.core.resources.IFile
@@ -24,6 +25,7 @@ import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.resource.XtextResourceSet
 
 import GTLanguage.GTLanguageFactory
+import GTLanguage.GTNode
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
 import IBeXLanguage.IBeXLanguageFactory
@@ -41,12 +43,16 @@ import IBeXLanguage.IBeXPatternSet
 class GTPackageBuilder implements GTBuilderExtension {
 	static val SOURCE_GEN_FOLDER = 'src-gen'
 
+	// The package information.
 	IProject project
 	IPath path
 	String packageName
 	IFolder sourceGenPackage
+
+	// The model.
 	GTRuleSet gtRuleSet
 	IBeXPatternSet ibexPatternSet
+	Set<String> metaModels = newHashSet()
 
 	override void run(IProject project, IPath packagePath) {
 		this.project = project
@@ -91,6 +97,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 
 			val editorModel = file.contents.get(0) as GraphTransformationFile
 			editorModels.put(it, editorModel)
+			this.metaModels.addAll(editorModel.imports.map[it.name])
 		]
 
 		// Transform Editor models to rules of the internal GT model.
@@ -177,7 +184,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			import org.emoflon.ibex.gt.engine.GTEngine;
 			
 			«FOR rule : this.gtRuleSet.rules»
-				import «this.packageName».api.rules.«this.getRuleClassName(rule)»;
+				import «this.packageName».api.rules.«getRuleClassName(rule)»;
 			«ENDFOR»
 			
 			/**
@@ -196,15 +203,15 @@ class GTPackageBuilder implements GTBuilderExtension {
 					super(engine, model);
 				}
 			«FOR rule : this.gtRuleSet.rules»
-			
-				/**
-				 * Create a new rule «rule.name»().
-				 * 
-				 * @return the created rule
-				 */
-				public «this.getRuleClassName(rule)» «rule.name»() {
-					return new «this.getRuleClassName(rule)»(this.model);
-				}
+				
+					/**
+					 * Create a new rule «rule.name»().
+					 * 
+					 * @return the created rule
+					 */
+					public «getRuleClassName(rule)» «rule.name»() {
+						return new «getRuleClassName(rule)»(this.model);
+					}
 			«ENDFOR»
 			}
 		'''
@@ -212,29 +219,48 @@ class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	private def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
+		val imports = getImportsForTypes(rule)
 		val matchSourceCode = '''
 			package «this.packageName».api.matches;
 			
 			import org.emoflon.ibex.gt.api.Match;
 			
-			import «this.packageName».api.rules.«this.getRuleClassName(rule)»;
+			import «this.packageName».api.rules.«getRuleClassName(rule)»;
+			
+			«FOR importClass : imports»
+				import «importClass»;
+			«ENDFOR»
 			
 			/**
 			 * A match for the rule «rule.name»().
 			 */
-			public class «this.getMatchClassName(rule)» extends Match<«this.getMatchClassName(rule)», «this.getRuleClassName(rule)»> {
+			public class «getMatchClassName(rule)» extends Match<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
+				«FOR node : rule.graph.nodes»
+					private «getVariableType(node)» «getVariableName(node)»;	
+				«ENDFOR»
+			
 				/**
 				 * Create a new match for a match for the rule «rule.name»().
 				 * 
 				 * @param rule
 				 *            the rule
 				 */
-				public «this.getMatchClassName(rule)»(final «this.getRuleClassName(rule)» rule) {
+				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» rule) {
 					super(rule);
 				}
+				
+				«FOR node : rule.graph.nodes»
+					public «getVariableType(node)» «getGetterMethodName(node)»() {
+						return this.«getVariableName(node)»;
+					}
+					
+					public void «getSetterMethodName(node)»(final «getVariableType(node)» «getVariableName(node)») {
+						this.«getVariableName(node)» = «getVariableName(node)»;
+					}
+				«ENDFOR»
 			}
 		'''
-		this.writeFile(apiMatchesPackage.getFile(this.getMatchClassName(rule) + ".java"), matchSourceCode)
+		this.writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
 	}
 
 	private def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
@@ -247,33 +273,33 @@ class GTPackageBuilder implements GTBuilderExtension {
 			import org.eclipse.emf.ecore.resource.ResourceSet;
 			import org.emoflon.ibex.gt.api.RuleApplication;
 			
-			import «this.packageName».api.matches.«this.getMatchClassName(rule)»;
+			import «this.packageName».api.matches.«getMatchClassName(rule)»;
 			
 			/**
 			 * The rule «rule.name»().
 			 */
-			public class «this.getRuleClassName(rule)» extends RuleApplication<«this.getMatchClassName(rule)», «this.getRuleClassName(rule)»> {
+			public class «getRuleClassName(rule)» extends RuleApplication<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				/**
 				 * Create a rule «rule.name»().
 				 * 
 				 * @param model
 				 *            the resource set
 				 */
-				public «this.getRuleClassName(rule)»(final ResourceSet model) {
+				public «getRuleClassName(rule)»(final ResourceSet model) {
 					super(model);
 				}
 			
 				@Override
-				public void execute(final «this.getMatchClassName(rule)» match) {
+				public void execute(final «getMatchClassName(rule)» match) {
 				}
 			
 				@Override
-				public Optional<«this.getMatchClassName(rule)»> findAnyMatch() {
+				public Optional<«getMatchClassName(rule)»> findAnyMatch() {
 					return null;
 				}
 			
 				@Override
-				public Collection<«this.getMatchClassName(rule)»> findMatches() {
+				public Collection<«getMatchClassName(rule)»> findMatches() {
 					return null;
 				}
 			
@@ -283,15 +309,41 @@ class GTPackageBuilder implements GTBuilderExtension {
 				}
 			}
 		'''
-		this.writeFile(rulesPackage.getFile(this.getRuleClassName(rule) + ".java"), ruleSourceCode)
+		this.writeFile(rulesPackage.getFile(getRuleClassName(rule) + ".java"), ruleSourceCode)
 	}
 
-	private def getMatchClassName(GTRule rule) {
+	// class names
+	private static def getMatchClassName(GTRule rule) {
 		return rule.name.toFirstUpper + "Match"
 	}
 
-	private def getRuleClassName(GTRule rule) {
+	private static def getRuleClassName(GTRule rule) {
 		return rule.name.toFirstUpper + "Rule"
+	}
+
+	// method names
+	private static def getGetterMethodName(GTNode node) {
+		return 'get' + getVariableName(node).toFirstUpper
+	}
+
+	private static def getSetterMethodName(GTNode node) {
+		return 'set' + getVariableName(node).toFirstUpper
+	}
+
+	// variables
+	private static def getVariableName(GTNode node) {
+		return 'element' + node.name.toFirstUpper
+	}
+
+	private static def getVariableType(GTNode node) {
+		return node.type.name
+	}
+	
+	private static def getImportsForTypes(GTRule rule) {
+		return newArrayList(
+			'SimpleFamilies.*',
+			'org.eclipse.emf.ecore.*'
+		)
 	}
 
 	/**
