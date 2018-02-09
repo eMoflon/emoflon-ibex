@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 import java.util.HashMap
 import java.util.HashSet
+import java.util.List
 
 import org.apache.log4j.Logger
 import org.eclipse.core.resources.IFile
@@ -219,17 +220,20 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 * Generates the Java API class.
 	 */
 	private def generateAPIJavaFile(IFolder apiPackage) {
+		val imports = newArrayList(
+			'org.eclipse.emf.ecore.resource.ResourceSet',
+			'org.emoflon.ibex.gt.api.GraphTransformationAPI',
+			'org.emoflon.ibex.gt.engine.GTEngine'
+		)
+		this.gtRuleSet.rules.forall [
+			imports.add('''«this.packageName».api.rules.«getRuleClassName(it)»''')
+		]
+
 		val apiClassName = this.packageName.replace('.', '').toFirstUpper + "API"
 		val apiSourceCode = '''
 			package «this.packageName».api;
 			
-			import org.eclipse.emf.ecore.resource.ResourceSet;
-			import org.emoflon.ibex.gt.api.GraphTransformationAPI;
-			import org.emoflon.ibex.gt.engine.GTEngine;
-			
-			«FOR rule : this.gtRuleSet.rules»
-				import «this.packageName».api.rules.«getRuleClassName(rule)»;
-			«ENDFOR»
+			«printImports(imports)»
 			
 			/**
 			 * The «apiClassName»
@@ -267,16 +271,13 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = getImportsForTypes(rule)
+		imports.add('org.emoflon.ibex.gt.api.Match');
+		imports.add('''«this.packageName».api.rules.«getRuleClassName(rule)»''')
+
 		val matchSourceCode = '''
 			package «this.packageName».api.matches;
 			
-			import org.emoflon.ibex.gt.api.Match;
-			
-			import «this.packageName».api.rules.«getRuleClassName(rule)»;
-			
-			«FOR importClass : imports»
-				import «importClass»;
-			«ENDFOR»
+			«printImports(imports)»
 			
 			/**
 			 * A match for the rule «rule.name»().
@@ -314,16 +315,18 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 * Generates the Java Rule class for the given rule.
 	 */
 	private def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
+		val imports = newArrayList(
+			'java.util.Collection',
+			'java.util.Optional',
+			'org.eclipse.emf.ecore.resource.ResourceSet',
+			'org.emoflon.ibex.gt.api.RuleApplication',
+			'''«this.packageName».api.matches.«getMatchClassName(rule)»'''
+		)
+
 		val ruleSourceCode = '''
 			package «this.packageName».api.rules;
 			
-			import java.util.Collection;
-			import java.util.Optional;
-			
-			import org.eclipse.emf.ecore.resource.ResourceSet;
-			import org.emoflon.ibex.gt.api.RuleApplication;
-			
-			import «this.packageName».api.matches.«getMatchClassName(rule)»;
+			«printImports(imports)»
 			
 			/**
 			 * The rule «rule.name»().
@@ -375,6 +378,17 @@ class GTPackageBuilder implements GTBuilderExtension {
 			}
 		]
 		return imports.sortBy[it]
+	}
+
+	/**
+	 * Sub template for Java import statements
+	 */
+	private static def printImports(List<String> imports) {
+		return '''
+			«FOR importClass : imports.sortBy[it.toLowerCase]»
+				import «importClass»;
+			«ENDFOR»
+		'''
 	}
 
 	// class names
