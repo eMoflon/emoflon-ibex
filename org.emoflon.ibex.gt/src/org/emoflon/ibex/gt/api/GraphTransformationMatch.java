@@ -14,7 +14,7 @@ package org.emoflon.ibex.gt.api;
  * @param <R>
  *            the type of the rule application the match is for
  */
-public abstract class Match<M extends Match<M, R>, R extends RuleApplication<M, R>> {
+public abstract class GraphTransformationMatch<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationRule<M, R>> {
 	/**
 	 * The rule application
 	 */
@@ -26,7 +26,7 @@ public abstract class Match<M extends Match<M, R>, R extends RuleApplication<M, 
 	 * @param rule
 	 *            the rule application
 	 */
-	public Match(final R rule) {
+	public GraphTransformationMatch(final R rule) {
 		this.rule = rule;
 	}
 

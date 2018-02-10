@@ -1,13 +1,15 @@
 package org.emoflon.ibex.gt.engine;
 
+import java.util.Objects;
 import java.util.Optional;
 
-import IBeXLanguage.IBeXLanguageFactory;
-import IBeXLanguage.IBeXPattern;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+
 import IBeXLanguage.IBeXPatternSet;
 
 /**
- * Engine for Unidirectional Graph Transformations which needs to be implemented
+ * Engine for unidirectional graph transformations which needs to be implemented
  * for a concrete pattern matcher.
  * 
  * @author Patrick Robrecht
@@ -17,42 +19,38 @@ public abstract class GTEngine {
 	protected Optional<String> debugPath = Optional.ofNullable(null);
 
 	/**
-	 * Enables the debugging mode if the given path is not <code>null</null>.
+	 * Sets the debug path.
 	 * 
 	 * @param debugPath
-	 *            the path for the debugging output
+	 *            the path for the debugging output. If it is <code>null</null>,
+	 *            debugging is disabled.
+	 * 
 	 */
-	public void setDebug(final String debugPath) {
+	public void setDebugPath(final String debugPath) {
 		this.debugPath = Optional.ofNullable(debugPath);
 	}
 
 	/**
-	 * Loads rules from an .gt file.
+	 * Loads IBeXPatterns from the resource set.
 	 * 
-	 * @param filePath
-	 *            the path to the given file.
+	 * @param ibexPatternResource
+	 *            a resource containing IBeXPatterns
 	 */
-	public void loadRulesFromFile(final String filePath) {
-		IBeXPatternSet ibexPatterns = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet();
-		// TODO: load patterns from file
-
-		// Transform into patterns of the concrete engine.
-		ibexPatterns.getPatterns().forEach(ibexPattern -> {
-			this.transformPattern(ibexPattern);
-		});
-		this.savePatternsForDebugging();
+	public void loadPatterns(final Resource ibexPatternResource) {
+		Objects.requireNonNull(ibexPatternResource, "Resource must not be null!");
+		EObject resourceContent = ibexPatternResource.getContents().get(0);
+		Objects.requireNonNull("Resource must not be empty");
+		if (resourceContent instanceof IBeXPatternSet) {
+			// Transform into patterns of the concrete engine.
+			this.transformPatterns((IBeXPatternSet) resourceContent);
+		}
 	}
 
 	/**
-	 * Transforms the IBeXPattern to the patterns of the engine.
+	 * Transforms the IBeXPattern into the patterns of the engine.
 	 * 
-	 * @param ibexPattern
-	 *            the IBeXPattern to add
+	 * @param ibexPatternSet
+	 *            the IBeXPatternSet to transform
 	 */
-	protected abstract void transformPattern(final IBeXPattern ibexPattern);
-	
-	/**
-	 * Serializes the output for debugging.
-	 */
-	protected abstract void savePatternsForDebugging();
+	protected abstract void transformPatterns(final IBeXPatternSet ibexPatternSet);
 }

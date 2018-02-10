@@ -20,7 +20,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
  * @param <R>
  *            the own type
  */
-public abstract class RuleApplication<M extends Match<M, R>, R extends RuleApplication<M, R>> {
+public abstract class GraphTransformationRule<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationRule<M, R>> {
 	/**
 	 * The model to query/transform with this rule application.
 	 */
@@ -32,7 +32,7 @@ public abstract class RuleApplication<M extends Match<M, R>, R extends RuleAppli
 	 * @param model
 	 *            the model to query/transform
 	 */
-	public RuleApplication(final ResourceSet model) {
+	public GraphTransformationRule(final ResourceSet model) {
 		this.model = model;
 	}
 

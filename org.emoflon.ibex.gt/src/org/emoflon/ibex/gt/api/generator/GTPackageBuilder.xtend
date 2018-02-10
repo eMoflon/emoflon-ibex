@@ -286,7 +286,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = getImportsForTypes(rule)
-		imports.add('org.emoflon.ibex.gt.api.Match');
+		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch');
 		imports.add('''«this.packageName».api.rules.«getRuleClassName(rule)»''')
 
 		val matchSourceCode = '''
@@ -297,7 +297,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			/**
 			 * A match for the rule «rule.name»().
 			 */
-			public class «getMatchClassName(rule)» extends Match<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
+			public class «getMatchClassName(rule)» extends GraphTransformationMatch<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				«FOR node : rule.graph.nodes»
 					private «getVariableType(node)» «getVariableName(node)»;	
 				«ENDFOR»
@@ -334,7 +334,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			'java.util.Collection',
 			'java.util.Optional',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
-			'org.emoflon.ibex.gt.api.RuleApplication',
+			'org.emoflon.ibex.gt.api.GraphTransformationRule',
 			'''«this.packageName».api.matches.«getMatchClassName(rule)»'''
 		)
 
@@ -346,7 +346,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			/**
 			 * The rule «rule.name»().
 			 */
-			public class «getRuleClassName(rule)» extends RuleApplication<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
+			public class «getRuleClassName(rule)» extends GraphTransformationRule<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				/**
 				 * Create a rule «rule.name»().
 				 * 

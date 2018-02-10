@@ -9,7 +9,7 @@
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated IBeXLanguage -->
       <package
-            uri="platform:/plugin/org.emoflon.ibex.common/IBeXLanguage.ecore"
+            uri="platform:/plugin/org.emoflon.ibex.common/model/IBeXLanguage.ecore"
             class="IBeXLanguage.IBeXLanguagePackage"
             genModel="model/IBeXLanguage.genmodel"/>
    </extension>
