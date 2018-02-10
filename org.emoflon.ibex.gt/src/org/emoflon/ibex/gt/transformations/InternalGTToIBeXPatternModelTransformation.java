@@ -1,13 +1,17 @@
-package org.emoflon.ibex.gt.engine.transformations;
+package org.emoflon.ibex.gt.transformations;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 
 import GTLanguage.GTEdge;
 import GTLanguage.GTNode;
 import GTLanguage.GTRule;
+import GTLanguage.GTRuleSet;
 import IBeXLanguage.IBeXEdge;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
@@ -22,7 +26,22 @@ import IBeXLanguage.IBeXPatternSet;
  * @author Patrick Robrecht
  * @version 0.1
  */
-public class InternalGTToIBeX {
+public class InternalGTToIBeXPatternModelTransformation extends AbstractModelTransformation<GTRuleSet, IBeXPatternSet> {
+	private List<IBeXPattern> ibexPatterns;
+
+	@Override
+	public IBeXPatternSet transform(final GTRuleSet gtRuleSet) {
+		this.ibexPatterns = new ArrayList<IBeXPattern>();
+		gtRuleSet.getRules().forEach(gtRule -> {
+			IBeXPatternSet set = transformRule(gtRule);
+			ibexPatterns.addAll(set.getPatterns());
+		});
+
+		IBeXPatternSet ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet();
+		ibexPatternSet.getPatterns().addAll(ibexPatterns.stream()
+				.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList()));
+		return ibexPatternSet;
+	}
 
 	/**
 	 * Transforms a GTRule into a set of IBeXPatterns with pattern invocations.
@@ -31,7 +50,7 @@ public class InternalGTToIBeX {
 	 *            the rule, must not be <code>null</code>
 	 * @return the IBeXPatternSet
 	 */
-	public static IBeXPatternSet transformRule(final GTRule gtRule) {
+	private static IBeXPatternSet transformRule(final GTRule gtRule) {
 		return transformRule(gtRule, true);
 	}
 
@@ -46,7 +65,7 @@ public class InternalGTToIBeX {
 	 *            invocations.
 	 * @return the IBeXPatternSet
 	 */
-	public static IBeXPatternSet transformRule(final GTRule gtRule, final boolean useInvocations) {
+	private static IBeXPatternSet transformRule(final GTRule gtRule, final boolean useInvocations) {
 		Objects.requireNonNull(gtRule, "rule must not be null!");
 
 		IBeXPatternSet ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet();

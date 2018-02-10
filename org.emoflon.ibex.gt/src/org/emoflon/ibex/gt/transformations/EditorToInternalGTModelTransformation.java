@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.engine.transformations;
+package org.emoflon.ibex.gt.transformations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,13 @@ import GTLanguage.GTRuleSet;
  * @author Patrick Robrecht
  * @version 0.1
  */
-public class EditorToInternalGT {
+public class EditorToInternalGTModelTransformation
+		extends AbstractModelTransformation<GraphTransformationFile, GTRuleSet> {
+
+	@Override
+	public GTRuleSet transform(final GraphTransformationFile editorModel) {
+		return EditorToInternalGTModelTransformation.transformRuleSet(editorModel);
+	}
 
 	/**
 	 * Transforms an editor file into a GTRuleSet of the internal GT model.
@@ -35,7 +41,7 @@ public class EditorToInternalGT {
 	 *            the editor file model, must not be <code>null</code>
 	 * @return the GTRuleSet
 	 */
-	public static GTRuleSet transformRuleSet(final GraphTransformationFile file) {
+	private static GTRuleSet transformRuleSet(final GraphTransformationFile file) {
 		Objects.requireNonNull(file, "file must not be null!");
 		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
 		file.getRules().forEach(rule -> gtRuleSet.getRules().add(transformRule(rule)));
@@ -105,10 +111,12 @@ public class EditorToInternalGT {
 			if (!gtSourceNode.isPresent()) {
 				throw new IllegalStateException("Could not find node " + sourceNodeName + "!");
 			}
-			/* TODO: This can fail for rules with refinement if the target is from parent rule
-			if (!gtTargetNode.isPresent()) {
-				throw new IllegalStateException("Could not find node " + targetNodeName + "!");
-			}*/
+			// TODO: This can fail for rules with refinement
+			// if the target is from parent
+			// if (!gtTargetNode.isPresent()) {
+			// throw new IllegalStateException("Could not find node " + targetNodeName +
+			// "!");
+			// }
 
 			GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
 			gtEdge.setType(reference.getType());

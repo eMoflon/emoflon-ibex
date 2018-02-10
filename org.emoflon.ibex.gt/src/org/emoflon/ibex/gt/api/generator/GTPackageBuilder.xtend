@@ -23,8 +23,8 @@ import org.eclipse.emf.ecore.xmi.XMLResource
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder
-import org.emoflon.ibex.gt.engine.transformations.EditorToInternalGT
-import org.emoflon.ibex.gt.engine.transformations.InternalGTToIBeX
+import org.emoflon.ibex.gt.transformations.EditorToInternalGTModelTransformation
+import org.emoflon.ibex.gt.transformations.InternalGTToIBeXPatternModelTransformation
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.resource.XtextResourceSet
 
@@ -32,7 +32,6 @@ import GTLanguage.GTLanguageFactory
 import GTLanguage.GTNode
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
-import IBeXLanguage.IBeXLanguageFactory
 import IBeXLanguage.IBeXPatternSet
 
 /**
@@ -107,7 +106,8 @@ class GTPackageBuilder implements GTBuilderExtension {
 		// Transform Editor models to rules of the internal GT model.
 		val gtRules = newHashSet()
 		editorModels.forEach [ gtFile, editorModel |
-			val internalModel = EditorToInternalGT.transformRuleSet(editorModel)
+			val transformation = new EditorToInternalGTModelTransformation
+			val internalModel = transformation.transform(editorModel)
 			gtRules.addAll(internalModel.rules)
 		]
 
@@ -117,17 +117,10 @@ class GTPackageBuilder implements GTBuilderExtension {
 		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet)
 
 		// Transform rules rules from internal models to IBeXPatterns.
-		val ibexPatterns = newHashSet()
-		val ruleToPatternCount = newHashMap()
-		gtRules.forEach [ internalRule, index |
-			val patterns = InternalGTToIBeX.transformRule(internalRule).getPatterns()
-			ibexPatterns.addAll(patterns)
-			ruleToPatternCount.put(internalRule.name, patterns.size)
-		]
+		val transformation = new InternalGTToIBeXPatternModelTransformation
+		this.ibexPatternSet = transformation.transform(gtRuleSet)
 
 		// Save IBexPatterns (patterns ordered alphabetically by their name).
-		this.ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet
-		this.ibexPatternSet.patterns.addAll(ibexPatterns.sortBy[it.name])
 		this.saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet)
 
 		// Load meta-models.
@@ -140,7 +133,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 		val debugFileContent = '''
 			# «this.packageName»
 			You specified «gtRules.size» rules from «gtFiles.size» files
-				which were transformed into «ibexPatterns.size» patterns.
+				which were transformed into «ibexPatternSet.patterns.size» patterns.
 			
 			## Meta-Models
 			«FOR metaModel : metaModels»
@@ -151,7 +144,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			«FOR file : gtFiles»
 			- File `«file.name»` (with «editorModels.get(file).rules.size» rules)
 				«FOR rule : editorModels.get(file).rules»
-					- «IF rule.abstract»abstract «ENDIF»rule `«rule.name»` (transformed to «ruleToPatternCount.get(rule.name)» patterns)
+					- «IF rule.abstract»abstract «ENDIF»rule `«rule.name»`
 				«ENDFOR»
 			«ENDFOR»
 			
