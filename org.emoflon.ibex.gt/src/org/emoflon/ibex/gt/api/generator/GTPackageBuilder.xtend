@@ -78,7 +78,11 @@ class GTPackageBuilder implements GTBuilderExtension {
 			val s = this.path.segment(i)
 			folder = this.ensureFolderExists(folder.getFolder(s))
 		}
-		this.apiPackage = this.ensureFolderExists(folder.getFolder('api'))
+		folder = folder.getFolder('api')
+		if (folder.exists) {
+			folder.delete(true, null)
+		}
+		this.apiPackage = this.ensureFolderExists(folder)
 	}
 
 	/**
