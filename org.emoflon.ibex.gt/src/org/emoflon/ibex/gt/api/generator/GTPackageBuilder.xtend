@@ -51,7 +51,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 	IProject project
 	IPath path
 	String packageName
-	IFolder sourceGenPackage
+	IFolder apiPackage
 
 	// The model.
 	GTRuleSet gtRuleSet
@@ -63,11 +63,11 @@ class GTPackageBuilder implements GTBuilderExtension {
 		this.path = packagePath
 		this.packageName = this.path.toString.replace('/', '.')
 
-		this.log("Start generation")
+		this.log("Started build")
 		this.ensureSourceGenPackageExists
 		this.generateModels
 		this.generateAPI
-		this.log("Finished generation")
+		this.log("Finished build")
 	}
 
 	/**
@@ -79,14 +79,13 @@ class GTPackageBuilder implements GTBuilderExtension {
 			val s = this.path.segment(i)
 			folder = this.ensureFolderExists(folder.getFolder(s))
 		}
-		this.sourceGenPackage = folder
+		this.apiPackage = this.ensureFolderExists(folder.getFolder('api'))
 	}
 
 	/**
 	 * Creates the models.
 	 */
 	private def generateModels() {
-		val modelFolder = this.ensureFolderExists(this.sourceGenPackage.getFolder('model'))
 		val allFiles = this.project.getFolder(GTBuilder.SOURCE_FOLDER).getFolder(this.path).members
 		val gtFiles = allFiles.filter[it instanceof IFile].map[it as IFile].filter["gt" == it.fileExtension].toList
 
@@ -94,7 +93,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 		val editorModels = newHashMap()
 		val resourceSet = new XtextResourceSet();
 		val HashSet<String> metaModels = newHashSet()
-		gtFiles.forEach [
+		gtFiles.filter[it.exists].forEach [
 			val file = resourceSet.createResource(URI.createPlatformResourceURI(it.getFullPath().toString(), false))
 			file.load(null);
 			EcoreUtil2.resolveLazyCrossReferences(file, [false]);
@@ -115,7 +114,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 		// Save internal GT model (rules ordered alphabetically by their name).
 		this.gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet
 		this.gtRuleSet.rules.addAll(gtRules.sortBy[it.name])
-		this.saveModelFile(modelFolder.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet)
+		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet)
 
 		// Transform rules rules from internal models to IBeXPatterns.
 		val ibexPatterns = newHashSet()
@@ -129,7 +128,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 		// Save IBexPatterns (patterns ordered alphabetically by their name).
 		this.ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet
 		this.ibexPatternSet.patterns.addAll(ibexPatterns.sortBy[it.name])
-		this.saveModelFile(modelFolder.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet)
+		this.saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet)
 
 		// Load meta-models.
 		val metaModelPackages = newHashMap()
@@ -140,25 +139,48 @@ class GTPackageBuilder implements GTBuilderExtension {
 		// Write debug file.
 		val debugFileContent = '''
 			# «this.packageName»
-			- «gtRules.size» rules from «gtFiles.size» files
-			- «ibexPatterns.size» patterns
+			You specified «gtRules.size» rules from «gtFiles.size» files
+				which were transformed into «ibexPatterns.size» patterns.
 			
 			## Meta-Models
 			«FOR metaModel : metaModels»
-				- «metaModel» (package «metaModelPackages.get(metaModel)»)
+				- `«metaModel»` (package `«metaModelPackages.get(metaModel)»`)
 			«ENDFOR»
 			
 			## Rules
-			
 			«FOR file : gtFiles»
-				### «file.name» (with «editorModels.get(file).rules.size» rules)
+			- File `«file.name»` (with «editorModels.get(file).rules.size» rules)
 				«FOR rule : editorModels.get(file).rules»
-					- «IF rule.abstract»abstract «ENDIF»rule «rule.name» (transformed to «ruleToPatternCount.get(rule.name)» patterns)
+					- «IF rule.abstract»abstract «ENDIF»rule `«rule.name»` (transformed to «ruleToPatternCount.get(rule.name)» patterns)
 				«ENDFOR»
-				
 			«ENDFOR»
+			
+			## API
+			The generated API is located in `src-gen/«this.packageName».api`.
+			
+			## How to specify rules
+			1. Add a meta-model reference.
+			2. Add the meta-model project(s) as dependency to the `META-INF/MANIFEST.MF`,
+				if not done yet (tab *Dependencies* via the button *Add*).
+			3. Define your rules by adding `.gt` files into the package.
+			
+			If there are errors in the specification, you will see this in the editor
+				and the generated API may contain errors as well.
+			
+			### How to use the API in another project
+			1. Add the generated packages `«this.packageName».api`, 
+				`«this.packageName».api.matches` and `«this.packageName».api.rules`
+				to the exported packages of this project
+				(tab *Runtime* > *Exported packages* via the button *Add*).
+			2. Add this project as a dependency of the project in which you want to use the API.
+			3. Create a new API object.
+				 ```
+				 ResourceSet resourceSet = new ResourceSetImpl();
+				 resourceSet.createResource(URI.createFileURI("your-model.xmi"));
+				 return new «this.APIClassName»(new DemoclesGTEngine(), resourceSet);
+				 ```
 		'''
-		this.writeFile(modelFolder.getFile("log.md"), debugFileContent)
+		this.writeFile(apiPackage.getFile("README.md"), debugFileContent)
 	}
 
 	/**
@@ -205,10 +227,8 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 * Generates the API.
 	 */
 	private def generateAPI() {
-		val apiPackage = this.ensureFolderExists(this.sourceGenPackage.getFolder('api'))
-		val matchesPackage = this.ensureFolderExists(apiPackage.getFolder('matches'))
-		val rulesPackage = this.ensureFolderExists(apiPackage.getFolder('rules'))
-
+		val matchesPackage = this.ensureFolderExists(this.apiPackage.getFolder('matches'))
+		val rulesPackage = this.ensureFolderExists(this.apiPackage.getFolder('rules'))
 		this.gtRuleSet.rules.forEach [
 			this.generateMatchJavaFile(matchesPackage, it)
 			this.generateRuleJavaFile(rulesPackage, it)
@@ -229,7 +249,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			imports.add('''«this.packageName».api.rules.«getRuleClassName(it)»''')
 		]
 
-		val apiClassName = this.packageName.replace('.', '').toFirstUpper + "API"
+		val apiClassName = this.APIClassName
 		val apiSourceCode = '''
 			package «this.packageName».api;
 			
@@ -348,7 +368,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			
 				@Override
 				public Optional<«getMatchClassName(rule)»> findAnyMatch() {
-					return null;
+					return Optional.ofNullable(null);
 				}
 			
 				@Override
@@ -392,6 +412,10 @@ class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	// class names
+	private def getAPIClassName() {
+		return this.packageName.replace('.', '').toFirstUpper + "API"
+	}
+	
 	private static def getMatchClassName(GTRule rule) {
 		return rule.name.toFirstUpper + "Match"
 	}
@@ -422,7 +446,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 * Logs the message on the console.
 	 */
 	private def log(String message) {
-		Logger.rootLogger.info(this.project.name + ", package " + this.packageName + ": " + message)
+		Logger.rootLogger.info(this.project.name + " - package " + this.packageName + ": " + message)
 	}
 
 	/**
