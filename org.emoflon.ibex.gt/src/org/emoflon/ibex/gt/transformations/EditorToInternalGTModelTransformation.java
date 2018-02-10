@@ -28,23 +28,23 @@ import GTLanguage.GTRuleSet;
  */
 public class EditorToInternalGTModelTransformation
 		extends AbstractModelTransformation<GraphTransformationFile, GTRuleSet> {
+	/**
+	 * The rules transformed into the internal model.
+	 */
+	private List<GTRule> gtRules;
 
 	@Override
 	public GTRuleSet transform(final GraphTransformationFile editorModel) {
-		return EditorToInternalGTModelTransformation.transformRuleSet(editorModel);
-	}
+		Objects.requireNonNull(editorModel, "The editor model must not be null!");
+		this.gtRules = new ArrayList<GTRule>();
+		editorModel.getRules().stream() //
+				.filter(r -> !r.isAbstract()) // ignore abstract rules
+				.forEach(editorRule -> this.transformRule(editorRule));
 
-	/**
-	 * Transforms an editor file into a GTRuleSet of the internal GT model.
-	 * 
-	 * @param file
-	 *            the editor file model, must not be <code>null</code>
-	 * @return the GTRuleSet
-	 */
-	private static GTRuleSet transformRuleSet(final GraphTransformationFile file) {
-		Objects.requireNonNull(file, "file must not be null!");
 		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
-		file.getRules().forEach(rule -> gtRuleSet.getRules().add(transformRule(rule)));
+		gtRuleSet.getRules().addAll(gtRules.stream() //
+				.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())) //
+				.collect(Collectors.toList()));
 		return gtRuleSet;
 	}
 
@@ -53,23 +53,23 @@ public class EditorToInternalGTModelTransformation
 	 * 
 	 * @param editorRule
 	 *            the editor rule, must not be <code>null</code>
-	 * @return the GTRule
 	 */
-	public static GTRule transformRule(final Rule editorRule) {
+	private void transformRule(final Rule editorRule) {
 		Objects.requireNonNull(editorRule, "rule must not be null!");
-		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
-		gtRule.setName(editorRule.getName());
-
-		GTGraph gtGraph = GTLanguageFactory.eINSTANCE.createGTGraph();
-		gtRule.setGraph(gtGraph);
 
 		// Transform nodes and edges.
-		editorRule.getNodes().forEach(editorNode -> gtGraph.getNodes().add(transformNode(editorNode)));
+		GTGraph gtGraph = GTLanguageFactory.eINSTANCE.createGTGraph();
 		editorRule.getNodes().forEach(editorNode -> {
-			gtGraph.getEdges().addAll(transformReferencesToEdges(editorNode, gtGraph.getNodes()));
+			gtGraph.getNodes().add(this.transformNode(editorNode));
+		});
+		editorRule.getNodes().forEach(editorNode -> {
+			gtGraph.getEdges().addAll(this.transformReferencesToEdges(editorNode, gtGraph.getNodes()));
 		});
 
-		return gtRule;
+		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
+		gtRule.setName(editorRule.getName());
+		gtRule.setGraph(gtGraph);
+		this.gtRules.add(gtRule);
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class EditorToInternalGTModelTransformation
 	 *            the editor node, must not be <code>null</code>
 	 * @return the GTNode
 	 */
-	private static GTNode transformNode(final Node editorNode) {
+	private GTNode transformNode(final Node editorNode) {
 		Objects.requireNonNull(editorNode, "node must not be null!");
 		GTNode gtNode = GTLanguageFactory.eINSTANCE.createGTNode();
 		gtNode.setName(editorNode.getName());
@@ -97,7 +97,7 @@ public class EditorToInternalGTModelTransformation
 	 *            edges to be created
 	 * @return the list of GTEdges
 	 */
-	private static List<GTEdge> transformReferencesToEdges(final Node editorNode, final List<GTNode> gtNodes) {
+	private List<GTEdge> transformReferencesToEdges(final Node editorNode, final List<GTNode> gtNodes) {
 		Objects.requireNonNull(editorNode, "editor node must not be null!");
 		Objects.requireNonNull(gtNodes, "node list must not be null!");
 		List<GTEdge> gtEdges = new ArrayList<GTEdge>();
@@ -109,22 +109,21 @@ public class EditorToInternalGTModelTransformation
 			Optional<GTNode> gtSourceNode = findGTNodeWithName(gtNodes, sourceNodeName);
 			Optional<GTNode> gtTargetNode = findGTNodeWithName(gtNodes, targetNodeName);
 			if (!gtSourceNode.isPresent()) {
-				throw new IllegalStateException("Could not find node " + sourceNodeName + "!");
+				this.logError("Could not find node " + sourceNodeName + "!");
 			}
-			// TODO: This can fail for rules with refinement
-			// if the target is from parent
-			// if (!gtTargetNode.isPresent()) {
-			// throw new IllegalStateException("Could not find node " + targetNodeName +
-			// "!");
-			// }
+			if (!gtTargetNode.isPresent()) {
+				this.logError("Could not find node " + targetNodeName + "!");
+			}
 
-			GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
-			gtEdge.setType(reference.getType());
-			gtEdge.setName(sourceNodeName + "-" + gtEdge.getType().getName() + "-" + targetNodeName);
-			gtSourceNode.ifPresent(node -> gtEdge.setSourceNode(node));
-			gtTargetNode.ifPresent(node -> gtEdge.setTargetNode(node));
+			if (gtSourceNode.isPresent() && gtSourceNode.isPresent()) {
+				GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
+				gtEdge.setType(reference.getType());
+				gtEdge.setName(sourceNodeName + "-" + gtEdge.getType().getName() + "-" + targetNodeName);
+				gtSourceNode.ifPresent(node -> gtEdge.setSourceNode(node));
+				gtTargetNode.ifPresent(node -> gtEdge.setTargetNode(node));
 
-			gtEdges.add(gtEdge);
+				gtEdges.add(gtEdge);
+			}
 		});
 		return gtEdges;
 	}
@@ -139,7 +138,7 @@ public class EditorToInternalGTModelTransformation
 	 *            the node name to search for, must not be <code>null</code>.
 	 * @return an Optional for the node to find
 	 */
-	public static Optional<GTNode> findGTNodeWithName(final List<GTNode> nodes, final String name) {
+	private static Optional<GTNode> findGTNodeWithName(final List<GTNode> nodes, final String name) {
 		Objects.requireNonNull(nodes, "node list must not be null!");
 		Objects.requireNonNull(name, "name must not be null!");
 		return nodes.stream().filter(gtNode -> name.equals(gtNode.getName())).findAny();
@@ -152,9 +151,10 @@ public class EditorToInternalGTModelTransformation
 	 *            the editor node, must not be <code>null</code>
 	 * @return the References which are the constraint list of the editor node
 	 */
-	public static List<Reference> extractReferences(final Node editorNode) {
+	private static List<Reference> extractReferences(final Node editorNode) {
 		Objects.requireNonNull(editorNode, "node must not be null!");
-		return editorNode.getConstraints().stream().filter(x -> x instanceof Reference).map(x -> (Reference) x)
+		return editorNode.getConstraints().stream() //
+				.filter(x -> x instanceof Reference).map(x -> (Reference) x) //
 				.collect(Collectors.toList());
 	}
 }

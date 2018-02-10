@@ -32,30 +32,17 @@ public class InternalGTToIBeXPatternModelTransformation extends AbstractModelTra
 	@Override
 	public IBeXPatternSet transform(final GTRuleSet gtRuleSet) {
 		this.ibexPatterns = new ArrayList<IBeXPattern>();
-		gtRuleSet.getRules().forEach(gtRule -> {
-			IBeXPatternSet set = transformRule(gtRule);
-			ibexPatterns.addAll(set.getPatterns());
-		});
+		gtRuleSet.getRules().forEach(gtRule -> this.transformRule(gtRule, true));
 
 		IBeXPatternSet ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet();
-		ibexPatternSet.getPatterns().addAll(ibexPatterns.stream()
-				.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList()));
+		ibexPatternSet.getPatterns().addAll(ibexPatterns.stream() //
+				.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())) //
+				.collect(Collectors.toList()));
 		return ibexPatternSet;
 	}
 
 	/**
-	 * Transforms a GTRule into a set of IBeXPatterns with pattern invocations.
-	 * 
-	 * @param gtRule
-	 *            the rule, must not be <code>null</code>
-	 * @return the IBeXPatternSet
-	 */
-	private static IBeXPatternSet transformRule(final GTRule gtRule) {
-		return transformRule(gtRule, true);
-	}
-
-	/**
-	 * Transforms a GTRule into a set of IBeXPatterns.
+	 * Transforms a GTRule into IBeXPatterns.
 	 * 
 	 * @param gtRule
 	 *            the rule, must not be <code>null</code>
@@ -63,20 +50,18 @@ public class InternalGTToIBeXPatternModelTransformation extends AbstractModelTra
 	 *            whether to use invocations or not. If set to <code>false</code>,
 	 *            one large pattern will be created, otherwise the pattern will use
 	 *            invocations.
-	 * @return the IBeXPatternSet
 	 */
-	private static IBeXPatternSet transformRule(final GTRule gtRule, final boolean useInvocations) {
+	private void transformRule(final GTRule gtRule, final boolean useInvocations) {
 		Objects.requireNonNull(gtRule, "rule must not be null!");
 
-		IBeXPatternSet ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet();
 		IBeXPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXPattern();
 		ibexPattern.setName(gtRule.getName());
-		ibexPatternSet.getPatterns().add(ibexPattern);
+		this.ibexPatterns.add(ibexPattern);
 
 		gtRule.getGraph().getNodes().stream() //
 				.sorted((n1, n2) -> n1.getName().compareTo(n2.getName())) // alphabetically by name
 				.forEach(gtNode -> {
-					ibexPattern.getLocalNodes().add(transformNode(gtNode));
+					ibexPattern.getLocalNodes().add(this.transformNode(gtNode));
 				});
 
 		// Ensure that all nodes must be disjoint even if they have the same type.
@@ -101,7 +86,7 @@ public class InternalGTToIBeXPatternModelTransformation extends AbstractModelTra
 						IBeXPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXPattern();
 						edgePattern.setName("edge-" + edgeType.getEContainingClass().getName() + "-"
 								+ edgeType.getName() + "-" + edgeType.getEReferenceType().getName());
-						ibexPatternSet.getPatterns().add(edgePattern);
+						this.ibexPatterns.add(edgePattern);
 
 						IBeXNode ibexSignatureSourceNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
 						ibexSignatureSourceNode.setName("src");
@@ -147,26 +132,35 @@ public class InternalGTToIBeXPatternModelTransformation extends AbstractModelTra
 		} else {
 			// No invocations, so include all edges as well.
 			gtRule.getGraph().getEdges().forEach(gtEdge -> {
-				ibexPattern.getLocalEdges().add(transformEdge(gtEdge, ibexPattern));
+				ibexPattern.getLocalEdges().add(this.transformEdge(gtEdge, ibexPattern));
 			});
 		}
-
-		return ibexPatternSet;
 	}
 
-	private static boolean canInstancesBeTheSame(final EClass class1, final EClass class2) {
-		return class1 == class2 || class1.getEAllSuperTypes().contains(class2)
-				|| class2.getEAllSuperTypes().contains(class1);
-	}
-
-	private static IBeXNode transformNode(final GTNode gtNode) {
+	/**
+	 * Transforms a GTNode into an IBeXNode.
+	 * 
+	 * @param gtNode
+	 *            the GTNode
+	 * @return the IBeXNode
+	 */
+	private IBeXNode transformNode(final GTNode gtNode) {
 		IBeXNode ibexNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
 		ibexNode.setName(gtNode.getName());
 		ibexNode.setType(gtNode.getType());
 		return ibexNode;
 	}
 
-	private static IBeXEdge transformEdge(final GTEdge gtEdge, final IBeXPattern ibexPattern) {
+	/**
+	 * Transforms a GTEdge into an IBeXEdge.
+	 * 
+	 * @param gtEdge
+	 *            the gtEdge
+	 * @param ibexPattern
+	 *            the pattern the edge belongs to.
+	 * @return the IBeXEdge
+	 */
+	private IBeXEdge transformEdge(final GTEdge gtEdge, final IBeXPattern ibexPattern) {
 		IBeXEdge ibexEdge = IBeXLanguageFactory.eINSTANCE.createIBeXEdge();
 		ibexEdge.setType(gtEdge.getType());
 		findIBeXNodeWithName(ibexPattern, gtEdge.getSourceNode().getName())
@@ -174,6 +168,21 @@ public class InternalGTToIBeXPatternModelTransformation extends AbstractModelTra
 		findIBeXNodeWithName(ibexPattern, gtEdge.getTargetNode().getName())
 				.ifPresent(targetNode -> ibexEdge.setTargetNode(targetNode));
 		return ibexEdge;
+	}
+
+	/**
+	 * Checks whether the given EClasses are the same or one is a super class of the
+	 * other.
+	 * 
+	 * @param class1
+	 *            an EClass
+	 * @param class2
+	 *            another EClass
+	 * @return true if and only if an object could be an instance of both classes
+	 */
+	private static boolean canInstancesBeTheSame(final EClass class1, final EClass class2) {
+		return class1 == class2 || class1.getEAllSuperTypes().contains(class2)
+				|| class2.getEAllSuperTypes().contains(class1);
 	}
 
 	/**

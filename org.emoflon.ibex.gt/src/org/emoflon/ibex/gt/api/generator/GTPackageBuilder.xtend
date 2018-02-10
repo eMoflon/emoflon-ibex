@@ -132,8 +132,10 @@ class GTPackageBuilder implements GTBuilderExtension {
 		// Write debug file.
 		val debugFileContent = '''
 			# «this.packageName»
-			You specified «gtRules.size» rules from «gtFiles.size» files
+			You specified «gtRuleSet.rules.size» rules in «gtFiles.size» files
 				which were transformed into «ibexPatternSet.patterns.size» patterns.
+			
+			The generated API is located in `src-gen/«this.packageName».api`.
 			
 			## Meta-Models
 			«FOR metaModel : metaModels»
@@ -142,14 +144,14 @@ class GTPackageBuilder implements GTBuilderExtension {
 			
 			## Rules
 			«FOR file : gtFiles»
-			- File `«file.name»` (with «editorModels.get(file).rules.size» rules)
-				«FOR rule : editorModels.get(file).rules»
-					- «IF rule.abstract»abstract «ENDIF»rule `«rule.name»`
+			- File `«file.name»`
+				«FOR rule : editorModels.get(file).rules.filter[!it.abstract]»
+					- rule `«rule.name»`
 				«ENDFOR»
 			«ENDFOR»
 			
-			## API
-			The generated API is located in `src-gen/«this.packageName».api`.
+			Note that abstract rules are not included in this list
+				because they cannot be applied directly.
 			
 			## How to specify rules
 			1. Add a meta-model reference.
