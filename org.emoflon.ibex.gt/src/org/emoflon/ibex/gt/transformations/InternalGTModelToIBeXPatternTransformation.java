@@ -26,7 +26,7 @@ import IBeXLanguage.IBeXPatternSet;
  * @author Patrick Robrecht
  * @version 0.1
  */
-public class InternalGTToIBeXPatternModelTransformation extends AbstractModelTransformation<GTRuleSet, IBeXPatternSet> {
+public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTransformation<GTRuleSet, IBeXPatternSet> {
 	private List<IBeXPattern> ibexPatterns;
 
 	@Override

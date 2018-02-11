@@ -20,13 +20,13 @@ import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl
 import org.eclipse.emf.ecore.xmi.XMIResource
 import org.eclipse.emf.ecore.xmi.XMLResource
-import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile
-import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension
-import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder
-import org.emoflon.ibex.gt.transformations.EditorToInternalGTModelTransformation
-import org.emoflon.ibex.gt.transformations.InternalGTToIBeXPatternModelTransformation
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.resource.XtextResourceSet
+import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile
+import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder
+import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension
+import org.emoflon.ibex.gt.transformations.EditorToInternalGTModelTransformation
+import org.emoflon.ibex.gt.transformations.InternalGTModelToIBeXPatternTransformation
 
 import GTLanguage.GTLanguageFactory
 import GTLanguage.GTNode
@@ -121,7 +121,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet)
 
 		// Transform rules rules from internal models to IBeXPatterns.
-		val transformation = new InternalGTToIBeXPatternModelTransformation
+		val transformation = new InternalGTModelToIBeXPatternTransformation
 		this.ibexPatternSet = transformation.transform(gtRuleSet)
 
 		// Save IBexPatterns (patterns ordered alphabetically by their name).
