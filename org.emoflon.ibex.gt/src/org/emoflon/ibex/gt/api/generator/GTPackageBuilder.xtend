@@ -148,10 +148,10 @@ class GTPackageBuilder implements GTBuilderExtension {
 			
 			## Rules
 			«FOR file : gtFiles»
-			- File `«file.name»`
-				«FOR rule : editorModels.get(file).rules.filter[!it.abstract]»
-					- rule `«rule.name»`
-				«ENDFOR»
+				- File `«file.name»`
+					«FOR rule : editorModels.get(file).rules.filter[!it.abstract]»
+						- rule `«rule.name»`
+					«ENDFOR»
 			«ENDFOR»
 			
 			Note that abstract rules are not included in this list
@@ -240,6 +240,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private def generateAPIJavaFile(IFolder apiPackage) {
 		val imports = newArrayList(
+			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI',
 			'org.emoflon.ibex.gt.engine.GTEngine'
@@ -255,12 +256,17 @@ class GTPackageBuilder implements GTBuilderExtension {
 			«printImports(imports)»
 			
 			/**
-			 * The «apiClassName»
+			 * The «apiClassName».
 			 */
 			public class «apiClassName» extends GraphTransformationAPI {
+				private static URI defaultPatternURI = URI.createFileURI("../«this.project.name»/src-gen/«this.path.toString»/api/ibex-patterns.xmi");
+				
 				/**
 				 * Create a new «apiClassName».
-				 * 
+				 *
+				 * If the patterns for the engine are not loaded yet, they are loaded from the
+				 * default pattern URI.
+				 *
 				 * @param engine
 				 *            the engine to use for queries and transformations
 				 * @param model
@@ -268,6 +274,9 @@ class GTPackageBuilder implements GTBuilderExtension {
 				 */
 				public «apiClassName»(final GTEngine engine, final ResourceSet model) {
 					super(engine, model);
+					if (!this.engine.isPatternSetLoaded()) {
+						this.engine.loadPatternSet(defaultPatternURI);
+					}
 				}
 			«FOR rule : this.gtRuleSet.rules»
 				
@@ -414,7 +423,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 	private def getAPIClassName() {
 		return this.packageName.replace('.', '').toFirstUpper + "API"
 	}
-	
+
 	private static def getMatchClassName(GTRule rule) {
 		return rule.name.toFirstUpper + "Match"
 	}
