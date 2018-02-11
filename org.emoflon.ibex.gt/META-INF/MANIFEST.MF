@@ -9,7 +9,8 @@ Export-Package: GTLanguage,
  GTLanguage.impl,
  GTLanguage.util,
  org.emoflon.ibex.gt.api,
- org.emoflon.ibex.gt.engine
+ org.emoflon.ibex.gt.engine,
+ org.emoflon.ibex.gt.transformations
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.apache.log4j,
