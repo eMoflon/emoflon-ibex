@@ -336,8 +336,13 @@ public abstract class OperationalStrategy {
 
 		return comatch;
 	}
-
-	protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+	
+	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+		
+	}
+	
+	private void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+		prepareMarkerCreation(greenPattern, comatch, ruleName);
 		greenPattern.createMarkers(ruleName, comatch);
 	}
 

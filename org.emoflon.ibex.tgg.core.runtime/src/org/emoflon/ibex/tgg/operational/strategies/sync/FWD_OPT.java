@@ -159,16 +159,13 @@ public abstract class FWD_OPT extends OperationalStrategy {
 					for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 						EcoreUtil.delete((EObject) comatch.get(createdCorr.getName()));
 					
-					//for (TGGRuleEdge createdTrgEdge : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgEdgesInRule())
-					//	EcoreUtil.delete((EObject) comatch.get(createdTrgEdge.getName()));
-					
 					for (TGGRuleNode createdTrgNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
 						EcoreUtil.delete((EObject) comatch.get(createdTrgNode.getName()));
 					
 					EcoreUtil.delete(getRuleApplicationNode(comatch));
 				}
 		  }
-		  consistencyReporter.init(this);
+		  consistencyReporter.initSrc(this);
 	}
 	
 	@Override
@@ -445,16 +442,14 @@ public abstract class FWD_OPT extends OperationalStrategy {
 	}
 	
 	@Override
-	protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
 		
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 
 		int weight = 
 				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
+				getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
 
 		weights.put(idCounter, weight);
 
@@ -480,8 +475,6 @@ public abstract class FWD_OPT extends OperationalStrategy {
 		handleBundles(comatch, ruleName);
 
 		idCounter++;
-		
-		super.createMarkers(greenPattern, comatch, ruleName);
 	}
 	
 	public void forward() throws IOException {
