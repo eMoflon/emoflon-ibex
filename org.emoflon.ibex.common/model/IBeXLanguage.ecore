@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="IBeXLanguage" nsURI="platform:/plugin/org.emoflon.ibex.common/model/IBeXLanguage.ecore"
+    nsPrefix="org.emoflon.ibex.common.language">
+  <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+    <details key="documentation" value="Model for IBeXPatterns."/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXEdge">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A typed edge connects two nodes. "/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceNode" eType="#//IBeXNode"
+        eOpposite="#//IBeXNode/outgoingEdges"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetNode" eType="#//IBeXNode"
+        eOpposite="#//IBeXNode/incomingEdges"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBexNamedElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Any IBeX element which has a name should inherit form this class."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXNode" eSuperTypes="#//IBexNamedElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A typed node can reference other nodes via edges."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingEdges" upperBound="-1"
+        eType="#//IBeXEdge" eOpposite="#//IBeXEdge/targetNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
+        eType="#//IBeXEdge" eOpposite="#//IBeXEdge/sourceNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXNodePair">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A pair of nodes."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="values" lowerBound="2"
+        upperBound="2" eType="#//IBeXNode"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXNodeToNodeMapping" instanceClassName="java.util.Map$Entry">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A mapping between nodes."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="key" eType="#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//IBeXNode"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXPattern" eSuperTypes="#//IBexNamedElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A pattern consists of local edges and nodes, signature nodes. It can invoke other patterns and force nodes be different."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
+        upperBound="-1" eType="#//IBeXNodePair" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="localEdges" upperBound="-1"
+        eType="#//IBeXEdge" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="localNodes" upperBound="-1"
+        eType="#//IBeXNode" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invocations" upperBound="-1"
+        eType="#//IBeXPatternInvocation" containment="true" eOpposite="#//IBeXPatternInvocation/invokedBy"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="signatureNodes" upperBound="-1"
+        eType="#//IBeXNode" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternInvocation">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An invocation of an IBeXPattern. Invocations can be positive or negative."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="positive" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invokedBy" eType="#//IBeXPattern"
+        eOpposite="#//IBeXPattern/invocations"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invokedPattern" eType="#//IBeXPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="mapping" upperBound="-1"
+        eType="#//IBeXNodeToNodeMapping" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternSet">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A set of IBeXPatterns. Each pattern in a set must have an unique name."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patterns" upperBound="-1"
+        eType="#//IBeXPattern" containment="true"/>
+  </eClassifiers>
+</ecore:EPackage>
