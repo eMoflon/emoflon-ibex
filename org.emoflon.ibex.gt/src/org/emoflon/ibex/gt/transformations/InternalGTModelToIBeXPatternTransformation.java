@@ -1,12 +1,14 @@
 package org.emoflon.ibex.gt.transformations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EReference;
 
 import GTLanguage.GTEdge;
 import GTLanguage.GTNode;
@@ -27,7 +29,15 @@ import IBeXLanguage.IBeXPatternSet;
  * @version 0.1
  */
 public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTransformation<GTRuleSet, IBeXPatternSet> {
+	/**
+	 * All IBeXPatterns created during the transformation.
+	 */
 	private List<IBeXPattern> ibexPatterns;
+
+	/**
+	 * Mapping between pattern names and the created IBeXPatterns.
+	 */
+	private HashMap<String, IBeXPattern> nameToIBeXPattern = new HashMap<String, IBeXPattern>();
 
 	@Override
 	public IBeXPatternSet transform(final GTRuleSet gtRuleSet) {
@@ -39,6 +49,17 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 				.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())) //
 				.collect(Collectors.toList()));
 		return ibexPatternSet;
+	}
+
+	/**
+	 * Add the given pattern to the list.
+	 * 
+	 * @param ibexPattern
+	 *            the IBeXPattern to add
+	 */
+	private void addPattern(final IBeXPattern ibexPattern) {
+		this.ibexPatterns.add(ibexPattern);
+		this.nameToIBeXPattern.put(ibexPattern.getName(), ibexPattern);
 	}
 
 	/**
@@ -56,7 +77,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 
 		IBeXPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXPattern();
 		ibexPattern.setName(gtRule.getName());
-		this.ibexPatterns.add(ibexPattern);
+		this.addPattern(ibexPattern);
 
 		gtRule.getGraph().getNodes().stream() //
 				.sorted((n1, n2) -> n1.getName().compareTo(n2.getName())) // alphabetically by name
@@ -83,26 +104,12 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 					.map(edge -> edge.getType()).distinct() // all types of EReference
 					.sorted((t1, t2) -> t1.getName().compareTo(t2.getName())) // in alphabetical order
 					.forEach(edgeType -> {
-						IBeXPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXPattern();
-						edgePattern.setName("edge-" + edgeType.getEContainingClass().getName() + "-"
-								+ edgeType.getName() + "-" + edgeType.getEReferenceType().getName());
-						this.ibexPatterns.add(edgePattern);
-
-						IBeXNode ibexSignatureSourceNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-						ibexSignatureSourceNode.setName("src");
-						ibexSignatureSourceNode.setType(edgeType.getEContainingClass());
-						edgePattern.getSignatureNodes().add(ibexSignatureSourceNode);
-
-						IBeXNode ibexSignatureTargetNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-						ibexSignatureTargetNode.setName("trg");
-						ibexSignatureTargetNode.setType(edgeType.getEReferenceType());
-						edgePattern.getSignatureNodes().add(ibexSignatureTargetNode);
-
-						IBeXEdge ibexEdge = IBeXLanguageFactory.eINSTANCE.createIBeXEdge();
-						ibexEdge.setSourceNode(ibexSignatureSourceNode);
-						ibexEdge.setTargetNode(ibexSignatureTargetNode);
-						ibexEdge.setType(edgeType);
-						edgePattern.getLocalEdges().add(ibexEdge);
+						IBeXPattern edgePattern = this.createEdgePattern(edgeType);
+						Optional<IBeXNode> ibexSignatureSourceNode = findSignatureIBeXNodeWithName(edgePattern, "src");
+						Optional<IBeXNode> ibexSignatureTargetNode = findSignatureIBeXNodeWithName(edgePattern, "trg");
+						if (!ibexSignatureSourceNode.isPresent() || !ibexSignatureTargetNode.isPresent()) {
+							throw new IllegalStateException("Invalid signature nodes for edge pattern!");
+						}
 
 						gtRule.getGraph().getEdges().stream().filter(edge -> edgeType.equals(edge.getType()))
 								.forEach(gtEdge -> {
@@ -110,9 +117,9 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 											.createIBeXPatternInvocation();
 									invocation.setPositive(true);
 
-									Optional<IBeXNode> ibexLocalSourceNode = findIBeXNodeWithName(ibexPattern,
+									Optional<IBeXNode> ibexLocalSourceNode = findLocalIBeXNodeWithName(ibexPattern,
 											gtEdge.getSourceNode().getName());
-									Optional<IBeXNode> ibexLocalTargetNode = findIBeXNodeWithName(ibexPattern,
+									Optional<IBeXNode> ibexLocalTargetNode = findLocalIBeXNodeWithName(ibexPattern,
 											gtEdge.getTargetNode().getName());
 
 									if (!ibexLocalSourceNode.isPresent()) {
@@ -123,8 +130,10 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 										throw new IllegalStateException(
 												"Could not find node " + gtEdge.getTargetNode().getName() + "!");
 									}
-									invocation.getMapping().put(ibexLocalSourceNode.get(), ibexSignatureSourceNode);
-									invocation.getMapping().put(ibexLocalTargetNode.get(), ibexSignatureTargetNode);
+									invocation.getMapping().put(ibexLocalSourceNode.get(),
+											ibexSignatureSourceNode.get());
+									invocation.getMapping().put(ibexLocalTargetNode.get(),
+											ibexSignatureTargetNode.get());
 									invocation.setInvokedPattern(edgePattern);
 									ibexPattern.getInvocations().add(invocation);
 								});
@@ -135,6 +144,45 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 				ibexPattern.getLocalEdges().add(this.transformEdge(gtEdge, ibexPattern));
 			});
 		}
+	}
+
+	/**
+	 * Create an {@link IBeXPattern} for the given edge. If an {@link IBeXPattern}
+	 * for the given {@link EReference} exists already, the existing pattern is
+	 * returned.
+	 * 
+	 * @param edgeType
+	 *            the EReference to create a pattern for
+	 * @return the created IBeXPattern
+	 */
+	private IBeXPattern createEdgePattern(final EReference edgeType) {
+		String name = "edge-" + edgeType.getEContainingClass().getName() + "-" + edgeType.getName() + "-"
+				+ edgeType.getEReferenceType().getName();
+		if (this.nameToIBeXPattern.containsKey(name)) {
+			return this.nameToIBeXPattern.get(name);
+		}
+
+		IBeXPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXPattern();
+		edgePattern.setName(name);
+		this.addPattern(edgePattern);
+
+		IBeXNode ibexSignatureSourceNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
+		ibexSignatureSourceNode.setName("src");
+		ibexSignatureSourceNode.setType(edgeType.getEContainingClass());
+		edgePattern.getSignatureNodes().add(ibexSignatureSourceNode);
+
+		IBeXNode ibexSignatureTargetNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
+		ibexSignatureTargetNode.setName("trg");
+		ibexSignatureTargetNode.setType(edgeType.getEReferenceType());
+		edgePattern.getSignatureNodes().add(ibexSignatureTargetNode);
+
+		IBeXEdge ibexEdge = IBeXLanguageFactory.eINSTANCE.createIBeXEdge();
+		ibexEdge.setSourceNode(ibexSignatureSourceNode);
+		ibexEdge.setTargetNode(ibexSignatureTargetNode);
+		ibexEdge.setType(edgeType);
+		edgePattern.getLocalEdges().add(ibexEdge);
+
+		return edgePattern;
 	}
 
 	/**
@@ -163,9 +211,9 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	private IBeXEdge transformEdge(final GTEdge gtEdge, final IBeXPattern ibexPattern) {
 		IBeXEdge ibexEdge = IBeXLanguageFactory.eINSTANCE.createIBeXEdge();
 		ibexEdge.setType(gtEdge.getType());
-		findIBeXNodeWithName(ibexPattern, gtEdge.getSourceNode().getName())
+		findLocalIBeXNodeWithName(ibexPattern, gtEdge.getSourceNode().getName())
 				.ifPresent(sourceNode -> ibexEdge.setSourceNode(sourceNode));
-		findIBeXNodeWithName(ibexPattern, gtEdge.getTargetNode().getName())
+		findLocalIBeXNodeWithName(ibexPattern, gtEdge.getTargetNode().getName())
 				.ifPresent(targetNode -> ibexEdge.setTargetNode(targetNode));
 		return ibexEdge;
 	}
@@ -181,22 +229,38 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	 * @return true if and only if an object could be an instance of both classes
 	 */
 	private static boolean canInstancesBeTheSame(final EClass class1, final EClass class2) {
-		return class1 == class2 || class1.getEAllSuperTypes().contains(class2)
+		return class1.getName().equals(class2.getName()) || class1.getEAllSuperTypes().contains(class2)
 				|| class2.getEAllSuperTypes().contains(class1);
 	}
 
 	/**
-	 * Finds an IBeXNode with the given name in the given IBeXPattern.
+	 * Finds an {@link IBeXNode} with the given name in the given IBeXPattern.
 	 * 
 	 * @param ibexPattern
 	 *            the IBeXPattern, must not be <code>null</code>
 	 * @param name
 	 *            the name to search for, must not be <code>null</code>
-	 * @return an Optional for the IBeXNode
+	 * @return an Optional for a local IBeXNode
 	 */
-	public static Optional<IBeXNode> findIBeXNodeWithName(final IBeXPattern ibexPattern, final String name) {
+	public static Optional<IBeXNode> findLocalIBeXNodeWithName(final IBeXPattern ibexPattern, final String name) {
 		Objects.requireNonNull(ibexPattern, "pattern must not be null!");
 		Objects.requireNonNull(name, "name must not be null!");
 		return ibexPattern.getLocalNodes().stream().filter(n -> name.equals(n.getName())).findAny();
+	}
+
+	/**
+	 * Finds an {@link IBeXNode} with the given name in the signature nodes of the
+	 * given IBeXPattern.
+	 * 
+	 * @param ibexPattern
+	 *            the IBeXPattern, must not be <code>null</code>
+	 * @param name
+	 *            the name to search for, must not be <code>null</code>
+	 * @return an Optional for a signature IBeXNode
+	 */
+	private static Optional<IBeXNode> findSignatureIBeXNodeWithName(final IBeXPattern ibexPattern, final String name) {
+		Objects.requireNonNull(ibexPattern, "pattern must not be null!");
+		Objects.requireNonNull(name, "name must not be null!");
+		return ibexPattern.getSignatureNodes().stream().filter(n -> name.equals(n.getName())).findAny();
 	}
 }
