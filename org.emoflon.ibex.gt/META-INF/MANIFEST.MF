@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.emoflon.ibex.gt;singleton:=true
+Bundle-Name: eMoflon::IBeX Graph Transformations
+Bundle-Version: 1.0.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: GTLanguage,
+ GTLanguage.impl,
+ GTLanguage.util,
+ org.emoflon.ibex.gt.api,
+ org.emoflon.ibex.gt.engine,
+ org.emoflon.ibex.gt.transformations
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Require-Bundle: org.apache.log4j,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.xtext,
+ org.eclipse.xtext.xbase.lib,
+ org.emoflon.ibex.common,
+ org.emoflon.ibex.gt.editor,
+ org.emoflon.ibex.gt.editor.ide,
+ org.emoflon.ibex.gt.editor.ui
+Bundle-ClassPath: .
