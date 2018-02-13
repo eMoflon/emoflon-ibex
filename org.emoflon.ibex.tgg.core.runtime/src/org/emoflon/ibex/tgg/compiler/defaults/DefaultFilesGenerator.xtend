@@ -249,7 +249,7 @@ class DefaultFilesGenerator {
 	def static generateMetamodelRegistration() {
 		'''
 		protected void registerUserMetamodels() throws IOException {
-			_RegistrationHelper.registerMetamodels(rs);
+			_RegistrationHelper.registerMetamodels(rs, this);
 				
 			// Register correspondence metamodel last
 			loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
@@ -263,11 +263,12 @@ class DefaultFilesGenerator {
 		
 		import org.apache.commons.lang3.NotImplementedException;
 		import org.eclipse.emf.ecore.resource.ResourceSet;
+		import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 		
 		public class _RegistrationHelper {
 		
 			/** Load and register source and target metamodels */
-			public static void registerMetamodels(ResourceSet rs) {
+			public static void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) {
 				throw new NotImplementedException("You need to register your source and target metamodels.");
 				
 				// For both source and target metamodels (and any other dependencies you might require)
