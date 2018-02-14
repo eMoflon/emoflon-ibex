@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,7 +45,6 @@ public class FixingCopier extends Copier {
 				EObject tNew = copier.get(tOld);
 				
 				EStructuralFeature srcFeature = cOld.eClass().getEStructuralFeature("source");
-				EObject sOld = (EObject)cOld.eGet(srcFeature);
 			
 				//EObject cNew = copier.copy(cOld);
 				cOld.eSet(trgFeature, tNew);

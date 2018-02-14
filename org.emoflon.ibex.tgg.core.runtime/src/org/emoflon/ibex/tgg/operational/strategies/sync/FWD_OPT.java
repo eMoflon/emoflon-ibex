@@ -46,7 +46,6 @@ import gurobi.GRBModel;
 import gurobi.GRBVar;
 import language.TGGComplementRule;
 import language.TGGRuleCorr;
-import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public abstract class FWD_OPT extends OperationalStrategy {
