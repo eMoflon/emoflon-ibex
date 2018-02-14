@@ -87,6 +87,11 @@ public class PatternSuffixes {
 	 * not already marked.
 	 */
 	public static final String FWD = SEP + "FWD";
+	
+	/**
+	 * As forward pattern, but applicable for linear optimization techniques.
+	 */
+	public static final String FWD_OPT = SEP + "FWD_OPT";
 
 
 	/**
@@ -94,6 +99,11 @@ public class PatternSuffixes {
 	 * and invocations to the corresponding patterns of super-rules.
 	 */
 	public static final String FWD_REFINEMENT_INVOCATIONS= SEP + "FWD_REFINEMENT_INVOCATIONS";
+	
+	/**
+	 * As forward refinement invocations pattern, but applicable for linear optimization techniques.
+	 */
+	public static final String FWD_OPT_REFINEMENT_INVOCATIONS= SEP + "FWD_OPT_REFINEMENT_INVOCATIONS";
 	
 	/**
 	 * If this pattern matches, then the corresponding TGG backward rule is

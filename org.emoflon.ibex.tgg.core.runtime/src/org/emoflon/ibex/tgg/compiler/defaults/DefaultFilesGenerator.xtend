@@ -220,11 +220,36 @@ class DefaultFilesGenerator {
 			'''
 		)	
 	}
+	
+	static def generateFWDOptAppFile(String projectName, String fileName, String engine, String additionalImports){
+		return generateBasicStructure(
+			'''
+			import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_OPT;
+			«additionalImports»
+			''',
+			fileName,
+			"FWD_OPT",
+			engine,
+			projectName,
+			'''
+			«fileName» fwd_opt = new «fileName»();
+			
+			logger.info("Starting FWD_OPT");
+			long tic = System.currentTimeMillis();
+			fwd_opt.run();
+			long toc = System.currentTimeMillis();
+			logger.info("Completed FWD_OPT in: " + (toc - tic) + " ms");
+
+			fwd_opt.saveModels();
+			fwd_opt.terminate();
+			'''
+		)	
+	}
 		
 	def static generateMetamodelRegistration() {
 		'''
 		protected void registerUserMetamodels() throws IOException {
-			_RegistrationHelper.registerMetamodels(rs);
+			_RegistrationHelper.registerMetamodels(rs, this);
 				
 			// Register correspondence metamodel last
 			loadAndRegisterMetamodel(projectPath + "/model/" + projectPath + ".ecore");
@@ -238,11 +263,12 @@ class DefaultFilesGenerator {
 		
 		import org.apache.commons.lang3.NotImplementedException;
 		import org.eclipse.emf.ecore.resource.ResourceSet;
+		import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 		
 		public class _RegistrationHelper {
 		
 			/** Load and register source and target metamodels */
-			public static void registerMetamodels(ResourceSet rs) {
+			public static void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) {
 				throw new NotImplementedException("You need to register your source and target metamodels.");
 				
 				// For both source and target metamodels (and any other dependencies you might require)

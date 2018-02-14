@@ -52,7 +52,7 @@ public abstract class CC extends OperationalStrategy {
 	protected TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
 	protected TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 
-	private TIntIntHashMap weights = new TIntIntHashMap();
+	protected TIntIntHashMap weights = new TIntIntHashMap();
 
 	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
 			new RuntimeEdgeHashingStrategy());
@@ -259,7 +259,7 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	@Override
-	protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 
@@ -293,11 +293,9 @@ public abstract class CC extends OperationalStrategy {
 		handleBundles(comatch, ruleName);
 
 		idCounter++;
-		
-		super.createMarkers(greenPattern, comatch, ruleName);
 	}
 
-	private void handleBundles(IMatch comatch, String ruleName) {
+	protected void handleBundles(IMatch comatch, String ruleName) {
 		if(!(getRule(ruleName) instanceof TGGComplementRule)) {
 			Bundle appliedBundle = new Bundle(idCounter);
 			appliedBundles.add(appliedBundle);
@@ -311,7 +309,7 @@ public abstract class CC extends OperationalStrategy {
 		lastAppliedBundle.addBundleContextEdges(getBlackEdges(comatch, ruleName));
 	}
 
-	private THashSet<EObject> getGreenNodes(IMatch comatch, String ruleName) {
+	protected THashSet<EObject> getGreenNodes(IMatch comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenSrcNodesInRule()));
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenTrgNodesInRule()));
@@ -319,7 +317,7 @@ public abstract class CC extends OperationalStrategy {
 		return result;
 	}
 
-	private THashSet<EObject> getBlackNodes(IMatch comatch, String ruleName) {
+	protected THashSet<EObject> getBlackNodes(IMatch comatch, String ruleName) {
 		THashSet<EObject> result = new THashSet<>();
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackSrcNodesInRule()));
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackTrgNodesInRule()));
@@ -336,14 +334,14 @@ public abstract class CC extends OperationalStrategy {
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
+	protected THashSet<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
 		return result;
 	}
 
-	private THashSet<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
+	protected THashSet<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
 		THashSet<RuntimeEdge> result = new THashSet<>();
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));

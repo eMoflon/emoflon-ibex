@@ -13,6 +13,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.cc.CCBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDFusedPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDBlackPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.WholeRulePattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -126,6 +127,9 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		if(isBWDBlackPattern(patternName))
 			return createGreenPattern(BWDGreenPattern.class);
 		
+		if(isFWDOptBlackPattern(patternName))
+			return createGreenPattern(FWDOptGreenPattern.class);
+		
 		return createGreenPattern(EmptyGreenPattern.class);
 	}
 
@@ -147,6 +151,10 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 	private boolean isGENBlackPattern(String patternName) {
 		return patternName.equals(GENBlackPattern.getName(ruleName));
+	}
+	
+	private boolean isFWDOptBlackPattern(String patternName) {
+		return patternName.equals(FWDOptBlackPattern.getName(ruleName));
 	}
 	
 	public IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {
