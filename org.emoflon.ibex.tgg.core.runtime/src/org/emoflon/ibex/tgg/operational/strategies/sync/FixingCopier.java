@@ -26,8 +26,6 @@ public class FixingCopier extends Copier {
 		Collection<EObject> trgResult = new ArrayList<>();
 		Collection<EObject> corrResult = new ArrayList<>();
 		
-		//HashMap<EObject,EObject> originalToCopy = new HashMap<EObject, EObject>();
-
 		// Collect new target objects
 		for (EObject tOld : trgObjects) {
 			if (!copier.containsKey(tOld)) {
@@ -42,13 +40,8 @@ public class FixingCopier extends Copier {
 			if (!copier.containsKey(cOld)) {
 				EStructuralFeature trgFeature = cOld.eClass().getEStructuralFeature("target");
 				EObject tOld = (EObject)cOld.eGet(trgFeature);
-				EObject tNew = copier.get(tOld);
-				
-				EStructuralFeature srcFeature = cOld.eClass().getEStructuralFeature("source");
-			
-				//EObject cNew = copier.copy(cOld);
+				EObject tNew = copier.get(tOld);	
 				cOld.eSet(trgFeature, tNew);
-				//cNew.eSet(srcFeature, sOld);
 				corrResult.add(cOld);
 			}
 		}
