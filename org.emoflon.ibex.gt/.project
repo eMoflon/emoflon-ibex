@@ -5,6 +5,11 @@
 	<projects>
 	</projects>
 	<buildSpec>
+	<buildCommand>
+			<name>org.moflon.emf.build.MoflonEmfBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 		<buildCommand>
 			<name>org.eclipse.xtext.ui.shared.xtextBuilder</name>
 			<arguments>
@@ -27,7 +32,7 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.moflon.ide.core.runtime.natures.RepositoryNature</nature>
+		<nature>org.moflon.emf.build.MoflonEmfNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
