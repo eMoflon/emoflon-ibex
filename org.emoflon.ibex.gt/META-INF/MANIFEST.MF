@@ -21,6 +21,5 @@ Require-Bundle: org.apache.log4j,
  org.eclipse.xtext.xbase.lib,
  org.emoflon.ibex.common,
  org.emoflon.ibex.gt.editor,
- org.emoflon.ibex.gt.editor.ide,
  org.emoflon.ibex.gt.editor.ui
 Bundle-ClassPath: .
