@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,8 +26,6 @@ public class FixingCopier extends Copier {
 		Collection<EObject> trgResult = new ArrayList<>();
 		Collection<EObject> corrResult = new ArrayList<>();
 		
-		//HashMap<EObject,EObject> originalToCopy = new HashMap<EObject, EObject>();
-
 		// Collect new target objects
 		for (EObject tOld : trgObjects) {
 			if (!copier.containsKey(tOld)) {
@@ -43,14 +40,8 @@ public class FixingCopier extends Copier {
 			if (!copier.containsKey(cOld)) {
 				EStructuralFeature trgFeature = cOld.eClass().getEStructuralFeature("target");
 				EObject tOld = (EObject)cOld.eGet(trgFeature);
-				EObject tNew = copier.get(tOld);
-				
-				EStructuralFeature srcFeature = cOld.eClass().getEStructuralFeature("source");
-				EObject sOld = (EObject)cOld.eGet(srcFeature);
-			
-				//EObject cNew = copier.copy(cOld);
+				EObject tNew = copier.get(tOld);	
 				cOld.eSet(trgFeature, tNew);
-				//cNew.eSet(srcFeature, sOld);
 				corrResult.add(cOld);
 			}
 		}

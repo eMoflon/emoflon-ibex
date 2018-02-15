@@ -6,12 +6,10 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
 import static org.emoflon.ibex.tgg.util.MAUtil.isComplementRule;
-import static org.emoflon.ibex.tgg.util.RuleRefinementUtil.*;
 
 import language.BindingType;
 import language.DomainType;
