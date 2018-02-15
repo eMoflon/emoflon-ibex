@@ -86,7 +86,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private void applyAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
-		Collection<String> attributeNames = match.parameterNames().stream()
+		Collection<String> attributeNames = match.getParameterNames().stream()
 			.filter(pname -> { 
 				Optional<Pair<String, String>> o = IbexBasePattern.getNodeAndAttrFromVarName(pname);
 				Optional<Boolean> check = o.map(node_attr -> node_attr.getLeft().equals(node.getName()));

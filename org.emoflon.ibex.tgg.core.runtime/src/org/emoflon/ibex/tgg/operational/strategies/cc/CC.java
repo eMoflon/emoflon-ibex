@@ -118,7 +118,7 @@ public abstract class CC extends OperationalStrategy {
 			return false;
 		
 		if(operationalMatchContainer.getMatches().stream()
-				.allMatch(m -> m.patternName().contains(PatternSuffixes.GENForCC))) {
+				.allMatch(m -> m.getPatternName().contains(PatternSuffixes.GENForCC))) {
 			//FIXME[Anjorin]:  Find an elegant way of properly discarding GENForCC matches!
 			return false;
 		}
@@ -162,13 +162,13 @@ public abstract class CC extends OperationalStrategy {
 		}
 		
 		//FIXME:[Milica] Check if this is really needed
-		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.patternName())));
+		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		application.setAmalgamated(true);
 	}
 	
 	//FIXME:[Milica] Check if maximality need to be done for edges as well
 	private void handleMaximality(IMatch match, Set<IMatch> contextRuleMatches, int kernelMatchID) {
-		String ruleName = removeAllSuffixes(match.patternName());
+		String ruleName = removeAllSuffixes(match.getPatternName());
 		TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
 		if(rule.isBounded()) {
 		//check if the complement rule was applied. If not, mark its kernel as invalid.
@@ -215,7 +215,7 @@ public abstract class CC extends OperationalStrategy {
 	}
 
 	private THashSet<EObject> getGenContextNodes(IMatch match){
-		THashSet<EObject> contextNodes = match.parameterNames().stream()
+		THashSet<EObject> contextNodes = match.getParameterNames().stream()
 				.map(n -> match.get(n)).collect(Collectors.toCollection(THashSet<EObject>::new));
 		return contextNodes;
 	}
@@ -225,14 +225,14 @@ public abstract class CC extends OperationalStrategy {
 	 */
 	private Set<IMatch> findAllComplementRuleContextMatches() {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> m.patternName().contains(PatternSuffixes.GENForCC))
+				.filter(m -> m.getPatternName().contains(PatternSuffixes.GENForCC))
 				.collect(Collectors.toSet());
 		return allComplementRuleMatches;
 	}
 	
 	private Set<IMatch> findAllComplementRuleMatches() {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.patternName())))
+				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.getPatternName())))
 				.collect(Collectors.toSet());
 		return allComplementRuleMatches;
 	}

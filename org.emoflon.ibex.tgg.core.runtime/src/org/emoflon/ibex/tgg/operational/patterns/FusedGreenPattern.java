@@ -14,8 +14,8 @@ public abstract class FusedGreenPattern extends IbexGreenPattern {
 	}
 	
 	protected void createMarkers(String ruleName, IMatch match, Function<String, String> getName) {
-		String kernelName = MAUtil.getKernelName(match.patternName());
-		String complementName = MAUtil.getComplementName(match.patternName());
+		String kernelName = MAUtil.getKernelName(match.getPatternName());
+		String complementName = MAUtil.getComplementName(match.getPatternName());
 		
 		fusedFactory.getKernelFactory()
 			.create(getName.apply(kernelName))
