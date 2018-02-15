@@ -26,12 +26,12 @@ public class SimpleMatch implements IMatch {
 	}
 
 	@Override
-	public Collection<String> parameterNames() {
+	public Collection<String> getParameterNames() {
 		return mappings.keySet();
 	}
 	
 	@Override
-	public String patternName() {
+	public String getPatternName() {
 		return patternName;
 	}
 

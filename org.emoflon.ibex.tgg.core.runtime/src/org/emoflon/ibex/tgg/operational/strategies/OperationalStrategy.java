@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
@@ -54,7 +55,7 @@ import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
-public abstract class OperationalStrategy {
+public abstract class OperationalStrategy implements IMatchObserver {
 
 	protected final static Logger logger = Logger.getLogger(OperationalStrategy.class);
 	protected final URI base;
@@ -109,6 +110,29 @@ public abstract class OperationalStrategy {
 		greenInterpreter = new IbexGreenInterpreter(this);
 		redInterpreter = new IbexRedInterpreter(this);
 	}
+	
+	@Override
+	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
+		this.addOperationalRuleMatch(PatternSuffixes.removeSuffix(match.getPatternName()), (IMatch) match);
+	}
+	
+	@Override
+	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
+		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
+			this.addBrokenMatch((IMatch) match);
+		}
+		this.removeOperationalRuleMatch((IMatch) match);
+	}
+	
+	/**
+	 * Decide if matches of this pattern should be watched and notified by the
+	 * pattern matcher
+	 * 
+	 * @param patternName
+	 * @return
+	 */
+	@Override
+	abstract public boolean isPatternRelevantForCompiler(String patternName);
 
 	protected void setModelGen() {
 		options.setModelGen(false);
@@ -138,15 +162,6 @@ public abstract class OperationalStrategy {
 
 	protected abstract void registerUserMetamodels() throws IOException;
 
-	/**
-	 * Decide if matches of this pattern should be watched and notified by the
-	 * pattern matcher
-	 * 
-	 * @param patternName
-	 * @return
-	 */
-	abstract public boolean isPatternRelevantForCompiler(String patternName);
-
 	public boolean isPatternRelevantForInterpreter(String patternName) {
 		return isPatternRelevantForCompiler(patternName);
 	}
@@ -155,15 +170,15 @@ public abstract class OperationalStrategy {
 		if (matchIsDomainConform(ruleName, match) && matchIsValidIsomorphism(ruleName, match)) {
 			operationalMatchContainer.addMatch(ruleName, match);
 			if (options.debug())
-				logger.debug("Received and added " + match.patternName());
+				logger.debug("Received and added " + match.getPatternName());
 		} else {
 			if (options.debug())
-				logger.debug("Received but rejected " + match.patternName());
+				logger.debug("Received but rejected " + match.getPatternName());
 		}
 	}
 
 	private boolean matchIsValidIsomorphism(String ruleName, IMatch match) {
-		if (match.patternName().endsWith(PatternSuffixes.CONSISTENCY)) {
+		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
 			// Make sure that node mappings comply to bindings in match
 			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match
 					.get(ConsistencyPattern.getProtocolNodeName(ruleName));
@@ -191,7 +206,7 @@ public abstract class OperationalStrategy {
 	private boolean nodeIsInResource(IMatch match, String name, Resource r) {
 		return ((EObject) match.get(name)).eResource().equals(r);
 	}
-
+	
 	public void removeOperationalRuleMatch(IMatch match) {
 		operationalMatchContainer.removeMatch(match);
 	}
@@ -318,17 +333,17 @@ public abstract class OperationalStrategy {
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		if (!isPatternRelevantForInterpreter(match.patternName())) {
+		if (!isPatternRelevantForInterpreter(match.getPatternName())) {
 			return Optional.empty();
 		}
 
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
-		IGreenPattern greenPattern = factory.create(match.patternName());
+		IGreenPattern greenPattern = factory.create(match.getPatternName());
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
 			if (options.debug())
-				logger.debug("Successfully applied: " + match.patternName());
+				logger.debug("Successfully applied: " + match.getPatternName());
 			markedAndCreatedEdges.addAll(cm.getCreatedEdges());
 			greenPattern.getEdgesMarkedByPattern().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
 			createMarkers(greenPattern, cm, ruleName);
@@ -370,7 +385,7 @@ public abstract class OperationalStrategy {
 
 			if (src == null | trg == null | ref == null)
 				throw new IllegalStateException(
-						"The match " + match.patternName() + " is invalid for this operational strategy (the edge -"
+						"The match " + match.getPatternName() + " is invalid for this operational strategy (the edge -"
 								+ ref.getName() + "-> appears to be expected but is missing)!  "
 								+ "Are you sure you have implemented isPatternRelevant correctly?");
 
@@ -385,7 +400,7 @@ public abstract class OperationalStrategy {
 
 	public TGGRuleApplication getRuleApplicationNode(IMatch match) {
 		return (TGGRuleApplication) match
-				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.patternName())));
+				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
 	}
 
 	public void addBrokenMatch(IMatch match) {
@@ -519,6 +534,6 @@ public abstract class OperationalStrategy {
 	}
 
 	public IGreenPattern revokes(IMatch match) {
-		throw new IllegalStateException("Not clear how to revoke a match of " + match.patternName());
+		throw new IllegalStateException("Not clear how to revoke a match of " + match.getPatternName());
 	}
 }

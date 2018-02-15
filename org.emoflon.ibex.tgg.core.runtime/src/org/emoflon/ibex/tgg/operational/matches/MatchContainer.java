@@ -102,8 +102,8 @@ public class MatchContainer {
 	}
 
 	public String getRuleName(IMatch match) {
-		if (isFusedPatternMatch(match.patternName()))
-				return match.patternName();
+		if (isFusedPatternMatch(match.getPatternName()))
+				return match.getPatternName();
 		return idToRuleName.get(matchToRuleNameID.get(match));
 	}
 
