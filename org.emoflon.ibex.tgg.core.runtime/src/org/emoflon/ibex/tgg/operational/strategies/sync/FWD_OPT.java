@@ -151,19 +151,23 @@ public abstract class FWD_OPT extends OperationalStrategy {
 	
 	@Override
 	protected void wrapUp() {
+		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
+		
 		  for (int v : chooseTGGRuleApplications()) {
 			  int id = v < 0 ? -v : v;
 			  IMatch comatch = idToMatch.get(id);
 			   if (v < 0) {
 					for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
-						EcoreUtil.delete((EObject) comatch.get(createdCorr.getName()));
+						objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 					
 					for (TGGRuleNode createdTrgNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
-						EcoreUtil.delete((EObject) comatch.get(createdTrgNode.getName()));
+						objectsToDelete.add((EObject) comatch.get(createdTrgNode.getName()));
 					
-					EcoreUtil.delete(getRuleApplicationNode(comatch));
+					objectsToDelete.add(getRuleApplicationNode(comatch));
 				}
 		  }
+		  
+		  EcoreUtil.deleteAll(objectsToDelete, true);
 		  consistencyReporter.initSrc(this);
 	}
 	

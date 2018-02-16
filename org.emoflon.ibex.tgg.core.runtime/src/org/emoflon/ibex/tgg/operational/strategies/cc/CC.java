@@ -239,17 +239,20 @@ public abstract class CC extends OperationalStrategy {
 
 	@Override
 	protected void wrapUp() {
+		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
+		
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			IMatch comatch = idToMatch.get(id);
 			if (v < 0) {
 				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
-					EcoreUtil.delete((EObject) comatch.get(createdCorr.getName()));
+					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 				
-				EcoreUtil.delete(getRuleApplicationNode(comatch));
+				objectsToDelete.add(getRuleApplicationNode(comatch));
 			}
 		}
-
+		
+		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.init(this);
 	}
 
