@@ -5,34 +5,15 @@ import java.nio.charset.StandardCharsets
 import java.util.HashMap
 import java.util.HashSet
 
-import org.apache.log4j.Logger
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
-import org.eclipse.core.resources.IProject
-import org.eclipse.core.runtime.IPath
-import org.eclipse.emf.common.util.URI
-import org.eclipse.emf.ecore.EClass
-import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.ecore.EPackage
-import org.eclipse.emf.ecore.resource.ResourceSet
-import org.eclipse.emf.ecore.util.EcoreUtil
-import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl
-import org.eclipse.emf.ecore.xmi.XMIResource
-import org.eclipse.emf.ecore.xmi.XMLResource
-import org.eclipse.xtext.EcoreUtil2
-import org.eclipse.xtext.resource.XtextResourceSet
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile
-import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder
-import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension
-import org.emoflon.ibex.gt.transformations.EditorToInternalGTModelTransformation
-import org.emoflon.ibex.gt.transformations.InternalGTModelToIBeXPatternTransformation
 
-import GTLanguage.GTLanguageFactory
 import GTLanguage.GTNode
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
-import IBeXLanguage.IBeXPatternSet
 import java.util.Set
+import java.util.List
 
 /**
  * This GTPackageBuilder implements
@@ -43,100 +24,25 @@ import java.util.Set
  * 
  * Each package is considered as an rule module with an API.
  */
-class GTPackageBuilder implements GTBuilderExtension {
-	static val SOURCE_GEN_FOLDER = 'src-gen'
-
-	// The package information.
-	IProject project
-	IPath path
+class JavaFileGenerator {
 	String packageName
-	IFolder apiPackage
-
-	// The model.
 	GTRuleSet gtRuleSet
-	IBeXPatternSet ibexPatternSet
-	HashMap<String, String> eClassNameToMetaModelName = newHashMap()
+	HashMap<String, String> eClassNameToMetaModelName
 
-	override void run(IProject project, IPath packagePath) {
-		this.project = project
-		this.path = packagePath
-		this.packageName = this.path.toString.replace('/', '.')
-
-		this.log("Started build")
-		this.ensureSourceGenPackageExists
-		this.generateModels
-		this.generateAPI
-		this.log("Finished build")
-	}
-
-	/**
-	 * Creates the target package.
-	 */
-	private def ensureSourceGenPackageExists() {
-		var folder = this.ensureFolderExists(this.project.getFolder(SOURCE_GEN_FOLDER))
-		for (var i = 0; i < this.path.segmentCount; i++) {
-			val s = this.path.segment(i)
-			folder = this.ensureFolderExists(folder.getFolder(s))
-		}
-		folder = folder.getFolder('api')
-		if (folder.exists) {
-			folder.delete(true, null)
-		}
-		this.apiPackage = this.ensureFolderExists(folder)
+	new(String packageName, GTRuleSet gtRuleSet, HashMap<String, String> eClassNameToMetaModelName) {
+		this.packageName = packageName
+		this.gtRuleSet = gtRuleSet
+		this.eClassNameToMetaModelName = eClassNameToMetaModelName
 	}
 
 	/**
 	 * Creates the models.
 	 */
-	private def generateModels() {
-		val allFiles = this.project.getFolder(GTBuilder.SOURCE_FOLDER).getFolder(this.path).members
-		val gtFiles = allFiles.filter[it instanceof IFile].map[it as IFile].filter["gt" == it.fileExtension].toList
-
-		// Load files into editor models.
-		val editorModels = newHashMap()
-		val resourceSet = new XtextResourceSet();
-		val HashSet<String> metaModels = newHashSet()
-		gtFiles.filter[it.exists].forEach [
-			val file = resourceSet.getResource(URI.createPlatformResourceURI(it.getFullPath().toString(), true), true)
-			EcoreUtil2.resolveLazyCrossReferences(file, [false]);
-
-			val editorModel = file.contents.get(0) as GraphTransformationFile
-			editorModels.put(it, editorModel)
-			metaModels.addAll(editorModel.imports.map[it.name])
-		]
-		EcoreUtil.resolveAll(resourceSet);
-
-		// Transform Editor models to rules of the internal GT model.
-		val gtRules = newHashSet()
-		editorModels.forEach [ gtFile, editorModel |
-			val transformation = new EditorToInternalGTModelTransformation
-			val internalModel = transformation.transform(editorModel)
-			gtRules.addAll(internalModel.rules)
-		]
-
-		// Save internal GT model (rules ordered alphabetically by their name).
-		this.gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet
-		this.gtRuleSet.rules.addAll(gtRules.sortBy[it.name])
-		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet)
-
-		// Transform rules rules from internal models to IBeXPatterns.
-		val transformation = new InternalGTModelToIBeXPatternTransformation
-		this.ibexPatternSet = transformation.transform(gtRuleSet)
-
-		// Save IBexPatterns (patterns ordered alphabetically by their name).
-		this.saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet)
-
-		// Load meta-models.
-		val metaModelPackages = newHashMap()
-		metaModels.forEach [
-			metaModelPackages.put(it, this.loadMetaModelClasses(it, resourceSet))
-		]
-
-		// Write debug file.
+	public def generateREADME(IFolder apiPackage, List<IFile> gtFiles, HashSet<String> metaModels,
+		HashMap<String, String> metaModelPackages, HashMap<IFile, GraphTransformationFile> editorModels) {
 		val debugFileContent = '''
 			# «this.packageName»
-			You specified «gtRuleSet.rules.size» rules in «gtFiles.size» files
-				which were transformed into «ibexPatternSet.patterns.size» patterns.
+			You specified «gtRuleSet.rules.size» rules in «gtFiles.size» files.
 			
 			The generated API is located in `src-gen/«this.packageName».api`.
 			
@@ -182,62 +88,9 @@ class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
-	 * Saves the model in the file.
-	 */
-	private def saveModelFile(IFile file, ResourceSet rs, EObject model) {
-		val uri = URI.createPlatformResourceURI(this.project.name + "/" + file.projectRelativePath.toString, true);
-		val resource = rs.createResource(uri);
-		resource.getContents().add(model);
-
-		val options = (resource as XMLResource).getDefaultSaveOptions();
-		options.put(XMIResource.OPTION_SAVE_ONLY_IF_CHANGED, XMIResource.OPTION_SAVE_ONLY_IF_CHANGED_MEMORY_BUFFER);
-		options.put(XMLResource.OPTION_URI_HANDLER, new URIHandlerImpl() {
-			override deresolve(URI uri) {
-				return uri
-			}
-		});
-		resource.save(options);
-	}
-
-	/**
-	 * Loads the EClasses from the meta-model.
-	 */
-	private def loadMetaModelClasses(String metaModelUri, ResourceSet resourceSet) {
-		val ecoreFile = resourceSet.getResource(URI.createURI(metaModelUri), true)
-		ecoreFile.load(null)
-		EcoreUtil2.resolveLazyCrossReferences(ecoreFile, [false]);
-		EcoreUtil.resolveAll(resourceSet);
-
-		val rootElement = ecoreFile.contents.get(0)
-		if (rootElement instanceof EPackage) {
-			val ePackage = rootElement as EPackage
-			val metaModelPackageName = if('ecore'.equals(ePackage.name)) 'org.eclipse.emf.ecore' else ePackage.name
-			val eClassesFromMetaModel = ePackage.EClassifiers.filter[it instanceof EClass].map[it as EClass].toSet
-			eClassesFromMetaModel.forEach [
-				eClassNameToMetaModelName.put(it.name, metaModelPackageName)
-			]
-			return metaModelPackageName
-		}
-		return null
-	}
-
-	/**
-	 * Generates the API.
-	 */
-	private def generateAPI() {
-		val matchesPackage = this.ensureFolderExists(this.apiPackage.getFolder('matches'))
-		val rulesPackage = this.ensureFolderExists(this.apiPackage.getFolder('rules'))
-		this.gtRuleSet.rules.forEach [
-			this.generateMatchJavaFile(matchesPackage, it)
-			this.generateRuleJavaFile(rulesPackage, it)
-		]
-		this.generateAPIJavaFile(apiPackage)
-	}
-
-	/**
 	 * Generates the Java API class.
 	 */
-	private def generateAPIJavaFile(IFolder apiPackage) {
+	public def generateAPIJavaFile(IFolder apiPackage, String patternUri) {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
@@ -258,7 +111,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			 * The «apiClassName».
 			 */
 			public class «apiClassName» extends GraphTransformationAPI {
-				private static URI defaultPatternURI = URI.createFileURI("../«this.project.name»/src-gen/«this.path.toString»/api/ibex-patterns.xmi");
+				private static URI defaultPatternURI = URI.createFileURI("«patternUri»");
 			
 				/**
 				 * Create a new «apiClassName».
@@ -296,7 +149,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 	/**
 	 * Generates the Java Rule class for the given rule.
 	 */
-	private def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
+	public def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = getImportsForTypes(rule)
 		imports.add('java.util.HashMap')
 		imports.add('java.util.Map')
@@ -314,7 +167,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			 */
 			public class «getMatchClassName(rule)» extends GraphTransformationMatch<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				«FOR node : rule.graph.nodes»
-					private «getVariableType(node)» «getVariableName(node)»;	
+					private «getVariableType(node)» «getVariableName(node)»;
 				«ENDFOR»
 			
 				/**
@@ -331,6 +184,11 @@ class GTPackageBuilder implements GTBuilderExtension {
 				}
 			«FOR node : rule.graph.nodes»
 				
+					/**
+					 * Returns the «node.name».
+					 *
+					 * @return the «node.name»
+					 */
 					public «getVariableType(node)» «getGetterMethodName(node)»() {
 						return this.«getVariableName(node)»;
 					}
@@ -352,7 +210,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 	/**
 	 * Generates the Java Rule class for the given rule.
 	 */
-	private def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
+	public def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
 		val imports = newHashSet(
 			'java.util.Collection',
 			'java.util.Map',
@@ -374,7 +232,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			 */
 			public class «getRuleClassName(rule)» extends GraphTransformationRule<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				private static String ruleName = "«rule.name»";
-				
+			
 				/**
 				 * Create a new rule «rule.name»().
 				 * 
@@ -461,23 +319,6 @@ class GTPackageBuilder implements GTBuilderExtension {
 
 	private static def getVariableType(GTNode node) {
 		return node.type.name
-	}
-
-	/**
-	 * Logs the message on the console.
-	 */
-	private def log(String message) {
-		Logger.rootLogger.info(this.project.name + " - package " + this.packageName + ": " + message)
-	}
-
-	/**
-	 * Creates the given folder if the folder does not exist yet.
-	 */
-	private def ensureFolderExists(IFolder folder) {
-		if (!folder.exists) {
-			folder.create(true, true, null)
-		}
-		return folder
 	}
 
 	/**
