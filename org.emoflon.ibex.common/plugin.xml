@@ -2,6 +2,6 @@
 <?eclipse version="3.0"?><!--
 --><plugin>
   <extension point="org.eclipse.emf.ecore.generated_package">
-    <package class="IBeXLanguage.IBeXLanguagePackage" genModel="model/Common.genmodel" uri="platform:/resource/org.emoflon.ibex.common/model/IBeXLanguage.ecore"/>
+    <package class="IBeXLanguage.IBeXLanguagePackage" genModel="model/Common.genmodel" uri="platform:/resource/org.emoflon.ibex.common/model/Common.ecore"/>
   </extension>
 </plugin>
