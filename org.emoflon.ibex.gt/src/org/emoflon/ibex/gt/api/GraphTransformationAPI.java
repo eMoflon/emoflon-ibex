@@ -9,24 +9,15 @@ import org.emoflon.ibex.gt.engine.GTEngine;
  * 
  * Concrete Implementations must implement loading rules from .gt files into the
  * engine.
- * 
- * @author Patrick Robrecht
- * @version 0.1
  */
 public abstract class GraphTransformationAPI {
 	/**
-	 * The engine to use for queries and transformations.
+	 * The interpreter to use for queries and transformations.
 	 */
-	protected GTEngine engine;
+	protected GraphTransformationInterpreter interpreter;
 
 	/**
-	 * The resource set containing the model file.
-	 */
-	protected ResourceSet model;
-
-	/**
-	 * Creates a new GraphTransformationAPI with the given engine for the given
-	 * resource set.
+	 * Creates a new GraphTransformationAPI for given engine and resource set.
 	 * 
 	 * @param engine
 	 *            the engine to use for queries and transformations
@@ -34,8 +25,7 @@ public abstract class GraphTransformationAPI {
 	 *            the resource set containing the model file
 	 */
 	public GraphTransformationAPI(final GTEngine engine, final ResourceSet model) {
-		this.engine = engine;
-		this.model = model;
+		this.interpreter = new GraphTransformationInterpreter(engine, model);
 	}
 
 	/**
@@ -44,6 +34,6 @@ public abstract class GraphTransformationAPI {
 	 * @return the resource set containing the model file
 	 */
 	public final ResourceSet getModel() {
-		return model;
+		return this.interpreter.getModel();
 	}
 }

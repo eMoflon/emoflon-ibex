@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 import java.util.HashMap
 import java.util.HashSet
-import java.util.List
 
 import org.apache.log4j.Logger
 import org.eclipse.core.resources.IFile
@@ -33,6 +32,7 @@ import GTLanguage.GTNode
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
 import IBeXLanguage.IBeXPatternSet
+import java.util.Set
 
 /**
  * This GTPackageBuilder implements
@@ -239,7 +239,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 * Generates the Java API class.
 	 */
 	private def generateAPIJavaFile(IFolder apiPackage) {
-		val imports = newArrayList(
+		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI',
@@ -260,7 +260,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 			 */
 			public class «apiClassName» extends GraphTransformationAPI {
 				private static URI defaultPatternURI = URI.createFileURI("../«this.project.name»/src-gen/«this.path.toString»/api/ibex-patterns.xmi");
-				
+			
 				/**
 				 * Create a new «apiClassName».
 				 *
@@ -274,8 +274,8 @@ class GTPackageBuilder implements GTBuilderExtension {
 				 */
 				public «apiClassName»(final GTEngine engine, final ResourceSet model) {
 					super(engine, model);
-					if (!this.engine.isPatternSetLoaded()) {
-						this.engine.loadPatternSet(defaultPatternURI);
+					if (!this.interpreter.isPatternSetLoaded()) {
+						this.interpreter.loadPatternSet(defaultPatternURI);
 					}
 				}
 			«FOR rule : this.gtRuleSet.rules»
@@ -286,7 +286,7 @@ class GTPackageBuilder implements GTBuilderExtension {
 					 * @return the created rule
 					 */
 					public «getRuleClassName(rule)» «rule.name»() {
-						return new «getRuleClassName(rule)»(this.model);
+						return new «getRuleClassName(rule)»(this.interpreter);
 					}
 			«ENDFOR»
 			}
@@ -299,7 +299,10 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = getImportsForTypes(rule)
-		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch');
+		imports.add('java.util.HashMap')
+		imports.add('java.util.Map')
+		imports.add('org.eclipse.emf.ecore.EObject')
+		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch')
 		imports.add('''«this.packageName».api.rules.«getRuleClassName(rule)»''')
 
 		val matchSourceCode = '''
@@ -321,19 +324,27 @@ class GTPackageBuilder implements GTBuilderExtension {
 				 * @param rule
 				 *            the rule
 				 */
-				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» rule) {
+				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» rule, final Map<String, EObject> map) {
 					super(rule);
+					«FOR node : rule.graph.nodes»
+						this.«getVariableName(node)» = («getVariableType(node)») map.get("«node.name»");
+					«ENDFOR»
 				}
+			«FOR node : rule.graph.nodes»
 				
-				«FOR node : rule.graph.nodes»
 					public «getVariableType(node)» «getGetterMethodName(node)»() {
 						return this.«getVariableName(node)»;
 					}
-					
-					public void «getSetterMethodName(node)»(final «getVariableType(node)» «getVariableName(node)») {
-						this.«getVariableName(node)» = «getVariableName(node)»;
-					}
-				«ENDFOR»
+			«ENDFOR»
+			
+				@Override
+				public Map<String, EObject> toMap() {
+					Map<String, EObject> map = new HashMap<String, EObject>();
+					«FOR node : rule.graph.nodes»
+						map.put("«node.name»", this.«getVariableName(node)»);
+					«ENDFOR»
+					return map;
+				}
 			}
 		'''
 		this.writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
@@ -343,10 +354,13 @@ class GTPackageBuilder implements GTBuilderExtension {
 	 * Generates the Java Rule class for the given rule.
 	 */
 	private def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
-		val imports = newArrayList(
+		val imports = newHashSet(
 			'java.util.Collection',
+			'java.util.Map',
 			'java.util.Optional',
-			'org.eclipse.emf.ecore.resource.ResourceSet',
+			'java.util.stream.Collectors',
+			'org.eclipse.emf.ecore.EObject',
+			'org.emoflon.ibex.gt.api.GraphTransformationInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationRule',
 			'''«this.packageName».api.matches.«getMatchClassName(rule)»'''
 		)
@@ -360,33 +374,37 @@ class GTPackageBuilder implements GTBuilderExtension {
 			 * The rule «rule.name»().
 			 */
 			public class «getRuleClassName(rule)» extends GraphTransformationRule<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
+				private static String ruleName = "«rule.name»";
+				
 				/**
-				 * Create a rule «rule.name»().
+				 * Create a new rule «rule.name»().
 				 * 
-				 * @param model
-				 *            the resource set
+				 * @param interpreter
+				 *            the interpreter
 				 */
-				public «getRuleClassName(rule)»(final ResourceSet model) {
-					super(model);
+				public «getRuleClassName(rule)»(final GraphTransformationInterpreter interpreter) {
+					super(interpreter);
 				}
 			
 				@Override
 				public void execute(final «getMatchClassName(rule)» match) {
+					this.interpreter.execute(ruleName, match.toMap());
 				}
 			
 				@Override
 				public Optional<«getMatchClassName(rule)»> findAnyMatch() {
-					return Optional.ofNullable(null);
+					Optional<Map<String, EObject>> match = this.interpreter.findAnyMatch(ruleName);
+					if (match.isPresent()) {
+						return Optional.of(new «getMatchClassName(rule)»(this, match.get()));
+					}
+					return Optional.empty();
 				}
 			
 				@Override
 				public Collection<«getMatchClassName(rule)»> findMatches() {
-					return null;
-				}
-			
-				@Override
-				public boolean isQuery() {
-					return false;
+					return this.interpreter.findMatches(ruleName).stream() //
+							.map(m -> new «getMatchClassName(rule)»(this, m)) //
+							.collect(Collectors.toList());
 				}
 			}
 		'''
@@ -405,13 +423,13 @@ class GTPackageBuilder implements GTBuilderExtension {
 				imports.add(typePackageName + '.' + it.name)
 			}
 		]
-		return imports.sortBy[it]
+		return imports.sortBy[it].toSet
 	}
 
 	/**
 	 * Sub template for Java import statements
 	 */
-	private static def printImports(List<String> imports) {
+	private static def printImports(Set<String> imports) {
 		return '''
 			«FOR importClass : imports.sortBy[it.toLowerCase]»
 				import «importClass»;
@@ -434,16 +452,12 @@ class GTPackageBuilder implements GTBuilderExtension {
 
 	// method names
 	private static def getGetterMethodName(GTNode node) {
-		return 'get' + getVariableName(node).toFirstUpper
-	}
-
-	private static def getSetterMethodName(GTNode node) {
-		return 'set' + getVariableName(node).toFirstUpper
+		return 'get' + node.name.toFirstUpper
 	}
 
 	// variables
 	private static def getVariableName(GTNode node) {
-		return 'element' + node.name.toFirstUpper
+		return 'var' + node.name.toFirstUpper
 	}
 
 	private static def getVariableType(GTNode node) {

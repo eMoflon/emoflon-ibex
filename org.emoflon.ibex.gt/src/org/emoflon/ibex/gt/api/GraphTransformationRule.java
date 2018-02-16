@@ -4,16 +4,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.eclipse.emf.ecore.resource.ResourceSet;
-
 /**
  * This is the abstraction for all rule applications.
  * 
  * Concrete Implementations must have a constructor to set the parameters
  * required for rule application and getters for all parameters.
- * 
- * @author Patrick Robrecht
- * @version 0.1
  * 
  * @param <M>
  *            the type of matches returned by this rule
@@ -22,27 +17,18 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
  */
 public abstract class GraphTransformationRule<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationRule<M, R>> {
 	/**
-	 * The model to query/transform with this rule application.
+	 * The interpreter.
 	 */
-	private ResourceSet model;
+	protected GraphTransformationInterpreter interpreter;
 
 	/**
-	 * Creates a new rule application for the given model.
+	 * Creates a new rule application.
 	 * 
-	 * @param model
-	 *            the model to query/transform
+	 * @param interpreter
+	 *            the interpreter
 	 */
-	public GraphTransformationRule(final ResourceSet model) {
-		this.model = model;
-	}
-
-	/**
-	 * Returns the model.
-	 * 
-	 * @return the model to query/transform
-	 */
-	public final ResourceSet getModel() {
-		return model;
+	public GraphTransformationRule(final GraphTransformationInterpreter interpreter) {
+		this.interpreter = interpreter;
 	}
 
 	/**
@@ -113,13 +99,4 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	public final int countMatches() {
 		return this.findMatches().size();
 	}
-
-	/**
-	 * Returns whether the rule application is a query (i. e. only context to match)
-	 * or a transformation.
-	 * 
-	 * @return <code>true</code> if the rule is a query, otherwise
-	 *         <code>false</code>.
-	 */
-	public abstract boolean isQuery();
 }
