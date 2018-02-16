@@ -97,15 +97,14 @@ class GTPackageBuilder implements GTBuilderExtension {
 		val resourceSet = new XtextResourceSet();
 		val HashSet<String> metaModels = newHashSet()
 		gtFiles.filter[it.exists].forEach [
-			val file = resourceSet.createResource(URI.createPlatformResourceURI(it.getFullPath().toString(), false))
-			file.load(null);
+			val file = resourceSet.getResource(URI.createPlatformResourceURI(it.getFullPath().toString(), true), true)
 			EcoreUtil2.resolveLazyCrossReferences(file, [false]);
-			EcoreUtil.resolveAll(resourceSet);
 
 			val editorModel = file.contents.get(0) as GraphTransformationFile
 			editorModels.put(it, editorModel)
 			metaModels.addAll(editorModel.imports.map[it.name])
 		]
+		EcoreUtil.resolveAll(resourceSet);
 
 		// Transform Editor models to rules of the internal GT model.
 		val gtRules = newHashSet()
