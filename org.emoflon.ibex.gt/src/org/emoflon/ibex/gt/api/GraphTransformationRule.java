@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
+
 /**
  * This is the abstraction for all rules.
  * 

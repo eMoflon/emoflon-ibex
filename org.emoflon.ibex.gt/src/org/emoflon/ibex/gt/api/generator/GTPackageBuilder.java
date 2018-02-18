@@ -143,7 +143,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		final InternalGTModelToIBeXPatternTransformation transformation = new InternalGTModelToIBeXPatternTransformation();
 		this.ibexPatternSet = transformation.transform(this.gtRuleSet);
 
-		// Save IBexPatterns.
+		// Save IBeXPatterns.
 		this.saveModelFile(this.apiPackage.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet);
 
 		// Load meta-models

@@ -217,8 +217,8 @@ class JavaFileGenerator {
 			'java.util.Optional',
 			'java.util.stream.Collectors',
 			'org.eclipse.emf.ecore.EObject',
-			'org.emoflon.ibex.gt.api.GraphTransformationInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationRule',
+			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'''«this.packageName».api.matches.«getMatchClassName(rule)»'''
 		)
 

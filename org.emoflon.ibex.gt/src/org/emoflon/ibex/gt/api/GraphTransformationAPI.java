@@ -2,6 +2,7 @@ package org.emoflon.ibex.gt.api;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.gt.engine.GTEngine;
+import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
  * This abstract API is the super class for all concrete APIs generated for a

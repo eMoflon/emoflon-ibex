@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.api;
+package org.emoflon.ibex.gt.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +12,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.emoflon.ibex.gt.engine.GTEngine;
 
 import IBeXLanguage.IBeXLanguagePackage;
 import IBeXLanguage.IBeXPatternSet;
