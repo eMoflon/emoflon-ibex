@@ -47,19 +47,49 @@ import org.emoflon.ibex.gt.transformations.InternalGTModelToIBeXPatternTransform
  * Each package is considered as an rule module with an API.
  */
 public class GTPackageBuilder implements GTBuilderExtension {
+	/**
+	 * The name of the source folder containing the generated API.
+	 */
 	private final static String SOURCE_GEN_FOLDER = "src-gen";
 
+	/**
+	 * The file generator used to generate the Java classes.
+	 */
 	private JavaFileGenerator fileGenerator;
 
-	// The package information.
+	/**
+	 * The project which is built.
+	 */
 	protected IProject project;
+
+	/**
+	 * The path of the package which is built.
+	 */
 	private IPath path;
+
+	/**
+	 * The name of the package.
+	 */
 	private String packageName;
+
+	/**
+	 * The folder of the package containing the API.
+	 */
 	private IFolder apiPackage;
 
-	// The model.
+	/**
+	 * The graph transformation rules.
+	 */
 	private GTRuleSet gtRuleSet;
+
+	/**
+	 * The IBeXPatterns.
+	 */
 	private IBeXPatternSet ibexPatternSet;
+
+	/**
+	 * The mapping between EClassNames to MetaModelNames
+	 */
 	private HashMap<String, String> eClassNameToMetaModelName = new HashMap<String, String>();
 
 	@Override
@@ -67,11 +97,10 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		this.project = project;
 		this.path = packagePath;
 		this.packageName = this.path.toString().replace("/", ".");
-		this.log("Started build");
 		this.ensureSourceGenPackageExists();
 		this.generateModels();
 		this.generateAPI();
-		this.log("Finished build");
+		this.log("Finished build.");
 	}
 
 	/**
@@ -94,7 +123,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
-	 * Creates the models.
+	 * Parses the models.
 	 */
 	private void generateModels() {
 		IResource[] allFiles = null;
@@ -114,8 +143,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		XtextResourceSet resourceSet = new XtextResourceSet();
 		HashSet<String> metaModels = new HashSet<String>();
 		gtFiles.forEach(it -> {
-			Resource file = resourceSet.getResource(URI.createPlatformResourceURI(it.getFullPath().toString(), true),
-					true);
+			URI uri = URI.createPlatformResourceURI(it.getFullPath().toString(), true);
+			Resource file = resourceSet.getResource(uri, true);
 			EcoreUtil2.resolveLazyCrossReferences(file, () -> false);
 
 			GraphTransformationFile editorModel = ((GraphTransformationFile) file.getContents().get(0));
@@ -140,7 +169,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		this.saveModelFile(this.apiPackage.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet);
 
 		// Transform rules into IBeXPatterns.
-		final InternalGTModelToIBeXPatternTransformation transformation = new InternalGTModelToIBeXPatternTransformation();
+		InternalGTModelToIBeXPatternTransformation transformation = new InternalGTModelToIBeXPatternTransformation();
 		this.ibexPatternSet = transformation.transform(this.gtRuleSet);
 
 		// Save IBeXPatterns.
@@ -180,7 +209,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
-	 * Loads the EClasses from the meta-model.
+	 * Loads the EClasses from the given meta-model URI.
 	 */
 	private String loadMetaModelClasses(final String metaModelUri, final ResourceSet resourceSet) {
 		Resource ecoreFile = resourceSet.getResource(URI.createURI(metaModelUri), true);
@@ -206,7 +235,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
-	 * Generates the API.
+	 * Generates Java classes of the API.
 	 */
 	private void generateAPI() {
 		IFolder matchesPackage = this.ensureFolderExists(this.apiPackage.getFolder("matches"));

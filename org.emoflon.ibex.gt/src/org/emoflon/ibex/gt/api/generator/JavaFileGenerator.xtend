@@ -25,10 +25,24 @@ import java.util.List
  * Each package is considered as an rule module with an API.
  */
 class JavaFileGenerator {
+	/**
+	 * The name of the package.
+	 */
 	String packageName
+
+	/**
+	 * The graph transformation rules as instance of the internal GT model.
+	 */
 	GTRuleSet gtRuleSet
+
+	/**
+	 * The mapping between EClassNames to MetaModelNames
+	 */
 	HashMap<String, String> eClassNameToMetaModelName
 
+	/**
+	 * Creates a new JavaFileGenerator.
+	 */
 	new(String packageName, GTRuleSet gtRuleSet, HashMap<String, String> eClassNameToMetaModelName) {
 		this.packageName = packageName
 		this.gtRuleSet = gtRuleSet
@@ -36,7 +50,7 @@ class JavaFileGenerator {
 	}
 
 	/**
-	 * Creates the models.
+	 * Generates the README.md file.
 	 */
 	public def generateREADME(IFolder apiPackage, List<IFile> gtFiles, HashSet<String> metaModels,
 		HashMap<String, String> metaModelPackages, HashMap<IFile, GraphTransformationFile> editorModels) {
@@ -147,7 +161,7 @@ class JavaFileGenerator {
 	}
 
 	/**
-	 * Generates the Java Rule class for the given rule.
+	 * Generates the Java Match class for the given rule.
 	 */
 	public def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = getImportsForTypes(rule)
@@ -294,29 +308,44 @@ class JavaFileGenerator {
 		'''
 	}
 
-	// class names
+	/**
+	 * Returns the name of the API class.
+	 */
 	private def getAPIClassName() {
 		return this.packageName.replace('.', '').toFirstUpper + "API"
 	}
 
+	/**
+	 * Returns the name of the match class for the rule.
+	 */
 	private static def getMatchClassName(GTRule rule) {
 		return rule.name.toFirstUpper + "Match"
 	}
 
+	/**
+	 * Returns the name of the rule class for the rule.
+	 */
 	private static def getRuleClassName(GTRule rule) {
 		return rule.name.toFirstUpper + "Rule"
 	}
 
-	// method names
+	/**
+	 * Returns the getter method name for the given node.
+	 */
 	private static def getGetterMethodName(GTNode node) {
 		return 'get' + node.name.toFirstUpper
 	}
 
-	// variables
+	/**
+	 * Returns the variable name for the given node.
+	 */
 	private static def getVariableName(GTNode node) {
 		return 'var' + node.name.toFirstUpper
 	}
 
+	/**
+	 * Returns the name of the type of given node.
+	 */
 	private static def getVariableType(GTNode node) {
 		return node.type.name
 	}
