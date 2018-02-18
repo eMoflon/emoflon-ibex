@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.emoflon.ibex.common.operational.IPatternInterpreter;
 
 import IBeXLanguage.IBeXLanguagePackage;
 import IBeXLanguage.IBeXPatternSet;
@@ -34,7 +35,7 @@ public class GraphTransformationInterpreter {
 	/**
 	 * The pattern matching engine.
 	 */
-	private GTEngine engine;
+	private IPatternInterpreter engine;
 
 	/**
 	 * The resource set containing the model file.
@@ -49,7 +50,7 @@ public class GraphTransformationInterpreter {
 	 * @param model
 	 *            the resource set containing the model file
 	 */
-	public GraphTransformationInterpreter(final GTEngine engine, final ResourceSet model) {
+	public GraphTransformationInterpreter(final IPatternInterpreter engine, final ResourceSet model) {
 		this.engine = engine;
 		this.model = model;
 	}
@@ -87,7 +88,7 @@ public class GraphTransformationInterpreter {
 		Objects.requireNonNull("Resource must not be empty!");
 		if (resourceContent instanceof IBeXPatternSet) {
 			// Transform into patterns of the concrete engine.
-			this.engine.transformPatterns((IBeXPatternSet) resourceContent);
+			this.engine.initPatterns((IBeXPatternSet) resourceContent);
 			this.patternSetLoaded = true;
 		} else {
 			throw new IllegalArgumentException("Expecting a IBeXPatternSet root element!");

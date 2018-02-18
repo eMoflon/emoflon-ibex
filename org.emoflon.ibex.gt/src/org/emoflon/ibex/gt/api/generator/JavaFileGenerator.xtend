@@ -108,8 +108,8 @@ class JavaFileGenerator {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
-			'org.emoflon.ibex.gt.api.GraphTransformationAPI',
-			'org.emoflon.ibex.gt.engine.GTEngine'
+			'org.emoflon.ibex.common.operational.IPatternInterpreter',
+			'org.emoflon.ibex.gt.api.GraphTransformationAPI'
 		)
 		this.gtRuleSet.rules.forall [
 			imports.add('''«this.packageName».api.rules.«getRuleClassName(it)»''')
@@ -138,7 +138,7 @@ class JavaFileGenerator {
 				 * @param model
 				 *            the resource set containing the model file
 				 */
-				public «apiClassName»(final GTEngine engine, final ResourceSet model) {
+				public «apiClassName»(final IPatternInterpreter engine, final ResourceSet model) {
 					super(engine, model);
 					if (!this.interpreter.isPatternSetLoaded()) {
 						this.interpreter.loadPatternSet(defaultPatternURI);

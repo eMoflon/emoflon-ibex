@@ -1,7 +1,7 @@
 package org.emoflon.ibex.gt.api;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.gt.engine.GTEngine;
+import org.emoflon.ibex.common.operational.IPatternInterpreter;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
@@ -25,7 +25,7 @@ public abstract class GraphTransformationAPI {
 	 * @param model
 	 *            the resource set containing the model file
 	 */
-	public GraphTransformationAPI(final GTEngine engine, final ResourceSet model) {
+	public GraphTransformationAPI(final IPatternInterpreter engine, final ResourceSet model) {
 		this.interpreter = new GraphTransformationInterpreter(engine, model);
 	}
 
