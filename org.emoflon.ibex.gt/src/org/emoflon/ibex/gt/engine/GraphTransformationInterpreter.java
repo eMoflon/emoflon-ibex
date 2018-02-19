@@ -12,6 +12,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.IPatternInterpreter;
 
 import IBeXLanguage.IBeXLanguagePackage;
@@ -21,7 +23,7 @@ import IBeXLanguage.IBeXPatternSet;
  * The GraphTransformationInterpreter implements rule application based on a
  * pattern matching engine.
  */
-public class GraphTransformationInterpreter {
+public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
 	 * The folder for debugging output.
 	 */
@@ -153,5 +155,15 @@ public class GraphTransformationInterpreter {
 	public Collection<Map<String, EObject>> findMatches(final String patternName) {
 		// TODO implement
 		return new ArrayList<Map<String, EObject>>();
+	}
+
+	@Override
+	public void addMatch(final IMatch match) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void removeMatch(final IMatch match) {
+		// TODO Auto-generated method stub
 	}
 }
