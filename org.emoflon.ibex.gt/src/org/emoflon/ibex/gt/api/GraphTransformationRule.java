@@ -4,16 +4,13 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
- * This is the abstraction for all rule applications.
+ * This is the abstraction for all rules.
  * 
  * Concrete Implementations must have a constructor to set the parameters
  * required for rule application and getters for all parameters.
- * 
- * @author Patrick Robrecht
- * @version 0.1
  * 
  * @param <M>
  *            the type of matches returned by this rule
@@ -22,36 +19,27 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
  */
 public abstract class GraphTransformationRule<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationRule<M, R>> {
 	/**
-	 * The model to query/transform with this rule application.
+	 * The interpreter.
 	 */
-	private ResourceSet model;
+	protected GraphTransformationInterpreter interpreter;
 
 	/**
-	 * Creates a new rule application for the given model.
+	 * Creates a new rule.
 	 * 
-	 * @param model
-	 *            the model to query/transform
+	 * @param interpreter
+	 *            the interpreter
 	 */
-	public GraphTransformationRule(final ResourceSet model) {
-		this.model = model;
+	public GraphTransformationRule(final GraphTransformationInterpreter interpreter) {
+		this.interpreter = interpreter;
 	}
 
 	/**
-	 * Returns the model.
-	 * 
-	 * @return the model to query/transform
-	 */
-	public final ResourceSet getModel() {
-		return model;
-	}
-
-	/**
-	 * Executes the rule application on the given match.
+	 * Executes the rule on the given match.
 	 */
 	public abstract void execute(final M match);
 
 	/**
-	 * Executes the rule application on an arbitrary match.
+	 * Executes the rule on an arbitrary match.
 	 * 
 	 * @return an {@link Optional} for the match the rule was executed on
 	 */
@@ -62,7 +50,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Executes the rule application on all matches.
+	 * Executes the rule on all matches.
 	 * 
 	 * @return the list of matches the rule was executed on
 	 */
@@ -73,21 +61,21 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Finds an arbitrary match for the rule application.
+	 * Finds an arbitrary match for the rule.
 	 * 
 	 * @return an {@link Optional} for the match
 	 */
 	public abstract Optional<M> findAnyMatch();
 
 	/**
-	 * Finds all matches for the rule application.
+	 * Finds all matches for the rule.
 	 * 
 	 * @return the list of matches
 	 */
 	public abstract Collection<M> findMatches();
 
 	/**
-	 * Finds all matches for the rule application.
+	 * Finds all matches for the rule.
 	 * 
 	 * @param action
 	 *            a Consumer for the matches found
@@ -97,7 +85,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Returns whether matches for the rule application exist.
+	 * Returns whether matches for the rule exist.
 	 * 
 	 * @return <code>true</code> if and only if there is at least one match
 	 */
@@ -106,20 +94,11 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Returns the number of matches found for the rule application.
+	 * Returns the number of matches found for the rule.
 	 * 
 	 * @return the number of matches
 	 */
 	public final int countMatches() {
 		return this.findMatches().size();
 	}
-
-	/**
-	 * Returns whether the rule application is a query (i. e. only context to match)
-	 * or a transformation.
-	 * 
-	 * @return <code>true</code> if the rule is a query, otherwise
-	 *         <code>false</code>.
-	 */
-	public abstract boolean isQuery();
 }

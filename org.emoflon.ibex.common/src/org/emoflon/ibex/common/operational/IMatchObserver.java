@@ -28,5 +28,7 @@ public interface IMatchObserver {
 	 * @return <code>true</code> if the pattern is relevant, <code>false</code>
 	 *         otherwise
 	 */
-	public boolean isPatternRelevantForCompiler(String patternName);
+	default public boolean isPatternRelevantForCompiler(String patternName) {
+		return true;
+	}
 }

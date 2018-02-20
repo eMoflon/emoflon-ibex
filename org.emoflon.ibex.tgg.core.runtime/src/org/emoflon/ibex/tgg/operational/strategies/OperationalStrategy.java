@@ -219,7 +219,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		// Attempt initialisation
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
-			blackInterpreter.initialise(rs.getPackageRegistry(), this, options);
+			blackInterpreter.initialise(rs.getPackageRegistry(), this);
+			blackInterpreter.setOptions(options);
 		} catch (RuntimeException e) {
 			initExcep = Optional.of(e);
 		}
@@ -272,9 +273,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected void registerInternalMetamodels() {
-		// Register internals for engine
-		blackInterpreter.registerInternalMetamodels();
-
 		// Register internals for Ibex
 		LanguagePackageImpl.init();
 		RuntimePackageImpl.init();
