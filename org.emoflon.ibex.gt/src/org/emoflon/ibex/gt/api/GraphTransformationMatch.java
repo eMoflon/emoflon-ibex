@@ -1,5 +1,9 @@
 package org.emoflon.ibex.gt.api;
 
+import java.util.Map;
+
+import org.eclipse.emf.ecore.EObject;
+
 /**
  * This is the abstraction for all matches.
  * 
@@ -38,4 +42,11 @@ public abstract class GraphTransformationMatch<M extends GraphTransformationMatc
 	public R getRule() {
 		return this.rule;
 	}
+
+	/**
+	 * Converts the match to a HashMap.
+	 * 
+	 * @return the match as a HashMap
+	 */
+	public abstract Map<String, EObject> toMap();
 }

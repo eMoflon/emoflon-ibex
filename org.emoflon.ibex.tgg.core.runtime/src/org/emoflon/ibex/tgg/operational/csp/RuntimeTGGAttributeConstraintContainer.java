@@ -31,7 +31,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 		
 	public RuntimeTGGAttributeConstraintContainer(List<TGGParamValue> variables, List<TGGAttributeConstraint> sortedConstraints, IMatch match, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
-		this.boundObjectNames = match.parameterNames();
+		this.boundObjectNames = match.getParameterNames();
 		this.constraintProvider = runtimeConstraintProvider;
 		
 		extractRuntimeParameters(variables);

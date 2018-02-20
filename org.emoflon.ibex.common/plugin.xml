@@ -1,17 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.0"?>
-
-<!--
--->
-
-<plugin>
-
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated IBeXLanguage -->
-      <package
-            uri="platform:/plugin/org.emoflon.ibex.common/model/IBeXLanguage.ecore"
-            class="IBeXLanguage.IBeXLanguagePackage"
-            genModel="model/IBeXLanguage.genmodel"/>
-   </extension>
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?><!--
+--><plugin>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="IBeXLanguage.IBeXLanguagePackage" genModel="model/Common.genmodel" uri="platform:/resource/org.emoflon.ibex.common/model/Common.ecore"/>
+  </extension>
 </plugin>

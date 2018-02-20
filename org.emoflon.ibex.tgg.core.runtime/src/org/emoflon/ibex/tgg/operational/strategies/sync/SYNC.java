@@ -93,7 +93,7 @@ public abstract class SYNC extends OperationalStrategy {
 	@Override
 	public IGreenPattern revokes(IMatch match) {
 		String ruleName = getRuleApplicationNode(match).getName();
-		return strategy.revokes(getGreenFactory(ruleName), match.patternName(), ruleName);
+		return strategy.revokes(getGreenFactory(ruleName), match.getPatternName(), ruleName);
 	}
 
 	@Override
@@ -136,9 +136,9 @@ public abstract class SYNC extends OperationalStrategy {
 		for (IMatch match : complementMatches) {
 			if (!isComplementMatchRelevant(match, comatch))
 				continue;
-			THashSet<EObject> fusedNodes = comatch.parameterNames().stream().map(n -> comatch.get(n))
+			THashSet<EObject> fusedNodes = comatch.getParameterNames().stream().map(n -> comatch.get(n))
 					.collect(Collectors.toCollection(THashSet<EObject>::new));
-			THashSet<EObject> complementNodes = match.parameterNames().stream().map(n -> match.get(n))
+			THashSet<EObject> complementNodes = match.getParameterNames().stream().map(n -> match.get(n))
 					.collect(Collectors.toCollection(THashSet<EObject>::new));
 
 			if (fusedNodes.containsAll(complementNodes))
@@ -152,8 +152,8 @@ public abstract class SYNC extends OperationalStrategy {
 	 * irrelevant complement matches
 	 */
 	private boolean isComplementMatchRelevant(IMatch match, IMatch comatch) {
-		if (!match.patternName().contains(PatternSuffixes.removeSuffix(match.patternName()))
-				|| !isPatternRelevantForInterpreter(match.patternName()))
+		if (!match.getPatternName().contains(PatternSuffixes.removeSuffix(match.getPatternName()))
+				|| !isPatternRelevantForInterpreter(match.getPatternName()))
 			return false;
 		return true;
 	}
@@ -168,7 +168,7 @@ public abstract class SYNC extends OperationalStrategy {
 		} else {
 			// if it is a kernel or a complement rule
 			protocolNode = (TGGRuleApplication) comatch
-					.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.patternName())));
+					.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		}
 
 		if (isComplementMatch(ruleName)) {
@@ -199,7 +199,7 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	private boolean isComplementRuleApplicable(IMatch match, String ruleName) {
-		if (!isPatternRelevantForInterpreter(match.patternName())) {
+		if (!isPatternRelevantForInterpreter(match.getPatternName())) {
 			return false;
 		}
 
@@ -220,7 +220,7 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	private THashSet<EObject> getContextNodesWithoutProtocolNode(IMatch match) {
-		THashSet<EObject> contextNodes = match.parameterNames().stream()
+		THashSet<EObject> contextNodes = match.getParameterNames().stream()
 				.filter(n -> !(match.get(n) instanceof TGGRuleApplication)).map(n -> match.get(n))
 				.collect(Collectors.toCollection(THashSet<EObject>::new));
 		return contextNodes;
@@ -228,7 +228,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 	private Set<IMatch> findAllComplementRuleMatches() {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.patternName())))
+				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.getPatternName())))
 				.collect(Collectors.toSet());
 
 		return allComplementRuleMatches;

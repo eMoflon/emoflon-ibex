@@ -119,13 +119,13 @@ public abstract class MODELGEN extends OperationalStrategy {
 		}
 		
 		// Close the kernel, so other complement rules cannot find this match anymore
-		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.patternName())));
+		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		application.setAmalgamated(true);
 	}
 
 	private HashMap<String, Integer> callUpdatePolicy(Set<IMatch> complementRuleMatches) {
 		Set<String> uniqueRulesNames = complementRuleMatches.stream()
-				.map(m -> PatternSuffixes.removeSuffix(m.patternName()))
+				.map(m -> PatternSuffixes.removeSuffix(m.getPatternName()))
 				.distinct()
 				.collect(Collectors.toSet());
 		HashMap<String, Integer> complementRulesBounds = updatePolicy.getNumberOfApplications(uniqueRulesNames);
@@ -150,7 +150,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	
 	private Set<IMatch> findAllComplementRuleMatches() {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.patternName())))
+				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.getPatternName())))
 				.collect(Collectors.toSet());
 
 		return allComplementRuleMatches;
@@ -209,7 +209,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	private void processBoundedRuleLimits(String name, HashMap<EReference, Integer> edgesToBeCreated) {
 		//find all matches for bounded rule collected by operational match container
 		int number = (int) findAllComplementRuleMatches().stream()
-				.filter(m -> m.patternName().contains(name)).count();
+				.filter(m -> m.getPatternName().contains(name)).count();
 		getRelevantEdges(((TGGComplementRule) getRule(name))).stream()
 		.forEach( e -> {edgesToBeCreated.put(e.getType(), number);});
 	}

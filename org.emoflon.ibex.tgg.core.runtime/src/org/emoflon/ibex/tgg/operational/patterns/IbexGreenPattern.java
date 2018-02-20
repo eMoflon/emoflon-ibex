@@ -86,7 +86,7 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 		factory.getBlackSrcNodesInRule().forEach(n -> ra.getContextSrc().add((EObject) match.get(n.getName())));
 		factory.getBlackTrgNodesInRule().forEach(n -> ra.getContextTrg().add((EObject) match.get(n.getName())));
 		
-		match.parameterNames().stream()
+		match.getParameterNames().stream()
 			.filter(n -> !IbexBasePattern.isAttrNode(n))
 			.forEach(n -> ra.getNodeMappings().put(n, (EObject) match.get(n)));
 
