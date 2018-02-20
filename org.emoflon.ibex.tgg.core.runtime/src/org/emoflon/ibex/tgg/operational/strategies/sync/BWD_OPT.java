@@ -19,9 +19,9 @@ import gnu.trove.set.hash.TIntHashSet;
 import language.TGGRuleCorr;
 import language.TGGRuleNode;
 
-public abstract class FWD_OPT extends OPT {
+public abstract class BWD_OPT extends OPT {
 	
-	public FWD_OPT(IbexOptions options) throws IOException {
+	public BWD_OPT(IbexOptions options) throws IOException {
 		super(options);
 	}
 	
@@ -36,25 +36,25 @@ public abstract class FWD_OPT extends OPT {
 					for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 						objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 					
-					for (TGGRuleNode createdTrgNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
-						objectsToDelete.add((EObject) comatch.get(createdTrgNode.getName()));
+					for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
+						objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
 					
 					objectsToDelete.add(getRuleApplicationNode(comatch));
 				}
 		  }
 		  
 		  EcoreUtil.deleteAll(objectsToDelete, true);
-		  consistencyReporter.initSrc(this);
+		  consistencyReporter.initTrg(this);
 	}
 	
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD_OPT);
+		return patternName.endsWith(PatternSuffixes.BWD_OPT);
 	}
 	
 	@Override
 	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD_OPT);
+		return patternName.endsWith(PatternSuffixes.BWD_OPT);
 	}
 	
 	@Override
@@ -64,8 +64,8 @@ public abstract class FWD_OPT extends OPT {
 		matchIdToRuleName.put(idCounter, ruleName);
 
 		int weight = 
-				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
+				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
 
 		weights.put(idCounter, weight);
 
@@ -98,21 +98,21 @@ public abstract class FWD_OPT extends OPT {
 	 	p.save(null);
 		
 	 	// Unrelax the metamodel
-		unrelaxReferences(options.tgg().getTrg());
+		unrelaxReferences(options.tgg().getSrc());
 		
 		// Remove adapters to avoid problems with notifications
-		t.eAdapters().clear();
-		t.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+		s.eAdapters().clear();
+		s.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
 		
 		// Copy and fix the model in the process
-		FixingCopier.fixAll(t, c);
+		FixingCopier.fixAll(s, c);
 		
 		// Now save fixed models
-		t.save(null);
+		s.save(null);
 		c.save(null);
 	}
 	
-	public void forward() throws IOException {
+	public void backward() throws IOException {
 		run();
 	}
 	
@@ -132,4 +132,3 @@ public abstract class FWD_OPT extends OPT {
 		relaxReferences(options.tgg().getTrg());
 	}
 }
-

@@ -113,12 +113,22 @@ public class PatternSuffixes {
 	 * not already marked.
 	 */
 	public static final String BWD = SEP + "BWD";
+	
+	/**
+	 * As backward pattern, but applicable for linear optimization techniques.
+	 */
+	public static final String BWD_OPT = SEP + "BWD_OPT";
 
 	/**
 	 * Contains the entire corr-context and source-context of the original TGG rule
 	 * and invocations to the corresponding patterns of super-rules.
 	 */
 	public static final String BWD_REFINEMENT_INVOCATIONS= SEP + "BWD_REFINEMENT_INVOCATIONS";
+	
+	/**
+	 * As backward refinement invocations pattern, but applicable for linear optimization techniques.
+	 */
+	public static final String BWD_OPT_REFINEMENT_INVOCATIONS= SEP + "BWD_OPT_REFINEMENT_INVOCATIONS";
 	
 	/**
 	 * Matches of these patterns are collected as soon as a TGG rule has been

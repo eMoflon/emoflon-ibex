@@ -18,11 +18,11 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class FWDOptBlackPattern extends BasicSyncPattern {
+public class BWDOptBlackPattern extends BasicSyncPattern {
 
 	protected BlackPatternFactory factory;
 
-	public FWDOptBlackPattern(BlackPatternFactory factory) {
+	public BWDOptBlackPattern(BlackPatternFactory factory) {
 		super(factory);
 		this.factory = factory;
 		initialise(factory.getFlattenedVersionOfRule());
@@ -36,7 +36,7 @@ public class FWDOptBlackPattern extends BasicSyncPattern {
 	}
 
 	protected void initialise(TGGRule rule) {
-		String name = rule.getName() + PatternSuffixes.FWD_OPT;
+		String name = rule.getName() + PatternSuffixes.BWD_OPT;
 
 		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
 				   .filter(this::isSignatureNode)
@@ -50,16 +50,16 @@ public class FWDOptBlackPattern extends BasicSyncPattern {
 	
 	protected void createPatternNetwork() {
 		// Rule Patterns
-		addPositiveInvocation(factory.createBlackPattern(FWDRefinementOptPattern.class));
+		addPositiveInvocation(factory.createBlackPattern(BWDRefinementOptPattern.class));
 
 		// FilterNACs
 		if(BlackPatternFactory.strategy != FilterACStrategy.NONE) {
-			addFilterNACPatterns(DomainType.SRC, factory, optimiser);
+			addFilterNACPatterns(DomainType.TRG, factory, optimiser);
 		}
 	}
 
 	protected boolean isSignatureNode(TGGRuleNode n) {
-		return n.getDomainType() == DomainType.SRC || n.getBindingType() == BindingType.CONTEXT;
+		return n.getDomainType() == DomainType.TRG || n.getBindingType() == BindingType.CONTEXT;
 	}
 	
 	@Override
@@ -68,6 +68,6 @@ public class FWDOptBlackPattern extends BasicSyncPattern {
 	}
 	
 	public static String getName(String ruleName) {
-		return ruleName + PatternSuffixes.FWD_OPT;
+		return ruleName + PatternSuffixes.BWD_OPT;
 	}
 }

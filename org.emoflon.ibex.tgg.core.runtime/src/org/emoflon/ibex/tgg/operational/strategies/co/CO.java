@@ -93,47 +93,6 @@ public abstract class CO extends CC {
 
 		idCounter++;
 	}
-		
-	private int[] chooseTGGRuleApplications() {
-		try {
-			GRBEnv env = new GRBEnv("Gurobi_ILP.log");
-			GRBModel model = new GRBModel(env);
-
-			TIntObjectHashMap<GRBVar> gurobiVariables = defineGurobiVariables(model);
-			
-			defineGurobiImplications(model, gurobiVariables);
-			
-			defineGurobiExclusions(model, gurobiVariables);
-
-			defineGurobiObjective(model, gurobiVariables);
-
-			model.optimize();
-
-			int[] result = new int[idToMatch.size()];
-
-			idToMatch.keySet().forEach(v -> {
-				try {
-					if (gurobiVariables.get(v).get(GRB.DoubleAttr.X) > 0)
-						result[v - 1] = v;
-					else
-						result[v - 1] = -v;
-				} catch (GRBException e) {
-					e.printStackTrace();
-				}
-				return true;
-			});
-
-			env.dispose();
-			model.dispose();
-
-			return result;
-
-		} catch (GRBException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
 	
 	@Override
 	public void loadModels() throws IOException {

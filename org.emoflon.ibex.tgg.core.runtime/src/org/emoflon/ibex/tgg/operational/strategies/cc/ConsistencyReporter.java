@@ -47,6 +47,12 @@ public class ConsistencyReporter {
 		inconsistentSrcEdges = extractInconsistentEdges(strategy.getSourceResource(), strategy.getProtocolResource(), Domain.SRC);
 	}
 	
+	public void initTrg(OperationalStrategy strategy) {
+		this.strategy = strategy;
+		inconsistentTrgNodes = extractInconsistentNodes(strategy.getTargetResource(), strategy.getProtocolResource(), Domain.TRG);
+		inconsistentTrgEdges = extractInconsistentEdges(strategy.getTargetResource(), strategy.getProtocolResource(), Domain.TRG);
+	}
+	
 	public Collection<EObject> getInconsistentSrcNodes() {
 		return inconsistentSrcNodes;
 	}
