@@ -89,9 +89,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		EObject resourceContent = ibexPatternResource.getContents().get(0);
 		Objects.requireNonNull("Resource must not be empty!");
 		if (resourceContent instanceof IBeXPatternSet) {
+			this.engine.initialise(this.model.getPackageRegistry(), this);
+
 			// Transform into patterns of the concrete engine.
 			this.engine.initPatterns((IBeXPatternSet) resourceContent);
 			this.patternSetLoaded = true;
+
+			this.engine.monitor(this.model);
 		} else {
 			throw new IllegalArgumentException("Expecting a IBeXPatternSet root element!");
 		}
@@ -122,6 +126,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
+	 * Terminates the engine.
+	 */
+	public void terminate() {
+		this.engine.terminate();
+	}
+
+	/**
 	 * Executes the pattern.
 	 * 
 	 * @param patternName
@@ -141,6 +152,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return an {@link Optional} for the match
 	 */
 	public Optional<Map<String, EObject>> findAnyMatch(final String patternName) {
+		this.updateMatches();
 		// TODO implement
 		return Optional.empty();
 	}
@@ -153,17 +165,27 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return a {@link Collection} of matches
 	 */
 	public Collection<Map<String, EObject>> findMatches(final String patternName) {
+		this.updateMatches();
 		// TODO implement
 		return new ArrayList<Map<String, EObject>>();
+	}
+
+	/**
+	 * Trigger the engine to update the pattern network.
+	 */
+	private void updateMatches() {
+		this.engine.updateMatches();
 	}
 
 	@Override
 	public void addMatch(final IMatch match) {
 		// TODO Auto-generated method stub
+		System.out.println("Add match" + match.getPatternName());
 	}
 
 	@Override
 	public void removeMatch(final IMatch match) {
 		// TODO Auto-generated method stub
+		System.out.println("Remove match" + match.getPatternName());
 	}
 }
