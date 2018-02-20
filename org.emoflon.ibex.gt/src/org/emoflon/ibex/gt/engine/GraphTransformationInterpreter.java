@@ -2,6 +2,8 @@ package org.emoflon.ibex.gt.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,6 +45,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * The resource set containing the model file.
 	 */
 	private ResourceSet model;
+
+	/**
+	 * The matches.
+	 */
+	private Map<String, List<IMatch>> matches = new HashMap<String, List<IMatch>>();
 
 	/**
 	 * Creates a new GraphTransformationInterpreter.
@@ -153,8 +160,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public Optional<Map<String, EObject>> findAnyMatch(final String patternName) {
 		this.updateMatches();
-		// TODO implement
-		return Optional.empty();
+
+		if (!this.matches.containsKey(patternName) || this.matches.get(patternName).isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.of(this.convertMatch(this.matches.get(patternName).get(0)));
 	}
 
 	/**
@@ -166,8 +176,19 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public Collection<Map<String, EObject>> findMatches(final String patternName) {
 		this.updateMatches();
-		// TODO implement
-		return new ArrayList<Map<String, EObject>>();
+
+		ArrayList<Map<String, EObject>> matchesForPattern = new ArrayList<Map<String, EObject>>();
+		if (!this.matches.containsKey(patternName)) {
+			return matchesForPattern;
+		}
+		this.matches.get(patternName).forEach(match -> matchesForPattern.add(this.convertMatch(match)));
+		return matchesForPattern;
+	}
+
+	private Map<String, EObject> convertMatch(final IMatch match) {
+		HashMap<String, EObject> mapping = new HashMap<String, EObject>();
+		match.getParameterNames().forEach(p -> mapping.put(p, (EObject) match.get(p)));
+		return mapping;
 	}
 
 	/**
@@ -179,13 +200,20 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 
 	@Override
 	public void addMatch(final IMatch match) {
-		// TODO Auto-generated method stub
-		System.out.println("Add match" + match.getPatternName());
+		String patternName = match.getPatternName();
+		if (!this.matches.containsKey(patternName)) {
+			this.matches.put(patternName, new ArrayList<IMatch>());
+		}
+		this.matches.get(patternName).add(match);
 	}
 
 	@Override
 	public void removeMatch(final IMatch match) {
-		// TODO Auto-generated method stub
-		System.out.println("Remove match" + match.getPatternName());
+		String patternName = match.getPatternName();
+		if (this.matches.containsKey(patternName)) {
+			this.matches.get(patternName).remove(match);
+		} else {
+			throw new IllegalArgumentException("Cannot remove a match which was never added!");
+		}
 	}
 }
