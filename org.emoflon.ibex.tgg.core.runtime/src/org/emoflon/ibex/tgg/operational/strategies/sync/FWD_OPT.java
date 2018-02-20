@@ -49,36 +49,33 @@ import language.TGGRuleCorr;
 import language.TGGRuleNode;
 
 public abstract class FWD_OPT extends OperationalStrategy {
-
 	protected TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
-	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
-			new RuntimeEdgeHashingStrategy());
+	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(new RuntimeEdgeHashingStrategy());
 	protected THashMap<EObject, TIntHashSet> nodeToMarkingMatches = new THashMap<>();
 	protected THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 	protected int nameCounter = 0;
-	TIntIntHashMap weights = new TIntIntHashMap();
-	THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
-	TIntHashSet invalidKernels = new TIntHashSet();
+	protected TIntIntHashMap weights = new TIntIntHashMap();
+	protected THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
+	protected TIntHashSet invalidKernels = new TIntHashSet();
 	protected TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	protected TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
-	HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
-	Bundle lastAppliedBundle;
+	protected HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
+	protected Bundle lastAppliedBundle;
 	protected TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
 	protected int idCounter = 1;
 	
-	//Hash maps to save the old metamodel state
-	THashMap<EReference, Integer> referenceToUpperBound = new THashMap<EReference, Integer>();
-	THashMap<EReference, Integer> referenceToLowerBound = new THashMap<EReference, Integer>();
-	THashMap<EReference, EReference> referenceToEOpposite = new THashMap<EReference, EReference>();
-	THashMap<EReference, Boolean> referenceToContainment = new THashMap<EReference, Boolean>();
+	// Hash maps to save the old metamodel state
+	protected THashMap<EReference, Integer> referenceToUpperBound = new THashMap<EReference, Integer>();
+	protected THashMap<EReference, Integer> referenceToLowerBound = new THashMap<EReference, Integer>();
+	protected THashMap<EReference, EReference> referenceToEOpposite = new THashMap<EReference, EReference>();
+	protected THashMap<EReference, Boolean> referenceToContainment = new THashMap<EReference, Boolean>();
 	
 	public FWD_OPT(IbexOptions options) throws IOException {
 		super(options);
 	}
 	
 	public void relaxReferences(EList<EPackage> model) {
-
 		EPackage[] packages = (EPackage[])model.toArray();
 		
 		for (EPackage p : packages) {
@@ -95,17 +92,16 @@ public abstract class FWD_OPT extends OperationalStrategy {
 							referenceToContainment.containsKey(reference) &&
 							referenceToEOpposite.containsKey(reference)) {
 							// Reference already exists, values must not be overwritten
-								continue;
+							continue;
 						}
 						
-						//Save metamodel values
+						// Save metamodel values
 						referenceToUpperBound.put(reference, reference.getUpperBound());
 						referenceToLowerBound.put(reference, reference.getLowerBound());
 						referenceToContainment.put(reference, reference.isContainment());
 						referenceToEOpposite.put(reference, reference.getEOpposite());
 						
-						
-						//Change metamodel values
+						// Change metamodel values
 						reference.setUpperBound(-1);
 						reference.setLowerBound(0);
 						reference.setContainment(false);
@@ -117,7 +113,6 @@ public abstract class FWD_OPT extends OperationalStrategy {
 	}
 	
 	public void unrelaxReferences(EList<EPackage> model) {
-
 		EPackage[] packages = (EPackage[])model.toArray();
 		
 		for (EPackage p : packages) {
@@ -494,6 +489,16 @@ public abstract class FWD_OPT extends OperationalStrategy {
 	public void loadTGG() throws IOException {
 		super.loadTGG();
 		relaxReferences(options.tgg().getTrg());
+	}
+	
+	@Override
+	public void loadModels() throws IOException {
+		s = loadResource(projectPath + "/instances/src.xmi");
+		t = createResource(projectPath + "/instances/trg.xmi");
+		c = createResource(projectPath + "/instances/corr.xmi");
+		p = createResource(projectPath + "/instances/protocol.xmi");
+
+		EcoreUtil.resolveAll(rs);
 	}
 	
 	@Override
