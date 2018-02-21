@@ -104,7 +104,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java API class.
 	 */
-	public def generateAPIJavaFile(IFolder apiPackage, String patternUri) {
+	public def generateAPIJavaFile(IFolder apiPackage, String patternPath) {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
@@ -125,13 +125,12 @@ class JavaFileGenerator {
 			 * The «apiClassName».
 			 */
 			public class «apiClassName» extends GraphTransformationAPI {
-				private static URI defaultPatternURI = URI.createFileURI("«patternUri»");
+				public static String patternPath = "«patternPath»";
 			
 				/**
-				 * Create a new «apiClassName».
+				 * Creates a new «apiClassName».
 				 *
-				 * If the patterns for the engine are not loaded yet, they are loaded from the
-				 * default pattern URI.
+				 * The are loaded from the default pattern path.
 				 *
 				 * @param engine
 				 *            the engine to use for queries and transformations
@@ -140,14 +139,33 @@ class JavaFileGenerator {
 				 */
 				public «apiClassName»(final IPatternInterpreter engine, final ResourceSet model) {
 					super(engine, model);
-					if (!this.interpreter.isPatternSetLoaded()) {
-						this.interpreter.loadPatternSet(defaultPatternURI);
-					}
+					URI uri = URI.createURI("../" + patternPath);
+					this.interpreter.loadPatternSet(uri);
+				}
+			
+				/**
+				 * Creates a new «apiClassName».
+				 *
+				 * The are loaded from the pattern path (the given workspace path concatenated
+				 * with the project relative path to the pattern file).
+				 *
+				 * @param engine
+				 *            the engine to use for queries and transformations
+				 * @param model
+				 *            the resource set containing the model file
+				 * @param workspacePath
+				 *            the path to the workspace
+				 */
+				public «apiClassName»(final IPatternInterpreter engine, final ResourceSet model,
+						final String workspacePath) {
+					super(engine, model);
+					URI uri = URI.createURI(workspacePath + patternPath);
+					this.interpreter.loadPatternSet(uri);
 				}
 			«FOR rule : this.gtRuleSet.rules»
 				
 					/**
-					 * Create a new rule «rule.name»().
+					 * Creates a new rule «rule.name»().
 					 * 
 					 * @return the created rule
 					 */
@@ -185,7 +203,7 @@ class JavaFileGenerator {
 				«ENDFOR»
 			
 				/**
-				 * Create a new match for a match for the rule «rule.name»().
+				 * Creates a new match for the rule «rule.name»().
 				 * 
 				 * @param rule
 				 *            the rule
@@ -248,7 +266,7 @@ class JavaFileGenerator {
 				private static String ruleName = "«rule.name»";
 			
 				/**
-				 * Create a new rule «rule.name»().
+				 * Creates a new rule «rule.name»().
 				 * 
 				 * @param interpreter
 				 *            the interpreter
