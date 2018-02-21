@@ -241,8 +241,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected void loadTGG() throws IOException {
-		Resource res = loadResource(projectPath + "/model/" + projectPath + ".tgg.xmi");
-		Resource flattenedRes = loadResource(projectPath + "/model/" + projectPath + "_flattened.tgg.xmi");
+		Resource res = loadTGGResource();
+		Resource flattenedRes = loadFlattenedTGGResource();
 
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
@@ -260,6 +260,14 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG());
 
 		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
+	}
+
+	protected Resource loadFlattenedTGGResource() throws IOException {
+		return loadResource(projectPath + "/model/" + projectPath + "_flattened.tgg.xmi");
+	}
+
+	protected Resource loadTGGResource() throws IOException {
+		return loadResource(projectPath + "/model/" + projectPath + ".tgg.xmi");
 	}
 
 	/**

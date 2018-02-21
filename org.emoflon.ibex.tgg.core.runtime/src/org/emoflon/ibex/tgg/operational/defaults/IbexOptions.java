@@ -65,7 +65,7 @@ public class IbexOptions {
 	}
 
 	public IbexOptions projectName(String projectName) {
-		this.projectPath = projectName;
+		this.projectName = projectName;
 		return this;
 	}
 	
