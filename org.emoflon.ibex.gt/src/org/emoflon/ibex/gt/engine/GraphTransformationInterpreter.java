@@ -2,6 +2,8 @@ package org.emoflon.ibex.gt.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,6 +45,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * The resource set containing the model file.
 	 */
 	private ResourceSet model;
+
+	/**
+	 * The matches.
+	 */
+	private Map<String, List<IMatch>> matches = new HashMap<String, List<IMatch>>();
 
 	/**
 	 * Creates a new GraphTransformationInterpreter.
@@ -89,9 +96,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		EObject resourceContent = ibexPatternResource.getContents().get(0);
 		Objects.requireNonNull("Resource must not be empty!");
 		if (resourceContent instanceof IBeXPatternSet) {
+			this.engine.initialise(this.model.getPackageRegistry(), this);
+
 			// Transform into patterns of the concrete engine.
 			this.engine.initPatterns((IBeXPatternSet) resourceContent);
 			this.patternSetLoaded = true;
+
+			this.engine.monitor(this.model);
 		} else {
 			throw new IllegalArgumentException("Expecting a IBeXPatternSet root element!");
 		}
@@ -122,6 +133,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
+	 * Terminates the engine.
+	 */
+	public void terminate() {
+		this.engine.terminate();
+	}
+
+	/**
 	 * Executes the pattern.
 	 * 
 	 * @param patternName
@@ -141,8 +159,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return an {@link Optional} for the match
 	 */
 	public Optional<Map<String, EObject>> findAnyMatch(final String patternName) {
-		// TODO implement
-		return Optional.empty();
+		this.updateMatches();
+
+		if (!this.matches.containsKey(patternName) || this.matches.get(patternName).isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.of(this.convertMatch(this.matches.get(patternName).get(0)));
 	}
 
 	/**
@@ -153,17 +175,45 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return a {@link Collection} of matches
 	 */
 	public Collection<Map<String, EObject>> findMatches(final String patternName) {
-		// TODO implement
-		return new ArrayList<Map<String, EObject>>();
+		this.updateMatches();
+
+		ArrayList<Map<String, EObject>> matchesForPattern = new ArrayList<Map<String, EObject>>();
+		if (!this.matches.containsKey(patternName)) {
+			return matchesForPattern;
+		}
+		this.matches.get(patternName).forEach(match -> matchesForPattern.add(this.convertMatch(match)));
+		return matchesForPattern;
+	}
+
+	private Map<String, EObject> convertMatch(final IMatch match) {
+		HashMap<String, EObject> mapping = new HashMap<String, EObject>();
+		match.getParameterNames().forEach(p -> mapping.put(p, (EObject) match.get(p)));
+		return mapping;
+	}
+
+	/**
+	 * Trigger the engine to update the pattern network.
+	 */
+	private void updateMatches() {
+		this.engine.updateMatches();
 	}
 
 	@Override
 	public void addMatch(final IMatch match) {
-		// TODO Auto-generated method stub
+		String patternName = match.getPatternName();
+		if (!this.matches.containsKey(patternName)) {
+			this.matches.put(patternName, new ArrayList<IMatch>());
+		}
+		this.matches.get(patternName).add(match);
 	}
 
 	@Override
 	public void removeMatch(final IMatch match) {
-		// TODO Auto-generated method stub
+		String patternName = match.getPatternName();
+		if (this.matches.containsKey(patternName)) {
+			this.matches.get(patternName).remove(match);
+		} else {
+			throw new IllegalArgumentException("Cannot remove a match which was never added!");
+		}
 	}
 }
