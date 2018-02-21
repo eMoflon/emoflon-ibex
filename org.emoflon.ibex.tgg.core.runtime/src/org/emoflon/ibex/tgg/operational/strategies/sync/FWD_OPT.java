@@ -26,6 +26,16 @@ public abstract class FWD_OPT extends OPT {
 	}
 	
 	@Override
+	public void loadModels() throws IOException {
+		s = loadResource(projectPath + "/instances/src.xmi");
+		t = createResource(projectPath + "/instances/trg.xmi");
+		c = createResource(projectPath + "/instances/corr.xmi");
+		p = createResource(projectPath + "/instances/protocol.xmi");
+
+		EcoreUtil.resolveAll(rs);
+	}
+	
+	@Override
 	protected void wrapUp() {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
 		
@@ -105,7 +115,7 @@ public abstract class FWD_OPT extends OPT {
 		t.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
 		
 		// Copy and fix the model in the process
-		FixingCopier.fixAll(t, c);
+		FixingCopier.fixAll(t, c, "target");
 		
 		// Now save fixed models
 		t.save(null);

@@ -26,6 +26,16 @@ public abstract class BWD_OPT extends OPT {
 	}
 	
 	@Override
+	public void loadModels() throws IOException {
+		s = createResource(projectPath + "/instances/src.xmi");
+		t = loadResource(projectPath + "/instances/trg.xmi");
+		c = createResource(projectPath + "/instances/corr.xmi");
+		p = createResource(projectPath + "/instances/protocol.xmi");
+
+		EcoreUtil.resolveAll(rs);
+	}
+	
+	@Override
 	protected void wrapUp() {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
 		
@@ -105,7 +115,7 @@ public abstract class BWD_OPT extends OPT {
 		s.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
 		
 		// Copy and fix the model in the process
-		FixingCopier.fixAll(s, c);
+		FixingCopier.fixAll(s, c, "source");
 		
 		// Now save fixed models
 		s.save(null);
@@ -129,6 +139,6 @@ public abstract class BWD_OPT extends OPT {
 	@Override
 	public void loadTGG() throws IOException {
 		super.loadTGG();
-		relaxReferences(options.tgg().getTrg());
+		relaxReferences(options.tgg().getSrc());
 	}
 }

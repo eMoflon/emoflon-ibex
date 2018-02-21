@@ -17,7 +17,9 @@ public class FixingCopier extends Copier {
 
 	private static final long serialVersionUID = 1L;
 
-	public static void fixAll(Resource t, Resource c) {
+	public static void fixAll(Resource t, Resource c, String structuralFeature) {
+		// NOTE: The variables are named according to their role for forward transformation.
+		// For backward transformation, flip source and target!
 		
 		Collection<EObject> trgObjects = t.getContents();
 		Collection<EObject> corrObjects = c.getContents();
@@ -25,30 +27,23 @@ public class FixingCopier extends Copier {
 		FixingCopier copier = new FixingCopier();
 		Collection<EObject> trgResult = new ArrayList<>();
 		Collection<EObject> corrResult = new ArrayList<>();
-		
-		//HashMap<EObject,EObject> originalToCopy = new HashMap<EObject, EObject>();
 
 		// Collect new target objects
 		for (EObject tOld : trgObjects) {
 			if (!copier.containsKey(tOld)) {
 				EObject tNew = copier.copy(tOld);
 				trgResult.add(tNew);
-				//originalToCopy.put(tOld, tNew);
 			}
 		}
 
 		// Change correspondences to new target objects
 		for (EObject cOld : corrObjects) {
 			if (!copier.containsKey(cOld)) {
-				EStructuralFeature trgFeature = cOld.eClass().getEStructuralFeature("target");
+				EStructuralFeature trgFeature = cOld.eClass().getEStructuralFeature(structuralFeature);
 				EObject tOld = (EObject)cOld.eGet(trgFeature);
 				EObject tNew = copier.get(tOld);
-				
-				EStructuralFeature srcFeature = cOld.eClass().getEStructuralFeature("source");
 			
-				//EObject cNew = copier.copy(cOld);
 				cOld.eSet(trgFeature, tNew);
-				//cNew.eSet(srcFeature, sOld);
 				corrResult.add(cOld);
 			}
 		}

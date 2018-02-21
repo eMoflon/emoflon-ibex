@@ -13,6 +13,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDFusedPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDOptBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDFusedPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
@@ -53,6 +54,7 @@ public class BlackPatternCompiler {
 			factory.createBlackPattern(FWDBlackPattern.class);
 			factory.createBlackPattern(BWDBlackPattern.class);
 			factory.createBlackPattern(FWDOptBlackPattern.class);
+			factory.createBlackPattern(BWDOptBlackPattern.class);
 			if (rule instanceof TGGComplementRule) {
 				factory.createBlackPattern(BWDFusedPattern.class);
 				factory.createBlackPattern(FWDFusedPattern.class);
