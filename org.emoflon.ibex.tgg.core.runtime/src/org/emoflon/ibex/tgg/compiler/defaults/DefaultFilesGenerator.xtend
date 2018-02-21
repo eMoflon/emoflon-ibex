@@ -105,6 +105,7 @@ class DefaultFilesGenerator {
 				private static IbexOptions createIbexOptions() {
 						IbexOptions options = new IbexOptions();
 						options.projectName("«projectName»");
+						options.projectPath("«projectName»");
 						options.debug(false);
 						options.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
 						return options;
