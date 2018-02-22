@@ -137,7 +137,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 	private void processComplementRuleMatch(IMatch match, HashMap<String, Integer> complementRulesBounds) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
+		TGGComplementRule rule = (TGGComplementRule) getRule(ruleName).get();
 
 		if(rule.isBounded()) {
 			processOperationalRuleMatch(ruleName, match);
@@ -186,11 +186,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 		
 		complementRulesBounds.keySet().stream()
         	.forEach( name -> {
-        		if(((TGGComplementRule) getRule(name)).isBounded()) {
+        		if((getComplementRule(name).get()).isBounded()) {
         			processBoundedRuleLimits(name, edgesToBeCreated);
         		}
         		else {
-        		getRelevantEdges(((TGGComplementRule) getRule(name))).stream()
+        		getRelevantEdges(getComplementRule(name).get()).stream()
         		.forEach( e -> {
         			if(! edgesToBeCreated.containsKey(e.getType())) {
         				edgesToBeCreated.put(e.getType(), complementRulesBounds.get(name));
@@ -210,7 +210,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 		//find all matches for bounded rule collected by operational match container
 		int number = (int) findAllComplementRuleMatches().stream()
 				.filter(m -> m.getPatternName().contains(name)).count();
-		getRelevantEdges(((TGGComplementRule) getRule(name))).stream()
+		getRelevantEdges(getComplementRule(name).get()).stream()
 		.forEach( e -> {edgesToBeCreated.put(e.getType(), number);});
 	}
 

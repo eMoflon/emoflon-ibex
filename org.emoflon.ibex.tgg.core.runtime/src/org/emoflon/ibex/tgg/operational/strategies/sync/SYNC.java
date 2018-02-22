@@ -174,7 +174,7 @@ public abstract class SYNC extends OperationalStrategy {
 		if (isComplementMatch(ruleName)) {
 			// complement protocol has to have same ID as its kernel protocol
 			TGGRuleApplication kernelProtocolNode = (TGGRuleApplication) comatch.get(ConsistencyPattern
-					.getProtocolNodeName(((TGGComplementRule) getRule(ruleName)).getKernel().getName()));
+					.getProtocolNodeName(getComplementRule(ruleName).get().getKernel().getName()));
 			localCounter = protocolNodeToID.get(kernelProtocolNode);
 		} else {
 			idCounter++;
@@ -203,7 +203,7 @@ public abstract class SYNC extends OperationalStrategy {
 			return false;
 		}
 
-		TGGComplementRule cr = (TGGComplementRule) getRule(ruleName);
+		TGGComplementRule cr = getComplementRule(ruleName).get();
 		if (!cr.isBounded())
 			return true;
 

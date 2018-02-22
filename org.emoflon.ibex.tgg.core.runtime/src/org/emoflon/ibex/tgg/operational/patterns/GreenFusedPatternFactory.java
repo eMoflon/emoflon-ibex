@@ -98,9 +98,23 @@ public class GreenFusedPatternFactory extends GreenPatternFactory {
 		if(isFWDFusedPattern(patternName))
 			return createGreenPattern(FWDFusedGreenPattern.class);
 		
+		if(isBWDOptFusedPattern(patternName))
+			return createGreenPattern(BWDOptFusedGreenPattern.class);
+		
+		if(isFWDOptFusedPattern(patternName))
+			return createGreenPattern(FWDOptFusedGreenPattern.class);
+		
 		return createGreenPattern(EmptyGreenPattern.class);
 	}
 	
+	private boolean isFWDOptFusedPattern(String patternName) {
+		return MAUtil.isFusedPatternMatch(patternName) && patternName.endsWith(PatternSuffixes.FWD_OPT);
+	}
+
+	private boolean isBWDOptFusedPattern(String patternName) {
+		return MAUtil.isFusedPatternMatch(patternName) && patternName.endsWith(PatternSuffixes.BWD_OPT);
+	}
+
 	private boolean isFWDFusedPattern(String patternName) {
 		return MAUtil.isFusedPatternMatch(patternName) && patternName.endsWith(PatternSuffixes.FWD);
 	}

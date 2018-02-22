@@ -246,6 +246,31 @@ class DefaultFilesGenerator {
 			'''
 		)	
 	}
+	
+	static def generateBWDOptAppFile(String projectName, String fileName, String engine, String additionalImports){
+		return generateBasicStructure(
+			'''
+			import org.emoflon.ibex.tgg.operational.strategies.sync.BWD_OPT;
+			«additionalImports»
+			''',
+			fileName,
+			"BWD_OPT",
+			engine,
+			projectName,
+			'''
+			«fileName» bwd_opt = new «fileName»();
+			
+			logger.info("Starting BWD_OPT");
+			long tic = System.currentTimeMillis();
+			bwd_opt.run();
+			long toc = System.currentTimeMillis();
+			logger.info("Completed BWD_OPT in: " + (toc - tic) + " ms");
+
+			bwd_opt.saveModels();
+			bwd_opt.terminate();
+			'''
+		)	
+	}
 		
 	def static generateMetamodelRegistration() {
 		'''

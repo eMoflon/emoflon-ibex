@@ -14,15 +14,9 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomKernelMatchUpdatePolicy;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
 import gnu.trove.set.hash.TIntHashSet;
-import gurobi.GRB;
-import gurobi.GRBEnv;
-import gurobi.GRBException;
-import gurobi.GRBModel;
-import gurobi.GRBVar;
 
 public abstract class CO extends CC {
 	
@@ -92,47 +86,6 @@ public abstract class CO extends CC {
 		handleBundles(comatch, ruleName);
 
 		idCounter++;
-	}
-		
-	private int[] chooseTGGRuleApplications() {
-		try {
-			GRBEnv env = new GRBEnv("Gurobi_ILP.log");
-			GRBModel model = new GRBModel(env);
-
-			TIntObjectHashMap<GRBVar> gurobiVariables = defineGurobiVariables(model);
-			
-			defineGurobiImplications(model, gurobiVariables);
-			
-			defineGurobiExclusions(model, gurobiVariables);
-
-			defineGurobiObjective(model, gurobiVariables);
-
-			model.optimize();
-
-			int[] result = new int[idToMatch.size()];
-
-			idToMatch.keySet().forEach(v -> {
-				try {
-					if (gurobiVariables.get(v).get(GRB.DoubleAttr.X) > 0)
-						result[v - 1] = v;
-					else
-						result[v - 1] = -v;
-				} catch (GRBException e) {
-					e.printStackTrace();
-				}
-				return true;
-			});
-
-			env.dispose();
-			model.dispose();
-
-			return result;
-
-		} catch (GRBException e) {
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 	
 	@Override

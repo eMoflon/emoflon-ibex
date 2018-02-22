@@ -118,8 +118,10 @@ public class ConsistencyPattern extends IbexBasePattern {
 	}
 	
 	public static String getProtocolNodeName(String ruleName) {
-		return ruleName + "_eMoflon_ProtocolNode";
+		return ruleName + protocolNodeSuffix;
 	}
+	
+	public static final String protocolNodeSuffix = "_eMoflon_ProtocolNode";
 
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {

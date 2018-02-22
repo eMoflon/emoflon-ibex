@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -17,36 +18,38 @@ public class FixingCopier extends Copier {
 
 	private static final long serialVersionUID = 1L;
 
-	public static void fixAll(Resource t, Resource c) {
+	public static void fixAll(Resource t, Resource c, String structuralFeature) {
+		// NOTE: The variables are named according to their role for forward transformation.
+		// For backward transformation, flip source and target!
 		
 		Collection<EObject> trgObjects = t.getContents();
 		Collection<EObject> corrObjects = c.getContents();
 		
 		FixingCopier copier = new FixingCopier();
-		Collection<EObject> trgResult = new ArrayList<>();
-		Collection<EObject> corrResult = new ArrayList<>();
-		
-		// Collect new target objects
-		for (EObject tOld : trgObjects) {
-			if (!copier.containsKey(tOld)) {
-				EObject tNew = copier.copy(tOld);
-				trgResult.add(tNew);
-				//originalToCopy.put(tOld, tNew);
-			}
-		}
 
+		// Collect new target objects
+		copier.copyAll(trgObjects);
+				
 		// Change correspondences to new target objects
+		Collection<EObject> corrResult = new ArrayList<>();
 		for (EObject cOld : corrObjects) {
 			if (!copier.containsKey(cOld)) {
-				EStructuralFeature trgFeature = cOld.eClass().getEStructuralFeature("target");
+				EStructuralFeature trgFeature = cOld.eClass().getEStructuralFeature(structuralFeature);
 				EObject tOld = (EObject)cOld.eGet(trgFeature);
-				EObject tNew = copier.get(tOld);	
+				EObject tNew = copier.get(tOld);
+			
 				cOld.eSet(trgFeature, tNew);
 				corrResult.add(cOld);
 			}
 		}
 		
+		copier.copyContainments();
 		copier.copyReferences();
+		
+		Collection<EObject> trgResult = copier.values()
+				.stream()
+				.filter(o -> o.eContainer() == null)
+				.collect(Collectors.toList());
 		
 		t.getContents().clear();
 		t.getContents().addAll(trgResult);		
@@ -54,28 +57,38 @@ public class FixingCopier extends Copier {
 		c.getContents().addAll(corrResult);
 	}
 
+	private Collection<Runnable> copyContainments = new ArrayList<Runnable>();
+	
+	private void copyContainments() {
+		copyContainments.forEach(r -> r.run());
+	}
+
 	@Override
 	protected void copyContainment(EReference eReference, EObject eObject, EObject copyEObject) {
-		int dynamicFeatureID = eObject.eClass().getFeatureID(eReference);
-		if (eObject.eIsSet(eReference)) {
-			EStructuralFeature.Setting setting = getTarget(eReference, eObject, copyEObject);
-			if (setting != null) {
-				DynamicEObjectImpl dynObj = ((DynamicEObjectImpl) eObject);
-				Object value = dynObj.dynamicGet(dynamicFeatureID);
+		copyContainments.add(() -> {
+			int dynamicFeatureID = eObject.eClass().getFeatureID(eReference);
+			if (eObject.eIsSet(eReference)) {
+				EStructuralFeature.Setting setting = getTarget(eReference, eObject, copyEObject);
+				if (setting != null) {
+					DynamicEObjectImpl dynObj = ((DynamicEObjectImpl) eObject);
+					Object value = dynObj.dynamicGet(dynamicFeatureID);
 
-				if (eReference.isMany()) {
-					@SuppressWarnings("unchecked")
-					List<EObject> target = (List<EObject>) value;
-					setting.set(copyAll(target));
-				} else {
-					// Fixing has to be done here as value is a list with exactly one element!
-					@SuppressWarnings("unchecked")
-					List<EObject> target = (List<EObject>) value;
-					if(!target.isEmpty())
-						setting.set(copy((EObject) target.get(0)));
+					if (eReference.isMany()) {
+						@SuppressWarnings("unchecked")
+						List<EObject> target = (List<EObject>) value;
+						setting.set(target.stream()
+										  .map(this::get)
+										  .collect(Collectors.toList()));
+					} else {
+						// Fixing has to be done here as value is a list with exactly one element!
+						@SuppressWarnings("unchecked")
+						List<EObject> target = (List<EObject>) value;
+						if(!target.isEmpty())
+							setting.set(get((EObject) target.get(0)));
+					}
 				}
 			}
-		}
+		});
 	}
 
 	@Override

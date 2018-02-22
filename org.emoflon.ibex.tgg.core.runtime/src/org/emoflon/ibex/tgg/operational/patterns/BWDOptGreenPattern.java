@@ -9,30 +9,30 @@ import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class FWDOptGreenPattern extends IbexGreenPattern {
+public class BWDOptGreenPattern extends IbexGreenPattern {
 
-	public FWDOptGreenPattern(GreenPatternFactory factory) {
+	public BWDOptGreenPattern(GreenPatternFactory factory) {
 		super(factory);
 	}
 
 	@Override
 	public Collection<TGGRuleNode> getSrcNodes() {
-		return Collections.emptyList();
+		return factory.getGreenSrcNodesInRule();
 	}
 
 	@Override
 	public Collection<TGGRuleEdge> getSrcEdges() {
-		return Collections.emptyList();
+		return factory.getGreenSrcEdgesInRule();
 	}
 
 	@Override
 	public Collection<TGGRuleNode> getTrgNodes() {
-		return factory.getGreenTrgNodesInRule();
+		return Collections.emptyList();
 	}
 
 	@Override
 	public Collection<TGGRuleEdge> getTrgEdges() {
-		return factory.getGreenTrgEdgesInRule();
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -42,6 +42,6 @@ public class FWDOptGreenPattern extends IbexGreenPattern {
 	
 	@Override
 	public boolean isToBeIgnored(IMatch match) {
-		return !factory.isComplementRule() && factory.getGreenSrcNodesInRule().isEmpty() && factory.getGreenSrcEdgesInRule().isEmpty();
+		return !factory.isComplementRule() && factory.getGreenTrgNodesInRule().isEmpty() && factory.getGreenTrgEdgesInRule().isEmpty();
 	}
 }

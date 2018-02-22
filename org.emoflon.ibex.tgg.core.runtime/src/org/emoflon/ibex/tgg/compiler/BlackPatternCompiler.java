@@ -13,8 +13,11 @@ import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDFusedPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDOptBlackPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDOptFusedPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDFusedPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptBlackPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptFusedPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDBlackPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -52,12 +55,19 @@ public class BlackPatternCompiler {
 			// Synchronisation
 			factory.createBlackPattern(FWDBlackPattern.class);
 			factory.createBlackPattern(BWDBlackPattern.class);
-			factory.createBlackPattern(FWDOptBlackPattern.class);
 			if (rule instanceof TGGComplementRule) {
 				factory.createBlackPattern(BWDFusedPattern.class);
 				factory.createBlackPattern(FWDFusedPattern.class);
 			}
 			factory.createBlackPattern(ConsistencyPattern.class);
+			
+			// ILP supported transformation
+			factory.createBlackPattern(FWDOptBlackPattern.class);
+			factory.createBlackPattern(BWDOptBlackPattern.class);
+			if (rule instanceof TGGComplementRule) {
+				factory.createBlackPattern(BWDOptFusedPattern.class);
+				factory.createBlackPattern(FWDOptFusedPattern.class);
+			}
 			
 			ruleToPatterns.put(rule.getName(), factory.getPatterns());
 		}
