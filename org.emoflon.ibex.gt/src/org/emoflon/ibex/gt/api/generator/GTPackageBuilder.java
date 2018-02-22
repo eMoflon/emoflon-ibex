@@ -245,9 +245,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			this.fileGenerator.generateRuleJavaFile(rulesPackage, gtRule);
 		});
 
-		String patternUri = "../" + this.project.getName() + "/src-gen/" + this.path.toString()
-				+ "/api/ibex-patterns.xmi";
-		this.fileGenerator.generateAPIJavaFile(this.apiPackage, patternUri);
+		String patternPath = this.project.getName() + "/src-gen/" + this.path.toString() + "/api/ibex-patterns.xmi";
+		this.fileGenerator.generateAPIJavaFile(this.apiPackage, patternPath);
 	}
 
 	/**
