@@ -403,10 +403,9 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	/***** Methods for reacting to broken matches of consistency patterns ******/
-
+	
 	public TGGRuleApplication getRuleApplicationNode(IMatch match) {
-		return (TGGRuleApplication) match
-				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
+		return (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
 	}
 
 	public void addBrokenMatch(IMatch match) {
@@ -473,9 +472,14 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return options.tgg();
 	}
 
-	protected TGGRule getRule(String ruleName) {
-		TGGRule rule = getTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findFirst().get();
-		return rule;
+	protected Optional<TGGRule> getRule(String ruleName) {
+		return getTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findFirst();
+	}
+	
+	protected Optional<TGGComplementRule> getComplementRule(String ruleName){
+		return getRule(ruleName)
+				.filter(TGGComplementRule.class::isInstance)
+				.map(TGGComplementRule.class::cast);
 	}
 
 	protected boolean isKernelMatch(String kernelName) {

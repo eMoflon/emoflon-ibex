@@ -3,15 +3,16 @@ package org.emoflon.ibex.tgg.operational.patterns;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDOptBlackPattern;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class BWDOptGreenPattern extends IbexGreenPattern {
+public class BWDOptFusedGreenPattern extends FusedGreenPattern {
 
-	public BWDOptGreenPattern(GreenPatternFactory factory) {
+	public BWDOptFusedGreenPattern(GreenFusedPatternFactory factory) {
 		super(factory);
 	}
 
@@ -41,7 +42,27 @@ public class BWDOptGreenPattern extends IbexGreenPattern {
 	}
 	
 	@Override
+	public Collection<TGGRuleEdge> getEdgesMarkedByPattern() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public Collection<TGGRuleEdge> getMarkedContextEdges() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public Collection<TGGRuleNode> getNodesMarkedByPattern() {
+		return Collections.emptyList();
+	}
+	
+	@Override
 	public boolean isToBeIgnored(IMatch match) {
-		return !factory.isComplementRule() && factory.getGreenTrgNodesInRule().isEmpty() && factory.getGreenTrgEdgesInRule().isEmpty();
+		return factory.getGreenTrgNodesInRule().isEmpty() && factory.getGreenTrgEdgesInRule().isEmpty();
+	}
+	
+	@Override
+	public void createMarkers(String ruleName, IMatch match) {
+		createMarkers(ruleName, match, BWDOptBlackPattern::getName);
 	}
 }

@@ -36,7 +36,7 @@ public class FWDOptBlackPattern extends BasicSyncPattern {
 	}
 
 	protected void initialise(TGGRule rule) {
-		String name = rule.getName() + PatternSuffixes.FWD_OPT;
+		String name = getName(rule.getName());
 
 		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
 				   .filter(this::isSignatureNode)

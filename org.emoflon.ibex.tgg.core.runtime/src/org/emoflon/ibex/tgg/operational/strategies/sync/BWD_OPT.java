@@ -49,7 +49,7 @@ public abstract class BWD_OPT extends OPT {
 					for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
 						objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
 					
-					objectsToDelete.add(getRuleApplicationNode(comatch));
+					objectsToDelete.addAll(getRuleApplicationNodes(comatch));
 				}
 		  }
 		  
@@ -127,8 +127,7 @@ public abstract class BWD_OPT extends OPT {
 	}
 	
 	@Override
-	public void run() throws IOException {	
- 
+	public void run() throws IOException {
 		do {
 			blackInterpreter.updateMatches();
 		} while (processOneOperationalRuleMatch());

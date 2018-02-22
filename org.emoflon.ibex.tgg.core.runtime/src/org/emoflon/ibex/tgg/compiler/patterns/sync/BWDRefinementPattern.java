@@ -44,6 +44,4 @@ public class BWDRefinementPattern extends BWDBlackPattern {
 			embedKernelConsistencyPatternNodes((TGGComplementRule)rule, this);
 		}
 	}
-	
-
 }

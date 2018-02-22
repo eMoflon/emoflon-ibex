@@ -49,14 +49,14 @@ public abstract class FWD_OPT extends OPT {
 					for (TGGRuleNode createdTrgNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
 						objectsToDelete.add((EObject) comatch.get(createdTrgNode.getName()));
 					
-					objectsToDelete.add(getRuleApplicationNode(comatch));
+					objectsToDelete.addAll(getRuleApplicationNodes(comatch));
 				}
 		  }
 		  
 		  EcoreUtil.deleteAll(objectsToDelete, true);
 		  consistencyReporter.initSrc(this);
 	}
-	
+
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.FWD_OPT);

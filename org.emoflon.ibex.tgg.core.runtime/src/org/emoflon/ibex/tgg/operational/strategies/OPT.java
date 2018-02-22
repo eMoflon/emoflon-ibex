@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -15,6 +16,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
@@ -41,7 +43,6 @@ import gurobi.GRBException;
 import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
-import language.TGGComplementRule;
 import language.TGGRuleNode;
 
 public abstract class OPT extends OperationalStrategy {
@@ -377,7 +378,7 @@ public abstract class OPT extends OperationalStrategy {
 	}
 	
 	protected void handleBundles(IMatch comatch, String ruleName) {
-		if(!(getRule(ruleName) instanceof TGGComplementRule)) {
+		if(!getComplementRule(ruleName).isPresent()) {
 			Bundle appliedBundle = new Bundle(idCounter);
 			appliedBundles.add(appliedBundle);
 			lastAppliedBundle = appliedBundle;
@@ -427,5 +428,14 @@ public abstract class OPT extends OperationalStrategy {
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
 		return result;
+	}
+	
+	protected Collection<EObject> getRuleApplicationNodes(IMatch comatch) {
+		return comatch.getParameterNames()
+				.stream()
+				.filter(p -> p.endsWith(ConsistencyPattern.protocolNodeSuffix))
+				.map(comatch::get)
+				.map(EObject.class::cast)
+				.collect(Collectors.toList());
 	}
 }

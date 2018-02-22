@@ -117,7 +117,7 @@ public abstract class CC extends OPT {
 	//FIXME:[Milica] Check if maximality need to be done for edges as well
 	private void handleMaximality(IMatch match, Set<IMatch> contextRuleMatches, int kernelMatchID) {
 		String ruleName = removeAllSuffixes(match.getPatternName());
-		TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
+		TGGComplementRule rule = getComplementRule(ruleName).get();
 		if(rule.isBounded()) {
 		//check if the complement rule was applied. If not, mark its kernel as invalid.
 			THashSet<EObject> contextNodes = getGenContextNodes(match);
@@ -130,7 +130,7 @@ public abstract class CC extends OPT {
 	private void applyMatchAndHandleUniqueness(IMatch match, THashMap<Integer, THashSet<EObject>> contextNodesMatches) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		if (processOperationalRuleMatch(ruleName, match) != null) {
-			TGGComplementRule rule = (TGGComplementRule) getRule(ruleName);
+			TGGComplementRule rule = getComplementRule(ruleName).get();
 			if(rule.isBounded())
 				findDuplicatedMatches(idToMatch.size(), contextNodesMatches);
 		}
