@@ -41,7 +41,7 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 					match,
 					factory.getOptions().constraintProvider());
 		} catch (Exception e) {
-			throw new IllegalStateException("Unable to sort attribute constraints for " + this.getClass().getName() + ", " + e.getMessage(), e);
+			throw new IllegalStateException("Unable to sort attribute constraints for " + match.getPatternName() + ", " + e.getMessage(), e);
 		}
 	}
 	
