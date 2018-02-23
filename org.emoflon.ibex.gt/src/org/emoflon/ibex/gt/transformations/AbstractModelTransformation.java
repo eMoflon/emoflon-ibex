@@ -46,10 +46,19 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	/**
 	 * Returns the errors occurred during the transformation.
 	 * 
-	 * @return the errors occurred during the transformation
+	 * @return the error messages
 	 */
-	protected final List<String> getErrors() {
+	public final List<String> getErrors() {
 		return this.errors;
+	}
+
+	/**
+	 * Returns the number of errors occurred during the transformation.
+	 * 
+	 * @return the number of errors
+	 */
+	public final int countErrors() {
+		return this.errors.size();
 	}
 
 	/**
@@ -57,7 +66,7 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	 * 
 	 * @return <code>false</code> if no errors occurred during the transformation
 	 */
-	protected final boolean hasErrors() {
+	public final boolean hasErrors() {
 		return !this.errors.isEmpty();
 	}
 }
