@@ -79,7 +79,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 				.sorted((n1, n2) -> n1.getName().compareTo(n2.getName())) // alphabetically by name
 				.forEach(gtNode -> {
 					IBeXNode ibexNode = this.transformNode(gtNode);
-					if (gtNode.getName().startsWith("_")) {
+					if (gtNode.isLocal()) {
 						ibexPattern.getLocalNodes().add(ibexNode);
 					} else {
 						ibexPattern.getSignatureNodes().add(ibexNode);

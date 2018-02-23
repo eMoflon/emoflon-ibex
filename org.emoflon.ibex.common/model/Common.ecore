@@ -13,13 +13,13 @@
         eOpposite="#//IBeXNode/outgoingEdges"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetNode" eType="#//IBeXNode"
         eOpposite="#//IBeXNode/incomingEdges"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EReference"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBexNamedElement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="Any IBeX element which has a name should inherit form this class."/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXNode" eSuperTypes="#//IBexNamedElement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -29,7 +29,7 @@
         eType="#//IBeXEdge" eOpposite="#//IBeXEdge/targetNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
         eType="#//IBeXEdge" eOpposite="#//IBeXEdge/sourceNode"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EClass"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXNodePair">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -64,7 +64,7 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="An invocation of an IBeXPattern. Invocations can be positive or negative."/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="positive" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="positive" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="invokedBy" eType="#//IBeXPattern"
         eOpposite="#//IBeXPattern/invocations"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="invokedPattern" eType="#//IBeXPattern"/>

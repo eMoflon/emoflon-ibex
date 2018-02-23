@@ -189,6 +189,7 @@ class JavaFileGenerator {
 		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch')
 		imports.add('''«this.packageName».api.rules.«getRuleClassName(rule)»''')
 
+		val signatureNodes = rule.graph.nodes.filter[!it.local]
 		val matchSourceCode = '''
 			package «this.packageName».api.matches;
 			
@@ -198,7 +199,7 @@ class JavaFileGenerator {
 			 * A match for the rule «rule.name»().
 			 */
 			public class «getMatchClassName(rule)» extends GraphTransformationMatch<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
-				«FOR node : rule.graph.nodes»
+				«FOR node : signatureNodes»
 					private «getVariableType(node)» «getVariableName(node)»;
 				«ENDFOR»
 			
@@ -210,11 +211,11 @@ class JavaFileGenerator {
 				 */
 				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» rule, final Map<String, EObject> map) {
 					super(rule);
-					«FOR node : rule.graph.nodes»
+					«FOR node : signatureNodes»
 						this.«getVariableName(node)» = («getVariableType(node)») map.get("«node.name»");
 					«ENDFOR»
 				}
-			«FOR node : rule.graph.nodes»
+			«FOR node : signatureNodes»
 				
 					/**
 					 * Returns the «node.name».
@@ -229,7 +230,7 @@ class JavaFileGenerator {
 				@Override
 				public Map<String, EObject> toMap() {
 					Map<String, EObject> map = new HashMap<String, EObject>();
-					«FOR node : rule.graph.nodes»
+					«FOR node : signatureNodes»
 						map.put("«node.name»", this.«getVariableName(node)»);
 					«ENDFOR»
 					return map;
@@ -305,7 +306,7 @@ class JavaFileGenerator {
 	 */
 	private def getImportsForTypes(GTRule rule) {
 		val imports = newHashSet()
-		val types = rule.graph.nodes.map[it.type].toSet
+		val types = rule.graph.nodes.filter[!it.local].map[it.type].toSet
 		types.forEach [
 			val typePackageName = this.eClassNameToMetaModelName.get(it.name)
 			if (typePackageName !== null) {

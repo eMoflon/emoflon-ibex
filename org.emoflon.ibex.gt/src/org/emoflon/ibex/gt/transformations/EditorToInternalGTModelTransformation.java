@@ -81,6 +81,7 @@ public class EditorToInternalGTModelTransformation
 		GTNode gtNode = GTLanguageFactory.eINSTANCE.createGTNode();
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
+		gtNode.setLocal(editorNode.getName().startsWith("_"));
 		return gtNode;
 	}
 
