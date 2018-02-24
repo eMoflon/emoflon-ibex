@@ -22,9 +22,6 @@ import GTLanguage.GTRuleSet;
  * Transformation from the editor file (which conforms to the GT.ecore
  * meta-model generated from the Xtext specification) to the internal GT model
  * (which conforms to the GTLanguage.ecore meta-model).
- * 
- * @author Patrick Robrecht
- * @version 0.1
  */
 public class EditorToInternalGTModelTransformation
 		extends AbstractModelTransformation<GraphTransformationFile, GTRuleSet> {
@@ -84,6 +81,7 @@ public class EditorToInternalGTModelTransformation
 		GTNode gtNode = GTLanguageFactory.eINSTANCE.createGTNode();
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
+		gtNode.setLocal(editorNode.getName().startsWith("_"));
 		return gtNode;
 	}
 

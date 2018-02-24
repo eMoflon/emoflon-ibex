@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -47,9 +48,30 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	private ResourceSet model;
 
 	/**
-	 * The matches.
+	 * The matches (key: pattern name, value: list of matches).
 	 */
 	private Map<String, List<IMatch>> matches = new HashMap<String, List<IMatch>>();
+
+	/**
+	 * Subscriptions for notification of new matches (key: pattern name, value: list
+	 * of consumers).
+	 */
+	private Map<String, List<Consumer<IMatch>>> subscriptionsForAppearingMatchesOfPattern //
+			= new HashMap<String, List<Consumer<IMatch>>>();
+
+	/**
+	 * Subscriptions for notification of disappearing matches (key: pattern name,
+	 * value: list of consumers).
+	 */
+	private Map<String, List<Consumer<IMatch>>> subscriptionsForDisappearingMatchesOfPattern //
+			= new HashMap<String, List<Consumer<IMatch>>>();
+
+	/**
+	 * Subscriptions for notification of disappearing matches (key: match, value:
+	 * list of consumers).
+	 */
+	private Map<IMatch, List<Consumer<IMatch>>> subscriptionsForDisappearingMatches //
+			= new HashMap<IMatch, List<Consumer<IMatch>>>();
 
 	/**
 	 * Creates a new GraphTransformationInterpreter.
@@ -147,7 +169,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @param match
 	 *            the match to execute the pattern on
 	 */
-	public void execute(final String patternName, final Map<String, EObject> match) {
+	public void execute(final String patternName, final IMatch match) {
 		// TODO implement
 	}
 
@@ -158,13 +180,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the name of the pattern
 	 * @return an {@link Optional} for the match
 	 */
-	public Optional<Map<String, EObject>> findAnyMatch(final String patternName) {
+	public Optional<IMatch> findAnyMatch(final String patternName) {
 		this.updateMatches();
 
 		if (!this.matches.containsKey(patternName) || this.matches.get(patternName).isEmpty()) {
 			return Optional.empty();
 		}
-		return Optional.of(this.convertMatch(this.matches.get(patternName).get(0)));
+		return Optional.of(this.matches.get(patternName).get(0));
 	}
 
 	/**
@@ -174,27 +196,106 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the name of the pattern
 	 * @return a {@link Collection} of matches
 	 */
-	public Collection<Map<String, EObject>> findMatches(final String patternName) {
+	public Collection<IMatch> findMatches(final String patternName) {
 		this.updateMatches();
 
-		ArrayList<Map<String, EObject>> matchesForPattern = new ArrayList<Map<String, EObject>>();
 		if (!this.matches.containsKey(patternName)) {
-			return matchesForPattern;
+			return new ArrayList<IMatch>();
 		}
-		this.matches.get(patternName).forEach(match -> matchesForPattern.add(this.convertMatch(match)));
-		return matchesForPattern;
+		return this.matches.get(patternName);
 	}
 
-	private Map<String, EObject> convertMatch(final IMatch match) {
-		HashMap<String, EObject> mapping = new HashMap<String, EObject>();
-		match.getParameterNames().forEach(p -> mapping.put(p, (EObject) match.get(p)));
-		return mapping;
+	/**
+	 * Subscribes notifications whenever a new match for the pattern is found.
+	 * 
+	 * @param patternName
+	 *            the name of the pattern
+	 * @param consumer
+	 *            the consumer to add
+	 */
+	public void subscribeAppearing(final String patternName, final Consumer<IMatch> consumer) {
+		if (!this.subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
+			this.subscriptionsForAppearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
+		}
+		this.subscriptionsForAppearingMatchesOfPattern.get(patternName).add(consumer);
+	}
+
+	/**
+	 * Unsubscribes the notifications for the given pattern and consumer.
+	 * 
+	 * @param patternName
+	 *            the name of the pattern
+	 * @param consumer
+	 *            the consumer to remove
+	 */
+	public void unsubscibeAppearing(final String patternName, final Consumer<IMatch> consumer) {
+		if (this.subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
+			this.subscriptionsForAppearingMatchesOfPattern.get(patternName).remove(consumer);
+		}
+	}
+
+	/**
+	 * Subscribes notifications whenever a match for the pattern disappears.
+	 * 
+	 * @param patternName
+	 *            the name of the pattern
+	 * @param consumer
+	 *            the consumer to add
+	 */
+	public void subscribeDisappearing(final String patternName, final Consumer<IMatch> consumer) {
+		if (!this.subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
+			this.subscriptionsForDisappearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
+		}
+		this.subscriptionsForDisappearingMatchesOfPattern.get(patternName).add(consumer);
+	}
+
+	/**
+	 * Unsubscribes the notifications for the given pattern and consumer.
+	 * 
+	 * @param patternName
+	 *            the name of the pattern
+	 * @param consumer
+	 *            the consumer to remove
+	 */
+	public void unsubscibeDisappearing(final String patternName, final Consumer<IMatch> consumer) {
+		if (this.subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
+			this.subscriptionsForDisappearingMatchesOfPattern.get(patternName).remove(consumer);
+		}
+	}
+
+	/**
+	 * Subscribes notifications whenever the given match disappears.
+	 * 
+	 * @param match
+	 *            the match
+	 * @param consumer
+	 *            the consumer to add
+	 */
+	public void subscribeMatchDisappears(final IMatch match, final Consumer<IMatch> consumer) {
+		if (!this.subscriptionsForDisappearingMatches.containsKey(match)) {
+			this.subscriptionsForDisappearingMatches.put(match, new ArrayList<Consumer<IMatch>>());
+		}
+		this.subscriptionsForDisappearingMatches.get(match).add(consumer);
+	}
+
+	/**
+	 * Unsubscribes notifications whenever the given match disappears.
+	 * 
+	 * @param match
+	 *            the match
+	 * @param consumer
+	 *            the consumer to add
+	 */
+	public void unsubscribeMatchDisappears(final IMatch match, final Consumer<IMatch> consumer) {
+		if (this.subscriptionsForDisappearingMatches.containsKey(match)) {
+			this.subscriptionsForDisappearingMatches.get(match).remove(consumer);
+		}
 	}
 
 	/**
 	 * Trigger the engine to update the pattern network.
 	 */
-	private void updateMatches() {
+	public void updateMatches() {
 		this.engine.updateMatches();
 	}
 
@@ -205,6 +306,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			this.matches.put(patternName, new ArrayList<IMatch>());
 		}
 		this.matches.get(patternName).add(match);
+
+		// Notify subscribers registered for all new matches of the pattern.
+		if (this.subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
+			this.subscriptionsForAppearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
+		}
 	}
 
 	@Override
@@ -212,6 +318,17 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		String patternName = match.getPatternName();
 		if (this.matches.containsKey(patternName)) {
 			this.matches.get(patternName).remove(match);
+
+			// Notify subscribers registered for all disappearing matches of the pattern.
+			if (this.subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
+				this.subscriptionsForDisappearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
+			}
+
+			// Notify subscribers registered for the disappearing match.
+			if (this.subscriptionsForDisappearingMatches.containsKey(match)) {
+				this.subscriptionsForDisappearingMatches.get(match).forEach(c -> c.accept(match));
+				this.subscriptionsForDisappearingMatches.remove(match);
+			}
 		} else {
 			throw new IllegalArgumentException("Cannot remove a match which was never added!");
 		}

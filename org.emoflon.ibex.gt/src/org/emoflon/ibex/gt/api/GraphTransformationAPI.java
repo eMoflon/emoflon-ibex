@@ -37,4 +37,11 @@ public abstract class GraphTransformationAPI {
 	public final ResourceSet getModel() {
 		return this.interpreter.getModel();
 	}
+
+	/**
+	 * Triggers an incremental update of the matches.
+	 */
+	public void updateMatches() {
+		this.interpreter.updateMatches();
+	}
 }

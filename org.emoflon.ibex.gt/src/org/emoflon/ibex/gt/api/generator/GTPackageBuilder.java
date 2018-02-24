@@ -159,6 +159,12 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			EditorToInternalGTModelTransformation transformation = new EditorToInternalGTModelTransformation();
 			GTRuleSet internalModel = transformation.transform(editorModel);
 			gtRules.addAll(internalModel.getRules());
+
+			if (transformation.hasErrors()) {
+				this.logError(String.format("%s errors during editor to internal model transformation of file %s",
+						transformation.countErrors(), gtFile.getName()));
+				transformation.getErrors().forEach(e -> this.logError(e));
+			}
 		});
 
 		// Save internal GT model.
@@ -171,6 +177,12 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		// Transform rules into IBeXPatterns.
 		InternalGTModelToIBeXPatternTransformation transformation = new InternalGTModelToIBeXPatternTransformation();
 		this.ibexPatternSet = transformation.transform(this.gtRuleSet);
+
+		if (transformation.hasErrors()) {
+			this.logError(String.format("%s errors during internal model to pattern transformation",
+					transformation.countErrors()));
+			transformation.getErrors().forEach(e -> this.logError(e));
+		}
 
 		// Save IBeXPatterns.
 		this.saveModelFile(this.apiPackage.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet);
@@ -254,6 +266,13 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private void log(final String message) {
 		Logger.getRootLogger().info(this.project.getName() + " - package " + this.packageName + ": " + message);
+	}
+
+	/**
+	 * Logs the error message on the console.
+	 */
+	private void logError(final String message) {
+		Logger.getRootLogger().error(this.project.getName() + " - package " + this.packageName + ": " + message);
 	}
 
 	/**
