@@ -1,8 +1,6 @@
 package org.emoflon.ibex.gt.api;
 
-import java.util.Map;
-
-import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.common.operational.IMatch;
 
 /**
  * This is the abstraction for all matches.
@@ -25,13 +23,21 @@ public abstract class GraphTransformationMatch<M extends GraphTransformationMatc
 	private R rule;
 
 	/**
+	 * The untyped match.
+	 */
+	private IMatch match;
+
+	/**
 	 * Creates a new Match for the given rule application.
 	 * 
 	 * @param rule
 	 *            the rule application
+	 * @param match
+	 *            the untyped match
 	 */
-	public GraphTransformationMatch(final R rule) {
+	public GraphTransformationMatch(final R rule, final IMatch match) {
 		this.rule = rule;
+		this.match = match;
 	}
 
 	/**
@@ -44,9 +50,11 @@ public abstract class GraphTransformationMatch<M extends GraphTransformationMatc
 	}
 
 	/**
-	 * Converts the match to a HashMap.
+	 * Returns the untyped {@link IMatch}.
 	 * 
-	 * @return the match as a HashMap
+	 * @return the untyped match
 	 */
-	public abstract Map<String, EObject> toMap();
+	public IMatch toIMatch() {
+		return this.match;
+	}
 }

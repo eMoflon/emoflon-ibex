@@ -1,9 +1,13 @@
 package org.emoflon.ibex.gt.api;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
@@ -24,19 +28,41 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	protected GraphTransformationInterpreter interpreter;
 
 	/**
+	 * The rule name
+	 */
+	private String ruleName;
+
+	/**
+	 * The mapping between consumers for typed and untyped matches.
+	 */
+	private Map<Consumer<M>, Consumer<IMatch>> consumers = new HashMap<Consumer<M>, Consumer<IMatch>>();
+
+	/**
 	 * Creates a new rule.
 	 * 
 	 * @param interpreter
 	 *            the interpreter
 	 */
-	public GraphTransformationRule(final GraphTransformationInterpreter interpreter) {
+	public GraphTransformationRule(final GraphTransformationInterpreter interpreter, final String ruleName) {
 		this.interpreter = interpreter;
+		this.ruleName = ruleName;
+	}
+
+	/**
+	 * Returns the name of the rule.
+	 * 
+	 * @return the rule name
+	 */
+	protected final String getRuleName() {
+		return this.ruleName;
 	}
 
 	/**
 	 * Executes the rule on the given match.
 	 */
-	public abstract void execute(final M match);
+	public final void execute(final M match) {
+		this.interpreter.execute(ruleName, match.toIMatch());
+	}
 
 	/**
 	 * Executes the rule on an arbitrary match.
@@ -65,14 +91,21 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * 
 	 * @return an {@link Optional} for the match
 	 */
-	public abstract Optional<M> findAnyMatch();
+	public final Optional<M> findAnyMatch() {
+		return this.interpreter.findAnyMatch(this.ruleName) //
+				.map(m -> this.convertMatch(m));
+	}
 
 	/**
 	 * Finds all matches for the rule.
 	 * 
 	 * @return the list of matches
 	 */
-	public abstract Collection<M> findMatches();
+	public final Collection<M> findMatches() {
+		return this.interpreter.findMatches(this.ruleName).stream() //
+				.map(m -> this.convertMatch(m)) //
+				.collect(Collectors.toList());
+	}
 
 	/**
 	 * Finds all matches for the rule.
@@ -101,4 +134,94 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	public final int countMatches() {
 		return this.findMatches().size();
 	}
+
+	/**
+	 * Subscribes notifications of all new matches found for the rule.
+	 * 
+	 * @param action
+	 *            the {@link Consumer} to notify
+	 */
+	public final void subscribeAppearing(final Consumer<M> action) {
+		this.interpreter.subscribeAppearing(this.ruleName, this.convertConsumer(action));
+	}
+
+	/**
+	 * Unsubscribes notifications of all new matches for the given {@link Consumer}.
+	 * 
+	 * @param action
+	 *            the {@link Consumer}
+	 */
+	public final void unsubscribeAppearing(final Consumer<M> action) {
+		if (this.consumers.containsKey(action)) {
+			this.interpreter.unsubscibeAppearing(this.ruleName, this.consumers.get(action));
+		} else {
+			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before");
+		}
+	}
+
+	/**
+	 * Subscribes notifications of all disappearing matches found for the rule.
+	 * 
+	 * @param action
+	 *            the {@link Consumer} to notify
+	 */
+	public final void subscribeDisappearing(final Consumer<M> action) {
+		this.interpreter.subscribeDisappearing(this.ruleName, this.convertConsumer(action));
+	}
+
+	/**
+	 * Unsubscribes notifications of all disappearing matches for the given
+	 * {@link Consumer}.
+	 * 
+	 * @param action
+	 *            the {@link Consumer}
+	 */
+	public final void unsubscribeDisappearing(final Consumer<M> action) {
+		if (this.consumers.containsKey(action)) {
+			this.interpreter.unsubscibeDisappearing(this.ruleName, this.consumers.get(action));
+		} else {
+			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before");
+		}
+	}
+
+	/**
+	 * Subscribe a notification when the given match disappears.
+	 * 
+	 * @param match
+	 *            the match to observe
+	 * @param action
+	 *            the {@link Consumer} to notify
+	 */
+	public final void whenMatchDisappears(final M match, final Consumer<M> action) {
+		this.interpreter.subscribeMatchDisappears(match.toIMatch(), this.convertConsumer(action));
+	}
+
+	/**
+	 * Converts the consumer of a typed match to a consumer of an untyped
+	 * {@link IMatch} which converts the match and calls the consumer of the typed
+	 * match afterwards.
+	 * 
+	 * @param action
+	 *            the {@link Consumer} of a typed match
+	 * @return the {@link IMatch} Consumer
+	 */
+	private Consumer<IMatch> convertConsumer(final Consumer<M> action) {
+		Consumer<IMatch> consumer = new Consumer<IMatch>() {
+			@Override
+			public void accept(IMatch m) {
+				action.accept(convertMatch(m));
+			}
+		};
+		this.consumers.put(action, consumer);
+		return consumer;
+	}
+
+	/**
+	 * Convert the untyped to a typed match.
+	 * 
+	 * @param match
+	 *            the untyped match
+	 * @return the typed match
+	 */
+	protected abstract M convertMatch(final IMatch match);
 }

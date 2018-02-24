@@ -183,9 +183,7 @@ class JavaFileGenerator {
 	 */
 	public def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = getImportsForTypes(rule)
-		imports.add('java.util.HashMap')
-		imports.add('java.util.Map')
-		imports.add('org.eclipse.emf.ecore.EObject')
+		imports.add('org.emoflon.ibex.common.operational.IMatch')
 		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch')
 		imports.add('''«this.packageName».api.rules.«getRuleClassName(rule)»''')
 
@@ -208,11 +206,13 @@ class JavaFileGenerator {
 				 * 
 				 * @param rule
 				 *            the rule
+				 * @param match
+				 *            the untyped match
 				 */
-				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» rule, final Map<String, EObject> map) {
-					super(rule);
+				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» rule, final IMatch match) {
+					super(rule, match);
 					«FOR node : signatureNodes»
-						this.«getVariableName(node)» = («getVariableType(node)») map.get("«node.name»");
+						this.«getVariableName(node)» = («getVariableType(node)») match.get("«node.name»");
 					«ENDFOR»
 				}
 			«FOR node : signatureNodes»
@@ -226,15 +226,6 @@ class JavaFileGenerator {
 						return this.«getVariableName(node)»;
 					}
 			«ENDFOR»
-			
-				@Override
-				public Map<String, EObject> toMap() {
-					Map<String, EObject> map = new HashMap<String, EObject>();
-					«FOR node : signatureNodes»
-						map.put("«node.name»", this.«getVariableName(node)»);
-					«ENDFOR»
-					return map;
-				}
 			}
 		'''
 		this.writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
@@ -245,11 +236,7 @@ class JavaFileGenerator {
 	 */
 	public def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
 		val imports = newHashSet(
-			'java.util.Collection',
-			'java.util.Map',
-			'java.util.Optional',
-			'java.util.stream.Collectors',
-			'org.eclipse.emf.ecore.EObject',
+			'org.emoflon.ibex.common.operational.IMatch',
 			'org.emoflon.ibex.gt.api.GraphTransformationRule',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'''«this.packageName».api.matches.«getMatchClassName(rule)»'''
@@ -273,28 +260,12 @@ class JavaFileGenerator {
 				 *            the interpreter
 				 */
 				public «getRuleClassName(rule)»(final GraphTransformationInterpreter interpreter) {
-					super(interpreter);
+					super(interpreter, ruleName);
 				}
-			
+				
 				@Override
-				public void execute(final «getMatchClassName(rule)» match) {
-					this.interpreter.execute(ruleName, match.toMap());
-				}
-			
-				@Override
-				public Optional<«getMatchClassName(rule)»> findAnyMatch() {
-					Optional<Map<String, EObject>> match = this.interpreter.findAnyMatch(ruleName);
-					if (match.isPresent()) {
-						return Optional.of(new «getMatchClassName(rule)»(this, match.get()));
-					}
-					return Optional.empty();
-				}
-			
-				@Override
-				public Collection<«getMatchClassName(rule)»> findMatches() {
-					return this.interpreter.findMatches(ruleName).stream() //
-							.map(m -> new «getMatchClassName(rule)»(this, m)) //
-							.collect(Collectors.toList());
+				protected «getMatchClassName(rule)» convertMatch(final IMatch match) {
+					return new «getMatchClassName(rule)»(this, match);
 				}
 			}
 		'''
