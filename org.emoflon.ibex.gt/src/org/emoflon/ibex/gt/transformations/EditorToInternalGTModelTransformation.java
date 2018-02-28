@@ -6,11 +6,17 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.gt.editor.gT.ContextNode;
+import org.emoflon.ibex.gt.editor.gT.ContextReference;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
 import org.emoflon.ibex.gt.editor.gT.Node;
+import org.emoflon.ibex.gt.editor.gT.Operator;
+import org.emoflon.ibex.gt.editor.gT.OperatorNode;
+import org.emoflon.ibex.gt.editor.gT.OperatorReference;
 import org.emoflon.ibex.gt.editor.gT.Reference;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 
+import GTLanguage.GTBindingType;
 import GTLanguage.GTEdge;
 import GTLanguage.GTGraph;
 import GTLanguage.GTLanguageFactory;
@@ -82,6 +88,18 @@ public class EditorToInternalGTModelTransformation
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
 		gtNode.setLocal(editorNode.getName().startsWith("_"));
+		if (editorNode instanceof ContextNode) {
+			gtNode.setBindingType(GTBindingType.CONTEXT);
+		} else {
+			if (editorNode instanceof OperatorNode) {
+				OperatorNode editorOperatorNode = (OperatorNode) editorNode;
+				if (editorOperatorNode.getOperator().equals(Operator.CREATE)) {
+					gtNode.setBindingType(GTBindingType.CREATE);
+				} else {
+					gtNode.setBindingType(GTBindingType.DELETE);
+				}
+			}
+		}
 		return gtNode;
 	}
 
@@ -117,6 +135,18 @@ public class EditorToInternalGTModelTransformation
 				GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
 				gtEdge.setType(reference.getType());
 				gtEdge.setName(sourceNodeName + "-" + gtEdge.getType().getName() + "-" + targetNodeName);
+				if (reference instanceof ContextReference) {
+					gtEdge.setBindingType(GTBindingType.CONTEXT);
+				} else {
+					if (reference instanceof OperatorReference) {
+						OperatorReference editorOperatorReference = (OperatorReference) reference;
+						if (editorOperatorReference.getOperator().equals(Operator.CREATE)) {
+							gtEdge.setBindingType(GTBindingType.CREATE);
+						} else {
+							gtEdge.setBindingType(GTBindingType.DELETE);
+						}
+					}
+				}
 				gtSourceNode.ifPresent(node -> gtEdge.setSourceNode(node));
 				gtTargetNode.ifPresent(node -> gtEdge.setTargetNode(node));
 
