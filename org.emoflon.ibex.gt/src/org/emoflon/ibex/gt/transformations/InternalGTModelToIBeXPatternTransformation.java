@@ -118,6 +118,11 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 			}
 		});
 
+		// Abort if there are no nodes, i. e. everything is created.
+		if (ibexPattern.getLocalNodes().isEmpty() && ibexPattern.getSignatureNodes().isEmpty()) {
+			return;
+		}
+
 		// Ensure that all nodes must be disjoint even if they have the same type.
 		List<IBeXNode> allNodes = new ArrayList<IBeXNode>();
 		allNodes.addAll(ibexPattern.getLocalNodes());
