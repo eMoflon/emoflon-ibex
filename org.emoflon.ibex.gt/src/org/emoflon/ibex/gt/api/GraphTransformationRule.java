@@ -59,31 +59,24 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 
 	/**
 	 * Executes the rule on the given match.
+	 * 
+	 * @return an {@link Optional} for the the co-match after rule application
 	 */
-	public final void execute(final M match) {
-		this.interpreter.execute(ruleName, match.toIMatch());
+	public final Optional<M> execute(final M match) {
+		return this.interpreter.execute(match.toIMatch()).map(m -> this.convertMatch(m));
 	}
 
 	/**
-	 * Executes the rule on an arbitrary match.
+	 * Executes the rule on an arbitrary match if there is a match.
 	 * 
-	 * @return an {@link Optional} for the match the rule was executed on
+	 * @return an {@link Optional} for the the co-match after rule application
 	 */
 	public final Optional<M> execute() {
-		Optional<M> anyMatch = this.findAnyMatch();
-		anyMatch.ifPresent(match -> this.execute(match));
-		return anyMatch;
-	}
-
-	/**
-	 * Executes the rule on all matches.
-	 * 
-	 * @return the list of matches the rule was executed on
-	 */
-	public final Collection<M> executeAll() {
-		Collection<M> matches = this.findMatches();
-		matches.forEach(match -> this.execute(match));
-		return matches;
+		Optional<M> match = this.findAnyMatch();
+		if (!match.isPresent()) {
+			return Optional.empty();
+		}
+		return this.execute(match.get());
 	}
 
 	/**

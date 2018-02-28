@@ -18,7 +18,11 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
+import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
+import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 
+import IBeXLanguage.IBeXCreatePattern;
+import IBeXLanguage.IBeXDeletePattern;
 import IBeXLanguage.IBeXLanguagePackage;
 import IBeXLanguage.IBeXPatternSet;
 
@@ -32,15 +36,22 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	protected Optional<String> debugPath = Optional.ofNullable(null);
 
-	/**
-	 * Whether the IBeXPatternSet was loaded.
-	 */
-	private boolean patternSetLoaded = false;
+	private IBeXPatternSet patternSet;
 
 	/**
 	 * The pattern matching engine.
 	 */
-	private IContextPatternInterpreter engine;
+	private IContextPatternInterpreter contextPatternInterpreter;
+
+	/**
+	 * The interpreter for creation of elements.
+	 */
+	private ICreatePatternInterpreter createPatternInterpreter;
+
+	/**
+	 * The interpreter for deletion of elements.
+	 */
+	private IDeletePatternInterpreter deletePatternInterpreter;
 
 	/**
 	 * The resource set containing the model file.
@@ -82,8 +93,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the resource set containing the model file
 	 */
 	public GraphTransformationInterpreter(final IContextPatternInterpreter engine, final ResourceSet model) {
-		this.engine = engine;
+		this.contextPatternInterpreter = engine;
 		this.model = model;
+
+		this.createPatternInterpreter = new GraphTransformationCreateInterpreter(this.model.getResources().get(0));
+		this.deletePatternInterpreter = new GraphTransformationDeleteInterpreter();
 	}
 
 	/**
@@ -104,7 +118,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public void setDebugPath(final String debugPath) {
 		this.debugPath = Optional.ofNullable(debugPath);
-		this.engine.setDebugPath(debugPath);
+		this.contextPatternInterpreter.setDebugPath(debugPath);
 	}
 
 	/**
@@ -118,13 +132,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		EObject resourceContent = ibexPatternResource.getContents().get(0);
 		Objects.requireNonNull("Resource must not be empty!");
 		if (resourceContent instanceof IBeXPatternSet) {
-			this.engine.initialise(this.model.getPackageRegistry(), this);
+			this.contextPatternInterpreter.initialise(this.model.getPackageRegistry(), this);
 
 			// Transform into patterns of the concrete engine.
-			this.engine.initPatterns((IBeXPatternSet) resourceContent);
-			this.patternSetLoaded = true;
-
-			this.engine.monitor(this.model);
+			this.patternSet = (IBeXPatternSet) resourceContent;
+			this.contextPatternInterpreter.initPatterns(this.patternSet);
+			this.contextPatternInterpreter.monitor(this.model);
 		} else {
 			throw new IllegalArgumentException("Expecting a IBeXPatternSet root element!");
 		}
@@ -151,14 +164,14 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return true if <code>loadPatterns</code> has been called successfully.
 	 */
 	public boolean isPatternSetLoaded() {
-		return this.patternSetLoaded;
+		return this.patternSet != null;
 	}
 
 	/**
 	 * Terminates the engine.
 	 */
 	public void terminate() {
-		this.engine.terminate();
+		this.contextPatternInterpreter.terminate();
 	}
 
 	/**
@@ -169,8 +182,40 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @param match
 	 *            the match to execute the pattern on
 	 */
-	public void execute(final String patternName, final IMatch match) {
-		// TODO implement
+	public Optional<IMatch> execute(final IMatch match) {
+		String patternName = match.getPatternName();
+
+		IMatch originalMatch = new GraphTransformationSimpleMatch(match);
+		
+		// Execute deletion.
+		Optional<IMatch> matchAfterDeletion;
+		Optional<IBeXDeletePattern> deletePattern = this.patternSet.getDeletePatterns().stream()
+				.filter(pattern -> pattern.getName().contentEquals(patternName)).findAny();
+		if (deletePattern.isPresent()) {
+			matchAfterDeletion = this.deletePatternInterpreter.apply(deletePattern.get(), originalMatch);
+		} else {
+			// Nothing to delete.
+			matchAfterDeletion = Optional.of(originalMatch);
+		}
+
+		// Abort if deletion failed.
+		if (!matchAfterDeletion.isPresent()) {
+			return matchAfterDeletion;
+		}
+
+		// Execute creation.
+		Optional<IMatch> matchAfterCreation;
+		Optional<IBeXCreatePattern> createPattern = this.patternSet.getCreatePatterns().stream()
+				.filter(pattern -> pattern.getName().equals(patternName)).findAny();
+		if (createPattern.isPresent()) {
+			matchAfterCreation = this.createPatternInterpreter.apply(createPattern.get(), matchAfterDeletion.get());
+		} else {
+			// Nothing to create.
+			matchAfterCreation = matchAfterDeletion;
+		}
+
+		// Return the co-match.
+		return matchAfterCreation;
 	}
 
 	/**
@@ -296,7 +341,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * Trigger the engine to update the pattern network.
 	 */
 	public void updateMatches() {
-		this.engine.updateMatches();
+		this.contextPatternInterpreter.updateMatches();
 	}
 
 	@Override
