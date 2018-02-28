@@ -17,7 +17,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
-import org.emoflon.ibex.common.operational.IPatternInterpreter;
+import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 
 import IBeXLanguage.IBeXLanguagePackage;
 import IBeXLanguage.IBeXPatternSet;
@@ -40,7 +40,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
 	 * The pattern matching engine.
 	 */
-	private IPatternInterpreter engine;
+	private IContextPatternInterpreter engine;
 
 	/**
 	 * The resource set containing the model file.
@@ -81,7 +81,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @param model
 	 *            the resource set containing the model file
 	 */
-	public GraphTransformationInterpreter(final IPatternInterpreter engine, final ResourceSet model) {
+	public GraphTransformationInterpreter(final IContextPatternInterpreter engine, final ResourceSet model) {
 		this.engine = engine;
 		this.model = model;
 	}
