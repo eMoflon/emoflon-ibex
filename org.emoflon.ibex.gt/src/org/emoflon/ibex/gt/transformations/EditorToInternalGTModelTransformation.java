@@ -40,9 +40,7 @@ public class EditorToInternalGTModelTransformation
 	public GTRuleSet transform(final GraphTransformationFile editorModel) {
 		Objects.requireNonNull(editorModel, "The editor model must not be null!");
 		this.gtRules = new ArrayList<GTRule>();
-		editorModel.getRules().stream() //
-				.filter(r -> !r.isAbstract()) // ignore abstract rules
-				.forEach(editorRule -> this.transformRule(editorRule));
+		editorModel.getRules().forEach(editorRule -> this.transformRule(editorRule));
 
 		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
 		gtRuleSet.getRules().addAll(gtRules.stream() //
@@ -71,8 +69,26 @@ public class EditorToInternalGTModelTransformation
 
 		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
 		gtRule.setName(editorRule.getName());
+		gtRule.setAbstract(editorRule.isAbstract());
+		gtRule.setExecutable(hasOperatorOrReference(editorRule));
 		gtRule.setGraph(gtGraph);
 		this.gtRules.add(gtRule);
+	}
+
+	/**
+	 * Checks whether the editor rule contains at least one operator node or
+	 * reference.
+	 * 
+	 * @param editorRule
+	 *            the editor rule
+	 * @return true if the rule contains an operator node.
+	 */
+	private static boolean hasOperatorOrReference(final Rule editorRule) {
+		boolean hasOperatorNode = editorRule.getNodes().stream() //
+				.anyMatch(node -> node instanceof OperatorNode);
+		return hasOperatorNode || editorRule.getNodes().stream() //
+				.map(node -> node.getConstraints()).flatMap(constraints -> constraints.stream())
+				.anyMatch(constraint -> constraint instanceof OperatorReference);
 	}
 
 	/**

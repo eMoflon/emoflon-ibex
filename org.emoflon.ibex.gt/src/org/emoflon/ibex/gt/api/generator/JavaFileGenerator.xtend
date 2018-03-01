@@ -235,9 +235,10 @@ class JavaFileGenerator {
 	 * Generates the Java Rule class for the given rule.
 	 */
 	public def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
+		val ruleType = if(rule.executable) 'GraphTransformationApplicableRule' else 'GraphTransformationRule';
 		val imports = newHashSet(
 			'org.emoflon.ibex.common.operational.IMatch',
-			'org.emoflon.ibex.gt.api.GraphTransformationRule',
+			'''org.emoflon.ibex.gt.api.«ruleType»''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'''«this.packageName».api.matches.«getMatchClassName(rule)»'''
 		)
@@ -250,7 +251,7 @@ class JavaFileGenerator {
 			/**
 			 * The rule «rule.name»().
 			 */
-			public class «getRuleClassName(rule)» extends GraphTransformationRule<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
+			public class «getRuleClassName(rule)» extends «ruleType»<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				private static String ruleName = "«rule.name»";
 			
 				/**
