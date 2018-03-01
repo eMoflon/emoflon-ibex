@@ -3,14 +3,13 @@ package org.emoflon.ibex.tgg.operational.defaults;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
+import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -44,7 +43,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		pattern.getSrcTrgEdgesCreatedByPattern().forEach(e -> {
 			RuntimeEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
 			strategy.removeCreatedEdge(runtimeEdge);
-			deleteEdge(runtimeEdge.getSrc(), runtimeEdge.getTrg(), runtimeEdge.getRef());
+			EMFManipulationUtils.deleteEdge(runtimeEdge.getSrc(), runtimeEdge.getTrg(), runtimeEdge.getRef());
 		});
 		
 		pattern.getEdgesMarkedByPattern().forEach(e -> {
@@ -62,7 +61,9 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	}
 	
 	private void revokeNode(EObject n) {
-		if(isDanglingNode(n)) strategy.addToTrash(n);
+		if (EMFManipulationUtils.isDanglingNode(n)) {
+			strategy.addToTrash(n);
+		}
 
 		// Now safe to delete
 		delete(n);
@@ -80,8 +81,12 @@ public class IbexRedInterpreter implements IRedInterpreter {
 				EObject src = (EObject) corr.eGet(srcFeature);
 				EObject trg = (EObject) corr.eGet(trgFeature);
 
-				if(isDanglingNode(Optional.ofNullable(src))) strategy.addToTrash(src);
-				if(isDanglingNode(Optional.ofNullable(trg))) strategy.addToTrash(trg);
+				if (EMFManipulationUtils.isDanglingNode(Optional.ofNullable(src))) {
+					strategy.addToTrash(src);
+				}
+				if (EMFManipulationUtils.isDanglingNode(Optional.ofNullable(trg))) {
+					strategy.addToTrash(trg);
+				}
 
 				corr.eUnset(srcFeature);
 				corr.eUnset(trgFeature);			
@@ -89,14 +94,6 @@ public class IbexRedInterpreter implements IRedInterpreter {
 				revokeNode(corr);
 			});
 		
-	}
-	
-	private boolean isDanglingNode(EObject o) {
-		return o.eResource() == null;
-	}
-	
-	private boolean isDanglingNode(Optional<EObject> o) {
-		return o.map(this::isDanglingNode).orElse(false);
 	}
 	
 	// This method is exactly what is in EcoreUtil.delete (apart from the Fixme below)
@@ -134,20 +131,4 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	    //FIXME [Greg] Why doesn't this work?
 	    //EcoreUtil.remove(eObject);
 	  }
-	
-	@SuppressWarnings("rawtypes")
-	private void deleteEdge(EObject src, EObject trg, EReference ref) {
-		if(src.eResource() == null)
-			return;
-		
-		if (ref.isMany()) {
-			EList list = ((EList) src.eGet(ref));
-			if(list.contains(trg))
-				list.remove(trg);
-		}
-		else {
-			if(src.eGet(ref) != null)
-				src.eUnset(ref);
-		}
-	}
 }

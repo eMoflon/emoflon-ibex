@@ -1,4 +1,6 @@
-package org.emoflon.ibex.gt.utils;
+package org.emoflon.ibex.common.utils;
+
+import java.util.Optional;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -18,6 +20,18 @@ public class EMFManipulationUtils {
 	 */
 	public static boolean isDanglingNode(final EObject eObject) {
 		return eObject.eResource() == null;
+	}
+
+	/**
+	 * Checks whether the given object is a dangling node.
+	 * 
+	 * @param eObject
+	 *            an {@link Optional} for a node
+	 * @return true if the node is a dangling node; false if the node is not a
+	 *         dangling node or the Optional is not present
+	 */
+	public static boolean isDanglingNode(Optional<EObject> eObject) {
+		return eObject.map(EMFManipulationUtils::isDanglingNode).orElse(false);
 	}
 
 	/**

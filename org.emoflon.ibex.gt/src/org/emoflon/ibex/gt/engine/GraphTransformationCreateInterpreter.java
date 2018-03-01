@@ -7,7 +7,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.gt.utils.EMFManipulationUtils;
+import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 
 import IBeXLanguage.IBeXCreatePattern;
 
