@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 
 import GTLanguage.GTBindingType;
 import GTLanguage.GTEdge;
@@ -118,11 +119,6 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 			}
 		});
 
-		// Abort if there are no nodes, i. e. everything is created.
-		if (ibexPattern.getLocalNodes().isEmpty() && ibexPattern.getSignatureNodes().isEmpty()) {
-			return;
-		}
-
 		// Ensure that all nodes must be disjoint even if they have the same type.
 		List<IBeXNode> allNodes = new ArrayList<IBeXNode>();
 		allNodes.addAll(ibexPattern.getLocalNodes());
@@ -142,48 +138,9 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 
 		// Transform edges.
 		if (useInvocations) {
-			filterEdgesByBindingTypes(gtRule, GTBindingType.CONTEXT, GTBindingType.DELETE).map(edge -> edge.getType())
-					.distinct() // all types of EReference
-					.sorted((t1, t2) -> t1.getName().compareTo(t2.getName())) // in alphabetical order
-					.forEach(edgeType -> {
-						IBeXPattern edgePattern = this.createEdgePattern(edgeType);
-						Optional<IBeXNode> ibexSignatureSourceNode = findIBeXNodeWithName(
-								edgePattern.getSignatureNodes(), "src");
-						Optional<IBeXNode> ibexSignatureTargetNode = findIBeXNodeWithName(
-								edgePattern.getSignatureNodes(), "trg");
-						if (!ibexSignatureSourceNode.isPresent() || !ibexSignatureTargetNode.isPresent()) {
-							this.logError("Invalid signature nodes for edge pattern!");
-							return;
-						}
-
-						filterEdgesByBindingTypes(gtRule, GTBindingType.CONTEXT, GTBindingType.DELETE)
-								.filter(edge -> edgeType.equals(edge.getType())) //
-								.forEach(gtEdge -> {
-									IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE
-											.createIBeXPatternInvocation();
-									invocation.setPositive(true);
-
-									Optional<IBeXNode> ibexLocalSourceNode = findIBeXNodeWithName(ibexPattern,
-											gtEdge.getSourceNode().getName());
-									Optional<IBeXNode> ibexLocalTargetNode = findIBeXNodeWithName(ibexPattern,
-											gtEdge.getTargetNode().getName());
-
-									if (!ibexLocalSourceNode.isPresent()) {
-										this.logError("Could not find node " + gtEdge.getSourceNode().getName() + "!");
-										return;
-									}
-									if (!ibexLocalTargetNode.isPresent()) {
-										this.logError("Could not find node " + gtEdge.getTargetNode().getName() + "!");
-										return;
-									}
-									invocation.getMapping().put(ibexLocalSourceNode.get(),
-											ibexSignatureSourceNode.get());
-									invocation.getMapping().put(ibexLocalTargetNode.get(),
-											ibexSignatureTargetNode.get());
-									invocation.setInvokedPattern(edgePattern);
-									ibexPattern.getInvocations().add(invocation);
-								});
-					});
+			filterEdgesByBindingTypes(gtRule, GTBindingType.CONTEXT, GTBindingType.DELETE).forEach(gtEdge -> {
+				this.transformEdgeToPatternInvocation(gtEdge, ibexPattern);
+			});
 		} else {
 			// No invocations, so include all edges as well.
 			gtRule.getGraph().getEdges().forEach(gtEdge -> {
@@ -236,6 +193,47 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	}
 
 	/**
+	 * Transforms an edge to a pattern invocation.
+	 * 
+	 * @param gtEdge
+	 *            the edge to transform
+	 * @param ibexPattern
+	 *            the pattern where the pattern invocation shall be added
+	 */
+	private void transformEdgeToPatternInvocation(final GTEdge gtEdge, final IBeXPattern ibexPattern) {
+		IBeXPattern edgePattern = this.createEdgePattern(gtEdge.getType());
+		Optional<IBeXNode> ibexSignatureSourceNode = //
+				IBeXPatternUtils.findIBeXNodeWithName(edgePattern.getSignatureNodes(), "src");
+		Optional<IBeXNode> ibexSignatureTargetNode = //
+				IBeXPatternUtils.findIBeXNodeWithName(edgePattern.getSignatureNodes(), "trg");
+		if (!ibexSignatureSourceNode.isPresent() || !ibexSignatureTargetNode.isPresent()) {
+			this.logError("Invalid signature nodes for edge pattern!");
+			return;
+		}
+
+		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
+		invocation.setPositive(true);
+
+		Optional<IBeXNode> ibexLocalSourceNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern,
+				gtEdge.getSourceNode().getName());
+		Optional<IBeXNode> ibexLocalTargetNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern,
+				gtEdge.getTargetNode().getName());
+
+		if (!ibexLocalSourceNode.isPresent()) {
+			this.logError("Could not find node " + gtEdge.getSourceNode().getName() + "!");
+			return;
+		}
+		if (!ibexLocalTargetNode.isPresent()) {
+			this.logError("Could not find node " + gtEdge.getTargetNode().getName() + "!");
+			return;
+		}
+		invocation.getMapping().put(ibexLocalSourceNode.get(), ibexSignatureSourceNode.get());
+		invocation.getMapping().put(ibexLocalTargetNode.get(), ibexSignatureTargetNode.get());
+		invocation.setInvokedPattern(edgePattern);
+		ibexPattern.getInvocations().add(invocation);
+	}
+
+	/**
 	 * Transforms a GTNode into an IBeXNode.
 	 * 
 	 * @param gtNode
@@ -263,9 +261,9 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 		Objects.requireNonNull(gtEdge, "Edge must not be null!");
 		IBeXEdge ibexEdge = IBeXLanguageFactory.eINSTANCE.createIBeXEdge();
 		ibexEdge.setType(gtEdge.getType());
-		findIBeXNodeWithName(ibexPattern, gtEdge.getSourceNode().getName())
+		IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, gtEdge.getSourceNode().getName())
 				.ifPresent(sourceNode -> ibexEdge.setSourceNode(sourceNode));
-		findIBeXNodeWithName(ibexPattern, gtEdge.getTargetNode().getName())
+		IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, gtEdge.getTargetNode().getName())
 				.ifPresent(targetNode -> ibexEdge.setTargetNode(targetNode));
 		return ibexEdge;
 	}
@@ -342,7 +340,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 		IBeXEdge ibexEdge = IBeXLanguageFactory.eINSTANCE.createIBeXEdge();
 		ibexEdge.setType(gtEdge.getType());
 
-		Optional<IBeXNode> ibexSourceNode = findIBeXNodeWithName(changedNodes, contextNodes,
+		Optional<IBeXNode> ibexSourceNode = IBeXPatternUtils.findIBeXNodeWithName(changedNodes, contextNodes,
 				gtEdge.getSourceNode().getName());
 		if (ibexSourceNode.isPresent()) {
 			ibexEdge.setSourceNode(ibexSourceNode.get());
@@ -352,7 +350,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 			ibexEdge.setSourceNode(node);
 		}
 
-		Optional<IBeXNode> ibexTargetNode = findIBeXNodeWithName(changedNodes, contextNodes,
+		Optional<IBeXNode> ibexTargetNode = IBeXPatternUtils.findIBeXNodeWithName(changedNodes, contextNodes,
 				gtEdge.getTargetNode().getName());
 		if (ibexTargetNode.isPresent()) {
 			ibexEdge.setTargetNode(ibexTargetNode.get());
@@ -380,59 +378,6 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 		Objects.requireNonNull(class2);
 		return class1.getName().equals(class2.getName()) || class1.getEAllSuperTypes().contains(class2)
 				|| class2.getEAllSuperTypes().contains(class1);
-	}
-
-	/**
-	 * Searches for an {@link IBeXNode} with the given name in the given list of
-	 * nodes.
-	 * 
-	 * @param nodes
-	 *            the nodes
-	 * @param name
-	 *            the name to search for
-	 * @return an {@link Optional} for a node with the given name
-	 */
-	private static Optional<IBeXNode> findIBeXNodeWithName(final List<IBeXNode> nodes, final String name) {
-		Objects.requireNonNull(nodes, "nodes must not be null!");
-		Objects.requireNonNull(name, "name must not be null!");
-		return nodes.stream().filter(node -> name.equals(node.getName())).findAny();
-	}
-
-	/**
-	 * Searches for an {@link IBeXNode} with the given name in the given lists of
-	 * nodes.
-	 * 
-	 * @param nodes
-	 *            the nodes
-	 * @param nodes2
-	 *            more nodes
-	 * @param name
-	 *            the name to search for
-	 * @return an {@link Optional} for a node with the given name
-	 */
-	private static Optional<IBeXNode> findIBeXNodeWithName(final List<IBeXNode> nodes, final List<IBeXNode> nodes2,
-			final String name) {
-		Optional<IBeXNode> node = findIBeXNodeWithName(nodes, name);
-		if (node.isPresent()) {
-			return node;
-		} else {
-			return findIBeXNodeWithName(nodes2, name);
-		}
-	}
-
-	/**
-	 * Finds an {@link IBeXNode} with the given name in the given IBeXPattern.
-	 * 
-	 * @param ibexPattern
-	 *            the IBeXPattern, must not be <code>null</code>
-	 * @param name
-	 *            the name to search for, must not be <code>null</code>
-	 * @return an Optional for a local IBeXNode
-	 */
-	private static Optional<IBeXNode> findIBeXNodeWithName(final IBeXPattern ibexPattern, final String name) {
-		Objects.requireNonNull(ibexPattern, "pattern must not be null!");
-		Objects.requireNonNull(name, "name must not be null!");
-		return findIBeXNodeWithName(ibexPattern.getLocalNodes(), ibexPattern.getSignatureNodes(), name);
 	}
 
 	/**
