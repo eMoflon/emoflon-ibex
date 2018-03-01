@@ -20,7 +20,7 @@ public class GraphTransformationSimpleMatch implements IMatch {
 	private HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 	/**
-	 * Initializes a match with the given pattern name.
+	 * Initializes an empty match with the given pattern name.
 	 * 
 	 * @param patternName
 	 *            the name of the pattern

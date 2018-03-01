@@ -1,10 +1,12 @@
 package org.emoflon.ibex.gt.engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -17,6 +19,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
+import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
@@ -24,6 +27,7 @@ import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
 import IBeXLanguage.IBeXLanguagePackage;
+import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXPatternSet;
 
 /**
@@ -216,6 +220,24 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
+	 * Returns the pattern with the given name. If such a pattern does not exist, a
+	 * <code>NoSuchElementException</code> is thrown.
+	 * 
+	 * @param name
+	 *            the name of the pattern
+	 * @return the pattern
+	 */
+	private IBeXPattern getContextPattern(final String name) {
+		Optional<IBeXPattern> pattern = this.patternSet.getPatterns().stream() //
+				.filter(p -> p.getName().equals(name)) //
+				.findAny();
+		if (!pattern.isPresent()) {
+			throw new NoSuchElementException(String.format("No pattern called %s", name));
+		}
+		return pattern.get();
+	}
+
+	/**
 	 * Terminates the engine.
 	 */
 	public void terminate() {
@@ -276,6 +298,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Optional<IMatch> findAnyMatch(final String patternName) {
 		this.updateMatches();
 
+		IBeXPattern pattern = this.getContextPattern(patternName);
+		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
+			return Optional.of(this.createEmptyMatchForCreatePattern(patternName));
+		}
+
 		if (!this.matches.containsKey(patternName) || this.matches.get(patternName).isEmpty()) {
 			return Optional.empty();
 		}
@@ -292,10 +319,36 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Collection<IMatch> findMatches(final String patternName) {
 		this.updateMatches();
 
+		IBeXPattern pattern = this.getContextPattern(patternName);
+		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
+			return Arrays.asList(this.createEmptyMatchForCreatePattern(patternName));
+		}
+
 		if (!this.matches.containsKey(patternName)) {
 			return new ArrayList<IMatch>();
 		}
 		return this.matches.get(patternName);
+	}
+
+	/**
+	 * Creates an empty match for the create pattern with the given name. The
+	 * created nodes are mapped to <code>null</code>.
+	 * 
+	 * @param patternName
+	 *            the name of the pattern
+	 * @return the created match
+	 */
+	private IMatch createEmptyMatchForCreatePattern(final String patternName) {
+		Optional<IBeXCreatePattern> pattern = this.patternSet.getCreatePatterns().stream()
+				.filter(p -> p.getName().equals(patternName)) //
+				.findAny();
+		if (pattern.isPresent()) {
+			IMatch match = new GraphTransformationSimpleMatch(patternName);
+			pattern.get().getCreatedNodes().forEach(node -> match.put(node.getName(), null));
+			return match;
+		} else {
+			throw new IllegalArgumentException(String.format("No create pattern called %s", patternName));
+		}
 	}
 
 	/**
