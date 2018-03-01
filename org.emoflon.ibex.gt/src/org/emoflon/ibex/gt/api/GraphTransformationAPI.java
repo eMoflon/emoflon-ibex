@@ -1,15 +1,20 @@
 package org.emoflon.ibex.gt.api;
 
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
  * This abstract API is the super class for all concrete APIs generated for a
- * set of models.
+ * set of model resources.
  * 
- * Concrete Implementations must implement loading rules from .gt files into the
- * engine.
+ * The concrete implementation provide methods to perform queries and rule
+ * applications on the given resource set which must not be empty.
+ * 
+ * All elements created during rule applications are added to the default
+ * resource. The default resource can be explicitly set in the constructor,
+ * otherwise the first resource in the resource set will be used.
  */
 public abstract class GraphTransformationAPI {
 	/**
@@ -23,10 +28,25 @@ public abstract class GraphTransformationAPI {
 	 * @param engine
 	 *            the engine to use for queries and transformations
 	 * @param model
-	 *            the resource set containing the model file
+	 *            the resource set containing at least one model resource
 	 */
 	public GraphTransformationAPI(final IContextPatternInterpreter engine, final ResourceSet model) {
 		this.interpreter = new GraphTransformationInterpreter(engine, model);
+	}
+
+	/**
+	 * Creates a new GraphTransformationAPI for given engine and resource set.
+	 * 
+	 * @param engine
+	 *            the engine to use for queries and transformations
+	 * @param model
+	 *            the resource set containing at least one model resource
+	 * @param defaultResource
+	 *            the default resource
+	 */
+	public GraphTransformationAPI(final IContextPatternInterpreter engine, final ResourceSet model,
+			final Resource defaultResource) {
+		this.interpreter = new GraphTransformationInterpreter(engine, model, defaultResource);
 	}
 
 	/**
@@ -43,12 +63,5 @@ public abstract class GraphTransformationAPI {
 	 */
 	public void updateMatches() {
 		this.interpreter.updateMatches();
-	}
-
-	/**
-	 * Saves the model.
-	 */
-	public void save() {
-		this.interpreter.save();
 	}
 }

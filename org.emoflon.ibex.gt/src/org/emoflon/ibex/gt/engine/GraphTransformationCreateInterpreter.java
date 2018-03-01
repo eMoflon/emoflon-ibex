@@ -18,16 +18,16 @@ import IBeXLanguage.IBeXNode;
  * Interpreter applying creation of elements for graph transformation.
  */
 public class GraphTransformationCreateInterpreter implements ICreatePatternInterpreter {
-	private Resource resource;
+	private Resource defaultResource;
 
 	/**
 	 * Creates a new GraphTransformationCreateInterpreter.
 	 * 
-	 * @param resource
-	 *            the model resource
+	 * @param defaultResource
+	 *            the default resource
 	 */
-	public GraphTransformationCreateInterpreter(final Resource resource) {
-		this.resource = resource;
+	public GraphTransformationCreateInterpreter(final Resource defaultResource) {
+		this.defaultResource = defaultResource;
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 	 */
 	private void createNode(final IBeXNode node, final IMatch match) {
 		EObject newNode = EcoreUtil.create(node.getType());
-		this.resource.getContents().add(newNode);
+		this.defaultResource.getContents().add(newNode);
 		match.put(node.getName(), newNode);
 	}
 

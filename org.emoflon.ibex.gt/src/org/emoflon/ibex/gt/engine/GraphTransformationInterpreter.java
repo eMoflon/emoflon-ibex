@@ -1,6 +1,5 @@
 package org.emoflon.ibex.gt.engine;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +36,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	protected Optional<String> debugPath = Optional.ofNullable(null);
 
+	/**
+	 * The pattern set containing the patterns.
+	 */
 	private IBeXPatternSet patternSet;
 
 	/**
@@ -86,19 +88,64 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			= new HashMap<IMatch, List<Consumer<IMatch>>>();
 
 	/**
-	 * Creates a new GraphTransformationInterpreter.
+	 * Creates a new GraphTransformationInterpreter for queries and modifications on
+	 * the given resource set. The default resource is set to the first resource in
+	 * the resource set.
 	 * 
 	 * @param engine
 	 *            the engine of the pattern matcher
 	 * @param model
-	 *            the resource set containing the model file
+	 *            the resource set containing at least one model resource
 	 */
 	public GraphTransformationInterpreter(final IContextPatternInterpreter engine, final ResourceSet model) {
+		Objects.requireNonNull(model, "The resource set must not be null!");
+		if (model.getResources().size() == 0) {
+			throw new IllegalArgumentException("Resource set must not be empty!");
+		}
+		this.init(engine, model, model.getResources().get(0));
+	}
+
+	/**
+	 * Creates a new GraphTransformationInterpreter for queries and modifications on
+	 * the given resource set with the given resource as default resource.
+	 * 
+	 * @param engine
+	 *            the engine of the pattern matcher
+	 * @param model
+	 *            the resource set containing at least one model resource
+	 * @param defaultResource
+	 *            the default resource
+	 */
+	public GraphTransformationInterpreter(final IContextPatternInterpreter engine, final ResourceSet model,
+			final Resource defaultResource) {
+		Objects.requireNonNull(defaultResource, "The default resource must not be null!");
+		this.init(engine, model, defaultResource);
+	}
+
+	/**
+	 * Initializes the GraphTransformationInterpreter.
+	 * 
+	 * @param engine
+	 *            the engine of the pattern matcher
+	 * @param model
+	 *            the resource set containing at least one model resource
+	 * @param defaultResource
+	 *            the default resource
+	 */
+	private void init(final IContextPatternInterpreter engine, final ResourceSet model,
+			final Resource defaultResource) {
+		Objects.requireNonNull(engine, "The engine must not be null!");
+		Objects.requireNonNull(model, "The resource set must not be null!");
+		Objects.requireNonNull(defaultResource, "The resource must not be null!");
+
+		URI trashURI = defaultResource.getURI().trimFileExtension();
+		trashURI = trashURI.trimSegments(1).appendSegment(trashURI.lastSegment() + "-trash").appendFileExtension("xmi");
+		Resource trashResource = model.createResource(trashURI);
+
 		this.contextPatternInterpreter = engine;
 		this.model = model;
-
-		this.createPatternInterpreter = new GraphTransformationCreateInterpreter(this.model.getResources().get(0));
-		this.deletePatternInterpreter = new GraphTransformationDeleteInterpreter();
+		this.createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource);
+		this.deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource);
 	}
 
 	/**
@@ -343,19 +390,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public void updateMatches() {
 		this.contextPatternInterpreter.updateMatches();
-	}
-
-	/**
-	 * Saves the model.
-	 */
-	public void save() {
-		this.model.getResources().forEach(r -> {
-			try {
-				r.save(null);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
 	}
 
 	@Override
