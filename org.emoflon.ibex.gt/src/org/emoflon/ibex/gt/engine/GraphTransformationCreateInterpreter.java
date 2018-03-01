@@ -20,6 +20,12 @@ import IBeXLanguage.IBeXNode;
 public class GraphTransformationCreateInterpreter implements ICreatePatternInterpreter {
 	private Resource resource;
 
+	/**
+	 * Creates a new GraphTransformationCreateInterpreter.
+	 * 
+	 * @param resource
+	 *            the model resource
+	 */
 	public GraphTransformationCreateInterpreter(final Resource resource) {
 		this.resource = resource;
 	}
@@ -27,23 +33,36 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 	@Override
 	public Optional<IMatch> apply(final IBeXCreatePattern createPattern, final IMatch match) {
 		createPattern.getCreatedNodes().forEach(node -> this.createNode(node, match));
-		//createPattern.getCreatedEdges().forEach(edge -> this.createEdge(edge, match));
+		createPattern.getCreatedEdges().forEach(edge -> this.createEdge(edge, match));
 		return Optional.of(match);
 	}
 
-	private void createNode(IBeXNode node, final IMatch match) {
+	/**
+	 * Creates an EObject for the given node and adds the element to the match.
+	 * 
+	 * @param node
+	 *            the node to create
+	 * @param match
+	 *            the match
+	 */
+	private void createNode(final IBeXNode node, final IMatch match) {
 		EObject newNode = EcoreUtil.create(node.getType());
 		this.resource.getContents().add(newNode);
 		match.put(node.getName(), newNode);
 	}
 
+	/**
+	 * Creates an EReference for the given edge.
+	 * 
+	 * @param edge
+	 *            the edge to create
+	 * @param match
+	 *            the match
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void createEdge(IBeXEdge edge, final IMatch match) {
-		System.out.println(edge.getSourceNode().getName() + " : " + match.get(edge.getSourceNode().getName()));
+	private void createEdge(final IBeXEdge edge, final IMatch match) {
 		EObject src = (EObject) match.get(edge.getSourceNode().getName());
-		EObject trg = (EObject) match.get(edge.getSourceNode().getName());
-
-		System.out.println("Create edge " + edge.getType().getName() + " - " + src + " - " + trg);
+		EObject trg = (EObject) match.get(edge.getTargetNode().getName());
 
 		EReference reference = edge.getType();
 		if (reference.isMany()) {

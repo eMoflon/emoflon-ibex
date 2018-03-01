@@ -44,4 +44,11 @@ public abstract class GraphTransformationAPI {
 	public void updateMatches() {
 		this.interpreter.updateMatches();
 	}
+
+	/**
+	 * Saves the model.
+	 */
+	public void save() {
+		this.interpreter.save();
+	}
 }

@@ -1,5 +1,6 @@
 package org.emoflon.ibex.gt.engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -186,7 +187,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		String patternName = match.getPatternName();
 
 		IMatch originalMatch = new GraphTransformationSimpleMatch(match);
-		
+
 		// Execute deletion.
 		Optional<IMatch> matchAfterDeletion;
 		Optional<IBeXDeletePattern> deletePattern = this.patternSet.getDeletePatterns().stream()
@@ -342,6 +343,19 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public void updateMatches() {
 		this.contextPatternInterpreter.updateMatches();
+	}
+
+	/**
+	 * Saves the model.
+	 */
+	public void save() {
+		this.model.getResources().forEach(r -> {
+			try {
+				r.save(null);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	@Override
