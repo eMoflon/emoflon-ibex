@@ -13,7 +13,6 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 public class GurobiWrapper extends ILPSolver {
-	
 	private final Map<String, GRBVar> gurobiVariables = new HashMap<>();
 	private GRBModel model;
 	private GRBEnv env;

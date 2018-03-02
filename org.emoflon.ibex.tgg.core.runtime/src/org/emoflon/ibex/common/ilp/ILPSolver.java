@@ -67,7 +67,7 @@ public abstract class ILPSolver {
 		}
 	}
 	
-	public abstract class ILPContraint {
+	public abstract class ILPConstraint {
 		
 	}
 	
