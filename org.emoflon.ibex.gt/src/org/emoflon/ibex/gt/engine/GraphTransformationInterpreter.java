@@ -367,7 +367,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
-	 * Unsubscribes the notifications for the given pattern and consumer.
+	 * Deletes the subscription of the notifications for the given pattern and
+	 * consumer.
 	 * 
 	 * @param patternName
 	 *            the name of the pattern
@@ -396,7 +397,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
-	 * Unsubscribes the notifications for the given pattern and consumer.
+	 * Deletes the subscription of the notifications for the given pattern and
+	 * consumer.
 	 * 
 	 * @param patternName
 	 *            the name of the pattern
@@ -425,7 +427,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
-	 * Unsubscribes notifications whenever the given match disappears.
+	 * Deletes the subscription of notifications when the given match disappears.
 	 * 
 	 * @param match
 	 *            the match
