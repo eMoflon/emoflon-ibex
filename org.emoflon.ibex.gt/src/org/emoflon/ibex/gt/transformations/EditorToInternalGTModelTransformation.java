@@ -6,11 +6,17 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.gt.editor.gT.ContextNode;
+import org.emoflon.ibex.gt.editor.gT.ContextReference;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
 import org.emoflon.ibex.gt.editor.gT.Node;
+import org.emoflon.ibex.gt.editor.gT.Operator;
+import org.emoflon.ibex.gt.editor.gT.OperatorNode;
+import org.emoflon.ibex.gt.editor.gT.OperatorReference;
 import org.emoflon.ibex.gt.editor.gT.Reference;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 
+import GTLanguage.GTBindingType;
 import GTLanguage.GTEdge;
 import GTLanguage.GTGraph;
 import GTLanguage.GTLanguageFactory;
@@ -34,9 +40,7 @@ public class EditorToInternalGTModelTransformation
 	public GTRuleSet transform(final GraphTransformationFile editorModel) {
 		Objects.requireNonNull(editorModel, "The editor model must not be null!");
 		this.gtRules = new ArrayList<GTRule>();
-		editorModel.getRules().stream() //
-				.filter(r -> !r.isAbstract()) // ignore abstract rules
-				.forEach(editorRule -> this.transformRule(editorRule));
+		editorModel.getRules().forEach(editorRule -> this.transformRule(editorRule));
 
 		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
 		gtRuleSet.getRules().addAll(gtRules.stream() //
@@ -65,8 +69,26 @@ public class EditorToInternalGTModelTransformation
 
 		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
 		gtRule.setName(editorRule.getName());
+		gtRule.setAbstract(editorRule.isAbstract());
+		gtRule.setExecutable(hasOperatorOrReference(editorRule));
 		gtRule.setGraph(gtGraph);
 		this.gtRules.add(gtRule);
+	}
+
+	/**
+	 * Checks whether the editor rule contains at least one operator node or
+	 * reference.
+	 * 
+	 * @param editorRule
+	 *            the editor rule
+	 * @return true if the rule contains an operator node.
+	 */
+	private static boolean hasOperatorOrReference(final Rule editorRule) {
+		boolean hasOperatorNode = editorRule.getNodes().stream() //
+				.anyMatch(node -> node instanceof OperatorNode);
+		return hasOperatorNode || editorRule.getNodes().stream() //
+				.map(node -> node.getConstraints()).flatMap(constraints -> constraints.stream())
+				.anyMatch(constraint -> constraint instanceof OperatorReference);
 	}
 
 	/**
@@ -82,6 +104,18 @@ public class EditorToInternalGTModelTransformation
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
 		gtNode.setLocal(editorNode.getName().startsWith("_"));
+		if (editorNode instanceof ContextNode) {
+			gtNode.setBindingType(GTBindingType.CONTEXT);
+		} else {
+			if (editorNode instanceof OperatorNode) {
+				OperatorNode editorOperatorNode = (OperatorNode) editorNode;
+				if (editorOperatorNode.getOperator().equals(Operator.CREATE)) {
+					gtNode.setBindingType(GTBindingType.CREATE);
+				} else {
+					gtNode.setBindingType(GTBindingType.DELETE);
+				}
+			}
+		}
 		return gtNode;
 	}
 
@@ -117,6 +151,18 @@ public class EditorToInternalGTModelTransformation
 				GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
 				gtEdge.setType(reference.getType());
 				gtEdge.setName(sourceNodeName + "-" + gtEdge.getType().getName() + "-" + targetNodeName);
+				if (reference instanceof ContextReference) {
+					gtEdge.setBindingType(GTBindingType.CONTEXT);
+				} else {
+					if (reference instanceof OperatorReference) {
+						OperatorReference editorOperatorReference = (OperatorReference) reference;
+						if (editorOperatorReference.getOperator().equals(Operator.CREATE)) {
+							gtEdge.setBindingType(GTBindingType.CREATE);
+						} else {
+							gtEdge.setBindingType(GTBindingType.DELETE);
+						}
+					}
+				}
 				gtSourceNode.ifPresent(node -> gtEdge.setSourceNode(node));
 				gtTargetNode.ifPresent(node -> gtEdge.setTargetNode(node));
 

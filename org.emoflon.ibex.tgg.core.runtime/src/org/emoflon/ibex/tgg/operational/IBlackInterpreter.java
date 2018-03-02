@@ -1,12 +1,12 @@
 package org.emoflon.ibex.tgg.operational;
 
-import org.emoflon.ibex.common.operational.IPatternInterpreter;
+import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 /**
  * Interface for bidirectional graph transformations via TGGs
  */
-public interface IBlackInterpreter extends IPatternInterpreter {
+public interface IBlackInterpreter extends IContextPatternInterpreter {
 	/**
 	 * Sets the IBeXOptions.
 	 * 

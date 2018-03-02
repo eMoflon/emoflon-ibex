@@ -108,7 +108,7 @@ class JavaFileGenerator {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
-			'org.emoflon.ibex.common.operational.IPatternInterpreter',
+			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI'
 		)
 		this.gtRuleSet.rules.forall [
@@ -137,7 +137,7 @@ class JavaFileGenerator {
 				 * @param model
 				 *            the resource set containing the model file
 				 */
-				public «apiClassName»(final IPatternInterpreter engine, final ResourceSet model) {
+				public «apiClassName»(final IContextPatternInterpreter engine, final ResourceSet model) {
 					super(engine, model);
 					URI uri = URI.createURI("../" + patternPath);
 					this.interpreter.loadPatternSet(uri);
@@ -156,7 +156,7 @@ class JavaFileGenerator {
 				 * @param workspacePath
 				 *            the path to the workspace
 				 */
-				public «apiClassName»(final IPatternInterpreter engine, final ResourceSet model,
+				public «apiClassName»(final IContextPatternInterpreter engine, final ResourceSet model,
 						final String workspacePath) {
 					super(engine, model);
 					URI uri = URI.createURI(workspacePath + patternPath);
@@ -235,9 +235,10 @@ class JavaFileGenerator {
 	 * Generates the Java Rule class for the given rule.
 	 */
 	public def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
+		val ruleType = if(rule.executable) 'GraphTransformationApplicableRule' else 'GraphTransformationRule';
 		val imports = newHashSet(
 			'org.emoflon.ibex.common.operational.IMatch',
-			'org.emoflon.ibex.gt.api.GraphTransformationRule',
+			'''org.emoflon.ibex.gt.api.«ruleType»''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'''«this.packageName».api.matches.«getMatchClassName(rule)»'''
 		)
@@ -250,7 +251,7 @@ class JavaFileGenerator {
 			/**
 			 * The rule «rule.name»().
 			 */
-			public class «getRuleClassName(rule)» extends GraphTransformationRule<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
+			public class «getRuleClassName(rule)» extends «ruleType»<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				private static String ruleName = "«rule.name»";
 			
 				/**

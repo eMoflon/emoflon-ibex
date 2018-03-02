@@ -5,6 +5,14 @@
   <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
     <details key="documentation" value="Internal model for graph transformation rules."/>
   </eAnnotations>
+  <eClassifiers xsi:type="ecore:EEnum" name="GTBindingType">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="The binding type defines whether a graph element is context, created or deleted."/>
+    </eAnnotations>
+    <eLiterals name="CONTEXT"/>
+    <eLiterals name="CREATE" value="1" literal="CREATE"/>
+    <eLiterals name="DELETE" value="2" literal="DELETE"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTEdge" eSuperTypes="#//GTGraphElement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="A typed edge connects two nodes."/>
@@ -26,8 +34,10 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTGraphElement" eSuperTypes="#//GTNamedElement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Any element in the internal GT model which is contained in a graph should inherit from this class."/>
+      <details key="documentation" value="Any element in the internal GT model which is contained in a graph should inherit from this class. A graph element must be of one of the binding types CONTEXT, CREATE or DELETE."/>
     </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bindingType" lowerBound="1"
+        eType="#//GTBindingType"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTNamedElement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -51,6 +61,8 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="Rules consists of a graph with typed nodes and edges."/>
     </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="executable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graph" eType="#//GTGraph"
         containment="true"/>
   </eClassifiers>

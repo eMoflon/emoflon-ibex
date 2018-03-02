@@ -14,7 +14,7 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  * This is the abstraction for all rules.
  * 
  * Concrete Implementations must have a constructor to set the parameters
- * required for rule application and getters for all parameters.
+ * required for finding matches and getters for all parameters.
  * 
  * @param <M>
  *            the type of matches returned by this rule
@@ -42,6 +42,8 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * 
 	 * @param interpreter
 	 *            the interpreter
+	 * @param ruleName
+	 *            the name of the rule
 	 */
 	public GraphTransformationRule(final GraphTransformationInterpreter interpreter, final String ruleName) {
 		this.interpreter = interpreter;
@@ -55,35 +57,6 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 */
 	protected final String getRuleName() {
 		return this.ruleName;
-	}
-
-	/**
-	 * Executes the rule on the given match.
-	 */
-	public final void execute(final M match) {
-		this.interpreter.execute(ruleName, match.toIMatch());
-	}
-
-	/**
-	 * Executes the rule on an arbitrary match.
-	 * 
-	 * @return an {@link Optional} for the match the rule was executed on
-	 */
-	public final Optional<M> execute() {
-		Optional<M> anyMatch = this.findAnyMatch();
-		anyMatch.ifPresent(match -> this.execute(match));
-		return anyMatch;
-	}
-
-	/**
-	 * Executes the rule on all matches.
-	 * 
-	 * @return the list of matches the rule was executed on
-	 */
-	public final Collection<M> executeAll() {
-		Collection<M> matches = this.findMatches();
-		matches.forEach(match -> this.execute(match));
-		return matches;
 	}
 
 	/**
@@ -146,7 +119,8 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Unsubscribes notifications of all new matches for the given {@link Consumer}.
+	 * Deletes the subscription of notifications of all new matches for the given
+	 * {@link Consumer}.
 	 * 
 	 * @param action
 	 *            the {@link Consumer}
@@ -170,8 +144,8 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Unsubscribes notifications of all disappearing matches for the given
-	 * {@link Consumer}.
+	 * Deletes the subscription of notifications of all disappearing matches for the
+	 * given {@link Consumer}.
 	 * 
 	 * @param action
 	 *            the {@link Consumer}
@@ -192,8 +166,20 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @param action
 	 *            the {@link Consumer} to notify
 	 */
-	public final void whenMatchDisappears(final M match, final Consumer<M> action) {
+	public final void subscribeMatchDisappears(final M match, final Consumer<M> action) {
 		this.interpreter.subscribeMatchDisappears(match.toIMatch(), this.convertConsumer(action));
+	}
+
+	/**
+	 * Deletes the subscription of a notification when the given match disappears.
+	 * 
+	 * @param match
+	 *            the match to observe
+	 * @param action
+	 *            the {@link Consumer} to notify
+	 */
+	public final void unsubscribeMatchDisappears(final M match, final Consumer<M> action) {
+		this.interpreter.unsubscribeMatchDisappears(match.toIMatch(), this.convertConsumer(action));
 	}
 
 	/**

@@ -28,7 +28,7 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	 * Transforms the source into the target model.
 	 * 
 	 * @param sourceModel
-	 *            the source model
+	 *            the source model, must not be <code>null</code>
 	 * @return the target model
 	 */
 	abstract public TargetModel transform(final SourceModel sourceModel);

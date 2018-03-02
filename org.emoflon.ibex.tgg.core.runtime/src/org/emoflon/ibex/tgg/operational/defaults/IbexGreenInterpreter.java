@@ -6,12 +6,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
@@ -51,7 +50,9 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		for (TGGRuleEdge e : greenEdges) {
 			EObject src = (EObject) comatch.get(e.getSrcNode().getName());
 			EObject trg = (EObject) comatch.get(e.getTrgNode().getName());
-			if(createEMFEdge) createEMFEdge(e, src, trg);
+			if (createEMFEdge) {
+				EMFManipulationUtils.createEdge(src, trg, e.getType());
+			}
 			result.add(new RuntimeEdge(src, trg, e.getType()));
 		}
 		
@@ -64,15 +65,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		for (TGGRuleCorr c : greenCorrs) {
 			comatch.put(c.getName(), createCorr(comatch, c, comatch.get(c.getSource().getName()), comatch.get(c.getTarget().getName()), corrR));
 		}
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void createEMFEdge(TGGRuleEdge e, EObject src, EObject trg) {
-		EReference ref = e.getType();
-		if (ref.isMany())
-			((EList) src.eGet(ref)).add(trg);
-		else
-			src.eSet(ref, trg);
 	}
 
 	private EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
