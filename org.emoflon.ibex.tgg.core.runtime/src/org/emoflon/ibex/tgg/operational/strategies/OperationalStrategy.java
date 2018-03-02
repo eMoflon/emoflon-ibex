@@ -286,14 +286,14 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		RuntimePackageImpl.init();
 	}
 
-	protected void loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
+	public void loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
 		Resource res = loadResource(workspaceRelativePath);
 		EPackage pack = (EPackage) res.getContents().get(0);
 		rs.getPackageRegistry().put(res.getURI().toString(), pack);
 		rs.getResources().remove(res);
 	}
 
-	protected Resource loadResource(String workspaceRelativePath) throws IOException {
+	public Resource loadResource(String workspaceRelativePath) throws IOException {
 		Resource res = createResource(workspaceRelativePath);
 		res.load(null);
 		EcoreUtil.resolveAll(res);
