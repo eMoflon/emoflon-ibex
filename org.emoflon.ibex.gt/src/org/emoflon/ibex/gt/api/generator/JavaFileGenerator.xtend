@@ -105,13 +105,14 @@ class JavaFileGenerator {
 	 * Generates the Java API class.
 	 */
 	public def generateAPIJavaFile(IFolder apiPackage, String patternPath) {
+		val rules = this.gtRuleSet.rules.filter[!it.abstract]
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
 			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI'
 		)
-		this.gtRuleSet.rules.forall [
+		rules.forEach [
 			imports.add('''«this.packageName».api.rules.«getRuleClassName(it)»''')
 		]
 
@@ -162,7 +163,7 @@ class JavaFileGenerator {
 					URI uri = URI.createURI(workspacePath + patternPath);
 					this.interpreter.loadPatternSet(uri);
 				}
-			«FOR rule : this.gtRuleSet.rules»
+			«FOR rule : rules»
 				
 					/**
 					 * Creates a new rule «rule.name»().
