@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,6 +17,13 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
+import org.emoflon.ibex.common.ilp.ILPFactory;
+import org.emoflon.ibex.common.ilp.ILPSolver;
+import org.emoflon.ibex.common.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.ibex.common.ilp.ILPSolver.ILPLinearExpression;
+import org.emoflon.ibex.common.ilp.ILPSolver.ILPSolution;
+import org.emoflon.ibex.common.ilp.ILPSolver.ILPTerm;
+import org.emoflon.ibex.common.ilp.ILPSolver.Operation;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -37,12 +45,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
 import gnu.trove.set.hash.TIntHashSet;
-import gurobi.GRB;
-import gurobi.GRBEnv;
-import gurobi.GRBException;
-import gurobi.GRBLinExpr;
-import gurobi.GRBModel;
-import gurobi.GRBVar;
 import language.TGGRuleNode;
 
 public abstract class OPT extends OperationalStrategy {
@@ -167,77 +169,49 @@ public abstract class OPT extends OperationalStrategy {
 		}
 	}
 	
-	protected TIntObjectHashMap<GRBVar> defineGurobiVariables(GRBModel model) {
-		TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<>();
-		idToMatch.keySet().forEach(v -> {
-			try {
-				gurobiVariables.put(v, model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x" + v));
-			} catch (GRBException e) {
-				e.printStackTrace();
-			}
-			return true;
-		});
-		return gurobiVariables;
-	}
-	
-	protected void defineGurobiExclusions(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
+	protected void defineGurobiExclusions(ILPSolver ilpSolver) {
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
-			
-			GRBLinExpr expr = new GRBLinExpr();
+			List<ILPTerm> ilpTerms = new LinkedList<>();
 			variables.forEach(v -> {
-				expr.addTerm(1.0, gurobiVars.get(v));
+				ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
 				return true;
 			});
-			try {
-				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
-			} catch (GRBException e) {
-				e.printStackTrace();
-			}
+			ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+			ilpSolver.addConstraint(expr, Operation.le, 1.0, "EXCL" + nameCounter++);
 		}
 
 		for (RuntimeEdge edge : edgeToMarkingMatches.keySet()) {
 			TIntHashSet variables = edgeToMarkingMatches.get(edge);
-			GRBLinExpr expr = new GRBLinExpr();
+			List<ILPTerm> ilpTerms = new LinkedList<>();
 			variables.forEach(v -> {
-				expr.addTerm(1.0, gurobiVars.get(v));
+				ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
 				return true;
 			});
-			try {
-				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
-			} catch (GRBException e) {
-				e.printStackTrace();
-			}
+			ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+			ilpSolver.addConstraint(expr, Operation.le, 1.0, "EXCL" + nameCounter++);
 		}
 		
 		for (Integer match : sameCRmatches.keySet()) {
-			TIntHashSet vars = sameCRmatches.get(match);
-		
-			GRBLinExpr expr = new GRBLinExpr();
-			vars.forEach(v -> {
-				expr.addTerm(1.0, gurobiVars.get(v));
+			TIntHashSet variables = sameCRmatches.get(match);
+			List<ILPTerm> ilpTerms = new LinkedList<>();
+			variables.forEach(v -> {
+				ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
 				return true;
 			});
-			try {
-				model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "EXCL" + nameCounter++);
-			} catch (GRBException e) {
-				e.printStackTrace();
-			}
+			ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+			ilpSolver.addConstraint(expr, Operation.le, 1.0, "EXCL" + nameCounter++);
 		}
 		
 		if (!invalidKernels.isEmpty()) {
-			TIntHashSet vars = invalidKernels;
-		
-			GRBLinExpr expr = new GRBLinExpr();
-			vars.forEach(v -> {
-				expr.addTerm(1.0, gurobiVars.get(v));
+			TIntHashSet variables = invalidKernels;
+			List<ILPTerm> ilpTerms = new LinkedList<>();
+			variables.forEach(v -> {
+				ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
 				return true;
 			});
-			try {
-				model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "EXCL" + nameCounter++);
-			} catch (GRBException e) {
-				e.printStackTrace();
-			}
+			ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+			ilpSolver.addConstraint(expr, Operation.le, 0.0, "EXCL" + nameCounter++);
 		}
 		
 		HandleDependencies handleCycles = new HandleDependencies(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
@@ -245,16 +219,13 @@ public abstract class OPT extends OperationalStrategy {
 
 		for (int cycle : cyclicBundles.keySet()) {
 			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getDependedRuleApplications(cycle));
-			for (List<Integer> vars : cyclicConstraints) {
-				GRBLinExpr expr = new GRBLinExpr();
-				vars.forEach(v -> {
-					expr.addTerm(1.0, gurobiVars.get(v));
-					});
-				try {
-					model.addConstr(expr, GRB.LESS_EQUAL, vars.size()-1, "EXCL" + nameCounter++);
-				} catch (GRBException e) {
-					e.printStackTrace();
-				}
+			for (List<Integer> variables : cyclicConstraints) {
+				List<ILPTerm> ilpTerms = new LinkedList<>();
+				variables.forEach(v -> {
+					ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
+				});
+				ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+				ilpSolver.addConstraint(expr, Operation.le, variables.size()-1, "EXCL" + nameCounter++);
 			}
 		}
 	}
@@ -267,114 +238,67 @@ public abstract class OPT extends OperationalStrategy {
 		return Sets.cartesianProduct(excludedRuleApplications);
 	}
 
-	protected void defineGurobiImplications(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-		for (int v : idToMatch.keySet().toArray()) {
-			
+	protected void defineGurobiImplications(ILPSolver ilpSolver) {
+		for (int v : idToMatch.keySet().toArray()) {			
 			THashSet<EObject> contextNodes = matchToContextNodes.get(v);
 			for (EObject node : contextNodes) {
-				GRBLinExpr expr = new GRBLinExpr();
-				expr.addTerm(1.0, gurobiVars.get(v));
-				if (!nodeToMarkingMatches.contains(node)) {
-					try {
-						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "IMPL" + nameCounter++);
-					} catch (GRBException e) {
-						e.printStackTrace();
+				ILPTerm term = ilpSolver.createTerm("x" + v, 1.0);
+				ILPLinearExpression expr = ilpSolver.createLinearExpression(term);
+				if (nodeToMarkingMatches.contains(node)) {
+					for (int v2 : nodeToMarkingMatches.get(node).toArray()) {
+						expr.addTerm(ilpSolver.createTerm("x" + v2, -1.0));
 					}
-					continue;
-				}
-
-				for (int v2 : nodeToMarkingMatches.get(node).toArray()) {
-					expr.addTerm(-1.0, gurobiVars.get(v2));
-				}
-
-				try {
-					model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "IMPL" + nameCounter++);
-				} catch (GRBException e) {
-					e.printStackTrace();
+					ilpSolver.addConstraint(expr, Operation.le, 0.0, "IMPL" + nameCounter++);
+				} else {
+					ilpSolver.addConstraint(expr, Operation.le, 1.0, "IMPL" + nameCounter++);
 				}
 			}
 
 			TCustomHashSet<RuntimeEdge> contextEdges = matchToContextEdges.get(v);
 			for (RuntimeEdge edge : contextEdges) {
-				GRBLinExpr expr = new GRBLinExpr();
-				expr.addTerm(1.0, gurobiVars.get(v));
+				ILPTerm term = ilpSolver.createTerm("x" + v, 1.0);
+				ILPLinearExpression expr = ilpSolver.createLinearExpression(term);
 				if (!edgeToMarkingMatches.contains(edge)) {
-					try {
-						model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "IMPL" + nameCounter++);
-					} catch (GRBException e) {
-						e.printStackTrace();
+					for (int v2 : edgeToMarkingMatches.get(edge).toArray()) {
+						expr.addTerm(ilpSolver.createTerm("x" + v2, -1.0));
 					}
-					continue;
-				}
-
-				for (int v2 : edgeToMarkingMatches.get(edge).toArray()) {
-					expr.addTerm(-1.0, gurobiVars.get(v2));
-				}
-
-				try {
-					model.addConstr(expr, GRB.LESS_EQUAL, 0.0, "IMPL" + nameCounter++);
-				} catch (GRBException e) {
-					e.printStackTrace();
+					ilpSolver.addConstraint(expr, Operation.le, 0.0, "IMPL" + nameCounter++);
+				} else {
+					ilpSolver.addConstraint(expr, Operation.le, 1.0, "IMPL" + nameCounter++);
 				}
 			}
 		}
 	}
 
-	protected void defineGurobiObjective(GRBModel model, TIntObjectHashMap<GRBVar> gurobiVars) {
-
-		GRBLinExpr expr = new GRBLinExpr();
+	protected void defineGurobiObjective(ILPSolver ilpSolver) {
+		List<ILPTerm> ilpTerms = new LinkedList<>();
 		idToMatch.keySet().forEach(v -> {
 			int weight = weights.get(v);
-			expr.addTerm(weight, gurobiVars.get(v));
+			ilpTerms.add(ilpSolver.createTerm("x" + v, weight));
 			return true;
 		});
-		try {
-			model.setObjective(expr, GRB.MAXIMIZE);
-		} catch (GRBException e) {
-			e.printStackTrace();
-		}
+		ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+		ilpSolver.setObjective(expr, Operation.maximize);
 	}
 	
 	protected int[] chooseTGGRuleApplications() {
+		ILPSolver ilpSolver = ILPFactory.createILPSolver(SupportedILPSolver.Gurobi);		
+		defineGurobiExclusions(ilpSolver);
+		defineGurobiImplications(ilpSolver);
+		defineGurobiObjective(ilpSolver);
 
-		try {
-			GRBEnv env = new GRBEnv("Gurobi_ILP.log");
-			GRBModel model = new GRBModel(env);
+		ILPSolution ilpSolution = ilpSolver.solveILP();
 
-			TIntObjectHashMap<GRBVar> gurobiVariables = defineGurobiVariables(model);
+		int[] result = new int[idToMatch.size()];
+		idToMatch.keySet().forEach(v -> {
+			if (ilpSolution.getVariable("x"+ v) > 0)
+				result[v - 1] = v;
+			else
+				result[v - 1] = -v;
+			return true;
+		});
 
-			defineGurobiExclusions(model, gurobiVariables);
-
-			defineGurobiImplications(model, gurobiVariables);
-
-			defineGurobiObjective(model, gurobiVariables);
-
-			model.optimize();
-
-			int[] result = new int[idToMatch.size()];
-
-			idToMatch.keySet().forEach(v -> {
-				try {
-					if (gurobiVariables.get(v).get(GRB.DoubleAttr.X) > 0)
-						result[v - 1] = v;
-					else
-						result[v - 1] = -v;
-				} catch (GRBException e) {
-					e.printStackTrace();
-				}
-				return true;
-			});
-
-			env.dispose();
-			model.dispose();
-
-			return result;
-
-		} catch (GRBException e) {
-			e.printStackTrace();
-		}
-
-		return null;
+		return result;
 	}
 	
 	protected void handleBundles(IMatch comatch, String ruleName) {
