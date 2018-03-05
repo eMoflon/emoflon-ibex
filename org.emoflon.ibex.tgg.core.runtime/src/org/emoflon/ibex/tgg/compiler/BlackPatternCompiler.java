@@ -7,8 +7,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.SearchEdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDBlackPattern;
@@ -67,6 +70,12 @@ public class BlackPatternCompiler {
 			if (rule instanceof TGGComplementRule) {
 				factory.createBlackPattern(BWDOptFusedPattern.class);
 				factory.createBlackPattern(FWDOptFusedPattern.class);
+			}
+			
+			// Create edge patterns for all patterns found so far
+			for (IBlackPattern pattern : factory.getPatterns()) {
+				if (IbexBasePattern.class.isAssignableFrom(pattern.getClass()))
+					((IbexBasePattern) pattern).getOptimiser().replaceEdges((IbexBasePattern) pattern);
 			}
 			
 			ruleToPatterns.put(rule.getName(), factory.getPatterns());
