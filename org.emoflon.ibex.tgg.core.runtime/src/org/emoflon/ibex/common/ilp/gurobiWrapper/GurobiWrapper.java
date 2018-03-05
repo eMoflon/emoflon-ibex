@@ -17,15 +17,13 @@ public class GurobiWrapper extends ILPSolver {
 	private GRBModel model;
 	private GRBEnv env;
 	private ILPSolution solution;
+	private final boolean onlyBinaryVariables;
 
-	public GurobiWrapper() {
+	public GurobiWrapper(boolean onlyBinaryVariables) throws GRBException {
 		super();
-		try {
-			env = new GRBEnv("Gurobi_ILP.log");
-			model = new GRBModel(env);
-		} catch (GRBException e) {
-			e.printStackTrace();
-		}
+		this.onlyBinaryVariables = onlyBinaryVariables;
+		env = new GRBEnv("Gurobi_ILP.log");
+		model = new GRBModel(env);
 	}
 
 	@Override
@@ -36,7 +34,11 @@ public class GurobiWrapper extends ILPSolver {
 		super.addVariable(variable);
 		try {
 			//add var (lowerBound,upperBound, Objective coefficient, type, name)
-			gurobiVariables.put(variable, model.addVar(0.0, 1.0, 0.0, GRB.BINARY, variable));
+			if(onlyBinaryVariables) {
+				gurobiVariables.put(variable, model.addVar(0.0, 1.0, 0.0, GRB.BINARY, variable));
+			} else {
+				gurobiVariables.put(variable, model.addVar(Integer.MIN_VALUE, Integer.MAX_VALUE, 0.0, GRB.INTEGER, variable));
+			}			
 		} catch (GRBException e) {
 			e.printStackTrace();
 		}
