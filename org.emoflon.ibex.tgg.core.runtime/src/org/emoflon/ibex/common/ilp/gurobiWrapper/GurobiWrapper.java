@@ -132,7 +132,7 @@ public class GurobiWrapper extends ILPSolver {
 		
 		@Override
 		public void addTerm(ILPTerm term) {
-			gurobiExpression.addTerm(term.getFactor(), gurobiVariables.get(term.getVariable()));
+			gurobiExpression.addTerm(term.getCoefficient(), gurobiVariables.get(term.getVariable()));
 		}
 	}
 }

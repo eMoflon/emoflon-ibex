@@ -1,13 +1,10 @@
 package org.emoflon.ibex.common.ilp;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.emoflon.ibex.common.ilp.ILPSolver.ILPTerm;
 
 public abstract class ILPSolver {
 	
@@ -42,15 +39,19 @@ public abstract class ILPSolver {
 	}	
 	
 	public class ILPTerm {
-		protected final String variable;
-		protected final double factor;
+		private final String variable;
+		private double coefficient;
 		
-		private ILPTerm(String variable, double factor) {
+		private ILPTerm(String variable, double coefficient) {
 			if(!variables.contains(variable)) {
 				addVariable(variable);
 			}
 			this.variable = variable;
-			this.factor = factor;
+			this.coefficient = coefficient;
+		}
+		
+		public void multiplyBy(double factor) {
+			this.coefficient *= factor; 
 		}
 
 		/**
@@ -61,10 +62,10 @@ public abstract class ILPSolver {
 		}
 
 		/**
-		 * @return the factor
+		 * @return the coefficient
 		 */
-		public double getFactor() {
-			return factor;
+		public double getCoefficient() {
+			return coefficient;
 		}
 	}
 	

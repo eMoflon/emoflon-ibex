@@ -7,18 +7,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.emoflon.ibex.common.ilp.ILPSolver;
-import org.emoflon.ibex.common.ilp.ILPSolver.ILPSolution;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
-import org.sat4j.pb.OptToPBSATAdapter;
-import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.SolverFactory;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IOptimizationProblem;
-import org.sat4j.specs.IProblem;
-import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -45,7 +39,6 @@ public class Sat4JWrapper extends ILPSolver {
 
 	@Override
 	public void addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
-		// TODO Auto-generated method stub
 		SAT4JLinearExpression expr = (SAT4JLinearExpression) linearExpression;
 		boolean moreThan;
 		switch(comparator) {
@@ -58,6 +51,13 @@ public class Sat4JWrapper extends ILPSolver {
 		default:
 			throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
 		}
+		
+		value *= expr.factor;
+		while(Math.abs(value - ((long)value)) >= 0.00000000001) {
+			value *= 10;
+			expr.multiplyBy(10);
+		}
+		
 		try {
 			solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), moreThan, BigInteger.valueOf((long) value));
 		} catch (ContradictionException e) {
@@ -72,7 +72,7 @@ public class Sat4JWrapper extends ILPSolver {
 		case maximize:
 			SAT4JLinearExpression invertedExpression = (SAT4JLinearExpression) this.createLinearExpression();
 			for(ILPTerm term : expr.getTerms()) {
-				invertedExpression.addTerm(this.createTerm(term.getVariable(), -term.getFactor()));
+				invertedExpression.addTerm(this.createTerm(term.getVariable(), -term.getCoefficient()));
 			}
 			expr = invertedExpression;
 			break;
@@ -86,12 +86,12 @@ public class Sat4JWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() {
-		OptToPBSATAdapter optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(solver));
-		optimizer.setTimeout(600);
-		optimizer.setVerbose(true);
+//		OptToPBSATAdapter optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(solver));
+		solver.setTimeout(600);
+		solver.setVerbose(true);
 		try {
-			if(optimizer.isSatisfiable()) {
-				int[] model = optimizer.model();
+			if(solver.isSatisfiable()) { //TODO check all constraints -> satisfied?
+				int[] model = solver.model();
 				Map<String, Integer> variableSolutions = new HashMap<>();
 				for(int i : model) {
 					int solution = i>0? 1 : 0;
@@ -102,10 +102,9 @@ public class Sat4JWrapper extends ILPSolver {
 						}
 					}
 				}
-				return new ILPSolution(variableSolutions, optimizer.isOptimal());
+				return new ILPSolution(variableSolutions, true);//optimizer.isOptimal());
 			}
 		} catch (TimeoutException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -115,10 +114,22 @@ public class Sat4JWrapper extends ILPSolver {
 	private class SAT4JLinearExpression extends ILPLinearExpression {
 		
 		private final Set<ILPTerm> terms = new HashSet<>();
+		private int factor = 1;
 
 		@Override
 		public void addTerm(ILPTerm term) {
+			term.multiplyBy(this.factor);
 			terms.add(term);
+			while(Math.abs(term.getCoefficient() - ((long)term.getCoefficient())) >= 0.00000000001) {
+				this.multiplyBy(10);
+			}
+		}
+		
+		private void multiplyBy(double factor) {
+			this.factor *= factor;
+			for (ILPTerm term : terms) {
+				term.multiplyBy(factor);
+			}
 		}
 		
 		private IVecInt getLiterals() {
@@ -132,7 +143,7 @@ public class Sat4JWrapper extends ILPSolver {
 		private IVec<BigInteger> getCoefs() {
 			IVec<BigInteger> vec = new Vec<>();
 			for (ILPTerm term : terms) {
-				vec.push(BigInteger.valueOf((long)term.getFactor()));
+				vec.push(BigInteger.valueOf((long)term.getCoefficient()));
 			}
 			return vec;
 		}
