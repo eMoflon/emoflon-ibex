@@ -20,6 +20,7 @@ import org.sat4j.specs.TimeoutException;
 public class Sat4JWrapper extends ILPSolver {
 	
 	private final IPBSolver solver;
+	private final Set<SAT4JConstraint> constraints = new HashSet<>();
 	
 	
 	//http://www.sat4j.org/maven234/org.ow2.sat4j.pb/apidocs/index.html
@@ -39,27 +40,8 @@ public class Sat4JWrapper extends ILPSolver {
 
 	@Override
 	public void addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
-		SAT4JLinearExpression expr = (SAT4JLinearExpression) linearExpression;
-		boolean moreThan;
-		switch(comparator) {
-		case ge:
-			moreThan = true;
-			break;
-		case le:
-			moreThan = false;
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
-		}
-		
-		value *= expr.factor;
-		while(Math.abs(value - ((long)value)) >= 0.00000000001) {
-			value *= 10;
-			expr.multiplyBy(10);
-		}
-		
 		try {
-			solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), moreThan, BigInteger.valueOf((long) value));
+			this.constraints.add(new SAT4JConstraint(linearExpression, comparator, value));
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
@@ -100,6 +82,11 @@ public class Sat4JWrapper extends ILPSolver {
 							variableSolutions.put(var, solution);
 							break;
 						}
+					}
+				}
+				for(SAT4JConstraint constraint : constraints) {
+					if(!constraint.checkConstraint(variableSolutions)) {
+						throw new RuntimeException("The ILP is not satisfiable");
 					}
 				}
 				return new ILPSolution(variableSolutions, true);//optimizer.isOptimal());
@@ -155,5 +142,53 @@ public class Sat4JWrapper extends ILPSolver {
 			return terms;
 		}
 		
+	}
+	
+	private class SAT4JConstraint extends ILPConstraint {
+		private final SAT4JLinearExpression linearExpression;
+		private final long value;
+		private final Operation comparator;
+		
+		private SAT4JConstraint(ILPLinearExpression linearExpression, Operation comparator, double value) throws ContradictionException {
+			SAT4JLinearExpression expr = (SAT4JLinearExpression) linearExpression;
+			this.comparator = comparator;
+			value *= expr.factor;
+			while(Math.abs(value - ((long)value)) >= 0.00000000001) {
+				value *= 10;
+				expr.multiplyBy(10);
+			}
+			this.linearExpression = expr;
+			this.value = (long) value;
+			switch(comparator) {
+				case ge:
+					solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), true, BigInteger.valueOf(this.value));
+					break;
+				case le:
+					solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), false, BigInteger.valueOf(this.value));
+					break;
+				case eq:
+					solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), true, BigInteger.valueOf(this.value));
+					solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), false, BigInteger.valueOf(this.value));
+				default:
+					throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
+			}
+		}
+		
+		private boolean checkConstraint(Map<String, Integer> variableSolutions) {
+			double solution = 0;
+			for(ILPTerm term : linearExpression.terms) {
+				solution += term.getCoefficient() * variableSolutions.get(term.getVariable());
+			}
+			switch(comparator) {
+				case ge:
+					return solution >= value;
+				case le:
+					return solution <= value;
+				case eq:
+					return solution == value;
+				default:
+					throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
+			}
+		}
 	}
 }
