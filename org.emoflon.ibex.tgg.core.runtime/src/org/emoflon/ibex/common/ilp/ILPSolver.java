@@ -10,7 +10,7 @@ import org.emoflon.ibex.common.ilp.ILPSolver.ILPTerm;
 
 public abstract class ILPSolver {
 	
-	private Set<String> variables;
+	private final Set<String> variables = new HashSet<>();
 	/**
 	 * @return the variables
 	 */
