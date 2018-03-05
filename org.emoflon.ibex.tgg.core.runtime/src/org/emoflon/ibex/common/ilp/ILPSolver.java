@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.emoflon.ibex.common.ilp.ILPSolver.ILPTerm;
@@ -91,5 +92,15 @@ public abstract class ILPSolver {
 		public boolean isOptimal() {
 			return optimal;
 		}
+		@Override
+		public String toString() {
+			StringBuilder s = new StringBuilder();
+			for (Entry<String, Integer> solution : solutionVariables.entrySet()) {
+				s.append("("+solution.getKey()+","+solution.getValue()+")\n");
+			}
+			return s.toString();
+		}
+		
+		
 	}
 }

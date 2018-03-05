@@ -1,7 +1,9 @@
 package org.emoflon.ibex.common.ilp.sat4JWrapper;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.emoflon.ibex.common.ilp.ILPSolver;
@@ -84,17 +86,23 @@ public class Sat4JWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() {
-		// TODO Auto-generated method stub
 		OptToPBSATAdapter optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(solver));
 		optimizer.setTimeout(600);
 		optimizer.setVerbose(true);
 		try {
 			if(optimizer.isSatisfiable()) {
 				int[] model = optimizer.model();
+				Map<String, Integer> variableSolutions = new HashMap<>();
 				for(int i : model) {
-					System.out.println(i);
+					int solution = i>0? 1 : 0;
+					for(String var : this.getVariables()) {
+						if(Math.abs(i) == var.hashCode()) {
+							variableSolutions.put(var, solution);
+							break;
+						}
+					}
 				}
-				
+				return new ILPSolution(variableSolutions, optimizer.isOptimal());
 			}
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
