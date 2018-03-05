@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.compiler.defaults;
 
-import static org.moflon.util.WorkspaceHelper.addAllFoldersAndFile;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -14,7 +12,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.emoflon.ibex.tgg.core.transformation.TGGProject;
-import org.moflon.util.LogUtils;
+import org.moflon.core.utilities.LogUtils;
+import org.moflon.core.utilities.WorkspaceHelper;
 
 import language.csp.definition.TGGAttributeConstraintDefinition;
 
@@ -27,7 +26,7 @@ public class AttrCondDefLibraryProvider {
 		String path = USER_ATTR_COND_DEF_FACTORY_PATH;
 		String userLib = DefaultFilesGenerator.generateUserRuntimeAttrCondFactory(userDefConstraints);
 		IPath pathToLib = new Path(path);
-		addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
+		WorkspaceHelper.addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
 	}
 
 	public static void userAttrCondDefStubs(IProject project, Collection<TGGAttributeConstraintDefinition> userDefConstraints) throws CoreException, IOException {
@@ -37,7 +36,7 @@ public class AttrCondDefLibraryProvider {
 			IPath pathToLib = new Path(path);
 			IFile userAttrLibFile = project.getFile(pathToLib);
 			if (!userAttrLibFile.exists()) {
-				addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
+				WorkspaceHelper.addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
 			}
 		}
 	}

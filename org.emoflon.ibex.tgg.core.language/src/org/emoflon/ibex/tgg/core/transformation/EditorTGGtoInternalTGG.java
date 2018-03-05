@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
+import org.moflon.core.utilities.LogUtils;
 import org.moflon.tgg.mosl.tgg.Adornment;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
@@ -44,7 +45,6 @@ import org.moflon.tgg.mosl.tgg.ParamValue;
 import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TggFactory;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
-import org.moflon.util.LogUtils;
 
 import language.BindingType;
 import language.DomainType;
