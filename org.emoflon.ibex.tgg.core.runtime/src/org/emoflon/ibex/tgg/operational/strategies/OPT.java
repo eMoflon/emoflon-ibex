@@ -258,7 +258,7 @@ public abstract class OPT extends OperationalStrategy {
 			for (RuntimeEdge edge : contextEdges) {
 				ILPTerm term = ilpSolver.createTerm("x" + v, 1.0);
 				ILPLinearExpression expr = ilpSolver.createLinearExpression(term);
-				if (!edgeToMarkingMatches.contains(edge)) {
+				if (edgeToMarkingMatches.contains(edge)) {
 					for (int v2 : edgeToMarkingMatches.get(edge).toArray()) {
 						expr.addTerm(ilpSolver.createTerm("x" + v2, -1.0));
 					}
@@ -282,7 +282,7 @@ public abstract class OPT extends OperationalStrategy {
 	}
 	
 	protected int[] chooseTGGRuleApplications() {
-		ILPSolver ilpSolver = ILPFactory.createBinaryILPSolver(SupportedILPSolver.Gurobi);		
+		ILPSolver ilpSolver = ILPFactory.createBinaryILPSolver(SupportedILPSolver.Sat4J);		
 		defineGurobiExclusions(ilpSolver);
 		defineGurobiImplications(ilpSolver);
 		defineGurobiObjective(ilpSolver);
