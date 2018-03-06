@@ -282,7 +282,7 @@ public abstract class OPT extends OperationalStrategy {
 	}
 	
 	protected int[] chooseTGGRuleApplications() {
-		ILPSolver ilpSolver = ILPFactory.createILPSolver(SupportedILPSolver.Gurobi);		
+		ILPSolver ilpSolver = ILPFactory.createBinaryILPSolver(SupportedILPSolver.Gurobi);		
 		defineGurobiExclusions(ilpSolver);
 		defineGurobiImplications(ilpSolver);
 		defineGurobiObjective(ilpSolver);
