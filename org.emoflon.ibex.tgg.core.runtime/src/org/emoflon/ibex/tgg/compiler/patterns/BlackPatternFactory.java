@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -22,6 +21,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.SearchEdgePattern;
+import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckLocalTranslationStatePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTranslationStatePattern;
 
 import language.BindingType;
@@ -33,10 +33,15 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class BlackPatternFactory {
+	private final static Collection<CheckTranslationStatePattern> markedPatterns = new ArrayList<>();
+	private final static Collection<CheckLocalTranslationStatePattern> localMarkedPatterns = new ArrayList<>();
+	static {
+		createMarkedPatterns();
+	}
+	
 	private TGGRule rule;
 	private Map<String, IBlackPattern> patterns;
 	private BlackPatternCompiler compiler;
-	private final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
 	
 	public static final FilterACStrategy strategy = FilterACStrategy.FILTER_NACS;
 
@@ -54,41 +59,42 @@ public class BlackPatternFactory {
 		return Collections.unmodifiableCollection(patterns.values());
 	}
 	
-	private Collection<CheckTranslationStatePattern> createMarkedPatterns() {
-		List<CheckTranslationStatePattern> markedPatterns = new ArrayList<>();
-		
-		CheckTranslationStatePattern signProtocolSrcMarkedPattern = new CheckTranslationStatePattern(this, DomainType.SRC, false, false);
-		CheckTranslationStatePattern signProtocolTrgMarkedPattern = new CheckTranslationStatePattern(this, DomainType.TRG, false, false);
+	private static void createMarkedPatterns() {
+		CheckTranslationStatePattern signProtocolSrcMarkedPattern = new CheckTranslationStatePattern(DomainType.SRC, false);
+		CheckTranslationStatePattern signProtocolTrgMarkedPattern = new CheckTranslationStatePattern(DomainType.TRG, false);
 				
-		CheckTranslationStatePattern signProtocolSrcMarkedContextPattern = new CheckTranslationStatePattern(this, DomainType.SRC, false, true);
-		CheckTranslationStatePattern signProtocolTrgMarkedContextPattern = new CheckTranslationStatePattern(this, DomainType.TRG, false, true);
+		CheckTranslationStatePattern signProtocolSrcMarkedContextPattern = new CheckTranslationStatePattern(DomainType.SRC, true);
+		CheckTranslationStatePattern signProtocolTrgMarkedContextPattern = new CheckTranslationStatePattern(DomainType.TRG, true);
 		
-		CheckTranslationStatePattern localProtocolSrcMarkedPattern = new CheckTranslationStatePattern(this, signProtocolSrcMarkedPattern, DomainType.SRC, true);
-		CheckTranslationStatePattern localProtocolTrgMarkedPattern = new CheckTranslationStatePattern(this, signProtocolTrgMarkedPattern, DomainType.TRG, true);
+		CheckLocalTranslationStatePattern localProtocolSrcMarkedPattern = new CheckLocalTranslationStatePattern(signProtocolSrcMarkedPattern, DomainType.SRC);
+		CheckLocalTranslationStatePattern localProtocolTrgMarkedPattern = new CheckLocalTranslationStatePattern(signProtocolTrgMarkedPattern, DomainType.TRG);
 		
 		localProtocolSrcMarkedPattern.addPositiveInvocation(signProtocolSrcMarkedPattern);
 		localProtocolTrgMarkedPattern.addPositiveInvocation(signProtocolTrgMarkedPattern);
 		
-		markedPatterns.add(localProtocolSrcMarkedPattern);
-		markedPatterns.add(localProtocolTrgMarkedPattern);
+		localMarkedPatterns.add(localProtocolSrcMarkedPattern);
+		localMarkedPatterns.add(localProtocolTrgMarkedPattern);
+		
 		markedPatterns.add(signProtocolSrcMarkedPattern);
 		markedPatterns.add(signProtocolTrgMarkedPattern);
 		markedPatterns.add(signProtocolSrcMarkedContextPattern);
 		markedPatterns.add(signProtocolTrgMarkedContextPattern);
-		
-		return Collections.unmodifiableCollection(markedPatterns);
 	}
 	
-	public Collection<CheckTranslationStatePattern> getMarkedPatterns() {
-		return markedPatterns;
+	public IBlackPattern getMarkedPattern(DomainType domain, boolean context) {
+		return markedPatterns.stream()//
+				.filter(p -> p.getDomain().equals(domain) && p.marksContext() == context)//
+				.findFirst()//
+				.get();//
 	}
 	
-	public IBlackPattern getMarkedPattern(DomainType domain, boolean local, boolean context) {
-		return markedPatterns.stream()
-							 .filter(p -> p.getDomain().equals(domain) && (p.isLocal() == local) && (p.marksContext() == context))
-							 .findFirst()
-							 .get();
+	public IBlackPattern getLocalMarkedPattern(DomainType domain) {
+		return localMarkedPatterns.stream()//
+				.filter(p -> p.getDomain().equals(domain))//
+				.findFirst()//
+				.get();//
 	}
+	
 	
 	/**
 	 * This method computes constraint patterns for a given pattern to deal with all 0..n multiplicities.
