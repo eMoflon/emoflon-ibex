@@ -3,11 +3,16 @@ package org.emoflon.ibex.tgg.compiler.patterns.common;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+
+import org.eclipse.emf.ecore.ENamedElement;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.moflon.util.MoflonUtil;
+import org.moflon.util.WorkspaceHelper;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import language.impl.LanguageFactoryImpl;
 
 public class EdgePattern extends IbexBasePattern {
 	
@@ -15,11 +20,23 @@ public class EdgePattern extends IbexBasePattern {
 	private TGGRuleNode trg;
 	private TGGRuleEdge edge;
 	
-	public EdgePattern(BlackPatternFactory factory, TGGRuleEdge edge) {
+	public EdgePattern(BlackPatternFactory factory, TGGRuleEdge sampleEdge) {
 		super(factory);
-		this.src = edge.getSrcNode();
-		this.trg = edge.getTrgNode();
-		this.edge = edge;
+		LanguageFactoryImpl lfi = new LanguageFactoryImpl();
+		
+		src = lfi.createTGGRuleNode();
+		src.setType(sampleEdge.getSrcNode().getType());
+		src.setName("source");
+		
+		trg = lfi.createTGGRuleNode();
+		trg.setType(sampleEdge.getTrgNode().getType());
+		trg.setName("target");
+		
+		edge = lfi.createTGGRuleEdge();
+		edge.setSrcNode(src);
+		edge.setTrgNode(trg);
+		edge.setType(sampleEdge.getType());
+		edge.setName("edge");
 		
 		initialise(factory);
 		createPatternNetwork(factory);
@@ -30,7 +47,8 @@ public class EdgePattern extends IbexBasePattern {
 	}
 
 	protected void initialise(BlackPatternFactory factory) {
-		String name = factory.getRule().getName() + PatternSuffixes.EDGE;
+		String name = MoflonUtil.getFQN(src.getType()) + "_" + MoflonUtil.getFQN(edge.getType()) + "_"
+				    + MoflonUtil.getFQN(trg.getType()) + "_" + PatternSuffixes.EDGE;
 		
 		Collection<TGGRuleNode> signatureNodes = new ArrayList<TGGRuleNode>();
 		signatureNodes.add(src);

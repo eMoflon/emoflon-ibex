@@ -39,7 +39,6 @@ public class BlackPatternFactory {
 	private Map<String, IBlackPattern> patterns;
 	private BlackPatternCompiler compiler;
 	private final Collection<CheckTranslationStatePattern> markedPatterns = createMarkedPatterns();
-	private static Map<EReference,EdgePattern> edgePatterns = new LinkedHashMap<EReference, EdgePattern>();;
 
 	public static final FilterACStrategy strategy = FilterACStrategy.FILTER_NACS;
 
@@ -86,32 +85,6 @@ public class BlackPatternFactory {
 		markedPatterns.add(signProtocolTrgMarkedContextPattern);
 
 		return Collections.unmodifiableCollection(markedPatterns);
-	}
-
-	public void updateEdgePatterns() {
-		Collection<IBlackPattern> patternList = patterns.values();
-
-		for (IBlackPattern p : patternList) {
-			if (IbexBasePattern.class.isAssignableFrom(p.getClass())) {
-				Collection<TGGRuleEdge> edges = ((IbexBasePattern) p).getOptimiser().extractEdges(p);
-
-				for (TGGRuleEdge e : edges) {
-					if (getEdgePatternByReference(e.getType()) == null) {
-						EdgePattern ep = new EdgePattern(this, e);
-						edgePatterns.put(e.getType(), ep);
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Returns an existing edge pattern with corresponding edge in the metamodel
-	 * @param edge: Edge in the metamodel
-	 * @return: Corresponding edge pattern, if one exists
-	 */
-	public EdgePattern getEdgePatternByReference(EReference edge) {
-		return edgePatterns.get(edge);
 	}
 
 	public Collection<CheckTranslationStatePattern> getMarkedPatterns() {

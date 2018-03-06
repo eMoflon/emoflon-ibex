@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,10 +13,13 @@ import java.util.stream.Collectors;
 //import javax.xml.ws.BindingType;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.osgi.internal.debug.Debug;
 import org.emoflon.ibex.tgg.compiler.patterns.common.EdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.Triple;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -24,6 +28,9 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import language.BindingType;
 
 public class IbexPatternOptimiser {
+
+	private static Map<Triple<EClass, EReference, EClass>,EdgePattern> edgePatterns 
+		= new LinkedHashMap<Triple<EClass, EReference, EClass>, EdgePattern>();
 
 	/**
 	 * This method takes a pair of nodes which potentially need an
@@ -219,17 +226,6 @@ public class IbexPatternOptimiser {
 	}
 
 	/**
-	 * Extracts edges from the given pattern to create edge patterns later on
-	 * 
-	 * @param pattern:
-	 *            The given pattern
-	 * @return: List of all edges
-	 */
-	public Collection<TGGRuleEdge> extractEdges(IBlackPattern pattern) {
-		return pattern.getLocalEdges();
-	}
-
-	/**
 	 * Replaces local edges of a given pattern by invocations to the respective edge
 	 * pattern
 	 * 
@@ -239,29 +235,37 @@ public class IbexPatternOptimiser {
 	 *             Thrown if the factory does not contain a suitable pattern
 	 */
 	public void replaceEdges(IbexBasePattern pattern) throws NotImplementedException {
-		pattern.getPatternFactory().updateEdgePatterns();
 		Collection<TGGRuleEdge> edges = pattern.getLocalEdges();
 		Collection<TGGRuleEdge> edgesToRemove = new ArrayList<TGGRuleEdge>();
 
 		for (TGGRuleEdge edge : edges) {
-			EdgePattern ep = pattern.getPatternFactory().getEdgePatternByReference(edge.getType());
-
-			if (ep == null)
-				throw new NotImplementedException(
-						"There does not exists any pattern for edge " + edge.getType().getName());
+			// Links connecting different models must be handled separately
+			if (!edge.getSrcNode().getDomainType().equals(edge.getTrgNode().getDomainType()))
+				continue;
 			
-			//EdgePattern ep = new EdgePattern(pattern.getPatternFactory(), edge);
+			Triple<EClass, EReference, EClass> key = new Triple<EClass, EReference, EClass>(edge.getSrcNode().getType(), edge.getType(), edge.getTrgNode().getType());
+			EdgePattern ep = edgePatterns.get(key);
+			
+			if (ep == null) {
+				ep = new EdgePattern(pattern.getPatternFactory(), edge);
+				edgePatterns.put(key, ep);
+			}
 			
 			// Mapping via source and target node
 			Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
 			mapping.put(edge.getSrcNode(), ep.getEdge().getSrcNode());
+			
+			//System.out.println(edge.getSrcNode().getType().getName() + " --> " + ep.getEdge().getSrcNode().getType().getName());
+			
 			mapping.put(edge.getTrgNode(), ep.getEdge().getTrgNode());
+			
+			//System.out.println(edge.getTrgNode().getType().getName() + " --> " + ep.getEdge().getTrgNode().getType().getName());
 			
 			// Invocation
 			pattern.addPositiveInvocation(ep, mapping);
 			edgesToRemove.add(edge);
 		}
 
-		extractEdges(pattern).removeAll(edgesToRemove);
+		edges.removeAll(edgesToRemove);
 	}
 }
