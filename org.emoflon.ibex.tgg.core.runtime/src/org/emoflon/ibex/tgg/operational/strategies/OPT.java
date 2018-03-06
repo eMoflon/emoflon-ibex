@@ -169,7 +169,7 @@ public abstract class OPT extends OperationalStrategy {
 		}
 	}
 	
-	protected void defineGurobiExclusions(ILPSolver ilpSolver) {
+	protected void defineILPExclusions(ILPSolver ilpSolver) {
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
 			List<ILPTerm> ilpTerms = new LinkedList<>();
@@ -238,7 +238,7 @@ public abstract class OPT extends OperationalStrategy {
 		return Sets.cartesianProduct(excludedRuleApplications);
 	}
 
-	protected void defineGurobiImplications(ILPSolver ilpSolver) {
+	protected void defineILPImplications(ILPSolver ilpSolver) {
 		for (int v : idToMatch.keySet().toArray()) {			
 			THashSet<EObject> contextNodes = matchToContextNodes.get(v);
 			for (EObject node : contextNodes) {
@@ -270,7 +270,7 @@ public abstract class OPT extends OperationalStrategy {
 		}
 	}
 
-	protected void defineGurobiObjective(ILPSolver ilpSolver) {
+	protected void defineILPObjective(ILPSolver ilpSolver) {
 		List<ILPTerm> ilpTerms = new LinkedList<>();
 		idToMatch.keySet().forEach(v -> {
 			int weight = weights.get(v);
@@ -283,9 +283,9 @@ public abstract class OPT extends OperationalStrategy {
 	
 	protected int[] chooseTGGRuleApplications() {
 		ILPSolver ilpSolver = ILPFactory.createBinaryILPSolver(SupportedILPSolver.Sat4J);		
-		defineGurobiExclusions(ilpSolver);
-		defineGurobiImplications(ilpSolver);
-		defineGurobiObjective(ilpSolver);
+		defineILPExclusions(ilpSolver);
+		defineILPImplications(ilpSolver);
+		defineILPObjective(ilpSolver);
 
 		ILPSolution ilpSolution = ilpSolver.solveILP();
 
