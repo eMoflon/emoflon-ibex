@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.emoflon.ibex.tgg.editor,
  org.emoflon.ibex.tgg.ide,
  org.emoflon.ibex.common,
- org.moflon.core.utilities
+ org.moflon.core.utilities,
+ org.moflon.emf.codegen;bundle-version="1.0.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

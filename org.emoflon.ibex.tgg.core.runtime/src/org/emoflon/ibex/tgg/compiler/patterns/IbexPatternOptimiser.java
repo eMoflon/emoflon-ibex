@@ -13,20 +13,15 @@ import java.util.stream.Collectors;
 //import javax.xml.ws.BindingType;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.osgi.internal.debug.Debug;
 import org.emoflon.ibex.tgg.compiler.patterns.common.EdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.Triple;
-import org.moflon.util.MoflonUtil;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import language.basic.expressions.TGGLiteralExpression;
 import language.inplaceAttributes.TGGInplaceAttributeExpression;
-import language.BindingType;
 
 public class IbexPatternOptimiser {
 

@@ -6,7 +6,8 @@ import java.util.Collections;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.moflon.util.MoflonUtil;
+import org.moflon.core.utilities.MoflonUtil;
+
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import language.impl.LanguageFactoryImpl;
