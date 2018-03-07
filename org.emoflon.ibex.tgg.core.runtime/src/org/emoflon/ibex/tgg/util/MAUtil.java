@@ -143,8 +143,7 @@ public class MAUtil {
 		for (TGGRuleElement e : pattern.getSignatureNodes()) {
 			TGGRuleNode node = (TGGRuleNode) e;
 			if (nodeIsNotInKernel(rule, node) && node.getDomainType().equals(domain)) {
-				IBlackPattern markedPattern = pattern.getPatternFactory().getMarkedPattern(node.getDomainType(), true,
-						false);
+				IBlackPattern markedPattern = pattern.getPatternFactory().getLocalMarkedPattern(node.getDomainType());
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findAny().get();
 
 				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
