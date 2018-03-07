@@ -8,7 +8,7 @@ import IBeXLanguage.IBeXPatternSet;
 /**
  * Interface for a pattern matcher.
  */
-public interface IPatternInterpreter {
+public interface IContextPatternInterpreter {
 	/**
 	 * Initializes the patterns of the engine with the given IBeXPatterns, which
 	 * need to be transformed into the patterns of the concrete pattern matcher.

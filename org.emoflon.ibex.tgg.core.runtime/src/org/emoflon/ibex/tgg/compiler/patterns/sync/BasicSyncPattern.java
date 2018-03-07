@@ -132,7 +132,7 @@ public abstract class BasicSyncPattern extends IbexBasePattern {
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (node.getBindingType().equals(positive ? BindingType.CONTEXT : BindingType.CREATE)
 					&& node.getDomainType().equals(domain) && isKernelProtocolNode(node)) {
-				IBlackPattern markedPattern = getPatternFactory().getMarkedPattern(node.getDomainType(), true, false);
+				IBlackPattern markedPattern = getPatternFactory().getLocalMarkedPattern(node.getDomainType());
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findFirst().get();
 
 				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();

@@ -252,10 +252,12 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private void generateAPI() {
 		IFolder matchesPackage = this.ensureFolderExists(this.apiPackage.getFolder("matches"));
 		IFolder rulesPackage = this.ensureFolderExists(this.apiPackage.getFolder("rules"));
-		this.gtRuleSet.getRules().forEach(gtRule -> {
-			this.fileGenerator.generateMatchJavaFile(matchesPackage, gtRule);
-			this.fileGenerator.generateRuleJavaFile(rulesPackage, gtRule);
-		});
+		this.gtRuleSet.getRules().stream() //
+				.filter(gtRule -> !gtRule.isAbstract()) // ignore abstract rules
+				.forEach(gtRule -> {
+					this.fileGenerator.generateMatchJavaFile(matchesPackage, gtRule);
+					this.fileGenerator.generateRuleJavaFile(rulesPackage, gtRule);
+				});
 
 		String patternPath = this.project.getName() + "/src-gen/" + this.path.toString() + "/api/ibex-patterns.xmi";
 		this.fileGenerator.generateAPIJavaFile(this.apiPackage, patternPath);

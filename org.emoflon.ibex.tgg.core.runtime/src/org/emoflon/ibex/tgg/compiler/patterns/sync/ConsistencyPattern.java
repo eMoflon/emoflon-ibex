@@ -85,7 +85,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 		{
 			TGGRuleNode node = (TGGRuleNode) el;
 			if (nodeIsConnectedToRuleApplicationNode(node)) {
-				IBlackPattern markedPattern = getPatternFactory().getMarkedPattern(node.getDomainType(), false, node.getBindingType().equals(BindingType.CONTEXT));
+				IBlackPattern markedPattern = getPatternFactory().getMarkedPattern(node.getDomainType(), node.getBindingType().equals(BindingType.CONTEXT));
 				TGGRuleNode invokedRuleApplicationNode = getRuleApplicationNode(markedPattern.getSignatureNodes());
 				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes()
 						.stream()

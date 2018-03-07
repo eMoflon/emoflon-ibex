@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
+Bundle-Name: eMoflon::IBeX Bidirectional Model Transformation via Triple Graph Grammars - Runtime
 Bundle-SymbolicName: org.emoflon.ibex.tgg.core.runtime;singleton:=true
-Bundle-Name: org.emoflon.ibex.tgg.core.runtime
 Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: eMoflon::IBeX Developers
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
  org.eclipse.emf.common,
@@ -16,11 +17,10 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.emoflon.ibex.tgg.editor,
  org.emoflon.ibex.tgg.ide,
  org.emoflon.ibex.common,
- org.eclipse.emf.codegen.ecore;bundle-version="2.13.0"
+ org.moflon.core.utilities
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: TU Darmstadt
 Bundle-ClassPath: lib/trove-3.1a1.jar,
  lib/commons-io-2.5.jar,
  lib/commons-lang3-3.5.jar,
