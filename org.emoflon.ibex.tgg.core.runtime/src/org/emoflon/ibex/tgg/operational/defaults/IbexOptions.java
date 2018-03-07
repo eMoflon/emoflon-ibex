@@ -141,7 +141,8 @@ public class IbexOptions {
 	/**
 	 * @param ilpSolver the ilpSolver to set
 	 */
-	public void setIlpSolver(SupportedILPSolver ilpSolver) {
+	public IbexOptions setIlpSolver(SupportedILPSolver ilpSolver) {
 		this.ilpSolver = ilpSolver;
+		return this;
 	}
 }
