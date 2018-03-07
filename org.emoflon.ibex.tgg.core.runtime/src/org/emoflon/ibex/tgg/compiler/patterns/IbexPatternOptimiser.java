@@ -20,6 +20,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.EdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.Triple;
+import org.moflon.util.MoflonUtil;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -29,8 +30,7 @@ import language.BindingType;
 
 public class IbexPatternOptimiser {
 
-	private static Map<Triple<EClass, EReference, EClass>,EdgePattern> edgePatterns 
-		= new LinkedHashMap<Triple<EClass, EReference, EClass>, EdgePattern>();
+	private static Map<EReference,EdgePattern> edgePatterns = new LinkedHashMap<>();
 
 	/**
 	 * This method takes a pair of nodes which potentially need an
@@ -243,7 +243,7 @@ public class IbexPatternOptimiser {
 			if (!edge.getSrcNode().getDomainType().equals(edge.getTrgNode().getDomainType()))
 				continue;
 			
-			Triple<EClass, EReference, EClass> key = new Triple<EClass, EReference, EClass>(edge.getSrcNode().getType(), edge.getType(), edge.getTrgNode().getType());
+			EReference key = edge.getType();
 			EdgePattern ep = edgePatterns.get(key);
 			
 			if (ep == null) {

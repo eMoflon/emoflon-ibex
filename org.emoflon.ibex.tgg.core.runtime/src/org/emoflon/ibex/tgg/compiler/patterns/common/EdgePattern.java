@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.eclipse.emf.ecore.ENamedElement;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.moflon.util.MoflonUtil;
-import org.moflon.util.WorkspaceHelper;
-
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import language.impl.LanguageFactoryImpl;
@@ -25,11 +22,11 @@ public class EdgePattern extends IbexBasePattern {
 		LanguageFactoryImpl lfi = new LanguageFactoryImpl();
 		
 		src = lfi.createTGGRuleNode();
-		src.setType(sampleEdge.getSrcNode().getType());
+		src.setType(sampleEdge.getType().getEContainingClass());
 		src.setName("source");
 		
 		trg = lfi.createTGGRuleNode();
-		trg.setType(sampleEdge.getTrgNode().getType());
+		trg.setType(sampleEdge.getType().getEReferenceType());
 		trg.setName("target");
 		
 		edge = lfi.createTGGRuleEdge();
