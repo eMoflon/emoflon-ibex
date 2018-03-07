@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
+import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 import language.TGG;
 import language.TGGRule;
@@ -21,11 +22,13 @@ public class IbexOptions {
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private boolean isModelGen;
+	private SupportedILPSolver ilpSolver;
 	
 	public IbexOptions() {
 		debug = false;
 		projectPath = "/";
 		workspacePath = "./../";
+		setIlpSolver(SupportedILPSolver.Sat4J);
 	}
 
 	public boolean isModelGen() {
@@ -126,5 +129,19 @@ public class IbexOptions {
 	
 	public boolean blackInterpSupportsAttrConstrs() {
 		return blackInterpSupportsAttrConstrs;
+	}
+
+	/**
+	 * @return the ilpSolver
+	 */
+	public SupportedILPSolver getIlpSolver() {
+		return ilpSolver;
+	}
+
+	/**
+	 * @param ilpSolver the ilpSolver to set
+	 */
+	public void setIlpSolver(SupportedILPSolver ilpSolver) {
+		this.ilpSolver = ilpSolver;
 	}
 }
