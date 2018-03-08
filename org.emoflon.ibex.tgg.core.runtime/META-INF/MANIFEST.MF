@@ -102,6 +102,7 @@ Export-Package: .,
  org.emoflon.ibex.tgg.operational.strategies.sync,
  org.emoflon.ibex.tgg.operational.updatepolicy,
  org.emoflon.ibex.tgg.util,
+ org.emoflon.ibex.tgg.util.ilp,
  runtime,
  runtime.impl,
  runtime.util
