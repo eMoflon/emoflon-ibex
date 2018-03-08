@@ -44,6 +44,9 @@ final class Sat4JWrapper extends ILPSolver {
 	 * The objective function that has been defined using setObjective
 	 */
 	private SAT4JObjective objective = null;
+	
+	private static final int DEFAULT_TIMEOUT = 20;
+	private static final int MAX_TIMEOUT = 60*60;
 
 
 	/**
@@ -86,6 +89,22 @@ final class Sat4JWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() throws ContradictionException {
+		System.out.println("The ILP to solve has "+constraints.size()+" constraints and "+this.getVariables().size()+ " variables");
+		int currentTimeout = DEFAULT_TIMEOUT;
+		ILPSolution solution = null;
+		while(solution == null && currentTimeout <= MAX_TIMEOUT) {
+			System.out.println("Attempting to solve ILP. Timeout="+currentTimeout+" seconds.");
+			try {
+				solution = solveILP(currentTimeout);
+			} catch(TimeoutException e) {
+				System.err.println("Could not solve ILP within "+currentTimeout+" seconds");
+				currentTimeout*=2;
+			}
+		}
+		return solution;
+	}
+	
+	private ILPSolution solveILP(int timeout) throws ContradictionException, TimeoutException {
 		solver = SolverFactory.newDefaultOptimizer();
 		
 		for(SAT4JConstraint constraint : constraints) {
@@ -94,33 +113,28 @@ final class Sat4JWrapper extends ILPSolver {
 		objective.registerObjective();
 		
 		OptToPBSATAdapter optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(solver));
-		optimizer.setTimeout(600);
+		optimizer.setTimeout(30);
 		optimizer.setVerbose(true);
-		try {
-			if(optimizer.isSatisfiable()) {
-				int[] model = solver.model();
-				Map<String, Integer> variableSolutions = new HashMap<>();
-				for(int i : model) {
-					int solution = i>0? 1 : 0;
-					for(String var : this.getVariables()) {
-						if(Math.abs(i) == var.hashCode()) {
-							variableSolutions.put(var, solution);
-							break;
-						}
+		if(optimizer.isSatisfiable()) {
+			int[] model = solver.model();
+			Map<String, Integer> variableSolutions = new HashMap<>();
+			for(int i : model) {
+				int solution = i>0? 1 : 0;
+				for(String var : this.getVariables()) {
+					if(Math.abs(i) == var.hashCode()) {
+						variableSolutions.put(var, solution);
+						break;
 					}
 				}
-				ILPSolution solution = new ILPSolution(variableSolutions, optimizer.isOptimal());
-				for(SAT4JConstraint constraint : constraints) {
-					if(!constraint.checkConstraint(solution)) {
-						throw new RuntimeException("The ILP is not satisfiable");
-					}
-				}
-				return solution;
 			}
-		} catch (TimeoutException e) {
-			e.printStackTrace();
+			ILPSolution solution = new ILPSolution(variableSolutions, optimizer.isOptimal());
+			for(SAT4JConstraint constraint : constraints) {
+				if(!constraint.checkConstraint(solution)) {
+					throw new RuntimeException("The ILP is not satisfiable");
+				}
+			}
+			return solution;
 		}
-
 		return null;
 	}
 
