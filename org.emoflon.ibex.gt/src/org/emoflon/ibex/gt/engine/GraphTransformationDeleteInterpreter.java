@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.operational.PushoutSemantics;
 import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 
 import IBeXLanguage.IBeXDeletePattern;
@@ -28,7 +29,13 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 	}
 
 	@Override
-	public Optional<IMatch> apply(final IBeXDeletePattern deletePattern, final IMatch match) {
+	public Optional<IMatch> apply(final IBeXDeletePattern deletePattern, final IMatch match,
+			final PushoutSemantics po) {
+		// Check applicability with DPO semantics.
+		if (po == PushoutSemantics.DPO && this.hasDanglingEdges(deletePattern, match)) {
+			return Optional.empty();
+		}
+
 		deletePattern.getDeletedNodes().forEach(node -> {
 			EObject eObject = (EObject) match.get(node.getName());
 			if (EMFManipulationUtils.isDanglingNode(eObject)) {
@@ -43,5 +50,10 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 			EMFManipulationUtils.deleteEdge(src, trg, edge.getType());
 		});
 		return Optional.of(match);
+	}
+
+	private boolean hasDanglingEdges(final IBeXDeletePattern deletePattern, final IMatch match) {
+		// TODO
+		return true;
 	}
 }

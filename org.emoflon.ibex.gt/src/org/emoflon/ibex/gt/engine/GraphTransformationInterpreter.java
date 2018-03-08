@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
+import org.emoflon.ibex.common.operational.PushoutSemantics;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
@@ -245,14 +246,25 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
-	 * Executes the pattern.
+	 * Applies the pattern on the given match with SPO semantics.
 	 * 
-	 * @param patternName
-	 *            the name of the pattern
 	 * @param match
 	 *            the match to execute the pattern on
+	 * @return the match after rule application
 	 */
-	public Optional<IMatch> execute(final IMatch match) {
+	public Optional<IMatch> apply(final IMatch match) {
+		return this.apply(match, PushoutSemantics.SPO);
+	}
+
+	/**
+	 * Executes the pattern.
+	 * 
+	 * @param match
+	 *            the match to execute the pattern on
+	 * @param po
+	 *            the pushout semantics to use
+	 */
+	public Optional<IMatch> apply(final IMatch match, final PushoutSemantics po) {
 		String patternName = match.getPatternName();
 
 		IMatch originalMatch = new GraphTransformationSimpleMatch(match);
@@ -262,7 +274,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		Optional<IBeXDeletePattern> deletePattern = this.patternSet.getDeletePatterns().stream()
 				.filter(pattern -> pattern.getName().contentEquals(patternName)).findAny();
 		if (deletePattern.isPresent()) {
-			matchAfterDeletion = this.deletePatternInterpreter.apply(deletePattern.get(), originalMatch);
+			matchAfterDeletion = this.deletePatternInterpreter.apply(deletePattern.get(), originalMatch, po);
 		} else {
 			// Nothing to delete.
 			matchAfterDeletion = Optional.of(originalMatch);

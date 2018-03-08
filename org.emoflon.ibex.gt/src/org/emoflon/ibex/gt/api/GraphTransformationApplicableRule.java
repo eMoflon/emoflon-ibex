@@ -1,7 +1,9 @@
 package org.emoflon.ibex.gt.api;
 
+import java.util.Objects;
 import java.util.Optional;
 
+import org.emoflon.ibex.common.operational.PushoutSemantics;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
@@ -31,25 +33,53 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	}
 
 	/**
-	 * Executes the rule on the given match.
+	 * Applies the rule on an arbitrary match with SPO semantics if a match can be
+	 * found.
 	 * 
-	 * @return an {@link Optional} for the the co-match after rule application
+	 * @return an {@link Optional} for the the match after rule application
 	 */
-	public final Optional<M> apply(final M match) {
-		return this.interpreter.execute(match.toIMatch()).map(m -> this.convertMatch(m));
+	public final Optional<M> apply() {
+		return this.apply(PushoutSemantics.SPO);
 	}
 
 	/**
-	 * Executes the rule on an arbitrary match if there is a match.
+	 * Applies the rule on the given match with SPO semantics.
 	 * 
-	 * @return an {@link Optional} for the the co-match after rule application
+	 * @param match
+	 *            the match
+	 * @return an {@link Optional} for the the match after rule application
 	 */
-	public final Optional<M> apply() {
+	public final Optional<M> apply(final M match) {
+		return this.apply(match, PushoutSemantics.SPO);
+	}
+
+	/**
+	 * Applies the rule on the given match with the given pushout semantics.
+	 * 
+	 * @param po
+	 *            the pushout semantics
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> apply(final PushoutSemantics po) {
 		Optional<M> match = this.findAnyMatch();
 		if (!match.isPresent()) {
 			return Optional.empty();
 		}
-		return this.apply(match.get());
+		return this.apply(match.get(), po);
+	}
+
+	/**
+	 * Applies the rule on the given match with the given pushout semantics.
+	 * 
+	 * @param match
+	 *            the match
+	 * @param po
+	 *            the pushout semantics
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> apply(final M match, final PushoutSemantics po) {
+		Objects.requireNonNull(match, "The match must not be null!");
+		return this.interpreter.apply(match.toIMatch(), po).map(m -> this.convertMatch(m));
 	}
 
 }
