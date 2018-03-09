@@ -71,36 +71,50 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 	 */
 	@SuppressWarnings("rawtypes")
 	private boolean isApplicableDPO(final IBeXDeletePattern deletePattern, final IMatch match) {
+		boolean result = true;
 		for (IBeXNode deletedNode : deletePattern.getDeletedNodes()) {
-			EObject eObject = (EObject) match.get(deletedNode.getName());
+			// All existing references of the deleted node must be deleted by the pattern,
+			// otherwise rule application is not allowed according to DPO.
 
-			// If a containment reference exists, the delete pattern must delete it.
-			if (eObject.eContainer() != null) {
-				if (!patternDeletesEdge(deletePattern, match, eObject, eObject.eContainer(),
-						eObject.eContainmentFeature())) {
-					return false;
+			EObject eObject = (EObject) match.get(deletedNode.getName());
+			System.out.println("	Checking references of " + eObject + " deleted as " + deletedNode.getName());
+
+			// Check outgoing containment edges.
+			for (EObject target : eObject.eContents()) {
+				EReference reference = target.eContainmentFeature();
+				if (!patternDeletesEdge(deletePattern, match, eObject, target, reference)) {
+					result = false;
 				}
 			}
 
-			// All existing references must be deleted by the pattern.
+			// Check other outgoing edges.
 			for (EContentsEList.FeatureIterator featureIterator = (EContentsEList.FeatureIterator) eObject
 					.eCrossReferences().iterator(); featureIterator.hasNext();) {
-				EObject eObjectTarget = (EObject) featureIterator.next();
-				EReference eReference = (EReference) featureIterator.feature();
-				if (!patternDeletesEdge(deletePattern, match, eObject, eObjectTarget, eReference)) {
-					return false;
+				EObject target = (EObject) featureIterator.next();
+				EReference reference = (EReference) featureIterator.feature();
+				if (!patternDeletesEdge(deletePattern, match, eObject, target, reference)) {
+					result = false;
 				}
 			}
 
-			// Find references with target eObject.
-			Collection<Setting> crossReferences = EcoreUtil.UsageCrossReferencer.find(eObject,
-					this.trashResource.getResourceSet());
+			// Check incoming containment edge.
+			if (eObject.eContainer() != null) {
+				if (!patternDeletesEdge(deletePattern, match, eObject.eContainer(), eObject,
+						eObject.eContainmentFeature())) {
+					result = false;
+				}
+			}
+
+			// Check other incoming edges.
+			Collection<Setting> crossReferences = EcoreUtil.UsageCrossReferencer.find(eObject, eObject.eResource());
 			for (Setting crossReference : crossReferences) {
-				System.out.println(
-						"cross reference" + crossReference.getEObject() + "" + crossReference.getEStructuralFeature());
+				EReference reference = (EReference) crossReference.getEStructuralFeature();
+				if (!patternDeletesEdge(deletePattern, match, eObject, crossReference.getEObject(), reference)) {
+					result = false;
+				}
 			}
 		}
-		return true;
+		return result;
 	}
 
 	/**
@@ -128,10 +142,12 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 				EObject deletedEdgeTarget = (EObject) match.get(deletedEdge.getTargetNode().getName());
 				if ((deletedEdgeSource.equals(source) && deletedEdgeTarget.equals(target))
 						|| (deletedEdgeSource.equals(target) && deletedEdgeTarget.equals(source))) {
+					System.out.println("		TEST deleted: " + source + " -- " + type.getName() + " -- " + target);
 					return true;
 				}
 			}
 		}
+		System.out.println("		TEST NOT deleted: " + source + " -- " + type.getName() + " -- " + target);
 		return false;
 	}
 }
