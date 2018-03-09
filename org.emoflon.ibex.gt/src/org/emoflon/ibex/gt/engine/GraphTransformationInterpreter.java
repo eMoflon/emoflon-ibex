@@ -19,7 +19,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
-import org.emoflon.ibex.common.operational.PushoutSemantics;
+import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
@@ -253,7 +253,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return the match after rule application
 	 */
 	public Optional<IMatch> apply(final IMatch match) {
-		return this.apply(match, PushoutSemantics.SPO);
+		return this.apply(match, PushoutApproach.SPO);
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @param po
 	 *            the pushout semantics to use
 	 */
-	public Optional<IMatch> apply(final IMatch match, final PushoutSemantics po) {
+	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po) {
 		String patternName = match.getPatternName();
 
 		IMatch originalMatch = new GraphTransformationSimpleMatch(match);

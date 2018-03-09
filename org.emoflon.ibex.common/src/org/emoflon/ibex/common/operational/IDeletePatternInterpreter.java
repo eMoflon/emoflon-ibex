@@ -19,5 +19,5 @@ public interface IDeletePatternInterpreter {
 	 *            the pushout semantics (DPO or SPO)
 	 * @return the match after the pattern application
 	 */
-	Optional<IMatch> apply(IBeXDeletePattern deletePattern, IMatch match, PushoutSemantics po);
+	Optional<IMatch> apply(IBeXDeletePattern deletePattern, IMatch match, PushoutApproach po);
 }

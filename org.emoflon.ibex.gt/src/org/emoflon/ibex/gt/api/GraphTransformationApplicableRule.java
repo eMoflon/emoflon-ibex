@@ -3,7 +3,7 @@ package org.emoflon.ibex.gt.api;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.emoflon.ibex.common.operational.PushoutSemantics;
+import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
@@ -39,7 +39,7 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	 * @return an {@link Optional} for the the match after rule application
 	 */
 	public final Optional<M> apply() {
-		return this.apply(PushoutSemantics.SPO);
+		return this.apply(PushoutApproach.SPO);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	 * @return an {@link Optional} for the the match after rule application
 	 */
 	public final Optional<M> apply(final M match) {
-		return this.apply(match, PushoutSemantics.SPO);
+		return this.apply(match, PushoutApproach.SPO);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	 *            the pushout semantics
 	 * @return an {@link Optional} for the the match after rule application
 	 */
-	public final Optional<M> apply(final PushoutSemantics po) {
+	public final Optional<M> apply(final PushoutApproach po) {
 		Optional<M> match = this.findAnyMatch();
 		if (!match.isPresent()) {
 			return Optional.empty();
@@ -77,7 +77,7 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	 *            the pushout semantics
 	 * @return an {@link Optional} for the the match after rule application
 	 */
-	public final Optional<M> apply(final M match, final PushoutSemantics po) {
+	public final Optional<M> apply(final M match, final PushoutApproach po) {
 		Objects.requireNonNull(match, "The match must not be null!");
 		return this.interpreter.apply(match.toIMatch(), po).map(m -> this.convertMatch(m));
 	}

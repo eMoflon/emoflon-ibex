@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.util.EContentsEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.common.operational.PushoutSemantics;
+import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 
 import IBeXLanguage.IBeXDeletePattern;
@@ -36,9 +36,9 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 
 	@Override
 	public Optional<IMatch> apply(final IBeXDeletePattern deletePattern, final IMatch match,
-			final PushoutSemantics po) {
+			final PushoutApproach po) {
 		// Check applicability with DPO semantics.
-		if (po == PushoutSemantics.DPO && !this.isApplicableDPO(deletePattern, match)) {
+		if (po == PushoutApproach.DPO && !this.isApplicableDPO(deletePattern, match)) {
 			return Optional.empty();
 		}
 
