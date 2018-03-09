@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -308,6 +311,19 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return an {@link Optional} for the match
 	 */
 	public Optional<IMatch> findAnyMatch(final String patternName) {
+		return this.findAnyMatch(patternName, new HashMap<String, EObject>());
+	}
+
+	/**
+	 * Finds a match for the pattern.
+	 * 
+	 * @param patternName
+	 *            the name of the pattern
+	 * @param parameters
+	 *            the parameters
+	 * @return an {@link Optional} for the match
+	 */
+	public Optional<IMatch> findAnyMatch(final String patternName, final Map<String, EObject> parameters) {
 		this.updateMatches();
 
 		IBeXPattern pattern = this.getContextPattern(patternName);
@@ -318,7 +334,28 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		if (!this.matches.containsKey(patternName) || this.matches.get(patternName).isEmpty()) {
 			return Optional.empty();
 		}
-		return Optional.of(this.matches.get(patternName).get(0));
+		return this.getFilteredMatchStream(patternName, parameters).findAny();
+	}
+
+	/**
+	 * Returns a stream of matches for the pattern such that the parameter values of
+	 * the matches are equal to the given parameters.
+	 * 
+	 * @param patternName
+	 *            the name of the pattern
+	 * @param parameters
+	 *            the parameter map
+	 * @return a stream containing matches
+	 */
+	private Stream<IMatch> getFilteredMatchStream(final String patternName, final Map<String, EObject> parameters) {
+		Stream<IMatch> matchesForPattern = this.matches.get(patternName).stream();
+		Iterator<String> parameterIterator = parameters.keySet().iterator();
+		while (parameterIterator.hasNext()) {
+			String parameterName = parameterIterator.next();
+			matchesForPattern = matchesForPattern.filter(m -> m.isInMatch(parameterName)
+					&& parameters.get(parameterName).equals((EObject) m.get(parameterName)));
+		}
+		return matchesForPattern;
 	}
 
 	/**
@@ -329,6 +366,19 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return a {@link Collection} of matches
 	 */
 	public Collection<IMatch> findMatches(final String patternName) {
+		return this.findMatches(patternName, new HashMap<String, EObject>());
+	}
+
+	/**
+	 * Finds all matches for the pattern.
+	 * 
+	 * @param patternName
+	 *            the name of the pattern
+	 * @param parameters
+	 *            the parameters
+	 * @return a {@link Collection} of matches
+	 */
+	public Collection<IMatch> findMatches(final String patternName, final Map<String, EObject> parameters) {
 		this.updateMatches();
 
 		IBeXPattern pattern = this.getContextPattern(patternName);
@@ -339,7 +389,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		if (!this.matches.containsKey(patternName)) {
 			return new ArrayList<IMatch>();
 		}
-		return this.matches.get(patternName);
+		return this.getFilteredMatchStream(patternName, parameters).collect(Collectors.toList());
 	}
 
 	/**
