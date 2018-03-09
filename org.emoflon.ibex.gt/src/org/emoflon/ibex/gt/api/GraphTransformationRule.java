@@ -2,11 +2,13 @@ package org.emoflon.ibex.gt.api;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
@@ -36,6 +38,11 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * The rule name
 	 */
 	private String ruleName;
+
+	/**
+	 * The parameters.
+	 */
+	protected HashMap<String, EObject> parameters = new HashMap<String, EObject>();
 
 	/**
 	 * The mapping between consumers for typed and untyped matches.
@@ -69,12 +76,59 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
+	 * Returns the parameters.
+	 * 
+	 * @return the parameters
+	 */
+	public final HashMap<String, EObject> getParameters() {
+		return this.parameters;
+	}
+
+	/**
+	 * Returns the names of the parameters which can be bound for this rule.
+	 * 
+	 * @return the parameter names
+	 */
+	protected abstract List<String> getParameterNames();
+
+	/**
+	 * Binds the parameters of the rule if there is a parameter of the same name in
+	 * the match.
+	 * 
+	 * @param match
+	 *            the match
+	 */
+	@SuppressWarnings("unchecked")
+	public final R bind(final IMatch match) {
+		this.getParameterNames().forEach(parameterName -> {
+			if (match.isInMatch(parameterName)) {
+				this.parameters.put(parameterName, (EObject) match.get(parameterName));
+			}
+		});
+		return (R) this;
+	}
+
+	/**
+	 * Binds the parameters of the rule if there is a parameter of the same name in
+	 * the match.
+	 * 
+	 * @param match
+	 *            the match
+	 */
+	@SuppressWarnings("unchecked")
+	public final <Mx extends GraphTransformationMatch<Mx, Rx>, Rx extends GraphTransformationRule<Mx, Rx>> R bind(
+			final GraphTransformationMatch<Mx, Rx> match) {
+		this.bind(match.toIMatch());
+		return (R) this;
+	}
+
+	/**
 	 * Finds an arbitrary match for the rule.
 	 * 
 	 * @return an {@link Optional} for the match
 	 */
 	public final Optional<M> findAnyMatch() {
-		return this.interpreter.findAnyMatch(this.ruleName) //
+		return this.interpreter.findAnyMatch(this.ruleName, this.parameters) //
 				.map(m -> this.convertMatch(m));
 	}
 
@@ -84,7 +138,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @return the list of matches
 	 */
 	public final Collection<M> findMatches() {
-		return this.interpreter.findMatches(this.ruleName).stream() //
+		return this.interpreter.findMatches(this.ruleName, this.parameters).stream() //
 				.map(m -> this.convertMatch(m)) //
 				.collect(Collectors.toList());
 	}
