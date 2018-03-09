@@ -45,7 +45,7 @@ final class Sat4JWrapper extends ILPSolver {
 	 */
 	private SAT4JObjective objective = null;
 	
-	private static final int DEFAULT_TIMEOUT = 20;
+	private static final int MIN_TIMEOUT = 3;
 	private static final int MAX_TIMEOUT = 60*60;
 
 
@@ -90,7 +90,9 @@ final class Sat4JWrapper extends ILPSolver {
 	@Override
 	public ILPSolution solveILP() throws ContradictionException {
 		System.out.println("The ILP to solve has "+constraints.size()+" constraints and "+this.getVariables().size()+ " variables");
-		int currentTimeout = DEFAULT_TIMEOUT;
+		int currentTimeout = this.getVariables().size();
+		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
+		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
 		ILPSolution solution = null;
 		while(solution == null && currentTimeout <= MAX_TIMEOUT) {
 			System.out.println("Attempting to solve ILP. Timeout="+currentTimeout+" seconds.");
@@ -104,6 +106,15 @@ final class Sat4JWrapper extends ILPSolver {
 		return solution;
 	}
 	
+	/**
+	 * Starts the solver with the specified timeout.
+	 * @param timeout	The timeout for the solver. If the timeout is too low it might happen that
+	 * 			<li>	the solver does not find a solution even though there is one </li>
+	 * 			<li>	the solver finds a solution but it is not the optimal solution yet </li>
+	 * @return
+	 * @throws ContradictionException
+	 * @throws TimeoutException
+	 */
 	private ILPSolution solveILP(int timeout) throws ContradictionException, TimeoutException {
 		solver = SolverFactory.newDefaultOptimizer();
 		
@@ -113,7 +124,8 @@ final class Sat4JWrapper extends ILPSolver {
 		objective.registerObjective();
 		
 		OptToPBSATAdapter optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(solver));
-		optimizer.setTimeout(30);
+		optimizer.setTimeout(timeout);
+//		System.out.println("Timeout is set to: "+optimizer.getTimeout());
 		optimizer.setVerbose(true);
 		if(optimizer.isSatisfiable()) {
 			int[] model = solver.model();
