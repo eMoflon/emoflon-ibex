@@ -71,19 +71,16 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 	 */
 	@SuppressWarnings("rawtypes")
 	private boolean isApplicableDPO(final IBeXDeletePattern deletePattern, final IMatch match) {
-		boolean result = true;
 		for (IBeXNode deletedNode : deletePattern.getDeletedNodes()) {
 			// All existing references of the deleted node must be deleted by the pattern,
 			// otherwise rule application is not allowed according to DPO.
-
 			EObject eObject = (EObject) match.get(deletedNode.getName());
-			System.out.println("	Checking references of " + eObject + " deleted as " + deletedNode.getName());
 
 			// Check outgoing containment edges.
 			for (EObject target : eObject.eContents()) {
 				EReference reference = target.eContainmentFeature();
 				if (!patternDeletesEdge(deletePattern, match, eObject, target, reference)) {
-					result = false;
+					return false;
 				}
 			}
 
@@ -93,7 +90,7 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 				EObject target = (EObject) featureIterator.next();
 				EReference reference = (EReference) featureIterator.feature();
 				if (!patternDeletesEdge(deletePattern, match, eObject, target, reference)) {
-					result = false;
+					return false;
 				}
 			}
 
@@ -101,7 +98,7 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 			if (eObject.eContainer() != null) {
 				if (!patternDeletesEdge(deletePattern, match, eObject.eContainer(), eObject,
 						eObject.eContainmentFeature())) {
-					result = false;
+					return false;
 				}
 			}
 
@@ -110,11 +107,11 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 			for (Setting crossReference : crossReferences) {
 				EReference reference = (EReference) crossReference.getEStructuralFeature();
 				if (!patternDeletesEdge(deletePattern, match, eObject, crossReference.getEObject(), reference)) {
-					result = false;
+					return false;
 				}
 			}
 		}
-		return result;
+		return true;
 	}
 
 	/**
@@ -142,12 +139,10 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 				EObject deletedEdgeTarget = (EObject) match.get(deletedEdge.getTargetNode().getName());
 				if ((deletedEdgeSource.equals(source) && deletedEdgeTarget.equals(target))
 						|| (deletedEdgeSource.equals(target) && deletedEdgeTarget.equals(source))) {
-					System.out.println("		TEST deleted: " + source + " -- " + type.getName() + " -- " + target);
 					return true;
 				}
 			}
 		}
-		System.out.println("		TEST NOT deleted: " + source + " -- " + type.getName() + " -- " + target);
 		return false;
 	}
 }
