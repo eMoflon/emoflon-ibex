@@ -171,7 +171,7 @@ class JavaFileGenerator {
 					 * @return the created rule
 					 */
 					public «getRuleClassName(rule)» «rule.name»() {
-						return new «getRuleClassName(rule)»(this.interpreter);
+						return new «getRuleClassName(rule)»(this, this.interpreter);
 					}
 			«ENDFOR»
 			}
@@ -241,6 +241,7 @@ class JavaFileGenerator {
 			'org.emoflon.ibex.common.operational.IMatch',
 			'''org.emoflon.ibex.gt.api.«ruleType»''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
+			'''«this.packageName».api.«APIClassName»''',
 			'''«this.packageName».api.matches.«getMatchClassName(rule)»'''
 		)
 
@@ -258,11 +259,13 @@ class JavaFileGenerator {
 				/**
 				 * Creates a new rule «rule.name»().
 				 * 
+				 * @param api
+				 *            the API the rule belongs to
 				 * @param interpreter
 				 *            the interpreter
 				 */
-				public «getRuleClassName(rule)»(final GraphTransformationInterpreter interpreter) {
-					super(interpreter, ruleName);
+				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter) {
+					super(api, interpreter, ruleName);
 				}
 				
 				@Override

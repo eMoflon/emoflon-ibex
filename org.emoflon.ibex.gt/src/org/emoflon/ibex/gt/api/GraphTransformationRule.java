@@ -23,6 +23,11 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  */
 public abstract class GraphTransformationRule<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationRule<M, R>> {
 	/**
+	 * The API.
+	 */
+	protected GraphTransformationAPI api;
+
+	/**
 	 * The interpreter.
 	 */
 	protected GraphTransformationInterpreter interpreter;
@@ -40,12 +45,16 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	/**
 	 * Creates a new rule.
 	 * 
+	 * @param api
+	 *            the API the rule belongs to
 	 * @param interpreter
 	 *            the interpreter
 	 * @param ruleName
 	 *            the name of the rule
 	 */
-	public GraphTransformationRule(final GraphTransformationInterpreter interpreter, final String ruleName) {
+	public GraphTransformationRule(final GraphTransformationAPI api, final GraphTransformationInterpreter interpreter,
+			final String ruleName) {
+		this.api = api;
 		this.interpreter = interpreter;
 		this.ruleName = ruleName;
 	}

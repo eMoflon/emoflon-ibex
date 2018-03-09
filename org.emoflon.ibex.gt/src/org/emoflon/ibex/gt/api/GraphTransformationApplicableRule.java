@@ -23,13 +23,16 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	/**
 	 * Creates a new executable rule.
 	 * 
+	 * @param api
+	 *            the API the rule belongs to
 	 * @param interpreter
 	 *            the interpreter
 	 * @param ruleName
 	 *            the name of the rule
 	 */
-	public GraphTransformationApplicableRule(GraphTransformationInterpreter interpreter, String ruleName) {
-		super(interpreter, ruleName);
+	public GraphTransformationApplicableRule(final GraphTransformationAPI api,
+			final GraphTransformationInterpreter interpreter, final String ruleName) {
+		super(api, interpreter, ruleName);
 	}
 
 	/**
@@ -39,7 +42,7 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	 * @return an {@link Optional} for the the match after rule application
 	 */
 	public final Optional<M> apply() {
-		return this.apply(PushoutApproach.SPO);
+		return this.apply(this.api.getDefaultPushout());
 	}
 
 	/**
@@ -50,7 +53,7 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	 * @return an {@link Optional} for the the match after rule application
 	 */
 	public final Optional<M> apply(final M match) {
-		return this.apply(match, PushoutApproach.SPO);
+		return this.apply(match, this.api.getDefaultPushout());
 	}
 
 	/**
