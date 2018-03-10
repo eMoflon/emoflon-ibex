@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -29,6 +30,7 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  */
 public abstract class GraphTransformationApplicableRule<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationRule<M, R>>
 		extends GraphTransformationRule<M, R> {
+	private Consumer<M> autoApply = m -> this.apply(m);
 
 	/**
 	 * Creates a new executable rule.
@@ -196,5 +198,22 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 			match = matchSupplier.get();
 		}
 		return matches;
+	}
+
+	/**
+	 * Applies the rule automatically whenever a match is found.
+	 * 
+	 * Note: This will not work for rules which are contain only created elements as
+	 * the rule is always applicable in this case.
+	 */
+	public final void applyWheneverApplicable() {
+		this.subscribeAppearing(autoApply);
+	}
+
+	/**
+	 * Stops automatic rule application whenever a match is found.
+	 */
+	public final void applyWheneverApplicableStop() {
+		this.unsubscribeAppearing(autoApply);
 	}
 }
