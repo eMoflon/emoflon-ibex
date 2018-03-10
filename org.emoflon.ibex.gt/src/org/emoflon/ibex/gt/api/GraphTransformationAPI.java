@@ -3,6 +3,7 @@ package org.emoflon.ibex.gt.api;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
+import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
@@ -21,6 +22,11 @@ public abstract class GraphTransformationAPI {
 	 * The interpreter to use for queries and transformations.
 	 */
 	protected GraphTransformationInterpreter interpreter;
+
+	/**
+	 * The pushout approach to use if no approach is specified.
+	 */
+	protected PushoutApproach defaultPushout = PushoutApproach.SPO;
 
 	/**
 	 * Creates a new GraphTransformationAPI for given engine and resource set.
@@ -63,5 +69,24 @@ public abstract class GraphTransformationAPI {
 	 */
 	public void updateMatches() {
 		this.interpreter.updateMatches();
+	}
+
+	/**
+	 * Changes the default pushout approach.
+	 * 
+	 * @param defaultPushout
+	 *            the pushout approach to set
+	 */
+	public void setDefaultPushout(final PushoutApproach defaultPushout) {
+		this.defaultPushout = defaultPushout;
+	}
+
+	/**
+	 * Returns the default pushout approach
+	 * 
+	 * @return the default pushout approach
+	 */
+	public PushoutApproach getDefaultPushout() {
+		return this.defaultPushout;
 	}
 }

@@ -1,7 +1,9 @@
 package org.emoflon.ibex.gt.api;
 
+import java.util.Objects;
 import java.util.Optional;
 
+import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
@@ -21,35 +23,66 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	/**
 	 * Creates a new executable rule.
 	 * 
+	 * @param api
+	 *            the API the rule belongs to
 	 * @param interpreter
 	 *            the interpreter
 	 * @param ruleName
 	 *            the name of the rule
 	 */
-	public GraphTransformationApplicableRule(GraphTransformationInterpreter interpreter, String ruleName) {
-		super(interpreter, ruleName);
+	public GraphTransformationApplicableRule(final GraphTransformationAPI api,
+			final GraphTransformationInterpreter interpreter, final String ruleName) {
+		super(api, interpreter, ruleName);
 	}
 
 	/**
-	 * Executes the rule on the given match.
+	 * Applies the rule on an arbitrary match with SPO semantics if a match can be
+	 * found.
 	 * 
-	 * @return an {@link Optional} for the the co-match after rule application
-	 */
-	public final Optional<M> apply(final M match) {
-		return this.interpreter.execute(match.toIMatch()).map(m -> this.convertMatch(m));
-	}
-
-	/**
-	 * Executes the rule on an arbitrary match if there is a match.
-	 * 
-	 * @return an {@link Optional} for the the co-match after rule application
+	 * @return an {@link Optional} for the the match after rule application
 	 */
 	public final Optional<M> apply() {
+		return this.apply(this.api.getDefaultPushout());
+	}
+
+	/**
+	 * Applies the rule on the given match with SPO semantics.
+	 * 
+	 * @param match
+	 *            the match
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> apply(final M match) {
+		return this.apply(match, this.api.getDefaultPushout());
+	}
+
+	/**
+	 * Applies the rule on the given match with the given pushout semantics.
+	 * 
+	 * @param po
+	 *            the pushout semantics
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> apply(final PushoutApproach po) {
 		Optional<M> match = this.findAnyMatch();
 		if (!match.isPresent()) {
 			return Optional.empty();
 		}
-		return this.apply(match.get());
+		return this.apply(match.get(), po);
+	}
+
+	/**
+	 * Applies the rule on the given match with the given pushout semantics.
+	 * 
+	 * @param match
+	 *            the match
+	 * @param po
+	 *            the pushout semantics
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> apply(final M match, final PushoutApproach po) {
+		Objects.requireNonNull(match, "The match must not be null!");
+		return this.interpreter.apply(match.toIMatch(), po).map(m -> this.convertMatch(m));
 	}
 
 }
