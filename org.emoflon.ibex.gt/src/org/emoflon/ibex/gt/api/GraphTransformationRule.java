@@ -116,8 +116,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 *            the match
 	 */
 	@SuppressWarnings("unchecked")
-	public final <Mx extends GraphTransformationMatch<Mx, Rx>, Rx extends GraphTransformationRule<Mx, Rx>> R bind(
-			final GraphTransformationMatch<Mx, Rx> match) {
+	public final R bind(final GraphTransformationMatch<?, ?> match) {
 		this.bind(match.toIMatch());
 		return (R) this;
 	}

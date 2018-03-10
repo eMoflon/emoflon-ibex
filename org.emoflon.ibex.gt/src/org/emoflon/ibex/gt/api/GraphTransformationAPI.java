@@ -26,7 +26,7 @@ public abstract class GraphTransformationAPI {
 	/**
 	 * The pushout approach to use if no approach is specified.
 	 */
-	protected PushoutApproach defaultPushout = PushoutApproach.SPO;
+	protected PushoutApproach defaultPushoutApproach = PushoutApproach.SPO;
 
 	/**
 	 * Creates a new GraphTransformationAPI for given engine and resource set.
@@ -74,11 +74,11 @@ public abstract class GraphTransformationAPI {
 	/**
 	 * Changes the default pushout approach.
 	 * 
-	 * @param defaultPushout
+	 * @param defaultPushoutApproach
 	 *            the pushout approach to set
 	 */
-	public void setDefaultPushout(final PushoutApproach defaultPushout) {
-		this.defaultPushout = defaultPushout;
+	public void setDefaultPushoutApproach(final PushoutApproach defaultPushoutApproach) {
+		this.defaultPushoutApproach = defaultPushoutApproach;
 	}
 
 	/**
@@ -86,7 +86,7 @@ public abstract class GraphTransformationAPI {
 	 * 
 	 * @return the default pushout approach
 	 */
-	public PushoutApproach getDefaultPushout() {
-		return this.defaultPushout;
+	public PushoutApproach getDefaultPushoutApproach() {
+		return this.defaultPushoutApproach;
 	}
 }
