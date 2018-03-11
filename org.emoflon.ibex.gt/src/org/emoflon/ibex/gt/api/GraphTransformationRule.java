@@ -67,15 +67,6 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Returns the name of the rule.
-	 * 
-	 * @return the rule name
-	 */
-	protected final String getRuleName() {
-		return this.ruleName;
-	}
-
-	/**
 	 * Returns the parameters.
 	 * 
 	 * @return the parameters
