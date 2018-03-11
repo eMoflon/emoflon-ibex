@@ -16,9 +16,9 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  * This is the abstraction for all applicable rules. Via <code>apply()</code>
  * and its variants, rules can be applied.
  * 
- * If no pushout approach is explicitly defined when calling a
- * <code>apply</code> method, the default pushout approach of the API which
- * created the rule will be used.
+ * If no pushout approach is set for the rule before calling an
+ * <code>apply</code> method, the pushout approach of the API which created the
+ * rule will be used.
  * 
  * Concrete Implementations of this class should provide typed methods for
  * binding the parameters.
@@ -30,10 +30,20 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  */
 public abstract class GraphTransformationApplicableRule<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationRule<M, R>>
 		extends GraphTransformationRule<M, R> {
-	private Consumer<M> autoApply = m -> this.apply(m);
+	/**
+	 * The consumer for the subscription for enableAutoApply().
+	 */
+	private Optional<Consumer<M>> autoApply = Optional.empty();
+
+	/**
+	 * The pushout approach for the rule.
+	 */
+	private Optional<PushoutApproach> pushoutApproach = Optional.empty();
 
 	/**
 	 * Creates a new executable rule.
+	 * 
+	 * Per default, the pushout approach which is set on API level is used.
 	 * 
 	 * @param api
 	 *            the API the rule belongs to
@@ -48,109 +58,90 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	}
 
 	/**
-	 * Applies the rule on an arbitrary match with the default pushout approach if a
-	 * match can be found.
+	 * Returns the pushout approach. If the pushout approach has not been set for
+	 * the rule, the pushout approach defaults to the one set for the API.
+	 * 
+	 * @return the pushout approach
+	 */
+	public final PushoutApproach getPushoutApproach() {
+		return this.pushoutApproach.orElse(this.api.getDefaultPushoutApproach());
+	}
+
+	/**
+	 * Sets the pushout approach for the rule.
+	 * 
+	 * @param pushoutApproach
+	 *            the pushout approach
+	 */
+	@SuppressWarnings("unchecked")
+	public final R setPushoutApproach(final PushoutApproach pushoutApproach) {
+		Objects.requireNonNull(pushoutApproach, "Pushout approach must not be null!");
+		this.pushoutApproach = Optional.of(pushoutApproach);
+		return (R) this;
+	}
+
+	/**
+	 * Sets the pushout approach for the rule to double pushout.
+	 */
+	public final R setDPO() {
+		return this.setPushoutApproach(PushoutApproach.DPO);
+	}
+
+	/**
+	 * Sets the pushout approach for the rule to single pushout.
+	 */
+	public final R setSPO() {
+		return this.setPushoutApproach(PushoutApproach.SPO);
+	}
+
+	/**
+	 * Applies the rule on an arbitrary match if a match can be found.
 	 * 
 	 * @return an {@link Optional} for the the match after rule application
 	 */
 	public final Optional<M> apply() {
-		return this.apply(this.api.getDefaultPushoutApproach());
+		Optional<M> match = this.findAnyMatch();
+		if (!match.isPresent()) {
+			return Optional.empty();
+		}
+		return this.apply(match.get());
 	}
 
 	/**
-	 * Applies the rule on the given match using the default pushout approach.
+	 * Applies the rule on the given match.
 	 * 
 	 * @param match
 	 *            the match
 	 * @return an {@link Optional} for the the match after rule application
 	 */
 	public final Optional<M> apply(final M match) {
-		return this.apply(match, this.api.getDefaultPushoutApproach());
-	}
-
-	/**
-	 * Applies the rule on the given match using the given pushout approach.
-	 * 
-	 * @param po
-	 *            the pushout approach to use
-	 * @return an {@link Optional} for the the match after rule application
-	 */
-	public final Optional<M> apply(final PushoutApproach po) {
-		Optional<M> match = this.findAnyMatch();
-		if (!match.isPresent()) {
-			return Optional.empty();
-		}
-		return this.apply(match.get(), po);
-	}
-
-	/**
-	 * Applies the rule on the given match using the given pushout approach.
-	 * 
-	 * @param match
-	 *            the match
-	 * @param po
-	 *            the pushout approach to use
-	 * @return an {@link Optional} for the the match after rule application
-	 */
-	public final Optional<M> apply(final M match, final PushoutApproach po) {
 		Objects.requireNonNull(match, "The match must not be null!");
-		return this.interpreter.apply(match.toIMatch(), po).map(m -> this.convertMatch(m));
+		return this.interpreter.apply(match.toIMatch(), this.getPushoutApproach()).map(m -> this.convertMatch(m));
 	}
 
 	/**
-	 * Applies the rule on at most <code>max</code> arbitrary matches using the
-	 * default pushout approach.
+	 * Applies the rule on at most <code>max</code> arbitrary matches.
 	 * 
 	 * @param max
 	 *            the maximal number of rule applications
 	 * @return the matches after rule application
 	 */
 	public final Collection<M> apply(final int max) {
-		return this.apply(max, this.api.getDefaultPushoutApproach());
+		return this.apply(matches -> matches.size() < max && this.hasMatches());
 	}
 
 	/**
-	 * Applies the rule on at most <code>max</code> arbitrary matches using the
-	 * given pushout approach.
-	 * 
-	 * @param count
-	 *            the maximal number of rule applications
-	 * @param po
-	 *            the pushout approach to use
-	 * @return the matches after rule application
-	 */
-	public final Collection<M> apply(final int count, final PushoutApproach po) {
-		return this.apply(matches -> matches.size() < count && this.hasMatches());
-	}
-
-	/**
-	 * Applies the rule as long as the given condition is fulfilled using the
-	 * default pushout approach.
+	 * Applies the rule as long as the given condition is fulfilled.
 	 * 
 	 * @param condition
-	 *            the condition to check, based on the matches of rule applications
-	 *            so far
+	 *            the condition to check, based on the matches of successful rule
+	 *            applications so far
 	 * @return the matches after rule application
 	 */
 	public final Collection<M> apply(final Predicate<Collection<M>> condition) {
-		return this.apply(condition, this.api.getDefaultPushoutApproach());
-	}
-
-	/**
-	 * Applies the rule as long as the given condition is fulfilled using the given
-	 * pushout approach.
-	 * 
-	 * @param condition
-	 *            the condition to check, based on the matches of rule applications
-	 *            so far
-	 * @param po
-	 *            the pushout approach to use
-	 * @return the matches after rule application
-	 */
-	public final Collection<M> apply(final Predicate<Collection<M>> condition, final PushoutApproach po) {
 		Collection<M> matches = new ArrayList<M>();
 		while (condition.test(matches)) {
-			this.apply(po).ifPresent(m -> matches.add(m));
+			this.apply().ifPresent(m -> matches.add(m));
 		}
 		return matches;
 	}
@@ -206,14 +197,24 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	 * Note: This will not work for rules which are contain only created elements as
 	 * the rule is always applicable in this case.
 	 */
-	public final void applyWheneverApplicable() {
-		this.subscribeAppearing(autoApply);
+	public final void enableAutoApply() {
+		this.autoApply.ifPresent(c -> this.unsubscribeAppearing(c));
+		this.autoApply = Optional.of(m -> this.apply(m));
+		this.subscribeAppearing(autoApply.get());
 	}
 
 	/**
 	 * Stops automatic rule application whenever a match is found.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if <code>applyWheneverApplicable</code> has not been called
+	 *             before
 	 */
-	public final void applyWheneverApplicableStop() {
-		this.unsubscribeAppearing(autoApply);
+	public final void disableAutoApply() {
+		if (!this.autoApply.isPresent()) {
+			throw new IllegalArgumentException("Cannot stop applyWheneverApplicable before start.");
+		}
+		this.unsubscribeAppearing(autoApply.get());
+		this.autoApply = Optional.empty();
 	}
 }
