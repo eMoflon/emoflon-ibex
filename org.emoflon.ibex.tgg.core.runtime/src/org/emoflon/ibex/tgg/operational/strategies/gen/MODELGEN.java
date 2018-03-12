@@ -176,7 +176,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	private void collectMatchesForAxioms() {
-		options.tgg().getRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom()).forEach(r -> {			
+		options.tgg().getRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom() && r.getNacs().isEmpty()).forEach(r -> {			
 			addOperationalRuleMatch(r.getName(), new SimpleMatch(GENBlackPattern.getName(r.getName())));
 		});
 	}
