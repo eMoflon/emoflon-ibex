@@ -299,6 +299,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			matchAfterCreation = matchAfterDeletion;
 		}
 
+		// Rule application may invalidate existing or lead to new matches.
+		this.updateMatches();
+
 		// Return the co-match.
 		return matchAfterCreation;
 	}

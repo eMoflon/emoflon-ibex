@@ -172,17 +172,17 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Deletes the subscription of notifications of all new matches for the given
+	 * Removes the subscription of notifications of all new matches for the given
 	 * {@link Consumer}.
 	 * 
 	 * @param action
-	 *            the {@link Consumer}
+	 *            the {@link Consumer} to remove
 	 */
 	public final void unsubscribeAppearing(final Consumer<M> action) {
 		if (this.consumers.containsKey(action)) {
 			this.interpreter.unsubscibeAppearing(this.ruleName, this.consumers.get(action));
 		} else {
-			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before");
+			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
 		}
 	}
 
@@ -197,17 +197,17 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Deletes the subscription of notifications of all disappearing matches for the
+	 * Removes the subscription of notifications of all disappearing matches for the
 	 * given {@link Consumer}.
 	 * 
 	 * @param action
-	 *            the {@link Consumer}
+	 *            the {@link Consumer} to remove
 	 */
 	public final void unsubscribeDisappearing(final Consumer<M> action) {
 		if (this.consumers.containsKey(action)) {
 			this.interpreter.unsubscibeDisappearing(this.ruleName, this.consumers.get(action));
 		} else {
-			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before");
+			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
 		}
 	}
 
@@ -224,15 +224,19 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Deletes the subscription of a notification when the given match disappears.
+	 * Removes the subscription of a notification when the given match disappears.
 	 * 
 	 * @param match
 	 *            the match to observe
 	 * @param action
-	 *            the {@link Consumer} to notify
+	 *            the {@link Consumer} to remove
 	 */
 	public final void unsubscribeMatchDisappears(final M match, final Consumer<M> action) {
-		this.interpreter.unsubscribeMatchDisappears(match.toIMatch(), this.convertConsumer(action));
+		if (this.consumers.containsKey(action)) {
+			this.interpreter.unsubscribeMatchDisappears(match.toIMatch(), this.convertConsumer(action));
+		} else {
+			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
+		}
 	}
 
 	/**

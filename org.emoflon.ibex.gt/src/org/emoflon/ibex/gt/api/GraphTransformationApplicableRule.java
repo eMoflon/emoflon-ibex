@@ -41,6 +41,16 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	private Optional<PushoutApproach> pushoutApproach = Optional.empty();
 
 	/**
+	 * The consumers to notify whenever a rule is applied.
+	 */
+	private Collection<Consumer<M>> ruleApplicationConsumers = new ArrayList<Consumer<M>>();
+
+	/**
+	 * The number of rule applications until now.
+	 */
+	private int ruleApplicationCount = 0;
+
+	/**
 	 * Creates a new executable rule.
 	 * 
 	 * Per default, the pushout approach which is set on API level is used.
@@ -116,7 +126,13 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	 */
 	public final Optional<M> apply(final M match) {
 		Objects.requireNonNull(match, "The match must not be null!");
-		return this.interpreter.apply(match.toIMatch(), this.getPushoutApproach()).map(m -> this.convertMatch(m));
+		Optional<M> comatch = this.interpreter.apply(match.toIMatch(), this.getPushoutApproach())
+				.map(m -> this.convertMatch(m));
+		comatch.ifPresent(cm -> {
+			this.ruleApplicationConsumers.forEach(action -> action.accept(cm));
+			this.ruleApplicationCount++;
+		});
+		return comatch;
 	}
 
 	/**
@@ -216,5 +232,46 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 		}
 		this.unsubscribeAppearing(autoApply.get());
 		this.autoApply = Optional.empty();
+	}
+
+	/**
+	 * Returns the number of successful rule applications, i. e. apply() returned an
+	 * Optional which was not empty.
+	 * 
+	 * @return the number of successful rule applications
+	 */
+	public final int countRuleApplications() {
+		return this.ruleApplicationCount;
+	}
+
+	/**
+	 * Subscribe a notification when the given rule is applied.
+	 * 
+	 * @param action
+	 *            the {@link Consumer} to notify of rule applications
+	 */
+	public final void subscribeRuleApplications(final Consumer<M> action) {
+		this.ruleApplicationConsumers.add(action);
+	}
+
+	/**
+	 * Removes the subscriptions of notification of rule applications.
+	 * 
+	 * @param action
+	 *            the {@link Consumer} to remove
+	 */
+	public final void unsubscribeRuleApplications(final Consumer<M> action) {
+		if (this.ruleApplicationConsumers.contains(action)) {
+			this.ruleApplicationConsumers.remove(action);
+		} else {
+			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
+		}
+	}
+
+	/**
+	 * Deletes all subscriptions of notifications of rule applications.
+	 */
+	public final void unsubscribeRuleApplicationsAll() {
+		this.ruleApplicationConsumers.clear();
 	}
 }
