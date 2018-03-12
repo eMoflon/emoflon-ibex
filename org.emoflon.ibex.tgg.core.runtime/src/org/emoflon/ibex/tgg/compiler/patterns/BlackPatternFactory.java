@@ -224,6 +224,10 @@ public class BlackPatternFactory {
 		return rule;
 	}
 	
+	public BlackPatternCompiler getCompiler() {
+		return compiler;
+	}
+	
 	public TGGRule getFlattenedVersionOfRule() {
 		return compiler.getFlattenedVersionOfRule(rule);
 	}

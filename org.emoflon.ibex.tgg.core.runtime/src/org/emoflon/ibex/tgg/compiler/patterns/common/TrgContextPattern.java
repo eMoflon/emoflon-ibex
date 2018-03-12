@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns.common;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
@@ -19,11 +20,11 @@ public class TrgContextPattern extends IbexBasePattern {
 
 	public TrgContextPattern(BlackPatternFactory factory) {
 		super(factory);
-		initialise(factory.getRule());
+		initialise(factory.getRule(), factory.getCompiler().getOptions().setCorrContextNodesAsLocalNodes());
 		createPatternNetwork(factory);
 	}
 
-	protected void initialise(TGGRule rule) {
+	protected void initialise(TGGRule rule, boolean setCorrContextNodesAsLocalNodes) {
 		String name = rule.getName() + PatternSuffixes.TRG_CONTEXT;
 
 		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream().filter(this::isSignatureNode)
@@ -32,12 +33,16 @@ public class TrgContextPattern extends IbexBasePattern {
 		Collection<TGGRuleEdge> localEdges = rule.getEdges().stream().filter(this::isLocalEdge)
 				.collect(Collectors.toList());
 
-		Collection<TGGRuleNode> localNodes = rule.getNodes().stream().filter(this::isContextCorr)
-				.collect(Collectors.toList());
+		Collection<TGGRuleNode> localNodes;
 
-		rule.getNodes().stream().filter(this::isContextCorr).map(TGGRuleCorr.class::cast)
-				.forEach(corr -> extractTargetEdges(corr, localEdges));
+		if (setCorrContextNodesAsLocalNodes) {
+			localNodes = rule.getNodes().stream().filter(this::isContextCorr).collect(Collectors.toList());
 
+			rule.getNodes().stream().filter(this::isContextCorr).map(TGGRuleCorr.class::cast)
+					.forEach(corr -> extractTargetEdges(corr, localEdges));
+		} else {
+			localNodes = Collections.emptyList();
+		}
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 

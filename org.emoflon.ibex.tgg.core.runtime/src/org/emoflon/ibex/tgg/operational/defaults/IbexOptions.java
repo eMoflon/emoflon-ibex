@@ -12,6 +12,21 @@ import language.TGGRule;
 public class IbexOptions {
 	public static boolean blackInterpSupportsAttrConstrs = true;
 	
+	/**
+	 * EdgePatterns are only created if the number of edges in this pattern is at least this constant
+	 */
+	private static int minimumNumberOfEdgesToCreateEdgePatterns = 3;
+	
+	/**
+	 * CorrContext nodes are local nodes in the SrcContext and TrgContext pattern 
+	 */
+	private static boolean setCorrContextNodesAsLocalNodes = true;
+	
+	/**
+	 * Patterns with more than one connected component are split via edge patterns
+	 */
+	private static boolean splitDisjointPatterns = true;
+	
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -127,4 +142,17 @@ public class IbexOptions {
 	public boolean blackInterpSupportsAttrConstrs() {
 		return blackInterpSupportsAttrConstrs;
 	}
+	
+	public int minimumNumberOfEdgesToCreateEdgePatterns() {
+		return minimumNumberOfEdgesToCreateEdgePatterns;
+	}
+	
+	public boolean splitDisjointPatterns() {
+		return splitDisjointPatterns;
+	}
+	
+	public boolean setCorrContextNodesAsLocalNodes() {
+		return setCorrContextNodesAsLocalNodes;
+	}
+	
 }

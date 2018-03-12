@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.antlr.grammar.v3.ANTLRParser.optionsSpec_return;
+
 //import javax.xml.ws.BindingType;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -229,10 +231,15 @@ public class IbexPatternOptimiser {
 	 * @throws NotImplementedException:
 	 *             Thrown if the factory does not contain a suitable pattern
 	 */
-	public void replaceEdges(IbexBasePattern pattern) throws NotImplementedException {
+	public void replaceEdges(IbexBasePattern pattern, int minNumberOfEdges) throws NotImplementedException {
 		Collection<TGGRuleEdge> edges = pattern.getLocalEdges();
+		
+		// If the pattern does not contain enough edges, it does not make sense to invoke EdgePatterns
+		if (edges.size() < minNumberOfEdges)
+			return;
+		
 		Collection<TGGRuleEdge> edgesToRemove = new ArrayList<TGGRuleEdge>();
-
+		
 		for (TGGRuleEdge edge : edges) {
 			// Links connecting different models must be handled separately
 			if (!edge.getSrcNode().getDomainType().equals(edge.getTrgNode().getDomainType()))
@@ -249,12 +256,7 @@ public class IbexPatternOptimiser {
 			// Mapping via source and target node
 			Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
 			mapping.put(edge.getSrcNode(), ep.getEdge().getSrcNode());
-			
-			//System.out.println(edge.getSrcNode().getType().getName() + " --> " + ep.getEdge().getSrcNode().getType().getName());
-			
 			mapping.put(edge.getTrgNode(), ep.getEdge().getTrgNode());
-			
-			//System.out.println(edge.getTrgNode().getType().getName() + " --> " + ep.getEdge().getTrgNode().getType().getName());
 			
 			// Invocation
 			pattern.addPositiveInvocation(ep, mapping);
