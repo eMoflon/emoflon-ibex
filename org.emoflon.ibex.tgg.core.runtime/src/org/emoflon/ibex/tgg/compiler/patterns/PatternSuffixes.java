@@ -73,6 +73,11 @@ public class PatternSuffixes {
 	public static final String GEN = SEP + "GEN";
 	
 	/**
+	 * Identifier for patterns containing a NAC for an axiom rule
+	 */
+	public static final String GEN_AXIOM_NAC = GEN + "_AXIOM_NAC";
+	
+	/**
 	 * These patterns are used to enforce DEC in a domain
 	 */
 	public static String NO_FILTER_ACs(DomainType domain) {

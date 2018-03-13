@@ -16,7 +16,7 @@ import language.TGGRuleNode;
 public class GENBlackPattern extends IbexBasePattern {
 	
 	public static String getName(String ruleName) {
-		return ruleName + PatternSuffixes.GEN;
+		return ruleName.replaceAll(PatternSuffixes.SEP, "_") + PatternSuffixes.GEN;
 	}
 	
 	public GENBlackPattern(BlackPatternFactory factory) {
