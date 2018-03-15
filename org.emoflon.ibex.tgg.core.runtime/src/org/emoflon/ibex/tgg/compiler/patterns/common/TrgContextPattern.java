@@ -28,7 +28,7 @@ public class TrgContextPattern extends IbexBasePattern {
 
 		Collection<TGGRuleEdge> localEdges = rule.getEdges().stream().filter(this::isLocalEdge).collect(Collectors.toList());
 
-		Collection<TGGRuleNode> localNodes = getOptimiser().determineLocalNodes(factory.getCompiler().getOptions(), localEdges, rule);
+		Collection<TGGRuleNode> localNodes = getOptimiser().determineLocalNodes(factory.getOptions(), localEdges, rule);
 
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}

@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.defaults;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 
@@ -10,17 +11,16 @@ import language.TGG;
 import language.TGGRule;
 
 public class IbexOptions {
-	public static boolean blackInterpSupportsAttrConstrs = true;
 	
-	/**
-	 * EdgePatterns are only created if the number of edges in this pattern is at least this constant
-	 */
-	private static int minimumNumberOfEdgesToCreateEdgePatterns = Integer.MAX_VALUE;
+	private FilterNACStrategy filterNACStrategy = FilterNACStrategy.FILTER_NACS;
 	
-	/**
-	 * CorrContext nodes are local nodes in the SrcContext and TrgContext pattern 
-	 */
-	private static boolean setCorrContextNodesAsLocalNodes = true;
+	private boolean blackInterpSupportsAttrConstrs = true;
+	
+	/** CorrContext nodes are local nodes in the SrcContext and TrgContext pattern */
+	private boolean setCorrContextNodesAsLocalNodes = true;
+	
+	/** EdgePatterns are only created if the number of edges in this pattern is at least this constant */
+	private int minimumNumberOfEdgesToCreateEdgePatterns = 5;
 	
 	private boolean debug;
 	private String workspacePath;
@@ -116,6 +116,10 @@ public class IbexOptions {
 				.collect(Collectors.toList());
 	}
 
+	public FilterNACStrategy getFilterNACStrategy() {
+		return filterNACStrategy;
+	}
+
 	public IbexOptions setConstraintProvider(RuntimeTGGAttrConstraintProvider constraintProvider) {
 		this.constraintProvider = constraintProvider;
 		return this;
@@ -146,4 +150,7 @@ public class IbexOptions {
 		return setCorrContextNodesAsLocalNodes;
 	}
 	
+	public void setFilterNACStrategy(FilterNACStrategy filterNACStrategy) {
+		this.filterNACStrategy = filterNACStrategy;
+	}
 }
