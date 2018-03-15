@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.compiler.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -15,7 +16,13 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.common.EdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
+import language.BindingType;
+import language.DomainType;
+import language.LanguageFactory;
+import language.TGGRule;
+import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import language.basic.expressions.TGGLiteralExpression;
@@ -227,34 +234,62 @@ public class IbexPatternOptimiser {
 	 * @throws NotImplementedException:
 	 *             Thrown if the factory does not contain a suitable pattern
 	 */
-	public void replaceEdges(IbexBasePattern pattern, int minNumberOfEdges) throws NotImplementedException {
+	public void replaceEdges(IbexBasePattern pattern, IbexOptions options) {
 		Collection<TGGRuleEdge> edges = pattern.getLocalEdges();
-		
-		// If the pattern does not contain enough edges, it does not make sense to invoke EdgePatterns
-		if (edges.size() < minNumberOfEdges)
+
+		// Only extract edges if the pattern is complex enough	
+		if (edges.size() < options.minimumNumberOfEdgesToCreateEdgePatterns())
 			return;
-		
+
 		Collection<TGGRuleEdge> edgesToRemove = new ArrayList<TGGRuleEdge>();
-		
-		for (TGGRuleEdge edge : edges) {		
+
+		for (TGGRuleEdge edge : edges) {
 			EReference key = edge.getType();
 			EdgePattern ep = edgePatterns.get(key);
-			
+
 			if (ep == null) {
 				ep = new EdgePattern(pattern.getPatternFactory(), edge);
 				edgePatterns.put(key, ep);
 			}
-			
+
 			// Mapping via source and target node
 			Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
 			mapping.put(edge.getSrcNode(), ep.getEdge().getSrcNode());
 			mapping.put(edge.getTrgNode(), ep.getEdge().getTrgNode());
-			
+
 			// Invocation
 			pattern.addPositiveInvocation(ep, mapping);
 			edgesToRemove.add(edge);
 		}
 
 		edges.removeAll(edgesToRemove);
+	}
+
+	public Collection<TGGRuleNode> determineLocalNodes(IbexOptions options, Collection<TGGRuleEdge> localEdges,
+			TGGRule rule) {
+		if (options.setCorrContextNodesAsLocalNodes()) {
+			rule.getNodes().stream()//
+					.filter(this::isContextCorr)//
+					.map(TGGRuleCorr.class::cast)//
+					.forEach(corr -> extractTargetEdges(corr, localEdges));
+			return rule.getNodes().stream().filter(this::isContextCorr).collect(Collectors.toList());
+		} else {
+			return Collections.emptyList();
+		}
+	}
+	
+	private boolean isContextCorr(TGGRuleNode n) {
+		return n.getBindingType() == BindingType.CONTEXT && n instanceof TGGRuleCorr;
+	}
+	
+	private void extractTargetEdges(TGGRuleCorr corr, Collection<TGGRuleEdge> localEdges) {
+		TGGRuleEdge target = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+		target.setBindingType(corr.getBindingType());
+		target.setDomainType(DomainType.TRG);
+		target.setName("target");
+		target.setType((EReference) corr.getType().getEStructuralFeature("target"));
+		target.setSrcNode(corr);
+		target.setTrgNode(corr.getTarget());
+		localEdges.add(target);
 	}
 }
