@@ -13,7 +13,6 @@ import org.emoflon.ibex.gt.editor.gT.Node;
 import org.emoflon.ibex.gt.editor.gT.Operator;
 import org.emoflon.ibex.gt.editor.gT.OperatorNode;
 import org.emoflon.ibex.gt.editor.gT.OperatorReference;
-import org.emoflon.ibex.gt.editor.gT.Reference;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 
 import GTLanguage.GTBindingType;
@@ -87,7 +86,7 @@ public class EditorToInternalGTModelTransformation
 		boolean hasOperatorNode = editorRule.getNodes().stream() //
 				.anyMatch(node -> node instanceof OperatorNode);
 		return hasOperatorNode || editorRule.getNodes().stream() //
-				.map(node -> node.getConstraints()).flatMap(constraints -> constraints.stream())
+				.map(node -> node.getReferences()).flatMap(constraints -> constraints.stream())
 				.anyMatch(constraint -> constraint instanceof OperatorReference);
 	}
 
@@ -133,8 +132,7 @@ public class EditorToInternalGTModelTransformation
 		Objects.requireNonNull(editorNode, "editor node must not be null!");
 		Objects.requireNonNull(gtNodes, "node list must not be null!");
 		List<GTEdge> gtEdges = new ArrayList<GTEdge>();
-		List<Reference> references = extractReferences(editorNode);
-		references.forEach(reference -> {
+		editorNode.getReferences().forEach(reference -> {
 			String sourceNodeName = editorNode.getName();
 			String targetNodeName = reference.getTarget().getName();
 
@@ -186,19 +184,5 @@ public class EditorToInternalGTModelTransformation
 		Objects.requireNonNull(nodes, "node list must not be null!");
 		Objects.requireNonNull(name, "name must not be null!");
 		return nodes.stream().filter(gtNode -> name.equals(gtNode.getName())).findAny();
-	}
-
-	/**
-	 * Returns all references of an editor node.
-	 * 
-	 * @param editorNode
-	 *            the editor node, must not be <code>null</code>
-	 * @return the References which are the constraint list of the editor node
-	 */
-	private static List<Reference> extractReferences(final Node editorNode) {
-		Objects.requireNonNull(editorNode, "node must not be null!");
-		return editorNode.getConstraints().stream() //
-				.filter(x -> x instanceof Reference).map(x -> (Reference) x) //
-				.collect(Collectors.toList());
 	}
 }
