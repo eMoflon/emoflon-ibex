@@ -26,6 +26,8 @@ public class EdgePattern extends IbexBasePattern {
 		src.setType(sampleEdge.getType().getEContainingClass());
 		src.setName("source");
 		
+		if (factory.getCompiler().getOptions())
+		
 		trg = lfi.createTGGRuleNode();
 		trg.setType(sampleEdge.getType().getEReferenceType());
 		trg.setName("target");

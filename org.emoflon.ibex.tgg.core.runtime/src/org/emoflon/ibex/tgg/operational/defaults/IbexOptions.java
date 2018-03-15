@@ -27,6 +27,11 @@ public class IbexOptions {
 	 */
 	private static boolean splitDisjointPatterns = true;
 	
+	/**
+	 * Indicates if attribute conditions should be considered in edge patterns
+	 */
+	private static boolean considerAttributeConditions = true;
+	
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -155,4 +160,7 @@ public class IbexOptions {
 		return setCorrContextNodesAsLocalNodes;
 	}
 	
+	public boolean considerAttributeConditions() {
+		return considerAttributeConditions;
+	}
 }
