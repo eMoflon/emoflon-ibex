@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns.common;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
@@ -14,26 +13,23 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class TrgContextPattern extends IbexBasePattern {
-	
+
 	public TrgContextPattern(BlackPatternFactory factory) {
 		super(factory);
 		initialise(factory.getRule());
 		createPatternNetwork(factory);
 	}
-	
+
 	protected void initialise(TGGRule rule) {
 		String name = rule.getName() + PatternSuffixes.TRG_CONTEXT;
-		
-		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
-					.filter(this::isSignatureNode)
-					.collect(Collectors.toList());
-		
-		Collection<TGGRuleEdge> localEdges = rule.getEdges().stream()
-					.filter(this::isLocalEdge)
-					.collect(Collectors.toList());
-		
-		Collection<TGGRuleNode> localNodes = Collections.emptyList();
-		
+
+		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream().filter(this::isSignatureNode)
+				.collect(Collectors.toList());
+
+		Collection<TGGRuleEdge> localEdges = rule.getEdges().stream().filter(this::isLocalEdge).collect(Collectors.toList());
+
+		Collection<TGGRuleNode> localNodes = getOptimiser().determineLocalNodes(factory.getCompiler().getOptions(), localEdges, rule);
+
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 
@@ -48,7 +44,7 @@ public class TrgContextPattern extends IbexBasePattern {
 	private void createPatternNetwork(BlackPatternFactory factory) {
 		// Leaf pattern
 	}
-		
+
 	@Override
 	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
 		// Leaf pattern so we have to check injectivity here

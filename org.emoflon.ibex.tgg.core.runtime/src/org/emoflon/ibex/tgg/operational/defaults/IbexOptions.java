@@ -12,6 +12,16 @@ import language.TGGRule;
 public class IbexOptions {
 	public static boolean blackInterpSupportsAttrConstrs = true;
 	
+	/**
+	 * EdgePatterns are only created if the number of edges in this pattern is at least this constant
+	 */
+	private static int minimumNumberOfEdgesToCreateEdgePatterns = Integer.MAX_VALUE;
+	
+	/**
+	 * CorrContext nodes are local nodes in the SrcContext and TrgContext pattern 
+	 */
+	private static boolean setCorrContextNodesAsLocalNodes = true;
+	
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -93,16 +103,16 @@ public class IbexOptions {
 	}
 
 	public Collection<TGGRule> getFlattenedConcreteTGGRules() {
-		return flattenedTGG.getRules()
-				.stream()
-				.filter(r -> !r.isAbstract())
+		return flattenedTGG.getRules()//
+				.stream()//
+				.filter(r -> !r.isAbstract())//
 				.collect(Collectors.toList());
 	}
 
 	public Collection<TGGRule> getConcreteTGGRules() {
-		return tgg.getRules()
-				.stream()
-				.filter(r -> !r.isAbstract())
+		return tgg.getRules()//
+				.stream()//
+				.filter(r -> !r.isAbstract())//
 				.collect(Collectors.toList());
 	}
 
@@ -127,4 +137,13 @@ public class IbexOptions {
 	public boolean blackInterpSupportsAttrConstrs() {
 		return blackInterpSupportsAttrConstrs;
 	}
+	
+	public int minimumNumberOfEdgesToCreateEdgePatterns() {
+		return minimumNumberOfEdgesToCreateEdgePatterns;
+	}
+	
+	public boolean setCorrContextNodesAsLocalNodes() {
+		return setCorrContextNodesAsLocalNodes;
+	}
+	
 }

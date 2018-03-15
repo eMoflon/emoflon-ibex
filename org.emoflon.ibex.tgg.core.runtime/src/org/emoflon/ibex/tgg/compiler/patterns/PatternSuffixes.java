@@ -58,6 +58,9 @@ public class PatternSuffixes {
 
 	/** Used for constraints, currently only multiplicity NACs */
 	public static final String CONSTRAINT = SEP + "CONSTRAINT";
+	
+	/** Used for edge patterns */
+	public static final String EDGE = SEP + "EDGE";
 
 	/** 
 	 * Contains the entire context of the original TGG rule
