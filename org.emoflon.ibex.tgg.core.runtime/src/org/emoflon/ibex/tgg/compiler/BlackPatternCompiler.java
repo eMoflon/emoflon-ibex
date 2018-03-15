@@ -2,35 +2,29 @@ package org.emoflon.ibex.tgg.compiler;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.SearchEdgePattern;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDFusedPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDOptBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDOptFusedPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDFusedPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptFusedPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDBlackPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
-import gnu.trove.map.hash.THashMap;
 import language.TGGComplementRule;
 import language.TGGRule;
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
 
 public class BlackPatternCompiler {
 	private Map<String, Collection<IBlackPattern>> ruleToPatterns;
