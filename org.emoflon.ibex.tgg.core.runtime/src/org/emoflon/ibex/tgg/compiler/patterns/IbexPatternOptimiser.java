@@ -10,10 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.antlr.grammar.v3.ANTLRParser.optionsSpec_return;
-
-//import javax.xml.ws.BindingType;
-
 import org.apache.commons.lang3.NotImplementedException;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.common.EdgePattern;
@@ -240,11 +236,7 @@ public class IbexPatternOptimiser {
 		
 		Collection<TGGRuleEdge> edgesToRemove = new ArrayList<TGGRuleEdge>();
 		
-		for (TGGRuleEdge edge : edges) {
-			// Links connecting different models must be handled separately
-			//if (!edge.getSrcNode().getDomainType().equals(edge.getTrgNode().getDomainType()))
-			//	continue;
-			
+		for (TGGRuleEdge edge : edges) {		
 			EReference key = edge.getType();
 			EdgePattern ep = edgePatterns.get(key);
 			

@@ -79,13 +79,9 @@ public class BlackPatternCompiler {
 			// Create edge patterns for all patterns found so far
 			for (IBlackPattern pattern : factory.getPatterns()) {
 				int minNrofEdges;
-				// First compute if the pattern is disjoint
-				if (computeNrofConnectedComponents(pattern) > 1 && options.splitDisjointPatterns())
-					// Split it anyway
-					minNrofEdges = 0;
-				else
-					// Only split if the number of edges is high enough
-					minNrofEdges = options.minimumNumberOfEdgesToCreateEdgePatterns();
+				
+				// Only split if the number of edges is high enough
+				minNrofEdges = options.minimumNumberOfEdgesToCreateEdgePatterns();
 				
 				if (IbexBasePattern.class.isAssignableFrom(pattern.getClass()))
 					((IbexBasePattern) pattern).getOptimiser().replaceEdges((IbexBasePattern) pattern, minNrofEdges);
@@ -95,35 +91,6 @@ public class BlackPatternCompiler {
 		}
 
 		checkForDuplicates();
-	}
-
-	private int computeNrofConnectedComponents(IBlackPattern pattern) {
-		THashMap<TGGRuleNode, Integer> nodeNumbers = new THashMap<>();
-		THashMap<TGGRuleEdge, Integer> edgeNumbers = new THashMap<>();
-		int nodeIndex = 0;
-
-		for (TGGRuleNode node : pattern.getAllNodes()) {
-			nodeNumbers.put(node, nodeIndex++);
-		}
-
-		boolean modified = true;
-		while (modified) {
-			modified = false;
-			for (TGGRuleEdge edge : pattern.getLocalEdges()) {
-				if (nodeNumbers.get(edge.getSrcNode()) != nodeNumbers.get(edge.getTrgNode())) {
-					modified = true;
-					int edgeNumber = nodeNumbers.get(edge.getSrcNode()) > nodeNumbers.get(edge.getTrgNode())
-							? nodeNumbers.get(edge.getSrcNode())
-							: nodeNumbers.get(edge.getTrgNode());
-
-					edgeNumbers.put(edge, edgeNumber);
-					nodeNumbers.put(edge.getSrcNode(), edgeNumber);
-					nodeNumbers.put(edge.getTrgNode(), edgeNumber);
-				}
-			}
-		}
-
-		return nodeNumbers.values().stream().distinct().collect(Collectors.toList()).size();
 	}
 
 	private void checkForDuplicates() {
