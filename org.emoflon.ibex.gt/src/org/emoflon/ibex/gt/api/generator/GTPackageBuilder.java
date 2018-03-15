@@ -267,14 +267,26 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * Logs the message on the console.
 	 */
 	private void log(final String message) {
-		Logger.getRootLogger().info(this.project.getName() + " - package " + this.packageName + ": " + message);
+		Logger.getRootLogger().info(this.getProjectAndPackageName() + ": " + message);
 	}
 
 	/**
 	 * Logs the error message on the console.
 	 */
 	private void logError(final String message) {
-		Logger.getRootLogger().error(this.project.getName() + " - package " + this.packageName + ": " + message);
+		Logger.getRootLogger().error(this.getProjectAndPackageName() + ": " + message);
+	}
+
+	/**
+	 * Returns the concatenation of the project name and the package.
+	 * 
+	 * @return the name string
+	 */
+	private String getProjectAndPackageName() {
+		if (this.packageName.equals("")) {
+			return this.project.getName() + ", default package";
+		}
+		return this.project.getName() + ", package " + this.packageName;
 	}
 
 	/**

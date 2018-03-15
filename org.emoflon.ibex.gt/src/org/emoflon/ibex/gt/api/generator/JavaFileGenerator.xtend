@@ -114,12 +114,12 @@ class JavaFileGenerator {
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI'
 		)
 		rules.forEach [
-			imports.add('''«this.packageName».api.rules.«getRuleClassName(it)»''')
+			imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(it)»''')
 		]
 
 		val apiClassName = this.APIClassName
 		val apiSourceCode = '''
-			package «this.packageName».api;
+			package «this.getSubPackageName('api')»;
 			
 			«printImports(imports)»
 			
@@ -187,11 +187,11 @@ class JavaFileGenerator {
 		val imports = getImportsForTypes(rule.graph.nodes.filter[!it.local].toList)
 		imports.add('org.emoflon.ibex.common.operational.IMatch')
 		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch')
-		imports.add('''«this.packageName».api.rules.«getRuleClassName(rule)»''')
+		imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(rule)»''')
 
 		val signatureNodes = rule.graph.nodes.filter[!it.local]
 		val matchSourceCode = '''
-			package «this.packageName».api.matches;
+			package «this.getSubPackageName('api.matches')»;
 			
 			«printImports(imports)»
 			
@@ -246,15 +246,15 @@ class JavaFileGenerator {
 			'org.emoflon.ibex.common.operational.IMatch',
 			'''org.emoflon.ibex.gt.api.«ruleType»''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
-			'''«this.packageName».api.«APIClassName»''',
-			'''«this.packageName».api.matches.«getMatchClassName(rule)»'''
+			'''«this.getSubPackageName('api')».«APIClassName»''',
+			'''«this.getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
 		)
 		if (parameterNodes.size > 0) {
 			imports.add('java.util.Objects');
 		}
 
 		val ruleSourceCode = '''
-			package «this.packageName».api.rules;
+			package «this.getSubPackageName('api.rules')»;
 			
 			«printImports(imports)»
 			
@@ -331,6 +331,14 @@ class JavaFileGenerator {
 				import «importClass»;
 			«ENDFOR»
 		'''
+	}
+
+	/**
+	 * Returns the name of the package.
+	 */
+	private def getSubPackageName(String subPackage) {
+		val dot = if (this.packageName.equals("")) "" else "." 
+		return '''«this.packageName»«dot»«subPackage»'''
 	}
 
 	/**
