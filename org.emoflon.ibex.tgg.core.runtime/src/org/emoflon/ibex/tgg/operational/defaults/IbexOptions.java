@@ -22,11 +22,6 @@ public class IbexOptions {
 	 */
 	private static boolean setCorrContextNodesAsLocalNodes = true;
 	
-	/**
-	 * Patterns with more than one connected component are split via edge patterns
-	 */
-	private static boolean splitDisjointPatterns = true;
-	
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -108,16 +103,16 @@ public class IbexOptions {
 	}
 
 	public Collection<TGGRule> getFlattenedConcreteTGGRules() {
-		return flattenedTGG.getRules()
-				.stream()
-				.filter(r -> !r.isAbstract())
+		return flattenedTGG.getRules()//
+				.stream()//
+				.filter(r -> !r.isAbstract())//
 				.collect(Collectors.toList());
 	}
 
 	public Collection<TGGRule> getConcreteTGGRules() {
-		return tgg.getRules()
-				.stream()
-				.filter(r -> !r.isAbstract())
+		return tgg.getRules()//
+				.stream()//
+				.filter(r -> !r.isAbstract())//
 				.collect(Collectors.toList());
 	}
 
@@ -145,10 +140,6 @@ public class IbexOptions {
 	
 	public int minimumNumberOfEdgesToCreateEdgePatterns() {
 		return minimumNumberOfEdgesToCreateEdgePatterns;
-	}
-	
-	public boolean splitDisjointPatterns() {
-		return splitDisjointPatterns;
 	}
 	
 	public boolean setCorrContextNodesAsLocalNodes() {
