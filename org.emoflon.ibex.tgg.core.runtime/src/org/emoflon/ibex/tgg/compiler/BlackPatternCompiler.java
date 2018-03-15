@@ -76,15 +76,15 @@ public class BlackPatternCompiler {
 				factory.createBlackPattern(FWDOptFusedPattern.class);
 			}
 
-			// Create edge patterns for all patterns found so far
+			// Create edge patterns for all patterns if required
 			for (IBlackPattern pattern : factory.getPatterns()) {
-				int minNrofEdges;
-				
-				// Only split if the number of edges is high enough
-				minNrofEdges = options.minimumNumberOfEdgesToCreateEdgePatterns();
-				
-				if (IbexBasePattern.class.isAssignableFrom(pattern.getClass()))
-					((IbexBasePattern) pattern).getOptimiser().replaceEdges((IbexBasePattern) pattern, minNrofEdges);
+				if (pattern instanceof IbexBasePattern) {
+					IbexBasePattern basePattern = (IbexBasePattern) pattern;
+					basePattern.getOptimiser().replaceEdges(//
+							basePattern, //
+							options//
+					);
+				}
 			}
 
 			ruleToPatterns.put(rule.getName(), factory.getPatterns());
