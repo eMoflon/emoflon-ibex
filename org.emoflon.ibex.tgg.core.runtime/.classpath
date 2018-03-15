@@ -10,6 +10,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/trove-3.1a1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="C:/Users/Nils/git/emoflon-ibex/org.emoflon.ibex.tgg.core.runtime/lib/org.eclipse.emf.codegen-2.11.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
