@@ -242,8 +242,8 @@ public class IbexPatternOptimiser {
 		
 		for (TGGRuleEdge edge : edges) {
 			// Links connecting different models must be handled separately
-			if (!edge.getSrcNode().getDomainType().equals(edge.getTrgNode().getDomainType()))
-				continue;
+			//if (!edge.getSrcNode().getDomainType().equals(edge.getTrgNode().getDomainType()))
+			//	continue;
 			
 			EReference key = edge.getType();
 			EdgePattern ep = edgePatterns.get(key);

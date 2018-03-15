@@ -227,6 +227,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		// Even if init failed still attempt to monitor before failing
 		try {
+			// Ensure that the resource set is empty
+			rs.getResources().clear();
 			blackInterpreter.monitor(rs);
 		} finally {
 			if (initExcep.isPresent())
