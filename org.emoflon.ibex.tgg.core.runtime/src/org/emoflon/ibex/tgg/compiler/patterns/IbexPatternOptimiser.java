@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.compiler.patterns;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.emoflon.ibex.tgg.compiler.patterns.common.EdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
@@ -30,7 +32,20 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
 
 public class IbexPatternOptimiser {
 
-	private static Map<EReference,EdgePattern> edgePatterns = new LinkedHashMap<>();
+	private static Map<EReference,Collection<EdgePattern>> edgePatterns = new LinkedHashMap<>();
+	
+	/**
+	 * Simple String comparison
+	 * @author NilsWeidmann
+	 *
+	 */
+	public static class StringComparator implements Comparator<String> {
+
+		@Override
+		public int compare(String arg0, String arg1) {
+			return arg0.compareTo(arg1);
+		}
+	}
 
 	/**
 	 * This method takes a pair of nodes which potentially need an
@@ -245,11 +260,25 @@ public class IbexPatternOptimiser {
 
 		for (TGGRuleEdge edge : edges) {
 			EReference key = edge.getType();
-			EdgePattern ep = edgePatterns.get(key);
-
+			Collection<EdgePattern> patterns = edgePatterns.get(key);
+			EdgePattern ep = null;
+			
+			// Initialize collection if necessary
+			if (patterns == null)
+				patterns = new ArrayList<>();
+		
+			// Check if the EdgePattern matches the current edge
+			for (EdgePattern p : patterns) {
+				if (!options.stronglyTypedEdgedPatterns() || edgeMatchesPattern(p,edge) ) {
+					ep = p;
+					break;
+				}
+			}
+			
 			if (ep == null) {
-				ep = new EdgePattern(pattern.getPatternFactory(), edge);
-				edgePatterns.put(key, ep);
+				ep = new EdgePattern(pattern.getPatternFactory(), edge, options.stronglyTypedEdgedPatterns());
+				patterns.add(ep);
+				edgePatterns.put(key, patterns);
 			}
 
 			// Mapping via source and target node
@@ -263,6 +292,65 @@ public class IbexPatternOptimiser {
 		}
 
 		edges.removeAll(edgesToRemove);
+	}
+	
+	/**
+	 * 
+	 * @param p: EdgePattern to test
+	 * @param e: Edge that possibly matches the pattern
+	 * @return True, if e matches p
+	 */
+	private boolean edgeMatchesPattern(EdgePattern p, TGGRuleEdge e) {
+		TGGRuleNode srcEdge = e.getSrcNode();
+		TGGRuleNode trgEdge = e.getTrgNode();
+		TGGRuleEdge patternEdge = p.getEdge();
+		TGGRuleNode srcPattern = patternEdge.getSrcNode();
+		TGGRuleNode trgPattern = patternEdge.getTrgNode();
+		
+		// Handle source nodes
+		if (srcEdge.getAttrExpr().size() != srcPattern.getAttrExpr().size())
+			return false;
+		
+		if (!convertToString(srcEdge.getAttrExpr()).equals(convertToString(srcPattern.getAttrExpr())))
+			return false;
+		
+		// Handle target nodes
+		if (trgEdge.getAttrExpr().size() != trgPattern.getAttrExpr().size())
+			return false;
+		
+		if (!convertToString(trgEdge.getAttrExpr()).equals(convertToString(trgPattern.getAttrExpr())))
+			return false;
+		
+		return true;
+	}
+	
+	/**
+	 * Creates a unique string out of a collection of attribute expressions for comparing them
+	 * @param list: List of attribute expressions
+	 * @return Unique string
+	 */
+	public static String convertToString(Collection<TGGInplaceAttributeExpression> list) {
+		String result = "";
+		ArrayList<String> attributeStrings = new ArrayList<>();
+		
+		
+		for (TGGInplaceAttributeExpression expr : list) {
+			// Safely convert component names to strings		
+			String attributeName = expr.getAttribute() == null ? "" : expr.getAttribute().getName();
+			String operatorName = expr.getOperator() == null ? "" : expr.getOperator().getName();
+			String valueName = expr.getValueExpr() == null ? "" : expr.getValueExpr().eGet(
+					expr.getValueExpr().eClass().getEStructuralFeature("value")).toString();
+			attributeStrings.add(attributeName + "_" + operatorName + "_" + valueName + "/");
+		}
+		
+		
+		attributeStrings.sort(new StringComparator());
+		
+		for (String as : attributeStrings) {
+			result += as;
+		}
+			
+		return result;
 	}
 
 	public Collection<TGGRuleNode> determineLocalNodes(IbexOptions options, Collection<TGGRuleEdge> localEdges,

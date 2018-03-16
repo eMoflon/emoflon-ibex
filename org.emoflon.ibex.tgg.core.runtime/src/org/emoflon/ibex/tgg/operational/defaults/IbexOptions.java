@@ -22,6 +22,11 @@ public class IbexOptions {
 	 */
 	private static boolean setCorrContextNodesAsLocalNodes = true;
 	
+	/**
+	 * Indicates if the edge patterns should be typed including attribute conditions and sub types
+	 */
+	private static boolean stronglyTypedEdgedPatterns = false;
+	
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -146,4 +151,7 @@ public class IbexOptions {
 		return setCorrContextNodesAsLocalNodes;
 	}
 	
+	public boolean stronglyTypedEdgedPatterns() {
+		return stronglyTypedEdgedPatterns;
+	}
 }
