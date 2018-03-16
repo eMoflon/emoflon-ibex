@@ -6,13 +6,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.gt.editor.gT.ContextNode;
-import org.emoflon.ibex.gt.editor.gT.ContextReference;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
 import org.emoflon.ibex.gt.editor.gT.Node;
 import org.emoflon.ibex.gt.editor.gT.Operator;
-import org.emoflon.ibex.gt.editor.gT.OperatorNode;
-import org.emoflon.ibex.gt.editor.gT.OperatorReference;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 
 import GTLanguage.GTBindingType;
@@ -84,10 +80,10 @@ public class EditorToInternalGTModelTransformation
 	 */
 	private static boolean hasOperatorOrReference(final Rule editorRule) {
 		boolean hasOperatorNode = editorRule.getNodes().stream() //
-				.anyMatch(node -> node instanceof OperatorNode);
+				.anyMatch(node -> node.getOperator() != Operator.CONTEXT);
 		return hasOperatorNode || editorRule.getNodes().stream() //
-				.map(node -> node.getReferences()).flatMap(constraints -> constraints.stream())
-				.anyMatch(constraint -> constraint instanceof OperatorReference);
+				.map(node -> node.getReferences()).flatMap(references -> references.stream())
+				.anyMatch(reference -> reference.getOperator() != Operator.CONTEXT);
 	}
 
 	/**
@@ -103,19 +99,27 @@ public class EditorToInternalGTModelTransformation
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
 		gtNode.setLocal(editorNode.getName().startsWith("_"));
-		if (editorNode instanceof ContextNode) {
-			gtNode.setBindingType(GTBindingType.CONTEXT);
-		} else {
-			if (editorNode instanceof OperatorNode) {
-				OperatorNode editorOperatorNode = (OperatorNode) editorNode;
-				if (editorOperatorNode.getOperator().equals(Operator.CREATE)) {
-					gtNode.setBindingType(GTBindingType.CREATE);
-				} else {
-					gtNode.setBindingType(GTBindingType.DELETE);
-				}
-			}
-		}
+		gtNode.setBindingType(convertOperatorToBindingType(editorNode.getOperator()));
 		return gtNode;
+	}
+
+	/**
+	 * Converts the operator to the binding type.
+	 * 
+	 * @param operator
+	 *            the operator
+	 * @return the binding type
+	 */
+	private static GTBindingType convertOperatorToBindingType(Operator operator) {
+		switch (operator) {
+		case CREATE:
+			return GTBindingType.CREATE;
+		case DELETE:
+			return GTBindingType.DELETE;
+		case CONTEXT:
+		default:
+			return GTBindingType.CONTEXT;
+		}
 	}
 
 	/**
@@ -149,21 +153,9 @@ public class EditorToInternalGTModelTransformation
 				GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
 				gtEdge.setType(reference.getType());
 				gtEdge.setName(sourceNodeName + "-" + gtEdge.getType().getName() + "-" + targetNodeName);
-				if (reference instanceof ContextReference) {
-					gtEdge.setBindingType(GTBindingType.CONTEXT);
-				} else {
-					if (reference instanceof OperatorReference) {
-						OperatorReference editorOperatorReference = (OperatorReference) reference;
-						if (editorOperatorReference.getOperator().equals(Operator.CREATE)) {
-							gtEdge.setBindingType(GTBindingType.CREATE);
-						} else {
-							gtEdge.setBindingType(GTBindingType.DELETE);
-						}
-					}
-				}
+				gtEdge.setBindingType(convertOperatorToBindingType(reference.getOperator()));
 				gtSourceNode.ifPresent(node -> gtEdge.setSourceNode(node));
 				gtTargetNode.ifPresent(node -> gtEdge.setTargetNode(node));
-
 				gtEdges.add(gtEdge);
 			}
 		});
