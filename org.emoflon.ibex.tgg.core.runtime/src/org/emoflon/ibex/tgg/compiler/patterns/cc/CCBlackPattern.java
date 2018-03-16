@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
 
 import language.BindingType;
 import language.DomainType;
@@ -46,7 +46,7 @@ public class CCBlackPattern extends IbexBasePattern {
 	protected void createPatternNetwork(BlackPatternFactory factory) {
 		addPositiveInvocation(factory.createBlackPattern(CCRefinementPattern.class));
 		
-		if (BlackPatternFactory.strategy != FilterACStrategy.NONE) {
+		if (factory.getOptions().getFilterNACStrategy() != FilterNACStrategy.NONE) {
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
 		}

@@ -3,6 +3,7 @@ package org.emoflon.ibex.gt.api;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
+import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
@@ -15,12 +16,20 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  * All elements created during rule applications are added to the default
  * resource. The default resource can be explicitly set in the constructor,
  * otherwise the first resource in the resource set will be used.
+ * 
+ * Per default, all rule applications use the single pushout approach. This
+ * behavior can be changed for the whole API or for single rules.
  */
 public abstract class GraphTransformationAPI {
 	/**
 	 * The interpreter to use for queries and transformations.
 	 */
 	protected GraphTransformationInterpreter interpreter;
+
+	/**
+	 * The pushout approach to use if no approach is specified.
+	 */
+	protected PushoutApproach defaultPushoutApproach = PushoutApproach.SPO;
 
 	/**
 	 * Creates a new GraphTransformationAPI for given engine and resource set.
@@ -61,7 +70,40 @@ public abstract class GraphTransformationAPI {
 	/**
 	 * Triggers an incremental update of the matches.
 	 */
-	public void updateMatches() {
+	public final void updateMatches() {
 		this.interpreter.updateMatches();
+	}
+
+	/**
+	 * Sets the default pushout approach.
+	 * 
+	 * @param defaultPushoutApproach
+	 *            the pushout approach to set
+	 */
+	public final void setDefaultPushoutApproach(final PushoutApproach defaultPushoutApproach) {
+		this.defaultPushoutApproach = defaultPushoutApproach;
+	}
+
+	/**
+	 * Sets the pushout approach to double pushout.
+	 */
+	public final void setDPO() {
+		this.setDefaultPushoutApproach(PushoutApproach.DPO);
+	}
+
+	/**
+	 * Sets the pushout approach to single pushout.
+	 */
+	public final void setSPO() {
+		this.setDefaultPushoutApproach(PushoutApproach.SPO);
+	}
+
+	/**
+	 * Returns the default pushout approach
+	 * 
+	 * @return the default pushout approach
+	 */
+	public final PushoutApproach getDefaultPushoutApproach() {
+		return this.defaultPushoutApproach;
 	}
 }

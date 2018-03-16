@@ -13,7 +13,7 @@ import java.util.Collections;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.SrcPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
 import language.DomainType;
@@ -57,7 +57,7 @@ public class FWDFusedPattern extends BasicSyncPattern {
 		addPositiveInvocation(factory.getFactory(flattenedComplementRule.getKernel()).createBlackPattern(FWDBlackPattern.class));		
 		MAUtil.createMarkedInvocations(DomainType.SRC, flattenedComplementRule, this);
 	
-		if(BlackPatternFactory.strategy != FilterACStrategy.NONE)
+		if(factory.getOptions().getFilterNACStrategy() != FilterNACStrategy.NONE)
 			addFilterNACPatterns(DomainType.SRC, factory, optimiser);
 	}
 	

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
 import language.BindingType;
@@ -53,7 +53,7 @@ public class FWDBlackPattern extends BasicSyncPattern {
 		createMarkedInvocations(false, DomainType.SRC);
 
 		// FilterNACs
-		if(BlackPatternFactory.strategy != FilterACStrategy.NONE)
+		if(factory.getOptions().getFilterNACStrategy() != FilterNACStrategy.NONE)
 			addFilterNACPatterns(DomainType.SRC, factory, optimiser);
 		
 		// NACs

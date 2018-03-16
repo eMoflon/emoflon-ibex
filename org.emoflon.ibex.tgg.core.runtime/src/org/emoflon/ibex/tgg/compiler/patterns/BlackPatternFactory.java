@@ -18,12 +18,12 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.NacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.SearchEdgePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENAxiomNacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckLocalTranslationStatePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTranslationStatePattern;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import language.BindingType;
 import language.DomainType;
@@ -44,8 +44,6 @@ public class BlackPatternFactory {
 	private Map<String, IBlackPattern> patterns;
 	private BlackPatternCompiler compiler;
 	
-	public static final FilterACStrategy strategy = FilterACStrategy.FILTER_NACS;
-
 	public BlackPatternFactory(TGGRule rule, BlackPatternCompiler compiler) {
 		this.rule = rule;
 		this.compiler = compiler;
@@ -313,5 +311,9 @@ public class BlackPatternFactory {
 
 	public Collection<IBlackPattern> createPatternsForUserDefinedTargetNACs() {
 		return createPatternsForUserDefinedNACs(DomainType.TRG);
+	}
+
+	public IbexOptions getOptions() {
+		return compiler.getOptions();
 	}
 }

@@ -270,4 +270,8 @@ public abstract class IbexBasePattern implements IBlackPattern {
 					n -> getAllNodes().stream()
 							          .anyMatch(node -> node.getName().contentEquals(n))));
 	}
+	
+	public IbexPatternOptimiser getOptimiser() {
+		return optimiser;
+	}
 }

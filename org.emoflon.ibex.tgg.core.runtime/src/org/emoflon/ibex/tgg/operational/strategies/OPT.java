@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -370,5 +371,9 @@ public abstract class OPT extends OperationalStrategy {
 				.map(comatch::get)
 				.map(EObject.class::cast)
 				.collect(Collectors.toList());
+	}
+	
+	public Resource loadResource(String workspaceRelativePath) throws IOException{
+		return super.loadResource(workspaceRelativePath);
 	}
 }

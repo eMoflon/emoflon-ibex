@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCCPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDBlackPattern;
@@ -26,22 +27,22 @@ import language.BindingType;
 import language.TGGComplementRule;
 import language.TGGRule;
 
-public class BlackPatternCompiler {	
+public class BlackPatternCompiler {
 	private Map<String, Collection<IBlackPattern>> ruleToPatterns;
 	private IbexOptions options;
 	private Map<String, BlackPatternFactory> factories;
-		
+
 	public BlackPatternCompiler(IbexOptions options) {
 		this.options = options;
 		factories = new LinkedHashMap<>();
 		ruleToPatterns = new LinkedHashMap<>();
 	}
-	
-	public Map<String, Collection<IBlackPattern>> getRuleToPatternMap(){
+
+	public Map<String, Collection<IBlackPattern>> getRuleToPatternMap() {
 		return Collections.unmodifiableMap(ruleToPatterns);
 	}
 
-	public void preparePatterns() {	
+	public void preparePatterns() {
 		for (TGGRule rule : options.getConcreteTGGRules()) {
 			BlackPatternFactory factory = getFactory(rule);
 
@@ -67,7 +68,7 @@ public class BlackPatternCompiler {
 				factory.createBlackPattern(FWDFusedPattern.class);
 			}
 			factory.createBlackPattern(ConsistencyPattern.class);
-			
+
 			// ILP supported transformation
 			factory.createBlackPattern(FWDOptBlackPattern.class);
 			factory.createBlackPattern(BWDOptBlackPattern.class);
@@ -75,40 +76,45 @@ public class BlackPatternCompiler {
 				factory.createBlackPattern(BWDOptFusedPattern.class);
 				factory.createBlackPattern(FWDOptFusedPattern.class);
 			}
-			
+
+			// Create edge patterns for all patterns if required
+			for (IBlackPattern pattern : factory.getPatterns()) {
+				if (pattern instanceof IbexBasePattern) {
+					IbexBasePattern basePattern = (IbexBasePattern) pattern;
+					basePattern.getOptimiser().replaceEdges(//
+							basePattern, //
+							options//
+					);
+				}
+			}
+
 			ruleToPatterns.put(rule.getName(), factory.getPatterns());
 		}
-	
+
 		checkForDuplicates();
 	}
 
 	private void checkForDuplicates() {
-		Collection<String> allNames = ruleToPatterns.values().stream()
-				.flatMap(ps -> ps.stream())
-				.map(p -> p.getName())
-				.sorted()
-				.collect(Collectors.toList());
+		Collection<String> allNames = ruleToPatterns.values().stream().flatMap(ps -> ps.stream()).map(p -> p.getName())
+				.sorted().collect(Collectors.toList());
 
-		Collection<String> duplicates = allNames.stream()
-				.filter(p -> Collections.frequency(allNames, p) > 1)	
+		Collection<String> duplicates = allNames.stream().filter(p -> Collections.frequency(allNames, p) > 1)
 				.collect(Collectors.toSet());
-		
-		if(!duplicates.isEmpty())
+
+		if (!duplicates.isEmpty())
 			throw new IllegalStateException("There are duplicate patterns: " + duplicates);
 	}
 
 	public BlackPatternFactory getFactory(TGGRule rule) {
-		if(!factories.containsKey(rule.getName()))
+		if (!factories.containsKey(rule.getName()))
 			factories.put(rule.getName(), new BlackPatternFactory(rule, this));
 
 		return factories.get(rule.getName());
 	}
 
 	public TGGRule getFlattenedVersionOfRule(TGGRule rule) {
-		return options.flattenedTGG().getRules().stream()
-				   .filter(r -> r.getName().equals(rule.getName()))
-				   .findAny()
-				   .orElseThrow(IllegalStateException::new);
+		return options.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(rule.getName())).findAny()
+				.orElseThrow(IllegalStateException::new);
 	}
 	
 	/**
@@ -118,5 +124,9 @@ public class BlackPatternCompiler {
 	 */
 	private static boolean ruleIsAxiom(TGGRule rule) {
 		return rule.getNodes().stream().allMatch(n -> n.getBindingType() == BindingType.CREATE);
+	}
+
+	public IbexOptions getOptions() {
+		return options;
 	}
 }
