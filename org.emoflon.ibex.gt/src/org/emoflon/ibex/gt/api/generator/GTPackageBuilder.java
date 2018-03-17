@@ -315,7 +315,20 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		return folder;
 	}
 
+	/**
+	 * Updates the project's manifest file.
+	 */
 	private void updateManifest() {
+		try {
+			new ManifestFileUpdater().processManifest(this.project, manifest -> {
+				return this.processManifest(manifest);
+			});
+		} catch (CoreException e) {
+			this.logError("Failed to update MANIFEST.MF.");
+		}
+	}
+
+	private boolean processManifest(final Manifest manifest) {
 		// The dependencies of the API.
 		List<String> dependencies = Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt");
 
@@ -323,29 +336,22 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		String apiPackageName = (this.packageName.equals("") ? "" : this.packageName + ".") + "api";
 		List<String> exports = Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules");
 
-		ManifestFileUpdater updater = new ManifestFileUpdater();
-		try {
-			updater.processManifest(this.project, manifest -> {
-				boolean changedBasics = setBasics(manifest, this.project.getName());
-				if (changedBasics) {
-					this.log("Initialized MANIFEST.MF.");
-				}
-
-				boolean updatedDependencies = ManifestFileUpdater.updateDependencies(manifest, dependencies);
-				if (updatedDependencies) {
-					this.log("Updated dependencies");
-				}
-
-				boolean updateExports = updateExports(manifest, exports);
-				if (updateExports) {
-					this.log("Updated exports");
-				}
-
-				return changedBasics || updatedDependencies || updateExports;
-			});
-		} catch (CoreException e) {
-			this.logError("Failed to update MANIFEST.MF.");
+		boolean changedBasics = setBasics(manifest, this.project.getName());
+		if (changedBasics) {
+			this.log("Initialized MANIFEST.MF.");
 		}
+
+		boolean updatedDependencies = ManifestFileUpdater.updateDependencies(manifest, dependencies);
+		if (updatedDependencies) {
+			this.log("Updated dependencies");
+		}
+
+		boolean updateExports = updateExports(manifest, exports);
+		if (updateExports) {
+			this.log("Updated exports");
+		}
+
+		return changedBasics || updatedDependencies || updateExports;
 	}
 
 	/**
