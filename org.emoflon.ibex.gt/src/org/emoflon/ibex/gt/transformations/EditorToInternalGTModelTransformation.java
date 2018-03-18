@@ -6,25 +6,37 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.emoflon.ibex.gt.editor.gT.AttributeConstraint;
+import org.emoflon.ibex.gt.editor.gT.BooleanConstant;
+import org.emoflon.ibex.gt.editor.gT.DecimalConstant;
+import org.emoflon.ibex.gt.editor.gT.EnumValue;
 import org.emoflon.ibex.gt.editor.gT.Expression;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
+import org.emoflon.ibex.gt.editor.gT.IntegerConstant;
 import org.emoflon.ibex.gt.editor.gT.Node;
 import org.emoflon.ibex.gt.editor.gT.Parameter;
 import org.emoflon.ibex.gt.editor.gT.ParameterValue;
 import org.emoflon.ibex.gt.editor.gT.Relation;
 import org.emoflon.ibex.gt.editor.gT.Rule;
+import org.emoflon.ibex.gt.editor.gT.StringConstant;
 
 import GTLanguage.GTAttributeAssignment;
 import GTLanguage.GTAttributeCondition;
 import GTLanguage.GTAttributeConstraint;
+import GTLanguage.GTBoolean;
+import GTLanguage.GTDouble;
 import GTLanguage.GTEdge;
+import GTLanguage.GTEnumLiteral;
 import GTLanguage.GTGraph;
+import GTLanguage.GTInteger;
 import GTLanguage.GTLanguageFactory;
 import GTLanguage.GTNode;
 import GTLanguage.GTParameter;
+import GTLanguage.GTParameterReference;
 import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
+import GTLanguage.GTString;
 
 /**
  * Transformation from the editor file (which conforms to the GT.ecore
@@ -99,47 +111,96 @@ public class EditorToInternalGTModelTransformation
 		gtNode.setLocal(editorNode.getName().startsWith("_"));
 		gtNode.setBindingType(EditorToInternalModelUtils.convertOperatorToBindingType(editorNode.getOperator()));
 
-		editorNode.getAttributes().forEach(editorAttributeConstraint -> {
-			if (editorAttributeConstraint.getRelation() == Relation.ASSIGNMENT) {
-				gtNode.getAttributeAssignments()
-						.add(this.transformAttributeAssignment(editorAttributeConstraint, gtParameters));
+		// Transform the attribute constraints.
+		editorNode.getAttributes().forEach(editorAttr -> {
+			if (editorAttr.getRelation() == Relation.ASSIGNMENT) {
+				GTAttributeAssignment gtAttr = GTLanguageFactory.eINSTANCE.createGTAttributeAssignment();
+				gtAttr.setType(editorAttr.getAttribute());
+				this.setAttributeConstraintValue(gtAttr, editorAttr, gtParameters);
+				gtNode.getAttributeAssignments().add(gtAttr);
 			} else {
-				gtNode.getAttributeConditions()
-						.add(this.transformAttributeCondition(editorAttributeConstraint, gtParameters));
+				GTAttributeCondition gtAttr = GTLanguageFactory.eINSTANCE.createGTAttributeCondition();
+				gtAttr.setType(editorAttr.getAttribute());
+				gtAttr.setRelation(EditorToInternalModelUtils.convertRelation(editorAttr.getRelation()));
+				this.setAttributeConstraintValue(gtAttr, editorAttr, gtParameters);
+				gtNode.getAttributeConditions().add(gtAttr);
 			}
 		});
 		return gtNode;
 	}
 
-	private GTAttributeAssignment transformAttributeAssignment(final AttributeConstraint editorAttributeConstraint,
-			final List<GTParameter> gtParameters) {
-		GTAttributeAssignment gtAttributeAssignment = GTLanguageFactory.eINSTANCE.createGTAttributeAssignment();
-		gtAttributeAssignment.setType(editorAttributeConstraint.getAttribute());
-		this.setAttributeConstraintValue(gtAttributeAssignment, editorAttributeConstraint, gtParameters);
-		return gtAttributeAssignment;
-	}
-
-	private GTAttributeCondition transformAttributeCondition(final AttributeConstraint editorAttributeConstraint,
-			final List<GTParameter> gtParameters) {
-		GTAttributeCondition gtAttributeCondition = GTLanguageFactory.eINSTANCE.createGTAttributeCondition();
-		gtAttributeCondition.setType(editorAttributeConstraint.getAttribute());
-		gtAttributeCondition
-				.setRelation(EditorToInternalModelUtils.convertRelation(editorAttributeConstraint.getRelation()));
-		this.setAttributeConstraintValue(gtAttributeCondition, editorAttributeConstraint, gtParameters);
-		return gtAttributeCondition;
-	}
-
+	/**
+	 * Sets the attribute value for the given attribute constraint.
+	 * 
+	 * @param gtAttributeConstraint
+	 *            the attribute constraint whose value shall be set
+	 * @param editorAttributeConstraint
+	 *            the attribute constraint of the editor model
+	 * @param gtParameters
+	 *            the parameters of rule (internal model)
+	 */
 	private void setAttributeConstraintValue(final GTAttributeConstraint gtAttributeConstraint,
 			final AttributeConstraint editorAttributeConstraint, final List<GTParameter> gtParameters) {
 		Expression editorValue = editorAttributeConstraint.getValue();
-		if (editorValue instanceof ParameterValue) {
+		if (editorValue instanceof BooleanConstant) {
+			GTBoolean gtBoolean = GTLanguageFactory.eINSTANCE.createGTBoolean();
+			String bValue = ((BooleanConstant) editorValue).getValue();
+			switch (bValue) {
+			case "false":
+				gtBoolean.setValue(false);
+				break;
+			case "true":
+				gtBoolean.setValue(true);
+				break;
+			default:
+				this.logError("Invalid Boolean value: " + bValue);
+				break;
+			}
+			gtAttributeConstraint.setValue(gtBoolean);
+		} else if (editorValue instanceof DecimalConstant) {
+			String dValue = ((DecimalConstant) editorValue).getValue();
+			try {
+				double d = Double.parseDouble(dValue);
+				GTDouble gtDouble = GTLanguageFactory.eINSTANCE.createGTDouble();
+				gtDouble.setValue(d);
+				gtAttributeConstraint.setValue(gtDouble);
+			} catch (NumberFormatException e) {
+				this.logError("Invalid double value: " + dValue);
+			}
+		} else if (editorValue instanceof IntegerConstant) {
+			String iValue = ((IntegerConstant) editorValue).getValue();
+			try {
+				int i = Integer.parseInt(iValue);
+				GTInteger gtInteger = GTLanguageFactory.eINSTANCE.createGTInteger();
+				gtInteger.setValue(i);
+				gtAttributeConstraint.setValue(gtInteger);
+			} catch (NumberFormatException e) {
+				this.logError("Invalid integer value: " + iValue);
+			}
+		} else if (editorValue instanceof StringConstant) {
+			String sValue = ((StringConstant) editorValue).getValue();
+			GTString gtString = GTLanguageFactory.eINSTANCE.createGTString();
+			gtString.setValue(sValue);
+			gtAttributeConstraint.setValue(gtString);
+		} else if (editorValue instanceof EnumValue) {
+			EEnumLiteral literal = ((EnumValue) editorValue).getLiteral();
+			GTEnumLiteral gtEnumLiteral = GTLanguageFactory.eINSTANCE.createGTEnumLiteral();
+			gtEnumLiteral.setLiteral(literal);
+			gtAttributeConstraint.setValue(gtEnumLiteral);
+		} else if (editorValue instanceof ParameterValue) {
 			String parameterName = ((ParameterValue) editorValue).getParameter().getName();
 			Optional<GTParameter> gtParameter = EditorToInternalModelUtils.findParameterWithName(gtParameters,
 					parameterName);
 			if (!gtParameter.isPresent()) {
 				this.logError("Could not find parameter " + parameterName + "!");
 			}
-			gtParameter.ifPresent(p -> gtAttributeConstraint.setValue(p));
+			gtParameter.ifPresent(p -> {
+				GTParameterReference paramReference = GTLanguageFactory.eINSTANCE.createGTParameterReference();
+				paramReference.setParameter(p);
+				gtAttributeConstraint.setValue(paramReference);
+			});
+		} else {
+			this.logError("Invalid attribute value: " + editorValue);
 		}
 	}
 
