@@ -1,7 +1,5 @@
 package org.emoflon.ibex.gt.api.generator;
 
-import GTLanguage.GTLanguageFactory;
-import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
 import IBeXLanguage.IBeXPatternSet;
 import java.io.IOException;
@@ -88,11 +86,6 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private GTRuleSet gtRuleSet;
 
 	/**
-	 * The IBeXPatterns.
-	 */
-	private IBeXPatternSet ibexPatternSet;
-
-	/**
 	 * The mapping between EClassNames to MetaModelNames
 	 */
 	private HashMap<String, String> eClassNameToMetaModelName = new HashMap<String, String>();
@@ -142,12 +135,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		try {
 			allFiles = this.project.getFolder(GTBuilder.SOURCE_FOLDER).getFolder(this.path).members();
 		} catch (CoreException e) {
-			this.log("Could not read files");
+			this.log("Could not read files.");
 		}
 		List<IFile> gtFiles = Arrays.stream(allFiles) //
 				.filter(f -> f instanceof IFile).map(f -> (IFile) f) //
-				.filter(f -> "gt".equals(f.getFileExtension())) //
-				.filter(f -> f.exists()) //
+				.filter(f -> "gt".equals(f.getFileExtension()) && f.exists()) //
 				.collect(Collectors.toList());
 
 		// Load files into editor models.
@@ -166,38 +158,26 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		EcoreUtil.resolveAll(resourceSet);
 
 		// Transform editor models to rules of the internal GT model.
-		HashSet<GTRule> gtRules = new HashSet<GTRule>();
+		EditorToInternalGTModelTransformation editor2internal = new EditorToInternalGTModelTransformation();
 		editorModels.forEach((IFile gtFile, GraphTransformationFile editorModel) -> {
-			EditorToInternalGTModelTransformation transformation = new EditorToInternalGTModelTransformation();
-			GTRuleSet internalModel = transformation.transform(editorModel);
-			gtRules.addAll(internalModel.getRules());
-
-			if (transformation.hasErrors()) {
+			this.gtRuleSet = editor2internal.transform(editorModel);
+			if (editor2internal.hasErrors()) {
 				this.logError(String.format("%s errors during editor to internal model transformation of file %s",
-						transformation.countErrors(), gtFile.getName()));
-				transformation.getErrors().forEach(e -> this.logError(e));
+						editor2internal.countErrors(), gtFile.getName()));
+				editor2internal.getErrors().forEach(e -> this.logError(e));
 			}
-		});
-
-		// Save internal GT model.
-		this.gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
-		gtRules.stream().sorted((a, b) -> a.getName().compareTo(b.getName())).forEach(gtRule -> {
-			gtRuleSet.getRules().add(gtRule);
 		});
 		this.saveModelFile(this.apiPackage.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet);
 
 		// Transform rules into IBeXPatterns.
-		InternalGTModelToIBeXPatternTransformation transformation = new InternalGTModelToIBeXPatternTransformation();
-		this.ibexPatternSet = transformation.transform(this.gtRuleSet);
-
-		if (transformation.hasErrors()) {
+		InternalGTModelToIBeXPatternTransformation internalToPatterns = new InternalGTModelToIBeXPatternTransformation();
+		IBeXPatternSet ibexPatternSet = internalToPatterns.transform(this.gtRuleSet);
+		if (internalToPatterns.hasErrors()) {
 			this.logError(String.format("%s errors during internal model to pattern transformation",
-					transformation.countErrors()));
-			transformation.getErrors().forEach(e -> this.logError(e));
+					internalToPatterns.countErrors()));
+			internalToPatterns.getErrors().forEach(e -> this.logError(e));
 		}
-
-		// Save IBeXPatterns.
-		this.saveModelFile(this.apiPackage.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet);
+		this.saveModelFile(this.apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
 
 		// Load meta-models
 		HashMap<String, String> metaModelPackages = new HashMap<String, String>();

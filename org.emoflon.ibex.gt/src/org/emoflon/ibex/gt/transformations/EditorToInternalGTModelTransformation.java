@@ -48,12 +48,11 @@ public class EditorToInternalGTModelTransformation
 	/**
 	 * The rules transformed into the internal model.
 	 */
-	private List<GTRule> gtRules;
+	private List<GTRule> gtRules = new ArrayList<GTRule>();
 
 	@Override
 	public GTRuleSet transform(final GraphTransformationFile editorModel) {
 		Objects.requireNonNull(editorModel, "The editor model must not be null!");
-		this.gtRules = new ArrayList<GTRule>();
 		editorModel.getRules().forEach(editorRule -> this.transformRule(editorRule));
 
 		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
