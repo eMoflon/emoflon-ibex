@@ -41,7 +41,7 @@ import org.moflon.core.utilities.ClasspathUtil;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater.AttributeUpdatePolicy;
 
 /**
- * This GTPackageBuilder implements
+ * This GTPackageBuilder
  * <ul>
  * <li>transforms the editor files into the internal model and IBeXPatterns</li>
  * <li>and generates code for the API.</li>
@@ -86,9 +86,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private GTRuleSet gtRuleSet;
 
 	/**
-	 * The mapping between EClassNames to MetaModelNames
+	 * The mapping between EClass/EDataType names to MetaModelNames
 	 */
-	private HashMap<String, String> eClassNameToMetaModelName = new HashMap<String, String>();
+	private HashMap<String, String> eClassifierNameToMetaModelName = new HashMap<String, String>();
 
 	@Override
 	public void run(final IProject project, final IPath packagePath) {
@@ -185,7 +185,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			metaModelPackages.put(metaModel, this.loadMetaModelClasses(metaModel, resourceSet));
 		});
 
-		this.fileGenerator = new JavaFileGenerator(this.packageName, this.gtRuleSet, this.eClassNameToMetaModelName);
+		this.fileGenerator = new JavaFileGenerator(this.packageName, this.gtRuleSet,
+				this.eClassifierNameToMetaModelName);
 		this.fileGenerator.generateREADME(this.apiPackage, gtFiles, metaModels, metaModelPackages, editorModels);
 	}
 
@@ -228,11 +229,10 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		EObject rootElement = ecoreFile.getContents().get(0);
 		if (rootElement instanceof EPackage) {
 			EPackage ePackage = (EPackage) rootElement;
-			String name = ("ecore".equals(ePackage.getName())) ? "org.eclipse.emf.ecore" : ePackage.getName();
-			ePackage.getEClassifiers().stream().filter(c -> c instanceof EClass).map(c -> (EClass) c) //
-					.forEach(eClass -> {
-						this.eClassNameToMetaModelName.put(eClass.getName(), name);
-					});
+			boolean isEcore = "ecore".equals(ePackage.getName());
+			String name = isEcore ? "org.eclipse.emf.ecore" : ePackage.getName();
+			ePackage.getEClassifiers().stream().filter(c -> !isEcore || c instanceof EClass) //
+					.forEach(c -> this.eClassifierNameToMetaModelName.put(c.getName(), name));
 			return name;
 		}
 		return null;

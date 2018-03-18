@@ -7,10 +7,14 @@ import java.util.HashSet
 
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
+import org.eclipse.emf.ecore.EClassifier
+import org.eclipse.emf.ecore.EDataType
+import org.eclipse.emf.ecore.EEnum
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile
 
 import GTLanguage.GTBindingType
 import GTLanguage.GTNode
+import GTLanguage.GTParameter
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
 import java.util.Set
@@ -37,9 +41,9 @@ class JavaFileGenerator {
 	GTRuleSet gtRuleSet
 
 	/**
-	 * The mapping between EClassNames to MetaModelNames
+	 * The mapping between EClass/EDataType names to MetaModelNames
 	 */
-	HashMap<String, String> eClassNameToMetaModelName
+	HashMap<String, String> eClassifierNameToMetaModelName
 
 	/**
 	 * Creates a new JavaFileGenerator.
@@ -47,7 +51,7 @@ class JavaFileGenerator {
 	new(String packageName, GTRuleSet gtRuleSet, HashMap<String, String> eClassNameToMetaModelName) {
 		this.packageName = packageName
 		this.gtRuleSet = gtRuleSet
-		this.eClassNameToMetaModelName = eClassNameToMetaModelName
+		this.eClassifierNameToMetaModelName = eClassNameToMetaModelName
 	}
 
 	/**
@@ -115,6 +119,7 @@ class JavaFileGenerator {
 		)
 		rules.forEach [
 			imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(it)»''')
+			imports.addAll(getImportsForDataTypes(it.parameters))
 		]
 
 		val apiClassName = this.APIClassName
@@ -167,11 +172,11 @@ class JavaFileGenerator {
 			«FOR rule : rules»
 				
 					/**
-					 * Creates a new rule «rule.name»().
+					 * Creates a new rule «getRuleNameAndParameterString(rule)».
 					 * 
 					 * @return the created rule
 					 */
-					public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final String «parameter.name»Value«ENDFOR») {
+					public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
 						return new «getRuleClassName(rule)»(this, this.interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
 					}
 			«ENDFOR»
@@ -184,7 +189,7 @@ class JavaFileGenerator {
 	 * Generates the Java Match class for the given rule.
 	 */
 	public def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
-		val imports = getImportsForTypes(rule.graph.nodes.filter[!it.local].toList)
+		val imports = getImportsForNodeTypes(rule.graph.nodes.filter[!it.local].toList)
 		imports.add('org.emoflon.ibex.common.operational.IMatch')
 		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch')
 		imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(rule)»''')
@@ -196,7 +201,7 @@ class JavaFileGenerator {
 			«printImports(imports)»
 			
 			/**
-			 * A match for the rule «rule.name»().
+			 * A match for the rule «getRuleNameAndParameterString(rule)».
 			 */
 			public class «getMatchClassName(rule)» extends GraphTransformationMatch<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				«FOR node : signatureNodes»
@@ -239,7 +244,8 @@ class JavaFileGenerator {
 	public def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
 		val ruleType = if(rule.executable) 'GraphTransformationApplicableRule' else 'GraphTransformationRule'
 		val parameterNodes = rule.graph.nodes.filter[it.bindingType != GTBindingType.CREATE && !it.local].toList
-		val imports = getImportsForTypes(parameterNodes)
+		val imports = getImportsForNodeTypes(parameterNodes)
+		imports.addAll(getImportsForDataTypes(rule.parameters))
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
@@ -259,7 +265,7 @@ class JavaFileGenerator {
 			«printImports(imports)»
 			
 			/**
-			 * The rule «rule.name»().
+			 * The rule «getRuleNameAndParameterString(rule)».
 			 */
 			public class «getRuleClassName(rule)» extends «ruleType»<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				private static String ruleName = "«rule.name»";
@@ -272,12 +278,12 @@ class JavaFileGenerator {
 				 * @param interpreter
 				 *            the interpreter
 				 «FOR parameter : rule.parameters»
-				 * @param «parameter.name»Value
-				 *            the value for the parameter «parameter.name»
+				 	* @param «parameter.name»Value
+				 	*            the value for the parameter «parameter.name»
 				 «ENDFOR»
 				 */
 				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
-						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final String «parameter.name»Value«ENDFOR»
+						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR»
 					super(api, interpreter, ruleName);
 					«FOR parameter : rule.parameters»
 						this.«getMethodName('set', parameter.name)»(«parameter.name»Value);
@@ -318,7 +324,7 @@ class JavaFileGenerator {
 					 * @param value
 					 *            the value to set
 					 */
-					public «getRuleClassName(rule)» «getMethodName('set', parameter.name)»(final String value) {
+					public «getRuleClassName(rule)» «getMethodName('set', parameter.name)»(final «getJavaType(parameter.type)» value) {
 						this.parameters.put("«parameter.name»", Objects.requireNonNull(value, "«parameter.name» must not be null!"));
 						return this;
 					}
@@ -329,13 +335,26 @@ class JavaFileGenerator {
 	}
 
 	/**
-	 * Determines the set of necessary imports for a rule.
+	 * Determines the set of necessary type imports for a set of nodes.
 	 */
-	private def getImportsForTypes(List<GTNode> nodes) {
+	private def getImportsForNodeTypes(List<GTNode> nodes) {
+		return getImportsForTypes(nodes.map[it.type])
+	}
+
+	/**
+	 * Determines the set of necessary type imports for the parameters.
+	 */
+	private def getImportsForDataTypes(List<GTParameter> parameters) {
+		return getImportsForTypes(parameters.map[it.type])
+	}
+
+	/**
+	 * Determines the set of necessary imports for the given EClassifiers.
+	 */
+	private def getImportsForTypes(List<? extends EClassifier> types) {
 		val imports = newHashSet()
-		val types = nodes.map[it.type].toSet
-		types.forEach [
-			val typePackageName = this.eClassNameToMetaModelName.get(it.name)
+		types.toSet.forEach [
+			val typePackageName = this.eClassifierNameToMetaModelName.get(it.name)
 			if (typePackageName !== null) {
 				imports.add(typePackageName + '.' + it.name)
 			}
@@ -384,6 +403,13 @@ class JavaFileGenerator {
 	}
 
 	/**
+	 * Returns the concatenation of rule name and the list of parameter names.
+	 */
+	private static def getRuleNameAndParameterString(GTRule rule) {
+		return '''«rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»)'''
+	}
+
+	/**
 	 * Returns the getter method name for the given name.
 	 */
 	private static def getMethodName(String prefix, String name) {
@@ -402,6 +428,13 @@ class JavaFileGenerator {
 	 */
 	private static def getVariableType(GTNode node) {
 		return node.type.name
+	}
+
+	/**
+	 * Returns the equivalent Java type for the EDataType.
+	 */
+	private static def getJavaType(EDataType dataType) {
+		return if(dataType instanceof EEnum) dataType.name else dataType.instanceTypeName
 	}
 
 	/**
