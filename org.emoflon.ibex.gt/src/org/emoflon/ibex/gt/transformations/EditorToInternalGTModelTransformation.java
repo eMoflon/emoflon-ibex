@@ -74,7 +74,7 @@ public class EditorToInternalGTModelTransformation
 		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
 		gtRule.setName(editorRule.getName());
 		gtRule.setAbstract(editorRule.isAbstract());
-		gtRule.setExecutable(EditorToInternalModelUtils.hasOperatorOrReference(editorRule));
+		gtRule.setExecutable(EditorToInternalModelUtils.hasOperatorNodeOrReference(editorRule));
 
 		editorRule.getParameters().forEach(editorParameter -> {
 			gtRule.getParameters().add(this.transformParameter(editorParameter));

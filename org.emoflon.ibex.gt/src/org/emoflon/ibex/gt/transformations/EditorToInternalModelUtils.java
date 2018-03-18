@@ -105,11 +105,12 @@ public class EditorToInternalModelUtils {
 	 *            the editor rule
 	 * @return true if the rule contains an operator node.
 	 */
-	public static boolean hasOperatorOrReference(final Rule editorRule) {
+	public static boolean hasOperatorNodeOrReference(final Rule editorRule) {
 		boolean hasOperatorNode = editorRule.getNodes().stream() //
 				.anyMatch(node -> node.getOperator() != Operator.CONTEXT);
 		return hasOperatorNode || editorRule.getNodes().stream() //
-				.map(node -> node.getReferences()).flatMap(references -> references.stream())
+				.map(node -> node.getReferences()) //
+				.flatMap(references -> references.stream())
 				.anyMatch(reference -> reference.getOperator() != Operator.CONTEXT);
 	}
 }
