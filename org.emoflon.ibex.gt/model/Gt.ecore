@@ -5,6 +5,37 @@
   <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
     <details key="documentation" value="Internal model for graph transformation rules."/>
   </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="GTAttributeAssignment" eSuperTypes="#//GTAttributeConstraint">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An attribute assignment changes an attribute value."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GTAttributeConstraint" abstract="true">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An attribute constraint is an abstract super type for attribute assignments and conditions."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//GTAttributeValue"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GTAttributeCondition" eSuperTypes="#//GTAttributeConstraint">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An attribute condition asserts attribute values."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="relation" eType="#//GTBinaryRelation"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GTAttributeValue" abstract="true">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="The attribute value for an attribute constraint is the value the attribute is set to or compared with."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="GTBinaryRelation">
+    <eLiterals name="GREATER"/>
+    <eLiterals name="GREATER_OR_EQUAL" value="1"/>
+    <eLiterals name="EQUAL" value="2"/>
+    <eLiterals name="UNEQUAL" value="3"/>
+    <eLiterals name="SMALLER_OR_EQUAL" value="4"/>
+    <eLiterals name="SMALLER" value="5"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="GTBindingType">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="The binding type defines whether a graph element is context, created or deleted."/>
@@ -49,15 +80,19 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="A typed node can reference other nodes via edges."/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EClass"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeAssignments" upperBound="-1"
+        eType="#//GTAttributeAssignment" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConditions" upperBound="-1"
+        eType="#//GTAttributeCondition" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingEdges" upperBound="-1"
         eType="#//GTEdge" eOpposite="#//GTEdge/targetNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
         eType="#//GTEdge" eOpposite="#//GTEdge/sourceNode"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="local" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
         defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EClass"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GTParameter" eSuperTypes="#//GTNamedElement">
+  <eClassifiers xsi:type="ecore:EClass" name="GTParameter" eSuperTypes="#//GTAttributeValue #//GTNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EDataType"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTRule" eSuperTypes="#//GTNamedElement">

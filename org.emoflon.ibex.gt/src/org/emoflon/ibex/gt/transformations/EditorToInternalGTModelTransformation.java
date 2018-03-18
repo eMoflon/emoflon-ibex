@@ -6,13 +6,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.gt.editor.gT.AttributeConstraint;
+import org.emoflon.ibex.gt.editor.gT.Expression;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
 import org.emoflon.ibex.gt.editor.gT.Node;
-import org.emoflon.ibex.gt.editor.gT.Operator;
 import org.emoflon.ibex.gt.editor.gT.Parameter;
+import org.emoflon.ibex.gt.editor.gT.ParameterValue;
+import org.emoflon.ibex.gt.editor.gT.Relation;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 
-import GTLanguage.GTBindingType;
+import GTLanguage.GTAttributeAssignment;
+import GTLanguage.GTAttributeCondition;
+import GTLanguage.GTAttributeConstraint;
 import GTLanguage.GTEdge;
 import GTLanguage.GTGraph;
 import GTLanguage.GTLanguageFactory;
@@ -55,42 +60,26 @@ public class EditorToInternalGTModelTransformation
 	private void transformRule(final Rule editorRule) {
 		Objects.requireNonNull(editorRule, "rule must not be null!");
 
-		// Transform nodes and edges.
-		GTGraph gtGraph = GTLanguageFactory.eINSTANCE.createGTGraph();
-		editorRule.getNodes().forEach(editorNode -> {
-			gtGraph.getNodes().add(this.transformNode(editorNode));
-		});
-		editorRule.getNodes().forEach(editorNode -> {
-			gtGraph.getEdges().addAll(this.transformReferencesToEdges(editorNode, gtGraph.getNodes()));
-		});
-
 		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
 		gtRule.setName(editorRule.getName());
 		gtRule.setAbstract(editorRule.isAbstract());
-		gtRule.setExecutable(hasOperatorOrReference(editorRule));
-		gtRule.setGraph(gtGraph);
+		gtRule.setExecutable(EditorToInternalModelUtils.hasOperatorOrReference(editorRule));
 
 		editorRule.getParameters().forEach(editorParameter -> {
 			gtRule.getParameters().add(this.transformParameter(editorParameter));
 		});
 
-		this.gtRules.add(gtRule);
-	}
+		// Transform nodes, edges, attribute constraints.
+		GTGraph gtGraph = GTLanguageFactory.eINSTANCE.createGTGraph();
+		editorRule.getNodes().forEach(editorNode -> {
+			gtGraph.getNodes().add(this.transformNode(editorNode, gtRule.getParameters()));
+		});
+		editorRule.getNodes().forEach(editorNode -> {
+			gtGraph.getEdges().addAll(this.transformReferencesToEdges(editorNode, gtGraph.getNodes()));
+		});
+		gtRule.setGraph(gtGraph);
 
-	/**
-	 * Checks whether the editor rule contains at least one operator node or
-	 * reference.
-	 * 
-	 * @param editorRule
-	 *            the editor rule
-	 * @return true if the rule contains an operator node.
-	 */
-	private static boolean hasOperatorOrReference(final Rule editorRule) {
-		boolean hasOperatorNode = editorRule.getNodes().stream() //
-				.anyMatch(node -> node.getOperator() != Operator.CONTEXT);
-		return hasOperatorNode || editorRule.getNodes().stream() //
-				.map(node -> node.getReferences()).flatMap(references -> references.stream())
-				.anyMatch(reference -> reference.getOperator() != Operator.CONTEXT);
+		this.gtRules.add(gtRule);
 	}
 
 	/**
@@ -98,34 +87,59 @@ public class EditorToInternalGTModelTransformation
 	 * 
 	 * @param editorNode
 	 *            the editor node, must not be <code>null</code>
+	 * @param gtParameters
+	 *            the rule parameters
 	 * @return the GTNode
 	 */
-	private GTNode transformNode(final Node editorNode) {
+	private GTNode transformNode(final Node editorNode, final List<GTParameter> gtParameters) {
 		Objects.requireNonNull(editorNode, "node must not be null!");
 		GTNode gtNode = GTLanguageFactory.eINSTANCE.createGTNode();
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
 		gtNode.setLocal(editorNode.getName().startsWith("_"));
-		gtNode.setBindingType(convertOperatorToBindingType(editorNode.getOperator()));
+		gtNode.setBindingType(EditorToInternalModelUtils.convertOperatorToBindingType(editorNode.getOperator()));
+
+		editorNode.getAttributes().forEach(editorAttributeConstraint -> {
+			if (editorAttributeConstraint.getRelation() == Relation.ASSIGNMENT) {
+				gtNode.getAttributeAssignments()
+						.add(this.transformAttributeAssignment(editorAttributeConstraint, gtParameters));
+			} else {
+				gtNode.getAttributeConditions()
+						.add(this.transformAttributeCondition(editorAttributeConstraint, gtParameters));
+			}
+		});
 		return gtNode;
 	}
 
-	/**
-	 * Converts the operator to the binding type.
-	 * 
-	 * @param operator
-	 *            the operator
-	 * @return the binding type
-	 */
-	private static GTBindingType convertOperatorToBindingType(Operator operator) {
-		switch (operator) {
-		case CREATE:
-			return GTBindingType.CREATE;
-		case DELETE:
-			return GTBindingType.DELETE;
-		case CONTEXT:
-		default:
-			return GTBindingType.CONTEXT;
+	private GTAttributeAssignment transformAttributeAssignment(final AttributeConstraint editorAttributeConstraint,
+			final List<GTParameter> gtParameters) {
+		GTAttributeAssignment gtAttributeAssignment = GTLanguageFactory.eINSTANCE.createGTAttributeAssignment();
+		gtAttributeAssignment.setType(editorAttributeConstraint.getAttribute());
+		this.setAttributeConstraintValue(gtAttributeAssignment, editorAttributeConstraint, gtParameters);
+		return gtAttributeAssignment;
+	}
+
+	private GTAttributeCondition transformAttributeCondition(final AttributeConstraint editorAttributeConstraint,
+			final List<GTParameter> gtParameters) {
+		GTAttributeCondition gtAttributeCondition = GTLanguageFactory.eINSTANCE.createGTAttributeCondition();
+		gtAttributeCondition.setType(editorAttributeConstraint.getAttribute());
+		gtAttributeCondition
+				.setRelation(EditorToInternalModelUtils.convertRelation(editorAttributeConstraint.getRelation()));
+		this.setAttributeConstraintValue(gtAttributeCondition, editorAttributeConstraint, gtParameters);
+		return gtAttributeCondition;
+	}
+
+	private void setAttributeConstraintValue(final GTAttributeConstraint gtAttributeConstraint,
+			final AttributeConstraint editorAttributeConstraint, final List<GTParameter> gtParameters) {
+		Expression editorValue = editorAttributeConstraint.getValue();
+		if (editorValue instanceof ParameterValue) {
+			String parameterName = ((ParameterValue) editorValue).getParameter().getName();
+			Optional<GTParameter> gtParameter = EditorToInternalModelUtils.findParameterWithName(gtParameters,
+					parameterName);
+			if (!gtParameter.isPresent()) {
+				this.logError("Could not find parameter " + parameterName + "!");
+			}
+			gtParameter.ifPresent(p -> gtAttributeConstraint.setValue(p));
 		}
 	}
 
@@ -147,8 +161,8 @@ public class EditorToInternalGTModelTransformation
 			String sourceNodeName = editorNode.getName();
 			String targetNodeName = reference.getTarget().getName();
 
-			Optional<GTNode> gtSourceNode = findGTNodeWithName(gtNodes, sourceNodeName);
-			Optional<GTNode> gtTargetNode = findGTNodeWithName(gtNodes, targetNodeName);
+			Optional<GTNode> gtSourceNode = EditorToInternalModelUtils.findGTNodeWithName(gtNodes, sourceNodeName);
+			Optional<GTNode> gtTargetNode = EditorToInternalModelUtils.findGTNodeWithName(gtNodes, targetNodeName);
 			if (!gtSourceNode.isPresent()) {
 				this.logError("Could not find node " + sourceNodeName + "!");
 			}
@@ -160,29 +174,13 @@ public class EditorToInternalGTModelTransformation
 				GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
 				gtEdge.setType(reference.getType());
 				gtEdge.setName(sourceNodeName + "-" + gtEdge.getType().getName() + "-" + targetNodeName);
-				gtEdge.setBindingType(convertOperatorToBindingType(reference.getOperator()));
+				gtEdge.setBindingType(EditorToInternalModelUtils.convertOperatorToBindingType(reference.getOperator()));
 				gtSourceNode.ifPresent(node -> gtEdge.setSourceNode(node));
 				gtTargetNode.ifPresent(node -> gtEdge.setTargetNode(node));
 				gtEdges.add(gtEdge);
 			}
 		});
 		return gtEdges;
-	}
-
-	/**
-	 * Searches for a GTNode with the given name in the given list.
-	 * 
-	 * @param nodes
-	 *            the node list to search in. The list can be empty, but must not be
-	 *            <code>null</code>.
-	 * @param name
-	 *            the node name to search for, must not be <code>null</code>.
-	 * @return an Optional for the node to find
-	 */
-	private static Optional<GTNode> findGTNodeWithName(final List<GTNode> nodes, final String name) {
-		Objects.requireNonNull(nodes, "node list must not be null!");
-		Objects.requireNonNull(name, "name must not be null!");
-		return nodes.stream().filter(gtNode -> name.equals(gtNode.getName())).findAny();
 	}
 
 	/**
