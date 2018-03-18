@@ -42,7 +42,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	/**
 	 * The parameters.
 	 */
-	protected HashMap<String, EObject> parameters = new HashMap<String, EObject>();
+	protected HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 	/**
 	 * The mapping between consumers for typed and untyped matches.
@@ -71,7 +71,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * 
 	 * @return the parameters
 	 */
-	public final HashMap<String, EObject> getParameters() {
+	public final HashMap<String, Object> getParameters() {
 		return this.parameters;
 	}
 

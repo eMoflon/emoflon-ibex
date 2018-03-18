@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
 import org.emoflon.ibex.gt.editor.gT.Node;
 import org.emoflon.ibex.gt.editor.gT.Operator;
+import org.emoflon.ibex.gt.editor.gT.Parameter;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 
 import GTLanguage.GTBindingType;
@@ -16,6 +17,7 @@ import GTLanguage.GTEdge;
 import GTLanguage.GTGraph;
 import GTLanguage.GTLanguageFactory;
 import GTLanguage.GTNode;
+import GTLanguage.GTParameter;
 import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
 
@@ -67,6 +69,11 @@ public class EditorToInternalGTModelTransformation
 		gtRule.setAbstract(editorRule.isAbstract());
 		gtRule.setExecutable(hasOperatorOrReference(editorRule));
 		gtRule.setGraph(gtGraph);
+
+		editorRule.getParameters().forEach(editorParameter -> {
+			gtRule.getParameters().add(this.transformParameter(editorParameter));
+		});
+
 		this.gtRules.add(gtRule);
 	}
 
@@ -176,5 +183,20 @@ public class EditorToInternalGTModelTransformation
 		Objects.requireNonNull(nodes, "node list must not be null!");
 		Objects.requireNonNull(name, "name must not be null!");
 		return nodes.stream().filter(gtNode -> name.equals(gtNode.getName())).findAny();
+	}
+
+	/**
+	 * Transforms an editor parameter into a GTParameter.
+	 * 
+	 * @param editorParameter
+	 *            the editor parameter, must not be <code>null</code>
+	 * @return the GTParameter
+	 */
+	private GTParameter transformParameter(final Parameter editorParameter) {
+		Objects.requireNonNull(editorParameter, "name must not be null!");
+		GTParameter gtParameter = GTLanguageFactory.eINSTANCE.createGTParameter();
+		gtParameter.setName(editorParameter.getName());
+		gtParameter.setType(editorParameter.getType());
+		return gtParameter;
 	}
 }

@@ -171,8 +171,8 @@ class JavaFileGenerator {
 					 * 
 					 * @return the created rule
 					 */
-					public «getRuleClassName(rule)» «rule.name»() {
-						return new «getRuleClassName(rule)»(this, this.interpreter);
+					public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final String «parameter.name»Value«ENDFOR») {
+						return new «getRuleClassName(rule)»(this, this.interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
 					}
 			«ENDFOR»
 			}
@@ -224,7 +224,7 @@ class JavaFileGenerator {
 					 *
 					 * @return the «node.name»
 					 */
-					public «getVariableType(node)» «getMethodName('get', node)»() {
+					public «getVariableType(node)» «getMethodName('get', node.name)»() {
 						return this.«getVariableName(node)»;
 					}
 			«ENDFOR»
@@ -249,7 +249,7 @@ class JavaFileGenerator {
 			'''«this.getSubPackageName('api')».«APIClassName»''',
 			'''«this.getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
 		)
-		if (parameterNodes.size > 0) {
+		if (rule.parameters.size > 0 || parameterNodes.size > 0) {
 			imports.add('java.util.Objects');
 		}
 
@@ -265,22 +265,30 @@ class JavaFileGenerator {
 				private static String ruleName = "«rule.name»";
 			
 				/**
-				 * Creates a new rule «rule.name»().
+				 * Creates a new rule «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»).
 				 * 
 				 * @param api
 				 *            the API the rule belongs to
 				 * @param interpreter
 				 *            the interpreter
+				 «FOR parameter : rule.parameters»
+				 * @param «parameter.name»Value
+				 *            the value for the parameter «parameter.name»
+				 «ENDFOR»
 				 */
-				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter) {
+				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
+						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final String «parameter.name»Value«ENDFOR»
 					super(api, interpreter, ruleName);
+					«FOR parameter : rule.parameters»
+						this.«getMethodName('set', parameter.name)»(«parameter.name»Value);
+					«ENDFOR»
 				}
-				
+			
 				@Override
 				protected «getMatchClassName(rule)» convertMatch(final IMatch match) {
 					return new «getMatchClassName(rule)»(this, match);
 				}
-				
+			
 				@Override
 				protected List<String> getParameterNames() {
 					List<String> names = new ArrayList<String>();
@@ -289,19 +297,32 @@ class JavaFileGenerator {
 					«ENDFOR»
 					return names;
 				}
-				«FOR node : parameterNodes»
-					
+			«FOR node : parameterNodes»
+				
 					/**
-					 * Binds the parameter «node.name».
+					 * Binds the parameter «node.name» to the given object.
 					 *
-					 * @param parameter
+					 * @param object
 					 *            the object to set
 					 */
-					public «getRuleClassName(rule)» «getMethodName('bind', node)»(final «getVariableType(node)» parameter) {
-						this.parameters.put("«node.name»", Objects.requireNonNull(parameter, "«node.name» must not be null!"));
+					public «getRuleClassName(rule)» «getMethodName('bind', node.name)»(final «getVariableType(node)» object) {
+						this.parameters.put("«node.name»", Objects.requireNonNull(object, "«node.name» must not be null!"));
 						return this;
 					}
-				«ENDFOR»
+			«ENDFOR»
+			«FOR parameter : rule.parameters»
+				
+					/**
+					 * Sets the parameter «parameter.name» to the given value.
+					 *
+					 * @param value
+					 *            the value to set
+					 */
+					public «getRuleClassName(rule)» «getMethodName('set', parameter.name)»(final String value) {
+						this.parameters.put("«parameter.name»", Objects.requireNonNull(value, "«parameter.name» must not be null!"));
+						return this;
+					}
+			«ENDFOR»
 			}
 		'''
 		this.writeFile(rulesPackage.getFile(getRuleClassName(rule) + ".java"), ruleSourceCode)
@@ -337,7 +358,7 @@ class JavaFileGenerator {
 	 * Returns the name of the package.
 	 */
 	private def getSubPackageName(String subPackage) {
-		val dot = if (this.packageName.equals("")) "" else "." 
+		val dot = if(this.packageName.equals("")) "" else "."
 		return '''«this.packageName»«dot»«subPackage»'''
 	}
 
@@ -363,10 +384,10 @@ class JavaFileGenerator {
 	}
 
 	/**
-	 * Returns the getter method name for the given node.
+	 * Returns the getter method name for the given name.
 	 */
-	private static def getMethodName(String prefix, GTNode node) {
-		return prefix + node.name.toFirstUpper
+	private static def getMethodName(String prefix, String name) {
+		return prefix + name.toFirstUpper
 	}
 
 	/**

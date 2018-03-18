@@ -314,7 +314,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return an {@link Optional} for the match
 	 */
 	public Optional<IMatch> findAnyMatch(final String patternName) {
-		return this.findAnyMatch(patternName, new HashMap<String, EObject>());
+		return this.findAnyMatch(patternName, new HashMap<String, Object>());
 	}
 
 	/**
@@ -326,7 +326,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the parameters
 	 * @return an {@link Optional} for the match
 	 */
-	public Optional<IMatch> findAnyMatch(final String patternName, final Map<String, EObject> parameters) {
+	public Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
 		IBeXPattern pattern = this.getContextPattern(patternName);
@@ -350,13 +350,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the parameter map
 	 * @return a stream containing matches
 	 */
-	private Stream<IMatch> getFilteredMatchStream(final String patternName, final Map<String, EObject> parameters) {
+	private Stream<IMatch> getFilteredMatchStream(final String patternName, final Map<String, Object> parameters) {
 		Stream<IMatch> matchesForPattern = this.matches.get(patternName).stream();
 		Iterator<String> parameterIterator = parameters.keySet().iterator();
 		while (parameterIterator.hasNext()) {
 			String parameterName = parameterIterator.next();
 			matchesForPattern = matchesForPattern.filter(m -> m.isInMatch(parameterName)
-					&& parameters.get(parameterName).equals((EObject) m.get(parameterName)));
+					&& parameters.get(parameterName).equals(m.get(parameterName)));
 		}
 		return matchesForPattern;
 	}
@@ -369,7 +369,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return a {@link Collection} of matches
 	 */
 	public Collection<IMatch> findMatches(final String patternName) {
-		return this.findMatches(patternName, new HashMap<String, EObject>());
+		return this.findMatches(patternName, new HashMap<String, Object>());
 	}
 
 	/**
@@ -381,7 +381,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the parameters
 	 * @return a {@link Collection} of matches
 	 */
-	public Collection<IMatch> findMatches(final String patternName, final Map<String, EObject> parameters) {
+	public Collection<IMatch> findMatches(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
 		IBeXPattern pattern = this.getContextPattern(patternName);
