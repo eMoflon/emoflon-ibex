@@ -6,19 +6,41 @@
     <details key="documentation" value="Model for IBeXPatterns."/>
   </eAnnotations>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXAttribute" abstract="true">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="The super class for attribute assignments and constraints."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="node" eType="#//IBeXNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//IBeXAttributeValue"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeAssignment"/>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeConstraint">
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeAssignment" eSuperTypes="#//IBeXAttribute">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An attribute assignment sets the attribute value."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeConstraint" eSuperTypes="#//IBeXAttribute">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A constraint defines a relation which must hold for a certain attribute of a node."/>
+    </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="relation" eType="#//IBeXRelation"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeParameter" eSuperTypes="#//IBeXAttributeValue #//IBeXNamedElement"/>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeValue"/>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeParameter" eSuperTypes="#//IBeXAttributeValue #//IBeXNamedElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An attribute value whose value is determined by a parameter."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeValue">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="The value of an attribute constraint or assignment."/>
+    </eAnnotations>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXConstant" eSuperTypes="#//IBeXAttributeValue">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A wrapper for an object as attribute value."/>
+    </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="stringValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXCreatePattern" eSuperTypes="#//IBeXNamedElement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -53,6 +75,12 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetNode" eType="#//IBeXNode"
         eOpposite="#//IBeXNode/incomingEdges"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EReference"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXEnumLiteral" eSuperTypes="#//IBeXAttributeValue">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A wrapper for an EnumLiteral value as an attribute value."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="literal" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EEnumLiteral"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXNamedElement" abstract="true">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -124,6 +152,9 @@
         eType="#//IBeXPattern" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="IBeXRelation">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="The relations for attribute constraints."/>
+    </eAnnotations>
     <eLiterals name="GREATER_OR_EQUAL"/>
     <eLiterals name="GREATER" value="1"/>
     <eLiterals name="EQUAL" value="2"/>
