@@ -1,13 +1,11 @@
 package org.emoflon.ibex.gt.transformations;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
@@ -110,14 +108,15 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 		ibexPattern.setName(gtRule.getName());
 
 		// Transform nodes.
-		filterNodesByBindingTypes(gtRule, GTBindingType.CONTEXT, GTBindingType.DELETE).forEach(gtNode -> {
-			IBeXNode ibexNode = this.transformNode(gtNode);
-			if (gtNode.isLocal()) {
-				ibexPattern.getLocalNodes().add(ibexNode);
-			} else {
-				ibexPattern.getSignatureNodes().add(ibexNode);
-			}
-		});
+		InternalGTModelUtils.filterNodesByBindingTypes(gtRule, GTBindingType.CONTEXT, GTBindingType.DELETE)
+				.forEach(gtNode -> {
+					IBeXNode ibexNode = this.transformNode(gtNode);
+					if (gtNode.isLocal()) {
+						ibexPattern.getLocalNodes().add(ibexNode);
+					} else {
+						ibexPattern.getSignatureNodes().add(ibexNode);
+					}
+				});
 
 		// Ensure that all nodes must be disjoint even if they have the same type.
 		List<IBeXNode> allNodes = new ArrayList<IBeXNode>();
@@ -138,9 +137,10 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 
 		// Transform edges.
 		if (useInvocations) {
-			filterEdgesByBindingTypes(gtRule, GTBindingType.CONTEXT, GTBindingType.DELETE).forEach(gtEdge -> {
-				this.transformEdgeToPatternInvocation(gtEdge, ibexPattern);
-			});
+			InternalGTModelUtils.filterEdgesByBindingTypes(gtRule, GTBindingType.CONTEXT, GTBindingType.DELETE)
+					.forEach(gtEdge -> {
+						this.transformEdgeToPatternInvocation(gtEdge, ibexPattern);
+					});
 		} else {
 			// No invocations, so include all edges as well.
 			gtRule.getGraph().getEdges().forEach(gtEdge -> {
@@ -277,13 +277,13 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	 */
 	private void transformRuleToCreatePattern(final GTRule gtRule) {
 		Objects.requireNonNull(gtRule, "rule must not be null!");
-		if (hasElementsOfBindingType(gtRule, GTBindingType.CREATE)) {
+		if (InternalGTModelUtils.hasElementsOfBindingType(gtRule, GTBindingType.CREATE)) {
 			IBeXCreatePattern ibexCreatePattern = IBeXLanguageFactory.eINSTANCE.createIBeXCreatePattern();
 			ibexCreatePattern.setName(gtRule.getName());
-			filterNodesByBindingTypes(gtRule, GTBindingType.CREATE).forEach(gtNode -> {
+			InternalGTModelUtils.filterNodesByBindingTypes(gtRule, GTBindingType.CREATE).forEach(gtNode -> {
 				ibexCreatePattern.getCreatedNodes().add(this.transformNode(gtNode));
 			});
-			filterEdgesByBindingTypes(gtRule, GTBindingType.CREATE).forEach(gtEdge -> {
+			InternalGTModelUtils.filterEdgesByBindingTypes(gtRule, GTBindingType.CREATE).forEach(gtEdge -> {
 				IBeXEdge ibexEdge = this.transformEdge(gtEdge, ibexCreatePattern.getCreatedNodes(),
 						ibexCreatePattern.getContextNodes());
 				ibexCreatePattern.getCreatedEdges().add(ibexEdge);
@@ -301,13 +301,13 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	 */
 	private void transformRuleToDeletePattern(final GTRule gtRule) {
 		Objects.requireNonNull(gtRule, "rule must not be null!");
-		if (hasElementsOfBindingType(gtRule, GTBindingType.DELETE)) {
+		if (InternalGTModelUtils.hasElementsOfBindingType(gtRule, GTBindingType.DELETE)) {
 			IBeXDeletePattern ibexDeletePattern = IBeXLanguageFactory.eINSTANCE.createIBeXDeletePattern();
 			ibexDeletePattern.setName(gtRule.getName());
-			filterNodesByBindingTypes(gtRule, GTBindingType.DELETE).forEach(gtNode -> {
+			InternalGTModelUtils.filterNodesByBindingTypes(gtRule, GTBindingType.DELETE).forEach(gtNode -> {
 				ibexDeletePattern.getDeletedNodes().add(this.transformNode(gtNode));
 			});
-			filterEdgesByBindingTypes(gtRule, GTBindingType.DELETE).forEach(gtEdge -> {
+			InternalGTModelUtils.filterEdgesByBindingTypes(gtRule, GTBindingType.DELETE).forEach(gtEdge -> {
 				IBeXEdge ibexEdge = this.transformEdge(gtEdge, ibexDeletePattern.getDeletedNodes(),
 						ibexDeletePattern.getContextNodes());
 				ibexDeletePattern.getDeletedEdges().add(ibexEdge);
@@ -378,70 +378,5 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 		Objects.requireNonNull(class2);
 		return class1.getName().equals(class2.getName()) || class1.getEAllSuperTypes().contains(class2)
 				|| class2.getEAllSuperTypes().contains(class1);
-	}
-
-	/**
-	 * Checks whether the graph of the rule contains nodes or edges of the given
-	 * binding type.
-	 * 
-	 * @param gtRule
-	 *            the rule
-	 * @param bindingType
-	 *            the binding type
-	 * @return <code>true</code> if and only if the graph contains at least one node
-	 *         or edge of the binding type
-	 */
-	private static boolean hasElementsOfBindingType(final GTRule gtRule, final GTBindingType bindingType) {
-		Objects.requireNonNull(gtRule, "Rule must not be null!");
-		return gtRule.getGraph().getNodes().stream().anyMatch(node -> node.getBindingType().equals(bindingType))
-				|| gtRule.getGraph().getEdges().stream().anyMatch(node -> node.getBindingType().equals(bindingType));
-	}
-
-	/**
-	 * Filters the nodes of the rule for the ones with the given binding type.
-	 * 
-	 * @param gtRule
-	 *            the rule
-	 * @param bindingType
-	 *            the binding type
-	 * @return the stream of nodes, sorted alphabetically by the name
-	 */
-	private static Stream<GTNode> filterNodesByBindingTypes(final GTRule gtRule, final GTBindingType... bindingTypes) {
-		Objects.requireNonNull(gtRule, "Rule must not be null!");
-		List<GTBindingType> bindingTypesList = validateBindingTypes(bindingTypes);
-		return gtRule.getGraph().getNodes().stream()
-				.filter(gtNode -> bindingTypesList.contains(gtNode.getBindingType()))
-				.sorted((a, b) -> a.getName().compareTo(b.getName()));
-	}
-
-	/**
-	 * Filters the edges of the rule for the ones with the given binding type.
-	 * 
-	 * @param gtRule
-	 *            the rule
-	 * @param bindingTypes
-	 *            the binding types
-	 * @return the stream of edges, sorted alphabetically by the name
-	 */
-	private static Stream<GTEdge> filterEdgesByBindingTypes(final GTRule gtRule, final GTBindingType... bindingTypes) {
-		Objects.requireNonNull(gtRule, "Rule must not be null!");
-		List<GTBindingType> bindingTypesList = validateBindingTypes(bindingTypes);
-		return gtRule.getGraph().getEdges().stream()
-				.filter(gtEdge -> bindingTypesList.contains(gtEdge.getBindingType()))
-				.sorted((a, b) -> a.getName().compareTo(b.getName()));
-	}
-
-	/**
-	 * Check that the array of bindingTypes contains at lest one element.
-	 * 
-	 * @param bindingTypes
-	 *            the array of binding types
-	 * @return the list of binding types
-	 */
-	private static List<GTBindingType> validateBindingTypes(final GTBindingType... bindingTypes) {
-		if (bindingTypes.length < 1) {
-			throw new IllegalArgumentException("At least one binding type required!");
-		}
-		return Arrays.asList(bindingTypes);
 	}
 }

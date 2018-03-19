@@ -69,7 +69,7 @@ public class EditorToInternalGTModelTransformation
 		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
 		gtRule.setName(editorRule.getName());
 		gtRule.setAbstract(editorRule.isAbstract());
-		gtRule.setExecutable(EditorToInternalModelUtils.hasOperatorNodeOrReference(editorRule));
+		gtRule.setExecutable(EditorToInternalGTModelUtils.hasOperatorNodeOrReference(editorRule));
 
 		editorRule.getParameters().forEach(editorParameter -> {
 			gtRule.getParameters().add(this.transformParameter(editorParameter));
@@ -103,7 +103,7 @@ public class EditorToInternalGTModelTransformation
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
 		gtNode.setLocal(editorNode.getName().startsWith("_"));
-		gtNode.setBindingType(EditorToInternalModelUtils.convertOperatorToBindingType(editorNode.getOperator()));
+		gtNode.setBindingType(EditorToInternalGTModelUtils.convertOperatorToBindingType(editorNode.getOperator()));
 
 		// Transform the attribute constraints.
 		editorNode.getAttributes().forEach(editorAttr -> {
@@ -115,7 +115,7 @@ public class EditorToInternalGTModelTransformation
 			} else {
 				GTAttributeCondition gtAttr = GTLanguageFactory.eINSTANCE.createGTAttributeCondition();
 				gtAttr.setType(editorAttr.getAttribute());
-				gtAttr.setRelation(EditorToInternalModelUtils.convertRelation(editorAttr.getRelation()));
+				gtAttr.setRelation(EditorToInternalGTModelUtils.convertRelation(editorAttr.getRelation()));
 				this.setAttributeValue(gtAttr, editorAttr, gtParameters);
 				gtNode.getAttributeConditions().add(gtAttr);
 			}
@@ -133,8 +133,8 @@ public class EditorToInternalGTModelTransformation
 	 * @param gtParameters
 	 *            the parameters of rule (internal model)
 	 */
-	private void setAttributeValue(final GTAttribute gtAttribute,
-			final AttributeConstraint editorAttributeConstraint, final List<GTParameter> gtParameters) {
+	private void setAttributeValue(final GTAttribute gtAttribute, final AttributeConstraint editorAttributeConstraint,
+			final List<GTParameter> gtParameters) {
 		Expression editorValue = editorAttributeConstraint.getValue();
 		if (editorValue instanceof LiteralValue) {
 			String s = ((LiteralValue) editorValue).getValue();
@@ -156,8 +156,7 @@ public class EditorToInternalGTModelTransformation
 			gtAttribute.setValue(gtEnumLiteral);
 		} else if (editorValue instanceof ParameterValue) {
 			String parameterName = ((ParameterValue) editorValue).getParameter().getName();
-			Optional<GTParameter> gtParameter = EditorToInternalModelUtils.findParameterWithName(gtParameters,
-					parameterName);
+			Optional<GTParameter> gtParameter = InternalGTModelUtils.findParameterWithName(gtParameters, parameterName);
 			if (!gtParameter.isPresent()) {
 				this.logError("Could not find parameter " + parameterName + "!");
 			}
@@ -189,8 +188,8 @@ public class EditorToInternalGTModelTransformation
 			String sourceNodeName = editorNode.getName();
 			String targetNodeName = reference.getTarget().getName();
 
-			Optional<GTNode> gtSourceNode = EditorToInternalModelUtils.findGTNodeWithName(gtNodes, sourceNodeName);
-			Optional<GTNode> gtTargetNode = EditorToInternalModelUtils.findGTNodeWithName(gtNodes, targetNodeName);
+			Optional<GTNode> gtSourceNode = InternalGTModelUtils.findGTNodeWithName(gtNodes, sourceNodeName);
+			Optional<GTNode> gtTargetNode = InternalGTModelUtils.findGTNodeWithName(gtNodes, targetNodeName);
 			if (!gtSourceNode.isPresent()) {
 				this.logError("Could not find node " + sourceNodeName + "!");
 			}
@@ -202,7 +201,8 @@ public class EditorToInternalGTModelTransformation
 				GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
 				gtEdge.setType(reference.getType());
 				gtEdge.setName(sourceNodeName + "-" + gtEdge.getType().getName() + "-" + targetNodeName);
-				gtEdge.setBindingType(EditorToInternalModelUtils.convertOperatorToBindingType(reference.getOperator()));
+				gtEdge.setBindingType(
+						EditorToInternalGTModelUtils.convertOperatorToBindingType(reference.getOperator()));
 				gtSourceNode.ifPresent(node -> gtEdge.setSourceNode(node));
 				gtTargetNode.ifPresent(node -> gtEdge.setTargetNode(node));
 				gtEdges.add(gtEdge);
