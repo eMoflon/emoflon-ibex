@@ -126,25 +126,25 @@ public class EditorToInternalGTModelTransformation
 	/**
 	 * Sets the attribute value for the given attribute constraint.
 	 * 
-	 * @param gtAttributeConstraint
+	 * @param gtAttribute
 	 *            the attribute constraint whose value shall be set
 	 * @param editorAttributeConstraint
 	 *            the attribute constraint of the editor model
 	 * @param gtParameters
 	 *            the parameters of rule (internal model)
 	 */
-	private void setAttributeValue(final GTAttribute gtAttributeConstraint,
+	private void setAttributeValue(final GTAttribute gtAttribute,
 			final AttributeConstraint editorAttributeConstraint, final List<GTParameter> gtParameters) {
 		Expression editorValue = editorAttributeConstraint.getValue();
 		if (editorValue instanceof LiteralValue) {
 			String s = ((LiteralValue) editorValue).getValue();
 			Optional<Object> object = GTEditorAttributeUtils
-					.convertEDataTypeStringToObject(gtAttributeConstraint.getType().getEAttributeType(), s);
+					.convertEDataTypeStringToObject(gtAttribute.getType().getEAttributeType(), s);
 			object.ifPresent(o -> {
 				GTConstant gtConstant = GTLanguageFactory.eINSTANCE.createGTConstant();
 				gtConstant.setValue(o);
 				gtConstant.setStringValue(o.toString());
-				gtAttributeConstraint.setValue(gtConstant);
+				gtAttribute.setValue(gtConstant);
 			});
 			if (!object.isPresent()) {
 				this.logError("Invalid attribute value: " + s);
@@ -153,7 +153,7 @@ public class EditorToInternalGTModelTransformation
 			EEnumLiteral literal = ((EnumValue) editorValue).getLiteral();
 			GTEnumLiteral gtEnumLiteral = GTLanguageFactory.eINSTANCE.createGTEnumLiteral();
 			gtEnumLiteral.setLiteral(literal);
-			gtAttributeConstraint.setValue(gtEnumLiteral);
+			gtAttribute.setValue(gtEnumLiteral);
 		} else if (editorValue instanceof ParameterValue) {
 			String parameterName = ((ParameterValue) editorValue).getParameter().getName();
 			Optional<GTParameter> gtParameter = EditorToInternalModelUtils.findParameterWithName(gtParameters,
@@ -164,7 +164,7 @@ public class EditorToInternalGTModelTransformation
 			gtParameter.ifPresent(p -> {
 				GTParameterReference paramReference = GTLanguageFactory.eINSTANCE.createGTParameterReference();
 				paramReference.setParameter(p);
-				gtAttributeConstraint.setValue(paramReference);
+				gtAttribute.setValue(paramReference);
 			});
 		} else {
 			this.logError("Invalid attribute value: " + editorValue);
