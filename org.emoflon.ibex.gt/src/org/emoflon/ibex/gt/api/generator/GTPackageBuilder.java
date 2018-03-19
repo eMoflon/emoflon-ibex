@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ import org.emoflon.ibex.gt.transformations.InternalGTModelToIBeXPatternTransform
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.plugins.manifest.PluginManifestConstants;
 import org.moflon.core.utilities.ClasspathUtil;
+import org.moflon.core.utilities.WorkspaceHelper;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater.AttributeUpdatePolicy;
 
 /**
@@ -91,14 +93,34 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private HashMap<String, String> eClassifierNameToMetaModelName = new HashMap<String, String>();
 
 	@Override
+	public void run(IProject project) {
+		this.project = project;
+		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
+			this.log("The build for GT projects only works for plugin projects.");
+			return;
+		}
+
+		this.updateManifest(manifest -> this.processManifestForProject(manifest));
+		try {
+			IFolder folder = this.ensureFolderExists(this.project.getFolder(GTPackageBuilder.SOURCE_GEN_FOLDER));
+			ClasspathUtil.makeSourceFolderIfNecessary(folder);
+		} catch (CoreException e) {
+			this.logError("Could not add src-gen as a source folder.");
+		}
+	}
+
+	@Override
 	public void run(final IProject project, final IPath packagePath) {
+		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
+			return;
+		}
 		this.project = project;
 		this.path = packagePath;
 		this.packageName = this.path.toString().replace("/", ".");
 		this.ensureSourceGenPackageExists();
 		this.generateModels();
 		this.generateAPI();
-		this.updateManifest();
+		this.updateManifest(manifest -> this.processManifestForPackage(manifest));
 		this.log("Finished build.");
 	}
 
@@ -107,12 +129,6 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private IFolder ensureSourceGenPackageExists() {
 		IFolder folder = this.ensureFolderExists(this.project.getFolder(GTPackageBuilder.SOURCE_GEN_FOLDER));
-		try {
-			ClasspathUtil.makeSourceFolderIfNecessary(folder);
-		} catch (CoreException e) {
-			this.logError("Could not add src-gen as a source folder.");
-		}
-
 		for (int i = 0; (i < this.path.segmentCount()); i++) {
 			folder = this.ensureFolderExists(folder.getFolder(this.path.segment(i)));
 		}
@@ -275,6 +291,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @return the name string
 	 */
 	private String getProjectAndPackageName() {
+		if (this.packageName == null) {
+			return this.project.getName();
+		}
 		if (this.packageName.equals("")) {
 			return this.project.getName() + ", default package";
 		}
@@ -298,23 +317,19 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	/**
 	 * Updates the project's manifest file.
 	 */
-	private void updateManifest() {
+	private void updateManifest(final Function<Manifest, Boolean> updateFunction) {
 		try {
 			new ManifestFileUpdater().processManifest(this.project, manifest -> {
-				return this.processManifest(manifest);
+				return updateFunction.apply(manifest);
 			});
 		} catch (CoreException e) {
 			this.logError("Failed to update MANIFEST.MF.");
 		}
 	}
 
-	private boolean processManifest(final Manifest manifest) {
+	private boolean processManifestForProject(final Manifest manifest) {
 		// The dependencies of the API.
 		List<String> dependencies = Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt");
-
-		// the packages for this API
-		String apiPackageName = (this.packageName.equals("") ? "" : this.packageName + ".") + "api";
-		List<String> exports = Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules");
 
 		boolean changedBasics = setBasics(manifest, this.project.getName());
 		if (changedBasics) {
@@ -326,12 +341,20 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			this.log("Updated dependencies");
 		}
 
+		return changedBasics || updatedDependencies;
+	}
+
+	private boolean processManifestForPackage(final Manifest manifest) {
+		// the packages for this API
+		String apiPackageName = (this.packageName.equals("") ? "" : this.packageName + ".") + "api";
+		List<String> exports = Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules");
+
 		boolean updateExports = updateExports(manifest, exports);
 		if (updateExports) {
 			this.log("Updated exports");
 		}
 
-		return changedBasics || updatedDependencies || updateExports;
+		return updateExports;
 	}
 
 	/**
