@@ -22,16 +22,17 @@ import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
 import GTLanguage.GTAttribute;
 import GTLanguage.GTAttributeAssignment;
 import GTLanguage.GTAttributeCondition;
-import GTLanguage.GTConstant;
 import GTLanguage.GTEdge;
-import GTLanguage.GTEnumLiteral;
 import GTLanguage.GTGraph;
 import GTLanguage.GTLanguageFactory;
 import GTLanguage.GTNode;
 import GTLanguage.GTParameter;
-import GTLanguage.GTParameterReference;
 import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
+import IBeXLanguage.IBeXAttributeParameter;
+import IBeXLanguage.IBeXConstant;
+import IBeXLanguage.IBeXEnumLiteral;
+import IBeXLanguage.IBeXLanguageFactory;
 
 /**
  * Transformation from the editor file (which conforms to the GT.ecore
@@ -141,7 +142,7 @@ public class EditorToInternalGTModelTransformation
 			Optional<Object> object = GTEditorAttributeUtils
 					.convertEDataTypeStringToObject(gtAttribute.getType().getEAttributeType(), s);
 			object.ifPresent(o -> {
-				GTConstant gtConstant = GTLanguageFactory.eINSTANCE.createGTConstant();
+				IBeXConstant gtConstant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
 				gtConstant.setValue(o);
 				gtConstant.setStringValue(o.toString());
 				gtAttribute.setValue(gtConstant);
@@ -151,7 +152,7 @@ public class EditorToInternalGTModelTransformation
 			}
 		} else if (editorValue instanceof EnumValue) {
 			EEnumLiteral literal = ((EnumValue) editorValue).getLiteral();
-			GTEnumLiteral gtEnumLiteral = GTLanguageFactory.eINSTANCE.createGTEnumLiteral();
+			IBeXEnumLiteral gtEnumLiteral = IBeXLanguageFactory.eINSTANCE.createIBeXEnumLiteral();
 			gtEnumLiteral.setLiteral(literal);
 			gtAttribute.setValue(gtEnumLiteral);
 		} else if (editorValue instanceof ParameterValue) {
@@ -161,9 +162,9 @@ public class EditorToInternalGTModelTransformation
 				this.logError("Could not find parameter " + parameterName + "!");
 			}
 			gtParameter.ifPresent(p -> {
-				GTParameterReference paramReference = GTLanguageFactory.eINSTANCE.createGTParameterReference();
-				paramReference.setParameter(p);
-				gtAttribute.setValue(paramReference);
+				IBeXAttributeParameter parameter = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeParameter();
+				parameter.setName(p.getName());
+				gtAttribute.setValue(parameter);
 			});
 		} else {
 			this.logError("Invalid attribute value: " + editorValue);

@@ -4,8 +4,8 @@ import org.emoflon.ibex.gt.editor.gT.Operator;
 import org.emoflon.ibex.gt.editor.gT.Relation;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 
-import GTLanguage.GTBinaryRelation;
 import GTLanguage.GTBindingType;
+import IBeXLanguage.IBeXRelation;
 
 /**
  * Utility methods for the editor to internal model transformation.
@@ -39,23 +39,24 @@ public class EditorToInternalGTModelUtils {
 	 *            the relation from the editor model
 	 * @return the binary relation
 	 */
-	public static GTBinaryRelation convertRelation(final Relation relation) {
+	public static IBeXRelation convertRelation(final Relation relation) {
 		switch (relation) {
+		case GREATER:
+			return IBeXRelation.GREATER;
+		case GREATER_OR_EQUAL:
+			return IBeXRelation.GREATER_OR_EQUAL;
+		case EQUAL:
+			return IBeXRelation.EQUAL;
+		case UNEQUAL:
+			return IBeXRelation.UNEQUAL;
+		case SMALLER:
+			return IBeXRelation.SMALLER;
+		case SMALLER_OR_EQUAL:
+			return IBeXRelation.SMALLER_OR_EQUAL;
 		case ASSIGNMENT:
 			throw new IllegalArgumentException("Cannot convert assignment relation.");
-		case GREATER:
-			return GTBinaryRelation.GREATER;
-		case GREATER_OR_EQUAL:
-			return GTBinaryRelation.GREATER_OR_EQUAL;
-		case UNEQUAL:
-			return GTBinaryRelation.UNEQUAL;
-		case SMALLER:
-			return GTBinaryRelation.SMALLER;
-		case SMALLER_OR_EQUAL:
-			return GTBinaryRelation.SMALLER_OR_EQUAL;
-		case EQUAL:
 		default:
-			return GTBinaryRelation.EQUAL;
+			throw new IllegalArgumentException("Cannot convert relation.");
 		}
 	}
 

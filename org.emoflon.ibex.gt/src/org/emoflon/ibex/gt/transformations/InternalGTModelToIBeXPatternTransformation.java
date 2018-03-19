@@ -275,8 +275,8 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 		IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
 		ibexAttrConstraint.setNode(ibexNode);
 		ibexAttrConstraint.setType(gtAttrCond.getType());
-		ibexAttrConstraint.setRelation(InternalGTModelToIBeXPatternUtils.convertRelation(gtAttrCond.getRelation()));
-		ibexAttrConstraint.setValue(InternalGTModelToIBeXPatternUtils.convertAttributeValue(gtAttrCond.getValue()));
+		ibexAttrConstraint.setRelation(gtAttrCond.getRelation());
+		ibexAttrConstraint.setValue(gtAttrCond.getValue());
 		return ibexAttrConstraint;
 	}
 
@@ -345,8 +345,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 				IBeXAttributeAssignment ibexAssignment = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeAssignment();
 				ibexAssignment.setNode(ibexNode);
 				ibexAssignment.setType(gtAssignment.getType());
-				ibexAssignment
-						.setValue(InternalGTModelToIBeXPatternUtils.convertAttributeValue(gtAssignment.getValue()));
+				ibexAssignment.setValue(gtAssignment.getValue());
 				ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
 			}
 		});
