@@ -15,7 +15,7 @@ public class IbexOptions {
 	/**
 	 * EdgePatterns are only created if the number of edges in this pattern is at least this constant
 	 */
-	private static int minimumNumberOfEdgesToCreateEdgePatterns = Integer.MAX_VALUE;
+	private static int minimumNumberOfEdgesToCreateEdgePatterns = 5;
 	
 	/**
 	 * CorrContext nodes are local nodes in the SrcContext and TrgContext pattern 
@@ -25,7 +25,7 @@ public class IbexOptions {
 	/**
 	 * Indicates if the edge patterns should be typed including attribute conditions and sub types
 	 */
-	private static boolean stronglyTypedEdgedPatterns = false;
+	private static boolean stronglyTypedEdgedPatterns = true;
 	
 	private boolean debug;
 	private String workspacePath;
