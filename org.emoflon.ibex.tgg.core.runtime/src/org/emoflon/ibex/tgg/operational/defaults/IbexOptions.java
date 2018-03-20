@@ -12,22 +12,28 @@ import language.TGG;
 import language.TGGRule;
 
 public class IbexOptions {
-	
+
 	private FilterNACStrategy filterNACStrategy = FilterNACStrategy.FILTER_NACS;
-	
+
 	private boolean blackInterpSupportsAttrConstrs = true;
-	
-	/** CorrContext nodes are local nodes in the SrcContext and TrgContext pattern */
-	private boolean setCorrContextNodesAsLocalNodes = true;
-	
-	/** EdgePatterns are only created if the number of edges in this pattern is at least this constant */
-	private int minimumNumberOfEdgesToCreateEdgePatterns = 5;
-	
+
 	/**
-	 * Indicates if the edge patterns should be typed including attribute conditions and sub types
+	 * CorrContext nodes are local nodes in the SrcContext and TrgContext pattern
 	 */
-	private static boolean stronglyTypedEdgedPatterns = true;
-	
+	private boolean setCorrContextNodesAsLocalNodes = false;
+
+	/**
+	 * EdgePatterns are only created if the number of edges in this pattern is at
+	 * least this constant
+	 */
+	private int minimumNumberOfEdgesToCreateEdgePatterns = Integer.MAX_VALUE;
+
+	/**
+	 * Indicates if the edge patterns should be typed including attribute conditions
+	 * and sub types
+	 */
+	private static boolean stronglyTypedEdgedPatterns = false;
+
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -38,7 +44,7 @@ public class IbexOptions {
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private boolean isModelGen;
 	private SupportedILPSolver ilpSolver;
-	
+
 	public IbexOptions() {
 		debug = false;
 		projectPath = "/";
@@ -54,21 +60,21 @@ public class IbexOptions {
 		this.isModelGen = isModelGen;
 		return this;
 	}
-	
+
 	public IbexOptions debug(boolean debug) {
 		this.debug = debug;
 		return this;
 	}
-	
-	public boolean debug(){
+
+	public boolean debug() {
 		return debug;
 	}
-	
+
 	public IbexOptions workspacePath(String workspacePath) {
 		this.workspacePath = workspacePath;
 		return this;
 	}
-	
+
 	public String workspacePath() {
 		return workspacePath;
 	}
@@ -77,8 +83,8 @@ public class IbexOptions {
 		this.projectPath = projectPath;
 		return this;
 	}
-	
-	public String projectPath(){
+
+	public String projectPath() {
 		return projectPath;
 	}
 
@@ -86,18 +92,17 @@ public class IbexOptions {
 		this.projectName = projectName;
 		return this;
 	}
-	
-	public String projectName(){
+
+	public String projectName() {
 		return projectName;
 	}
 
-	
 	public IbexOptions tgg(TGG tgg) {
 		this.tgg = tgg;
 		return this;
 	}
-	
-	public TGG tgg(){
+
+	public TGG tgg() {
 		return tgg;
 	}
 
@@ -105,8 +110,8 @@ public class IbexOptions {
 		this.flattenedTGG = flattenedTGG;
 		return this;
 	}
-	
-	public TGG flattenedTGG(){
+
+	public TGG flattenedTGG() {
 		return flattenedTGG;
 	}
 
@@ -132,7 +137,7 @@ public class IbexOptions {
 		this.constraintProvider = constraintProvider;
 		return this;
 	}
-	
+
 	public RuntimeTGGAttrConstraintProvider constraintProvider() {
 		return constraintProvider;
 	}
@@ -141,23 +146,23 @@ public class IbexOptions {
 		this.userDefinedConstraints = userDefinedConstraints;
 		return this;
 	}
-	
+
 	public RuntimeTGGAttrConstraintFactory userDefinedConstraints() {
 		return userDefinedConstraints;
 	}
-	
+
 	public boolean blackInterpSupportsAttrConstrs() {
 		return blackInterpSupportsAttrConstrs;
 	}
-	
+
 	public int minimumNumberOfEdgesToCreateEdgePatterns() {
 		return minimumNumberOfEdgesToCreateEdgePatterns;
 	}
-	
+
 	public boolean setCorrContextNodesAsLocalNodes() {
 		return setCorrContextNodesAsLocalNodes;
 	}
-	
+
 	public boolean stronglyTypedEdgedPatterns() {
 		return stronglyTypedEdgedPatterns;
 	}
@@ -174,7 +179,8 @@ public class IbexOptions {
 	}
 
 	/**
-	 * @param ilpSolver the ilpSolver to set
+	 * @param ilpSolver
+	 *            the ilpSolver to set
 	 */
 	public IbexOptions setIlpSolver(SupportedILPSolver ilpSolver) {
 		this.ilpSolver = ilpSolver;
