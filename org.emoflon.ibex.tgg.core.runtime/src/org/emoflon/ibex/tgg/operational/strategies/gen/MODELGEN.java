@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import java.util.stream.IntStream;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.GENAxiomNacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -62,12 +64,27 @@ public abstract class MODELGEN extends OperationalStrategy {
 		
 		EcoreUtil.resolveAll(rs);
 	}
+	
+	
+
+	/**
+	 * If we get notified about a new match that is the NAC of an axiom (i.e. a match for an GENAxiomNacPattern) we need to remove the always available empty axiom match.
+	 * Otherwise we can add the match as usual.
+	 */
+	@Override
+	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
+		if(GENAxiomNacPattern.isGENAxiomNacPattern(match.getPatternName())) {
+			this.deleteAxiomMatchesForFoundNACs(match);
+		} else {
+			super.addMatch(match);
+		}
+	}
 
 	protected abstract void registerUserMetamodels() throws IOException;
 
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.GEN);
+		return patternName.endsWith(PatternSuffixes.GEN) || patternName.endsWith(PatternSuffixes.GEN_AXIOM_NAC);
 	}
 	
 	@Override
@@ -82,7 +99,6 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 */
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
-		
 		if(stopCriterion.dont() || operationalMatchContainer.isEmpty())
 			return false;
 
@@ -100,6 +116,21 @@ public abstract class MODELGEN extends OperationalStrategy {
 			});
 		}
 		return true;
+	}
+	
+	/**
+	 * We have found a match for a NAC of an axiom. This means this axiom is no longer applicable and thus needs to be removed from the set of matches
+	 * @param match the match of a NAC for an Axiom
+	 */
+	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
+		Set<IMatch> matchesToRemove = new HashSet<>();
+		String axiomName = GENBlackPattern.getName(GENAxiomNacPattern.getAxiomName(match.getPatternName()));
+		operationalMatchContainer.getMatches().stream()
+			.filter(m -> m.getPatternName().equals(axiomName)).forEach(m -> {
+			logger.debug("Removed " + m.getPatternName());
+			matchesToRemove.add(m);
+		});
+		matchesToRemove.stream().forEach(m -> removeMatch(m));
 	}
 
 
@@ -175,6 +206,10 @@ public abstract class MODELGEN extends OperationalStrategy {
 		super.run();
 	}
 
+	/**
+	 *	Axioms are always applicable but the PatternMatcher does not return empty matches enabling the application of the axioms.
+	 *	Therefore we add the empty matches ourself. The match of an axiom will be removed once a match of a NAC of the axiom is found. 
+	 */
 	private void collectMatchesForAxioms() {
 		options.tgg().getRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom()).forEach(r -> {			
 			addOperationalRuleMatch(r.getName(), new SimpleMatch(GENBlackPattern.getName(r.getName())));

@@ -20,6 +20,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.SearchEdgePattern;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.GENAxiomNacPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckLocalTranslationStatePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.translation_app_conds.CheckTranslationStatePattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -265,6 +266,16 @@ public class BlackPatternFactory {
 
 	public IBlackPattern createSearchEdgePattern(TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection) {
 		return createPattern(rule.getName() + SearchEdgePattern.getPatternNameSuffix(entryPoint, edgeType, eDirection), () -> new SearchEdgePattern(entryPoint, edgeType, eDirection, this));
+	}
+	
+	/**
+	 * Creates a {@link GENAxiomNacPattern} for each NAC defined for the axiom
+	 * @return the created patterns
+	 */
+	public Collection<IBlackPattern> createPatternsForUserDefinedAxiomNACs() {
+		return rule.getNacs().stream()
+				.map(nac -> createPattern(nac.getName()+"_AXIOM_NAC", () -> new GENAxiomNacPattern(this, rule, nac)))
+				.collect(Collectors.toList());
 	}
 
 	private Collection<IBlackPattern> createPatternsForUserDefinedNACs(DomainType domain){

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
+import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 import language.TGG;
 import language.TGGRule;
@@ -31,11 +32,13 @@ public class IbexOptions {
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private boolean isModelGen;
+	private SupportedILPSolver ilpSolver;
 	
 	public IbexOptions() {
 		debug = false;
 		projectPath = "/";
 		workspacePath = "./../";
+		setIlpSolver(SupportedILPSolver.Sat4J);
 	}
 
 	public boolean isModelGen() {
@@ -152,5 +155,20 @@ public class IbexOptions {
 	
 	public void setFilterNACStrategy(FilterNACStrategy filterNACStrategy) {
 		this.filterNACStrategy = filterNACStrategy;
+	}
+
+	/**
+	 * @return the ilpSolver
+	 */
+	public SupportedILPSolver getIlpSolver() {
+		return ilpSolver;
+	}
+
+	/**
+	 * @param ilpSolver the ilpSolver to set
+	 */
+	public IbexOptions setIlpSolver(SupportedILPSolver ilpSolver) {
+		this.ilpSolver = ilpSolver;
+		return this;
 	}
 }
