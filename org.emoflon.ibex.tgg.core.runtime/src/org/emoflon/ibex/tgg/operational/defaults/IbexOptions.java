@@ -23,6 +23,11 @@ public class IbexOptions {
 	/** EdgePatterns are only created if the number of edges in this pattern is at least this constant */
 	private int minimumNumberOfEdgesToCreateEdgePatterns = 5;
 	
+	/**
+	 * Indicates if the edge patterns should be typed including attribute conditions and sub types
+	 */
+	private static boolean stronglyTypedEdgedPatterns = true;
+	
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -153,6 +158,10 @@ public class IbexOptions {
 		return setCorrContextNodesAsLocalNodes;
 	}
 	
+	public boolean stronglyTypedEdgedPatterns() {
+		return stronglyTypedEdgedPatterns;
+	}
+
 	public void setFilterNACStrategy(FilterNACStrategy filterNACStrategy) {
 		this.filterNACStrategy = filterNACStrategy;
 	}
