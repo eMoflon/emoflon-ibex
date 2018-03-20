@@ -1,7 +1,5 @@
 package org.emoflon.ibex.gt.api.generator;
 
-import GTLanguage.GTLanguageFactory;
-import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
 import IBeXLanguage.IBeXPatternSet;
 import java.io.IOException;
@@ -10,6 +8,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -36,9 +36,14 @@ import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
 import org.emoflon.ibex.gt.transformations.EditorToInternalGTModelTransformation;
 import org.emoflon.ibex.gt.transformations.InternalGTModelToIBeXPatternTransformation;
+import org.moflon.core.plugins.manifest.ManifestFileUpdater;
+import org.moflon.core.plugins.manifest.PluginManifestConstants;
+import org.moflon.core.utilities.ClasspathUtil;
+import org.moflon.core.utilities.WorkspaceHelper;
+import org.moflon.core.plugins.manifest.ManifestFileUpdater.AttributeUpdatePolicy;
 
 /**
- * This GTPackageBuilder implements
+ * This GTPackageBuilder
  * <ul>
  * <li>transforms the editor files into the internal model and IBeXPatterns</li>
  * <li>and generates code for the API.</li>
@@ -83,23 +88,39 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private GTRuleSet gtRuleSet;
 
 	/**
-	 * The IBeXPatterns.
+	 * The mapping between EClass/EDataType names to MetaModelNames
 	 */
-	private IBeXPatternSet ibexPatternSet;
+	private HashMap<String, String> eClassifierNameToMetaModelName = new HashMap<String, String>();
 
-	/**
-	 * The mapping between EClassNames to MetaModelNames
-	 */
-	private HashMap<String, String> eClassNameToMetaModelName = new HashMap<String, String>();
+	@Override
+	public void run(IProject project) {
+		this.project = project;
+		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
+			this.log("The build for GT projects only works for plugin projects.");
+			return;
+		}
+
+		this.updateManifest(manifest -> this.processManifestForProject(manifest));
+		try {
+			IFolder folder = this.ensureFolderExists(this.project.getFolder(GTPackageBuilder.SOURCE_GEN_FOLDER));
+			ClasspathUtil.makeSourceFolderIfNecessary(folder);
+		} catch (CoreException e) {
+			this.logError("Could not add src-gen as a source folder.");
+		}
+	}
 
 	@Override
 	public void run(final IProject project, final IPath packagePath) {
+		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
+			return;
+		}
 		this.project = project;
 		this.path = packagePath;
 		this.packageName = this.path.toString().replace("/", ".");
 		this.ensureSourceGenPackageExists();
 		this.generateModels();
 		this.generateAPI();
+		this.updateManifest(manifest -> this.processManifestForPackage(manifest));
 		this.log("Finished build.");
 	}
 
@@ -130,12 +151,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		try {
 			allFiles = this.project.getFolder(GTBuilder.SOURCE_FOLDER).getFolder(this.path).members();
 		} catch (CoreException e) {
-			this.log("Could not read files");
+			this.log("Could not read files.");
 		}
 		List<IFile> gtFiles = Arrays.stream(allFiles) //
 				.filter(f -> f instanceof IFile).map(f -> (IFile) f) //
-				.filter(f -> "gt".equals(f.getFileExtension())) //
-				.filter(f -> f.exists()) //
+				.filter(f -> "gt".equals(f.getFileExtension()) && f.exists()) //
 				.collect(Collectors.toList());
 
 		// Load files into editor models.
@@ -154,38 +174,26 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		EcoreUtil.resolveAll(resourceSet);
 
 		// Transform editor models to rules of the internal GT model.
-		HashSet<GTRule> gtRules = new HashSet<GTRule>();
+		EditorToInternalGTModelTransformation editor2internal = new EditorToInternalGTModelTransformation();
 		editorModels.forEach((IFile gtFile, GraphTransformationFile editorModel) -> {
-			EditorToInternalGTModelTransformation transformation = new EditorToInternalGTModelTransformation();
-			GTRuleSet internalModel = transformation.transform(editorModel);
-			gtRules.addAll(internalModel.getRules());
-
-			if (transformation.hasErrors()) {
+			this.gtRuleSet = editor2internal.transform(editorModel);
+			if (editor2internal.hasErrors()) {
 				this.logError(String.format("%s errors during editor to internal model transformation of file %s",
-						transformation.countErrors(), gtFile.getName()));
-				transformation.getErrors().forEach(e -> this.logError(e));
+						editor2internal.countErrors(), gtFile.getName()));
+				editor2internal.getErrors().forEach(e -> this.logError(e));
 			}
-		});
-
-		// Save internal GT model.
-		this.gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
-		gtRules.stream().sorted((a, b) -> a.getName().compareTo(b.getName())).forEach(gtRule -> {
-			gtRuleSet.getRules().add(gtRule);
 		});
 		this.saveModelFile(this.apiPackage.getFile("gt-rules.xmi"), resourceSet, this.gtRuleSet);
 
 		// Transform rules into IBeXPatterns.
-		InternalGTModelToIBeXPatternTransformation transformation = new InternalGTModelToIBeXPatternTransformation();
-		this.ibexPatternSet = transformation.transform(this.gtRuleSet);
-
-		if (transformation.hasErrors()) {
+		InternalGTModelToIBeXPatternTransformation internalToPatterns = new InternalGTModelToIBeXPatternTransformation();
+		IBeXPatternSet ibexPatternSet = internalToPatterns.transform(this.gtRuleSet);
+		if (internalToPatterns.hasErrors()) {
 			this.logError(String.format("%s errors during internal model to pattern transformation",
-					transformation.countErrors()));
-			transformation.getErrors().forEach(e -> this.logError(e));
+					internalToPatterns.countErrors()));
+			internalToPatterns.getErrors().forEach(e -> this.logError(e));
 		}
-
-		// Save IBeXPatterns.
-		this.saveModelFile(this.apiPackage.getFile("ibex-patterns.xmi"), resourceSet, this.ibexPatternSet);
+		this.saveModelFile(this.apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
 
 		// Load meta-models
 		HashMap<String, String> metaModelPackages = new HashMap<String, String>();
@@ -193,7 +201,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			metaModelPackages.put(metaModel, this.loadMetaModelClasses(metaModel, resourceSet));
 		});
 
-		this.fileGenerator = new JavaFileGenerator(this.packageName, this.gtRuleSet, this.eClassNameToMetaModelName);
+		this.fileGenerator = new JavaFileGenerator(this.packageName, this.gtRuleSet,
+				this.eClassifierNameToMetaModelName);
 		this.fileGenerator.generateREADME(this.apiPackage, gtFiles, metaModels, metaModelPackages, editorModels);
 	}
 
@@ -236,11 +245,10 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		EObject rootElement = ecoreFile.getContents().get(0);
 		if (rootElement instanceof EPackage) {
 			EPackage ePackage = (EPackage) rootElement;
-			String name = ("ecore".equals(ePackage.getName())) ? "org.eclipse.emf.ecore" : ePackage.getName();
-			ePackage.getEClassifiers().stream().filter(c -> c instanceof EClass).map(c -> (EClass) c) //
-					.forEach(eClass -> {
-						this.eClassNameToMetaModelName.put(eClass.getName(), name);
-					});
+			boolean isEcore = "ecore".equals(ePackage.getName());
+			String name = isEcore ? "org.eclipse.emf.ecore" : ePackage.getName();
+			ePackage.getEClassifiers().stream().filter(c -> !isEcore || c instanceof EClass) //
+					.forEach(c -> this.eClassifierNameToMetaModelName.put(c.getName(), name));
 			return name;
 		}
 		return null;
@@ -283,6 +291,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @return the name string
 	 */
 	private String getProjectAndPackageName() {
+		if (this.packageName == null) {
+			return this.project.getName();
+		}
 		if (this.packageName.equals("")) {
 			return this.project.getName() + ", default package";
 		}
@@ -301,5 +312,104 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			}
 		}
 		return folder;
+	}
+
+	/**
+	 * Updates the project's manifest file.
+	 */
+	private void updateManifest(final Function<Manifest, Boolean> updateFunction) {
+		try {
+			new ManifestFileUpdater().processManifest(this.project, manifest -> {
+				return updateFunction.apply(manifest);
+			});
+		} catch (CoreException e) {
+			this.logError("Failed to update MANIFEST.MF.");
+		}
+	}
+
+	private boolean processManifestForProject(final Manifest manifest) {
+		// The dependencies of the API.
+		List<String> dependencies = Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt");
+
+		boolean changedBasics = setBasics(manifest, this.project.getName());
+		if (changedBasics) {
+			this.log("Initialized MANIFEST.MF.");
+		}
+
+		boolean updatedDependencies = ManifestFileUpdater.updateDependencies(manifest, dependencies);
+		if (updatedDependencies) {
+			this.log("Updated dependencies");
+		}
+
+		return changedBasics || updatedDependencies;
+	}
+
+	private boolean processManifestForPackage(final Manifest manifest) {
+		// the packages for this API
+		String apiPackageName = (this.packageName.equals("") ? "" : this.packageName + ".") + "api";
+		List<String> exports = Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules");
+
+		boolean updateExports = updateExports(manifest, exports);
+		if (updateExports) {
+			this.log("Updated exports");
+		}
+
+		return updateExports;
+	}
+
+	/**
+	 * Sets the required properties of the manifest if not set already.
+	 * 
+	 * @param manifest
+	 *            the manifest to update
+	 * @param projectName
+	 *            the name of the project
+	 * @return whether the property was changed
+	 */
+	private static boolean setBasics(final Manifest manifest, final String projectName) {
+		boolean changed = false;
+		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.MANIFEST_VERSION, "1.0",
+				AttributeUpdatePolicy.KEEP);
+		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_NAME, projectName,
+				AttributeUpdatePolicy.KEEP);
+		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_MANIFEST_VERSION, "2",
+				AttributeUpdatePolicy.KEEP);
+		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_VERSION, "0.0.1",
+				AttributeUpdatePolicy.KEEP);
+		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_SYMBOLIC_NAME,
+				projectName + ";singleton:=true", AttributeUpdatePolicy.KEEP);
+		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_ACTIVATION_POLICY,
+				"lazy", AttributeUpdatePolicy.KEEP);
+		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_EXECUTION_ENVIRONMENT,
+				"JavaSE-1.8", AttributeUpdatePolicy.KEEP);
+		return changed;
+	}
+
+	/**
+	 * Updates the Export-Package property of the manifest.
+	 * 
+	 * @param manifest
+	 *            the manifest to update
+	 * @param newExports
+	 *            the exports to add
+	 * @return whether the property was changed
+	 */
+	private static boolean updateExports(final Manifest manifest, final List<String> newExports) {
+		String exports = (String) manifest.getMainAttributes().get(PluginManifestConstants.EXPORT_PACKAGE);
+		List<String> exportsList = ManifestFileUpdater.extractDependencies(exports);
+
+		boolean updated = false;
+		for (String newExport : newExports) {
+			if (!exportsList.contains(newExport)) {
+				exportsList.add(newExport);
+				updated = true;
+			}
+		}
+
+		if (updated) {
+			String newExportsString = exportsList.stream().filter(e -> !e.isEmpty()).collect(Collectors.joining(","));
+			manifest.getMainAttributes().put(PluginManifestConstants.EXPORT_PACKAGE, newExportsString);
+		}
+		return updated;
 	}
 }

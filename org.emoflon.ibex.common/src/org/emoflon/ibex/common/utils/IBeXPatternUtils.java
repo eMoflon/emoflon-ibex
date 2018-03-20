@@ -6,10 +6,9 @@ import java.util.Optional;
 
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPattern;
-import IBeXLanguage.IBeXPatternSet;
 
 /**
- * Utility for working with {@link IBeXPatternSet}.
+ * Utility for working with {@link IBeXPattern}s.
  */
 public class IBeXPatternUtils {
 
