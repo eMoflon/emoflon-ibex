@@ -157,6 +157,7 @@ public class IbexOptions {
 	
 	public boolean stronglyTypedEdgedPatterns() {
 		return stronglyTypedEdgedPatterns;
+	}
 
 	public void setFilterNACStrategy(FilterNACStrategy filterNACStrategy) {
 		this.filterNACStrategy = filterNACStrategy;
