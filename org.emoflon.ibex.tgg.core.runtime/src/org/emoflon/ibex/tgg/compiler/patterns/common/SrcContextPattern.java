@@ -20,7 +20,7 @@ public class SrcContextPattern extends IbexBasePattern {
 
 	public SrcContextPattern(BlackPatternFactory factory) {
 		super(factory);
-		initialise(factory.getRule(), factory.getCompiler().getOptions().setCorrContextNodesAsLocalNodes());
+		initialise(factory.getRule(), factory.getOptions().setCorrContextNodesAsLocalNodes());
 		createPatternNetwork(factory);
 	}
 

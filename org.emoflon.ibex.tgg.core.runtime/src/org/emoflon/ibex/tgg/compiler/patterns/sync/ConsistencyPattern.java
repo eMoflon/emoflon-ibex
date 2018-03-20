@@ -10,7 +10,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
 
 import language.BindingType;
 import language.DomainType;
@@ -52,7 +52,7 @@ public class ConsistencyPattern extends IbexBasePattern {
 		createMarkedInvocations();
 		addPositiveInvocation(factory.createBlackPattern(WholeRulePattern.class));
 		
-		if (BlackPatternFactory.strategy != FilterACStrategy.NONE) {
+		if (factory.getOptions().getFilterNACStrategy() != FilterNACStrategy.NONE) {
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
 		}
