@@ -311,8 +311,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		if (deletePattern.isPresent()) {
 			matchAfterDeletion = this.deletePatternInterpreter.apply(deletePattern.get(), originalMatch, po);
 		} else {
-			// Nothing to delete.
-			matchAfterDeletion = Optional.of(originalMatch);
+			throw new IllegalArgumentException(String.format("No delete pattern called %s", patternName));
 		}
 
 		// Abort if deletion failed.
@@ -328,8 +327,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			matchAfterCreation = this.createPatternInterpreter.apply(createPattern.get(), matchAfterDeletion.get(),
 					parameters);
 		} else {
-			// Nothing to create.
-			matchAfterCreation = matchAfterDeletion;
+			throw new IllegalArgumentException(String.format("No create pattern called %s", patternName));
 		}
 
 		// Rule application may invalidate existing or lead to new matches.

@@ -310,7 +310,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	 */
 	private void transformRuleToCreatePattern(final GTRule gtRule) {
 		Objects.requireNonNull(gtRule, "rule must not be null!");
-		if (!InternalGTModelUtils.hasElementsOfBindingType(gtRule, GTBindingType.CREATE)) {
+		if (!gtRule.isExecutable()) {
 			return;
 		}
 
@@ -361,7 +361,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	 */
 	private void transformRuleToDeletePattern(final GTRule gtRule) {
 		Objects.requireNonNull(gtRule, "rule must not be null!");
-		if (!InternalGTModelUtils.hasElementsOfBindingType(gtRule, GTBindingType.DELETE)) {
+		if (!gtRule.isExecutable()) {
 			return;
 		}
 

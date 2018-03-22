@@ -49,23 +49,6 @@ public class InternalGTModelUtils {
 	}
 
 	/**
-	 * Checks whether the graph of the rule contains nodes or edges of the given
-	 * binding type.
-	 * 
-	 * @param gtRule
-	 *            the rule
-	 * @param bindingType
-	 *            the binding type
-	 * @return <code>true</code> if and only if the graph contains at least one node
-	 *         or edge of the binding type
-	 */
-	public static boolean hasElementsOfBindingType(final GTRule gtRule, final GTBindingType bindingType) {
-		Objects.requireNonNull(gtRule, "Rule must not be null!");
-		return gtRule.getGraph().getNodes().stream().anyMatch(node -> node.getBindingType().equals(bindingType))
-				|| gtRule.getGraph().getEdges().stream().anyMatch(node -> node.getBindingType().equals(bindingType));
-	}
-
-	/**
 	 * Filters the nodes of the rule for the ones with the given binding type.
 	 * 
 	 * @param gtRule
