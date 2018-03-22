@@ -8,9 +8,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.util.ilp.Sat4JWrapper.SAT4JConstraint;
-import org.emoflon.ibex.tgg.util.ilp.Sat4JWrapper.SAT4JObjective;
-
 /**
  * This class is used to abstract from the usage of a concrete ILP solver. It provides common methods to define ILP problems, 
  * start finding the solution and access to the found solution.
@@ -94,7 +91,9 @@ public abstract class ILPSolver {
 	 * @param constraint the constraint to add
 	 */
 	protected void addConstraint(ILPConstraint constraint) {
-		this.constraints.add(constraint);
+		if(!this.constraints.contains(constraint)) {
+			this.constraints.add(constraint);
+		}
 	}
 	/**
 	 * Retrieve all defined constraints
@@ -146,8 +145,6 @@ public abstract class ILPSolver {
 		return b.toString();
 	}
 
-
-
 	/**
 	 * Defines the operations that are available for constraints and objectives
 	 * @author RobinO
@@ -157,31 +154,44 @@ public abstract class ILPSolver {
 		/**
 		 * &gt; (constraint)
 		 */
-		gt,
+		gt(">="),
 		/**
 		 * &gt;= (constraint)
 		 */
-		ge,
+		ge(">"),
 		/**
 		 * = (constraint)
 		 */
-		eq,
+		eq("="),
 		/**
 		 * &lt;= (constraint)
 		 */
-		le,
+		le("<="),
 		/**
 		 * &lt; (constraint)
 		 */
-		lt,
+		lt("<"),
 		/**
 		 * maximize objective
 		 */
-		maximize,
+		maximize("MAX"),
 		/**
 		 * minimize objective
 		 */
-		minimize
+		minimize("MIN");
+		
+		private final String stringRepresentation;
+		
+		private Operation(String stringRepresentation) {
+			this.stringRepresentation = stringRepresentation;
+		}
+
+		@Override
+		public String toString() {
+			return stringRepresentation;
+		}
+		
+		
 	}	
 	
 	/**
@@ -227,6 +237,8 @@ public abstract class ILPSolver {
 		public String getVariable() {
 			return variable;
 		}
+		
+		
 
 		/**
 		 * @return the coefficient
@@ -246,10 +258,56 @@ public abstract class ILPSolver {
 
 		@Override
 		public String toString() {
-			return this.coefficient + " * " + this.variable;
+			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(1.0)) {
+				return this.variable;
+			}
+			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(-1.0)) {
+				return "-" + this.variable;
+			}
+			return "("+this.coefficient + " * " + this.variable+")";
 		}
-		
-		
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			long temp;
+			temp = Double.doubleToLongBits(coefficient);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			result = prime * result + ((variable == null) ? 0 : variable.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ILPTerm other = (ILPTerm) obj;
+			if (Double.doubleToLongBits(coefficient) != Double.doubleToLongBits(other.coefficient)) {
+				return false;
+			}
+			if (variable == null) {
+				if (other.variable != null) {
+					return false;
+				}
+			} else if (!variable.equals(other.variable)) {
+				return false;
+			}
+			return true;
+		}	
 	}
 	
 	/**
@@ -294,10 +352,55 @@ public abstract class ILPSolver {
 		
 		@Override
 		public String toString() {
-			return "CONSTRAINT ("+name+"):"+linearExpression.toString() + " "+ comparator.toString() +" " + value;
+			return "CONSTRAINT ("+name+"): "+linearExpression.toString() + " "+ comparator.toString() +" " + value;
+		}
+		
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((comparator == null) ? 0 : comparator.hashCode());
+			result = prime * result + ((linearExpression == null) ? 0 : linearExpression.hashCode());
+			long temp;
+			temp = Double.doubleToLongBits(value);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			return result;
 		}
 
-
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ILPConstraint other = (ILPConstraint) obj;
+			if (comparator != other.comparator) {
+				return false;
+			}
+			if (linearExpression == null) {
+				if (other.linearExpression != null) {
+					return false;
+				}
+			} else if (!linearExpression.equals(other.linearExpression)) {
+				return false;
+			}
+			if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value)) {
+				return false;
+			}
+			return true;
+		}
 
 		/**
 		 * Multiplies the inequation by the given factor
@@ -375,6 +478,46 @@ public abstract class ILPSolver {
 		public String toString() {
 			return "OBJECTIVE: "+this.objectiveOperation.toString() + ": "+ this.linearExpression.toString();
 		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((linearExpression == null) ? 0 : linearExpression.hashCode());
+			result = prime * result + ((objectiveOperation == null) ? 0 : objectiveOperation.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ILPObjective other = (ILPObjective) obj;
+			if (linearExpression == null) {
+				if (other.linearExpression != null) {
+					return false;
+				}
+			} else if (!linearExpression.equals(other.linearExpression)) {
+				return false;
+			}
+			if (objectiveOperation != other.objectiveOperation) {
+				return false;
+			}
+			return true;
+		}
 	}
 	
 	/**
@@ -424,6 +567,45 @@ public abstract class ILPSolver {
 		@Override
 		public String toString() {
 			return String.join(" + ", terms.stream().map(t -> t.toString()).collect(Collectors.toList()));
+		}
+		
+		
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result;
+			result = prime * result + ((terms == null) ? 0 : terms.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ILPLinearExpression other = (ILPLinearExpression) obj;
+			if (terms == null) {
+				if (other.terms != null) {
+					return false;
+				}
+			} else if (!terms.equals(other.terms)) {
+				return false;
+			}
+			return true;
 		}
 
 		/**

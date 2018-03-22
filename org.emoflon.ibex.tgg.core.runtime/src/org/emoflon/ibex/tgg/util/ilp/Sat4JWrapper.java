@@ -1,12 +1,8 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
@@ -40,7 +36,6 @@ final class Sat4JWrapper extends ILPSolver {
 	
 	private static final int MIN_TIMEOUT = 3;
 	private static final int MAX_TIMEOUT = 60*60;
-
 
 	/**
 	 * Creates a new SAT4JWrapper
@@ -123,11 +118,11 @@ final class Sat4JWrapper extends ILPSolver {
 				}
 			}
 			ILPSolution solution = new ILPSolution(variableSolutions, optimizer.isOptimal());
-			for(ILPConstraint constraint : getConstraints()) {
-				if(!constraint.checkConstraint(solution)) {
-					throw new RuntimeException("The ILP is not satisfiable");
-				}
-			}
+//			for(ILPConstraint constraint : getConstraints()) {
+//				if(!constraint.checkConstraint(solution)) {
+//					throw new RuntimeException("The ILP is not satisfiable");
+//				}
+//			}
 			return solution;
 		}
 		return null;
