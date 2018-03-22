@@ -1,5 +1,6 @@
 package org.emoflon.ibex.gt.engine;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.EAttribute;
@@ -34,7 +35,8 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 	}
 
 	@Override
-	public Optional<IMatch> apply(final IBeXCreatePattern createPattern, final IMatch match) {
+	public Optional<IMatch> apply(final IBeXCreatePattern createPattern, final IMatch match,
+			Map<String, Object> parameters) {
 		// Create nodes and edges.
 		createPattern.getCreatedNodes().forEach(node -> {
 			EObject newNode = EcoreUtil.create(node.getType());
@@ -60,8 +62,13 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 				object.eSet(attribute, enumLiteral);
 			}
 			if (value instanceof IBeXAttributeParameter) {
-				System.out.println("Need to assign parameter" + ((IBeXAttributeParameter) value).getName());
+				String parameterName = ((IBeXAttributeParameter) value).getName();
+				if (!parameters.containsKey(parameterName)) {
+					throw new IllegalArgumentException("Missing parameter " + parameterName);
+				}
+				object.eSet(attribute, parameters.get(parameterName));
 			}
+
 		});
 		return Optional.of(match);
 	}

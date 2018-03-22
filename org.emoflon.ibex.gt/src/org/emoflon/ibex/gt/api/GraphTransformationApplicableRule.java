@@ -126,7 +126,7 @@ public abstract class GraphTransformationApplicableRule<M extends GraphTransform
 	 */
 	public final Optional<M> apply(final M match) {
 		Objects.requireNonNull(match, "The match must not be null!");
-		Optional<M> comatch = this.interpreter.apply(match.toIMatch(), this.getPushoutApproach())
+		Optional<M> comatch = this.interpreter.apply(match.toIMatch(), this.getPushoutApproach(), this.parameters)
 				.map(m -> this.convertMatch(m));
 		comatch.ifPresent(cm -> {
 			this.ruleApplicationConsumers.forEach(action -> action.accept(cm));
