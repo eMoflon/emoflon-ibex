@@ -6,6 +6,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.emoflon.ibex.tgg.util.ilp.Sat4JWrapper.SAT4JConstraint;
+import org.emoflon.ibex.tgg.util.ilp.Sat4JWrapper.SAT4JObjective;
 
 /**
  * This class is used to abstract from the usage of a concrete ILP solver. It provides common methods to define ILP problems, 
@@ -26,6 +30,15 @@ public abstract class ILPSolver {
 	 * Contains all variables that have been defined
 	 */
 	private final Set<String> variables = new HashSet<>();
+	
+	/**
+	 * Set of constraints that have been defined using addConstraint
+	 */
+	private final Set<ILPConstraint> constraints = new HashSet<>();
+	/**
+	 * The objective function that has been defined using setObjective
+	 */
+	private ILPObjective objective = null;
 	
 	/**
 	 * Returns the variables that have been defined. New variables can be defined by using them within a term.
@@ -74,34 +87,67 @@ public abstract class ILPSolver {
 	 * @param	value				The value 
 	 * @param	name				The name of the constraint. Naming constraints is not supported by all solvers.
 	 */
-	public abstract void addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name);
+	public abstract ILPConstraint addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name);
 	
+	/**
+	 * Adds the constraint the set of constraints
+	 * @param constraint the constraint to add
+	 */
+	protected void addConstraint(ILPConstraint constraint) {
+		this.constraints.add(constraint);
+	}
 	/**
 	 * Retrieve all defined constraints
 	 * @return the constraints that have been defined
 	 */
-	public abstract Collection<ILPConstraint> getConstraints();
+	public final Collection<ILPConstraint> getConstraints() {
+		return Collections.unmodifiableCollection(this.constraints);
+	}
 	
 	/**
 	 * Retrieve the objective function
 	 * @return The objective function
 	 */
-	public abstract ILPObjective getObjective();
+	public final ILPObjective getObjective() {
+		return this.objective;
+	}
 	
 	/**
 	 * Sets the objective of the ILP that has to be either maximized or minimized.
 	 * @param 	linearExpression	The linear expression that has to be optimized
 	 * @param 	operation			Whether the operation should be maximized or minimized.
 	 */
-	public abstract void setObjective(ILPLinearExpression linearExpression, Operation operation);
+	public abstract ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation);
+	
+	/**
+	 * Sets the objective of the ILP
+	 * @param objective the objective
+	 */
+	protected void setObjective(ILPObjective objective) {
+		this.objective = objective;
+	}
 	
 	/**
 	 * Starts solving the ILP
 	 * @return The solution of the ILP (if found)
 	 * @throws Exception 
 	 */
-	public abstract ILPSolution solveILP() throws Exception; 
+	public abstract ILPSolution solveILP() throws Exception;
 	
+	
+	
+	@Override
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		b.append(objective);
+		for(ILPConstraint constraint : constraints) {
+			b.append("\n" + constraint);
+		}
+		return b.toString();
+	}
+
+
+
 	/**
 	 * Defines the operations that are available for constraints and objectives
 	 * @author RobinO
@@ -197,6 +243,13 @@ public abstract class ILPSolver {
 		public final double getSolutionValue(ILPSolution ilpSolution) {
 			return coefficient * ilpSolution.getVariable(variable);
 		}
+
+		@Override
+		public String toString() {
+			return this.coefficient + " * " + this.variable;
+		}
+		
+		
 	}
 	
 	/**
@@ -220,17 +273,32 @@ public abstract class ILPSolver {
 		protected double value;
 		
 		/**
+		 * Name of the constraint
+		 */
+		protected final String name;
+		
+		/**
 		 * Create a new ILP constraint
 		 * @param linearExpression	The linear expression of the constraint (left side of the inequation)
 		 * @param comparator		Comparator (e.g. <=)
 		 * @param value				The value on the right side of the inequation
 		 */
-		protected ILPConstraint(ILPLinearExpression linearExpression, Operation comparator, double value) {
+		protected ILPConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
 			this.linearExpression = linearExpression;
 			this.comparator = comparator;
 			this.value = value;
+			this.name = name;
 		}
 		
+		
+		
+		@Override
+		public String toString() {
+			return "CONSTRAINT ("+name+"):"+linearExpression.toString() + " "+ comparator.toString() +" " + value;
+		}
+
+
+
 		/**
 		 * Multiplies the inequation by the given factor
 		 * @param factor
@@ -302,6 +370,11 @@ public abstract class ILPSolver {
 		public double getSolutionValue(ILPSolution ilpSolution) {
 			return linearExpression.getSolutionValue(ilpSolution);
 		}
+
+		@Override
+		public String toString() {
+			return "OBJECTIVE: "+this.objectiveOperation.toString() + ": "+ this.linearExpression.toString();
+		}
 	}
 	
 	/**
@@ -346,6 +419,13 @@ public abstract class ILPSolver {
 			return solution;
 		}
 		
+		
+		
+		@Override
+		public String toString() {
+			return String.join(" + ", terms.stream().map(t -> t.toString()).collect(Collectors.toList()));
+		}
+
 		/**
 		 * @return the terms
 		 */

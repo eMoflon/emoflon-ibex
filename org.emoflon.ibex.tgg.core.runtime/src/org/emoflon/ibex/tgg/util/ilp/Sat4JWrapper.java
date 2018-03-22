@@ -36,14 +36,7 @@ final class Sat4JWrapper extends ILPSolver {
 	 * The SAT4J pseudo-boolean solver
 	 */
 	private IPBSolver solver;
-	/**
-	 * Set of constraints that have been defined using addConstraint
-	 */
-	private final Set<SAT4JConstraint> constraints = new HashSet<>();
-	/**
-	 * The objective function that has been defined using setObjective
-	 */
-	private SAT4JObjective objective = null;
+	
 	
 	private static final int MIN_TIMEOUT = 3;
 	private static final int MAX_TIMEOUT = 60*60;
@@ -64,32 +57,22 @@ final class Sat4JWrapper extends ILPSolver {
 	}
 
 	@Override
-	public void addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
-		this.constraints.add(new SAT4JConstraint(linearExpression, comparator, value));
+	public ILPConstraint addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
+		ILPConstraint constr = new SAT4JConstraint(linearExpression, comparator, value, name);
+		this.addConstraint(constr);
+		return constr;
 	}
 
 	@Override
-	public Collection<ILPConstraint> getConstraints() {
-		return Collections.unmodifiableSet(constraints);
-	}
-
-	@Override
-	public void setObjective(ILPLinearExpression linearExpression, Operation operation) {
-		if(objective == null) {
-			objective = new SAT4JObjective(linearExpression, operation);
-		} else {
-			throw new UnsupportedOperationException("The objective function has already been set");
-		}
-	}
-
-	@Override
-	public ILPObjective getObjective() {
+	public ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation) {
+		SAT4JObjective objective = new SAT4JObjective(linearExpression, operation);
+		this.setObjective(objective);
 		return objective;
 	}
 
 	@Override
 	public ILPSolution solveILP() throws ContradictionException {
-		System.out.println("The ILP to solve has "+constraints.size()+" constraints and "+this.getVariables().size()+ " variables");
+		System.out.println("The ILP to solve has "+this.getConstraints().size()+" constraints and "+this.getVariables().size()+ " variables");
 		int currentTimeout = this.getVariables().size();
 		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
@@ -118,10 +101,10 @@ final class Sat4JWrapper extends ILPSolver {
 	private ILPSolution solveILP(int timeout) throws ContradictionException, TimeoutException {
 		solver = SolverFactory.newDefaultOptimizer();
 		
-		for(SAT4JConstraint constraint : constraints) {
-			constraint.registerConstraint();
+		for(ILPConstraint constraint : this.getConstraints()) {
+			((SAT4JConstraint) constraint).registerConstraint();
 		}
-		objective.registerObjective();
+		((SAT4JObjective) this.getObjective()).registerObjective();
 		
 		OptToPBSATAdapter optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(solver));
 		optimizer.setTimeout(timeout);
@@ -140,7 +123,7 @@ final class Sat4JWrapper extends ILPSolver {
 				}
 			}
 			ILPSolution solution = new ILPSolution(variableSolutions, optimizer.isOptimal());
-			for(SAT4JConstraint constraint : constraints) {
+			for(ILPConstraint constraint : getConstraints()) {
 				if(!constraint.checkConstraint(solution)) {
 					throw new RuntimeException("The ILP is not satisfiable");
 				}
@@ -193,8 +176,8 @@ final class Sat4JWrapper extends ILPSolver {
 		 * @param comparator		Comparator (e.g. <=)
 		 * @param value				The value on the right side of the inequation
 		 */
-		private SAT4JConstraint(ILPLinearExpression linearExpression, Operation comparator, double value) {
-			super(linearExpression, comparator, value);
+		private SAT4JConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
+			super(linearExpression, comparator, value, name);
 			if(!(linearExpression instanceof SAT4JLinearExpression)) {
 				throw new IllegalArgumentException("The linear Expression is not a SAT4J Expression");
 			}
