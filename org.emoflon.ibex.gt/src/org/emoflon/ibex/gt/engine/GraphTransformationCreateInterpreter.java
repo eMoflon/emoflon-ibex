@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -58,17 +57,17 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 				object.eSet(attribute, ((IBeXConstant) value).getValue());
 			}
 			if (value instanceof IBeXEnumLiteral) {
-				EEnumLiteral enumLiteral = ((IBeXEnumLiteral) value).getLiteral();
-				object.eSet(attribute, enumLiteral);
+				IBeXEnumLiteral enumLiteral = ((IBeXEnumLiteral) value);
+				// TODO eSet causes CastException on runtime
+				object.eSet(attribute, enumLiteral.getLiteral());
 			}
 			if (value instanceof IBeXAttributeParameter) {
 				String parameterName = ((IBeXAttributeParameter) value).getName();
 				if (!parameters.containsKey(parameterName)) {
-					throw new IllegalArgumentException("Missing parameter " + parameterName);
+					throw new IllegalArgumentException("Missing required parameter " + parameterName);
 				}
 				object.eSet(attribute, parameters.get(parameterName));
 			}
-
 		});
 		return Optional.of(match);
 	}

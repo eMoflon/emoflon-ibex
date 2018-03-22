@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,6 +29,8 @@ import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 
+import IBeXLanguage.IBeXAttributeConstraint;
+import IBeXLanguage.IBeXAttributeParameter;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
 import IBeXLanguage.IBeXLanguagePackage;
@@ -386,6 +389,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 				.map(node -> node.getName()) //
 				.collect(Collectors.toList());
 
+		// Filter for node bindings.
 		Iterator<String> parameterIterator = parameters.keySet().iterator();
 		while (parameterIterator.hasNext()) {
 			String parameterName = parameterIterator.next();
@@ -394,7 +398,50 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 						m -> m.isInMatch(parameterName) && parameters.get(parameterName).equals(m.get(parameterName)));
 			}
 		}
+
+		// Filter for attribute constraints with parameters.
+		for (IBeXAttributeConstraint ac : pattern.getAttributeConstraint()) {
+			if (ac.getValue() instanceof IBeXAttributeParameter) {
+				String nodeName = ac.getNode().getName();
+				String parameterName = ((IBeXAttributeParameter) ac.getValue()).getName();
+				if (!parameters.containsKey(parameterName)) {
+					throw new IllegalArgumentException("Missing required parameter " + parameterName);
+				}
+				Object parameterValue = parameters.get(parameterName);
+
+				matchesForPattern = matchesForPattern.filter(m -> {
+					EObject node = (EObject) m.get(nodeName);
+					Object currentValue = node.eGet(ac.getType());
+
+					switch (ac.getRelation()) {
+					case GREATER_OR_EQUAL:
+						return compareTo(currentValue, parameterValue, x -> x >= 0);
+					case EQUAL:
+						return currentValue.equals(parameterValue);
+					case GREATER:
+						return compareTo(currentValue, parameterValue, x -> x > 0);
+					case SMALLER:
+						return compareTo(currentValue, parameterValue, x -> x < 0);
+					case SMALLER_OR_EQUAL:
+						return compareTo(currentValue, parameterValue, x -> x <= 0);
+					case UNEQUAL:
+						return !currentValue.equals(parameterValue);
+					default:
+						return false;
+					}
+				});
+			}
+		}
+
 		return matchesForPattern;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static boolean compareTo(final Object a, final Object b, final Predicate<Integer> condition) {
+		if ((a instanceof Comparable) && (b instanceof Comparable)) {
+			return condition.test(((Comparable) a).compareTo(b));
+		}
+		return false;
 	}
 
 	/**
