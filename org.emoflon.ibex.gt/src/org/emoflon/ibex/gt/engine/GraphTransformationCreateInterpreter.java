@@ -3,7 +3,9 @@ package org.emoflon.ibex.gt.engine;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -57,9 +59,13 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 				object.eSet(attribute, ((IBeXConstant) value).getValue());
 			}
 			if (value instanceof IBeXEnumLiteral) {
-				IBeXEnumLiteral enumLiteral = ((IBeXEnumLiteral) value);
-				// TODO eSet causes CastException on runtime
-				object.eSet(attribute, enumLiteral.getLiteral());
+				EEnumLiteral enumLiteral = ((IBeXEnumLiteral) value).getLiteral();
+				// Need to get actual Java instance. Cannot pass EnumLiteral here!
+				Enumerator instance = enumLiteral.getInstance();
+				if (instance == null) {
+					throw new IllegalArgumentException("Missing object for " + enumLiteral);
+				}
+				object.eSet(attribute, instance);
 			}
 			if (value instanceof IBeXAttributeParameter) {
 				String parameterName = ((IBeXAttributeParameter) value).getName();
