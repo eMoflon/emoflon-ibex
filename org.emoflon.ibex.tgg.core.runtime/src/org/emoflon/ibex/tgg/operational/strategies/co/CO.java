@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.co;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.emf.ecore.EObject;
@@ -17,6 +18,7 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.RandomKernelMatchUpdatePoli
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
 import gnu.trove.set.hash.TIntHashSet;
+import language.TGGRuleCorr;
 
 public abstract class CO extends CC {
 	
@@ -40,13 +42,20 @@ public abstract class CO extends CC {
 	
 	@Override
 	protected void wrapUp() {
+		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
+		
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			IMatch comatch = idToMatch.get(id);
-			if (v < 0)
-				EcoreUtil.delete(getRuleApplicationNode(comatch));
+			if (v < 0) {
+				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
+				
+				objectsToDelete.add(getRuleApplicationNode(comatch));
+			}
 		}
-
+		
+		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.initWithCorr(this);
 	}
 	
@@ -96,6 +105,11 @@ public abstract class CO extends CC {
 		p = createResource(projectPath + "/instances/protocol.xmi");
 
 		EcoreUtil.resolveAll(rs);
+	}
+	
+	@Override
+	public void saveModels() throws IOException {
+		p.save(null);
 	}
 	
 	@Override

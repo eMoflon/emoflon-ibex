@@ -127,7 +127,6 @@ public abstract class MODELGEN extends OperationalStrategy {
 		String axiomName = GENBlackPattern.getName(GENAxiomNacPattern.getAxiomName(match.getPatternName()));
 		operationalMatchContainer.getMatches().stream()
 			.filter(m -> m.getPatternName().equals(axiomName)).forEach(m -> {
-			logger.debug("Removed " + m.getPatternName());
 			matchesToRemove.add(m);
 		});
 		matchesToRemove.stream().forEach(m -> removeMatch(m));
