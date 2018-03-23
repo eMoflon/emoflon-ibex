@@ -257,6 +257,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		String patternPath = project.getName() + "/" + SOURCE_GEN_FOLDER + "/" + path.toString()
 				+ "/api/ibex-patterns.xmi";
 		generator.generateAPIJavaFile(apiPackage, patternPath);
+		generator.generateAppJavaFile(apiPackage);
 	}
 
 	/**

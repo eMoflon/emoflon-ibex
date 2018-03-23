@@ -26,9 +26,9 @@ class JavaFileGenerator {
 	String packageName
 
 	/**
-	 * The name of the API class.
+	 * The prefix for the API class name.
 	 */
-	String apiClassName
+	String classNamePrefix
 
 	/**
 	 * The graph transformation rules as instance of the internal GT model.
@@ -44,7 +44,7 @@ class JavaFileGenerator {
 	 * Creates a new JavaFileGenerator.
 	 */
 	new(IPath packagePath, String packageName, GTRuleSet gtRuleSet, EClassifiersManager eClassifiersManager) {
-		this.apiClassName = packagePath.lastSegment.toFirstUpper + "API"
+		this.classNamePrefix = packagePath.lastSegment.toFirstUpper
 		this.packageName = packageName
 		this.gtRuleSet = gtRuleSet
 		this.eClassifiersManager = eClassifiersManager
@@ -70,13 +70,13 @@ class JavaFileGenerator {
 			«printHeader(this.getSubPackageName('api'), imports)»
 			
 			/**
-			 * The «apiClassName» with «gtRuleSet.rules.size» rules.
+			 * The «APIClassName» with «gtRuleSet.rules.size» rules.
 			 */
-			public class «apiClassName» extends GraphTransformationAPI {
+			public class «APIClassName» extends GraphTransformationAPI {
 				public static String patternPath = "«patternPath»";
 			
 				/**
-				 * Creates a new «apiClassName».
+				 * Creates a new «APIClassName».
 				 *
 				 * The are loaded from the default pattern path.
 				 *
@@ -85,14 +85,14 @@ class JavaFileGenerator {
 				 * @param model
 				 *            the resource set containing the model file
 				 */
-				public «apiClassName»(final IContextPatternInterpreter engine, final ResourceSet model) {
+				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model) {
 					super(engine, model);
 					URI uri = URI.createURI("../" + patternPath);
 					this.interpreter.loadPatternSet(uri);
 				}
 			
 				/**
-				 * Creates a new «apiClassName».
+				 * Creates a new «APIClassName».
 				 *
 				 * The are loaded from the pattern path (the given workspace path concatenated
 				 * with the project relative path to the pattern file).
@@ -104,7 +104,7 @@ class JavaFileGenerator {
 				 * @param workspacePath
 				 *            the path to the workspace
 				 */
-				public «apiClassName»(final IContextPatternInterpreter engine, final ResourceSet model,
+				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model,
 						final String workspacePath) {
 					super(engine, model);
 					URI uri = URI.createURI(workspacePath + patternPath);
@@ -123,7 +123,128 @@ class JavaFileGenerator {
 			«ENDFOR»
 			}
 		'''
-		writeFile(apiPackage.getFile(apiClassName + '.java'), apiSourceCode)
+		writeFile(apiPackage.getFile(APIClassName + '.java'), apiSourceCode)
+	}
+
+	/**
+	 * Generates the Java App class.
+	 */
+	public def generateAppJavaFile(IFolder apiPackage) {
+		val imports = newHashSet(
+			'java.io.IOException',
+			'java.util.Map',
+			'java.util.Objects',
+			'java.util.Optional',
+			'org.eclipse.emf.common.util.URI',
+			'org.eclipse.emf.ecore.EPackage',
+			'org.eclipse.emf.ecore.EPackage.Registry',
+			'org.eclipse.emf.ecore.resource.Resource',
+			'org.eclipse.emf.ecore.resource.ResourceSet',
+			'org.eclipse.emf.ecore.resource.impl.ResourceSetImpl',
+			'org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl',
+			'org.emoflon.ibex.common.operational.IContextPatternInterpreter'
+		)
+		val appClassName = this.classNamePrefix + 'App'
+		val appSourceCode = '''
+			«printHeader(this.getSubPackageName('api'), imports)»
+			
+			/**
+			 * An application using the «this.APIClassName».
+			 */
+			public abstract class «appClassName» {
+				/**
+				 * The resource set.
+				 */
+				private ResourceSet resourceSet = new ResourceSetImpl();
+			
+				/**
+				 * The workspace path.
+				 */
+				private Optional<String> workspacePath = Optional.empty();
+			
+				/**
+				 * Returns the mapping between the meta-model namespace and the EPackage.
+				 */
+				protected abstract Map<String, EPackage> getMetaModelPackages();
+			
+				/**
+				 * Creates the model file with the given URI.
+				 * 
+				 * @param uri
+				 *            the URI of the model file
+				 * @return the resource set
+				 */
+				protected ResourceSet createModel(final URI uri) {
+					this.prepareResourceSet();
+					resourceSet.createResource(uri);
+					return resourceSet;
+				}
+			
+				/**
+				 * Loads the model file with the given URI.
+				 * 
+				 * @param uri
+				 *            the URI of the model file
+				 * @return the resource set
+				 */
+				protected ResourceSet loadModel(final URI uri) {
+					this.prepareResourceSet();
+					resourceSet.getResource(uri, true);
+					return resourceSet;
+				}
+			
+				/**
+				 * Initializes the package registry of the resource set.
+				 */
+				private void prepareResourceSet() {
+					Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+					reg.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+			
+					Registry packageRegistry = resourceSet.getPackageRegistry();
+					this.getMetaModelPackages().forEach((eNS_URI, eINSTANCE) -> packageRegistry.put(eNS_URI, eINSTANCE));
+				}
+			
+				/**
+				 * Sets the workspace path to the given path.
+				 * 
+				 * @param workspacePath
+				 *            the workspace path to set
+				 */
+				protected void setWorkspacePath(final String workspacePath) {
+					Objects.requireNonNull(workspacePath, "The workspace path must not be null!");
+					this.workspacePath = Optional.of(workspacePath);
+				}
+			
+				/**
+				 * Creates a new «this.APIClassName».
+				 * 
+				 * @param engine
+				 *            the pattern matching engine to use
+				 * @return the created API
+				 */
+				protected «this.APIClassName» initAPI(final IContextPatternInterpreter engine) {
+					Objects.requireNonNull(workspacePath, "The engine must not be null!");
+					if (workspacePath.isPresent()) {
+						return new «this.APIClassName»(engine, this.resourceSet, workspacePath.get());
+					} else {
+						return new «this.APIClassName»(engine, this.resourceSet);
+					}
+				}
+			
+				/**
+				 * Saves all resources in the resource set.
+				 * 
+				 * @throws IOException
+				 *             if an IOException is thrown on save
+				 */
+				protected void saveResourceSet() throws IOException {
+					for (Resource resource : resourceSet.getResources()) {
+						resource.save(null);
+					}
+				}
+			}
+		'''
+		writeFile(apiPackage.getFile(appClassName + '.java'), appSourceCode)
 	}
 
 	/**
@@ -201,7 +322,7 @@ class JavaFileGenerator {
 			'org.emoflon.ibex.common.operational.IMatch',
 			'''org.emoflon.ibex.gt.api.«ruleType»''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
-			'''«this.getSubPackageName('api')».«apiClassName»''',
+			'''«this.getSubPackageName('api')».«APIClassName»''',
 			'''«this.getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
 		)
 		if (rule.parameters.size > 0 || parameterNodes.size > 0) {
@@ -229,7 +350,7 @@ class JavaFileGenerator {
 				 	*            the value for the parameter «parameter.name»
 				 «ENDFOR»
 				 */
-				public «getRuleClassName(rule)»(final «apiClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
+				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
 						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR»
 					super(api, interpreter, ruleName);
 					«FOR parameter : rule.parameters»
@@ -305,6 +426,13 @@ class JavaFileGenerator {
 				import «importClass»;
 			«ENDFOR»
 		'''
+	}
+
+	/**
+	 * Returns the name of the API class.
+	 */
+	private def getAPIClassName() {
+		return this.classNamePrefix + "API"
 	}
 
 	/**
