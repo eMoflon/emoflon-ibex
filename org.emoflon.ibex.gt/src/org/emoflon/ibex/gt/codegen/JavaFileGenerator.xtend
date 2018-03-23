@@ -6,6 +6,7 @@ import java.util.Set
 
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
+import org.eclipse.core.runtime.IPath
 import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EEnum
 import org.emoflon.ibex.gt.codegen.EClassifiersManager
@@ -16,14 +17,18 @@ import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
 
 /**
- * This GTPackageBuilder transforms the editor files into the internal model and IBeXPatterns
- * and generates code for the API. Each package is considered as an rule module with an own API.
+ * This class contains the templates for the API Java classes.
  */
 class JavaFileGenerator {
 	/**
 	 * The name of the package.
 	 */
 	String packageName
+	
+	/**
+	 * The name of the API class.
+	 */
+	String apiClassName
 
 	/**
 	 * The graph transformation rules as instance of the internal GT model.
@@ -38,7 +43,8 @@ class JavaFileGenerator {
 	/**
 	 * Creates a new JavaFileGenerator.
 	 */
-	new(String packageName, GTRuleSet gtRuleSet, EClassifiersManager eClassifiersManager) {
+	new(IPath packagePath, String packageName, GTRuleSet gtRuleSet, EClassifiersManager eClassifiersManager) {
+		this.apiClassName = packagePath.lastSegment.toFirstUpper + "API"
 		this.packageName = packageName
 		this.gtRuleSet = gtRuleSet
 		this.eClassifiersManager = eClassifiersManager
@@ -60,7 +66,6 @@ class JavaFileGenerator {
 			imports.addAll(this.eClassifiersManager.getImportsForDataTypes(it.parameters))
 		]
 
-		val apiClassName = this.APIClassName
 		val apiSourceCode = '''
 			package «this.getSubPackageName('api')»;
 			
@@ -190,7 +195,7 @@ class JavaFileGenerator {
 			'org.emoflon.ibex.common.operational.IMatch',
 			'''org.emoflon.ibex.gt.api.«ruleType»''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
-			'''«this.getSubPackageName('api')».«APIClassName»''',
+			'''«this.getSubPackageName('api')».«apiClassName»''',
 			'''«this.getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
 		)
 		if (rule.parameters.size > 0 || parameterNodes.size > 0) {
@@ -220,7 +225,7 @@ class JavaFileGenerator {
 				 	*            the value for the parameter «parameter.name»
 				 «ENDFOR»
 				 */
-				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
+				public «getRuleClassName(rule)»(final «apiClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
 						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR»
 					super(api, interpreter, ruleName);
 					«FOR parameter : rule.parameters»
@@ -289,13 +294,6 @@ class JavaFileGenerator {
 	private def getSubPackageName(String subPackage) {
 		val dot = if(this.packageName.equals("")) "" else "."
 		return '''«this.packageName»«dot»«subPackage»'''
-	}
-
-	/**
-	 * Returns the name of the API class.
-	 */
-	private def getAPIClassName() {
-		return this.packageName.replace('.', '').toFirstUpper + "API"
 	}
 
 	/**

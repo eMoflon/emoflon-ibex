@@ -43,13 +43,9 @@ import org.moflon.core.utilities.WorkspaceHelper;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater.AttributeUpdatePolicy;
 
 /**
- * This GTPackageBuilder
- * <ul>
- * <li>transforms the editor files into the internal model and IBeXPatterns</li>
- * <li>and generates code for the API.</li>
- * </ul>
- * 
- * Each package is considered as an rule module with an API.
+ * This GTPackageBuilder transforms the editor files into the internal model and
+ * IBeXPatterns and generates code for the API. Each package is considered as an
+ * rule module with an own API.
  */
 public class GTPackageBuilder implements GTBuilderExtension {
 	/**
@@ -71,11 +67,6 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * The name of the package.
 	 */
 	private String packageName;
-
-	/**
-	 * The folder of the package containing the API.
-	 */
-	private IFolder apiPackage;
 
 	@Override
 	public void run(final IProject project) {
@@ -102,7 +93,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		this.project = project;
 		this.path = packagePath;
 		this.packageName = this.path.toString().replace("/", ".");
-		this.ensureSourceGenPackageExists();
+		IFolder apiPackage = this.ensureSourceGenPackageExists();
 
 		// Load files into editor models.
 		HashMap<IFile, GraphTransformationFile> editorModels = new HashMap<IFile, GraphTransformationFile>();
@@ -130,7 +121,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 				editor2internal.getErrors().forEach(e -> this.logError(e));
 			}
 		}
-		this.saveModelFile(this.apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
+		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
 
 		// Transform rules into IBeXPatterns.
 		InternalGTModelToIBeXPatternTransformation internalToPatterns = new InternalGTModelToIBeXPatternTransformation();
@@ -140,18 +131,20 @@ public class GTPackageBuilder implements GTBuilderExtension {
 					internalToPatterns.countErrors()));
 			internalToPatterns.getErrors().forEach(e -> this.logError(e));
 		}
-		this.saveModelFile(this.apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
+		this.saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
 
 		// Generate the Java code.
-		this.generateAPI(gtRuleSet, this.loadMetaModels(metaModels, resourceSet));
+		this.generateAPI(apiPackage, gtRuleSet, this.loadMetaModels(metaModels, resourceSet));
 		this.updateManifest(manifest -> this.processManifestForPackage(manifest));
 		this.log("Finished build.");
 	}
 
 	/**
 	 * Creates the target package.
+	 * 
+	 * @return the folder
 	 */
-	private void ensureSourceGenPackageExists() {
+	private IFolder ensureSourceGenPackageExists() {
 		IFolder folder = this.ensureFolderExists(this.project.getFolder(GTPackageBuilder.SOURCE_GEN_FOLDER));
 		for (int i = 0; (i < this.path.segmentCount()); i++) {
 			folder = this.ensureFolderExists(folder.getFolder(this.path.segment(i)));
@@ -164,7 +157,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 				this.log("Could not delete old package.");
 			}
 		}
-		this.apiPackage = this.ensureFolderExists(folder);
+		return this.ensureFolderExists(folder);
 	}
 
 	/**
@@ -241,15 +234,19 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	/**
 	 * Generate a Rule and a Match class for every rule and the API class.
 	 * 
+	 * @param apiPackage
+	 *            the package containing the API code
 	 * @param gtRuleSet
 	 *            the graph transformation rules
 	 * @param eClassifiersManager
 	 *            the EClassifiers handler
 	 */
-	private void generateAPI(final GTRuleSet gtRuleSet, final EClassifiersManager eClassifiersManager) {
-		JavaFileGenerator generator = new JavaFileGenerator(this.packageName, gtRuleSet, eClassifiersManager);
-		IFolder matchesPackage = this.ensureFolderExists(this.apiPackage.getFolder("matches"));
-		IFolder rulesPackage = this.ensureFolderExists(this.apiPackage.getFolder("rules"));
+	private void generateAPI(final IFolder apiPackage, final GTRuleSet gtRuleSet,
+			final EClassifiersManager eClassifiersManager) {
+		JavaFileGenerator generator = new JavaFileGenerator(this.path, this.packageName, gtRuleSet,
+				eClassifiersManager);
+		IFolder matchesPackage = this.ensureFolderExists(apiPackage.getFolder("matches"));
+		IFolder rulesPackage = this.ensureFolderExists(apiPackage.getFolder("rules"));
 		gtRuleSet.getRules().stream() //
 				.filter(gtRule -> !gtRule.isAbstract()) // ignore abstract rules
 				.forEach(gtRule -> {
@@ -259,7 +256,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 
 		String patternPath = project.getName() + "/" + SOURCE_GEN_FOLDER + "/" + path.toString()
 				+ "/api/ibex-patterns.xmi";
-		generator.generateAPIJavaFile(this.apiPackage, patternPath);
+		generator.generateAPIJavaFile(apiPackage, patternPath);
 	}
 
 	/**
