@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class is used to abstract from the usage of a concrete ILP solver. It provides common methods to define ILP problems, 
@@ -26,6 +27,15 @@ public abstract class ILPSolver {
 	 * Contains all variables that have been defined
 	 */
 	private final Set<String> variables = new HashSet<>();
+	
+	/**
+	 * Set of constraints that have been defined using addConstraint
+	 */
+	private final Set<ILPConstraint> constraints = new HashSet<>();
+	/**
+	 * The objective function that has been defined using setObjective
+	 */
+	private ILPObjective objective = null;
 	
 	/**
 	 * Returns the variables that have been defined. New variables can be defined by using them within a term.
@@ -74,34 +84,67 @@ public abstract class ILPSolver {
 	 * @param	value				The value 
 	 * @param	name				The name of the constraint. Naming constraints is not supported by all solvers.
 	 */
-	public abstract void addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name);
+	public abstract ILPConstraint addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name);
 	
+	/**
+	 * Adds the constraint the set of constraints
+	 * @param constraint the constraint to add
+	 */
+	protected void addConstraint(ILPConstraint constraint) {
+		if(!this.constraints.contains(constraint)) {
+			this.constraints.add(constraint);
+		}
+	}
 	/**
 	 * Retrieve all defined constraints
 	 * @return the constraints that have been defined
 	 */
-	public abstract Collection<ILPConstraint> getConstraints();
+	public final Collection<ILPConstraint> getConstraints() {
+		return Collections.unmodifiableCollection(this.constraints);
+	}
 	
 	/**
 	 * Retrieve the objective function
 	 * @return The objective function
 	 */
-	public abstract ILPObjective getObjective();
+	public final ILPObjective getObjective() {
+		return this.objective;
+	}
 	
 	/**
 	 * Sets the objective of the ILP that has to be either maximized or minimized.
 	 * @param 	linearExpression	The linear expression that has to be optimized
 	 * @param 	operation			Whether the operation should be maximized or minimized.
 	 */
-	public abstract void setObjective(ILPLinearExpression linearExpression, Operation operation);
+	public abstract ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation);
+	
+	/**
+	 * Sets the objective of the ILP
+	 * @param objective the objective
+	 */
+	protected void setObjective(ILPObjective objective) {
+		this.objective = objective;
+	}
 	
 	/**
 	 * Starts solving the ILP
 	 * @return The solution of the ILP (if found)
 	 * @throws Exception 
 	 */
-	public abstract ILPSolution solveILP() throws Exception; 
+	public abstract ILPSolution solveILP() throws Exception;
 	
+	
+	
+	@Override
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		b.append(objective);
+		for(ILPConstraint constraint : constraints) {
+			b.append("\n" + constraint);
+		}
+		return b.toString();
+	}
+
 	/**
 	 * Defines the operations that are available for constraints and objectives
 	 * @author RobinO
@@ -111,31 +154,44 @@ public abstract class ILPSolver {
 		/**
 		 * &gt; (constraint)
 		 */
-		gt,
+		gt(">="),
 		/**
 		 * &gt;= (constraint)
 		 */
-		ge,
+		ge(">"),
 		/**
 		 * = (constraint)
 		 */
-		eq,
+		eq("="),
 		/**
 		 * &lt;= (constraint)
 		 */
-		le,
+		le("<="),
 		/**
 		 * &lt; (constraint)
 		 */
-		lt,
+		lt("<"),
 		/**
 		 * maximize objective
 		 */
-		maximize,
+		maximize("MAX"),
 		/**
 		 * minimize objective
 		 */
-		minimize
+		minimize("MIN");
+		
+		private final String stringRepresentation;
+		
+		private Operation(String stringRepresentation) {
+			this.stringRepresentation = stringRepresentation;
+		}
+
+		@Override
+		public String toString() {
+			return stringRepresentation;
+		}
+		
+		
 	}	
 	
 	/**
@@ -181,6 +237,8 @@ public abstract class ILPSolver {
 		public String getVariable() {
 			return variable;
 		}
+		
+		
 
 		/**
 		 * @return the coefficient
@@ -197,6 +255,59 @@ public abstract class ILPSolver {
 		public final double getSolutionValue(ILPSolution ilpSolution) {
 			return coefficient * ilpSolution.getVariable(variable);
 		}
+
+		@Override
+		public String toString() {
+			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(1.0)) {
+				return this.variable;
+			}
+			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(-1.0)) {
+				return "-" + this.variable;
+			}
+			return "("+this.coefficient + " * " + this.variable+")";
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			long temp;
+			temp = Double.doubleToLongBits(coefficient);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			result = prime * result + ((variable == null) ? 0 : variable.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ILPTerm other = (ILPTerm) obj;
+			if (Double.doubleToLongBits(coefficient) != Double.doubleToLongBits(other.coefficient)) {
+				return false;
+			}
+			if (variable == null) {
+				if (other.variable != null) {
+					return false;
+				}
+			} else if (!variable.equals(other.variable)) {
+				return false;
+			}
+			return true;
+		}	
 	}
 	
 	/**
@@ -220,17 +331,77 @@ public abstract class ILPSolver {
 		protected double value;
 		
 		/**
+		 * Name of the constraint
+		 */
+		protected final String name;
+		
+		/**
 		 * Create a new ILP constraint
 		 * @param linearExpression	The linear expression of the constraint (left side of the inequation)
 		 * @param comparator		Comparator (e.g. <=)
 		 * @param value				The value on the right side of the inequation
 		 */
-		protected ILPConstraint(ILPLinearExpression linearExpression, Operation comparator, double value) {
+		protected ILPConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
 			this.linearExpression = linearExpression;
 			this.comparator = comparator;
 			this.value = value;
+			this.name = name;
 		}
 		
+		
+		
+		@Override
+		public String toString() {
+			return "CONSTRAINT ("+name+"): "+linearExpression.toString() + " "+ comparator.toString() +" " + value;
+		}
+		
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((comparator == null) ? 0 : comparator.hashCode());
+			result = prime * result + ((linearExpression == null) ? 0 : linearExpression.hashCode());
+			long temp;
+			temp = Double.doubleToLongBits(value);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ILPConstraint other = (ILPConstraint) obj;
+			if (comparator != other.comparator) {
+				return false;
+			}
+			if (linearExpression == null) {
+				if (other.linearExpression != null) {
+					return false;
+				}
+			} else if (!linearExpression.equals(other.linearExpression)) {
+				return false;
+			}
+			if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value)) {
+				return false;
+			}
+			return true;
+		}
+
 		/**
 		 * Multiplies the inequation by the given factor
 		 * @param factor
@@ -302,6 +473,51 @@ public abstract class ILPSolver {
 		public double getSolutionValue(ILPSolution ilpSolution) {
 			return linearExpression.getSolutionValue(ilpSolution);
 		}
+
+		@Override
+		public String toString() {
+			return "OBJECTIVE: "+this.objectiveOperation.toString() + ": "+ this.linearExpression.toString();
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((linearExpression == null) ? 0 : linearExpression.hashCode());
+			result = prime * result + ((objectiveOperation == null) ? 0 : objectiveOperation.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ILPObjective other = (ILPObjective) obj;
+			if (linearExpression == null) {
+				if (other.linearExpression != null) {
+					return false;
+				}
+			} else if (!linearExpression.equals(other.linearExpression)) {
+				return false;
+			}
+			if (objectiveOperation != other.objectiveOperation) {
+				return false;
+			}
+			return true;
+		}
 	}
 	
 	/**
@@ -346,6 +562,52 @@ public abstract class ILPSolver {
 			return solution;
 		}
 		
+		
+		
+		@Override
+		public String toString() {
+			return String.join(" + ", terms.stream().map(t -> t.toString()).collect(Collectors.toList()));
+		}
+		
+		
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result;
+			result = prime * result + ((terms == null) ? 0 : terms.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ILPLinearExpression other = (ILPLinearExpression) obj;
+			if (terms == null) {
+				if (other.terms != null) {
+					return false;
+				}
+			} else if (!terms.equals(other.terms)) {
+				return false;
+			}
+			return true;
+		}
+
 		/**
 		 * @return the terms
 		 */
