@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.api.generator;
+package org.emoflon.ibex.gt.codegen;
 
 import GTLanguage.GTRuleSet;
 import IBeXLanguage.IBeXPatternSet;
@@ -20,9 +20,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -31,6 +29,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.XtextResourceSet;
+import org.emoflon.ibex.gt.codegen.JavaFileGenerator;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
@@ -88,12 +87,12 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private GTRuleSet gtRuleSet;
 
 	/**
-	 * The mapping between EClass/EDataType names to MetaModelNames
+	 * Utility to handle the mapping between EClassifier names to meta-model names.
 	 */
-	private HashMap<String, String> eClassifierNameToMetaModelName = new HashMap<String, String>();
+	private EClassifiersManager eClassifiersManager = new EClassifiersManager();
 
 	@Override
-	public void run(IProject project) {
+	public void run(final IProject project) {
 		this.project = project;
 		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
 			this.log("The build for GT projects only works for plugin projects.");
@@ -197,12 +196,18 @@ public class GTPackageBuilder implements GTBuilderExtension {
 
 		// Load meta-models
 		HashMap<String, String> metaModelPackages = new HashMap<String, String>();
-		metaModels.forEach(metaModel -> {
-			metaModelPackages.put(metaModel, this.loadMetaModelClasses(metaModel, resourceSet));
+		metaModels.forEach(metaModelUri -> {
+			Resource ecoreFile = resourceSet.getResource(URI.createURI(metaModelUri), true);
+			try {
+				ecoreFile.load(null);
+				String metaModelCodePackageName = this.eClassifiersManager.loadMetaModelClasses(ecoreFile);
+				metaModelPackages.put(metaModelUri, metaModelCodePackageName);
+			} catch (IOException e) {
+				this.log("Could not load meta-model " + metaModelUri + ".");
+			}
 		});
 
-		this.fileGenerator = new JavaFileGenerator(this.packageName, this.gtRuleSet,
-				this.eClassifierNameToMetaModelName);
+		this.fileGenerator = new JavaFileGenerator(this.packageName, this.gtRuleSet, this.eClassifiersManager);
 		this.fileGenerator.generateREADME(this.apiPackage, gtFiles, metaModels, metaModelPackages, editorModels);
 	}
 
@@ -230,31 +235,6 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
-	 * Loads the EClasses from the given meta-model URI.
-	 */
-	private String loadMetaModelClasses(final String metaModelUri, final ResourceSet resourceSet) {
-		Resource ecoreFile = resourceSet.getResource(URI.createURI(metaModelUri), true);
-		try {
-			ecoreFile.load(null);
-		} catch (IOException e) {
-			this.log("Could not load meta-model " + metaModelUri + ".");
-		}
-		EcoreUtil2.resolveLazyCrossReferences(ecoreFile, () -> false);
-		EcoreUtil.resolveAll(resourceSet);
-
-		EObject rootElement = ecoreFile.getContents().get(0);
-		if (rootElement instanceof EPackage) {
-			EPackage ePackage = (EPackage) rootElement;
-			boolean isEcore = "ecore".equals(ePackage.getName());
-			String name = isEcore ? "org.eclipse.emf.ecore" : ePackage.getName();
-			ePackage.getEClassifiers().stream().filter(c -> !isEcore || c instanceof EClass) //
-					.forEach(c -> this.eClassifierNameToMetaModelName.put(c.getName(), name));
-			return name;
-		}
-		return null;
-	}
-
-	/**
 	 * Generates Java classes of the API.
 	 */
 	private void generateAPI() {
@@ -266,9 +246,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 					this.fileGenerator.generateMatchJavaFile(matchesPackage, gtRule);
 					this.fileGenerator.generateRuleJavaFile(rulesPackage, gtRule);
 				});
-
-		String patternPath = this.project.getName() + "/src-gen/" + this.path.toString() + "/api/ibex-patterns.xmi";
-		this.fileGenerator.generateAPIJavaFile(this.apiPackage, patternPath);
+		this.fileGenerator.generateAPIJavaFile(this.apiPackage, this.project.getName() + "/" + SOURCE_GEN_FOLDER + "/"
+				+ this.path.toString() + "/api/ibex-patterns.xmi");
 	}
 
 	/**
@@ -327,6 +306,14 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		}
 	}
 
+	/**
+	 * Updates the manifest such that it contains at least basic properties and the
+	 * dependencies for the API.
+	 * 
+	 * @param manifest
+	 *            the manifest to update
+	 * @return whether the manifest was changed
+	 */
 	private boolean processManifestForProject(final Manifest manifest) {
 		// The dependencies of the API.
 		List<String> dependencies = Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt");
@@ -342,19 +329,6 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		}
 
 		return changedBasics || updatedDependencies;
-	}
-
-	private boolean processManifestForPackage(final Manifest manifest) {
-		// the packages for this API
-		String apiPackageName = (this.packageName.equals("") ? "" : this.packageName + ".") + "api";
-		List<String> exports = Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules");
-
-		boolean updateExports = updateExports(manifest, exports);
-		if (updateExports) {
-			this.log("Updated exports");
-		}
-
-		return updateExports;
 	}
 
 	/**
@@ -383,6 +357,26 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_EXECUTION_ENVIRONMENT,
 				"JavaSE-1.8", AttributeUpdatePolicy.KEEP);
 		return changed;
+	}
+
+	/**
+	 * Updates the exports in the MANIFEST.MF for the API.
+	 * 
+	 * @param the
+	 *            manifest to update
+	 * @return whether the manifest was changed
+	 */
+	private boolean processManifestForPackage(final Manifest manifest) {
+		// the packages for this API
+		String apiPackageName = (this.packageName.equals("") ? "" : this.packageName + ".") + "api";
+		List<String> exports = Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules");
+
+		boolean updateExports = updateExports(manifest, exports);
+		if (updateExports) {
+			this.log("Updated exports");
+		}
+
+		return updateExports;
 	}
 
 	/**

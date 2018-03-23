@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.api.generator
+package org.emoflon.ibex.gt.codegen
 
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
@@ -7,14 +7,13 @@ import java.util.HashSet
 
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
-import org.eclipse.emf.ecore.EClassifier
 import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EEnum
+import org.emoflon.ibex.gt.codegen.EClassifiersManager
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile
 
 import GTLanguage.GTBindingType
 import GTLanguage.GTNode
-import GTLanguage.GTParameter
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
 import java.util.Set
@@ -41,17 +40,17 @@ class JavaFileGenerator {
 	GTRuleSet gtRuleSet
 
 	/**
-	 * The mapping between EClass/EDataType names to MetaModelNames
+	 * Utility to handle the mapping between EClassifier names to meta-model names.
 	 */
-	HashMap<String, String> eClassifierNameToMetaModelName
+	EClassifiersManager eClassifiersManager
 
 	/**
 	 * Creates a new JavaFileGenerator.
 	 */
-	new(String packageName, GTRuleSet gtRuleSet, HashMap<String, String> eClassNameToMetaModelName) {
+	new(String packageName, GTRuleSet gtRuleSet, EClassifiersManager eClassifiersManager) {
 		this.packageName = packageName
 		this.gtRuleSet = gtRuleSet
-		this.eClassifierNameToMetaModelName = eClassNameToMetaModelName
+		this.eClassifiersManager = eClassifiersManager
 	}
 
 	/**
@@ -119,7 +118,7 @@ class JavaFileGenerator {
 		)
 		rules.forEach [
 			imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(it)»''')
-			imports.addAll(getImportsForDataTypes(it.parameters))
+			imports.addAll(this.eClassifiersManager.getImportsForDataTypes(it.parameters))
 		]
 
 		val apiClassName = this.APIClassName
@@ -189,7 +188,7 @@ class JavaFileGenerator {
 	 * Generates the Java Match class for the given rule.
 	 */
 	public def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
-		val imports = getImportsForNodeTypes(rule.graph.nodes.filter[!it.local].toList)
+		val imports = this.eClassifiersManager.getImportsForNodeTypes(rule.graph.nodes.filter[!it.local].toList)
 		imports.add('org.emoflon.ibex.common.operational.IMatch')
 		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch')
 		imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(rule)»''')
@@ -244,8 +243,8 @@ class JavaFileGenerator {
 	public def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
 		val ruleType = if(rule.executable) 'GraphTransformationApplicableRule' else 'GraphTransformationRule'
 		val parameterNodes = rule.graph.nodes.filter[it.bindingType != GTBindingType.CREATE && !it.local].toList
-		val imports = getImportsForNodeTypes(parameterNodes)
-		imports.addAll(getImportsForDataTypes(rule.parameters))
+		val imports = this.eClassifiersManager.getImportsForNodeTypes(parameterNodes)
+		imports.addAll(this.eClassifiersManager.getImportsForDataTypes(rule.parameters))
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
@@ -332,34 +331,6 @@ class JavaFileGenerator {
 			}
 		'''
 		this.writeFile(rulesPackage.getFile(getRuleClassName(rule) + ".java"), ruleSourceCode)
-	}
-
-	/**
-	 * Determines the set of necessary type imports for a set of nodes.
-	 */
-	private def getImportsForNodeTypes(List<GTNode> nodes) {
-		return getImportsForTypes(nodes.map[it.type])
-	}
-
-	/**
-	 * Determines the set of necessary type imports for the parameters.
-	 */
-	private def getImportsForDataTypes(List<GTParameter> parameters) {
-		return getImportsForTypes(parameters.map[it.type])
-	}
-
-	/**
-	 * Determines the set of necessary imports for the given EClassifiers.
-	 */
-	private def getImportsForTypes(List<? extends EClassifier> types) {
-		val imports = newHashSet()
-		types.toSet.forEach [
-			val typePackageName = this.eClassifierNameToMetaModelName.get(it.name)
-			if (typePackageName !== null) {
-				imports.add(typePackageName + '.' + it.name)
-			}
-		]
-		return imports.sortBy[it].toSet
 	}
 
 	/**
