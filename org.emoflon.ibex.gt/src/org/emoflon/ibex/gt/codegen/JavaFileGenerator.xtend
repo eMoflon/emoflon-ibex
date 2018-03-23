@@ -2,31 +2,22 @@ package org.emoflon.ibex.gt.codegen
 
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
-import java.util.HashMap
-import java.util.HashSet
+import java.util.Set
 
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
 import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EEnum
 import org.emoflon.ibex.gt.codegen.EClassifiersManager
-import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile
 
 import GTLanguage.GTBindingType
 import GTLanguage.GTNode
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
-import java.util.Set
-import java.util.List
 
 /**
- * This GTPackageBuilder implements
- * <ul>
- * <li>transforms the editor files into the internal model and IBeXPatterns</li>
- * <li>and generates code for the API.</li>
- * </ul>
- * 
- * Each package is considered as an rule module with an API.
+ * This GTPackageBuilder transforms the editor files into the internal model and IBeXPatterns
+ * and generates code for the API. Each package is considered as an rule module with an own API.
  */
 class JavaFileGenerator {
 	/**
@@ -54,58 +45,6 @@ class JavaFileGenerator {
 	}
 
 	/**
-	 * Generates the README.md file.
-	 */
-	public def generateREADME(IFolder apiPackage, List<IFile> gtFiles, HashSet<String> metaModels,
-		HashMap<String, String> metaModelPackages, HashMap<IFile, GraphTransformationFile> editorModels) {
-		val debugFileContent = '''
-			# «this.packageName»
-			You specified «gtRuleSet.rules.size» rules in «gtFiles.size» files.
-			
-			The generated API is located in `src-gen/«this.packageName».api`.
-			
-			## Meta-Models
-			«FOR metaModel : metaModels»
-				- `«metaModel»` (package `«metaModelPackages.get(metaModel)»`)
-			«ENDFOR»
-			
-			## Rules
-			«FOR file : gtFiles»
-				- File `«file.name»`
-					«FOR rule : editorModels.get(file).rules.filter[!it.abstract]»
-						- rule `«rule.name»`
-					«ENDFOR»
-			«ENDFOR»
-			
-			Note that abstract rules are not included in this list
-				because they cannot be applied directly.
-			
-			## How to specify rules
-			1. Add a meta-model reference.
-			2. Add the meta-model project(s) as dependency to the `META-INF/MANIFEST.MF`,
-				if not done yet (tab *Dependencies* via the button *Add*).
-			3. Define your rules by adding `.gt` files into the package.
-			
-			If there are errors in the specification, you will see this in the editor
-				and the generated API may contain errors as well.
-			
-			### How to use the API in another project
-			1. Add the generated packages `«this.packageName».api`, 
-				`«this.packageName».api.matches` and `«this.packageName».api.rules`
-				to the exported packages of this project
-				(tab *Runtime* > *Exported packages* via the button *Add*).
-			2. Add this project as a dependency of the project in which you want to use the API.
-			3. Create a new API object.
-				 ```
-				 ResourceSet resourceSet = new ResourceSetImpl();
-				 resourceSet.createResource(URI.createFileURI("your-model.xmi"));
-				 return new «this.APIClassName»(new DemoclesGTEngine(), resourceSet);
-				 ```
-		'''
-		this.writeFile(apiPackage.getFile("README.md"), debugFileContent)
-	}
-
-	/**
 	 * Generates the Java API class.
 	 */
 	public def generateAPIJavaFile(IFolder apiPackage, String patternPath) {
@@ -128,7 +67,7 @@ class JavaFileGenerator {
 			«printImports(imports)»
 			
 			/**
-			 * The «apiClassName».
+			 * The «apiClassName» with «gtRuleSet.rules.size» rules.
 			 */
 			public class «apiClassName» extends GraphTransformationAPI {
 				public static String patternPath = "«patternPath»";
@@ -171,7 +110,7 @@ class JavaFileGenerator {
 			«FOR rule : rules»
 				
 					/**
-					 * Creates a new rule «getRuleNameAndParameterString(rule)».
+					 * Creates a new rule «getRuleSignature(rule)».
 					 * 
 					 * @return the created rule
 					 */
@@ -181,7 +120,7 @@ class JavaFileGenerator {
 			«ENDFOR»
 			}
 		'''
-		this.writeFile(apiPackage.getFile(apiClassName + '.java'), apiSourceCode)
+		writeFile(apiPackage.getFile(apiClassName + '.java'), apiSourceCode)
 	}
 
 	/**
@@ -200,7 +139,7 @@ class JavaFileGenerator {
 			«printImports(imports)»
 			
 			/**
-			 * A match for the rule «getRuleNameAndParameterString(rule)».
+			 * A match for the rule «getRuleSignature(rule)».
 			 */
 			public class «getMatchClassName(rule)» extends GraphTransformationMatch<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				«FOR node : signatureNodes»
@@ -234,7 +173,7 @@ class JavaFileGenerator {
 			«ENDFOR»
 			}
 		'''
-		this.writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
+		writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
 	}
 
 	/**
@@ -264,7 +203,7 @@ class JavaFileGenerator {
 			«printImports(imports)»
 			
 			/**
-			 * The rule «getRuleNameAndParameterString(rule)».
+			 * The rule «getRuleSignature(rule)».
 			 */
 			public class «getRuleClassName(rule)» extends «ruleType»<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				private static String ruleName = "«rule.name»";
@@ -330,7 +269,7 @@ class JavaFileGenerator {
 			«ENDFOR»
 			}
 		'''
-		this.writeFile(rulesPackage.getFile(getRuleClassName(rule) + ".java"), ruleSourceCode)
+		writeFile(rulesPackage.getFile(getRuleClassName(rule) + ".java"), ruleSourceCode)
 	}
 
 	/**
@@ -376,7 +315,7 @@ class JavaFileGenerator {
 	/**
 	 * Returns the concatenation of rule name and the list of parameter names.
 	 */
-	private static def getRuleNameAndParameterString(GTRule rule) {
+	private static def getRuleSignature(GTRule rule) {
 		return '''«rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»)'''
 	}
 
@@ -411,7 +350,7 @@ class JavaFileGenerator {
 	/**
 	 * Creates the file containing the content.
 	 */
-	private def writeFile(IFile file, String content) {
+	private static def writeFile(IFile file, String content) {
 		val contentStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))
 		if (file.exists) {
 			file.setContents(contentStream, true, true, null)
