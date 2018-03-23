@@ -24,7 +24,7 @@ class JavaFileGenerator {
 	 * The name of the package.
 	 */
 	String packageName
-	
+
 	/**
 	 * The name of the API class.
 	 */
@@ -66,10 +66,8 @@ class JavaFileGenerator {
 			imports.addAll(this.eClassifiersManager.getImportsForDataTypes(it.parameters))
 		]
 
-		val apiSourceCode = '''
-			package «this.getSubPackageName('api')»;
-			
-			«printImports(imports)»
+		val apiSourceCode = '''			
+			«printHeader(this.getSubPackageName('api'), imports)»
 			
 			/**
 			 * The «apiClassName» with «gtRuleSet.rules.size» rules.
@@ -139,9 +137,7 @@ class JavaFileGenerator {
 
 		val signatureNodes = rule.graph.nodes.filter[!it.local]
 		val matchSourceCode = '''
-			package «this.getSubPackageName('api.matches')»;
-			
-			«printImports(imports)»
+			«printHeader(this.getSubPackageName('api.matches'), imports)»
 			
 			/**
 			 * A match for the rule «getRuleSignature(rule)».
@@ -176,6 +172,16 @@ class JavaFileGenerator {
 						return this.«getVariableName(node)»;
 					}
 			«ENDFOR»
+			
+				@Override
+				public String toString() {
+					String s = "match {" + System.lineSeparator();
+					«FOR node : signatureNodes»
+						s += "	«node.name» --> " + this.«getVariableName(node)» + System.lineSeparator();
+					«ENDFOR»
+					s += "} for " + this.getRule();
+					return s;
+				}
 			}
 		'''
 		writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
@@ -203,9 +209,7 @@ class JavaFileGenerator {
 		}
 
 		val ruleSourceCode = '''
-			package «this.getSubPackageName('api.rules')»;
-			
-			«printImports(imports)»
+			«printHeader(this.getSubPackageName('api.rules'), imports)»
 			
 			/**
 			 * The rule «getRuleSignature(rule)».
@@ -272,16 +276,31 @@ class JavaFileGenerator {
 						return this;
 					}
 			«ENDFOR»
+			
+				@Override
+				public String toString() {
+					String s = "rule " + ruleName + " {" + System.lineSeparator();
+					«FOR node : parameterNodes»
+						s += "	«node.name» --> " + this.parameters.get("«node.name»") + System.lineSeparator();
+					«ENDFOR»
+					«FOR parameter : rule.parameters»
+						s += "	«parameter.name» --> " + this.parameters.get("«parameter.name»") + System.lineSeparator();
+					«ENDFOR»
+					s += "}";
+					return s;
+				}
 			}
 		'''
 		writeFile(rulesPackage.getFile(getRuleClassName(rule) + ".java"), ruleSourceCode)
 	}
 
 	/**
-	 * Sub template for Java import statements
+	 * Sub template for the package declaration and import statements.
 	 */
-	private static def printImports(Set<String> imports) {
+	private static def printHeader(String packageDeclaration, Set<String> imports) {
 		return '''
+			package «packageDeclaration»;
+			
 			«FOR importClass : imports.sortBy[it.toLowerCase]»
 				import «importClass»;
 			«ENDFOR»
