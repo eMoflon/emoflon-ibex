@@ -114,7 +114,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 		// Transform nodes and attributes.
 		InternalGTModelUtils.filterNodesByBindingTypes(gtRule, GTBindingType.CONTEXT, GTBindingType.DELETE)
 				.forEach(gtNode -> {
-					IBeXNode ibexNode = this.transformNode(gtNode);
+					IBeXNode ibexNode = transformNode(gtNode);
 					if (gtNode.isLocal()) {
 						ibexPattern.getLocalNodes().add(ibexNode);
 					} else {
@@ -147,9 +147,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 		// Transform edges.
 		if (useInvocations) {
 			InternalGTModelUtils.filterEdgesByBindingTypes(gtRule, GTBindingType.CONTEXT, GTBindingType.DELETE)
-					.forEach(gtEdge -> {
-						this.transformEdgeToPatternInvocation(gtEdge, ibexPattern);
-					});
+					.forEach(gtEdge -> this.transformEdgeToPatternInvocation(gtEdge, ibexPattern));
 		} else {
 			// No invocations, so include all edges as well.
 			gtRule.getGraph().getEdges().forEach(gtEdge -> {
@@ -249,7 +247,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	 *            the GTNode
 	 * @return the IBeXNode
 	 */
-	private IBeXNode transformNode(final GTNode gtNode) {
+	private static IBeXNode transformNode(final GTNode gtNode) {
 		Objects.requireNonNull(gtNode, "Node must not be null!");
 
 		IBeXNode ibexNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
@@ -310,7 +308,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	 */
 	private void transformRuleToCreatePattern(final GTRule gtRule) {
 		Objects.requireNonNull(gtRule, "rule must not be null!");
-		if (!InternalGTModelUtils.hasElementsOfBindingType(gtRule, GTBindingType.CREATE)) {
+		if (!gtRule.isExecutable()) {
 			return;
 		}
 
@@ -319,7 +317,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 
 		// Transform created nodes.
 		InternalGTModelUtils.filterNodesByBindingTypes(gtRule, GTBindingType.CREATE).forEach(gtNode -> {
-			ibexCreatePattern.getCreatedNodes().add(this.transformNode(gtNode));
+			ibexCreatePattern.getCreatedNodes().add(transformNode(gtNode));
 		});
 
 		// Transform created edges (and their source/target nodes if necessary).
@@ -331,25 +329,34 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 
 		// Transform attribute assignments.
 		gtRule.getGraph().getNodes().forEach(gtNode -> {
-			IBeXNode ibexNode = null;
-			Optional<IBeXNode> ibexNodeOptional = IBeXPatternUtils.findIBeXNodeWithName(
-					ibexCreatePattern.getCreatedNodes(), ibexCreatePattern.getContextNodes(), gtNode.getName());
-			if (ibexNodeOptional.isPresent()) {
-				ibexNode = ibexNodeOptional.get();
-			} else {
-				ibexNode = this.transformNode(gtNode);
-				ibexCreatePattern.getContextNodes().add(ibexNode);
-			}
-
-			for (GTAttributeAssignment gtAssignment : gtNode.getAttributeAssignments()) {
-				IBeXAttributeAssignment ibexAssignment = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeAssignment();
-				ibexAssignment.setNode(ibexNode);
-				ibexAssignment.setType(gtAssignment.getType());
-				ibexAssignment.setValue(gtAssignment.getValue());
-				ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
-			}
+			this.transformAttributeAssignmentsOfNode(gtNode, ibexCreatePattern);
 		});
 		this.ibexCreatePatterns.add(ibexCreatePattern);
+	}
+
+	/**
+	 * Transforms the attribute assignments of the given node and adds them to the
+	 * given create pattern
+	 * 
+	 * @param gtNode
+	 *            the node whose assignments shall be transformed
+	 * @param ibexCreatePattern
+	 *            the create pattern
+	 */
+	private void transformAttributeAssignmentsOfNode(final GTNode gtNode, final IBeXCreatePattern ibexCreatePattern) {
+		if (gtNode.getAttributeAssignments().size() == 0) {
+			return;
+		}
+
+		IBeXNode ibexNode = addIBeXNodeToContextNodes(gtNode, ibexCreatePattern.getCreatedNodes(),
+				ibexCreatePattern.getContextNodes());
+		for (GTAttributeAssignment gtAssignment : gtNode.getAttributeAssignments()) {
+			IBeXAttributeAssignment ibexAssignment = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeAssignment();
+			ibexAssignment.setNode(ibexNode);
+			ibexAssignment.setType(gtAssignment.getType());
+			ibexAssignment.setValue(gtAssignment.getValue());
+			ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
+		}
 	}
 
 	/**
@@ -361,7 +368,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 	 */
 	private void transformRuleToDeletePattern(final GTRule gtRule) {
 		Objects.requireNonNull(gtRule, "rule must not be null!");
-		if (!InternalGTModelUtils.hasElementsOfBindingType(gtRule, GTBindingType.DELETE)) {
+		if (!gtRule.isExecutable()) {
 			return;
 		}
 
@@ -370,7 +377,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 
 		// Transform deleted nodes.
 		InternalGTModelUtils.filterNodesByBindingTypes(gtRule, GTBindingType.DELETE).forEach(gtNode -> {
-			ibexDeletePattern.getDeletedNodes().add(this.transformNode(gtNode));
+			ibexDeletePattern.getDeletedNodes().add(transformNode(gtNode));
 		});
 
 		// Transform deleted edges (and their source/target nodes if necessary).
@@ -405,28 +412,35 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 
 		IBeXEdge ibexEdge = IBeXLanguageFactory.eINSTANCE.createIBeXEdge();
 		ibexEdge.setType(gtEdge.getType());
-
-		Optional<IBeXNode> ibexSourceNode = IBeXPatternUtils.findIBeXNodeWithName(changedNodes, contextNodes,
-				gtEdge.getSourceNode().getName());
-		if (ibexSourceNode.isPresent()) {
-			ibexEdge.setSourceNode(ibexSourceNode.get());
-		} else {
-			IBeXNode node = this.transformNode(gtEdge.getSourceNode());
-			contextNodes.add(node);
-			ibexEdge.setSourceNode(node);
-		}
-
-		Optional<IBeXNode> ibexTargetNode = IBeXPatternUtils.findIBeXNodeWithName(changedNodes, contextNodes,
-				gtEdge.getTargetNode().getName());
-		if (ibexTargetNode.isPresent()) {
-			ibexEdge.setTargetNode(ibexTargetNode.get());
-		} else {
-			IBeXNode node = this.transformNode(gtEdge.getTargetNode());
-			contextNodes.add(node);
-			ibexEdge.setTargetNode(node);
-		}
-
+		ibexEdge.setSourceNode(addIBeXNodeToContextNodes(gtEdge.getSourceNode(), changedNodes, contextNodes));
+		ibexEdge.setTargetNode(addIBeXNodeToContextNodes(gtEdge.getTargetNode(), changedNodes, contextNodes));
 		return ibexEdge;
+	}
+
+	/**
+	 * Searches the IBexNode for the given GTNode within the given node lists. If an
+	 * IBeXNode with the name exists, it is returned, otherwise it created and added
+	 * to the context nodes.
+	 * 
+	 * @param gtNode
+	 *            the GTNode
+	 * @param changedNodes
+	 *            the list of changed nodes of the pattern
+	 * @param contextNodes
+	 *            the list of context nodes of the pattern
+	 * @return the IBeXNode
+	 */
+	private static IBeXNode addIBeXNodeToContextNodes(final GTNode gtNode, final List<IBeXNode> changedNodes,
+			final List<IBeXNode> contextNodes) {
+		Optional<IBeXNode> existingNode = IBeXPatternUtils.findIBeXNodeWithName(changedNodes, contextNodes,
+				gtNode.getName());
+		if (existingNode.isPresent()) {
+			return existingNode.get();
+		} else {
+			IBeXNode node = transformNode(gtNode);
+			contextNodes.add(node);
+			return node;
+		}
 	}
 
 	/**

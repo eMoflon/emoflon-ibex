@@ -1,5 +1,6 @@
 package org.emoflon.ibex.common.operational;
 
+import java.util.Map;
 import java.util.Optional;
 
 import IBeXLanguage.IBeXCreatePattern;
@@ -17,5 +18,5 @@ public interface ICreatePatternInterpreter {
 	 *            the match
 	 * @return the co-match
 	 */
-	Optional<IMatch> apply(IBeXCreatePattern createPattern, IMatch match);
+	Optional<IMatch> apply(IBeXCreatePattern createPattern, IMatch match, Map<String, Object> parameters);
 }

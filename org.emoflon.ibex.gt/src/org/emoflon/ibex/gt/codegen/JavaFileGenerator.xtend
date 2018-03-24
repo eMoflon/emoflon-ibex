@@ -1,33 +1,23 @@
-package org.emoflon.ibex.gt.api.generator
+package org.emoflon.ibex.gt.codegen
 
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
-import java.util.HashMap
-import java.util.HashSet
+import java.util.Set
 
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
-import org.eclipse.emf.ecore.EClassifier
+import org.eclipse.core.runtime.IPath
 import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EEnum
-import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile
+import org.emoflon.ibex.gt.codegen.EClassifiersManager
 
 import GTLanguage.GTBindingType
 import GTLanguage.GTNode
-import GTLanguage.GTParameter
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
-import java.util.Set
-import java.util.List
 
 /**
- * This GTPackageBuilder implements
- * <ul>
- * <li>transforms the editor files into the internal model and IBeXPatterns</li>
- * <li>and generates code for the API.</li>
- * </ul>
- * 
- * Each package is considered as an rule module with an API.
+ * This class contains the templates for the API Java classes.
  */
 class JavaFileGenerator {
 	/**
@@ -36,74 +26,28 @@ class JavaFileGenerator {
 	String packageName
 
 	/**
+	 * The prefix for the API class name.
+	 */
+	String classNamePrefix
+
+	/**
 	 * The graph transformation rules as instance of the internal GT model.
 	 */
 	GTRuleSet gtRuleSet
 
 	/**
-	 * The mapping between EClass/EDataType names to MetaModelNames
+	 * Utility to handle the mapping between EClassifier names to meta-model names.
 	 */
-	HashMap<String, String> eClassifierNameToMetaModelName
+	EClassifiersManager eClassifiersManager
 
 	/**
 	 * Creates a new JavaFileGenerator.
 	 */
-	new(String packageName, GTRuleSet gtRuleSet, HashMap<String, String> eClassNameToMetaModelName) {
+	new(IPath packagePath, String packageName, GTRuleSet gtRuleSet, EClassifiersManager eClassifiersManager) {
+		this.classNamePrefix = packagePath.lastSegment.toFirstUpper
 		this.packageName = packageName
 		this.gtRuleSet = gtRuleSet
-		this.eClassifierNameToMetaModelName = eClassNameToMetaModelName
-	}
-
-	/**
-	 * Generates the README.md file.
-	 */
-	public def generateREADME(IFolder apiPackage, List<IFile> gtFiles, HashSet<String> metaModels,
-		HashMap<String, String> metaModelPackages, HashMap<IFile, GraphTransformationFile> editorModels) {
-		val debugFileContent = '''
-			# «this.packageName»
-			You specified «gtRuleSet.rules.size» rules in «gtFiles.size» files.
-			
-			The generated API is located in `src-gen/«this.packageName».api`.
-			
-			## Meta-Models
-			«FOR metaModel : metaModels»
-				- `«metaModel»` (package `«metaModelPackages.get(metaModel)»`)
-			«ENDFOR»
-			
-			## Rules
-			«FOR file : gtFiles»
-				- File `«file.name»`
-					«FOR rule : editorModels.get(file).rules.filter[!it.abstract]»
-						- rule `«rule.name»`
-					«ENDFOR»
-			«ENDFOR»
-			
-			Note that abstract rules are not included in this list
-				because they cannot be applied directly.
-			
-			## How to specify rules
-			1. Add a meta-model reference.
-			2. Add the meta-model project(s) as dependency to the `META-INF/MANIFEST.MF`,
-				if not done yet (tab *Dependencies* via the button *Add*).
-			3. Define your rules by adding `.gt` files into the package.
-			
-			If there are errors in the specification, you will see this in the editor
-				and the generated API may contain errors as well.
-			
-			### How to use the API in another project
-			1. Add the generated packages `«this.packageName».api`, 
-				`«this.packageName».api.matches` and `«this.packageName».api.rules`
-				to the exported packages of this project
-				(tab *Runtime* > *Exported packages* via the button *Add*).
-			2. Add this project as a dependency of the project in which you want to use the API.
-			3. Create a new API object.
-				 ```
-				 ResourceSet resourceSet = new ResourceSetImpl();
-				 resourceSet.createResource(URI.createFileURI("your-model.xmi"));
-				 return new «this.APIClassName»(new DemoclesGTEngine(), resourceSet);
-				 ```
-		'''
-		this.writeFile(apiPackage.getFile("README.md"), debugFileContent)
+		this.eClassifiersManager = eClassifiersManager
 	}
 
 	/**
@@ -119,23 +63,20 @@ class JavaFileGenerator {
 		)
 		rules.forEach [
 			imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(it)»''')
-			imports.addAll(getImportsForDataTypes(it.parameters))
+			imports.addAll(this.eClassifiersManager.getImportsForDataTypes(it.parameters))
 		]
 
-		val apiClassName = this.APIClassName
-		val apiSourceCode = '''
-			package «this.getSubPackageName('api')»;
-			
-			«printImports(imports)»
+		val apiSourceCode = '''			
+			«printHeader(this.getSubPackageName('api'), imports)»
 			
 			/**
-			 * The «apiClassName».
+			 * The «APIClassName» with «gtRuleSet.rules.size» rules.
 			 */
-			public class «apiClassName» extends GraphTransformationAPI {
+			public class «APIClassName» extends GraphTransformationAPI {
 				public static String patternPath = "«patternPath»";
 			
 				/**
-				 * Creates a new «apiClassName».
+				 * Creates a new «APIClassName».
 				 *
 				 * The are loaded from the default pattern path.
 				 *
@@ -144,14 +85,14 @@ class JavaFileGenerator {
 				 * @param model
 				 *            the resource set containing the model file
 				 */
-				public «apiClassName»(final IContextPatternInterpreter engine, final ResourceSet model) {
+				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model) {
 					super(engine, model);
 					URI uri = URI.createURI("../" + patternPath);
 					this.interpreter.loadPatternSet(uri);
 				}
 			
 				/**
-				 * Creates a new «apiClassName».
+				 * Creates a new «APIClassName».
 				 *
 				 * The are loaded from the pattern path (the given workspace path concatenated
 				 * with the project relative path to the pattern file).
@@ -163,7 +104,7 @@ class JavaFileGenerator {
 				 * @param workspacePath
 				 *            the path to the workspace
 				 */
-				public «apiClassName»(final IContextPatternInterpreter engine, final ResourceSet model,
+				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model,
 						final String workspacePath) {
 					super(engine, model);
 					URI uri = URI.createURI(workspacePath + patternPath);
@@ -172,7 +113,7 @@ class JavaFileGenerator {
 			«FOR rule : rules»
 				
 					/**
-					 * Creates a new rule «getRuleNameAndParameterString(rule)».
+					 * Creates a new rule «getRuleSignature(rule)».
 					 * 
 					 * @return the created rule
 					 */
@@ -182,26 +123,143 @@ class JavaFileGenerator {
 			«ENDFOR»
 			}
 		'''
-		this.writeFile(apiPackage.getFile(apiClassName + '.java'), apiSourceCode)
+		writeFile(apiPackage.getFile(APIClassName + '.java'), apiSourceCode)
+	}
+
+	/**
+	 * Generates the Java App class.
+	 */
+	public def generateAppJavaFile(IFolder apiPackage) {
+		val imports = this.eClassifiersManager.importsForPackages
+		imports.addAll(
+			'java.io.IOException',
+			'java.util.Objects',
+			'java.util.Optional',
+			'org.eclipse.emf.common.util.URI',
+			'org.eclipse.emf.ecore.EPackage.Registry',
+			'org.eclipse.emf.ecore.resource.Resource',
+			'org.eclipse.emf.ecore.resource.ResourceSet',
+			'org.eclipse.emf.ecore.resource.impl.ResourceSetImpl',
+			'org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl',
+			'org.emoflon.ibex.common.operational.IContextPatternInterpreter'
+		)
+		val appClassName = this.classNamePrefix + 'App'
+		val appSourceCode = '''
+			«printHeader(this.getSubPackageName('api'), imports)»
+			
+			/**
+			 * An application using the «this.APIClassName».
+			 */
+			public abstract class «appClassName» {
+				/**
+				 * The resource set.
+				 */
+				private ResourceSet resourceSet = new ResourceSetImpl();
+			
+				/**
+				 * The workspace path.
+				 */
+				private Optional<String> workspacePath = Optional.empty();
+			
+				/**
+				 * Creates the model file with the given URI.
+				 * 
+				 * @param uri
+				 *            the URI of the model file
+				 * @return the resource set
+				 */
+				protected ResourceSet createModel(final URI uri) {
+					this.prepareResourceSet();
+					resourceSet.createResource(uri);
+					return resourceSet;
+				}
+			
+				/**
+				 * Loads the model file with the given URI.
+				 * 
+				 * @param uri
+				 *            the URI of the model file
+				 * @return the resource set
+				 */
+				protected ResourceSet loadModel(final URI uri) {
+					this.prepareResourceSet();
+					resourceSet.getResource(uri, true);
+					return resourceSet;
+				}
+			
+				/**
+				 * Initializes the package registry of the resource set.
+				 */
+				private void prepareResourceSet() {
+					Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+					reg.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+			
+					Registry packageRegistry = resourceSet.getPackageRegistry();
+					«FOR p : this.eClassifiersManager.packages»
+						packageRegistry.put(«p».eNS_URI, «p».eINSTANCE);
+					«ENDFOR»
+				}
+			
+				/**
+				 * Sets the workspace path to the given path.
+				 * 
+				 * @param workspacePath
+				 *            the workspace path to set
+				 */
+				protected void setWorkspacePath(final String workspacePath) {
+					Objects.requireNonNull(workspacePath, "The workspace path must not be null!");
+					this.workspacePath = Optional.of(workspacePath);
+				}
+			
+				/**
+				 * Creates a new «this.APIClassName».
+				 * 
+				 * @param engine
+				 *            the pattern matching engine to use
+				 * @return the created API
+				 */
+				protected «this.APIClassName» initAPI(final IContextPatternInterpreter engine) {
+					Objects.requireNonNull(workspacePath, "The engine must not be null!");
+					if (workspacePath.isPresent()) {
+						return new «this.APIClassName»(engine, this.resourceSet, workspacePath.get());
+					} else {
+						return new «this.APIClassName»(engine, this.resourceSet);
+					}
+				}
+			
+				/**
+				 * Saves all resources in the resource set.
+				 * 
+				 * @throws IOException
+				 *             if an IOException is thrown on save
+				 */
+				protected void saveResourceSet() throws IOException {
+					for (Resource resource : resourceSet.getResources()) {
+						resource.save(null);
+					}
+				}
+			}
+		'''
+		writeFile(apiPackage.getFile(appClassName + '.java'), appSourceCode)
 	}
 
 	/**
 	 * Generates the Java Match class for the given rule.
 	 */
 	public def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
-		val imports = getImportsForNodeTypes(rule.graph.nodes.filter[!it.local].toList)
-		imports.add('org.emoflon.ibex.common.operational.IMatch')
-		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch')
-		imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(rule)»''')
+		val imports = this.eClassifiersManager.getImportsForNodeTypes(rule.graph.nodes.filter[!it.local].toList)
+		imports.addAll(
+			'org.emoflon.ibex.common.operational.IMatch',
+			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
+			'''«this.getSubPackageName('api.rules')».«getRuleClassName(rule)»'''
+		)
 
 		val signatureNodes = rule.graph.nodes.filter[!it.local]
 		val matchSourceCode = '''
-			package «this.getSubPackageName('api.matches')»;
-			
-			«printImports(imports)»
+			«printHeader(this.getSubPackageName('api.matches'), imports)»
 			
 			/**
-			 * A match for the rule «getRuleNameAndParameterString(rule)».
+			 * A match for the rule «getRuleSignature(rule)».
 			 */
 			public class «getMatchClassName(rule)» extends GraphTransformationMatch<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				«FOR node : signatureNodes»
@@ -233,9 +291,19 @@ class JavaFileGenerator {
 						return this.«getVariableName(node)»;
 					}
 			«ENDFOR»
+			
+				@Override
+				public String toString() {
+					String s = "match {" + System.lineSeparator();
+					«FOR node : signatureNodes»
+						s += "	«node.name» --> " + this.«getVariableName(node)» + System.lineSeparator();
+					«ENDFOR»
+					s += "} for " + this.getRule();
+					return s;
+				}
 			}
 		'''
-		this.writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
+		writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
 	}
 
 	/**
@@ -244,8 +312,8 @@ class JavaFileGenerator {
 	public def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
 		val ruleType = if(rule.executable) 'GraphTransformationApplicableRule' else 'GraphTransformationRule'
 		val parameterNodes = rule.graph.nodes.filter[it.bindingType != GTBindingType.CREATE && !it.local].toList
-		val imports = getImportsForNodeTypes(parameterNodes)
-		imports.addAll(getImportsForDataTypes(rule.parameters))
+		val imports = this.eClassifiersManager.getImportsForNodeTypes(parameterNodes)
+		imports.addAll(this.eClassifiersManager.getImportsForDataTypes(rule.parameters))
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
@@ -260,12 +328,10 @@ class JavaFileGenerator {
 		}
 
 		val ruleSourceCode = '''
-			package «this.getSubPackageName('api.rules')»;
-			
-			«printImports(imports)»
+			«printHeader(this.getSubPackageName('api.rules'), imports)»
 			
 			/**
-			 * The rule «getRuleNameAndParameterString(rule)».
+			 * The rule «getRuleSignature(rule)».
 			 */
 			public class «getRuleClassName(rule)» extends «ruleType»<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				private static String ruleName = "«rule.name»";
@@ -329,48 +395,42 @@ class JavaFileGenerator {
 						return this;
 					}
 			«ENDFOR»
+			
+				@Override
+				public String toString() {
+					String s = "rule " + ruleName + " {" + System.lineSeparator();
+					«FOR node : parameterNodes»
+						s += "	«node.name» --> " + this.parameters.get("«node.name»") + System.lineSeparator();
+					«ENDFOR»
+					«FOR parameter : rule.parameters»
+						s += "	«parameter.name» --> " + this.parameters.get("«parameter.name»") + System.lineSeparator();
+					«ENDFOR»
+					s += "}";
+					return s;
+				}
 			}
 		'''
-		this.writeFile(rulesPackage.getFile(getRuleClassName(rule) + ".java"), ruleSourceCode)
+		writeFile(rulesPackage.getFile(getRuleClassName(rule) + ".java"), ruleSourceCode)
 	}
 
 	/**
-	 * Determines the set of necessary type imports for a set of nodes.
+	 * Sub template for the package declaration and import statements.
 	 */
-	private def getImportsForNodeTypes(List<GTNode> nodes) {
-		return getImportsForTypes(nodes.map[it.type])
-	}
-
-	/**
-	 * Determines the set of necessary type imports for the parameters.
-	 */
-	private def getImportsForDataTypes(List<GTParameter> parameters) {
-		return getImportsForTypes(parameters.map[it.type])
-	}
-
-	/**
-	 * Determines the set of necessary imports for the given EClassifiers.
-	 */
-	private def getImportsForTypes(List<? extends EClassifier> types) {
-		val imports = newHashSet()
-		types.toSet.forEach [
-			val typePackageName = this.eClassifierNameToMetaModelName.get(it.name)
-			if (typePackageName !== null) {
-				imports.add(typePackageName + '.' + it.name)
-			}
-		]
-		return imports.sortBy[it].toSet
-	}
-
-	/**
-	 * Sub template for Java import statements
-	 */
-	private static def printImports(Set<String> imports) {
+	private static def printHeader(String packageDeclaration, Set<String> imports) {
 		return '''
+			package «packageDeclaration»;
+			
 			«FOR importClass : imports.sortBy[it.toLowerCase]»
 				import «importClass»;
 			«ENDFOR»
 		'''
+	}
+
+	/**
+	 * Returns the name of the API class.
+	 */
+	private def getAPIClassName() {
+		return this.classNamePrefix + "API"
 	}
 
 	/**
@@ -379,13 +439,6 @@ class JavaFileGenerator {
 	private def getSubPackageName(String subPackage) {
 		val dot = if(this.packageName.equals("")) "" else "."
 		return '''«this.packageName»«dot»«subPackage»'''
-	}
-
-	/**
-	 * Returns the name of the API class.
-	 */
-	private def getAPIClassName() {
-		return this.packageName.replace('.', '').toFirstUpper + "API"
 	}
 
 	/**
@@ -405,7 +458,7 @@ class JavaFileGenerator {
 	/**
 	 * Returns the concatenation of rule name and the list of parameter names.
 	 */
-	private static def getRuleNameAndParameterString(GTRule rule) {
+	private static def getRuleSignature(GTRule rule) {
 		return '''«rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»)'''
 	}
 
@@ -440,7 +493,7 @@ class JavaFileGenerator {
 	/**
 	 * Creates the file containing the content.
 	 */
-	private def writeFile(IFile file, String content) {
+	private static def writeFile(IFile file, String content) {
 		val contentStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))
 		if (file.exists) {
 			file.setContents(contentStream, true, true, null)

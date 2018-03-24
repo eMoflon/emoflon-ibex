@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?><!--
 --><plugin>
   <extension point="org.emoflon.ibex.gt.editor.ui.GTBuilderExtension">
-    <builder_extension class="org.emoflon.ibex.gt.api.generator.GTPackageBuilder"/>
+    <builder_extension class="org.emoflon.ibex.gt.codegen.GTPackageBuilder"/>
   </extension>
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="GTLanguage.GTLanguagePackage" genModel="model/Gt.genmodel" uri="platform:/resource/org.emoflon.ibex.gt/model/Gt.ecore"/>

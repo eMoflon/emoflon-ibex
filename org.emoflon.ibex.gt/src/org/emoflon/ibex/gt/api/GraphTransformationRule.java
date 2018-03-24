@@ -15,8 +15,9 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 /**
  * This is the abstraction for all rules.
  * 
- * Concrete Implementations must have a constructor to set the parameters
- * required for finding matches and getters for all parameters.
+ * Concrete Implementations must have a constructor and methods which set the
+ * parameters required for finding matches. In addition methods for to bind
+ * context and deleted nodes to a specific value must be provided.
  * 
  * @param <M>
  *            the type of matches returned by this rule

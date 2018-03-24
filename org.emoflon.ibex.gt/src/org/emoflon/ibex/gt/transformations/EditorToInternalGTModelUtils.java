@@ -61,19 +61,44 @@ public class EditorToInternalGTModelUtils {
 	}
 
 	/**
+	 * Checks whether the editor rule contains at least one created or deleted node.
+	 * 
+	 * @param editorRule
+	 *            the editor rule
+	 * @return true if the rule contains a created or deleted node.
+	 */
+	public static boolean hasCreatedOrDeletedNode(final Rule editorRule) {
+		return editorRule.getNodes().stream() //
+				.anyMatch(node -> node.getOperator() != Operator.CONTEXT);
+	}
+
+	/**
+	 * Checks whether the editor rule contains at least one created or deleted
+	 * reference.
+	 * 
+	 * @param editorRule
+	 *            the editor rule
+	 * @return true if the rule contains a created or deleted reference.
+	 */
+	public static boolean hasCreatedOrDeletedReference(final Rule editorRule) {
+		return editorRule.getNodes().stream() //
+				.map(node -> node.getReferences()) //
+				.flatMap(references -> references.stream())
+				.anyMatch(reference -> reference.getOperator() != Operator.CONTEXT);
+	}
+
+	/**
 	 * Checks whether the editor rule contains at least one operator node or
 	 * reference.
 	 * 
 	 * @param editorRule
 	 *            the editor rule
-	 * @return true if the rule contains an operator node.
+	 * @return true if the rule contains an attribute assignment.
 	 */
-	public static boolean hasOperatorNodeOrReference(final Rule editorRule) {
-		boolean hasOperatorNode = editorRule.getNodes().stream() //
-				.anyMatch(node -> node.getOperator() != Operator.CONTEXT);
-		return hasOperatorNode || editorRule.getNodes().stream() //
-				.map(node -> node.getReferences()) //
-				.flatMap(references -> references.stream())
-				.anyMatch(reference -> reference.getOperator() != Operator.CONTEXT);
+	public static boolean hasAttributeAssignment(final Rule editorRule) {
+		return editorRule.getNodes().stream() //
+				.map(node -> node.getAttributes()) //
+				.flatMap(attributes -> attributes.stream()) //
+				.anyMatch(attribute -> attribute.getRelation() == Relation.ASSIGNMENT);
 	}
 }
