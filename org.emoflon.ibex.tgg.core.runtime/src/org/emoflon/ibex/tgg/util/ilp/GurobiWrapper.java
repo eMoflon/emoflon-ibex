@@ -1,11 +1,7 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import gurobi.GRB;
 import gurobi.GRB.DoubleAttr;
@@ -39,15 +35,6 @@ final class GurobiWrapper extends ILPSolver {
 	 * This setting defines the variable range of variables registered at Gurobi
 	 */
 	private final boolean onlyBinaryVariables;
-	
-	/**
-	 * Set of constraints that have been defined using addConstraint
-	 */
-	private final Set<GurobiConstraint> constraints = new HashSet<>();
-	/**
-	 * The objective function that has been defined using setObjective
-	 */
-	private GurobiObjective objective = null;
 
 	/**
 	 * Creates a new Gurobi ILP solver
@@ -82,26 +69,16 @@ final class GurobiWrapper extends ILPSolver {
 	}
 
 	@Override
-	public void addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
-		this.constraints.add(new GurobiConstraint(linearExpression, comparator, value, name));
+	public ILPConstraint addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
+		GurobiConstraint constr = new GurobiConstraint(linearExpression, comparator, value, name);
+		this.addConstraint(constr);
+		return constr;
 	}
 	
 	@Override
-	public Collection<ILPConstraint> getConstraints() {
-		return Collections.unmodifiableSet(constraints);
-	}
-	
-	@Override
-	public void setObjective(ILPLinearExpression linearExpression, Operation operation) {
-		if(objective == null) {
-			objective = new GurobiObjective(linearExpression, operation);
-		} else {
-			throw new UnsupportedOperationException("The objective function has already been set");
-		}
-	}
-
-	@Override
-	public ILPObjective getObjective() {
+	public ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation) {
+		GurobiObjective objective = new GurobiObjective(linearExpression, operation);
+		this.setObjective(objective);
 		return objective;
 	}
 
@@ -113,10 +90,10 @@ final class GurobiWrapper extends ILPSolver {
 		for(String variableName : this.getVariables()) {
 			this.registerVariable(variableName);
 		}
-		for(GurobiConstraint constraint : this.constraints) {
-			constraint.registerConstraint();
+		for(ILPConstraint constraint : this.getConstraints()) {
+			((GurobiConstraint) constraint).registerConstraint();
 		}
-		objective.registerObjective();
+		((GurobiObjective) this.getObjective()).registerObjective();
 	
 		model.optimize();
 		Map<String, Integer> solutionVariables = new HashMap<>();
@@ -155,10 +132,6 @@ final class GurobiWrapper extends ILPSolver {
 		 */
 		private final char gurobiComparator;
 		/**
-		 * Name of the constraint
-		 */
-		private final String name;
-		/**
 		 * Creates a Gurobi constraint
 		 * @param linearExpression	The linear expression of the constraint (left side of the inequation)
 		 * @param comparator		Comparator (e.g. <=)
@@ -166,7 +139,7 @@ final class GurobiWrapper extends ILPSolver {
 		 * @param name				Hte name of the constraint
 		 */
 		private GurobiConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
-			super(linearExpression, comparator, value);
+			super(linearExpression, comparator, value, name);
 			switch(comparator) {
 			case eq:
 				gurobiComparator = GRB.EQUAL;
@@ -180,7 +153,6 @@ final class GurobiWrapper extends ILPSolver {
 			default:
 				throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
 			}
-			this.name = name;
 		}
 		
 		/**
