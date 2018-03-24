@@ -13,6 +13,7 @@ import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 
+import IBeXLanguage.IBeXAttributeAssignment;
 import IBeXLanguage.IBeXAttributeParameter;
 import IBeXLanguage.IBeXAttributeValue;
 import IBeXLanguage.IBeXConstant;
@@ -37,7 +38,7 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 
 	@Override
 	public Optional<IMatch> apply(final IBeXCreatePattern createPattern, final IMatch match,
-			Map<String, Object> parameters) {
+			final Map<String, Object> parameters) {
 		// Create nodes and edges.
 		createPattern.getCreatedNodes().forEach(node -> {
 			EObject newNode = EcoreUtil.create(node.getType());
@@ -52,29 +53,34 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 
 		// Assign attributes.
 		createPattern.getAttributeAssignments().forEach(assignment -> {
-			EObject object = (EObject) match.get(assignment.getNode().getName());
-			EAttribute attribute = assignment.getType();
-			IBeXAttributeValue value = assignment.getValue();
-			if (value instanceof IBeXConstant) {
-				object.eSet(attribute, ((IBeXConstant) value).getValue());
-			}
-			if (value instanceof IBeXEnumLiteral) {
-				EEnumLiteral enumLiteral = ((IBeXEnumLiteral) value).getLiteral();
-				// Need to get actual Java instance. Cannot pass EnumLiteral here!
-				Enumerator instance = enumLiteral.getInstance();
-				if (instance == null) {
-					throw new IllegalArgumentException("Missing object for " + enumLiteral);
-				}
-				object.eSet(attribute, instance);
-			}
-			if (value instanceof IBeXAttributeParameter) {
-				String parameterName = ((IBeXAttributeParameter) value).getName();
-				if (!parameters.containsKey(parameterName)) {
-					throw new IllegalArgumentException("Missing required parameter " + parameterName);
-				}
-				object.eSet(attribute, parameters.get(parameterName));
-			}
+			assignAttribute(assignment, match, parameters);
 		});
 		return Optional.of(match);
+	}
+
+	private static void assignAttribute(final IBeXAttributeAssignment assignment, final IMatch match,
+			final Map<String, Object> parameters) {
+		EObject object = (EObject) match.get(assignment.getNode().getName());
+		EAttribute attribute = assignment.getType();
+		IBeXAttributeValue value = assignment.getValue();
+		if (value instanceof IBeXConstant) {
+			object.eSet(attribute, ((IBeXConstant) value).getValue());
+		}
+		if (value instanceof IBeXEnumLiteral) {
+			EEnumLiteral enumLiteral = ((IBeXEnumLiteral) value).getLiteral();
+			// Need to get actual Java instance. Cannot pass EnumLiteral here!
+			Enumerator instance = enumLiteral.getInstance();
+			if (instance == null) {
+				throw new IllegalArgumentException("Missing object for " + enumLiteral);
+			}
+			object.eSet(attribute, instance);
+		}
+		if (value instanceof IBeXAttributeParameter) {
+			String parameterName = ((IBeXAttributeParameter) value).getName();
+			if (!parameters.containsKey(parameterName)) {
+				throw new IllegalArgumentException("Missing required parameter " + parameterName);
+			}
+			object.eSet(attribute, parameters.get(parameterName));
+		}
 	}
 }
