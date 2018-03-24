@@ -331,28 +331,42 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 
 		// Transform attribute assignments.
 		gtRule.getGraph().getNodes().forEach(gtNode -> {
-			if (gtNode.getAttributeAssignments().size() > 0) {
-				IBeXNode ibexNode = null;
-				Optional<IBeXNode> ibexNodeOptional = IBeXPatternUtils.findIBeXNodeWithName(
-						ibexCreatePattern.getCreatedNodes(), ibexCreatePattern.getContextNodes(), gtNode.getName());
-				if (ibexNodeOptional.isPresent()) {
-					ibexNode = ibexNodeOptional.get();
-				} else {
-					ibexNode = this.transformNode(gtNode);
-					ibexCreatePattern.getContextNodes().add(ibexNode);
-				}
-
-				for (GTAttributeAssignment gtAssignment : gtNode.getAttributeAssignments()) {
-					IBeXAttributeAssignment ibexAssignment = IBeXLanguageFactory.eINSTANCE
-							.createIBeXAttributeAssignment();
-					ibexAssignment.setNode(ibexNode);
-					ibexAssignment.setType(gtAssignment.getType());
-					ibexAssignment.setValue(gtAssignment.getValue());
-					ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
-				}
-			}
+			this.transformAttributeAssignmentsOfNode(gtNode, ibexCreatePattern);
 		});
 		this.ibexCreatePatterns.add(ibexCreatePattern);
+	}
+
+	/**
+	 * Transforms the attribute assignments of the given node and adds them to the
+	 * given create pattern
+	 * 
+	 * @param gtNode
+	 *            the node whose assignments shall be transformed
+	 * @param ibexCreatePattern
+	 *            the create pattern
+	 */
+	private void transformAttributeAssignmentsOfNode(final GTNode gtNode, final IBeXCreatePattern ibexCreatePattern) {
+		if (gtNode.getAttributeAssignments().size() == 0) {
+			return;
+		}
+
+		IBeXNode ibexNode = null;
+		Optional<IBeXNode> ibexNodeOptional = IBeXPatternUtils.findIBeXNodeWithName(ibexCreatePattern.getCreatedNodes(),
+				ibexCreatePattern.getContextNodes(), gtNode.getName());
+		if (ibexNodeOptional.isPresent()) {
+			ibexNode = ibexNodeOptional.get();
+		} else {
+			ibexNode = this.transformNode(gtNode);
+			ibexCreatePattern.getContextNodes().add(ibexNode);
+		}
+
+		for (GTAttributeAssignment gtAssignment : gtNode.getAttributeAssignments()) {
+			IBeXAttributeAssignment ibexAssignment = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeAssignment();
+			ibexAssignment.setNode(ibexNode);
+			ibexAssignment.setType(gtAssignment.getType());
+			ibexAssignment.setValue(gtAssignment.getValue());
+			ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
+		}
 	}
 
 	/**
