@@ -96,8 +96,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		IFolder apiPackage = this.ensureSourceGenPackageExists();
 
 		// Load files into editor models.
-		HashMap<IFile, GraphTransformationFile> editorModels = new HashMap<IFile, GraphTransformationFile>();
 		XtextResourceSet resourceSet = new XtextResourceSet();
+		Map<IFile, GraphTransformationFile> editorModels = new HashMap<IFile, GraphTransformationFile>();
 		Set<String> metaModels = new HashSet<String>();
 		this.getFiles().forEach(gtFile -> {
 			URI uri = URI.createPlatformResourceURI(gtFile.getFullPath().toString(), true);
@@ -111,26 +111,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		EcoreUtil.resolveAll(resourceSet);
 
 		// Transform editor models to rules of the internal GT model.
-		GTRuleSet gtRuleSet = null;
-		EditorToInternalGTModelTransformation editor2internal = new EditorToInternalGTModelTransformation();
-		for (final IFile gtFile : editorModels.keySet()) {
-			gtRuleSet = editor2internal.transform(editorModels.get(gtFile));
-			if (editor2internal.hasErrors()) {
-				this.logError(String.format("%s errors during editor to internal model transformation of file %s",
-						editor2internal.countErrors(), gtFile.getName()));
-				editor2internal.getErrors().forEach(e -> this.logError(e));
-			}
-		}
+		GTRuleSet gtRuleSet = this.transformModels(editorModels);
 		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
 
 		// Transform rules into IBeXPatterns.
-		InternalGTModelToIBeXPatternTransformation internalToPatterns = new InternalGTModelToIBeXPatternTransformation();
-		IBeXPatternSet ibexPatternSet = internalToPatterns.transform(gtRuleSet);
-		if (internalToPatterns.hasErrors()) {
-			this.logError(String.format("%s errors during internal model to pattern transformation",
-					internalToPatterns.countErrors()));
-			internalToPatterns.getErrors().forEach(e -> this.logError(e));
-		}
+		IBeXPatternSet ibexPatternSet = this.transformToIBeXPatterns(gtRuleSet);
 		this.saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
 
 		// Generate the Java code.
@@ -229,6 +214,46 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			}
 		});
 		return eClassifiersManager;
+	}
+
+	/**
+	 * Transforms the editor models into a GTRuleSet and IBeXPatterns.
+	 * 
+	 * @param editorModels
+	 *            the editor files and models
+	 * @return the graph transformation rules
+	 */
+	private GTRuleSet transformModels(final Map<IFile, GraphTransformationFile> editorModels) {
+		// Transform editor models to rules of the internal GT model.
+		GTRuleSet gtRuleSet = null;
+		EditorToInternalGTModelTransformation editor2internal = new EditorToInternalGTModelTransformation();
+		for (final IFile gtFile : editorModels.keySet()) {
+			gtRuleSet = editor2internal.transform(editorModels.get(gtFile));
+			if (editor2internal.hasErrors()) {
+				this.logError(String.format("%s errors during editor to internal model transformation of file %s",
+						editor2internal.countErrors(), gtFile.getName()));
+				editor2internal.getErrors().forEach(e -> this.logError(e));
+			}
+		}
+		return gtRuleSet;
+	}
+
+	/**
+	 * Transforms the given rules into IBeXPatterns.
+	 * 
+	 * @param gtRuleSet
+	 *            the graph transformation rules
+	 * @return the IBeXPatterns
+	 */
+	private IBeXPatternSet transformToIBeXPatterns(final GTRuleSet gtRuleSet) {
+		InternalGTModelToIBeXPatternTransformation internalToPatterns = new InternalGTModelToIBeXPatternTransformation();
+		IBeXPatternSet ibexPatternSet = internalToPatterns.transform(gtRuleSet);
+		if (internalToPatterns.hasErrors()) {
+			this.logError(String.format("%s errors during internal model to pattern transformation",
+					internalToPatterns.countErrors()));
+			internalToPatterns.getErrors().forEach(e -> this.logError(e));
+		}
+		return ibexPatternSet;
 	}
 
 	/**
