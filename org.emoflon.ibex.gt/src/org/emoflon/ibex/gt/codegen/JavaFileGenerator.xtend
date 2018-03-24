@@ -130,13 +130,12 @@ class JavaFileGenerator {
 	 * Generates the Java App class.
 	 */
 	public def generateAppJavaFile(IFolder apiPackage) {
-		val imports = newHashSet(
+		val imports = this.eClassifiersManager.importsForPackages
+		imports.addAll(
 			'java.io.IOException',
-			'java.util.Map',
 			'java.util.Objects',
 			'java.util.Optional',
 			'org.eclipse.emf.common.util.URI',
-			'org.eclipse.emf.ecore.EPackage',
 			'org.eclipse.emf.ecore.EPackage.Registry',
 			'org.eclipse.emf.ecore.resource.Resource',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
@@ -161,11 +160,6 @@ class JavaFileGenerator {
 				 * The workspace path.
 				 */
 				private Optional<String> workspacePath = Optional.empty();
-			
-				/**
-				 * Returns the mapping between the meta-model namespace and the EPackage.
-				 */
-				protected abstract Map<String, EPackage> getMetaModelPackages();
 			
 				/**
 				 * Creates the model file with the given URI.
@@ -201,7 +195,9 @@ class JavaFileGenerator {
 					reg.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 			
 					Registry packageRegistry = resourceSet.getPackageRegistry();
-					this.getMetaModelPackages().forEach((eNS_URI, eINSTANCE) -> packageRegistry.put(eNS_URI, eINSTANCE));
+					«FOR p : this.eClassifiersManager.packages»
+						packageRegistry.put(«p».eNS_URI, «p».eINSTANCE);
+					«ENDFOR»
 				}
 			
 				/**
@@ -252,9 +248,11 @@ class JavaFileGenerator {
 	 */
 	public def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = this.eClassifiersManager.getImportsForNodeTypes(rule.graph.nodes.filter[!it.local].toList)
-		imports.add('org.emoflon.ibex.common.operational.IMatch')
-		imports.add('org.emoflon.ibex.gt.api.GraphTransformationMatch')
-		imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(rule)»''')
+		imports.addAll(
+			'org.emoflon.ibex.common.operational.IMatch',
+			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
+			'''«this.getSubPackageName('api.rules')».«getRuleClassName(rule)»'''
+		)
 
 		val signatureNodes = rule.graph.nodes.filter[!it.local]
 		val matchSourceCode = '''
