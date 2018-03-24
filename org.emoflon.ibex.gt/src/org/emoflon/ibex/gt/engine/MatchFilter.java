@@ -13,6 +13,7 @@ import org.emoflon.ibex.common.operational.IMatch;
 import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXAttributeParameter;
 import IBeXLanguage.IBeXPattern;
+import IBeXLanguage.IBeXRelation;
 
 /**
  * Utility methods to filter match streams.
@@ -69,32 +70,44 @@ public class MatchFilter {
 				if (!parameters.containsKey(parameterName)) {
 					throw new IllegalArgumentException("Missing required parameter " + parameterName);
 				}
-				Object parameterValue = parameters.get(parameterName);
-
 				matches = matches.filter(m -> {
 					EObject node = (EObject) m.get(nodeName);
 					Object currentValue = node.eGet(ac.getType());
-
-					switch (ac.getRelation()) {
-					case GREATER_OR_EQUAL:
-						return compareTo(currentValue, parameterValue, x -> x >= 0);
-					case EQUAL:
-						return currentValue.equals(parameterValue);
-					case GREATER:
-						return compareTo(currentValue, parameterValue, x -> x > 0);
-					case SMALLER:
-						return compareTo(currentValue, parameterValue, x -> x < 0);
-					case SMALLER_OR_EQUAL:
-						return compareTo(currentValue, parameterValue, x -> x <= 0);
-					case UNEQUAL:
-						return !currentValue.equals(parameterValue);
-					default:
-						return false;
-					}
+					return compare(currentValue, parameters.get(parameterName), ac.getRelation());
 				});
 			}
 		}
 		return matches;
+	}
+
+	/**
+	 * Compares two objects according to the given relation.
+	 * 
+	 * @param a
+	 *            the first object
+	 * @param b
+	 *            the second object
+	 * @param relation
+	 *            the relation
+	 * @return the result of the comparison
+	 */
+	private static boolean compare(final Object a, final Object b, final IBeXRelation relation) {
+		switch (relation) {
+		case GREATER_OR_EQUAL:
+			return compareTo(a, b, x -> x >= 0);
+		case EQUAL:
+			return a.equals(b);
+		case GREATER:
+			return compareTo(a, b, x -> x > 0);
+		case SMALLER:
+			return compareTo(a, b, x -> x < 0);
+		case SMALLER_OR_EQUAL:
+			return compareTo(a, b, x -> x <= 0);
+		case UNEQUAL:
+			return !a.equals(b);
+		default:
+			return false;
+		}
 	}
 
 	/**
