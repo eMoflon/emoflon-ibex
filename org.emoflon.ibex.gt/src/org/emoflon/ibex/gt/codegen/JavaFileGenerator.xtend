@@ -53,7 +53,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java API class.
 	 */
-	public def generateAPIJavaFile(IFolder apiPackage, String patternPath) {
+	public def generateAPIClass(IFolder apiPackage, String patternPath) {
 		val rules = this.gtRuleSet.rules.filter[!it.abstract]
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
@@ -129,7 +129,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java App class.
 	 */
-	public def generateAppJavaFile(IFolder apiPackage) {
+	public def generateAppClass(IFolder apiPackage) {
 		val imports = this.eClassifiersManager.importsForPackages
 		imports.addAll(
 			'java.io.IOException',
@@ -154,12 +154,12 @@ class JavaFileGenerator {
 				/**
 				 * The resource set.
 				 */
-				private ResourceSet resourceSet = new ResourceSetImpl();
+				protected ResourceSet resourceSet = new ResourceSetImpl();
 			
 				/**
 				 * The workspace path.
 				 */
-				private Optional<String> workspacePath = Optional.empty();
+				protected Optional<String> workspacePath = Optional.empty();
 			
 				/**
 				 * Creates the model file with the given URI.
@@ -246,7 +246,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java Match class for the given rule.
 	 */
-	public def generateMatchJavaFile(IFolder apiMatchesPackage, GTRule rule) {
+	public def generateMatchClass(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = this.eClassifiersManager.getImportsForNodeTypes(rule.graph.nodes.filter[!it.local].toList)
 		imports.addAll(
 			'org.emoflon.ibex.common.operational.IMatch',
@@ -309,7 +309,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java Rule class for the given rule.
 	 */
-	public def generateRuleJavaFile(IFolder rulesPackage, GTRule rule) {
+	public def generateRuleClass(IFolder rulesPackage, GTRule rule) {
 		val ruleType = if(rule.executable) 'GraphTransformationApplicableRule' else 'GraphTransformationRule'
 		val parameterNodes = rule.graph.nodes.filter[it.bindingType != GTBindingType.CREATE && !it.local].toList
 		val imports = this.eClassifiersManager.getImportsForNodeTypes(parameterNodes)
