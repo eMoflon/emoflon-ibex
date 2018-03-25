@@ -96,7 +96,7 @@ public class EClassifiersManager {
 	 * @return names of the meta-model packages
 	 */
 	public Set<String> getPackages() {
-		return metaModelNames.stream().map(m -> m + "Package").collect(Collectors.toSet());
+		return metaModelNames.stream().map(m -> getPackageClassName(m)).collect(Collectors.toSet());
 	}
 
 	/**
@@ -105,6 +105,16 @@ public class EClassifiersManager {
 	 * @return the types for Java import statements
 	 */
 	public Set<String> getImportsForPackages() {
-		return metaModelNames.stream().map(m -> m + "." + m + "Package").collect(Collectors.toSet());
+		return metaModelNames.stream().map(m -> m + "." + getPackageClassName(m)).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Return the name of the Package class.
+	 * 
+	 * @param modelName
+	 *            the name of the meta-model
+	 */
+	private static String getPackageClassName(final String modelName) {
+		return Character.toUpperCase(modelName.charAt(0)) + modelName.substring(1) + "Package";
 	}
 }

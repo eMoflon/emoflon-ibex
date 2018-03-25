@@ -275,14 +275,14 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		gtRuleSet.getRules().stream() //
 				.filter(gtRule -> !gtRule.isAbstract()) // ignore abstract rules
 				.forEach(gtRule -> {
-					generator.generateMatchJavaFile(matchesPackage, gtRule);
-					generator.generateRuleJavaFile(rulesPackage, gtRule);
+					generator.generateMatchClass(matchesPackage, gtRule);
+					generator.generateRuleClass(rulesPackage, gtRule);
 				});
 
 		String patternPath = project.getName() + "/" + SOURCE_GEN_FOLDER + "/" + path.toString()
 				+ "/api/ibex-patterns.xmi";
-		generator.generateAPIJavaFile(apiPackage, patternPath);
-		generator.generateAppJavaFile(apiPackage);
+		generator.generateAPIClass(apiPackage, patternPath);
+		generator.generateAppClass(apiPackage);
 	}
 
 	/**
