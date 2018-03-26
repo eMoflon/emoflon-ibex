@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.utils.EcoreUtils;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 
 import GTLanguage.GTAttributeAssignment;
@@ -135,7 +135,7 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 			for (int j = i + 1; j < allNodes.size(); j++) {
 				IBeXNode node1 = allNodes.get(i);
 				IBeXNode node2 = allNodes.get(j);
-				if (canInstancesBeTheSame(node1.getType(), node2.getType())) {
+				if (EcoreUtils.areTypesCompatible(node1.getType(), node2.getType())) {
 					IBeXNodePair nodePair = IBeXLanguageFactory.eINSTANCE.createIBeXNodePair();
 					nodePair.getValues().add(node1);
 					nodePair.getValues().add(node2);
@@ -441,22 +441,5 @@ public class InternalGTModelToIBeXPatternTransformation extends AbstractModelTra
 			contextNodes.add(node);
 			return node;
 		}
-	}
-
-	/**
-	 * Checks whether the given EClasses are the same or one is a super class of the
-	 * other.
-	 * 
-	 * @param class1
-	 *            an EClass
-	 * @param class2
-	 *            another EClass
-	 * @return true if and only if an object could be an instance of both classes
-	 */
-	private static boolean canInstancesBeTheSame(final EClass class1, final EClass class2) {
-		Objects.requireNonNull(class1);
-		Objects.requireNonNull(class2);
-		return class1.getName().equals(class2.getName()) || class1.getEAllSuperTypes().contains(class2)
-				|| class2.getEAllSuperTypes().contains(class1);
 	}
 }
