@@ -73,12 +73,6 @@ public abstract class BWD_OPT extends OPT {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 
-		int weight = 
-				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
-
-		weights.put(idCounter, weight);
-
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
 				nodeToMarkingMatches.put(e, new TIntHashSet());
@@ -120,6 +114,16 @@ public abstract class BWD_OPT extends OPT {
 		// Now save fixed models
 		s.save(null);
 		c.save(null);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
+	 */
+	@Override
+	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+		return
+				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
 	}
 	
 	public void backward() throws IOException {

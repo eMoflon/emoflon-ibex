@@ -54,6 +54,20 @@ public abstract class CC extends OPT {
 		c.save(null);
 		p.save(null);
 	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
+	 */
+	@Override
+	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+		return
+				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
+	}
 
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
@@ -213,14 +227,6 @@ public abstract class CC extends OPT {
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
-
-		int weight = 
-				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
-
-		weights.put(idCounter, weight);
 
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))

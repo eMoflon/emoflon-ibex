@@ -64,15 +64,6 @@ public abstract class CO extends CC {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 
-		int weight = 
-				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() +
-				getGreenFactory(ruleName).getGreenCorrNodesInRule().size() +
-				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
-
-		weights.put(idCounter, weight);
-
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
 				nodeToMarkingMatches.put(e, new TIntHashSet());
@@ -112,6 +103,17 @@ public abstract class CO extends CC {
 		p.save(null);
 	}
 	
+	
+	
+	/* (non-Javadoc)
+	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
+	 */
+	@Override
+	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+		return super.getWeightForMatch(comatch, ruleName)
+				+ getGreenFactory(ruleName).getGreenCorrNodesInRule().size();
+	}
+
 	@Override
 	public boolean modelsAreConsistent() {
 		return getInconsistentSrcNodes().size() + getInconsistentTrgNodes().size() + getInconsistentSrcEdges().size()

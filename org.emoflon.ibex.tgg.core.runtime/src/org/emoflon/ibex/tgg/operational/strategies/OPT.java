@@ -29,8 +29,8 @@ import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
 import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
-import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPTerm;
@@ -41,7 +41,6 @@ import com.google.common.collect.Sets;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TCustomHashMap;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
@@ -57,7 +56,6 @@ public abstract class OPT extends OperationalStrategy {
 	protected THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 	protected int nameCounter = 0;
-	protected TIntIntHashMap weights = new TIntIntHashMap();
 	protected TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	protected TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
@@ -278,7 +276,7 @@ public abstract class OPT extends OperationalStrategy {
 	protected void defineILPObjective(ILPSolver ilpSolver) {
 		List<ILPTerm> ilpTerms = new LinkedList<>();
 		idToMatch.keySet().forEach(v -> {
-			int weight = weights.get(v);
+			int weight = getWeightForMatch(idToMatch.get(v), matchIdToRuleName.get(v));
 			ilpTerms.add(ilpSolver.createTerm("x" + v, weight));
 			return true;
 		});
@@ -291,6 +289,7 @@ public abstract class OPT extends OperationalStrategy {
 		defineILPExclusions(ilpSolver);
 		defineILPImplications(ilpSolver);
 		defineILPObjective(ilpSolver);
+		addUserDefinedConstraints(ilpSolver);
 		
 		try {
 			ILPSolution ilpSolution = ilpSolver.solveILP();
@@ -310,6 +309,8 @@ public abstract class OPT extends OperationalStrategy {
 			return null;
 		}
 	}
+
+	protected abstract void addUserDefinedConstraints(ILPSolver ilpSolver);
 
 	protected void handleBundles(IMatch comatch, String ruleName) {
 		if(!getComplementRule(ruleName).isPresent()) {
@@ -372,6 +373,8 @@ public abstract class OPT extends OperationalStrategy {
 				.map(EObject.class::cast)
 				.collect(Collectors.toList());
 	}
+	
+	protected abstract int getWeightForMatch(IMatch comatch, String ruleName);
 	
 	public Resource loadResource(String workspaceRelativePath) throws IOException{
 		return super.loadResource(workspaceRelativePath);

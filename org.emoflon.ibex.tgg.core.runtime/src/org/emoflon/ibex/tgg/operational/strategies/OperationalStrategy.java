@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.lang.NullPointerException;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -516,7 +517,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	public IUpdatePolicy getUpdatePolicy() {
-		return updatePolicy;
+		return updatePolicy; 
 	}
 
 	public IGreenPatternFactory getGreenFactory(String ruleName) {

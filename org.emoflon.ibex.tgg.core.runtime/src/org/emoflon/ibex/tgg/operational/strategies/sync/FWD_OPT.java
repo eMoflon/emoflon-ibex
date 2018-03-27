@@ -73,12 +73,6 @@ public abstract class FWD_OPT extends OPT {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 
-		int weight = 
-				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
-
-		weights.put(idCounter, weight);
-
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
 				nodeToMarkingMatches.put(e, new TIntHashSet());
@@ -122,6 +116,16 @@ public abstract class FWD_OPT extends OPT {
 		c.save(null);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
+	 */
+	@Override
+	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+		return
+				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
+	}
+
 	public void forward() throws IOException {
 		run();
 	}
