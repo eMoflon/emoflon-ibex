@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
+import org.emoflon.ibex.common.utils.EcoreUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
@@ -167,18 +167,14 @@ public abstract class IbexBasePattern implements IBlackPattern {
 			for(int j = i+1; j < nodes.size(); j++){
 				TGGRuleNode nodeI = nodes.get(i);
 				TGGRuleNode nodeJ = nodes.get(j);
-				if(compatibleTypes(nodeI.getType(), nodeJ.getType()))
-					if(!injectivityIsAlreadyChecked(nodeI, nodeJ))
+				if (EcoreUtils.areTypesCompatible(nodeI.getType(), nodeJ.getType()))
+					if (!injectivityIsAlreadyChecked(nodeI, nodeJ))
 						if (optimiser.unequalConstraintNecessary(nodeI, nodeJ))
 							injectivityCheckPairs.add(MutablePair.of(nodeI, nodeJ));
 			}
 		}
 		
 		return injectivityCheckPairs;
-	}
-	
-	private boolean compatibleTypes(EClass class1, EClass class2){
-		return class1 == class2 || class1.getEAllSuperTypes().contains(class2) || class2.getEAllSuperTypes().contains(class1);
 	}
 	
 	/**
