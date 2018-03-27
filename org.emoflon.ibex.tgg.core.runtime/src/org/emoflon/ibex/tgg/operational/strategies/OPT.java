@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,8 +28,8 @@ import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
 import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
-import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPTerm;
@@ -220,10 +219,10 @@ public abstract class OPT extends OperationalStrategy {
 		}
 
 		HandleDependencies handleCycles = new HandleDependencies(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
-		HashMap<Integer, ArrayList<Integer>> cyclicBundles = handleCycles.getCyclicDependenciesBetweenBundles();
+		Set<Integer> allCyclicBundles = handleCycles.getCyclicDependenciesBetweenBundles().keySet();
 
-		for (int cycle : cyclicBundles.keySet()) {
-			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getDependedRuleApplications(cycle));
+		for (int cycle : allCyclicBundles) {
+			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getComplementRuleApplications(cycle));
 			for (List<Integer> variables : cyclicConstraints) {
 				List<ILPTerm> ilpTerms = new LinkedList<>();
 				variables.forEach(v -> {
@@ -235,12 +234,8 @@ public abstract class OPT extends OperationalStrategy {
 		}
 	}
 
-	private Set<List<Integer>> getCyclicConstraints(HashMap<Integer, HashSet<Integer>> dependedRuleApplications) {
-		List<HashSet<Integer>> excludedRuleApplications = new ArrayList<>();
-		for (HashSet<Integer> ruleApplication : dependedRuleApplications.values()) {
-			excludedRuleApplications.add(ruleApplication);
-		}
-		return Sets.cartesianProduct(excludedRuleApplications);
+	private Set<List<Integer>> getCyclicConstraints(List<HashSet<Integer>> dependedRuleApplications) {
+		return Sets.cartesianProduct(dependedRuleApplications);
 	}
 
 	protected void defineILPImplications(ILPSolver ilpSolver) {
@@ -373,6 +368,7 @@ public abstract class OPT extends OperationalStrategy {
 				.collect(Collectors.toList());
 	}
 	
+	@Override
 	public Resource loadResource(String workspaceRelativePath) throws IOException{
 		return super.loadResource(workspaceRelativePath);
 	}

@@ -90,23 +90,25 @@ public abstract class CC extends OPT {
 	private void processComplementRuleMatches(IMatch comatch) {
 		blackInterpreter.updateMatches();
 		int kernelMatchID = idToMatch.size();
-		Set<IMatch> contextRuleMatches = findAllComplementRuleContextMatches();
+		// handles maximality
+		Set<IMatch> complementRuleContextMatches = findAllComplementRuleContextMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		
-		THashMap<Integer, THashSet<EObject>> crMatchToContextNodes = new THashMap<>();
+		// handles uniqueness
+		THashMap<Integer, THashSet<EObject>> complementMatchToContextNodes = new THashMap<>();
 		
 		while (complementRuleMatches.iterator().hasNext()) {
 			IMatch match = complementRuleMatches.iterator().next();
-			applyMatchAndHandleUniqueness(match, crMatchToContextNodes);
+			applyMatchAndHandleUniqueness(match, complementMatchToContextNodes);
 			complementRuleMatches.remove(match);
 			removeOperationalRuleMatch(match);
 		}
 		
-		//check if all found CR matches are really applied
-		while (contextRuleMatches.iterator().hasNext()) {
-			IMatch match = contextRuleMatches.iterator().next();
-			handleMaximality(match, contextRuleMatches, kernelMatchID);
-			contextRuleMatches.remove(match);
+		// check if all found CR matches are really applied.
+		while (complementRuleContextMatches.iterator().hasNext()) {
+			IMatch match = complementRuleContextMatches.iterator().next();
+			handleMaximality(match, kernelMatchID);
+			complementRuleContextMatches.remove(match);
 		}
 		
 		//FIXME:[Milica] Check if this is really needed
@@ -115,7 +117,7 @@ public abstract class CC extends OPT {
 	}
 	
 	//FIXME:[Milica] Check if maximality need to be done for edges as well
-	private void handleMaximality(IMatch match, Set<IMatch> contextRuleMatches, int kernelMatchID) {
+	private void handleMaximality(IMatch match, int kernelMatchID) {
 		String ruleName = removeAllSuffixes(match.getPatternName());
 		TGGComplementRule rule = getComplementRule(ruleName).get();
 		if(rule.isBounded()) {
@@ -127,33 +129,36 @@ public abstract class CC extends OPT {
 	}
 
 	//FIXME:[Milica] Check if uniqueness need to be done for edges as well
-	private void applyMatchAndHandleUniqueness(IMatch match, THashMap<Integer, THashSet<EObject>> contextNodesMatches) {
+	private void applyMatchAndHandleUniqueness(IMatch match,
+			THashMap<Integer, THashSet<EObject>> complementMatchToContextNodes) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		if (processOperationalRuleMatch(ruleName, match) != null) {
 			TGGComplementRule rule = getComplementRule(ruleName).get();
 			if(rule.isBounded())
-				findDuplicatedMatches(idToMatch.size(), contextNodesMatches);
+				findDuplicatedMatches(idToMatch.size(), complementMatchToContextNodes);
 		}
 	}
 
-	private void findDuplicatedMatches(int matchID, THashMap<Integer, THashSet<EObject>> contextNodesMatches) { 
-		THashSet<EObject> contextNodesForMatchID = matchToContextNodes.get(matchID);
-		for (Integer id : contextNodesMatches.keySet()) {
+	private void findDuplicatedMatches(int currentComplementMatchID,
+			THashMap<Integer, THashSet<EObject>> complementMatchToContextNodes) {
+
+		THashSet<EObject> contextNodesForCurrentComplementMatchID = matchToContextNodes.get(currentComplementMatchID);
+		for (Integer previousComplementMatchID : complementMatchToContextNodes.keySet()) {
 		//check if matches belong to the same complement rule
-			if (matchIdToRuleName.get(matchID).equals(matchIdToRuleName.get(id))) {
-				if(matchToContextNodes.get(id).equals(contextNodesForMatchID)) {
-					if (!sameCRmatches.containsKey(matchID)) {
-						sameCRmatches.put(matchID, new TIntHashSet());
-						sameCRmatches.get(matchID).add(matchID);
-						sameCRmatches.get(matchID).add(id);
+			if (matchIdToRuleName.get(currentComplementMatchID).equals(matchIdToRuleName.get(previousComplementMatchID))) {
+				if(matchToContextNodes.get(previousComplementMatchID).equals(contextNodesForCurrentComplementMatchID)) {
+					if (!sameCRmatches.containsKey(currentComplementMatchID)) {
+						sameCRmatches.put(currentComplementMatchID, new TIntHashSet());
+						sameCRmatches.get(currentComplementMatchID).add(currentComplementMatchID);
+						sameCRmatches.get(currentComplementMatchID).add(previousComplementMatchID);
 					}
 					else {
-					sameCRmatches.get(matchID).add(id);
+						sameCRmatches.get(currentComplementMatchID).add(previousComplementMatchID);
 					}
 				}
 			}
 		}
-		contextNodesMatches.put(matchID, contextNodesForMatchID);
+		complementMatchToContextNodes.put(currentComplementMatchID, contextNodesForCurrentComplementMatchID);
 	}
 	
 	private String removeAllSuffixes(String name) {
@@ -172,17 +177,15 @@ public abstract class CC extends OPT {
 	 * @return Collection of all matches that has to be applied.
 	 */
 	private Set<IMatch> findAllComplementRuleContextMatches() {
-		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
+		return operationalMatchContainer.getMatches().stream()
 				.filter(m -> m.getPatternName().contains(PatternSuffixes.GENForCC))
 				.collect(Collectors.toSet());
-		return allComplementRuleMatches;
 	}
 	
 	private Set<IMatch> findAllComplementRuleMatches() {
-		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
+		return operationalMatchContainer.getMatches().stream()
 				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.getPatternName())))
 				.collect(Collectors.toSet());
-		return allComplementRuleMatches;
 	}
 
 	@Override
