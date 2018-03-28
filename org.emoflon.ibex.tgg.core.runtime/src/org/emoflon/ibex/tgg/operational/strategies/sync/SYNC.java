@@ -37,7 +37,9 @@ public abstract class SYNC extends OperationalStrategy {
 	@Override
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
 		super.registerBlackInterpreter(blackInterpreter);
-		// TODO: [Milica] Check if filling protocol is necessary!
+		/**
+		 * Consider filling protocol from protocol.xmi.
+		 */
 		fillInProtocolReport();
 		multiamalgamatedTgg = tggContainsComplementRules();
 	}
