@@ -130,7 +130,7 @@ public class HandleDependencies {
 					// add node that caused cycle
 					cyclicContextBundles.add(recursiveStack.get(pop));
 					// add all other nodes from stack until the same node that caused the cycle is reached
-					while(recursiveStack.get(pop) != contextBundle) {
+					while (recursiveStack.get(pop).intValue() != contextBundle) {
 						pop--;
 						cyclicContextBundles.add(recursiveStack.get(pop));
 					}
