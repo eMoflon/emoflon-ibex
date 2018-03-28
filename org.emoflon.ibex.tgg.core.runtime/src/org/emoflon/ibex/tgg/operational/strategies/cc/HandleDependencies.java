@@ -148,8 +148,7 @@ public class HandleDependencies {
 	 * 
 	 * @param detectedCycle
 	 *            - specific cycle between bundles
-	 * @return Collection of all rule applications causing dependencies for
-	 *         detectedCycle
+	 * @return Collection of complement rule applications inside the bundle
 	 */
 	public List<HashSet<Integer>> getComplementRuleApplications(int detectedCycle) {
 		List<HashSet<Integer>> bundleToComplementRuleApplication = new ArrayList<>();
