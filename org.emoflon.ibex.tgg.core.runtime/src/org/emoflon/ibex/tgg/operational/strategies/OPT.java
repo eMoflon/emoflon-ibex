@@ -61,11 +61,11 @@ public abstract class OPT extends OperationalStrategy {
 	protected TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
 	/**
-	 * Collection of constraints to guarantee uniqueness property;
-	 * key: ComplementRule (CR) match; 
-	 * value: other CR matches of the same CR using the same context as CR match
+	 * Collection of constraints to guarantee uniqueness property; key: Complement
+	 * rule (CR) match ID; value: other CR matches of the same CR using the same
+	 * context as CR match
 	 */
-	protected THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
+	protected THashMap<Integer, TIntHashSet> sameComplementMatches = new THashMap<>();
 
 	/**
 	 * Collection of constraints to guarantee maximality property;
@@ -196,8 +196,8 @@ public abstract class OPT extends OperationalStrategy {
 			ilpSolver.addConstraint(expr, Operation.le, 1.0, "EXCL" + nameCounter++);
 		}
 
-		for (Integer match : sameCRmatches.keySet()) {
-			TIntHashSet variables = sameCRmatches.get(match);
+		for (Integer match : sameComplementMatches.keySet()) {
+			TIntHashSet variables = sameComplementMatches.get(match);
 			List<ILPTerm> ilpTerms = new LinkedList<>();
 			variables.forEach(v -> {
 				ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));

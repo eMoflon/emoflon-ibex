@@ -147,13 +147,13 @@ public abstract class CC extends OPT {
 		//check if matches belong to the same complement rule
 			if (matchIdToRuleName.get(currentComplementMatchID).equals(matchIdToRuleName.get(previousComplementMatchID))) {
 				if(matchToContextNodes.get(previousComplementMatchID).equals(contextNodesForCurrentComplementMatchID)) {
-					if (!sameCRmatches.containsKey(currentComplementMatchID)) {
-						sameCRmatches.put(currentComplementMatchID, new TIntHashSet());
-						sameCRmatches.get(currentComplementMatchID).add(currentComplementMatchID);
-						sameCRmatches.get(currentComplementMatchID).add(previousComplementMatchID);
+					if (!sameComplementMatches.containsKey(currentComplementMatchID)) {
+						sameComplementMatches.put(currentComplementMatchID, new TIntHashSet());
+						sameComplementMatches.get(currentComplementMatchID).add(currentComplementMatchID);
+						sameComplementMatches.get(currentComplementMatchID).add(previousComplementMatchID);
 					}
 					else {
-						sameCRmatches.get(currentComplementMatchID).add(previousComplementMatchID);
+						sameComplementMatches.get(currentComplementMatchID).add(previousComplementMatchID);
 					}
 				}
 			}
