@@ -110,13 +110,16 @@ public abstract class CC extends OPT {
 			handleMaximality(match, kernelMatchID);
 			complementRuleContextMatches.remove(match);
 		}
-		
-		//FIXME:[Milica] Check if this is really needed
-		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
+
+		TGGRuleApplication application = (TGGRuleApplication) comatch
+				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		application.setAmalgamated(true);
 	}
 	
-	//FIXME:[Milica] Check if maximality need to be done for edges as well
+	/**
+	 * Maximality check is for now only done for nodes. It might be in the future
+	 * that some test show that this is also needed for edges.
+	 */
 	private void handleMaximality(IMatch match, int kernelMatchID) {
 		String ruleName = removeAllSuffixes(match.getPatternName());
 		TGGComplementRule rule = getComplementRule(ruleName).get();
@@ -128,7 +131,10 @@ public abstract class CC extends OPT {
 		}
 	}
 
-	//FIXME:[Milica] Check if uniqueness need to be done for edges as well
+	/**
+	 * Uniqueness check is for now only done for nodes. It might be in the future
+	 * that some test show that this is also needed for edges.
+	 */
 	private void applyMatchAndHandleUniqueness(IMatch match,
 			THashMap<Integer, THashSet<EObject>> complementMatchToContextNodes) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
