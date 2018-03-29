@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.emoflon.ibex.gt.editor.gT.AttributeConstraint;
-import org.emoflon.ibex.gt.editor.gT.EnumValue;
-import org.emoflon.ibex.gt.editor.gT.Expression;
+import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
-import org.emoflon.ibex.gt.editor.gT.LiteralValue;
 import org.emoflon.ibex.gt.editor.gT.Node;
 import org.emoflon.ibex.gt.editor.gT.Parameter;
-import org.emoflon.ibex.gt.editor.gT.ParameterValue;
 import org.emoflon.ibex.gt.editor.gT.Relation;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
@@ -139,9 +139,9 @@ public class EditorToInternalGTModelTransformation
 	 */
 	private void setAttributeValue(final GTAttribute gtAttribute, final AttributeConstraint editorAttributeConstraint,
 			final List<GTParameter> gtParameters) {
-		Expression editorValue = editorAttributeConstraint.getValue();
-		if (editorValue instanceof LiteralValue) {
-			String s = ((LiteralValue) editorValue).getValue();
+		EditorExpression editorValue = editorAttributeConstraint.getValue();
+		if (editorValue instanceof EditorLiteralExpression) {
+			String s = ((EditorLiteralExpression) editorValue).getValue();
 			Optional<Object> object = GTEditorAttributeUtils
 					.convertEDataTypeStringToObject(gtAttribute.getType().getEAttributeType(), s);
 			object.ifPresent(o -> {
@@ -153,13 +153,13 @@ public class EditorToInternalGTModelTransformation
 			if (!object.isPresent()) {
 				this.logError("Invalid attribute value: " + s);
 			}
-		} else if (editorValue instanceof EnumValue) {
-			EEnumLiteral literal = ((EnumValue) editorValue).getLiteral();
+		} else if (editorValue instanceof EditorEnumExpression) {
+			EEnumLiteral literal = ((EditorEnumExpression) editorValue).getLiteral();
 			IBeXEnumLiteral gtEnumLiteral = IBeXLanguageFactory.eINSTANCE.createIBeXEnumLiteral();
 			gtEnumLiteral.setLiteral(literal);
 			gtAttribute.setValue(gtEnumLiteral);
-		} else if (editorValue instanceof ParameterValue) {
-			String parameterName = ((ParameterValue) editorValue).getParameter().getName();
+		} else if (editorValue instanceof EditorParameterExpression) {
+			String parameterName = ((EditorParameterExpression) editorValue).getParameter().getName();
 			Optional<GTParameter> gtParameter = InternalGTModelUtils.findParameterWithName(gtParameters, parameterName);
 			if (!gtParameter.isPresent()) {
 				this.logError("Could not find parameter " + parameterName + "!");
