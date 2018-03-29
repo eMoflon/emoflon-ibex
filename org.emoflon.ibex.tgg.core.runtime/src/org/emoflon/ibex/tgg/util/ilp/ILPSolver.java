@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import gnu.trove.set.hash.THashSet;
+
 /**
  * This class is used to abstract from the usage of a concrete ILP solver. It provides common methods to define ILP problems, 
  * start finding the solution and access to the found solution.
@@ -26,12 +28,12 @@ public abstract class ILPSolver {
 	/**
 	 * Contains all variables that have been defined
 	 */
-	private final Set<String> variables = new HashSet<>();
+	private final THashSet<String> variables = new THashSet<>();
 	
 	/**
 	 * Set of constraints that have been defined using addConstraint
 	 */
-	private final Set<ILPConstraint> constraints = new HashSet<>();
+	private final THashSet<ILPConstraint> constraints = new THashSet<>();
 	/**
 	 * The objective function that has been defined using setObjective
 	 */

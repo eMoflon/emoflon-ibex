@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.util.ilp;
 import java.util.HashMap;
 import java.util.Map;
 
+import gnu.trove.map.hash.THashMap;
 import gurobi.GRB;
 import gurobi.GRB.DoubleAttr;
 import gurobi.GRBEnv;
@@ -22,7 +23,7 @@ final class GurobiWrapper extends ILPSolver {
 	/**
 	 * A mapping of the variable identifiers to the variables registered in the Gurobi model
 	 */
-	private final Map<String, GRBVar> gurobiVariables = new HashMap<>();
+	private final THashMap<String, GRBVar> gurobiVariables = new THashMap<>();
 	/**
 	 * The Gurobi model
 	 */
