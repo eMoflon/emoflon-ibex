@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.util.ilp;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -276,6 +277,7 @@ public abstract class ILPSolver {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
+			result = prime * result + getOuterType().hashCode();
 			long temp;
 			temp = Double.doubleToLongBits(coefficient);
 			result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -298,6 +300,9 @@ public abstract class ILPSolver {
 				return false;
 			}
 			ILPTerm other = (ILPTerm) obj;
+			if (!getOuterType().equals(other.getOuterType())) {
+				return false;
+			}
 			if (Double.doubleToLongBits(coefficient) != Double.doubleToLongBits(other.coefficient)) {
 				return false;
 			}
@@ -309,7 +314,13 @@ public abstract class ILPSolver {
 				return false;
 			}
 			return true;
-		}	
+		}
+
+		private ILPSolver getOuterType() {
+			return ILPSolver.this;
+		}
+
+		
 	}
 	
 	/**
@@ -539,23 +550,21 @@ public abstract class ILPSolver {
 		 */
 		public void addTerm(ILPTerm term) {
 			//check existing terms if there is one with the same coef
-			ILPTerm foundTerm = null;
-			for(ILPTerm existingTerm : terms) {
+			Iterator<ILPTerm> it = terms.iterator();
+			while(it.hasNext()) {
+				ILPTerm existingTerm = it.next();
 				if(existingTerm.variable.equals(term.variable)) {
-					foundTerm = existingTerm;
-					break;
+					//update coefficient
+					existingTerm.coefficient += term.coefficient;
+					//check if term not 0
+					if(Double.doubleToLongBits(existingTerm.coefficient) == Double.doubleToLongBits(0)) {
+						it.remove();
+					}
+					return;
 				}
 			}
-			if(foundTerm != null) {
-				//update coefficient
-				foundTerm.coefficient += term.coefficient;
-				//check if term not 0
-				if(Double.doubleToLongBits(foundTerm.coefficient) != Double.doubleToLongBits(0)) {
-					terms.remove(foundTerm);
-				}
-			} else {
-				terms.add(term);
-			}
+			
+			terms.add(term);
 		}
 		
 		/**

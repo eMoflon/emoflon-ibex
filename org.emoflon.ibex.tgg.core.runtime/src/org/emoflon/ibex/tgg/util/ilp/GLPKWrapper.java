@@ -17,7 +17,6 @@ import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_smcp;
 
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntDoubleHashMap;
 
 /**
  * @author RobinO
@@ -128,6 +127,7 @@ public final class GLPKWrapper extends ILPSolver {
 	@Override
 	public ILPSolution solveILP() throws Exception {
 		System.out.println("The ILP to solve has "+this.getConstraints().size()+" constraints and "+this.getVariables().size()+ " variables");
+		System.out.println(this);
 		if(this.getVariables().size() <= 0) {
 			return new ILPSolution(new HashMap<String, Integer>(), true);
 		}
@@ -145,32 +145,39 @@ public final class GLPKWrapper extends ILPSolver {
 			counter = 1;
 			GLPK.glp_add_rows(problem, this.getConstraints().size());
 			for(ILPConstraint constraint : this.getConstraints()) {
-				System.out.println("Registering constraint ("+counter+"): " +constraint);
 				((GLPKConstraint) constraint).registerConstraint(counter++);
 				//For some reason this needs some time. If we just continue the program will terminate
 //				Thread.sleep(1000);
 			}
 			((GLPKObjective) this.getObjective()).registerObjective();
 
-			//For debugging: Write model to file
-			GLPK.glp_write_lp(problem, null, "lp.lp");
-
 			//Solve model
 			glp_smcp parm= new glp_smcp();
 			GLPK.glp_init_smcp(parm);
 			int exitCode = GLPK.glp_simplex(problem, parm);
-
+			//For debugging: Write model to file
+			GLPK.glp_write_lp(problem, null, "lp.lp");
 			// Retrieve solution
 			if (exitCode == 0) {
+				int status = GLPK.glp_get_status(problem);
+				
+				boolean optimal = status == GLPKConstants.GLP_OPT;
+				boolean feasible = optimal || status == GLPKConstants.GLP_FEAS;
+				if (!feasible) { 
+					System.err.println("No optimal or feasible solution found.");
+					return null;
+				}
 				Map<String, Integer> variableSolutions = new HashMap<String, Integer>();
 				double optimum = GLPK.glp_get_obj_val(problem);
-				System.out.println("Optimal solution found: "+optimum);
+				System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
 				for(Entry<String, Integer> variable : glpkVariableCounters.entrySet()) {
 					double value = GLPK.glp_get_col_prim(problem, variable.getValue());
 					variableSolutions.put(variable.getKey(), (int) value);
 				}
 				GLPK.glp_delete_prob(problem);
-				return new ILPSolution(variableSolutions, true);
+				ILPSolution solution = new ILPSolution(variableSolutions, optimal);
+				System.out.println(solution);
+				return solution;
 			} else {
 				System.err.println("The problem could not be solved");
 				GLPK.glp_delete_prob(problem);
@@ -189,31 +196,18 @@ public final class GLPKWrapper extends ILPSolver {
 		}
 
 		private void registerConstraint(int constraintCounter) throws InterruptedException {
-			System.out.println("Setting name");
-//			GLPK.glp_set_row_name(problem, constraintCounter, this.name);
+			GLPK.glp_set_row_name(problem, constraintCounter, this.name);
 			
 			int counter = 1;
-			TIntDoubleHashMap variableCoefficientMapping = new TIntDoubleHashMap();
+			int numberOfVariables = this.linearExpression.getTerms().size();
+			SWIGTYPE_p_int variableIndices = GLPK.new_intArray(numberOfVariables+1);
+			SWIGTYPE_p_double coefficients = GLPK.new_doubleArray(numberOfVariables+1);
 			for(ILPTerm term : this.linearExpression.getTerms()) {
-				int variableIdentifier = glpkVariableCounters.get(term.getVariable());
-				double coeff = term.getCoefficient();
-				if(variableCoefficientMapping.contains(variableIdentifier)) {
-					coeff += variableCoefficientMapping.get(variableIdentifier);
-				}
-				variableCoefficientMapping.put(variableIdentifier, coeff);
-			}
-			
-			int numberOfVariables = variableCoefficientMapping.size();
-			SWIGTYPE_p_int variableIndices = GLPK.new_intArray(numberOfVariables);
-			SWIGTYPE_p_double coefficients = GLPK.new_doubleArray(numberOfVariables);
-			for(int variableIdentifier : variableCoefficientMapping.keys()) {
-				GLPK.intArray_setitem(variableIndices, counter, variableIdentifier);
-				GLPK.doubleArray_setitem(coefficients, counter, variableCoefficientMapping.get(variableIdentifier));
+				GLPK.intArray_setitem(variableIndices, counter, glpkVariableCounters.get(term.getVariable()));
+				GLPK.doubleArray_setitem(coefficients, counter, term.getCoefficient());
 				counter++;
 			}
-			System.out.println("Adding row");
 			GLPK.glp_set_mat_row(problem, constraintCounter, numberOfVariables, variableIndices, coefficients);
-			System.out.println("Setting bounds");
 			switch(comparator) {
 			case ge:
 				GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_LO, this.value, this.value);
@@ -226,11 +220,9 @@ public final class GLPKWrapper extends ILPSolver {
 			default:
 				throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
 			}
-			
 			// Free memory
-			System.out.println("Deleting arrays");
-//			GLPK.delete_intArray(variableIndices);
-//			GLPK.delete_doubleArray(coefficients);
+			GLPK.delete_intArray(variableIndices);
+			GLPK.delete_doubleArray(coefficients);
 		}
 	}
 

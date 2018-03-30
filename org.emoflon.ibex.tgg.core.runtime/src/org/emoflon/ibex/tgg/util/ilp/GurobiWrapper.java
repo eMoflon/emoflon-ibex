@@ -75,7 +75,7 @@ final class GurobiWrapper extends ILPSolver {
 		this.addConstraint(constr);
 		return constr;
 	}
-	
+
 	@Override
 	public ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation) {
 		GurobiObjective objective = new GurobiObjective(linearExpression, operation);
@@ -87,7 +87,7 @@ final class GurobiWrapper extends ILPSolver {
 	public ILPSolution solveILP() throws GRBException {
 		env = new GRBEnv("Gurobi_ILP.log");
 		model = new GRBModel(env);
-		
+
 		for(String variableName : this.getVariables()) {
 			this.registerVariable(variableName);
 		}
@@ -95,7 +95,7 @@ final class GurobiWrapper extends ILPSolver {
 			((GurobiConstraint) constraint).registerConstraint();
 		}
 		((GurobiObjective) this.getObjective()).registerObjective();
-	
+
 		model.optimize();
 		Map<String, Integer> solutionVariables = new HashMap<>();
 		for (String variableName : getVariables()) {
@@ -121,17 +121,13 @@ final class GurobiWrapper extends ILPSolver {
 			return gurobiExpression;
 		}
 	}
-	
+
 	/**
 	 * ILPConstraint for Gurobi
 	 * 
 	 * @author Robin Oppermann
 	 */
 	private class GurobiConstraint extends ILPConstraint {
-		/**
-		 * Gurobi identifier of the comparator
-		 */
-		private final char gurobiComparator;
 		/**
 		 * Creates a Gurobi constraint
 		 * @param linearExpression	The linear expression of the constraint (left side of the inequation)
@@ -141,7 +137,15 @@ final class GurobiWrapper extends ILPSolver {
 		 */
 		private GurobiConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
 			super(linearExpression, comparator, value, name);
-			switch(comparator) {
+		}
+
+		/**
+		 * Registers the constraint in the gurobi model
+		 * @throws GRBException
+		 */
+		private void registerConstraint() throws GRBException {
+			char gurobiComparator;
+			switch(this.comparator) {
 			case eq:
 				gurobiComparator = GRB.EQUAL;
 				break;
@@ -154,17 +158,10 @@ final class GurobiWrapper extends ILPSolver {
 			default:
 				throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
 			}
-		}
-		
-		/**
-		 * Registers the constraint in the gurobi model
-		 * @throws GRBException
-		 */
-		private void registerConstraint() throws GRBException {
 			model.addConstr(((GurobiLinearExpression)linearExpression).createGurobiExpression(), gurobiComparator, value, name);
 		}
 	}
-	
+
 	/**
 	 * ILP Objective for Gurobi
 	 * 
@@ -175,7 +172,7 @@ final class GurobiWrapper extends ILPSolver {
 		 * Gurobi identifier of the objective
 		 */
 		private final int gurobiObjectiveSelector;
-		
+
 		/**
 		 * Creates a new objective function
 		 * 
@@ -195,7 +192,7 @@ final class GurobiWrapper extends ILPSolver {
 				throw new IllegalArgumentException("Unsupported operation: "+objectiveOperation.toString());
 			}
 		}
-		
+
 		/**
 		 * Registers the objective in the gurobi model
 		 * @throws GRBException
