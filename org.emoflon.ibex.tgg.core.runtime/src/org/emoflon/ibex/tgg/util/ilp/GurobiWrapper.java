@@ -85,6 +85,7 @@ final class GurobiWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() throws GRBException {
+		System.out.println("The ILP to solve has "+this.getConstraints().size()+" constraints and "+this.getVariables().size()+ " variables");
 		env = new GRBEnv("Gurobi_ILP.log");
 		model = new GRBModel(env);
 
@@ -102,9 +103,11 @@ final class GurobiWrapper extends ILPSolver {
 			GRBVar gurobiVar = gurobiVariables.get(variableName);
 			solutionVariables.put(variableName, (int) gurobiVar.get(DoubleAttr.X));
 		}
+		double optimum = model.get(GRB.DoubleAttr.ObjVal);
+		System.out.println("Solution found: "+optimum);
 		env.dispose();
 		model.dispose();
-		return new ILPSolution(solutionVariables, true);
+		return new ILPSolution(solutionVariables, true, optimum);
 	}
 
 	/**

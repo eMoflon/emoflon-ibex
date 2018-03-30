@@ -129,7 +129,7 @@ public final class GLPKWrapper extends ILPSolver {
 		System.out.println("The ILP to solve has "+this.getConstraints().size()+" constraints and "+this.getVariables().size()+ " variables");
 		System.out.println(this);
 		if(this.getVariables().size() <= 0) {
-			return new ILPSolution(new HashMap<String, Integer>(), true);
+			return new ILPSolution(new HashMap<String, Integer>(), true, 0);
 		}
 		try {
 			problem = GLPK.glp_create_prob();
@@ -175,7 +175,7 @@ public final class GLPKWrapper extends ILPSolver {
 					variableSolutions.put(variable.getKey(), (int) value);
 				}
 				GLPK.glp_delete_prob(problem);
-				ILPSolution solution = new ILPSolution(variableSolutions, optimal);
+				ILPSolution solution = new ILPSolution(variableSolutions, optimal, optimum);
 				System.out.println(solution);
 				return solution;
 			} else {

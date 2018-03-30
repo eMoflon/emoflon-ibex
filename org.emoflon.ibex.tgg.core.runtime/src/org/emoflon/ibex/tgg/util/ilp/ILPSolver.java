@@ -659,15 +659,18 @@ public abstract class ILPSolver {
 		 */
 		private final boolean optimal;
 		
+		private final double solutionValue;
+		
 		/**
 		 * Initializes a new ILPSolution
 		 * @param solutionVariables	Mapping of variables to the found solutions
 		 * @param optimal			Whether the found solution is optimal 
 		 */
-		protected ILPSolution(Map<String, Integer> solutionVariables, boolean optimal) {
+		protected ILPSolution(Map<String, Integer> solutionVariables, boolean optimal, double solutionValue) {
 			super();
 			this.solutionVariables = solutionVariables;
 			this.optimal = optimal;
+			this.solutionValue = solutionValue;
 		}
 		
 		/**
@@ -679,6 +682,13 @@ public abstract class ILPSolver {
 			return solutionVariables.get(variable);
 		}
 		
+		/**
+		 * @return the solutionValue
+		 */
+		public double getSolutionValue() {
+			return solutionValue;
+		}
+
 		/**
 		 * @return	Whether the found solution is optimal
 		 */

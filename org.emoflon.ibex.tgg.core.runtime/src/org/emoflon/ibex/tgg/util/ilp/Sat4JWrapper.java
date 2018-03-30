@@ -117,13 +117,11 @@ final class Sat4JWrapper extends ILPSolver {
 					}
 				}
 			}
-			ILPSolution solution = new ILPSolution(variableSolutions, optimizer.isOptimal());
-//			for(ILPConstraint constraint : getConstraints()) {
-//				if(!constraint.checkConstraint(solution)) {
-//					throw new RuntimeException("The ILP is not satisfiable");
-//				}
-//			}
-			return solution;
+			boolean optimal = optimizer.isOptimal();
+			ILPSolution solution = new ILPSolution(variableSolutions, optimal, -1);
+			double optimum = this.getObjective().getSolutionValue(solution);
+			System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
+			return new ILPSolution(variableSolutions, optimal, optimum);
 		}
 		return null;
 	}
