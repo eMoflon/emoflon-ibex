@@ -538,7 +538,24 @@ public abstract class ILPSolver {
 		 * @param term	The term to add
 		 */
 		public void addTerm(ILPTerm term) {
-			terms.add(term);
+			//check existing terms if there is one with the same coef
+			ILPTerm foundTerm = null;
+			for(ILPTerm existingTerm : terms) {
+				if(existingTerm.variable.equals(term.variable)) {
+					foundTerm = existingTerm;
+					break;
+				}
+			}
+			if(foundTerm != null) {
+				//update coefficient
+				foundTerm.coefficient += term.coefficient;
+				//check if term not 0
+				if(Double.doubleToLongBits(foundTerm.coefficient) != Double.doubleToLongBits(0)) {
+					terms.remove(foundTerm);
+				}
+			} else {
+				terms.add(term);
+			}
 		}
 		
 		/**
