@@ -4,6 +4,10 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
@@ -33,42 +37,20 @@ final class Sat4JWrapper extends ILPSolver {
 	 */
 	private IPBSolver solver;
 	
-	
 	private static final int MIN_TIMEOUT = 3;
 	private static final int MAX_TIMEOUT = 60*60;
 
 	/**
 	 * Creates a new SAT4JWrapper
 	 */
-	Sat4JWrapper() {}
-
-	@Override
-	public ILPLinearExpression createLinearExpression(ILPTerm... terms) {
-		ILPLinearExpression expr = new SAT4JLinearExpression();
-		for (ILPTerm term : terms) {
-			expr.addTerm(term);
-		}
-		return expr;
-	}
-
-	@Override
-	public ILPConstraint addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
-		ILPConstraint constr = new SAT4JConstraint(linearExpression, comparator, value, name);
-		this.addConstraint(constr);
-		return constr;
-	}
-
-	@Override
-	public ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation) {
-		ILPObjective objective = new SAT4JObjective(linearExpression, operation);
-		this.setObjective(objective);
-		return objective;
+	Sat4JWrapper(ILPProblem ilpProblem) {
+		super(ilpProblem);
 	}
 
 	@Override
 	public ILPSolution solveILP() throws ContradictionException {
-		System.out.println("The ILP to solve has "+this.getConstraints().size()+" constraints and "+this.getVariables().size()+ " variables");
-		int currentTimeout = this.getVariables().size();
+		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
+		int currentTimeout = this.ilpProblem.getVariables().size();
 		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
 		ILPSolution solution = null;
@@ -96,21 +78,20 @@ final class Sat4JWrapper extends ILPSolver {
 	private ILPSolution solveILP(int timeout) throws ContradictionException, TimeoutException {
 		solver = SolverFactory.newDefaultOptimizer();
 		
-		for(ILPConstraint constraint : this.getConstraints()) {
-			((SAT4JConstraint) constraint).registerConstraint();
+		for(ILPConstraint constraint : this.ilpProblem.getConstraints()) {
+			this.registerConstraint(constraint);
 		}
-		((SAT4JObjective) this.getObjective()).registerObjective();
+		this.registerObjective(this.ilpProblem.getObjective());
 		
 		OptToPBSATAdapter optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(solver));
 		optimizer.setTimeout(timeout);
-//		System.out.println("Timeout is set to: "+optimizer.getTimeout());
 		optimizer.setVerbose(true);
 		if(optimizer.isSatisfiable()) {
 			int[] model = solver.model();
 			Map<String, Integer> variableSolutions = new HashMap<>();
 			for(int i : model) {
 				int solution = i>0? 1 : 0;
-				for(String var : this.getVariables()) {
+				for(String var : this.ilpProblem.getVariables()) {
 					if(Math.abs(i) == var.hashCode()) {
 						variableSolutions.put(var, solution);
 						break;
@@ -119,7 +100,7 @@ final class Sat4JWrapper extends ILPSolver {
 			}
 			boolean optimal = optimizer.isOptimal();
 			ILPSolution solution = new ILPSolution(variableSolutions, optimal, -1);
-			double optimum = this.getObjective().getSolutionValue(solution);
+			double optimum = this.ilpProblem.getObjective().getSolutionValue(solution);
 			System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
 			return new ILPSolution(variableSolutions, optimal, optimum);
 		}
@@ -127,136 +108,86 @@ final class Sat4JWrapper extends ILPSolver {
 	}
 
 	/**
-	 * SAT4J LinearExpression
-	 * @author Robin Oppermann
+	 * Converts the term representation into the integer vector of variable literals of SAT4J
+	 * The string identifiers are replaced by integer identifiers 
+	 * @return The integer vector representing the literals of the linear expression
 	 */
-	private class SAT4JLinearExpression extends ILPLinearExpression {
-		/**
-		 * Converts the term representation into the integer vector of variable literals of SAT4J
-		 * The string identifiers are replaced by integer identifiers 
-		 * @return The integer vector representing the literals of the linear expression
-		 */
-		private IVecInt getLiterals() {
-			IVecInt vec = new VecInt();
-			for (ILPTerm term : this.getTerms()) {
-				vec.push(term.getVariable().hashCode());
-			}
-			return vec;
+	private IVecInt getLiterals(ILPLinearExpression linearExpression) {
+		IVecInt vec = new VecInt();
+		for (ILPTerm term : linearExpression.getTerms()) {
+			vec.push(term.getVariable().hashCode());
 		}
-
-		/**
-		 * Converts the term representation into the integer vector of coefficients of SAT4J
-		 * @return The BigInteger vector of the coefficients
-		 */
-		private IVec<BigInteger> getCoefs() {
-			IVec<BigInteger> vec = new Vec<>();
-			for (ILPTerm term : this.getTerms()) {
-				vec.push(BigInteger.valueOf((long)term.getCoefficient()));
-			}
-			return vec;
-		}
+		return vec;
 	}
 
 	/**
-	 * SAT4J Contraint
-	 * @author Robin Oppermann
-	 *
+	 * Converts the term representation into the integer vector of coefficients of SAT4J
+	 * @return The BigInteger vector of the coefficients
 	 */
-	private class SAT4JConstraint extends ILPConstraint {
-		/**
-		 * Creates a SAT4J constraint
-		 * @param linearExpression	The linear expression of the constraint (left side of the inequation)
-		 * @param comparator		Comparator (e.g. <=)
-		 * @param value				The value on the right side of the inequation
-		 */
-		private SAT4JConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
-			super(linearExpression, comparator, value, name);
-			if(!(linearExpression instanceof SAT4JLinearExpression)) {
-				throw new IllegalArgumentException("The linear Expression is not a SAT4J Expression");
-			}
-			switch(comparator) {
-			case ge:
-			case le:
-			case eq:
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
+	private IVec<BigInteger> getCoefs(ILPLinearExpression linearExpression) {
+		IVec<BigInteger> vec = new Vec<>();
+		for (ILPTerm term : linearExpression.getTerms()) {
+			vec.push(BigInteger.valueOf((long)term.getCoefficient()));
+		}
+		return vec;
+	}
+	
+	/**
+	 * Registers the constraint for SAT4J
+	 * @throws ContradictionException
+	 */
+	private void registerConstraint(ILPConstraint constraint) throws ContradictionException {
+		for (ILPTerm term : constraint.getLinearExpression().getTerms()) {
+			while(Math.abs(term.getCoefficient() - ((long)term.getCoefficient())) >= 0.00000000001) {
+				constraint.multiplyBy(10);
 			}
 		}
-
-		/**
-		 * Registers the constraint for SAT4J
-		 * @throws ContradictionException
-		 */
-		private void registerConstraint() throws ContradictionException {
-			for (ILPTerm term : this.linearExpression.getTerms()) {
-				while(Math.abs(term.getCoefficient() - ((long)term.getCoefficient())) >= 0.00000000001) {
-					this.multiplyBy(10);
-				}
-			}
-			while(Math.abs(value - ((long)value)) >= 0.00000000001) {
-				this.multiplyBy(10);
-			}
-			SAT4JLinearExpression expr = (SAT4JLinearExpression) linearExpression;
-			long value = (long) this.value;
-			switch(comparator) {
-			case ge:
-				solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), true, BigInteger.valueOf(value));
-				break;
-			case le:
-				solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), false, BigInteger.valueOf(value));
-				break;
-			case eq:
-				solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), true, BigInteger.valueOf(value));
-				solver.addPseudoBoolean(expr.getLiterals(), expr.getCoefs(), false, BigInteger.valueOf(value));
-			default:
-				throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
-			}
+		while(Math.abs(constraint.getValue() - ((long)constraint.getValue())) >= 0.00000000001) {
+			constraint.multiplyBy(10);
+		}
+		long value = (long) constraint.getValue();
+		IVecInt literals = getLiterals(constraint.getLinearExpression());
+		IVec<BigInteger> coeffs = getCoefs(constraint.getLinearExpression());
+		switch(constraint.getComparator()) {
+		case ge:
+			solver.addPseudoBoolean(literals, coeffs, true, BigInteger.valueOf(value));
+			break;
+		case le:
+			solver.addPseudoBoolean(literals, coeffs, false, BigInteger.valueOf(value));
+			break;
+		case eq:
+			solver.addPseudoBoolean(literals, coeffs, true, BigInteger.valueOf(value));
+			solver.addPseudoBoolean(literals, coeffs, false, BigInteger.valueOf(value));
+		default:
+			throw new IllegalArgumentException("Unsupported comparator: "+constraint.getComparator().toString());
 		}
 	}
 	
 	/**
-	 * SAT4J Objective
-	 * 
-	 * @author Robin Oppermann
-	 *
+	 * Register the objective for SAT4J
 	 */
-	private class SAT4JObjective extends ILPObjective {
-		/**
-		 * Creates a new objective function
-		 * 
-		 * @param linearExpression		The linear expression to optimize
-		 * @param objectiveOperation	The objective: Either minimize or maximize the objective
-		 */
-		private SAT4JObjective(ILPLinearExpression linearExpression, Operation objectiveOperation) {
-			super(linearExpression, objectiveOperation);
-		}
-		
-		/**
-		 * Register the objective for SAT4J
-		 */
-		private void registerObjective() {
-			for (ILPTerm term : this.linearExpression.getTerms()) {
-				while(Math.abs(term.getCoefficient() - ((long)term.getCoefficient())) >= 0.00000000001) {
-					linearExpression.multiplyBy(10);
-				}
+	private void registerObjective(ILPObjective objective) {
+		for (ILPTerm term : objective.getLinearExpression().getTerms()) {
+			while(Math.abs(term.getCoefficient() - ((long)term.getCoefficient())) >= 0.00000000001) {
+				objective.getLinearExpression().multiplyBy(10);
 			}
-			SAT4JLinearExpression expr = (SAT4JLinearExpression) this.linearExpression;
-			switch(this.objectiveOperation) {
-			case maximize:
-				SAT4JLinearExpression invertedExpression = (SAT4JLinearExpression) createLinearExpression();
-				for(ILPTerm term : expr.getTerms()) {
-					invertedExpression.addTerm(createTerm(term.getVariable(), -term.getCoefficient()));
-				}
-				expr = invertedExpression;
-				break;
-			case minimize:
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported comparator: "+objectiveOperation.toString());
-			}
-			solver.setObjectiveFunction(new ObjectiveFunction(expr.getLiterals(), expr.getCoefs()));
 		}
-		
+		ILPLinearExpression expr = objective.getLinearExpression();
+		switch(objective.getObjectiveOperation()) {
+		case maximize:
+			ILPLinearExpression invertedExpression = ilpProblem.createLinearExpression();
+			for(ILPTerm term : expr.getTerms()) {
+				invertedExpression.addTerm(ilpProblem.createTerm(term.getVariable(), -term.getCoefficient()));
+			}
+			expr = invertedExpression;
+			break;
+		case minimize:
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported comparator: "+objective.getObjectiveOperation().toString());
+		}
+		IVecInt literals = getLiterals(expr);
+		IVec<BigInteger> coeffs = getCoefs(expr);
+		solver.setObjectiveFunction(new ObjectiveFunction(literals, coeffs));
 	}
 }

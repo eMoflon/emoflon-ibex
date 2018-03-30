@@ -1,9 +1,8 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
 /**
- * This static class offers methods to create ILP solvers
+ * This static class offers methods to create ILP solvers and ILP problems
  * @author Robin Oppermann
- *
  */
 public final class ILPFactory {
 	
@@ -20,14 +19,14 @@ public final class ILPFactory {
 	 * @param 	solver Specifies the solver to use Currently Gurobi and SAT4J are supported.
 	 * @return The created solver
 	 */
-	public static ILPSolver createBinaryILPSolver(SupportedILPSolver solver) {
+	public static ILPSolver createBinaryILPSolver(ILPProblem ilpProblem, SupportedILPSolver solver) {
 		switch(solver) {
 			case Gurobi:
-				return new GurobiWrapper(true);
+				return new GurobiWrapper(ilpProblem, true);
 			case Sat4J:
-				return new Sat4JWrapper();
+				return new Sat4JWrapper(ilpProblem);
 			case GLPK:
-				return new GLPKWrapper(true);
+				return new GLPKWrapper(ilpProblem, true);
 			default:
 				throw new UnsupportedOperationException("Unknown Solver: "+solver.toString());
 		}
@@ -38,17 +37,25 @@ public final class ILPFactory {
 	 * @param	solver Specifies the solver to use. Currently only Gurobi is supported.
 	 * @return	The created solver.
 	 */
-	public static ILPSolver createILPSolver(SupportedILPSolver solver) {
+	public static ILPSolver createILPSolver(ILPProblem ilpProblem, SupportedILPSolver solver) {
 		switch(solver) {
 			case Gurobi:
-				return new GurobiWrapper(false);
+				return new GurobiWrapper(ilpProblem, false);
 			case GLPK:
-				return new GLPKWrapper(false);
+				return new GLPKWrapper(ilpProblem, false);
 			case Sat4J:
 				throw new UnsupportedOperationException("SAT4J does not support arbitrary ILP");
 			default:
 				throw new UnsupportedOperationException("Unknown Solver: "+solver.toString());
 		}
+	}
+	
+	/**
+	 * Creates a new empty ILPProblem
+	 * @return the created ILPProblem which can be filled with constraints and objecitves afterwards
+	 */
+	public static ILPProblem createILPProblem() {
+		return new ILPProblem();
 	}
 	
 	/**

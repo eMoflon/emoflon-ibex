@@ -3,6 +3,11 @@ package org.emoflon.ibex.tgg.util.ilp;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
+
 import gnu.trove.map.hash.THashMap;
 import gurobi.GRB;
 import gurobi.GRB.DoubleAttr;
@@ -41,8 +46,8 @@ final class GurobiWrapper extends ILPSolver {
 	 * Creates a new Gurobi ILP solver
 	 * @param onlyBinaryVariables This setting defines the variable range of variables registered at Gurobi
 	 */
-	GurobiWrapper(boolean onlyBinaryVariables){
-		super();
+	GurobiWrapper(ILPProblem ilpProblem, boolean onlyBinaryVariables){
+		super(ilpProblem);
 		this.onlyBinaryVariables = onlyBinaryVariables;
 	}
 
@@ -61,45 +66,22 @@ final class GurobiWrapper extends ILPSolver {
 	}
 
 	@Override
-	public ILPLinearExpression createLinearExpression(ILPTerm... terms) {
-		GurobiLinearExpression expr = new GurobiLinearExpression();
-		for (ILPTerm ilpTerm : terms) {
-			expr.addTerm(ilpTerm);
-		}
-		return expr;
-	}
-
-	@Override
-	public ILPConstraint addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
-		GurobiConstraint constr = new GurobiConstraint(linearExpression, comparator, value, name);
-		this.addConstraint(constr);
-		return constr;
-	}
-
-	@Override
-	public ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation) {
-		GurobiObjective objective = new GurobiObjective(linearExpression, operation);
-		this.setObjective(objective);
-		return objective;
-	}
-
-	@Override
 	public ILPSolution solveILP() throws GRBException {
-		System.out.println("The ILP to solve has "+this.getConstraints().size()+" constraints and "+this.getVariables().size()+ " variables");
+		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
 		env = new GRBEnv("Gurobi_ILP.log");
 		model = new GRBModel(env);
 
-		for(String variableName : this.getVariables()) {
+		for(String variableName : this.ilpProblem.getVariables()) {
 			this.registerVariable(variableName);
 		}
-		for(ILPConstraint constraint : this.getConstraints()) {
-			((GurobiConstraint) constraint).registerConstraint();
+		for(ILPConstraint constraint : this.ilpProblem.getConstraints()) {
+			registerConstraint(constraint);
 		}
-		((GurobiObjective) this.getObjective()).registerObjective();
+		registerObjective(this.ilpProblem.getObjective());
 
 		model.optimize();
 		Map<String, Integer> solutionVariables = new HashMap<>();
-		for (String variableName : getVariables()) {
+		for (String variableName : this.ilpProblem.getVariables()) {
 			GRBVar gurobiVar = gurobiVariables.get(variableName);
 			solutionVariables.put(variableName, (int) gurobiVar.get(DoubleAttr.X));
 		}
@@ -109,99 +91,56 @@ final class GurobiWrapper extends ILPSolver {
 		model.dispose();
 		return new ILPSolution(solutionVariables, true, optimum);
 	}
-
+	
 	/**
-	 * 
-	 * @author Robin Oppermann
-	 *
+	 * Creates the internally used Gurobi expression
 	 */
-	private class GurobiLinearExpression extends ILPLinearExpression {
-		private GRBLinExpr createGurobiExpression() {
-			GRBLinExpr gurobiExpression = new GRBLinExpr();
-			for(ILPTerm term : this.getTerms()) {
-				gurobiExpression.addTerm(term.getCoefficient(), gurobiVariables.get(term.getVariable()));
-			}
-			return gurobiExpression;
+	private GRBLinExpr createGurobiExpression(ILPLinearExpression linearExpression) {
+		GRBLinExpr gurobiExpression = new GRBLinExpr();
+		for(ILPTerm term : linearExpression.getTerms()) {
+			gurobiExpression.addTerm(term.getCoefficient(), gurobiVariables.get(term.getVariable()));
 		}
+		return gurobiExpression;
+	}
+	
+	/**
+	 * Registers the constraint in the gurobi model
+	 * @throws GRBException
+	 */
+	private void registerConstraint(ILPConstraint constraint) throws GRBException {
+		char gurobiComparator;
+		switch(constraint.getComparator()) {
+		case eq:
+			gurobiComparator = GRB.EQUAL;
+			break;
+		case ge:
+			gurobiComparator = GRB.GREATER_EQUAL;
+			break;
+		case le:
+			gurobiComparator = GRB.LESS_EQUAL;
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported comparator: "+constraint.getComparator().toString());
+		}
+		model.addConstr(createGurobiExpression(constraint.getLinearExpression()), gurobiComparator, constraint.getValue(), constraint.getName());
 	}
 
 	/**
-	 * ILPConstraint for Gurobi
-	 * 
-	 * @author Robin Oppermann
+	 * Registers the objective in the gurobi model
+	 * @throws GRBException
 	 */
-	private class GurobiConstraint extends ILPConstraint {
-		/**
-		 * Creates a Gurobi constraint
-		 * @param linearExpression	The linear expression of the constraint (left side of the inequation)
-		 * @param comparator		Comparator (e.g. <=)
-		 * @param value				The value on the right side of the inequation
-		 * @param name				Hte name of the constraint
-		 */
-		private GurobiConstraint(ILPLinearExpression linearExpression, Operation comparator, double value, String name) {
-			super(linearExpression, comparator, value, name);
+	private void registerObjective(ILPObjective objective) throws GRBException {
+		int gurobiObjectiveSelector;
+		switch(objective.getObjectiveOperation()) {
+		case maximize:
+			gurobiObjectiveSelector = GRB.MAXIMIZE;
+			break;
+		case minimize:
+			gurobiObjectiveSelector = GRB.MINIMIZE;
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported operation: "+objective.getObjectiveOperation().toString());
 		}
-
-		/**
-		 * Registers the constraint in the gurobi model
-		 * @throws GRBException
-		 */
-		private void registerConstraint() throws GRBException {
-			char gurobiComparator;
-			switch(this.comparator) {
-			case eq:
-				gurobiComparator = GRB.EQUAL;
-				break;
-			case ge:
-				gurobiComparator = GRB.GREATER_EQUAL;
-				break;
-			case le:
-				gurobiComparator = GRB.LESS_EQUAL;
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
-			}
-			model.addConstr(((GurobiLinearExpression)linearExpression).createGurobiExpression(), gurobiComparator, value, name);
-		}
-	}
-
-	/**
-	 * ILP Objective for Gurobi
-	 * 
-	 * @author Robin Oppermann
-	 */
-	private class GurobiObjective extends ILPObjective {
-		/**
-		 * Gurobi identifier of the objective
-		 */
-		private final int gurobiObjectiveSelector;
-
-		/**
-		 * Creates a new objective function
-		 * 
-		 * @param linearExpression		The linear expression to optimize
-		 * @param objectiveOperation	The objective: Either minimize or maximize the objective
-		 */
-		private GurobiObjective(ILPLinearExpression linearExpression, Operation objectiveOperation) {
-			super(linearExpression, objectiveOperation);
-			switch(objectiveOperation) {
-			case maximize:
-				gurobiObjectiveSelector = GRB.MAXIMIZE;
-				break;
-			case minimize:
-				gurobiObjectiveSelector = GRB.MINIMIZE;
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported operation: "+objectiveOperation.toString());
-			}
-		}
-
-		/**
-		 * Registers the objective in the gurobi model
-		 * @throws GRBException
-		 */
-		private void registerObjective() throws GRBException {
-			model.setObjective(((GurobiLinearExpression)linearExpression).createGurobiExpression(), gurobiObjectiveSelector);
-		}		
-	}
+		model.setObjective(createGurobiExpression(objective.getLinearExpression()), gurobiObjectiveSelector);
+	}	
 }

@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
 import org.gnu.glpk.SWIGTYPE_p_double;
@@ -19,11 +22,20 @@ import org.gnu.glpk.glp_smcp;
 import gnu.trove.map.hash.THashMap;
 
 /**
- * @author RobinO
+ * This class is a wrapper around GLPK allowing the usage of this ILPSolver with the unified API of the {@link ILPSolver} class.
+ * To use GLPK you have to download and extract it
+ * The files have to be either in 
+ * on Windows x64: C:\Program Files\GLPK\glpk-4.65 
+ * on Windows x86: C:\Program Files (x86)\GLPK\glpk-4.65
+ * or in a directory of your PATH, or you can give the path the vm arguments
+ * @author Robin Oppermann
  *
  */
-public final class GLPKWrapper extends ILPSolver {
+final class GLPKWrapper extends ILPSolver {
 
+	/*
+	 * Add standard library path when class is loaded
+	 */
 	static {
 		try {
 			addLibraryPath("C:\\Program Files\\GLPK\\glpk-4.65\\w64");
@@ -37,7 +49,15 @@ public final class GLPKWrapper extends ILPSolver {
 	 * This setting defines the variable range of variables registered at Gurobi
 	 */
 	private final boolean onlyBinaryVariables;
+	
+	/**
+	 * The GLPK problem
+	 */
 	private glp_prob problem;
+	
+	/**
+	 * Mapping of variables to the integer identifiers used within GLPK
+	 */
 	private final THashMap<String, Integer> glpkVariableCounters = new THashMap<String, Integer>();
 
 
@@ -69,24 +89,18 @@ public final class GLPKWrapper extends ILPSolver {
 	}
 
 	/**
-	 * 
+	 * Creates a new GLPK solver to solve the given problem
 	 */
-	GLPKWrapper(boolean onlyBinaryVariables) {
+	GLPKWrapper(ILPProblem ilpProblem, boolean onlyBinaryVariables) {
+		super(ilpProblem);
 		this.onlyBinaryVariables = onlyBinaryVariables;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.emoflon.ibex.tgg.util.ilp.ILPSolver#createLinearExpression(org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPTerm[])
+	/**
+	 * Creates a new variable entry for the given variable
+	 * @param variable the variable to create an entry for
+	 * @param variableCounter The variable identifier (column counter). Each identifier must be unique and should be used incremental
 	 */
-	@Override
-	public ILPLinearExpression createLinearExpression(ILPTerm... terms) {
-		ILPLinearExpression expr = new GLPKLinearExression();
-		for (ILPTerm term : terms) {
-			expr.addTerm(term);
-		}
-		return expr;
-	}
-
 	private void registerVariable(String variable, int variableCounter) {
 		this.glpkVariableCounters.put(variable, variableCounter);
 		GLPK.glp_set_col_name(problem, variableCounter, variable);
@@ -100,25 +114,70 @@ public final class GLPKWrapper extends ILPSolver {
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see org.emoflon.ibex.tgg.util.ilp.ILPSolver#addConstraint(org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPLinearExpression, org.emoflon.ibex.tgg.util.ilp.ILPSolver.Operation, double, java.lang.String)
+	/**
+	 * Registers the constraint in GLPK. Each constraint is a row in the matrix, containing the information about 
+	 * the used variables and coefficients as well as the bounds.
+	 * @param constraint The constraint to register
+	 * @param constraintCounter Incremental counter (used for the index of the row)
 	 */
-	@Override
-	public ILPConstraint addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value,
-			String name) {
-		ILPConstraint constr = new GLPKConstraint(linearExpression, comparator, value, name);
-		this.addConstraint(constr);
-		return constr;
+	private void registerConstraint(ILPConstraint constraint, int constraintCounter){
+		GLPK.glp_set_row_name(problem, constraintCounter, constraint.getName());
+		
+		int counter = 1;
+		int numberOfVariables = constraint.getLinearExpression().getTerms().size();
+		SWIGTYPE_p_int variableIndices = GLPK.new_intArray(numberOfVariables+1);
+		SWIGTYPE_p_double coefficients = GLPK.new_doubleArray(numberOfVariables+1);
+		for(ILPTerm term : constraint.getLinearExpression().getTerms()) {
+			GLPK.intArray_setitem(variableIndices, counter, glpkVariableCounters.get(term.getVariable()));
+			GLPK.doubleArray_setitem(coefficients, counter, term.getCoefficient());
+			counter++;
+		}
+		GLPK.glp_set_mat_row(problem, constraintCounter, numberOfVariables, variableIndices, coefficients);
+		switch(constraint.getComparator()) {
+		case ge:
+			GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_LO, constraint.getValue(), constraint.getValue());
+			break;
+		case le:
+			GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_UP, constraint.getValue(), constraint.getValue());
+			break;
+		case eq:
+			GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_FX, constraint.getValue(), constraint.getValue());
+		default:
+			throw new IllegalArgumentException("Unsupported comparator: "+constraint.getComparator().toString());
+		}
+		// Free memory
+		GLPK.delete_intArray(variableIndices);
+		GLPK.delete_doubleArray(coefficients);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.emoflon.ibex.tgg.util.ilp.ILPSolver#setObjective(org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPLinearExpression, org.emoflon.ibex.tgg.util.ilp.ILPSolver.Operation)
+	
+	/**
+	 * Registers the objective in GLPK
+	 * @param objective The objective function
 	 */
-	@Override
-	public ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation) {
-		ILPObjective objective = new GLPKObjective(linearExpression, operation);
-		this.setObjective(objective);
-		return objective;
+	private void registerObjective(ILPObjective objective) {
+		GLPK.glp_set_obj_name(problem, "obj");
+		switch(objective.getObjectiveOperation()) {
+		case maximize:
+			GLPK.glp_set_obj_dir(problem, GLPKConstants.GLP_MAX);
+			break;
+		case minimize:
+			GLPK.glp_set_obj_dir(problem, GLPKConstants.GLP_MIN);
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported operation: "+objective.getObjectiveOperation().toString());
+		}
+	
+		//define terms
+		for(Entry<String, Integer> variable : glpkVariableCounters.entrySet()) {
+			//find terms containing the variable
+			double currentCoef = 0;
+			for(ILPTerm term : objective.getLinearExpression().getTerms()) {
+				if(term.getVariable().equals(variable.getKey())) {
+					currentCoef += term.getCoefficient();
+				}
+			}
+			GLPK.glp_set_obj_coef(problem, variable.getValue(), currentCoef);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -126,30 +185,28 @@ public final class GLPKWrapper extends ILPSolver {
 	 */
 	@Override
 	public ILPSolution solveILP() throws Exception {
-		System.out.println("The ILP to solve has "+this.getConstraints().size()+" constraints and "+this.getVariables().size()+ " variables");
+		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
 		System.out.println(this);
-		if(this.getVariables().size() <= 0) {
+		if(this.ilpProblem.getVariables().size() <= 0) {
 			return new ILPSolution(new HashMap<String, Integer>(), true, 0);
 		}
 		try {
 			problem = GLPK.glp_create_prob();
 			//register variables
-			int numberOfVariables = this.getVariables().size();
+			int numberOfVariables = this.ilpProblem.getVariables().size();
 			GLPK.glp_add_cols(problem, numberOfVariables);
 			int counter = 1;
-			for(String variable : this.getVariables()) {
+			for(String variable : this.ilpProblem.getVariables()) {
 				this.registerVariable(variable, counter++);
 			}
 			
 			//register constraints
 			counter = 1;
-			GLPK.glp_add_rows(problem, this.getConstraints().size());
-			for(ILPConstraint constraint : this.getConstraints()) {
-				((GLPKConstraint) constraint).registerConstraint(counter++);
-				//For some reason this needs some time. If we just continue the program will terminate
-//				Thread.sleep(1000);
+			GLPK.glp_add_rows(problem, this.ilpProblem.getConstraints().size());
+			for(ILPConstraint constraint : this.ilpProblem.getConstraints()) {
+				registerConstraint(constraint, counter++);
 			}
-			((GLPKObjective) this.getObjective()).registerObjective();
+			registerObjective(this.ilpProblem.getObjective());
 
 			//Solve model
 			glp_smcp parm= new glp_smcp();
@@ -176,7 +233,6 @@ public final class GLPKWrapper extends ILPSolver {
 				}
 				GLPK.glp_delete_prob(problem);
 				ILPSolution solution = new ILPSolution(variableSolutions, optimal, optimum);
-				System.out.println(solution);
 				return solution;
 			} else {
 				System.err.println("The problem could not be solved");
@@ -187,77 +243,5 @@ public final class GLPKWrapper extends ILPSolver {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	private class GLPKConstraint extends ILPConstraint{
-		private GLPKConstraint(ILPLinearExpression linearExpression, Operation comparator, double value,
-				String name) {
-			super(linearExpression, comparator, value, name);
-		}
-
-		private void registerConstraint(int constraintCounter) throws InterruptedException {
-			GLPK.glp_set_row_name(problem, constraintCounter, this.name);
-			
-			int counter = 1;
-			int numberOfVariables = this.linearExpression.getTerms().size();
-			SWIGTYPE_p_int variableIndices = GLPK.new_intArray(numberOfVariables+1);
-			SWIGTYPE_p_double coefficients = GLPK.new_doubleArray(numberOfVariables+1);
-			for(ILPTerm term : this.linearExpression.getTerms()) {
-				GLPK.intArray_setitem(variableIndices, counter, glpkVariableCounters.get(term.getVariable()));
-				GLPK.doubleArray_setitem(coefficients, counter, term.getCoefficient());
-				counter++;
-			}
-			GLPK.glp_set_mat_row(problem, constraintCounter, numberOfVariables, variableIndices, coefficients);
-			switch(comparator) {
-			case ge:
-				GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_LO, this.value, this.value);
-				break;
-			case le:
-				GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_UP, this.value, this.value);
-				break;
-			case eq:
-				GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_FX, this.value, this.value);
-			default:
-				throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
-			}
-			// Free memory
-			GLPK.delete_intArray(variableIndices);
-			GLPK.delete_doubleArray(coefficients);
-		}
-	}
-
-	private class GLPKObjective extends ILPObjective {
-		private GLPKObjective(ILPLinearExpression linearExpression, Operation objectiveOperation) {
-			super(linearExpression, objectiveOperation);
-		}
-
-		private void registerObjective() {
-			GLPK.glp_set_obj_name(problem, "obj");
-			switch(this.objectiveOperation) {
-			case maximize:
-				GLPK.glp_set_obj_dir(problem, GLPKConstants.GLP_MAX);
-				break;
-			case minimize:
-				GLPK.glp_set_obj_dir(problem, GLPKConstants.GLP_MIN);
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported operation: "+objectiveOperation.toString());
-			}
-
-			//define terms
-			for(Entry<String, Integer> variable : glpkVariableCounters.entrySet()) {
-				//find terms containing the variable
-				double currentCoef = 0;
-				for(ILPTerm term : this.linearExpression.getTerms()) {
-					if(term.getVariable().equals(variable.getKey())) {
-						currentCoef += term.getCoefficient();
-					}
-				}
-				GLPK.glp_set_obj_coef(problem, variable.getValue(), currentCoef);
-			}
-		}
-	}
-
-	private class GLPKLinearExression extends ILPLinearExpression {
 	}
 }
