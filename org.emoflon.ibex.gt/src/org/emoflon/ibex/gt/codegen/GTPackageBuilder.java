@@ -32,7 +32,7 @@ import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.gt.codegen.JavaFileGenerator;
-import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
+import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
@@ -97,14 +97,14 @@ public class GTPackageBuilder implements GTBuilderExtension {
 
 		// Load files into editor models.
 		XtextResourceSet resourceSet = new XtextResourceSet();
-		Map<IFile, GraphTransformationFile> editorModels = new HashMap<IFile, GraphTransformationFile>();
+		Map<IFile, EditorGTFile> editorModels = new HashMap<IFile, EditorGTFile>();
 		Set<String> metaModels = new HashSet<String>();
 		this.getFiles().forEach(gtFile -> {
 			URI uri = URI.createPlatformResourceURI(gtFile.getFullPath().toString(), true);
 			Resource file = resourceSet.getResource(uri, true);
 			EcoreUtil2.resolveLazyCrossReferences(file, () -> false);
 
-			GraphTransformationFile editorModel = ((GraphTransformationFile) file.getContents().get(0));
+			EditorGTFile editorModel = ((EditorGTFile) file.getContents().get(0));
 			editorModels.put(gtFile, editorModel);
 			editorModel.getImports().forEach(i -> metaModels.add(i.getName()));
 		});
@@ -225,10 +225,10 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @param editorModels
 	 *            the editor files and models
 	 */
-	private void checkEditorModelsForDuplicateRuleNames(final Map<IFile, GraphTransformationFile> editorModels) {
+	private void checkEditorModelsForDuplicateRuleNames(final Map<IFile, EditorGTFile> editorModels) {
 		Map<String, IFile> ruleNameToFile = new HashMap<String, IFile>();
 		for (final IFile gtFile : editorModels.keySet()) {
-			GraphTransformationFile editorModel = editorModels.get(gtFile);
+			EditorGTFile editorModel = editorModels.get(gtFile);
 			List<Rule> duplicates = new ArrayList<Rule>();
 			editorModel.getRules().forEach(rule -> {
 				String ruleName = rule.getName();
@@ -252,7 +252,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 *            the editor files and models
 	 * @return the graph transformation rules
 	 */
-	private GTRuleSet transformEditorModelsToInternalModel(final Map<IFile, GraphTransformationFile> editorModels) {
+	private GTRuleSet transformEditorModelsToInternalModel(final Map<IFile, EditorGTFile> editorModels) {
 		GTRuleSet gtRuleSet = null;
 		EditorToInternalGTModelTransformation editor2internal = new EditorToInternalGTModelTransformation();
 		for (final IFile gtFile : editorModels.keySet()) {

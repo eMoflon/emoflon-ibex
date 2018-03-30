@@ -7,15 +7,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EEnumLiteral;
-import org.emoflon.ibex.gt.editor.gT.AttributeConstraint;
+import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
 import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
-import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
+import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.gT.Node;
 import org.emoflon.ibex.gt.editor.gT.Parameter;
-import org.emoflon.ibex.gt.editor.gT.Relation;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
 
@@ -39,15 +39,14 @@ import IBeXLanguage.IBeXLanguageFactory;
  * meta-model generated from the Xtext specification) to the internal GT model
  * (which conforms to the GTLanguage.ecore meta-model).
  */
-public class EditorToInternalGTModelTransformation
-		extends AbstractModelTransformation<GraphTransformationFile, GTRuleSet> {
+public class EditorToInternalGTModelTransformation extends AbstractModelTransformation<EditorGTFile, GTRuleSet> {
 	/**
 	 * The rules transformed into the internal model.
 	 */
 	private List<GTRule> gtRules = new ArrayList<GTRule>();
 
 	@Override
-	public GTRuleSet transform(final GraphTransformationFile editorModel) {
+	public GTRuleSet transform(final EditorGTFile editorModel) {
 		Objects.requireNonNull(editorModel, "The editor model must not be null!");
 		editorModel.getRules().forEach(editorRule -> this.transformRule(editorRule));
 
@@ -111,7 +110,7 @@ public class EditorToInternalGTModelTransformation
 
 		// Transform the attribute constraints.
 		editorNode.getAttributes().forEach(editorAttr -> {
-			if (editorAttr.getRelation() == Relation.ASSIGNMENT) {
+			if (editorAttr.getRelation() == EditorRelation.ASSIGNMENT) {
 				GTAttributeAssignment gtAttr = GTLanguageFactory.eINSTANCE.createGTAttributeAssignment();
 				gtAttr.setType(editorAttr.getAttribute());
 				this.setAttributeValue(gtAttr, editorAttr, gtParameters);
@@ -132,14 +131,14 @@ public class EditorToInternalGTModelTransformation
 	 * 
 	 * @param gtAttribute
 	 *            the attribute constraint whose value shall be set
-	 * @param editorAttributeConstraint
+	 * @param editorAttribute
 	 *            the attribute constraint of the editor model
 	 * @param gtParameters
 	 *            the parameters of rule (internal model)
 	 */
-	private void setAttributeValue(final GTAttribute gtAttribute, final AttributeConstraint editorAttributeConstraint,
+	private void setAttributeValue(final GTAttribute gtAttribute, final EditorAttribute editorAttribute,
 			final List<GTParameter> gtParameters) {
-		EditorExpression editorValue = editorAttributeConstraint.getValue();
+		EditorExpression editorValue = editorAttribute.getValue();
 		if (editorValue instanceof EditorLiteralExpression) {
 			String s = ((EditorLiteralExpression) editorValue).getValue();
 			Optional<Object> object = GTEditorAttributeUtils
