@@ -60,7 +60,7 @@ final class Sat4JWrapper extends ILPSolver {
 
 	@Override
 	public ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation) {
-		SAT4JObjective objective = new SAT4JObjective(linearExpression, operation);
+		ILPObjective objective = new SAT4JObjective(linearExpression, operation);
 		this.setObjective(objective);
 		return objective;
 	}

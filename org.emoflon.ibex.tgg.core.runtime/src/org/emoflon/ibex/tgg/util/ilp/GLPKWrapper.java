@@ -5,15 +5,26 @@ package org.emoflon.ibex.tgg.util.ilp;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.gnu.glpk.GLPK;
+import org.gnu.glpk.GLPKConstants;
+import org.gnu.glpk.SWIGTYPE_p_double;
+import org.gnu.glpk.SWIGTYPE_p_int;
+import org.gnu.glpk.glp_prob;
+import org.gnu.glpk.glp_smcp;
+
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TIntDoubleHashMap;
 
 /**
  * @author RobinO
  *
  */
 public final class GLPKWrapper extends ILPSolver {
-	
+
 	static {
 		try {
 			addLibraryPath("C:\\Program Files\\GLPK\\glpk-4.65\\w64");
@@ -22,40 +33,47 @@ public final class GLPKWrapper extends ILPSolver {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
-	* Adds the specified path to the java library path
-	*
-	* @param pathToAdd the path to add
-	* @throws Exception
-	*/
+	 * This setting defines the variable range of variables registered at Gurobi
+	 */
+	private final boolean onlyBinaryVariables;
+	private glp_prob problem;
+	private final THashMap<String, Integer> glpkVariableCounters = new THashMap<String, Integer>();
+
+
+	/**
+	 * Adds the specified path to the java library path
+	 *
+	 * @param pathToAdd the path to add
+	 * @throws Exception
+	 */
 	private static void addLibraryPath(String pathToAdd) throws Exception{
-//		ClassLoader.getSystemClassLoader().
-	    final Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
-	    usrPathsField.setAccessible(true);
-	 
-	    //get array of paths
-	    final String[] paths = (String[])usrPathsField.get(null);
-	 
-	    //check if the path to add is already present
-	    for(String path : paths) {
-	        if(path.equals(pathToAdd)) {
-	            return;
-	        }
-	    }
-	 
-	    //add the new path
-	    final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
-	    newPaths[newPaths.length-1] = pathToAdd;
-	    usrPathsField.set(null, newPaths);
+		//		ClassLoader.getSystemClassLoader().
+		final Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
+		usrPathsField.setAccessible(true);
+
+		//get array of paths
+		final String[] paths = (String[])usrPathsField.get(null);
+
+		//check if the path to add is already present
+		for(String path : paths) {
+			if(path.equals(pathToAdd)) {
+				return;
+			}
+		}
+
+		//add the new path
+		final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
+		newPaths[newPaths.length-1] = pathToAdd;
+		usrPathsField.set(null, newPaths);
 	}
 
 	/**
 	 * 
 	 */
-	public GLPKWrapper() {
-		// TODO Auto-generated constructor stub
-		System.out.println(GLPK.glp_version());
+	GLPKWrapper(boolean onlyBinaryVariables) {
+		this.onlyBinaryVariables = onlyBinaryVariables;
 	}
 
 	/* (non-Javadoc)
@@ -63,8 +81,24 @@ public final class GLPKWrapper extends ILPSolver {
 	 */
 	@Override
 	public ILPLinearExpression createLinearExpression(ILPTerm... terms) {
-		// TODO Auto-generated method stub
-		return null;
+		ILPLinearExpression expr = new GLPKLinearExression();
+		for (ILPTerm term : terms) {
+			expr.addTerm(term);
+		}
+		return expr;
+	}
+
+	private void registerVariable(String variable, int variableCounter) {
+		this.glpkVariableCounters.put(variable, variableCounter);
+		GLPK.glp_set_col_name(problem, variableCounter, variable);
+		if(this.onlyBinaryVariables) {
+			GLPK.glp_set_col_kind(problem, variableCounter, GLPKConstants.GLP_BV);
+			GLPK.glp_set_col_bnds(problem, variableCounter, GLPKConstants.GLP_DB, 0, 1);
+		} else {
+			GLPK.glp_set_col_kind(problem, variableCounter, GLPKConstants.GLP_IV);
+			GLPK.glp_set_col_bnds(problem, variableCounter, GLPKConstants.GLP_FR, 0, 0);
+		}
+		
 	}
 
 	/* (non-Javadoc)
@@ -73,8 +107,9 @@ public final class GLPKWrapper extends ILPSolver {
 	@Override
 	public ILPConstraint addConstraint(ILPLinearExpression linearExpression, Operation comparator, double value,
 			String name) {
-		// TODO Auto-generated method stub
-		return null;
+		ILPConstraint constr = new GLPKConstraint(linearExpression, comparator, value, name);
+		this.addConstraint(constr);
+		return constr;
 	}
 
 	/* (non-Javadoc)
@@ -82,8 +117,9 @@ public final class GLPKWrapper extends ILPSolver {
 	 */
 	@Override
 	public ILPObjective setObjective(ILPLinearExpression linearExpression, Operation operation) {
-		// TODO Auto-generated method stub
-		return null;
+		ILPObjective objective = new GLPKObjective(linearExpression, operation);
+		this.setObjective(objective);
+		return objective;
 	}
 
 	/* (non-Javadoc)
@@ -91,8 +127,145 @@ public final class GLPKWrapper extends ILPSolver {
 	 */
 	@Override
 	public ILPSolution solveILP() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("The ILP to solve has "+this.getConstraints().size()+" constraints and "+this.getVariables().size()+ " variables");
+		if(this.getVariables().size() <= 0) {
+			return new ILPSolution(new HashMap<String, Integer>(), true);
+		}
+		try {
+			problem = GLPK.glp_create_prob();
+			//register variables
+			int numberOfVariables = this.getVariables().size();
+			GLPK.glp_add_cols(problem, numberOfVariables);
+			int counter = 1;
+			for(String variable : this.getVariables()) {
+				this.registerVariable(variable, counter++);
+			}
+			
+			//register constraints
+			counter = 1;
+			GLPK.glp_add_rows(problem, this.getConstraints().size());
+			for(ILPConstraint constraint : this.getConstraints()) {
+				System.out.println("Registering constraint ("+counter+"): " +constraint);
+				((GLPKConstraint) constraint).registerConstraint(counter++);
+				//For some reason this needs some time. If we just continue the program will terminate
+//				Thread.sleep(1000);
+			}
+			((GLPKObjective) this.getObjective()).registerObjective();
+
+			//For debugging: Write model to file
+			GLPK.glp_write_lp(problem, null, "lp.lp");
+
+			//Solve model
+			glp_smcp parm= new glp_smcp();
+			GLPK.glp_init_smcp(parm);
+			int exitCode = GLPK.glp_simplex(problem, parm);
+
+			// Retrieve solution
+			if (exitCode == 0) {
+				Map<String, Integer> variableSolutions = new HashMap<String, Integer>();
+				double optimum = GLPK.glp_get_obj_val(problem);
+				System.out.println("Optimal solution found: "+optimum);
+				for(Entry<String, Integer> variable : glpkVariableCounters.entrySet()) {
+					double value = GLPK.glp_get_col_prim(problem, variable.getValue());
+					variableSolutions.put(variable.getKey(), (int) value);
+				}
+				GLPK.glp_delete_prob(problem);
+				return new ILPSolution(variableSolutions, true);
+			} else {
+				System.err.println("The problem could not be solved");
+				GLPK.glp_delete_prob(problem);
+				return null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
+	private class GLPKConstraint extends ILPConstraint{
+		private GLPKConstraint(ILPLinearExpression linearExpression, Operation comparator, double value,
+				String name) {
+			super(linearExpression, comparator, value, name);
+		}
+
+		private void registerConstraint(int constraintCounter) throws InterruptedException {
+			System.out.println("Setting name");
+//			GLPK.glp_set_row_name(problem, constraintCounter, this.name);
+			
+			int counter = 1;
+			TIntDoubleHashMap variableCoefficientMapping = new TIntDoubleHashMap();
+			for(ILPTerm term : this.linearExpression.getTerms()) {
+				int variableIdentifier = glpkVariableCounters.get(term.getVariable());
+				double coeff = term.getCoefficient();
+				if(variableCoefficientMapping.contains(variableIdentifier)) {
+					coeff += variableCoefficientMapping.get(variableIdentifier);
+				}
+				variableCoefficientMapping.put(variableIdentifier, coeff);
+			}
+			
+			int numberOfVariables = variableCoefficientMapping.size();
+			SWIGTYPE_p_int variableIndices = GLPK.new_intArray(numberOfVariables);
+			SWIGTYPE_p_double coefficients = GLPK.new_doubleArray(numberOfVariables);
+			for(int variableIdentifier : variableCoefficientMapping.keys()) {
+				GLPK.intArray_setitem(variableIndices, counter, variableIdentifier);
+				GLPK.doubleArray_setitem(coefficients, counter, variableCoefficientMapping.get(variableIdentifier));
+				counter++;
+			}
+			System.out.println("Adding row");
+			GLPK.glp_set_mat_row(problem, constraintCounter, numberOfVariables, variableIndices, coefficients);
+			System.out.println("Setting bounds");
+			switch(comparator) {
+			case ge:
+				GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_LO, this.value, this.value);
+				break;
+			case le:
+				GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_UP, this.value, this.value);
+				break;
+			case eq:
+				GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_FX, this.value, this.value);
+			default:
+				throw new IllegalArgumentException("Unsupported comparator: "+comparator.toString());
+			}
+			
+			// Free memory
+			System.out.println("Deleting arrays");
+//			GLPK.delete_intArray(variableIndices);
+//			GLPK.delete_doubleArray(coefficients);
+		}
+	}
+
+	private class GLPKObjective extends ILPObjective {
+		private GLPKObjective(ILPLinearExpression linearExpression, Operation objectiveOperation) {
+			super(linearExpression, objectiveOperation);
+		}
+
+		private void registerObjective() {
+			GLPK.glp_set_obj_name(problem, "obj");
+			switch(this.objectiveOperation) {
+			case maximize:
+				GLPK.glp_set_obj_dir(problem, GLPKConstants.GLP_MAX);
+				break;
+			case minimize:
+				GLPK.glp_set_obj_dir(problem, GLPKConstants.GLP_MIN);
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported operation: "+objectiveOperation.toString());
+			}
+
+			//define terms
+			for(Entry<String, Integer> variable : glpkVariableCounters.entrySet()) {
+				//find terms containing the variable
+				double currentCoef = 0;
+				for(ILPTerm term : this.linearExpression.getTerms()) {
+					if(term.getVariable().equals(variable.getKey())) {
+						currentCoef += term.getCoefficient();
+					}
+				}
+				GLPK.glp_set_obj_coef(problem, variable.getValue(), currentCoef);
+			}
+		}
+	}
+
+	private class GLPKLinearExression extends ILPLinearExpression {
+	}
 }
