@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
+import org.emoflon.ibex.gt.editor.gT.EditorAttributeExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
@@ -18,6 +19,7 @@ import org.emoflon.ibex.gt.editor.gT.Node;
 import org.emoflon.ibex.gt.editor.gT.Parameter;
 import org.emoflon.ibex.gt.editor.gT.Rule;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
+import org.emoflon.ibex.gt.editor.utils.GTFlattener;
 
 import GTLanguage.GTAttribute;
 import GTLanguage.GTAttributeAssignment;
@@ -29,6 +31,7 @@ import GTLanguage.GTNode;
 import GTLanguage.GTParameter;
 import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
+import IBeXLanguage.IBeXAttributeExpression;
 import IBeXLanguage.IBeXAttributeParameter;
 import IBeXLanguage.IBeXConstant;
 import IBeXLanguage.IBeXEnumLiteral;
@@ -48,6 +51,7 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	@Override
 	public GTRuleSet transform(final EditorGTFile editorModel) {
 		Objects.requireNonNull(editorModel, "The editor model must not be null!");
+
 		editorModel.getRules().forEach(editorRule -> this.transformRule(editorRule));
 
 		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
@@ -60,11 +64,22 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	/**
 	 * Transforms an editor rule into a GTRule of the internal GT model.
 	 * 
-	 * @param editorRule
+	 * @param editorRuleUnflattened
 	 *            the editor rule, must not be <code>null</code>
 	 */
-	private void transformRule(final Rule editorRule) {
-		Objects.requireNonNull(editorRule, "rule must not be null!");
+	private void transformRule(final Rule editorRuleUnflattened) {
+		Objects.requireNonNull(editorRuleUnflattened, "rule must not be null!");
+
+		Rule editorRule = editorRuleUnflattened;
+		if (!editorRuleUnflattened.getSuperRules().isEmpty()) {
+			GTFlattener flattener = new GTFlattener(editorRuleUnflattened);
+			editorRule = flattener.getFlattenedRule();
+
+			if (flattener.hasErrors()) {
+				flattener.getErrors().forEach(e -> this.logError(e));
+				return;
+			}
+		}
 
 		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
 		gtRule.setName(editorRule.getName());
@@ -78,15 +93,36 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 			gtRule.getParameters().add(this.transformParameter(editorParameter));
 		});
 
-		// Transform nodes, edges, attribute constraints.
+		// Transform nodes and edges.
 		GTGraph gtGraph = GTLanguageFactory.eINSTANCE.createGTGraph();
 		editorRule.getNodes().forEach(editorNode -> {
-			gtGraph.getNodes().add(this.transformNode(editorNode, gtRule.getParameters()));
+			gtGraph.getNodes().add(this.transformNode(editorNode));
 		});
 		editorRule.getNodes().forEach(editorNode -> {
 			gtGraph.getEdges().addAll(this.transformReferencesToEdges(editorNode, gtGraph.getNodes()));
 		});
 		gtRule.setGraph(gtGraph);
+
+		// Transform attribute assignments and constraints.
+		editorRule.getNodes().forEach(editorNode -> {
+			Optional<GTNode> gtNodeOptional = InternalGTModelUtils.findGTNodeWithName(gtGraph.getNodes(),
+					editorNode.getName());
+			GTNode gtNode = gtNodeOptional.get();
+			editorNode.getAttributes().forEach(editorAttr -> {
+				if (editorAttr.getRelation() == EditorRelation.ASSIGNMENT) {
+					GTAttributeAssignment gtAttr = GTLanguageFactory.eINSTANCE.createGTAttributeAssignment();
+					gtAttr.setType(editorAttr.getAttribute());
+					this.setAttributeValue(gtAttr, editorAttr, gtRule.getParameters());
+					gtNode.getAttributeAssignments().add(gtAttr);
+				} else {
+					GTAttributeCondition gtAttr = GTLanguageFactory.eINSTANCE.createGTAttributeCondition();
+					gtAttr.setType(editorAttr.getAttribute());
+					gtAttr.setRelation(EditorToInternalGTModelUtils.convertRelation(editorAttr.getRelation()));
+					this.setAttributeValue(gtAttr, editorAttr, gtRule.getParameters());
+					gtNode.getAttributeConditions().add(gtAttr);
+				}
+			});
+		});
 
 		this.gtRules.add(gtRule);
 	}
@@ -96,33 +132,15 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	 * 
 	 * @param editorNode
 	 *            the editor node, must not be <code>null</code>
-	 * @param gtParameters
-	 *            the rule parameters
 	 * @return the GTNode
 	 */
-	private GTNode transformNode(final Node editorNode, final List<GTParameter> gtParameters) {
+	private GTNode transformNode(final Node editorNode) {
 		Objects.requireNonNull(editorNode, "node must not be null!");
 		GTNode gtNode = GTLanguageFactory.eINSTANCE.createGTNode();
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
 		gtNode.setLocal(editorNode.getName().startsWith("_"));
 		gtNode.setBindingType(EditorToInternalGTModelUtils.convertOperatorToBindingType(editorNode.getOperator()));
-
-		// Transform the attribute constraints.
-		editorNode.getAttributes().forEach(editorAttr -> {
-			if (editorAttr.getRelation() == EditorRelation.ASSIGNMENT) {
-				GTAttributeAssignment gtAttr = GTLanguageFactory.eINSTANCE.createGTAttributeAssignment();
-				gtAttr.setType(editorAttr.getAttribute());
-				this.setAttributeValue(gtAttr, editorAttr, gtParameters);
-				gtNode.getAttributeAssignments().add(gtAttr);
-			} else {
-				GTAttributeCondition gtAttr = GTLanguageFactory.eINSTANCE.createGTAttributeCondition();
-				gtAttr.setType(editorAttr.getAttribute());
-				gtAttr.setRelation(EditorToInternalGTModelUtils.convertRelation(editorAttr.getRelation()));
-				this.setAttributeValue(gtAttr, editorAttr, gtParameters);
-				gtNode.getAttributeConditions().add(gtAttr);
-			}
-		});
 		return gtNode;
 	}
 
@@ -139,7 +157,14 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	private void setAttributeValue(final GTAttribute gtAttribute, final EditorAttribute editorAttribute,
 			final List<GTParameter> gtParameters) {
 		EditorExpression editorValue = editorAttribute.getValue();
-		if (editorValue instanceof EditorLiteralExpression) {
+		if (editorValue instanceof EditorAttributeExpression) {
+			EditorAttributeExpression editorAttributeExpression = (EditorAttributeExpression) editorValue;
+			IBeXAttributeExpression gtAttributeExpression = IBeXLanguageFactory.eINSTANCE
+					.createIBeXAttributeExpression();
+			gtAttributeExpression.setNodeName(editorAttributeExpression.getNode().getName());
+			gtAttributeExpression.setAttribute(editorAttributeExpression.getAttribute());
+			gtAttribute.setValue(gtAttributeExpression);
+		} else if (editorValue instanceof EditorLiteralExpression) {
 			String s = ((EditorLiteralExpression) editorValue).getValue();
 			Optional<Object> object = GTEditorAttributeUtils
 					.convertEDataTypeStringToObject(gtAttribute.getType().getEAttributeType(), s);
