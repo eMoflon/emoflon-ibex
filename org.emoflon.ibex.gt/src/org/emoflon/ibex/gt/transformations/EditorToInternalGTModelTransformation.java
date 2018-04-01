@@ -92,7 +92,21 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 			gtRule.getParameters().add(this.transformParameter(editorParameter));
 		});
 
-		// Transform nodes and edges.
+		transformNodesAndEdges(editorRule, gtRule);
+		transformAttributes(editorRule, gtRule);
+
+		this.gtRules.add(gtRule);
+	}
+
+	/**
+	 * Transforms the nodes and the edges of the rule.
+	 * 
+	 * @param editorRule
+	 *            the editor rule
+	 * @param gtRule
+	 *            the GTRule
+	 */
+	private void transformNodesAndEdges(final Rule editorRule, final GTRule gtRule) {
 		GTGraph gtGraph = GTLanguageFactory.eINSTANCE.createGTGraph();
 		editorRule.getNodes().forEach(editorNode -> {
 			gtGraph.getNodes().add(this.transformNode(editorNode));
@@ -101,10 +115,19 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 			gtGraph.getEdges().addAll(this.transformReferencesToEdges(editorNode, gtGraph.getNodes()));
 		});
 		gtRule.setGraph(gtGraph);
+	}
 
-		// Transform attribute assignments and constraints.
+	/**
+	 * Transforms the attribute assignments and conditions of the rule.
+	 * 
+	 * @param editorRule
+	 *            the editor rule
+	 * @param gtRule
+	 *            the GTRule
+	 */
+	private void transformAttributes(final Rule editorRule, final GTRule gtRule) {
 		editorRule.getNodes().forEach(editorNode -> {
-			Optional<GTNode> gtNodeOptional = InternalGTModelUtils.findGTNodeWithName(gtGraph.getNodes(),
+			Optional<GTNode> gtNodeOptional = InternalGTModelUtils.findGTNodeWithName(gtRule.getGraph().getNodes(),
 					editorNode.getName());
 			GTNode gtNode = gtNodeOptional.get();
 			editorNode.getAttributes().forEach(editorAttr -> {
@@ -122,8 +145,6 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 				}
 			});
 		});
-
-		this.gtRules.add(gtRule);
 	}
 
 	/**
