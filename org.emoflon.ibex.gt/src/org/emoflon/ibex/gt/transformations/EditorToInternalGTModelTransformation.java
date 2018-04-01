@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.ecore.EEnumLiteral;
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
 import org.emoflon.ibex.gt.editor.gT.EditorAttributeExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
@@ -145,7 +144,7 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	}
 
 	/**
-	 * Sets the attribute value for the given attribute constraint.
+	 * Sets the attribute value for the given attribute.
 	 * 
 	 * @param gtAttribute
 	 *            the attribute constraint whose value shall be set
@@ -158,44 +157,97 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 			final List<GTParameter> gtParameters) {
 		EditorExpression editorValue = editorAttribute.getValue();
 		if (editorValue instanceof EditorAttributeExpression) {
-			EditorAttributeExpression editorAttributeExpression = (EditorAttributeExpression) editorValue;
-			IBeXAttributeExpression gtAttributeExpression = IBeXLanguageFactory.eINSTANCE
-					.createIBeXAttributeExpression();
-			gtAttributeExpression.setNodeName(editorAttributeExpression.getNode().getName());
-			gtAttributeExpression.setAttribute(editorAttributeExpression.getAttribute());
-			gtAttribute.setValue(gtAttributeExpression);
-		} else if (editorValue instanceof EditorLiteralExpression) {
-			String s = ((EditorLiteralExpression) editorValue).getValue();
-			Optional<Object> object = GTEditorAttributeUtils
-					.convertEDataTypeStringToObject(gtAttribute.getType().getEAttributeType(), s);
-			object.ifPresent(o -> {
-				IBeXConstant gtConstant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
-				gtConstant.setValue(o);
-				gtConstant.setStringValue(o.toString());
-				gtAttribute.setValue(gtConstant);
-			});
-			if (!object.isPresent()) {
-				this.logError("Invalid attribute value: " + s);
-			}
+			setAttributeValueToAttributeExpression(gtAttribute, (EditorAttributeExpression) editorValue);
 		} else if (editorValue instanceof EditorEnumExpression) {
-			EEnumLiteral literal = ((EditorEnumExpression) editorValue).getLiteral();
-			IBeXEnumLiteral gtEnumLiteral = IBeXLanguageFactory.eINSTANCE.createIBeXEnumLiteral();
-			gtEnumLiteral.setLiteral(literal);
-			gtAttribute.setValue(gtEnumLiteral);
+			setAttributeValueToEnumExpression(gtAttribute, (EditorEnumExpression) editorValue);
+		} else if (editorValue instanceof EditorLiteralExpression) {
+			setAttributeValueToLiteralExpression(gtAttribute, (EditorLiteralExpression) editorValue);
 		} else if (editorValue instanceof EditorParameterExpression) {
-			String parameterName = ((EditorParameterExpression) editorValue).getParameter().getName();
-			Optional<GTParameter> gtParameter = InternalGTModelUtils.findParameterWithName(gtParameters, parameterName);
-			if (!gtParameter.isPresent()) {
-				this.logError("Could not find parameter " + parameterName + "!");
-			}
-			gtParameter.ifPresent(p -> {
-				IBeXAttributeParameter parameter = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeParameter();
-				parameter.setName(p.getName());
-				gtAttribute.setValue(parameter);
-			});
+			setAttributeValueToParameterExpression(gtAttribute, (EditorParameterExpression) editorValue, gtParameters);
 		} else {
-			this.logError("Invalid attribute value: " + editorValue);
+			logError("Invalid attribute value: " + editorValue);
 		}
+	}
+
+	/**
+	 * Sets the attribute value for the given attribute to the attribute expression.
+	 * 
+	 * @param gtAttribute
+	 *            the attribute constraint whose value shall be set
+	 * @param editorAttributeExpression
+	 *            the attribute expression
+	 */
+	private void setAttributeValueToAttributeExpression(final GTAttribute gtAttribute,
+			final EditorAttributeExpression editorAttributeExpression) {
+		IBeXAttributeExpression gtAttributeExpression = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeExpression();
+		gtAttributeExpression.setNodeName(editorAttributeExpression.getNode().getName());
+		gtAttributeExpression.setAttribute(editorAttributeExpression.getAttribute());
+		gtAttribute.setValue(gtAttributeExpression);
+	}
+
+	/**
+	 * Sets the attribute value for the given attribute to the enum expression.
+	 * 
+	 * @param gtAttribute
+	 *            the attribute constraint whose value shall be set
+	 * @param editorEnumExpression
+	 *            the enum expression
+	 */
+	private void setAttributeValueToEnumExpression(final GTAttribute gtAttribute,
+			final EditorEnumExpression editorEnumExpression) {
+		IBeXEnumLiteral gtEnumLiteral = IBeXLanguageFactory.eINSTANCE.createIBeXEnumLiteral();
+		gtEnumLiteral.setLiteral(editorEnumExpression.getLiteral());
+		gtAttribute.setValue(gtEnumLiteral);
+	}
+
+	/**
+	 * Sets the attribute value for the given attribute to the literal expression.
+	 * 
+	 * @param gtAttribute
+	 *            the attribute constraint whose value shall be set
+	 * @param editorAttribute
+	 *            the attribute constraint of the editor model
+	 * @param gtParameters
+	 *            the parameters of rule (internal model)
+	 */
+	private void setAttributeValueToLiteralExpression(final GTAttribute gtAttribute,
+			final EditorLiteralExpression editorLiteralExpression) {
+		String s = editorLiteralExpression.getValue();
+		Optional<Object> object = GTEditorAttributeUtils
+				.convertEDataTypeStringToObject(gtAttribute.getType().getEAttributeType(), s);
+		object.ifPresent(o -> {
+			IBeXConstant gtConstant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
+			gtConstant.setValue(o);
+			gtConstant.setStringValue(o.toString());
+			gtAttribute.setValue(gtConstant);
+		});
+		if (!object.isPresent()) {
+			logError("Invalid attribute value: " + s);
+		}
+	}
+
+	/**
+	 * Sets the attribute value for the given attribute to the parameter expression.
+	 * 
+	 * @param gtAttribute
+	 *            the attribute constraint whose value shall be set
+	 * @param editorParameterExpression
+	 *            the parameter expression
+	 * @param gtParameters
+	 *            the parameters of rule (internal model)
+	 */
+	private void setAttributeValueToParameterExpression(final GTAttribute gtAttribute,
+			final EditorParameterExpression editorParameterExpression, final List<GTParameter> gtParameters) {
+		String parameterName = editorParameterExpression.getParameter().getName();
+		Optional<GTParameter> gtParameter = InternalGTModelUtils.findParameterWithName(gtParameters, parameterName);
+		if (!gtParameter.isPresent()) {
+			logError("Could not find parameter " + parameterName + "!");
+		}
+		gtParameter.ifPresent(p -> {
+			IBeXAttributeParameter parameter = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeParameter();
+			parameter.setName(p.getName());
+			gtAttribute.setValue(parameter);
+		});
 	}
 
 	/**
