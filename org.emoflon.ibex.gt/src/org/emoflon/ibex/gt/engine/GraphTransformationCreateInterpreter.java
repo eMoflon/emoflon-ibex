@@ -44,27 +44,66 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 	@Override
 	public Optional<IMatch> apply(final IBeXCreatePattern createPattern, final IMatch match,
 			final Map<String, Object> parameters) {
-		// Create nodes and edges.
+		createNodes(createPattern, match);
+		createEdges(createPattern, match);
+		applyAttributeAssignments(createPattern, match, parameters);
+		return Optional.of(match);
+	}
+
+	/**
+	 * Create nodes.
+	 * 
+	 * @param createPattern
+	 *            the pattern defining which elements are created
+	 * @param match
+	 *            the match
+	 */
+	private void createNodes(final IBeXCreatePattern createPattern, final IMatch match) {
 		createPattern.getCreatedNodes().forEach(node -> {
 			EObject newNode = EcoreUtil.create(node.getType());
 			this.defaultResource.getContents().add(newNode);
 			match.put(node.getName(), newNode);
 		});
+	}
+
+	/**
+	 * Create edges.
+	 * 
+	 * @param createPattern
+	 *            the pattern defining which elements are created
+	 * @param match
+	 *            the match
+	 */
+	private void createEdges(final IBeXCreatePattern createPattern, final IMatch match) {
 		createPattern.getCreatedEdges().forEach(edge -> {
 			EObject src = (EObject) match.get(edge.getSourceNode().getName());
 			EObject trg = (EObject) match.get(edge.getTargetNode().getName());
 			EMFManipulationUtils.createEdge(src, trg, edge.getType());
 		});
+	}
 
-		// Calculate attribute values and assign them.
+	/**
+	 * Execute the attribute assignments.
+	 * 
+	 * @param createPattern
+	 *            the pattern defining which elements are created
+	 * @param match
+	 *            the match
+	 * @param parameters
+	 *            the parameters
+	 */
+	private void applyAttributeAssignments(final IBeXCreatePattern createPattern, final IMatch match,
+			final Map<String, Object> parameters) {
+		// Calculate attribute values.
 		List<AssignmentTriple> assignments = new ArrayList<AssignmentTriple>();
 		createPattern.getAttributeAssignments().forEach(assignment -> {
-			calculateAssignment(assignment, match, parameters, assignments);
+			assignments.add(calculateAssignment(assignment, match, parameters));
 		});
+
+		// Execute assignments.
 		assignments.forEach(assignment -> {
 			assignment.getObject().eSet(assignment.getAttribute(), assignment.getValue());
 		});
-		return Optional.of(match);
 	}
 
 	/**
@@ -76,13 +115,10 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 	 *            the match
 	 * @param parameters
 	 *            the parameters
-	 * @param assignmentTriples
-	 *            the triples of object,
+	 * @return the calculated assignment
 	 */
-	private void calculateAssignment(final IBeXAttributeAssignment assignment, final IMatch match,
-			final Map<String, Object> parameters, final List<AssignmentTriple> assignmentTriples) {
-		EObject object = (EObject) match.get(assignment.getNode().getName());
-		EAttribute attribute = assignment.getType();
+	private AssignmentTriple calculateAssignment(final IBeXAttributeAssignment assignment, final IMatch match,
+			final Map<String, Object> parameters) {
 		IBeXAttributeValue value = assignment.getValue();
 		Object calculatedValue = null;
 		if (value instanceof IBeXConstant) {
@@ -93,7 +129,7 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 			calculatedValue = node.eGet(attributeExpression.getAttribute());
 		} else if (value instanceof IBeXEnumLiteral) {
 			EEnumLiteral enumLiteral = ((IBeXEnumLiteral) value).getLiteral();
-			// Need to get actual Java instance. Cannot pass EnumLiteral here!
+			// Need to get actual Java instance. Cannot use EnumLiteral here!
 			calculatedValue = enumLiteral.getInstance();
 			if (calculatedValue == null) {
 				throw new IllegalArgumentException("Missing object for " + enumLiteral);
@@ -105,7 +141,9 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 			}
 			calculatedValue = parameters.get(parameterName);
 		}
-		assignmentTriples.add(new AssignmentTriple(object, attribute, calculatedValue));
+
+		EObject object = (EObject) match.get(assignment.getNode().getName());
+		return new AssignmentTriple(object, assignment.getType(), calculatedValue);
 	}
 
 	/**
