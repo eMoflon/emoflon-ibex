@@ -1,9 +1,10 @@
 package org.emoflon.ibex.gt.engine;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
@@ -14,6 +15,7 @@ import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 
 import IBeXLanguage.IBeXAttributeAssignment;
+import IBeXLanguage.IBeXAttributeExpression;
 import IBeXLanguage.IBeXAttributeParameter;
 import IBeXLanguage.IBeXAttributeValue;
 import IBeXLanguage.IBeXConstant;
@@ -24,6 +26,9 @@ import IBeXLanguage.IBeXEnumLiteral;
  * Interpreter applying creation of elements for graph transformation.
  */
 public class GraphTransformationCreateInterpreter implements ICreatePatternInterpreter {
+	/**
+	 * The default resource.
+	 */
 	private Resource defaultResource;
 
 	/**
@@ -51,36 +56,83 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 			EMFManipulationUtils.createEdge(src, trg, edge.getType());
 		});
 
-		// Assign attributes.
+		// Calculate attribute values and assign them.
+		List<AssignmentTriple> assignments = new ArrayList<AssignmentTriple>();
 		createPattern.getAttributeAssignments().forEach(assignment -> {
-			assignAttribute(assignment, match, parameters);
+			calculateAssignment(assignment, match, parameters, assignments);
+		});
+		assignments.forEach(assignment -> {
+			assignment.getObject().eSet(assignment.getAttribute(), assignment.getValue());
 		});
 		return Optional.of(match);
 	}
 
-	private static void assignAttribute(final IBeXAttributeAssignment assignment, final IMatch match,
-			final Map<String, Object> parameters) {
+	/**
+	 * Calculates the new value for the attributes.
+	 * 
+	 * @param assignment
+	 *            the attribute assignments
+	 * @param match
+	 *            the match
+	 * @param parameters
+	 *            the parameters
+	 * @param assignmentTriples
+	 *            the triples of object,
+	 */
+	private void calculateAssignment(final IBeXAttributeAssignment assignment, final IMatch match,
+			final Map<String, Object> parameters, final List<AssignmentTriple> assignmentTriples) {
 		EObject object = (EObject) match.get(assignment.getNode().getName());
 		EAttribute attribute = assignment.getType();
 		IBeXAttributeValue value = assignment.getValue();
+		Object calculatedValue = null;
 		if (value instanceof IBeXConstant) {
-			object.eSet(attribute, ((IBeXConstant) value).getValue());
-		}
-		if (value instanceof IBeXEnumLiteral) {
+			calculatedValue = ((IBeXConstant) value).getValue();
+		} else if (value instanceof IBeXAttributeExpression) {
+			IBeXAttributeExpression attributeExpression = (IBeXAttributeExpression) value;
+			EObject node = (EObject) match.get(attributeExpression.getNodeName());
+			calculatedValue = node.eGet(attributeExpression.getAttribute());
+		} else if (value instanceof IBeXEnumLiteral) {
 			EEnumLiteral enumLiteral = ((IBeXEnumLiteral) value).getLiteral();
 			// Need to get actual Java instance. Cannot pass EnumLiteral here!
-			Enumerator instance = enumLiteral.getInstance();
-			if (instance == null) {
+			calculatedValue = enumLiteral.getInstance();
+			if (calculatedValue == null) {
 				throw new IllegalArgumentException("Missing object for " + enumLiteral);
 			}
-			object.eSet(attribute, instance);
-		}
-		if (value instanceof IBeXAttributeParameter) {
+		} else if (value instanceof IBeXAttributeParameter) {
 			String parameterName = ((IBeXAttributeParameter) value).getName();
 			if (!parameters.containsKey(parameterName)) {
 				throw new IllegalArgumentException("Missing required parameter " + parameterName);
 			}
-			object.eSet(attribute, parameters.get(parameterName));
+			calculatedValue = parameters.get(parameterName);
+		}
+		assignmentTriples.add(new AssignmentTriple(object, attribute, calculatedValue));
+	}
+
+	/**
+	 * An AssignmentTriple consists of the object, the attribute type and the new
+	 * value for the attribute.
+	 */
+	class AssignmentTriple {
+		private final EObject object;
+		private final EAttribute attribute;
+		private final Object value;
+
+		public AssignmentTriple(final EObject object, final EAttribute attribute, final Object value) {
+			this.object = object;
+			this.attribute = attribute;
+			this.value = value;
+		}
+
+		public EObject getObject() {
+			return object;
+		}
+
+		public EAttribute getAttribute() {
+			return attribute;
+		}
+
+		public Object getValue() {
+			return value;
 		}
 	}
 }
