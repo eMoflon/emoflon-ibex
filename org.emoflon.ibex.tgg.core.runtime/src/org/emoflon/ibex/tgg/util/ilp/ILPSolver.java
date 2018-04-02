@@ -45,22 +45,6 @@ public abstract class ILPSolver {
 	 * @throws Exception
 	 */
 	public static ILPSolution solveBinaryILPProblem(ILPProblem ilpProblem, SupportedILPSolver solver) throws Exception {
-		if(solver == SupportedILPSolver.GLPK) { //TODO remove this when GLPK works correctly
-			//double check with Gurobi
-			ILPSolution glpkSolution = ILPFactory.createBinaryILPSolver(ilpProblem, solver).solveILP();
-			double calculatedSolutionValue = ilpProblem.getSolutionValue(glpkSolution);
-			if(!ilpProblem.checkValidity(glpkSolution)) {
-				throw new RuntimeException("Invalid solution?");
-			}
-			if(calculatedSolutionValue != glpkSolution.getSolutionValue()) {
-				throw new RuntimeException("Invalid solution?");
-			}
-			ILPSolution gurobiSolution = ILPFactory.createBinaryILPSolver(ilpProblem, SupportedILPSolver.Gurobi).solveILP();
-			if(glpkSolution.getSolutionValue() < gurobiSolution.getSolutionValue()) {
-				throw new RuntimeException("Different solution?");
-			}
-			
-		}
 		return ILPFactory.createBinaryILPSolver(ilpProblem, solver).solveILP();
 	}
 }

@@ -10,8 +10,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
-
 import gnu.trove.set.hash.THashSet;
 
 /**
@@ -40,17 +38,6 @@ public final class ILPProblem {
 	 * Creates a new ILPProblem. Instances can be obtained using the {@link ILPFactory}
 	 */
 	ILPProblem() {}
-	
-	/**
-	 * Solves the ILPProblem using the given solver
-	 * @param ilpProblem The ILPProblem to solve
-	 * @param solver The solver to use
-	 * @return a valid solution for the ILP or null if no solution could be found
-	 * @throws Exception
-	 */
-	public ILPSolution solveILPProblem(SupportedILPSolver solver) throws Exception {
-		return ILPFactory.createILPSolver(this, solver).solveILP();
-	}
 
 	/**
 	 * Returns the variables that have been defined. New variables can be defined by using them within a term.

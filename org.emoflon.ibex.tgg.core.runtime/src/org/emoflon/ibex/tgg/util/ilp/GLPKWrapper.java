@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.naming.directory.InvalidAttributeValueException;
+
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
@@ -211,9 +213,12 @@ final class GLPKWrapper extends ILPSolver {
 			//Solve model
 			glp_smcp parm= new glp_smcp();
 			GLPK.glp_init_smcp(parm);
-			int exitCode = GLPK.glp_simplex(problem, parm);
-			//For debugging: Write model to file
 			GLPK.glp_write_lp(problem, null, "lp.lp");
+			int exitCode = GLPK.glp_simplex(problem, parm);
+			exitCode += GLPK.glp_intopt(problem, null);
+			//For debugging: Write model to file
+			GLPK.glp_print_sol(problem, "lp_sol_base.lp");
+			GLPK.glp_print_mip(problem, "lp_sol_mip.lp");
 			// Retrieve solution
 			if (exitCode == 0) {
 				int status = GLPK.glp_get_status(problem);
@@ -225,10 +230,13 @@ final class GLPKWrapper extends ILPSolver {
 					return null;
 				}
 				Map<String, Integer> variableSolutions = new HashMap<String, Integer>();
-				double optimum = GLPK.glp_get_obj_val(problem);
+				double optimum = GLPK.glp_mip_obj_val(problem);
 				System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
 				for(Entry<String, Integer> variable : glpkVariableCounters.entrySet()) {
-					double value = GLPK.glp_get_col_prim(problem, variable.getValue());
+					double value = GLPK.glp_mip_col_val(problem, variable.getValue());
+					if(value != 0 && value != 1) {
+						throw new InvalidAttributeValueException("Solution may only be 0 or 1");
+					}
 					variableSolutions.put(variable.getKey(), (int) value);
 				}
 				GLPK.glp_delete_prob(problem);
