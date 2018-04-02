@@ -131,15 +131,8 @@ class JavaFileGenerator {
 	public def generateAppClass(IFolder apiPackage) {
 		val imports = this.eClassifiersManager.importsForPackages
 		imports.addAll(
-			'java.io.IOException',
-			'java.util.Objects',
-			'java.util.Optional',
-			'org.eclipse.emf.common.util.URI',
-			'org.eclipse.emf.ecore.resource.Resource',
-			'org.eclipse.emf.ecore.resource.ResourceSet',
-			'org.eclipse.emf.ecore.resource.impl.ResourceSetImpl',
-			'org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl',
-			'org.emoflon.ibex.common.operational.IContextPatternInterpreter'
+			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
+			'org.emoflon.ibex.gt.api.GraphTransformationApp'
 		)
 		val appClassName = this.classNamePrefix + 'App'
 		val appSourceCode = '''
@@ -148,93 +141,18 @@ class JavaFileGenerator {
 			/**
 			 * An application using the «this.APIClassName».
 			 */
-			public abstract class «appClassName» {
-				/**
-				 * The resource set.
-				 */
-				protected ResourceSet resourceSet = new ResourceSetImpl();
+			public abstract class «appClassName» extends GraphTransformationApp<«this.APIClassName»> {
 			
-				/**
-				 * The workspace path.
-				 */
-				protected Optional<String> workspacePath = Optional.empty();
-			
-				/**
-				 * Creates the model file with the given URI.
-				 * 
-				 * @param uri
-				 *            the URI of the model file
-				 * @return the resource set
-				 */
-				protected ResourceSet createModel(final URI uri) {
-					this.prepareResourceSet();
-					resourceSet.createResource(uri);
-					return resourceSet;
-				}
-			
-				/**
-				 * Loads the model file with the given URI.
-				 * 
-				 * @param uri
-				 *            the URI of the model file
-				 * @return the resource set
-				 */
-				protected ResourceSet loadModel(final URI uri) {
-					this.prepareResourceSet();
-					resourceSet.getResource(uri, true);
-					return resourceSet;
-				}
-			
-				/**
-				 * Initializes the package registry of the resource set.
-				 */
-				private void prepareResourceSet() {
-					Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-					reg.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-			
-					// Add meta-models to the package registry.
+				@Override
+				protected void registerMetaModels() {
 					«FOR p : this.eClassifiersManager.packages»
-						resourceSet.getPackageRegistry().put(«p».eNS_URI, «p».eINSTANCE);
+						registerMetaModel(«p».eINSTANCE);
 					«ENDFOR»
 				}
 			
-				/**
-				 * Sets the workspace path to the given path.
-				 * 
-				 * @param workspacePath
-				 *            the workspace path to set
-				 */
-				protected void setWorkspacePath(final String workspacePath) {
-					Objects.requireNonNull(workspacePath, "The workspace path must not be null!");
-					this.workspacePath = Optional.of(workspacePath);
-				}
-			
-				/**
-				 * Creates a new «this.APIClassName».
-				 * 
-				 * @param engine
-				 *            the pattern matching engine to use
-				 * @return the created API
-				 */
+				@Override
 				protected «this.APIClassName» initAPI(final IContextPatternInterpreter engine) {
-					Objects.requireNonNull(workspacePath, "The engine must not be null!");
-					if (workspacePath.isPresent()) {
-						return new «this.APIClassName»(engine, this.resourceSet, workspacePath.get());
-					} else {
-						return new «this.APIClassName»(engine, this.resourceSet);
-					}
-				}
-			
-				/**
-				 * Saves all resources in the resource set.
-				 * 
-				 * @throws IOException
-				 *             if an IOException is thrown on save
-				 */
-				protected void saveResourceSet() throws IOException {
-					for (Resource resource : resourceSet.getResources()) {
-						resource.save(null);
-					}
+					return new «this.APIClassName»(engine, resourceSet, workspacePath);
 				}
 			}
 		'''
