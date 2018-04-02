@@ -48,7 +48,7 @@ final class GLPKWrapper extends ILPSolver {
 	}
 
 	/**
-	 * This setting defines the variable range of variables registered at Gurobi
+	 * This setting defines the variable range of variables registered at GLPK
 	 */
 	private final boolean onlyBinaryVariables;
 	
