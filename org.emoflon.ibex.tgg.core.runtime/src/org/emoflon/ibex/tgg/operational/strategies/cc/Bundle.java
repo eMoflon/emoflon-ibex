@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.cc;
 
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
@@ -26,8 +27,8 @@ public class Bundle {
 		bundleContextEdges = new HashSet<RuntimeEdge>();
 	}
 	
-	public void addMatch(Integer complementMatch) {
-		allMatches.add(complementMatch);
+	public void addMatch(Integer match) {
+		allMatches.add(match);
 	}
 	
 	public void addBundleContextNodes(THashSet<EObject> blackNodes) {
@@ -52,6 +53,10 @@ public class Bundle {
 	
 	public int getKernelMatch() {
 		return kernelMatch;
+	}
+
+	public HashSet<Integer> getAllComplementMatches() {
+		return allMatches.stream().filter(m -> m != kernelMatch).collect(Collectors.toCollection(HashSet::new));
 	}
 
 }

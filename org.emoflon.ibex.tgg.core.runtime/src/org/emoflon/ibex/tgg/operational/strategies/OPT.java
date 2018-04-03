@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,12 +28,13 @@ import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
 import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
-import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Comparator;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
+import org.emoflon.ibex.tgg.util.ilp.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
-import org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPLinearExpression;
-import org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPSolution;
-import org.emoflon.ibex.tgg.util.ilp.ILPSolver.ILPTerm;
-import org.emoflon.ibex.tgg.util.ilp.ILPSolver.Operation;
 
 import com.google.common.collect.Sets;
 
@@ -60,11 +60,11 @@ public abstract class OPT extends OperationalStrategy {
 	protected TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 
 	/**
-	 * Collection of constraints to guarantee uniqueness property;
-	 * key: ComplementRule (CR) match; 
-	 * value: other CR matches of the same CR using the same context as CR match
+	 * Collection of constraints to guarantee uniqueness property; key: Complement
+	 * rule (CR) match ID; value: other CR matches of the same CR using the same
+	 * context as CR match
 	 */
-	protected THashMap<Integer, TIntHashSet> sameCRmatches = new THashMap<>();
+	protected THashMap<Integer, TIntHashSet> sameComplementMatches = new THashMap<>();
 
 	/**
 	 * Collection of constraints to guarantee maximality property;
@@ -87,17 +87,13 @@ public abstract class OPT extends OperationalStrategy {
 	THashMap<EReference, Integer> referenceToLowerBound = new THashMap<EReference, Integer>();
 	THashMap<EReference, EReference> referenceToEOpposite = new THashMap<EReference, EReference>();
 	THashMap<EReference, Boolean> referenceToContainment = new THashMap<EReference, Boolean>();
-	
-	private final SupportedILPSolver ilpSolver;
 
 	public OPT(IbexOptions options) throws IOException {
 		super(options);
-		this.ilpSolver = options.getIlpSolver();
 	}
 
 	public OPT(IbexOptions options, IUpdatePolicy policy) {
 		super(options, policy);
-		this.ilpSolver = options.getIlpSolver();
 	}
 
 	public void relaxReferences(EList<EPackage> model) {
@@ -172,127 +168,124 @@ public abstract class OPT extends OperationalStrategy {
 		}
 	}
 
-	protected void defineILPExclusions(ILPSolver ilpSolver) {
+	protected void defineILPExclusions(ILPProblem ilpProblem) {
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
 			List<ILPTerm> ilpTerms = new LinkedList<>();
 			variables.forEach(v -> {
-				ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
+				ilpTerms.add(ilpProblem.createTerm("x" + v, 1.0));
 				return true;
 			});
-			ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
-			ilpSolver.addConstraint(expr, Operation.le, 1.0, "EXCL" + nameCounter++);
+			ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
 		}
 
 		for (RuntimeEdge edge : edgeToMarkingMatches.keySet()) {
 			TIntHashSet variables = edgeToMarkingMatches.get(edge);
 			List<ILPTerm> ilpTerms = new LinkedList<>();
 			variables.forEach(v -> {
-				ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
+				ilpTerms.add(ilpProblem.createTerm("x" + v, 1.0));
 				return true;
 			});
-			ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
-			ilpSolver.addConstraint(expr, Operation.le, 1.0, "EXCL" + nameCounter++);
+			ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
 		}
 
-		for (Integer match : sameCRmatches.keySet()) {
-			TIntHashSet variables = sameCRmatches.get(match);
+		for (Integer match : sameComplementMatches.keySet()) {
+			TIntHashSet variables = sameComplementMatches.get(match);
 			List<ILPTerm> ilpTerms = new LinkedList<>();
 			variables.forEach(v -> {
-				ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
+				ilpTerms.add(ilpProblem.createTerm("x" + v, 1.0));
 				return true;
 			});
-			ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
-			ilpSolver.addConstraint(expr, Operation.le, 1.0, "EXCL" + nameCounter++);
+			ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
 		}
 
 		if (!invalidKernels.isEmpty()) {
 			TIntHashSet variables = invalidKernels;
 			List<ILPTerm> ilpTerms = new LinkedList<>();
 			variables.forEach(v -> {
-				ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
+				ilpTerms.add(ilpProblem.createTerm("x" + v, 1.0));
 				return true;
 			});
-			ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
-			ilpSolver.addConstraint(expr, Operation.le, 0.0, "EXCL" + nameCounter++);
+			ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "EXCL" + nameCounter++);
 		}
 
 		HandleDependencies handleCycles = new HandleDependencies(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
-		HashMap<Integer, ArrayList<Integer>> cyclicBundles = handleCycles.getCyclicDependenciesBetweenBundles();
+		Set<Integer> allCyclicBundles = handleCycles.getCyclicDependenciesBetweenBundles().keySet();
 
-		for (int cycle : cyclicBundles.keySet()) {
-			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getDependedRuleApplications(cycle));
+		for (int cycle : allCyclicBundles) {
+			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getComplementRuleApplications(cycle));
 			for (List<Integer> variables : cyclicConstraints) {
 				List<ILPTerm> ilpTerms = new LinkedList<>();
 				variables.forEach(v -> {
-					ilpTerms.add(ilpSolver.createTerm("x" + v, 1.0));
+					ilpTerms.add(ilpProblem.createTerm("x" + v, 1.0));
 				});
-				ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
-				ilpSolver.addConstraint(expr, Operation.le, variables.size()-1, "EXCL" + nameCounter++);
+				ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+				ilpProblem.addConstraint(expr, Comparator.le, variables.size()-1, "EXCL" + nameCounter++);
 			}
 		}
 	}
 
-	private Set<List<Integer>> getCyclicConstraints(HashMap<Integer, HashSet<Integer>> dependedRuleApplications) {
-		List<HashSet<Integer>> excludedRuleApplications = new ArrayList<>();
-		for (HashSet<Integer> ruleApplication : dependedRuleApplications.values()) {
-			excludedRuleApplications.add(ruleApplication);
-		}
-		return Sets.cartesianProduct(excludedRuleApplications);
+	private Set<List<Integer>> getCyclicConstraints(List<HashSet<Integer>> dependedRuleApplications) {
+		return Sets.cartesianProduct(dependedRuleApplications);
 	}
 
-	protected void defineILPImplications(ILPSolver ilpSolver) {
+	protected void defineILPImplications(ILPProblem ilpProblem) {
 		for (int v : idToMatch.keySet().toArray()) {			
 			THashSet<EObject> contextNodes = matchToContextNodes.get(v);
 			for (EObject node : contextNodes) {
-				ILPTerm term = ilpSolver.createTerm("x" + v, 1.0);
-				ILPLinearExpression expr = ilpSolver.createLinearExpression(term);
+				ILPTerm term = ilpProblem.createTerm("x" + v, 1.0);
+				ILPLinearExpression expr = ilpProblem.createLinearExpression(term);
 				if (nodeToMarkingMatches.contains(node)) {
 					for (int v2 : nodeToMarkingMatches.get(node).toArray()) {
-						expr.addTerm(ilpSolver.createTerm("x" + v2, -1.0));
+						expr.addTerm(ilpProblem.createTerm("x" + v2, -1.0));
 					}
-					ilpSolver.addConstraint(expr, Operation.le, 0.0, "IMPL" + nameCounter++);
+					ilpProblem.addConstraint(expr, Comparator.le, 0.0, "IMPL" + nameCounter++);
 				} else {
-					ilpSolver.addConstraint(expr, Operation.le, 1.0, "IMPL" + nameCounter++);
+					ilpProblem.addConstraint(expr, Comparator.le, 1.0, "IMPL" + nameCounter++);
 				}
 			}
 
 			TCustomHashSet<RuntimeEdge> contextEdges = matchToContextEdges.get(v);
 			for (RuntimeEdge edge : contextEdges) {
-				ILPTerm term = ilpSolver.createTerm("x" + v, 1.0);
-				ILPLinearExpression expr = ilpSolver.createLinearExpression(term);
+				ILPTerm term = ilpProblem.createTerm("x" + v, 1.0);
+				ILPLinearExpression expr = ilpProblem.createLinearExpression(term);
 				if (edgeToMarkingMatches.contains(edge)) {
 					for (int v2 : edgeToMarkingMatches.get(edge).toArray()) {
-						expr.addTerm(ilpSolver.createTerm("x" + v2, -1.0));
+						expr.addTerm(ilpProblem.createTerm("x" + v2, -1.0));
 					}
-					ilpSolver.addConstraint(expr, Operation.le, 0.0, "IMPL" + nameCounter++);
+					ilpProblem.addConstraint(expr, Comparator.le, 0.0, "IMPL" + nameCounter++);
 				} else {
-					ilpSolver.addConstraint(expr, Operation.le, 1.0, "IMPL" + nameCounter++);
+					ilpProblem.addConstraint(expr, Comparator.le, 1.0, "IMPL" + nameCounter++);
 				}
 			}
 		}
 	}
 
-	protected void defineILPObjective(ILPSolver ilpSolver) {
+	protected void defineILPObjective(ILPProblem ilpProblem) {
 		List<ILPTerm> ilpTerms = new LinkedList<>();
 		idToMatch.keySet().forEach(v -> {
 			int weight = getWeightForMatch(idToMatch.get(v), matchIdToRuleName.get(v));
-			ilpTerms.add(ilpSolver.createTerm("x" + v, weight));
+			ilpTerms.add(ilpProblem.createTerm("x" + v, weight));
 			return true;
 		});
-		ILPLinearExpression expr = ilpSolver.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
-		ilpSolver.setObjective(expr, Operation.maximize);
+		ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+		ilpProblem.setObjective(expr, Objective.maximize);
 	}
 
 	protected int[] chooseTGGRuleApplications() {
-		ILPSolver ilpSolver = ILPFactory.createBinaryILPSolver(this.ilpSolver);		
-		defineILPExclusions(ilpSolver);
-		defineILPImplications(ilpSolver);
-		defineILPObjective(ilpSolver);
-		addUserDefinedConstraints(ilpSolver);
+		
+		ILPProblem ilpProblem = ILPFactory.createILPProblem();
+		defineILPExclusions(ilpProblem);
+		defineILPImplications(ilpProblem);
+		defineILPObjective(ilpProblem);
+		addUserDefinedConstraints(ilpProblem);
 		
 		try {
-			ILPSolution ilpSolution = ilpSolver.solveILP();
+			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, this.options.getIlpSolver());
 
 			int[] result = new int[idToMatch.size()];
 			idToMatch.keySet().forEach(v -> {
@@ -310,7 +303,7 @@ public abstract class OPT extends OperationalStrategy {
 		}
 	}
 
-	protected abstract void addUserDefinedConstraints(ILPSolver ilpSolver);
+	protected abstract void addUserDefinedConstraints(ILPProblem ilpProblem);
 
 	protected void handleBundles(IMatch comatch, String ruleName) {
 		if(!getComplementRule(ruleName).isPresent()) {
@@ -376,6 +369,7 @@ public abstract class OPT extends OperationalStrategy {
 	
 	protected abstract int getWeightForMatch(IMatch comatch, String ruleName);
 	
+	@Override
 	public Resource loadResource(String workspaceRelativePath) throws IOException{
 		return super.loadResource(workspaceRelativePath);
 	}

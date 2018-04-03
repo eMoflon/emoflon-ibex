@@ -187,6 +187,7 @@ public class EditorToInternalGTModelTransformation
 	private List<GTEdge> transformReferencesToEdges(final Node editorNode, final List<GTNode> gtNodes) {
 		Objects.requireNonNull(editorNode, "editor node must not be null!");
 		Objects.requireNonNull(gtNodes, "node list must not be null!");
+
 		List<GTEdge> gtEdges = new ArrayList<GTEdge>();
 		editorNode.getReferences().forEach(reference -> {
 			String sourceNodeName = editorNode.getName();
@@ -195,13 +196,13 @@ public class EditorToInternalGTModelTransformation
 			Optional<GTNode> gtSourceNode = InternalGTModelUtils.findGTNodeWithName(gtNodes, sourceNodeName);
 			Optional<GTNode> gtTargetNode = InternalGTModelUtils.findGTNodeWithName(gtNodes, targetNodeName);
 			if (!gtSourceNode.isPresent()) {
-				this.logError("Could not find node " + sourceNodeName + "!");
+				this.logError("Could not find source node " + sourceNodeName + "!");
 			}
 			if (!gtTargetNode.isPresent()) {
-				this.logError("Could not find node " + targetNodeName + "!");
+				this.logError("Could not find target node " + targetNodeName + "!");
 			}
 
-			if (gtSourceNode.isPresent() && gtSourceNode.isPresent()) {
+			if (gtSourceNode.isPresent() && gtTargetNode.isPresent()) {
 				GTEdge gtEdge = GTLanguageFactory.eINSTANCE.createGTEdge();
 				gtEdge.setType(reference.getType());
 				gtEdge.setName(sourceNodeName + "-" + gtEdge.getType().getName() + "-" + targetNodeName);
@@ -223,7 +224,8 @@ public class EditorToInternalGTModelTransformation
 	 * @return the GTParameter
 	 */
 	private GTParameter transformParameter(final Parameter editorParameter) {
-		Objects.requireNonNull(editorParameter, "name must not be null!");
+		Objects.requireNonNull(editorParameter, "The parameter must not be null!");
+
 		GTParameter gtParameter = GTLanguageFactory.eINSTANCE.createGTParameter();
 		gtParameter.setName(editorParameter.getName());
 		gtParameter.setType(editorParameter.getType());

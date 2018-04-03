@@ -6,7 +6,6 @@ import java.util.Set
 
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
-import org.eclipse.core.runtime.IPath
 import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EEnum
 import org.emoflon.ibex.gt.codegen.EClassifiersManager
@@ -43,8 +42,8 @@ class JavaFileGenerator {
 	/**
 	 * Creates a new JavaFileGenerator.
 	 */
-	new(IPath packagePath, String packageName, GTRuleSet gtRuleSet, EClassifiersManager eClassifiersManager) {
-		this.classNamePrefix = packagePath.lastSegment.toFirstUpper
+	new(String classNamePrefix, String packageName, GTRuleSet gtRuleSet, EClassifiersManager eClassifiersManager) {
+		this.classNamePrefix = classNamePrefix
 		this.packageName = packageName
 		this.gtRuleSet = gtRuleSet
 		this.eClassifiersManager = eClassifiersManager
@@ -136,7 +135,6 @@ class JavaFileGenerator {
 			'java.util.Objects',
 			'java.util.Optional',
 			'org.eclipse.emf.common.util.URI',
-			'org.eclipse.emf.ecore.EPackage.Registry',
 			'org.eclipse.emf.ecore.resource.Resource',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
 			'org.eclipse.emf.ecore.resource.impl.ResourceSetImpl',
@@ -194,9 +192,9 @@ class JavaFileGenerator {
 					Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 					reg.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 			
-					Registry packageRegistry = resourceSet.getPackageRegistry();
+					// Add meta-models to the package registry.
 					«FOR p : this.eClassifiersManager.packages»
-						packageRegistry.put(«p».eNS_URI, «p».eINSTANCE);
+						resourceSet.getPackageRegistry().put(«p».eNS_URI, «p».eINSTANCE);
 					«ENDFOR»
 				}
 			

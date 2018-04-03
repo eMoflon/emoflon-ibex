@@ -62,7 +62,7 @@ public class MatchContainer {
 	}
 
 	public IMatch getNext() {
-		return (IMatch) matchToRuleNameID.keySet().iterator().next();
+		return matchToRuleNameID.keySet().iterator().next();
 	}
 
 	public Set<IMatch> getMatches() {
@@ -83,6 +83,7 @@ public class MatchContainer {
 	public IMatch getNextRandomKernel(EList<TGGRule> rules) {
 		Iterator<IMatch> it = matchToRuleNameID.keySet().iterator();
 		
+		try {
 		while (it.hasNext()) {
 			IMatch m = it.next();
 			String ruleName = getRuleName(m);
@@ -93,7 +94,9 @@ public class MatchContainer {
 				}
 			}
 		}
-		//FIXME[Milica] Throw appropriate exception
+		} catch (Exception e) {
+			System.err.println("No kernel matches found!");
+		}
 		return null;
 	}
 	

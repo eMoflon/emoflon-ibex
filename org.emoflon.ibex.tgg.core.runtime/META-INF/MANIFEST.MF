@@ -29,7 +29,8 @@ Bundle-ClassPath: lib/trove-3.1a1.jar,
  lib/commons-lang3-3.5.jar,
  lib/gurobi.jar,
  lib/javabdd-1.0b2.jar,
- .
+ .,
+ lib/glpk-java.jar
 Export-Package: .,
  gnu.trove,
  gnu.trove.decorator,
@@ -104,6 +105,7 @@ Export-Package: .,
  org.emoflon.ibex.tgg.operational.updatepolicy,
  org.emoflon.ibex.tgg.util,
  org.emoflon.ibex.tgg.util.ilp,
+ org.gnu.glpk,
  runtime,
  runtime.impl,
  runtime.util

@@ -3,6 +3,7 @@ package org.emoflon.ibex.gt.codegen;
 import GTLanguage.GTRuleSet;
 import IBeXLanguage.IBeXPatternSet;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,15 +33,14 @@ import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.gt.codegen.JavaFileGenerator;
 import org.emoflon.ibex.gt.editor.gT.GraphTransformationFile;
+import org.emoflon.ibex.gt.editor.gT.Rule;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
 import org.emoflon.ibex.gt.transformations.EditorToInternalGTModelTransformation;
 import org.emoflon.ibex.gt.transformations.InternalGTModelToIBeXPatternTransformation;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
-import org.moflon.core.plugins.manifest.PluginManifestConstants;
 import org.moflon.core.utilities.ClasspathUtil;
 import org.moflon.core.utilities.WorkspaceHelper;
-import org.moflon.core.plugins.manifest.ManifestFileUpdater.AttributeUpdatePolicy;
 
 /**
  * This GTPackageBuilder transforms the editor files into the internal model and
@@ -110,8 +110,10 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		});
 		EcoreUtil.resolveAll(resourceSet);
 
+		this.checkEditorModelsForDuplicateRuleNames(editorModels);
+
 		// Transform editor models to rules of the internal GT model.
-		GTRuleSet gtRuleSet = this.transformModels(editorModels);
+		GTRuleSet gtRuleSet = this.transformEditorModelsToInternalModel(editorModels);
 		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
 
 		// Transform rules into IBeXPatterns.
@@ -217,14 +219,40 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
+	 * Checks the editor models for duplicate rule definitions. For duplicates an
+	 * error is logged and the rule is removed.
+	 * 
+	 * @param editorModels
+	 *            the editor files and models
+	 */
+	private void checkEditorModelsForDuplicateRuleNames(final Map<IFile, GraphTransformationFile> editorModels) {
+		Map<String, IFile> ruleNameToFile = new HashMap<String, IFile>();
+		for (final IFile gtFile : editorModels.keySet()) {
+			GraphTransformationFile editorModel = editorModels.get(gtFile);
+			List<Rule> duplicates = new ArrayList<Rule>();
+			editorModel.getRules().forEach(rule -> {
+				String ruleName = rule.getName();
+				if (ruleNameToFile.containsKey(ruleName)) {
+					this.logError(String.format("Rule %s already defined in %s. Ignoring definition in %s.", ruleName,
+							ruleNameToFile.get(ruleName).getName(), gtFile.getName())
+							+ " Please rename one of the rule definitions.");
+					duplicates.add(rule);
+				} else {
+					ruleNameToFile.put(ruleName, gtFile);
+				}
+			});
+			editorModel.getRules().removeAll(duplicates);
+		}
+	}
+
+	/**
 	 * Transforms the editor models into a GTRuleSet and IBeXPatterns.
 	 * 
 	 * @param editorModels
 	 *            the editor files and models
 	 * @return the graph transformation rules
 	 */
-	private GTRuleSet transformModels(final Map<IFile, GraphTransformationFile> editorModels) {
-		// Transform editor models to rules of the internal GT model.
+	private GTRuleSet transformEditorModelsToInternalModel(final Map<IFile, GraphTransformationFile> editorModels) {
 		GTRuleSet gtRuleSet = null;
 		EditorToInternalGTModelTransformation editor2internal = new EditorToInternalGTModelTransformation();
 		for (final IFile gtFile : editorModels.keySet()) {
@@ -268,7 +296,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private void generateAPI(final IFolder apiPackage, final GTRuleSet gtRuleSet,
 			final EClassifiersManager eClassifiersManager) {
-		JavaFileGenerator generator = new JavaFileGenerator(this.path, this.packageName, gtRuleSet,
+		JavaFileGenerator generator = new JavaFileGenerator(getClassNamePrefix(), packageName, gtRuleSet,
 				eClassifiersManager);
 		IFolder matchesPackage = this.ensureFolderExists(apiPackage.getFolder("matches"));
 		IFolder rulesPackage = this.ensureFolderExists(apiPackage.getFolder("rules"));
@@ -283,6 +311,19 @@ public class GTPackageBuilder implements GTBuilderExtension {
 				+ "/api/ibex-patterns.xmi";
 		generator.generateAPIClass(apiPackage, patternPath);
 		generator.generateAppClass(apiPackage);
+	}
+
+	/**
+	 * Gets the prefix for API/App classes based on path or project name.
+	 * 
+	 * @return the prefix for the class names
+	 */
+	private String getClassNamePrefix() {
+		String lastSegment = path.lastSegment();
+		if (path.segmentCount() == 0 || lastSegment.length() == 0) {
+			return project.getName();
+		}
+		return Character.toUpperCase(lastSegment.charAt(0)) + lastSegment.substring(1);
 	}
 
 	/**
@@ -350,7 +391,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private boolean processManifestForProject(final Manifest manifest) {
 		List<String> dependencies = Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt");
 
-		boolean changedBasics = setBasics(manifest, this.project.getName());
+		boolean changedBasics = ExtendedManifestFileUpdater.setBasics(manifest, this.project.getName());
 		if (changedBasics) {
 			this.log("Initialized MANIFEST.MF.");
 		}
@@ -364,34 +405,6 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
-	 * Sets the required properties of the manifest if not set already.
-	 * 
-	 * @param manifest
-	 *            the manifest to update
-	 * @param projectName
-	 *            the name of the project
-	 * @return whether the property was changed
-	 */
-	private static boolean setBasics(final Manifest manifest, final String projectName) {
-		boolean changed = false;
-		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.MANIFEST_VERSION, "1.0",
-				AttributeUpdatePolicy.KEEP);
-		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_NAME, projectName,
-				AttributeUpdatePolicy.KEEP);
-		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_MANIFEST_VERSION, "2",
-				AttributeUpdatePolicy.KEEP);
-		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_VERSION, "0.0.1",
-				AttributeUpdatePolicy.KEEP);
-		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_SYMBOLIC_NAME,
-				projectName + ";singleton:=true", AttributeUpdatePolicy.KEEP);
-		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_ACTIVATION_POLICY,
-				"lazy", AttributeUpdatePolicy.KEEP);
-		changed |= ManifestFileUpdater.updateAttribute(manifest, PluginManifestConstants.BUNDLE_EXECUTION_ENVIRONMENT,
-				"JavaSE-1.8", AttributeUpdatePolicy.KEEP);
-		return changed;
-	}
-
-	/**
 	 * Updates the exports in the MANIFEST.MF for the API.
 	 * 
 	 * @param the
@@ -400,37 +413,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private boolean processManifestForPackage(final Manifest manifest) {
 		String apiPackageName = (this.packageName.equals("") ? "" : this.packageName + ".") + "api";
-		boolean updateExports = updateExports(manifest,
+		boolean updateExports = ExtendedManifestFileUpdater.updateExports(manifest,
 				Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules"));
 		if (updateExports) {
 			this.log("Updated exports");
 		}
 		return updateExports;
-	}
-
-	/**
-	 * Updates the Export-Package property of the manifest.
-	 * 
-	 * @param manifest
-	 *            the manifest to update
-	 * @param newExports
-	 *            the exports to add
-	 * @return whether the property was changed
-	 */
-	private static boolean updateExports(final Manifest manifest, final List<String> newExports) {
-		List<String> exportsList = ManifestFileUpdater
-				.extractDependencies((String) manifest.getMainAttributes().get(PluginManifestConstants.EXPORT_PACKAGE));
-		boolean updated = false;
-		for (String newExport : newExports) {
-			if (!exportsList.contains(newExport)) {
-				exportsList.add(newExport);
-				updated = true;
-			}
-		}
-		if (updated) {
-			manifest.getMainAttributes().put(PluginManifestConstants.EXPORT_PACKAGE,
-					exportsList.stream().filter(e -> !e.isEmpty()).collect(Collectors.joining(",")));
-		}
-		return updated;
 	}
 }
