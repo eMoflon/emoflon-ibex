@@ -144,6 +144,7 @@ final class GLPKWrapper extends ILPSolver {
 			break;
 		case eq:
 			GLPK.glp_set_row_bnds(problem, constraintCounter, GLPKConstants.GLP_FX, constraint.getValue(), constraint.getValue());
+			break;
 		default:
 			throw new IllegalArgumentException("Unsupported comparator: "+constraint.getComparator().toString());
 		}
@@ -175,6 +176,75 @@ final class GLPKWrapper extends ILPSolver {
 		}
 		
 	}
+	
+	/**
+	 * Creates and fills the GLPK problem
+	 */
+	private void prepareModel() {
+		problem = GLPK.glp_create_prob();
+		//register variables
+		int numberOfVariables = this.ilpProblem.getVariables().size();
+		GLPK.glp_add_cols(problem, numberOfVariables);
+		int counter = 1;
+		for(String variable : this.ilpProblem.getVariables()) {
+			this.registerVariable(variable, counter++);
+		}
+		
+		//register constraints
+		counter = 1;
+		GLPK.glp_add_rows(problem, this.ilpProblem.getConstraints().size());
+		for(ILPConstraint constraint : this.ilpProblem.getConstraints()) {
+			registerConstraint(constraint, counter++);
+		}
+		registerObjective(this.ilpProblem.getObjective());
+	}
+	
+	/**
+	 * Uses GLPK to solve the model
+	 * @return the GLPK exit code, 0 for success
+	 */
+	private int solveModel() {
+		glp_smcp parm= new glp_smcp();
+		GLPK.glp_init_smcp(parm);
+		GLPK.glp_write_lp(problem, null, "lp.lp");
+		int exitCode = GLPK.glp_simplex(problem, parm);
+		GLPK.glp_print_sol(problem, "lp_sol_base.lp");
+		if(exitCode != 0) {
+			return exitCode;
+		}
+		exitCode = GLPK.glp_intopt(problem, null);
+		//For debugging: Write model to file
+		GLPK.glp_print_mip(problem, "lp_sol_mip.lp");
+		return exitCode;
+	}
+	
+	/**
+	 * Retrieves the solution from the GLPK model
+	 * @return the solution containing the variable mapping provided by GLPK
+	 * @throws InvalidAttributeValueException
+	 */
+	private ILPSolution retrieveSolution() throws InvalidAttributeValueException {
+		int status = GLPK.glp_get_status(problem);
+		
+		boolean optimal = status == GLPKConstants.GLP_OPT;
+		boolean feasible = optimal || status == GLPKConstants.GLP_FEAS;
+		if (!feasible) { 
+			System.err.println("No optimal or feasible solution found.");
+			return null;
+		}
+		Map<String, Integer> variableSolutions = new HashMap<String, Integer>();
+		double optimum = GLPK.glp_mip_obj_val(problem);
+		System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
+		for(Entry<String, Integer> variable : glpkVariableCounters.entrySet()) {
+			double value = GLPK.glp_mip_col_val(problem, variable.getValue());
+			if(value != 0 && value != 1) {
+				throw new InvalidAttributeValueException("Solution may only be 0 or 1");
+			}
+			variableSolutions.put(variable.getKey(), (int) value);
+		}
+		GLPK.glp_delete_prob(problem);
+		return new ILPSolution(variableSolutions, optimal, optimum);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.emoflon.ibex.tgg.util.ilp.ILPSolver#solveILP()
@@ -182,60 +252,15 @@ final class GLPKWrapper extends ILPSolver {
 	@Override
 	public ILPSolution solveILP() throws Exception {
 		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
-		System.out.println(this);
 		if(this.ilpProblem.getVariables().size() <= 0) {
 			return new ILPSolution(new HashMap<String, Integer>(), true, 0);
 		}
 		try {
-			problem = GLPK.glp_create_prob();
-			//register variables
-			int numberOfVariables = this.ilpProblem.getVariables().size();
-			GLPK.glp_add_cols(problem, numberOfVariables);
-			int counter = 1;
-			for(String variable : this.ilpProblem.getVariables()) {
-				this.registerVariable(variable, counter++);
-			}
-			
-			//register constraints
-			counter = 1;
-			GLPK.glp_add_rows(problem, this.ilpProblem.getConstraints().size());
-			for(ILPConstraint constraint : this.ilpProblem.getConstraints()) {
-				registerConstraint(constraint, counter++);
-			}
-			registerObjective(this.ilpProblem.getObjective());
-
-			//Solve model
-			glp_smcp parm= new glp_smcp();
-			GLPK.glp_init_smcp(parm);
-			GLPK.glp_write_lp(problem, null, "lp.lp");
-			int exitCode = GLPK.glp_simplex(problem, parm);
-			exitCode += GLPK.glp_intopt(problem, null);
-			//For debugging: Write model to file
-			GLPK.glp_print_sol(problem, "lp_sol_base.lp");
-			GLPK.glp_print_mip(problem, "lp_sol_mip.lp");
+			this.prepareModel();
+			int exitCode = solveModel();
 			// Retrieve solution
 			if (exitCode == 0) {
-				int status = GLPK.glp_get_status(problem);
-				
-				boolean optimal = status == GLPKConstants.GLP_OPT;
-				boolean feasible = optimal || status == GLPKConstants.GLP_FEAS;
-				if (!feasible) { 
-					System.err.println("No optimal or feasible solution found.");
-					return null;
-				}
-				Map<String, Integer> variableSolutions = new HashMap<String, Integer>();
-				double optimum = GLPK.glp_mip_obj_val(problem);
-				System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
-				for(Entry<String, Integer> variable : glpkVariableCounters.entrySet()) {
-					double value = GLPK.glp_mip_col_val(problem, variable.getValue());
-					if(value != 0 && value != 1) {
-						throw new InvalidAttributeValueException("Solution may only be 0 or 1");
-					}
-					variableSolutions.put(variable.getKey(), (int) value);
-				}
-				GLPK.glp_delete_prob(problem);
-				ILPSolution solution = new ILPSolution(variableSolutions, optimal, optimum);
-				return solution;
+				return this.retrieveSolution();
 			} else {
 				System.err.println("The problem could not be solved");
 				GLPK.glp_delete_prob(problem);
