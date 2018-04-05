@@ -170,16 +170,10 @@ final class GLPKWrapper extends ILPSolver {
 		}
 	
 		//define terms
-		for(Entry<String, Integer> variable : glpkVariableCounters.entrySet()) {
-			//find terms containing the variable
-			double currentCoef = 0;
-			for(ILPTerm term : objective.getLinearExpression().getTerms()) {
-				if(term.getVariable().equals(variable.getKey())) {
-					currentCoef += term.getCoefficient();
-				}
-			}
-			GLPK.glp_set_obj_coef(problem, variable.getValue(), currentCoef);
+		for(ILPTerm term : objective.getLinearExpression().getTerms()) {
+			GLPK.glp_set_obj_coef(problem, glpkVariableCounters.get(term.getVariable()), term.getCoefficient());
 		}
+		
 	}
 
 	/* (non-Javadoc)

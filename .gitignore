@@ -34,3 +34,4 @@ org.emoflon.ibex.tgg.tests/testsuite1_ClassInhHier2DB/debug/patterns.xmi
 org.emoflon.ibex.tgg.tests/ClassInheritanceHierarchy/xtend-gen/org/benchmarx/classInheritanceHierarchy/core/.ClassInheritanceHierarchyComparator.xtendbin
 
 *.xtendbin
+*.orig
