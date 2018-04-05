@@ -16,6 +16,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorParameter;
 import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
+import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
 import org.emoflon.ibex.gt.editor.utils.GTFlattener;
@@ -82,9 +83,7 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
 		gtRule.setName(editorRule.getName());
 		gtRule.setAbstract(editorRule.isAbstract());
-		boolean isExecutable = EditorToInternalGTModelUtils.hasCreatedOrDeletedNode(editorRule)
-				|| EditorToInternalGTModelUtils.hasCreatedOrDeletedReference(editorRule)
-				|| EditorToInternalGTModelUtils.hasAttributeAssignment(editorRule);
+		boolean isExecutable = editorRule.getType() == EditorPatternType.RULE;
 		gtRule.setExecutable(isExecutable);
 
 		editorRule.getParameters().forEach(editorParameter -> {

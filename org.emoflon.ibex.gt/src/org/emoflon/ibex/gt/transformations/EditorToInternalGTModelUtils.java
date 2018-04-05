@@ -1,7 +1,6 @@
 package org.emoflon.ibex.gt.transformations;
 
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
-import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 
 import GTLanguage.GTBindingType;
@@ -58,47 +57,5 @@ public class EditorToInternalGTModelUtils {
 		default:
 			throw new IllegalArgumentException("Cannot convert relation.");
 		}
-	}
-
-	/**
-	 * Checks whether the editor rule contains at least one created or deleted node.
-	 * 
-	 * @param editorRule
-	 *            the editor rule
-	 * @return true if the rule contains a created or deleted node.
-	 */
-	public static boolean hasCreatedOrDeletedNode(final EditorPattern editorRule) {
-		return editorRule.getNodes().stream() //
-				.anyMatch(node -> node.getOperator() != EditorOperator.CONTEXT);
-	}
-
-	/**
-	 * Checks whether the editor pattern contains at least one created or deleted
-	 * reference.
-	 * 
-	 * @param editorPattern
-	 *            the editor rule
-	 * @return true if the pattern contains a created or deleted reference.
-	 */
-	public static boolean hasCreatedOrDeletedReference(final EditorPattern editorPattern) {
-		return editorPattern.getNodes().stream() //
-				.map(node -> node.getReferences()) //
-				.flatMap(references -> references.stream())
-				.anyMatch(reference -> reference.getOperator() != EditorOperator.CONTEXT);
-	}
-
-	/**
-	 * Checks whether the editor pattern contains at least one operator node or
-	 * reference.
-	 * 
-	 * @param editorPattern
-	 *            the editor rule
-	 * @return true if the pattern contains an attribute assignment.
-	 */
-	public static boolean hasAttributeAssignment(final EditorPattern editorPattern) {
-		return editorPattern.getNodes().stream() //
-				.map(node -> node.getAttributes()) //
-				.flatMap(attributes -> attributes.stream()) //
-				.anyMatch(attribute -> attribute.getRelation() == EditorRelation.ASSIGNMENT);
 	}
 }
