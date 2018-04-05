@@ -1,8 +1,8 @@
 package org.emoflon.ibex.gt.transformations;
 
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
+import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
-import org.emoflon.ibex.gt.editor.gT.Rule;
 
 import GTLanguage.GTBindingType;
 import IBeXLanguage.IBeXRelation;
@@ -67,36 +67,36 @@ public class EditorToInternalGTModelUtils {
 	 *            the editor rule
 	 * @return true if the rule contains a created or deleted node.
 	 */
-	public static boolean hasCreatedOrDeletedNode(final Rule editorRule) {
+	public static boolean hasCreatedOrDeletedNode(final EditorPattern editorRule) {
 		return editorRule.getNodes().stream() //
 				.anyMatch(node -> node.getOperator() != EditorOperator.CONTEXT);
 	}
 
 	/**
-	 * Checks whether the editor rule contains at least one created or deleted
+	 * Checks whether the editor pattern contains at least one created or deleted
 	 * reference.
 	 * 
-	 * @param editorRule
+	 * @param editorPattern
 	 *            the editor rule
-	 * @return true if the rule contains a created or deleted reference.
+	 * @return true if the pattern contains a created or deleted reference.
 	 */
-	public static boolean hasCreatedOrDeletedReference(final Rule editorRule) {
-		return editorRule.getNodes().stream() //
+	public static boolean hasCreatedOrDeletedReference(final EditorPattern editorPattern) {
+		return editorPattern.getNodes().stream() //
 				.map(node -> node.getReferences()) //
 				.flatMap(references -> references.stream())
 				.anyMatch(reference -> reference.getOperator() != EditorOperator.CONTEXT);
 	}
 
 	/**
-	 * Checks whether the editor rule contains at least one operator node or
+	 * Checks whether the editor pattern contains at least one operator node or
 	 * reference.
 	 * 
-	 * @param editorRule
+	 * @param editorPattern
 	 *            the editor rule
-	 * @return true if the rule contains an attribute assignment.
+	 * @return true if the pattern contains an attribute assignment.
 	 */
-	public static boolean hasAttributeAssignment(final Rule editorRule) {
-		return editorRule.getNodes().stream() //
+	public static boolean hasAttributeAssignment(final EditorPattern editorPattern) {
+		return editorPattern.getNodes().stream() //
 				.map(node -> node.getAttributes()) //
 				.flatMap(attributes -> attributes.stream()) //
 				.anyMatch(attribute -> attribute.getRelation() == EditorRelation.ASSIGNMENT);

@@ -33,7 +33,7 @@ import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.gt.codegen.JavaFileGenerator;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
-import org.emoflon.ibex.gt.editor.gT.Rule;
+import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
 import org.emoflon.ibex.gt.transformations.EditorToInternalGTModelTransformation;
@@ -110,7 +110,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		});
 		EcoreUtil.resolveAll(resourceSet);
 
-		this.checkEditorModelsForDuplicateRuleNames(editorModels);
+		this.checkEditorModelsForDuplicatePatternNames(editorModels);
 
 		// Transform editor models to rules of the internal GT model.
 		GTRuleSet gtRuleSet = this.transformEditorModelsToInternalModel(editorModels);
@@ -225,12 +225,12 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @param editorModels
 	 *            the editor files and models
 	 */
-	private void checkEditorModelsForDuplicateRuleNames(final Map<IFile, EditorGTFile> editorModels) {
+	private void checkEditorModelsForDuplicatePatternNames(final Map<IFile, EditorGTFile> editorModels) {
 		Map<String, IFile> ruleNameToFile = new HashMap<String, IFile>();
 		for (final IFile gtFile : editorModels.keySet()) {
 			EditorGTFile editorModel = editorModels.get(gtFile);
-			List<Rule> duplicates = new ArrayList<Rule>();
-			editorModel.getRules().forEach(rule -> {
+			List<EditorPattern> duplicates = new ArrayList<EditorPattern>();
+			editorModel.getPatterns().forEach(rule -> {
 				String ruleName = rule.getName();
 				if (ruleNameToFile.containsKey(ruleName)) {
 					this.logError(String.format("Rule %s already defined in %s. Ignoring definition in %s.", ruleName,
@@ -241,7 +241,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 					ruleNameToFile.put(ruleName, gtFile);
 				}
 			});
-			editorModel.getRules().removeAll(duplicates);
+			editorModel.getPatterns().removeAll(duplicates);
 		}
 	}
 

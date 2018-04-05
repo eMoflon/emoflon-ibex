@@ -12,11 +12,11 @@ import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorNode;
+import org.emoflon.ibex.gt.editor.gT.EditorParameter;
 import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
-import org.emoflon.ibex.gt.editor.gT.Node;
-import org.emoflon.ibex.gt.editor.gT.Parameter;
-import org.emoflon.ibex.gt.editor.gT.Rule;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
 import org.emoflon.ibex.gt.editor.utils.GTFlattener;
 
@@ -37,9 +37,8 @@ import IBeXLanguage.IBeXEnumLiteral;
 import IBeXLanguage.IBeXLanguageFactory;
 
 /**
- * Transformation from the editor file (which conforms to the GT.ecore
- * meta-model generated from the Xtext specification) to the internal GT model
- * (which conforms to the GTLanguage.ecore meta-model).
+ * Transformation from the editor file (which conforms to the meta-model
+ * generated from the Xtext specification) to the internal GT model.
  */
 public class EditorToInternalGTModelTransformation extends AbstractModelTransformation<EditorGTFile, GTRuleSet> {
 	/**
@@ -51,7 +50,7 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	public GTRuleSet transform(final EditorGTFile editorModel) {
 		Objects.requireNonNull(editorModel, "The editor model must not be null!");
 
-		editorModel.getRules().forEach(editorRule -> this.transformRule(editorRule));
+		editorModel.getPatterns().forEach(editorRule -> this.transformRule(editorRule));
 
 		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
 		gtRuleSet.getRules().addAll(gtRules.stream() //
@@ -63,16 +62,16 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	/**
 	 * Transforms an editor rule into a GTRule of the internal GT model.
 	 * 
-	 * @param editorRuleUnflattened
+	 * @param unflattenedEditorPattern
 	 *            the editor rule, must not be <code>null</code>
 	 */
-	private void transformRule(final Rule editorRuleUnflattened) {
-		Objects.requireNonNull(editorRuleUnflattened, "rule must not be null!");
+	private void transformRule(final EditorPattern unflattenedEditorPattern) {
+		Objects.requireNonNull(unflattenedEditorPattern, "pattern must not be null!");
 
-		Rule editorRule = editorRuleUnflattened;
-		if (!editorRuleUnflattened.getSuperRules().isEmpty()) {
-			GTFlattener flattener = new GTFlattener(editorRuleUnflattened);
-			editorRule = flattener.getFlattenedRule();
+		EditorPattern editorRule = unflattenedEditorPattern;
+		if (!unflattenedEditorPattern.getSuperPatterns().isEmpty()) {
+			GTFlattener flattener = new GTFlattener(unflattenedEditorPattern);
+			editorRule = flattener.getFlattenedPattern();
 
 			if (flattener.hasErrors()) {
 				flattener.getErrors().forEach(e -> this.logError(e));
@@ -106,7 +105,7 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	 * @param gtRule
 	 *            the GTRule
 	 */
-	private void transformNodesAndEdges(final Rule editorRule, final GTRule gtRule) {
+	private void transformNodesAndEdges(final EditorPattern editorRule, final GTRule gtRule) {
 		GTGraph gtGraph = GTLanguageFactory.eINSTANCE.createGTGraph();
 		editorRule.getNodes().forEach(editorNode -> {
 			gtGraph.getNodes().add(this.transformNode(editorNode));
@@ -125,7 +124,7 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	 * @param gtRule
 	 *            the GTRule
 	 */
-	private void transformAttributes(final Rule editorRule, final GTRule gtRule) {
+	private void transformAttributes(final EditorPattern editorRule, final GTRule gtRule) {
 		editorRule.getNodes().forEach(editorNode -> {
 			Optional<GTNode> gtNodeOptional = InternalGTModelUtils.findGTNodeWithName(gtRule.getGraph().getNodes(),
 					editorNode.getName());
@@ -154,7 +153,7 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	 *            the editor node, must not be <code>null</code>
 	 * @return the GTNode
 	 */
-	private GTNode transformNode(final Node editorNode) {
+	private GTNode transformNode(final EditorNode editorNode) {
 		Objects.requireNonNull(editorNode, "node must not be null!");
 		GTNode gtNode = GTLanguageFactory.eINSTANCE.createGTNode();
 		gtNode.setName(editorNode.getName());
@@ -281,7 +280,7 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	 *            edges to be created
 	 * @return the list of GTEdges
 	 */
-	private List<GTEdge> transformReferencesToEdges(final Node editorNode, final List<GTNode> gtNodes) {
+	private List<GTEdge> transformReferencesToEdges(final EditorNode editorNode, final List<GTNode> gtNodes) {
 		Objects.requireNonNull(editorNode, "editor node must not be null!");
 		Objects.requireNonNull(gtNodes, "node list must not be null!");
 
@@ -320,7 +319,7 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	 *            the editor parameter, must not be <code>null</code>
 	 * @return the GTParameter
 	 */
-	private GTParameter transformParameter(final Parameter editorParameter) {
+	private GTParameter transformParameter(final EditorParameter editorParameter) {
 		Objects.requireNonNull(editorParameter, "The parameter must not be null!");
 
 		GTParameter gtParameter = GTLanguageFactory.eINSTANCE.createGTParameter();
