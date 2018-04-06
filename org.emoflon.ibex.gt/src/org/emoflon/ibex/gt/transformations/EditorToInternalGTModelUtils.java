@@ -1,8 +1,7 @@
 package org.emoflon.ibex.gt.transformations;
 
-import org.emoflon.ibex.gt.editor.gT.Operator;
-import org.emoflon.ibex.gt.editor.gT.Relation;
-import org.emoflon.ibex.gt.editor.gT.Rule;
+import org.emoflon.ibex.gt.editor.gT.EditorOperator;
+import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 
 import GTLanguage.GTBindingType;
 import IBeXLanguage.IBeXRelation;
@@ -19,7 +18,7 @@ public class EditorToInternalGTModelUtils {
 	 *            the operator from the editor model
 	 * @return the binding type
 	 */
-	public static GTBindingType convertOperatorToBindingType(final Operator operator) {
+	public static GTBindingType convertOperatorToBindingType(final EditorOperator operator) {
 		switch (operator) {
 		case CREATE:
 			return GTBindingType.CREATE;
@@ -39,7 +38,7 @@ public class EditorToInternalGTModelUtils {
 	 *            the relation from the editor model
 	 * @return the binary relation
 	 */
-	public static IBeXRelation convertRelation(final Relation relation) {
+	public static IBeXRelation convertRelation(final EditorRelation relation) {
 		switch (relation) {
 		case GREATER:
 			return IBeXRelation.GREATER;
@@ -58,47 +57,5 @@ public class EditorToInternalGTModelUtils {
 		default:
 			throw new IllegalArgumentException("Cannot convert relation.");
 		}
-	}
-
-	/**
-	 * Checks whether the editor rule contains at least one created or deleted node.
-	 * 
-	 * @param editorRule
-	 *            the editor rule
-	 * @return true if the rule contains a created or deleted node.
-	 */
-	public static boolean hasCreatedOrDeletedNode(final Rule editorRule) {
-		return editorRule.getNodes().stream() //
-				.anyMatch(node -> node.getOperator() != Operator.CONTEXT);
-	}
-
-	/**
-	 * Checks whether the editor rule contains at least one created or deleted
-	 * reference.
-	 * 
-	 * @param editorRule
-	 *            the editor rule
-	 * @return true if the rule contains a created or deleted reference.
-	 */
-	public static boolean hasCreatedOrDeletedReference(final Rule editorRule) {
-		return editorRule.getNodes().stream() //
-				.map(node -> node.getReferences()) //
-				.flatMap(references -> references.stream())
-				.anyMatch(reference -> reference.getOperator() != Operator.CONTEXT);
-	}
-
-	/**
-	 * Checks whether the editor rule contains at least one operator node or
-	 * reference.
-	 * 
-	 * @param editorRule
-	 *            the editor rule
-	 * @return true if the rule contains an attribute assignment.
-	 */
-	public static boolean hasAttributeAssignment(final Rule editorRule) {
-		return editorRule.getNodes().stream() //
-				.map(node -> node.getAttributes()) //
-				.flatMap(attributes -> attributes.stream()) //
-				.anyMatch(attribute -> attribute.getRelation() == Relation.ASSIGNMENT);
 	}
 }
