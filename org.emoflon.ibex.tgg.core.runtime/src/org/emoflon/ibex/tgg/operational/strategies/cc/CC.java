@@ -88,8 +88,11 @@ public abstract class CC extends OPT {
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		
-		if(ruleName == null)
+		if(ruleName == null) {
+			removeOperationalRuleMatch(match);
 			return true;  //FIXME[Anjorin]:  This should be avoided (all matches that do not correspond to rules should be filtered)
+		}
+			
 		
 		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
 		comatch.ifPresent(cm -> {

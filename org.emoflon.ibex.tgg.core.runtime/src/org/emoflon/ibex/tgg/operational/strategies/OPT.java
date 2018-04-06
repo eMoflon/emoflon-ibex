@@ -281,8 +281,8 @@ public abstract class OPT extends OperationalStrategy {
 		ILPProblem ilpProblem = ILPFactory.createILPProblem();
 		defineILPExclusions(ilpProblem);
 		defineILPImplications(ilpProblem);
-		defineILPObjective(ilpProblem);
 		addUserDefinedConstraints(ilpProblem);
+		defineILPObjective(ilpProblem);
 		
 		try {
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, this.options.getIlpSolver());
