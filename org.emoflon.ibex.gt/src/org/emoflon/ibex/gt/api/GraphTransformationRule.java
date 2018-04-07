@@ -13,8 +13,9 @@ import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
- * This is the abstraction for all applicable rules. Via <code>apply()</code>
- * and its variants, rules can be applied.
+ * This is the abstraction for all rules, i. e. patterns with a created or
+ * deleted node or attribute assignments. Via <code>apply()</code> and its
+ * variants, rules can be applied.
  * 
  * If no pushout approach is set for the rule before calling an
  * <code>apply</code> method, the pushout approach of the API which created the
@@ -25,11 +26,11 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  * 
  * @param <M>
  *            the type of matches returned by this rule
- * @param <R>
+ * @param <P>
  *            the own type
  */
-public abstract class GraphTransformationRule<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationPattern<M, R>>
-		extends GraphTransformationPattern<M, R> {
+public abstract class GraphTransformationRule<M extends GraphTransformationMatch<M, P>, P extends GraphTransformationPattern<M, P>>
+		extends GraphTransformationPattern<M, P> {
 	/**
 	 * The consumer for the subscription for enableAutoApply().
 	 */
@@ -62,8 +63,8 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @param ruleName
 	 *            the name of the rule
 	 */
-	public GraphTransformationRule(final GraphTransformationAPI api,
-			final GraphTransformationInterpreter interpreter, final String ruleName) {
+	public GraphTransformationRule(final GraphTransformationAPI api, final GraphTransformationInterpreter interpreter,
+			final String ruleName) {
 		super(api, interpreter, ruleName);
 	}
 
@@ -84,23 +85,23 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 *            the pushout approach
 	 */
 	@SuppressWarnings("unchecked")
-	public final R setPushoutApproach(final PushoutApproach pushoutApproach) {
+	public final P setPushoutApproach(final PushoutApproach pushoutApproach) {
 		Objects.requireNonNull(pushoutApproach, "Pushout approach must not be null!");
 		this.pushoutApproach = Optional.of(pushoutApproach);
-		return (R) this;
+		return (P) this;
 	}
 
 	/**
 	 * Sets the pushout approach for the rule to double pushout.
 	 */
-	public final R setDPO() {
+	public final P setDPO() {
 		return this.setPushoutApproach(PushoutApproach.DPO);
 	}
 
 	/**
 	 * Sets the pushout approach for the rule to single pushout.
 	 */
-	public final R setSPO() {
+	public final P setSPO() {
 		return this.setPushoutApproach(PushoutApproach.SPO);
 	}
 

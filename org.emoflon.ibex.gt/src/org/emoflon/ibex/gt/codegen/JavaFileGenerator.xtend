@@ -214,7 +214,7 @@ class JavaFileGenerator {
 					«FOR node : signatureNodes»
 						s += "	«node.name» --> " + this.«getVariableName(node)» + System.lineSeparator();
 					«ENDFOR»
-					s += "} for " + this.getRule();
+					s += "} for " + this.getPattern();
 					return s;
 				}
 			}
@@ -223,10 +223,11 @@ class JavaFileGenerator {
 	}
 
 	/**
-	 * Generates the Java Rule class for the given rule.
+	 * Generates the Java Pattern/Rule class for the given rule.
 	 */
 	public def generateRuleClass(IFolder rulesPackage, GTRule rule) {
-		val ruleType = if(rule.executable) 'GraphTransformationRule' else 'GraphTransformationPattern'
+		val ruleType = if(rule.executable) 'rule' else 'pattern'
+		val ruleClassType = if(rule.executable) 'GraphTransformationRule' else 'GraphTransformationPattern'
 		val parameterNodes = rule.graph.nodes.filter[it.bindingType != GTBindingType.CREATE && !it.local].toList
 		val imports = this.eClassifiersManager.getImportsForNodeTypes(parameterNodes)
 		imports.addAll(this.eClassifiersManager.getImportsForDataTypes(rule.parameters))
@@ -234,7 +235,7 @@ class JavaFileGenerator {
 			'java.util.ArrayList',
 			'java.util.List',
 			'org.emoflon.ibex.common.operational.IMatch',
-			'''org.emoflon.ibex.gt.api.«ruleType»''',
+			'''org.emoflon.ibex.gt.api.«ruleClassType»''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'''«this.getSubPackageName('api')».«APIClassName»''',
 			'''«this.getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
@@ -247,16 +248,16 @@ class JavaFileGenerator {
 			«printHeader(this.getSubPackageName('api.rules'), imports)»
 			
 			/**
-			 * The rule «getRuleSignature(rule)».
+			 * The «ruleType» «getRuleSignature(rule)».
 			 */
-			public class «getRuleClassName(rule)» extends «ruleType»<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
-				private static String ruleName = "«rule.name»";
+			public class «getRuleClassName(rule)» extends «ruleClassType»<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
+				private static String patternName = "«rule.name»";
 			
 				/**
-				 * Creates a new rule «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»).
+				 * Creates a new «ruleType» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»).
 				 * 
 				 * @param api
-				 *            the API the rule belongs to
+				 *            the API the «ruleType» belongs to
 				 * @param interpreter
 				 *            the interpreter
 				 «FOR parameter : rule.parameters»
@@ -266,7 +267,7 @@ class JavaFileGenerator {
 				 */
 				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
 						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR»
-					super(api, interpreter, ruleName);
+					super(api, interpreter, patternName);
 					«FOR parameter : rule.parameters»
 						this.«getMethodName('set', parameter.name)»(«parameter.name»Value);
 					«ENDFOR»
@@ -314,7 +315,7 @@ class JavaFileGenerator {
 			
 				@Override
 				public String toString() {
-					String s = "rule " + ruleName + " {" + System.lineSeparator();
+					String s = "«ruleType» " + patternName + " {" + System.lineSeparator();
 					«FOR node : parameterNodes»
 						s += "	«node.name» --> " + this.parameters.get("«node.name»") + System.lineSeparator();
 					«ENDFOR»

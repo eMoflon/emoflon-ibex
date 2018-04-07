@@ -13,7 +13,7 @@ import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
- * This is the abstraction for all rules.
+ * This is the abstraction for all patterns.
  * 
  * Concrete Implementations must have a constructor and methods which set the
  * parameters required for finding matches. In addition methods for to bind
@@ -21,10 +21,10 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  * 
  * @param <M>
  *            the type of matches returned by this rule
- * @param <R>
+ * @param <P>
  *            the own type
  */
-public abstract class GraphTransformationPattern<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationPattern<M, R>> {
+public abstract class GraphTransformationPattern<M extends GraphTransformationMatch<M, P>, P extends GraphTransformationPattern<M, P>> {
 	/**
 	 * The API.
 	 */
@@ -91,13 +91,13 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the match
 	 */
 	@SuppressWarnings("unchecked")
-	public final R bind(final IMatch match) {
+	public final P bind(final IMatch match) {
 		this.getParameterNames().forEach(parameterName -> {
 			if (match.isInMatch(parameterName)) {
 				this.parameters.put(parameterName, (EObject) match.get(parameterName));
 			}
 		});
-		return (R) this;
+		return (P) this;
 	}
 
 	/**
@@ -108,9 +108,9 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the match
 	 */
 	@SuppressWarnings("unchecked")
-	public final R bind(final GraphTransformationMatch<?, ?> match) {
+	public final P bind(final GraphTransformationMatch<?, ?> match) {
 		this.bind(match.toIMatch());
-		return (R) this;
+		return (P) this;
 	}
 
 	/**
