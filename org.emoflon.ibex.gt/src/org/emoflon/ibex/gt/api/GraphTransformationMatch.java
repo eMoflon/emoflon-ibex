@@ -13,7 +13,7 @@ import org.emoflon.ibex.common.operational.IMatch;
  * @param <R>
  *            the type of the rule the match is for
  */
-public abstract class GraphTransformationMatch<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationRule<M, R>> {
+public abstract class GraphTransformationMatch<M extends GraphTransformationMatch<M, R>, R extends GraphTransformationPattern<M, R>> {
 	/**
 	 * The rule application
 	 */

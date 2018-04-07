@@ -226,7 +226,7 @@ class JavaFileGenerator {
 	 * Generates the Java Rule class for the given rule.
 	 */
 	public def generateRuleClass(IFolder rulesPackage, GTRule rule) {
-		val ruleType = if(rule.executable) 'GraphTransformationApplicableRule' else 'GraphTransformationRule'
+		val ruleType = if(rule.executable) 'GraphTransformationRule' else 'GraphTransformationPattern'
 		val parameterNodes = rule.graph.nodes.filter[it.bindingType != GTBindingType.CREATE && !it.local].toList
 		val imports = this.eClassifiersManager.getImportsForNodeTypes(parameterNodes)
 		imports.addAll(this.eClassifiersManager.getImportsForDataTypes(rule.parameters))
@@ -368,7 +368,7 @@ class JavaFileGenerator {
 	 * Returns the name of the rule class for the rule.
 	 */
 	private static def getRuleClassName(GTRule rule) {
-		return rule.name.toFirstUpper + "Rule"
+		return rule.name.toFirstUpper + if(rule.executable) "Rule" else "Pattern"
 	}
 
 	/**
