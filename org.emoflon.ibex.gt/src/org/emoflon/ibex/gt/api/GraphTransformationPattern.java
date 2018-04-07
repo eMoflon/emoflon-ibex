@@ -20,7 +20,7 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  * context and deleted nodes to a specific value must be provided.
  * 
  * @param <M>
- *            the type of matches returned by this rule
+ *            the type of matches returned by this pattern
  * @param <P>
  *            the own type
  */
@@ -36,9 +36,9 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	protected GraphTransformationInterpreter interpreter;
 
 	/**
-	 * The rule name
+	 * The pattern name
 	 */
-	private String ruleName;
+	private String patternName;
 
 	/**
 	 * The parameters.
@@ -51,20 +51,20 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	private Map<Consumer<M>, Consumer<IMatch>> consumers = new HashMap<Consumer<M>, Consumer<IMatch>>();
 
 	/**
-	 * Creates a new rule.
+	 * Creates a new pattern.
 	 * 
 	 * @param api
-	 *            the API the rule belongs to
+	 *            the API the pattern belongs to
 	 * @param interpreter
 	 *            the interpreter
-	 * @param ruleName
-	 *            the name of the rule
+	 * @param patternName
+	 *            the name of the pattern
 	 */
-	public GraphTransformationPattern(final GraphTransformationAPI api, final GraphTransformationInterpreter interpreter,
-			final String ruleName) {
+	public GraphTransformationPattern(final GraphTransformationAPI api,
+			final GraphTransformationInterpreter interpreter, final String patternName) {
 		this.api = api;
 		this.interpreter = interpreter;
-		this.ruleName = ruleName;
+		this.patternName = patternName;
 	}
 
 	/**
@@ -77,15 +77,15 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Returns the names of the parameters which can be bound for this rule.
+	 * Returns the names of the parameters which can be bound for this pattern.
 	 * 
 	 * @return the parameter names
 	 */
 	protected abstract List<String> getParameterNames();
 
 	/**
-	 * Binds the parameters of the rule if there is a parameter of the same name in
-	 * the match.
+	 * Binds the parameters of the pattern if there is a parameter of the same name
+	 * in the match.
 	 * 
 	 * @param match
 	 *            the match
@@ -101,8 +101,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Binds the parameters of the rule if there is a parameter of the same name in
-	 * the match.
+	 * Binds the parameters of the pattern if there is a parameter of the same name
+	 * in the match.
 	 * 
 	 * @param match
 	 *            the match
@@ -114,28 +114,28 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Finds an arbitrary match for the rule.
+	 * Finds an arbitrary match for the pattern.
 	 * 
 	 * @return an {@link Optional} for the match
 	 */
 	public final Optional<M> findAnyMatch() {
-		return this.interpreter.findAnyMatch(this.ruleName, this.parameters) //
+		return this.interpreter.findAnyMatch(this.patternName, this.parameters) //
 				.map(m -> this.convertMatch(m));
 	}
 
 	/**
-	 * Finds all matches for the rule.
+	 * Finds all matches for the pattern.
 	 * 
 	 * @return the list of matches
 	 */
 	public final Collection<M> findMatches() {
-		return this.interpreter.findMatches(this.ruleName, this.parameters).stream() //
+		return this.interpreter.findMatches(this.patternName, this.parameters).stream() //
 				.map(m -> this.convertMatch(m)) //
 				.collect(Collectors.toList());
 	}
 
 	/**
-	 * Finds all matches for the rule.
+	 * Finds all matches for the pattern.
 	 * 
 	 * @param action
 	 *            a Consumer for the matches found
@@ -145,7 +145,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Returns whether matches for the rule exist.
+	 * Returns whether matches for the pattern exist.
 	 * 
 	 * @return <code>true</code> if and only if there is at least one match
 	 */
@@ -154,7 +154,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Returns the number of matches found for the rule.
+	 * Returns the number of matches found for the pattern.
 	 * 
 	 * @return the number of matches
 	 */
@@ -163,13 +163,13 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Subscribes notifications of all new matches found for the rule.
+	 * Subscribes notifications of all new matches found for the pattern.
 	 * 
 	 * @param action
 	 *            the {@link Consumer} to notify
 	 */
 	public final void subscribeAppearing(final Consumer<M> action) {
-		this.interpreter.subscribeAppearing(this.ruleName, this.convertConsumer(action));
+		this.interpreter.subscribeAppearing(this.patternName, this.convertConsumer(action));
 	}
 
 	/**
@@ -181,20 +181,20 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 */
 	public final void unsubscribeAppearing(final Consumer<M> action) {
 		if (this.consumers.containsKey(action)) {
-			this.interpreter.unsubscibeAppearing(this.ruleName, this.consumers.get(action));
+			this.interpreter.unsubscibeAppearing(this.patternName, this.consumers.get(action));
 		} else {
 			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
 		}
 	}
 
 	/**
-	 * Subscribes notifications of all disappearing matches found for the rule.
+	 * Subscribes notifications of all disappearing matches found for the pattern.
 	 * 
 	 * @param action
 	 *            the {@link Consumer} to notify
 	 */
 	public final void subscribeDisappearing(final Consumer<M> action) {
-		this.interpreter.subscribeDisappearing(this.ruleName, this.convertConsumer(action));
+		this.interpreter.subscribeDisappearing(this.patternName, this.convertConsumer(action));
 	}
 
 	/**
@@ -206,7 +206,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 */
 	public final void unsubscribeDisappearing(final Consumer<M> action) {
 		if (this.consumers.containsKey(action)) {
-			this.interpreter.unsubscibeDisappearing(this.ruleName, this.consumers.get(action));
+			this.interpreter.unsubscibeDisappearing(this.patternName, this.consumers.get(action));
 		} else {
 			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
 		}

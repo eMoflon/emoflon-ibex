@@ -106,6 +106,15 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
+	 * Checks whether the rule is applicable.
+	 * 
+	 * @return <code>true</code> if there is at least one match
+	 */
+	public final boolean isApplicable() {
+		return this.hasMatches();
+	}
+
+	/**
 	 * Applies the rule on an arbitrary match if a match can be found.
 	 * 
 	 * @return an {@link Optional} for the the match after rule application
