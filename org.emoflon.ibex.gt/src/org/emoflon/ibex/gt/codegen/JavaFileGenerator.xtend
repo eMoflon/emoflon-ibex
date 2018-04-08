@@ -112,9 +112,9 @@ class JavaFileGenerator {
 			«FOR rule : rules»
 				
 					/**
-					 * Creates a new rule «getRuleSignature(rule)».
+					 * Creates a new «getRuleType(rule)» «getRuleSignature(rule)».
 					 * 
-					 * @return the created rule
+					 * @return the created «getRuleType(rule)»
 					 */
 					public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
 						return new «getRuleClassName(rule)»(this, this.interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
@@ -175,7 +175,7 @@ class JavaFileGenerator {
 			«printHeader(this.getSubPackageName('api.matches'), imports)»
 			
 			/**
-			 * A match for the rule «getRuleSignature(rule)».
+			 * A match for the «getRuleType(rule)» «getRuleSignature(rule)».
 			 */
 			public class «getMatchClassName(rule)» extends GraphTransformationMatch<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				«FOR node : signatureNodes»
@@ -183,15 +183,15 @@ class JavaFileGenerator {
 				«ENDFOR»
 			
 				/**
-				 * Creates a new match for the rule «rule.name»().
+				 * Creates a new match for the «getRuleType(rule)» «getRuleSignature(rule)».
 				 * 
-				 * @param rule
-				 *            the rule
+				 * @param pattern
+				 *            the pattern
 				 * @param match
 				 *            the untyped match
 				 */
-				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» rule, final IMatch match) {
-					super(rule, match);
+				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» pattern, final IMatch match) {
+					super(pattern, match);
 					«FOR node : signatureNodes»
 						this.«getVariableName(node)» = («getVariableType(node)») match.get("«node.name»");
 					«ENDFOR»
@@ -370,6 +370,13 @@ class JavaFileGenerator {
 	 */
 	private static def getRuleClassName(GTRule rule) {
 		return rule.name.toFirstUpper + if(rule.executable) "Rule" else "Pattern"
+	}
+
+	/**
+	 * Returns "pattern" or "rule". 
+	 */
+	private static def getRuleType(GTRule rule) {
+		return if(rule.executable) 'rule' else 'pattern'
 	}
 
 	/**

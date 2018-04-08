@@ -43,7 +43,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	/**
 	 * The parameters.
 	 */
-	protected HashMap<String, Object> parameters = new HashMap<String, Object>();
+	protected Map<String, Object> parameters = new HashMap<String, Object>();
 
 	/**
 	 * The mapping between consumers for typed and untyped matches.
@@ -72,7 +72,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return the parameters
 	 */
-	public final HashMap<String, Object> getParameters() {
+	public final Map<String, Object> getParameters() {
 		return this.parameters;
 	}
 
