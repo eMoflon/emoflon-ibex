@@ -277,7 +277,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @param match
 	 *            the match to execute the pattern on
 	 * @param po
-	 *            the pushout semantics to use
+	 *            the pushout approach to use
 	 * @return the match after rule application
 	 */
 	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po) {
@@ -290,7 +290,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @param match
 	 *            the match to execute the pattern on
 	 * @param po
-	 *            the pushout semantics to use
+	 *            the pushout approach to use
 	 * @param parameters
 	 *            the parameters to pass
 	 * @return the match after rule application
@@ -298,39 +298,32 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters) {
 		String patternName = match.getPatternName();
 
-		IMatch originalMatch = new GraphTransformationSimpleMatch(match);
-
-		// Execute deletion.
-		Optional<IMatch> matchAfterDeletion;
 		Optional<IBeXDeletePattern> deletePattern = this.patternSet.getDeletePatterns().stream()
-				.filter(pattern -> pattern.getName().contentEquals(patternName)).findAny();
-		if (deletePattern.isPresent()) {
-			matchAfterDeletion = this.deletePatternInterpreter.apply(deletePattern.get(), originalMatch, po);
-		} else {
+				.filter(pattern -> pattern.getName().equals(patternName)).findAny();
+		if (!deletePattern.isPresent()) {
 			throw new IllegalArgumentException(String.format("No delete pattern called %s", patternName));
 		}
 
-		// Abort if deletion failed.
-		if (!matchAfterDeletion.isPresent()) {
-			return matchAfterDeletion;
-		}
-
-		// Execute creation.
-		Optional<IMatch> matchAfterCreation;
 		Optional<IBeXCreatePattern> createPattern = this.patternSet.getCreatePatterns().stream()
 				.filter(pattern -> pattern.getName().equals(patternName)).findAny();
-		if (createPattern.isPresent()) {
-			matchAfterCreation = this.createPatternInterpreter.apply(createPattern.get(), matchAfterDeletion.get(),
-					parameters);
-		} else {
+		if (!createPattern.isPresent()) {
 			throw new IllegalArgumentException(String.format("No create pattern called %s", patternName));
+		}
+
+		// Execute deletion.
+		IMatch originalMatch = new GraphTransformationSimpleMatch(match);
+		Optional<IMatch> comatch = this.deletePatternInterpreter.apply(deletePattern.get(), originalMatch, po);
+
+		// Execute creation.
+		if (comatch.isPresent()) {
+			comatch = this.createPatternInterpreter.apply(createPattern.get(), comatch.get(), parameters);
 		}
 
 		// Rule application may invalidate existing or lead to new matches.
 		this.updateMatches();
 
 		// Return the co-match.
-		return matchAfterCreation;
+		return comatch;
 	}
 
 	/**
