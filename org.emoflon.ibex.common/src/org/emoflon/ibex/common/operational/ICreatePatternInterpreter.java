@@ -16,6 +16,8 @@ public interface ICreatePatternInterpreter {
 	 *            the pattern defining which elements are created
 	 * @param match
 	 *            the match
+	 * @param parameters
+	 *            the parameters
 	 * @return the co-match
 	 */
 	Optional<IMatch> apply(IBeXCreatePattern createPattern, IMatch match, Map<String, Object> parameters);

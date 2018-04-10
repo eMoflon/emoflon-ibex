@@ -4,4 +4,10 @@
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="IBeXLanguage.IBeXLanguagePackage" genModel="model/Common.genmodel" uri="platform:/resource/org.emoflon.ibex.common/model/Common.ecore"/>
   </extension>
+  <extension
+        point="org.moflon.emf.codegen.URIPreferenceExtension">
+     <uri_preference_extension
+           class="org.emoflon.ibex.common.utils.URIPreferenceExtension">
+     </uri_preference_extension>
+  </extension>
 </plugin>
