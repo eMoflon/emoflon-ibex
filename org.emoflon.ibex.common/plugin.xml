@@ -4,13 +4,10 @@
   <extension point="org.moflon.emf.codegen.URIPreferenceExtension">
     <uri_preference_extension class="org.emoflon.ibex.common.utils.URIPreferenceExtension"/>
   </extension>
+  <extension point="net.sourceforge.plantuml.eclipse.diagramTextProvider">
+    <diagramTextProvider providerClass="org.emoflon.ibex.common.visualization.IBeXPatternVisualizer"/>
+  </extension>
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="IBeXLanguage.IBeXLanguagePackage" genModel="model/Common.genmodel" uri="platform:/resource/org.emoflon.ibex.common/model/Common.ecore"/>
-  </extension>
-  <extension
-        point="net.sourceforge.plantuml.eclipse.diagramTextProvider">
-     <diagramTextProvider
-           providerClass="org.emoflon.ibex.common.visualization.IBeXPatternVisualizer">
-     </diagramTextProvider>
   </extension>
 </plugin>
