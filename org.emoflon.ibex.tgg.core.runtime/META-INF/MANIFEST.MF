@@ -109,4 +109,5 @@ Export-Package: .,
  runtime,
  runtime.impl,
  runtime.util
+Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime
 

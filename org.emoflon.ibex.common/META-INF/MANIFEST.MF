@@ -18,3 +18,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.moflon.core.preferences;bundle-version="1.1.0",
  org.moflon.emf.codegen;bundle-version="1.1.0"
 Bundle-ClassPath: .
+Automatic-Module-Name: org.emoflon.ibex.common
