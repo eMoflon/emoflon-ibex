@@ -5,6 +5,7 @@ import IBeXLanguage.IBeXPatternSet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.emoflon.ibex.gt.transformations.EditorToInternalGTModelTransformation
 import org.emoflon.ibex.gt.transformations.InternalGTModelToIBeXPatternTransformation;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.utilities.ClasspathUtil;
+import org.moflon.core.utilities.ExtensionsUtil;
 import org.moflon.core.utilities.WorkspaceHelper;
 
 /**
@@ -311,6 +313,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 				+ "/api/ibex-patterns.xmi";
 		generator.generateAPIClass(apiPackage, patternPath);
 		generator.generateAppClass(apiPackage);
+		this.collectEngineExtensions().forEach(e -> generator.generateAppClassForEngine(apiPackage, e));
 	}
 
 	/**
@@ -370,6 +373,16 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
+	 * Collects the GTEngine builder extensions.
+	 * 
+	 * @return the extensions
+	 */
+	private Collection<GTEngineExtension> collectEngineExtensions() {
+		return ExtensionsUtil.collectExtensions(GTEngineExtension.BUILDER_EXTENSON_ID, "class",
+				GTEngineExtension.class);
+	}
+
+	/**
 	 * Updates the project's manifest file.
 	 */
 	private void updateManifest(final Function<Manifest, Boolean> updateFunction) {
@@ -389,7 +402,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @return whether the manifest was changed
 	 */
 	private boolean processManifestForProject(final Manifest manifest) {
-		List<String> dependencies = Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt");
+		List<String> dependencies = new ArrayList<String>();
+		dependencies.addAll(Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt"));
+		this.collectEngineExtensions().forEach(engine -> dependencies.addAll(engine.getDependencies()));
 
 		boolean changedBasics = ExtendedManifestFileUpdater.setBasics(manifest, this.project.getName());
 		if (changedBasics) {
