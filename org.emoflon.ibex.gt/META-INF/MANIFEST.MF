@@ -10,6 +10,7 @@ Export-Package: GTLanguage,
  GTLanguage.impl,
  GTLanguage.util,
  org.emoflon.ibex.gt.api,
+ org.emoflon.ibex.gt.codegen,
  org.emoflon.ibex.gt.engine,
  org.emoflon.ibex.gt.transformations
 Bundle-Localization: plugin
@@ -26,3 +27,4 @@ Require-Bundle: org.apache.log4j,
  org.moflon.core.plugins,
  org.moflon.core.utilities
 Bundle-ClassPath: .
+Automatic-Module-Name: org.emoflon.ibex.gt

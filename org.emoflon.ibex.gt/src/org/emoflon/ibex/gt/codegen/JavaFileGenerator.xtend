@@ -160,6 +160,31 @@ class JavaFileGenerator {
 	}
 
 	/**
+	 * Generates the App class for the concrete engine. 
+	 */
+	public def generateAppClassForEngine(IFolder apiPackage, GTEngineExtension engine) {
+		val appClassName = this.classNamePrefix + 'App'
+		val engineAppClassName = this.classNamePrefix + engine.engineName + 'App'
+		val concreteAppSourceCode = '''
+			«printHeader(this.getSubPackageName('api'), engine.imports)»
+			
+			/**
+			 * An application using the «this.APIClassName» using «engine.engineName».
+			 */
+			public class «engineAppClassName» extends «appClassName» {
+			
+				/**
+				 * Initializes an API using «engine.engineName».
+				 */
+				protected «this.APIClassName» initAPI() {
+					return this.initAPI(new «engine.engineClassName»());
+				}
+			}
+		'''
+		writeFile(apiPackage.getFile(engineAppClassName + '.java'), concreteAppSourceCode)
+	}
+
+	/**
 	 * Generates the Java Match class for the given rule.
 	 */
 	public def generateMatchClass(IFolder apiMatchesPackage, GTRule rule) {
