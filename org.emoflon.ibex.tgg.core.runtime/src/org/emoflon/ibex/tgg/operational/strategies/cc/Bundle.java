@@ -13,18 +13,18 @@ public class Bundle {
 	/**
 	 * Collection of all matches belonging to the bundle (kernel and its complement matches)
 	 */
-	private HashSet<Integer> allMatches;
+	private THashSet<Integer> allMatches;
 	private int kernelMatch;
 	
-	private HashSet<EObject> bundleContextNodes;
-	private HashSet<RuntimeEdge> bundleContextEdges;
+	private THashSet<EObject> bundleContextNodes;
+	private THashSet<RuntimeEdge> bundleContextEdges;
 
 	
 	public Bundle(int kernelMatch) {
 		this.kernelMatch = kernelMatch;
-		allMatches = new HashSet<Integer>();
-		bundleContextNodes = new HashSet<EObject>();
-		bundleContextEdges = new HashSet<RuntimeEdge>();
+		allMatches = new THashSet<Integer>();
+		bundleContextNodes = new THashSet<EObject>();
+		bundleContextEdges = new THashSet<RuntimeEdge>();
 	}
 	
 	public void addMatch(Integer match) {
@@ -39,15 +39,15 @@ public class Bundle {
 		bundleContextEdges.addAll(blackEdges);
 	}
 	
-	public HashSet<EObject> getBundleContextNodes() {
+	public THashSet<EObject> getBundleContextNodes() {
 		return bundleContextNodes;
 	}
 
-	public HashSet<RuntimeEdge> getBundleContextEdges() {
+	public THashSet<RuntimeEdge> getBundleContextEdges() {
 		return bundleContextEdges;
 	}
 	
-	public HashSet<Integer> getAllMatches(){
+	public THashSet<Integer> getAllMatches(){
 		return allMatches;
 	}
 	
@@ -55,8 +55,8 @@ public class Bundle {
 		return kernelMatch;
 	}
 
-	public HashSet<Integer> getAllComplementMatches() {
-		return allMatches.stream().filter(m -> m != kernelMatch).collect(Collectors.toCollection(HashSet::new));
+	public THashSet<Integer> getAllComplementMatches() {
+		return allMatches.stream().filter(m -> m != kernelMatch).collect(Collectors.toCollection(THashSet::new));
 	}
 
 }

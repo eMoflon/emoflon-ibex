@@ -25,14 +25,14 @@ public class HandleDependencies {
 	 * key: bundle;
 	 * value: bundles that provide context for this bundle
 	 */
-	HashMap<Integer, ArrayList<Integer>> directDependencies = new HashMap<Integer, ArrayList<Integer>>();
+	THashMap<Integer, ArrayList<Integer>> directDependencies = new THashMap<Integer, ArrayList<Integer>>();
 	
 	/**
 	 * Collection of all cycles detected in dependencies between the bundles;
 	 * key: cycle id; 
 	 * value: list of bundles that cause cycle
 	 */
-	HashMap<Integer, ArrayList<Integer>> cyclicDependencies = new HashMap<Integer, ArrayList<Integer>>();
+	THashMap<Integer, ArrayList<Integer>> cyclicDependencies = new THashMap<Integer, ArrayList<Integer>>();
 	private int cyclicDependencyId = 1;
 	
 	TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
@@ -52,8 +52,8 @@ public class HandleDependencies {
 	}
 	
 	
-	private HashMap<Integer, ArrayList<Integer>> getBundlesDirectDependences() {
-		HashMap<Integer, ArrayList<Integer>> bundleToDependences = new HashMap<Integer, ArrayList<Integer>>();
+	private THashMap<Integer, ArrayList<Integer>> getBundlesDirectDependences() {
+		THashMap<Integer, ArrayList<Integer>> bundleToDependences = new THashMap<Integer, ArrayList<Integer>>();
 		for (Bundle bundle : appliedBundles) {
 			ArrayList<Integer> directDependences = findDirectDependences(bundle).stream().filter(n -> n != bundle.getKernelMatch()).collect(Collectors.toCollection(ArrayList::new));
 			bundleToDependences.put(bundle.getKernelMatch(), directDependences);
@@ -98,7 +98,7 @@ public class HandleDependencies {
 	 * 
 	 * @return Collection of all cycles found in dependencies between bundles
 	 */
-	public HashMap<Integer, ArrayList<Integer>> getCyclicDependenciesBetweenBundles(){
+	public THashMap<Integer, ArrayList<Integer>> getCyclicDependenciesBetweenBundles(){
 		detectAllBundleCycles();
 		return cyclicDependencies;
 	}
@@ -150,8 +150,8 @@ public class HandleDependencies {
 	 *            - specific cycle between bundles
 	 * @return Collection of complement rule applications inside the bundle
 	 */
-	public List<HashSet<Integer>> getComplementRuleApplications(int detectedCycle) {
-		List<HashSet<Integer>> bundleToComplementRuleApplication = new ArrayList<>();
+	public List<THashSet<Integer>> getComplementRuleApplications(int detectedCycle) {
+		List<THashSet<Integer>> bundleToComplementRuleApplication = new ArrayList<>();
 		for (Integer bundleID : cyclicDependencies.get(detectedCycle)) {
 			bundleToComplementRuleApplication.add(getBundle(bundleID).getAllComplementMatches());
 		}

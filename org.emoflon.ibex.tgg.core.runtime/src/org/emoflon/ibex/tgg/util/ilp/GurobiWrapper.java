@@ -1,14 +1,13 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
 
-import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import gurobi.GRB;
 import gurobi.GRB.DoubleAttr;
 import gurobi.GRBEnv;
@@ -28,7 +27,7 @@ final class GurobiWrapper extends ILPSolver {
 	/**
 	 * A mapping of the variable identifiers to the variables registered in the Gurobi model
 	 */
-	private final THashMap<String, GRBVar> gurobiVariables = new THashMap<>();
+	private final TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<GRBVar>();
 	/**
 	 * The Gurobi model
 	 */
@@ -59,9 +58,9 @@ final class GurobiWrapper extends ILPSolver {
 	private void registerVariable(String variable) throws GRBException {
 		//add var (lowerBound,upperBound, Objective coefficient, type, name)
 		if(onlyBinaryVariables) {
-			gurobiVariables.put(variable, model.addVar(0.0, 1.0, 0.0, GRB.BINARY, variable));
+			gurobiVariables.put(this.ilpProblem.getVariableId(variable), model.addVar(0.0, 1.0, 0.0, GRB.BINARY, variable));
 		} else {
-			gurobiVariables.put(variable, model.addVar(Integer.MIN_VALUE, Integer.MAX_VALUE, 0.0, GRB.INTEGER, variable));
+			gurobiVariables.put(this.ilpProblem.getVariableId(variable), model.addVar(Integer.MIN_VALUE, Integer.MAX_VALUE, 0.0, GRB.INTEGER, variable));
 		}
 	}
 
@@ -80,16 +79,16 @@ final class GurobiWrapper extends ILPSolver {
 		registerObjective(this.ilpProblem.getObjective());
 
 		model.optimize();
-		Map<String, Integer> solutionVariables = new HashMap<>();
-		for (String variableName : this.ilpProblem.getVariables()) {
-			GRBVar gurobiVar = gurobiVariables.get(variableName);
-			solutionVariables.put(variableName, (int) gurobiVar.get(DoubleAttr.X));
+		TIntIntHashMap solutionVariables = new TIntIntHashMap();
+		for (int variableId : this.ilpProblem.getVariableIds()) {
+			GRBVar gurobiVar = gurobiVariables.get(variableId);
+			solutionVariables.put(variableId, (int) gurobiVar.get(DoubleAttr.X));
 		}
 		double optimum = model.get(GRB.DoubleAttr.ObjVal);
 		System.out.println("Solution found: "+optimum);
 		env.dispose();
 		model.dispose();
-		return new ILPSolution(solutionVariables, true, optimum);
+		return ilpProblem.createILPSolution(solutionVariables, true, optimum);
 	}
 	
 	/**
@@ -98,7 +97,7 @@ final class GurobiWrapper extends ILPSolver {
 	private GRBLinExpr createGurobiExpression(ILPLinearExpression linearExpression) {
 		GRBLinExpr gurobiExpression = new GRBLinExpr();
 		for(ILPTerm term : linearExpression.getTerms()) {
-			gurobiExpression.addTerm(term.getCoefficient(), gurobiVariables.get(term.getVariable()));
+			gurobiExpression.addTerm(term.getCoefficient(), gurobiVariables.get(term.getVariableId()));
 		}
 		return gurobiExpression;
 	}

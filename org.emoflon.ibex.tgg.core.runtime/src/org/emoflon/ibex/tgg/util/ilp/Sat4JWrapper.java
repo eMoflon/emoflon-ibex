@@ -1,12 +1,11 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
@@ -19,6 +18,8 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
+
+import gnu.trove.map.hash.TIntIntHashMap;
 
 /**
  * This class is a wrapper around SAT4J allowing the usage of this ILPSolver with the unified API of the {@link ILPSolver} class.
@@ -88,21 +89,21 @@ final class Sat4JWrapper extends ILPSolver {
 		optimizer.setVerbose(true);
 		if(optimizer.isSatisfiable()) {
 			int[] model = solver.model();
-			Map<String, Integer> variableSolutions = new HashMap<>();
+			TIntIntHashMap variableSolutions = new TIntIntHashMap();
 			for(int i : model) {
 				int solution = i>0? 1 : 0;
-				for(String var : this.ilpProblem.getVariables()) {
-					if(Math.abs(i) == var.hashCode()) {
+				for(int var : this.ilpProblem.getVariableIds()) {
+					if(Math.abs(i) == var) {
 						variableSolutions.put(var, solution);
 						break;
 					}
 				}
 			}
 			boolean optimal = optimizer.isOptimal();
-			ILPSolution solution = new ILPSolution(variableSolutions, optimal, -1);
+			ILPSolution solution = this.ilpProblem.createILPSolution(variableSolutions, optimal, -1);
 			double optimum = this.ilpProblem.getObjective().getSolutionValue(solution);
 			System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
-			return new ILPSolution(variableSolutions, optimal, optimum);
+			return this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
 		}
 		return null;
 	}
@@ -115,7 +116,7 @@ final class Sat4JWrapper extends ILPSolver {
 	private IVecInt getLiterals(ILPLinearExpression linearExpression) {
 		IVecInt vec = new VecInt();
 		for (ILPTerm term : linearExpression.getTerms()) {
-			vec.push(term.getVariable().hashCode());
+			vec.push(term.getVariableId());
 		}
 		return vec;
 	}
@@ -177,7 +178,7 @@ final class Sat4JWrapper extends ILPSolver {
 		case maximize:
 			ILPLinearExpression invertedExpression = ilpProblem.createLinearExpression();
 			for(ILPTerm term : expr.getTerms()) {
-				invertedExpression.addTerm(ilpProblem.createTerm(term.getVariable(), -term.getCoefficient()));
+				invertedExpression.addTerm(ilpProblem.createTerm(term.getVariableId(), -term.getCoefficient()));
 			}
 			expr = invertedExpression;
 			break;

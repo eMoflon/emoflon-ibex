@@ -5,11 +5,11 @@ package org.emoflon.ibex.tgg.util.ilp;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.hash.THashSet;
 
 /**
@@ -20,11 +20,14 @@ import gnu.trove.set.hash.THashSet;
  *
  */
 public final class ILPProblem {
+	
+	private int variableCounter = 1;
 
 	/**
 	 * Contains all variables that have been defined
 	 */
-	private final THashSet<String> variables = new THashSet<>();
+	private final TObjectIntHashMap<String> variables = new TObjectIntHashMap<String>();
+	private final TIntObjectHashMap<String> variableIDsToVariables = new TIntObjectHashMap<String>();
 	/**
 	 * Set of constraints that have been defined using addConstraint
 	 */
@@ -44,8 +47,12 @@ public final class ILPProblem {
 	 * 
 	 * @return the variables that have been defined
 	 */
-	public Set<String> getVariables() {
-		return Collections.unmodifiableSet(variables);
+	public Collection<String> getVariables() {
+		return Collections.unmodifiableCollection(variables.keySet());
+	}
+	
+	public int[] getVariableIds() {
+		return variableIDsToVariables.keys();
 	}
 
 	/**
@@ -53,8 +60,21 @@ public final class ILPProblem {
 	 * This method should be overwritten if a special handling of variables within for the concrete ILP Solver is required.
 	 * @param	variable The (unique) name of the variable.
 	 */
-	void addVariable(String variable) {
-		variables.add(variable);
+	int addVariable(String variable) {
+		if(!variables.contains(variable)) {
+			variables.put(variable, variableCounter);
+			variableIDsToVariables.put(variableCounter, variable);
+			return variableCounter++;
+		}
+		return variables.get(variable);
+	}
+	
+	int getVariableId(String variable) {
+		return this.variables.get(variable);
+	}
+	
+	String getVariable(int variableId) {
+		return this.variableIDsToVariables.get(variableId);
 	}
 
 	/**
@@ -83,6 +103,22 @@ public final class ILPProblem {
 	public ILPTerm createTerm(String variable, double coefficient) {
 		return new ILPTerm(variable, coefficient);
 	}
+	
+	ILPSolution createILPSolution(TIntIntHashMap variableAllocations, boolean optimal, double solutionValue) {
+		return new ILPSolution(variableAllocations, optimal, solutionValue);
+	}
+	
+	/**
+	 * Creates an ILP Term that can be used within linear expressions.
+	 * The term is of the form (c*x) where x is the variable and c is the coefficient.
+	 * 
+	 * @param	variableId	The ID of the variable used within the term.
+	 * @param	coefficient	The coefficient of the term.
+	 * @return	The ILPTerm that has been created.
+	 */
+	ILPTerm createTerm(int variableId, double coefficient) {
+		return new ILPTerm(variableId, coefficient);
+	}
 
 	/**
 	 * Adds a constraint to the ILP. <br>
@@ -104,6 +140,7 @@ public final class ILPProblem {
 	 */
 	void addConstraint(ILPConstraint constraint) {
 		if(!this.constraints.contains(constraint)) {
+			System.out.println("Constraint added ("+constraints.size()+")");
 			this.constraints.add(constraint);
 		}
 	}
@@ -244,7 +281,7 @@ public final class ILPProblem {
 		/**
 		 * The variable identifier
 		 */
-		private final String variable;
+		private final int variableId;
 		/**
 		 * The coefficient
 		 */
@@ -256,10 +293,16 @@ public final class ILPProblem {
 		 * @param coefficient The coefficient
 		 */
 		private ILPTerm(String variable, double coefficient) {
-			if(!variables.contains(variable)) {
-				addVariable(variable);
-			}
-			this.variable = variable;
+			this(addVariable(variable), coefficient);
+		}
+		
+		/**
+		 * Creates a new term
+		 * @param variableId The id of the variable
+		 * @param coefficient The coefficient
+		 */
+		private ILPTerm(int variableId, double coefficient) {
+			this.variableId = variableId;
 			this.coefficient = coefficient;
 		}
 
@@ -275,7 +318,14 @@ public final class ILPProblem {
 		 * @return the variable
 		 */
 		public String getVariable() {
-			return variable;
+			return variableIDsToVariables.get(variableId);
+		}
+		
+		/**
+		 * @return the id of the variable
+		 */
+		int getVariableId() {
+			return this.variableId;
 		}
 
 		/**
@@ -291,23 +341,22 @@ public final class ILPProblem {
 		 * @return The calculated value
 		 */
 		final double getSolutionValue(ILPSolution ilpSolution) {
-			return coefficient * ilpSolution.getVariable(variable);
+			return coefficient * ilpSolution.getVariable(variableId);
 		}
 
 		@Override
 		public String toString() {
 			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(1.0)) {
-				return this.variable;
+				return this.getVariable();
 			}
 			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(-1.0)) {
-				return "-" + this.variable;
+				return "-" + this.getVariable();
 			}
-			return "("+this.coefficient + " * " + this.variable+")";
+			return "("+this.coefficient + " * " + this.getVariable()+")";
 		}
+		
+		
 
-		/* (non-Javadoc)
-		 * @see java.lang.Object#hashCode()
-		 */
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -316,38 +365,25 @@ public final class ILPProblem {
 			long temp;
 			temp = Double.doubleToLongBits(coefficient);
 			result = prime * result + (int) (temp ^ (temp >>> 32));
-			result = prime * result + ((variable == null) ? 0 : variable.hashCode());
+			result = prime * result + variableId;
 			return result;
 		}
 
-		/* (non-Javadoc)
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj) {
+			if (this == obj)
 				return true;
-			}
-			if (obj == null) {
+			if (obj == null)
 				return false;
-			}
-			if (getClass() != obj.getClass()) {
+			if (getClass() != obj.getClass())
 				return false;
-			}
 			ILPTerm other = (ILPTerm) obj;
-			if (!getOuterType().equals(other.getOuterType())) {
+			if (!getOuterType().equals(other.getOuterType()))
 				return false;
-			}
-			if (Double.doubleToLongBits(coefficient) != Double.doubleToLongBits(other.coefficient)) {
+			if (Double.doubleToLongBits(coefficient) != Double.doubleToLongBits(other.coefficient))
 				return false;
-			}
-			if (variable == null) {
-				if (other.variable != null) {
-					return false;
-				}
-			} else if (!variable.equals(other.variable)) {
+			if (variableId != other.variableId)
 				return false;
-			}
 			return true;
 		}
 
@@ -615,7 +651,7 @@ public final class ILPProblem {
 		/**
 		 * The terms the linear expression uses
 		 */
-		private final Set<ILPTerm> terms = new HashSet<>();
+		private final TIntObjectHashMap<ILPTerm> terms = new TIntObjectHashMap<ILPProblem.ILPTerm>();
 
 		/**
 		 * Adds a term to the linear expression (additional summand)
@@ -623,21 +659,17 @@ public final class ILPProblem {
 		 */
 		public void addTerm(ILPTerm term) {
 			//check existing terms if there is one with the same coef
-			Iterator<ILPTerm> it = terms.iterator();
-			while(it.hasNext()) {
-				ILPTerm existingTerm = it.next();
-				if(existingTerm.variable.equals(term.variable)) {
-					//update coefficient
-					existingTerm.coefficient += term.coefficient;
-					//check if term not 0
-					if(Double.doubleToLongBits(existingTerm.coefficient) == Double.doubleToLongBits(0)) {
-						it.remove();
-					}
-					return;
+			if(terms.containsKey(term.variableId)) {
+				ILPTerm existingTerm = terms.get(term.variableId);
+				//update coefficient
+				existingTerm.coefficient += term.coefficient;
+				//check if term not 0
+				if(Double.doubleToLongBits(existingTerm.coefficient) == Double.doubleToLongBits(0)) {
+					terms.remove(term.variableId);
 				}
+			} else {
+				terms.put(term.variableId, term);
 			}
-
-			terms.add(term);
 		}
 
 		/**
@@ -645,7 +677,7 @@ public final class ILPProblem {
 		 * @param factor	The factor to multiply by
 		 */
 		void multiplyBy(double factor) {
-			for (ILPTerm term : terms) {
+			for (ILPTerm term : terms.valueCollection()) {
 				term.multiplyBy(factor);
 			}
 		}
@@ -657,7 +689,7 @@ public final class ILPProblem {
 		 */
 		final double getSolutionValue(ILPSolution ilpSolution) {
 			double solution = 0;
-			for(ILPTerm term : terms) {
+			for(ILPTerm term : terms.valueCollection()) {
 				solution += term.getSolutionValue(ilpSolution);
 			}
 			return solution;
@@ -665,7 +697,7 @@ public final class ILPProblem {
 
 		@Override
 		public String toString() {
-			return String.join(" + ", terms.stream().map(t -> t.toString()).collect(Collectors.toList()));
+			return String.join(" + ", terms.valueCollection().stream().map(t -> t.toString()).collect(Collectors.toList()));
 		}
 
 		/* (non-Javadoc)
@@ -708,8 +740,123 @@ public final class ILPProblem {
 		/**
 		 * @return the terms
 		 */
-		Set<ILPTerm> getTerms() {
-			return Collections.unmodifiableSet(terms);
+		Collection<ILPTerm> getTerms() {
+			return Collections.unmodifiableCollection(terms.valueCollection());
+		}
+	}
+	
+	/**
+	 * This class is used to make the solution found by the ILP Solver accessible.
+	 * 
+	 * @author Robin Oppermann
+	 */
+	public final class ILPSolution {
+		/**
+		 * Mapping of variables to the found solutions
+		 */
+		private final TIntIntHashMap variableAllocations;
+		/**
+		 * Whether the found solution is optimal 
+		 */
+		private final boolean optimal;
+
+		
+		/**
+		 * The value of the objective function generated for the current solution
+		 */
+		private final double solutionValue;
+
+		/**
+		 * Initializes a new ILPSolution
+		 * @param variableAllocations	Mapping of variables to the found solutions
+		 * @param optimal			Whether the found solution is optimal 
+		 */
+		private ILPSolution(TIntIntHashMap variableAllocations, boolean optimal, double solutionValue) {
+			super();
+			this.variableAllocations = variableAllocations;
+			this.optimal = optimal;
+			this.solutionValue = solutionValue;
+		}
+
+		/**
+		 * Returns the value of a variable 
+		 * @param 	variable	The variable identifier
+		 * @return	The value of the variable in the solution
+		 */
+		public int getVariable(String variable) {
+			return getVariable(getVariableId(variable));
+		}
+		
+		int getVariable(int variableId) {
+			return variableAllocations.get(variableId);
+		}
+
+		/**
+		 * @return the solutionValue
+		 */
+		public double getSolutionValue() {
+			return solutionValue;
+		}
+
+		/**
+		 * @return	Whether the found solution is optimal
+		 */
+		public boolean isOptimal() {
+			return optimal;
+		}
+		/**
+		 * Creates a string representation of the found solution
+		 */
+		@Override
+		public String toString() {
+			StringBuilder s = new StringBuilder();
+			s.append("Solution value: "+solutionValue+"\n");
+			for (int variableId : variableAllocations.keys()) {
+				s.append("("+getVariable(variableId)+","+variableAllocations.get(variableId)+")\n");
+			}
+			return s.toString();
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			long temp;
+			temp = Double.doubleToLongBits(solutionValue);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			result = prime * result + ((variableAllocations == null) ? 0 : variableAllocations.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			ILPSolution other = (ILPSolution) obj;
+			if (Double.doubleToLongBits(solutionValue) != Double.doubleToLongBits(other.solutionValue)) {
+				return false;
+			}
+			if (variableAllocations == null) {
+				if (other.variableAllocations != null) {
+					return false;
+				}
+			} else if (!variableAllocations.equals(other.variableAllocations)) {
+				return false;
+			}
+			return true;
 		}
 	}
 }

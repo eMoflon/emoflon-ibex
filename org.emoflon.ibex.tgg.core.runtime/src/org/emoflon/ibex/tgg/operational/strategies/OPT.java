@@ -31,9 +31,9 @@ import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Comparator;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
-import org.emoflon.ibex.tgg.util.ilp.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
 import com.google.common.collect.Sets;
