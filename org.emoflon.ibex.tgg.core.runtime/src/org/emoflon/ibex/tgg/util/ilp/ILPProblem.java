@@ -5,11 +5,16 @@ package org.emoflon.ibex.tgg.util.ilp;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import gnu.trove.function.TDoubleFunction;
+import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TIntDoubleProcedure;
 import gnu.trove.set.hash.THashSet;
 
 /**
@@ -140,7 +145,7 @@ public final class ILPProblem {
 	 */
 	void addConstraint(ILPConstraint constraint) {
 		if(!this.constraints.contains(constraint)) {
-			System.out.println("Constraint added ("+constraints.size()+")");
+//			System.out.println("Constraint added ("+constraints.size()+")");
 			this.constraints.add(constraint);
 		}
 	}
@@ -435,52 +440,6 @@ public final class ILPProblem {
 			return "CONSTRAINT ("+name+"): "+linearExpression.toString() + " "+ comparator.toString() +" " + value;
 		}
 
-		/* (non-Javadoc)
-		 * @see java.lang.Object#hashCode()
-		 */
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((comparator == null) ? 0 : comparator.hashCode());
-			result = prime * result + ((linearExpression == null) ? 0 : linearExpression.hashCode());
-			long temp;
-			temp = Double.doubleToLongBits(value);
-			result = prime * result + (int) (temp ^ (temp >>> 32));
-			return result;
-		}
-
-		/* (non-Javadoc)
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			ILPConstraint other = (ILPConstraint) obj;
-			if (comparator != other.comparator) {
-				return false;
-			}
-			if (linearExpression == null) {
-				if (other.linearExpression != null) {
-					return false;
-				}
-			} else if (!linearExpression.equals(other.linearExpression)) {
-				return false;
-			}
-			if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value)) {
-				return false;
-			}
-			return true;
-		}
-
 		/**
 		 * Multiplies the inequation by the given factor
 		 * @param factor
@@ -535,6 +494,46 @@ public final class ILPProblem {
 		 */
 		String getName() {
 			return name;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((comparator == null) ? 0 : comparator.hashCode());
+			result = prime * result + ((linearExpression == null) ? 0 : linearExpression.hashCode());
+			long temp;
+			temp = Double.doubleToLongBits(value);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ILPConstraint other = (ILPConstraint) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (comparator != other.comparator)
+				return false;
+			if (linearExpression == null) {
+				if (other.linearExpression != null)
+					return false;
+			} else if (!linearExpression.equals(other.linearExpression))
+				return false;
+			if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value))
+				return false;
+			return true;
+		}
+
+		private ILPProblem getOuterType() {
+			return ILPProblem.this;
 		}
 	}
 
@@ -651,24 +650,20 @@ public final class ILPProblem {
 		/**
 		 * The terms the linear expression uses
 		 */
-		private final TIntObjectHashMap<ILPTerm> terms = new TIntObjectHashMap<ILPProblem.ILPTerm>();
+		private final TIntDoubleHashMap terms = new TIntDoubleHashMap();
 
 		/**
 		 * Adds a term to the linear expression (additional summand)
 		 * @param term	The term to add
 		 */
 		public void addTerm(ILPTerm term) {
-			//check existing terms if there is one with the same coef
-			if(terms.containsKey(term.variableId)) {
-				ILPTerm existingTerm = terms.get(term.variableId);
-				//update coefficient
-				existingTerm.coefficient += term.coefficient;
-				//check if term not 0
-				if(Double.doubleToLongBits(existingTerm.coefficient) == Double.doubleToLongBits(0)) {
-					terms.remove(term.variableId);
-				}
-			} else {
-				terms.put(term.variableId, term);
+			this.addTerm(term.variableId, term.coefficient);
+		}
+		
+		private void addTerm(int variableID, double coefficient) {
+			double result = terms.adjustOrPutValue(variableID, coefficient, coefficient);
+			if(Double.doubleToLongBits(result) == Double.doubleToLongBits(0)) {
+				terms.remove(variableID);
 			}
 		}
 
@@ -677,9 +672,13 @@ public final class ILPProblem {
 		 * @param factor	The factor to multiply by
 		 */
 		void multiplyBy(double factor) {
-			for (ILPTerm term : terms.valueCollection()) {
-				term.multiplyBy(factor);
-			}
+			terms.transformValues(new TDoubleFunction() {
+				
+				@Override
+				public double execute(double arg0) {
+					return arg0 * factor;
+				}
+			});
 		}
 
 		/**
@@ -689,59 +688,75 @@ public final class ILPProblem {
 		 */
 		final double getSolutionValue(ILPSolution ilpSolution) {
 			double solution = 0;
-			for(ILPTerm term : terms.valueCollection()) {
-				solution += term.getSolutionValue(ilpSolution);
+			for(int variableId : this.terms.keys()) {
+				double coefficient = terms.get(variableId);
+				solution += coefficient * ilpSolution.getVariable(variableId);
 			}
 			return solution;
 		}
 
 		@Override
 		public String toString() {
-			return String.join(" + ", terms.valueCollection().stream().map(t -> t.toString()).collect(Collectors.toList()));
-		}
-
-		/* (non-Javadoc)
-		 * @see java.lang.Object#hashCode()
-		 */
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result;
-			result = prime * result + ((terms == null) ? 0 : terms.hashCode());
-			return result;
-		}
-
-		/* (non-Javadoc)
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			ILPLinearExpression other = (ILPLinearExpression) obj;
-			if (terms == null) {
-				if (other.terms != null) {
-					return false;
-				}
-			} else if (!terms.equals(other.terms)) {
-				return false;
-			}
-			return true;
+			return String.join(" + ", this.getTerms().stream().map(t -> t.toString()).collect(Collectors.toList()));
 		}
 
 		/**
 		 * @return the terms
 		 */
 		Collection<ILPTerm> getTerms() {
-			return Collections.unmodifiableCollection(terms.valueCollection());
+			List<ILPTerm> terms = new LinkedList<ILPTerm>();
+			this.terms.forEachEntry(new TIntDoubleProcedure() {
+				@Override
+				public boolean execute(int variableId, double coefficient) {
+					terms.add(new ILPTerm(variableId, coefficient));
+					return true;
+				}
+			});
+			return Collections.unmodifiableCollection(terms);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((terms == null) ? 0 : terms.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ILPLinearExpression other = (ILPLinearExpression) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (terms == null) {
+				if (other.terms != null)
+					return false;
+			} else {
+				if(other.terms == null)
+					return false;
+				if(terms.size() != other.terms.size())
+					return false;
+				for(int variableID : terms.keys()) {
+					if(!other.terms.contains(variableID)) {
+						return false;
+					}
+					if(terms.get(variableID) != other.terms.get(variableID)) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		private ILPProblem getOuterType() {
+			return ILPProblem.this;
 		}
 	}
 	
