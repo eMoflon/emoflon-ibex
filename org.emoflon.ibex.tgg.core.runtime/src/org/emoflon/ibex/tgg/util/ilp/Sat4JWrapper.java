@@ -178,7 +178,7 @@ final class Sat4JWrapper extends ILPSolver {
 		case maximize:
 			ILPLinearExpression invertedExpression = ilpProblem.createLinearExpression();
 			for(ILPTerm term : expr.getTerms()) {
-				invertedExpression.addTerm(ilpProblem.createTerm(term.getVariableId(), -term.getCoefficient()));
+				invertedExpression.addTerm(term.getVariableId(), -term.getCoefficient());
 			}
 			expr = invertedExpression;
 			break;

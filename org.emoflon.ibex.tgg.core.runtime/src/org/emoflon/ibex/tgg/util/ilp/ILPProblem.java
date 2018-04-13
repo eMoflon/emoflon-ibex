@@ -7,14 +7,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import gnu.trove.function.TDoubleFunction;
+import gnu.trove.iterator.TIntDoubleIterator;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TIntDoubleProcedure;
+import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.hash.THashSet;
 
 /**
@@ -89,40 +90,13 @@ public final class ILPProblem {
 	 * @param	terms	The terms that are used in the linear expression.
 	 * @return	The linear expression that has been created.
 	 */
-	public ILPLinearExpression createLinearExpression(ILPTerm...terms) {
+	public ILPLinearExpression createLinearExpression() {
 		ILPLinearExpression expr = new ILPLinearExpression();
-		for (ILPTerm term : terms) {
-			expr.addTerm(term);
-		}
 		return expr;
-	}
-
-	/**
-	 * Creates an ILP Term that can be used within linear expressions.
-	 * The term is of the form (c*x) where x is the variable and c is the coefficient.
-	 * 
-	 * @param	variable	The variable used within the term.
-	 * @param	coefficient	The coefficient of the term.
-	 * @return	The ILPTerm that has been created.
-	 */
-	public ILPTerm createTerm(String variable, double coefficient) {
-		return new ILPTerm(variable, coefficient);
 	}
 	
 	ILPSolution createILPSolution(TIntIntHashMap variableAllocations, boolean optimal, double solutionValue) {
 		return new ILPSolution(variableAllocations, optimal, solutionValue);
-	}
-	
-	/**
-	 * Creates an ILP Term that can be used within linear expressions.
-	 * The term is of the form (c*x) where x is the variable and c is the coefficient.
-	 * 
-	 * @param	variableId	The ID of the variable used within the term.
-	 * @param	coefficient	The coefficient of the term.
-	 * @return	The ILPTerm that has been created.
-	 */
-	ILPTerm createTerm(int variableId, double coefficient) {
-		return new ILPTerm(variableId, coefficient);
 	}
 
 	/**
@@ -656,11 +630,11 @@ public final class ILPProblem {
 		 * Adds a term to the linear expression (additional summand)
 		 * @param term	The term to add
 		 */
-		public void addTerm(ILPTerm term) {
-			this.addTerm(term.variableId, term.coefficient);
+		public void addTerm(String variable, double coefficient) {
+			this.addTerm(getVariableId(variable), coefficient);
 		}
 		
-		private void addTerm(int variableID, double coefficient) {
+		void addTerm(int variableID, double coefficient) {
 			double result = terms.adjustOrPutValue(variableID, coefficient, coefficient);
 			if(Double.doubleToLongBits(result) == Double.doubleToLongBits(0)) {
 				terms.remove(variableID);
@@ -694,10 +668,29 @@ public final class ILPProblem {
 			}
 			return solution;
 		}
+		
+		private String getTermString(int variableId) {
+			double coefficient = this.terms.get(variableId);
+			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(1.0)) {
+				return getVariable(variableId);
+			}
+			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(-1.0)) {
+				return "-" + getVariable(variableId);
+			}
+			return "("+coefficient + " * " + getVariable(variableId)+")";
+		}
 
 		@Override
 		public String toString() {
-			return String.join(" + ", this.getTerms().stream().map(t -> t.toString()).collect(Collectors.toList()));
+			List<String> termStrings = new LinkedList<String>();
+			this.terms.keySet().forEach(new TIntProcedure() {
+				@Override
+				public boolean execute(int arg0) {
+					termStrings.add(getTermString(arg0));
+					return true;
+				}
+			});
+			return String.join(" + ", termStrings);
 		}
 
 		/**
