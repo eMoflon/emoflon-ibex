@@ -30,12 +30,11 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 * 
 	 * @param uri
 	 *            the URI of the model file
-	 * @return the resource set
+	 * @return the resource
 	 */
-	protected ResourceSet createModel(final URI uri) {
+	protected Resource createModel(final URI uri) {
 		prepareResourceSet();
-		resourceSet.createResource(uri);
-		return resourceSet;
+		return resourceSet.createResource(uri);
 	}
 
 	/**
@@ -43,12 +42,11 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 * 
 	 * @param uri
 	 *            the URI of the model file
-	 * @return the resource set
+	 * @return the resource
 	 */
-	protected ResourceSet loadModel(final URI uri) {
+	protected Resource loadModel(final URI uri) {
 		prepareResourceSet();
-		resourceSet.getResource(uri, true);
-		return resourceSet;
+		return resourceSet.getResource(uri, true);
 	}
 
 	/**

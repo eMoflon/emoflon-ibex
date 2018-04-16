@@ -12,7 +12,17 @@ Export-Package: IBeXLanguage,
  org.emoflon.ibex.common.operational,
  org.emoflon.ibex.common.utils
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: net.sourceforge.plantuml.eclipse,
+ org.eclipse.jface,
  org.eclipse.emf.ecore,
- org.eclipse.emf.ecore.xmi
+ org.eclipse.emf.ecore.editor,
+ org.eclipse.emf.ecore.xmi,
+ org.moflon.core.preferences,
+ org.moflon.core.ui,
+ org.moflon.emf.codegen,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro
 Bundle-ClassPath: .
+Automatic-Module-Name: org.emoflon.ibex.common
+

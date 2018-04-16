@@ -35,3 +35,4 @@ Export-Package: language,
  language.inplaceAttributes.util,
  language.util,
  org.emoflon.ibex.tgg.core.transformation
+Automatic-Module-Name: org.emoflon.ibex.tgg.core.language
