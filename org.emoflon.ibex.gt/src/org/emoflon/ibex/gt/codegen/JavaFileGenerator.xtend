@@ -144,14 +144,14 @@ class JavaFileGenerator {
 			public abstract class «appClassName» extends GraphTransformationApp<«this.APIClassName»> {
 			
 				@Override
-				protected void registerMetaModels() {
+				public void registerMetaModels() {
 					«FOR p : this.eClassifiersManager.packages»
 						registerMetaModel(«p».eINSTANCE);
 					«ENDFOR»
 				}
 			
 				@Override
-				protected «this.APIClassName» initAPI(final IContextPatternInterpreter engine) {
+				public «this.APIClassName» initAPI(final IContextPatternInterpreter engine) {
 					return new «this.APIClassName»(engine, resourceSet, workspacePath);
 				}
 			}
@@ -176,7 +176,7 @@ class JavaFileGenerator {
 				/**
 				 * Initializes an API using «engine.engineName».
 				 */
-				protected «this.APIClassName» initAPI() {
+				public «this.APIClassName» initAPI() {
 					return this.initAPI(new «engine.engineClassName»());
 				}
 			}
