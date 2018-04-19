@@ -32,7 +32,7 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 *            the URI of the model file
 	 * @return the resource
 	 */
-	protected Resource createModel(final URI uri) {
+	public Resource createModel(final URI uri) {
 		prepareResourceSet();
 		return resourceSet.createResource(uri);
 	}
@@ -44,7 +44,7 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 *            the URI of the model file
 	 * @return the resource
 	 */
-	protected Resource loadModel(final URI uri) {
+	public Resource loadModel(final URI uri) {
 		prepareResourceSet();
 		return resourceSet.getResource(uri, true);
 	}
@@ -55,8 +55,8 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 * @throws IOException
 	 *             if an IOException is thrown on save
 	 */
-	protected void saveResourceSet() throws IOException {
-		for (Resource resource : resourceSet.getResources()) {
+	public void saveResourceSet() throws IOException {
+		for (final Resource resource : resourceSet.getResources()) {
 			resource.save(null);
 		}
 	}
@@ -71,9 +71,19 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	}
 
 	/**
+	 * Sets the resource set.
+	 * 
+	 * @param resourceSet
+	 *            the resource set
+	 */
+	public void setResourceSet(final ResourceSet resourceSet) {
+		this.resourceSet = resourceSet;
+	}
+
+	/**
 	 * Add the meta-models to the package registry.
 	 */
-	protected abstract void registerMetaModels();
+	public abstract void registerMetaModels();
 
 	/**
 	 * Registers the given EPackage as a meta-model.
@@ -91,7 +101,7 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 * @param workspacePath
 	 *            the workspace path to set
 	 */
-	protected void setWorkspacePath(final String workspacePath) {
+	public void setWorkspacePath(final String workspacePath) {
 		Objects.requireNonNull(workspacePath, "The workspace path must not be null!");
 		this.workspacePath = workspacePath;
 	}
@@ -101,5 +111,5 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 * 
 	 * @return the created API
 	 */
-	protected abstract API initAPI(IContextPatternInterpreter engine);
+	public abstract API initAPI(IContextPatternInterpreter engine);
 }
