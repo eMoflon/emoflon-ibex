@@ -1,18 +1,18 @@
 package org.emoflon.ibex.tgg.operational.strategies.cc;
 
-import java.util.stream.Collectors;
-
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 
+import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.hash.THashSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 public class Bundle {
 	
 	/**
 	 * Collection of all matches belonging to the bundle (kernel and its complement matches)
 	 */
-	private THashSet<Integer> allMatches;
+	private TIntHashSet allMatches;
 	private int kernelMatch;
 	
 	private THashSet<EObject> bundleContextNodes;
@@ -21,7 +21,7 @@ public class Bundle {
 	
 	public Bundle(int kernelMatch) {
 		this.kernelMatch = kernelMatch;
-		allMatches = new THashSet<Integer>();
+		allMatches = new TIntHashSet();
 		bundleContextNodes = new THashSet<EObject>();
 		bundleContextEdges = new THashSet<RuntimeEdge>();
 	}
@@ -46,7 +46,7 @@ public class Bundle {
 		return bundleContextEdges;
 	}
 	
-	public THashSet<Integer> getAllMatches(){
+	public TIntHashSet getAllMatches(){
 		return allMatches;
 	}
 	
@@ -55,7 +55,14 @@ public class Bundle {
 	}
 
 	public THashSet<Integer> getAllComplementMatches() {
-		return allMatches.stream().filter(m -> m != kernelMatch).collect(Collectors.toCollection(THashSet::new));
+		THashSet<Integer> complementMatches = new THashSet<Integer>();
+		TIntIterator it = this.allMatches.iterator();
+		while(it.hasNext()) {
+			int value = it.next();
+			if(value != kernelMatch) {
+				complementMatches.add(value);
+			}
+		}
+		return complementMatches;
 	}
-
 }
