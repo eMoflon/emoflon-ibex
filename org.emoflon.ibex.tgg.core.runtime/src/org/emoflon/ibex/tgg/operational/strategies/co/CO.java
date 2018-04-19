@@ -8,16 +8,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomKernelMatchUpdatePolicy;
 
-import gnu.trove.set.hash.TCustomHashSet;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.set.hash.TIntHashSet;
 import language.TGGRuleCorr;
 
 public abstract class CO extends CC {
@@ -57,35 +51,6 @@ public abstract class CO extends CC {
 		
 		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.initWithCorr(this);
-	}
-	
-	@Override
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
-		idToMatch.put(idCounter, comatch);
-		matchIdToRuleName.put(idCounter, ruleName);
-
-		getGreenNodes(comatch, ruleName).forEach(e -> {
-			if (!nodeToMarkingMatches.containsKey(e))
-				nodeToMarkingMatches.put(e, new TIntHashSet());
-			nodeToMarkingMatches.get(e).add(idCounter);
-		});
-
-		getGreenEdges(comatch, ruleName).forEach(e -> {
-			if (!edgeToMarkingMatches.containsKey(e)) {
-				edgeToMarkingMatches.put(e, new TIntHashSet());
-			}
-			edgeToMarkingMatches.get(e).add(idCounter);
-		});
-
-		matchToContextNodes.put(idCounter, new THashSet<>());
-		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
-
-		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
-		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
-		
-		handleBundles(comatch, ruleName);
-
-		idCounter++;
 	}
 	
 	@Override

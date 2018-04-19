@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.operational.strategies.cc;
 
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;

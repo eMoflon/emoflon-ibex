@@ -237,10 +237,43 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		}
 	}
 
+	/**
+	 * Terminates the strategy
+	 * @throws IOException
+	 */
 	public void terminate() throws IOException {
+		removeBlackInterpreter();
+	}
+	
+	/**
+	 * Removes the black interpreter and all references to the black interpreter from the strategy and its resources
+	 */
+	protected void removeBlackInterpreter() {
+		if(blackInterpreter == null) {
+			return;
+		}
 		blackInterpreter.terminate();
+		blackInterpreter = null;	
 		rs.getAllContents().forEachRemaining(c -> c.eAdapters().clear());
 		rs.eAdapters().clear();
+		Object[] matches = operationalMatchContainer.getMatches().toArray();
+		for(Object m : matches) {
+			this.operationalMatchContainer.removeMatch((IMatch) m);
+		}
+		logger.debug("Removed black interpreter");
+	}
+	
+	/**
+	 * Replaces the black interpreter and initializes the new black interpreter
+	 * @param newBlackInterpreter The black interpreter to replace the existing black interpreter
+	 */
+	protected void reinitializeBlackInterpreter(IBlackInterpreter newBlackInterpreter) {
+		this.removeBlackInterpreter();
+		Runtime.getRuntime().gc();
+		this.blackInterpreter = newBlackInterpreter;
+		this.blackInterpreter.initialise(rs.getPackageRegistry(), this);
+		this.blackInterpreter.setOptions(options);
+		this.blackInterpreter.monitor(rs);
 	}
 
 	protected void loadTGG() throws IOException {

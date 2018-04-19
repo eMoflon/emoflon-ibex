@@ -2,9 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,14 +23,12 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.cc.Bundle;
 import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
-import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Comparator;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
-import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
@@ -41,6 +37,7 @@ import com.google.common.collect.Sets;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TCustomHashMap;
 import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
@@ -53,11 +50,11 @@ public abstract class OPT extends OperationalStrategy {
 	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
 			new RuntimeEdgeHashingStrategy());
 	protected THashMap<EObject, TIntHashSet> nodeToMarkingMatches = new THashMap<>();
-	protected THashMap<IMatch, HashMap<String, EObject>> matchToCoMatch = new THashMap<>();
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 	protected int nameCounter = 0;
 	protected TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
 	protected TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
+	protected TIntIntHashMap matchToWeight = new TIntIntHashMap();
 
 	/**
 	 * Collection of constraints to guarantee uniqueness property; key: Complement
@@ -171,45 +168,42 @@ public abstract class OPT extends OperationalStrategy {
 	protected void defineILPExclusions(ILPProblem ilpProblem) {
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
-			List<ILPTerm> ilpTerms = new LinkedList<>();
+			ILPLinearExpression expr = ilpProblem.createLinearExpression();
 			variables.forEach(v -> {
-				ilpTerms.add(ilpProblem.createTerm("x" + v, 1.0));
+				expr.addTerm("x" + v, 1.0);
 				return true;
 			});
-			ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
+			
 			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
 		}
 
 		for (RuntimeEdge edge : edgeToMarkingMatches.keySet()) {
 			TIntHashSet variables = edgeToMarkingMatches.get(edge);
-			List<ILPTerm> ilpTerms = new LinkedList<>();
+			ILPLinearExpression expr = ilpProblem.createLinearExpression();
 			variables.forEach(v -> {
-				ilpTerms.add(ilpProblem.createTerm("x" + v, 1.0));
+				expr.addTerm("x" + v, 1.0);
 				return true;
 			});
-			ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
 			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
 		}
 
 		for (Integer match : sameComplementMatches.keySet()) {
 			TIntHashSet variables = sameComplementMatches.get(match);
-			List<ILPTerm> ilpTerms = new LinkedList<>();
+			ILPLinearExpression expr = ilpProblem.createLinearExpression();
 			variables.forEach(v -> {
-				ilpTerms.add(ilpProblem.createTerm("x" + v, 1.0));
+				expr.addTerm("x" + v, 1.0);
 				return true;
 			});
-			ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
 			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
 		}
 
 		if (!invalidKernels.isEmpty()) {
 			TIntHashSet variables = invalidKernels;
-			List<ILPTerm> ilpTerms = new LinkedList<>();
+			ILPLinearExpression expr = ilpProblem.createLinearExpression();
 			variables.forEach(v -> {
-				ilpTerms.add(ilpProblem.createTerm("x" + v, 1.0));
+				expr.addTerm("x" + v, 1.0);
 				return true;
 			});
-			ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
 			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "EXCL" + nameCounter++);
 		}
 
@@ -237,11 +231,11 @@ public abstract class OPT extends OperationalStrategy {
 		for (int v : idToMatch.keySet().toArray()) {			
 			THashSet<EObject> contextNodes = matchToContextNodes.get(v);
 			for (EObject node : contextNodes) {
-				ILPTerm term = ilpProblem.createTerm("x" + v, 1.0);
-				ILPLinearExpression expr = ilpProblem.createLinearExpression(term);
+				ILPLinearExpression expr = ilpProblem.createLinearExpression();
+				expr.addTerm("x" + v, 1.0);
 				if (nodeToMarkingMatches.contains(node)) {
 					for (int v2 : nodeToMarkingMatches.get(node).toArray()) {
-						expr.addTerm(ilpProblem.createTerm("x" + v2, -1.0));
+						expr.addTerm("x" + v2, -1.0);
 					}
 					ilpProblem.addConstraint(expr, Comparator.le, 0.0, "IMPL" + nameCounter++);
 				} else {
@@ -251,11 +245,11 @@ public abstract class OPT extends OperationalStrategy {
 
 			TCustomHashSet<RuntimeEdge> contextEdges = matchToContextEdges.get(v);
 			for (RuntimeEdge edge : contextEdges) {
-				ILPTerm term = ilpProblem.createTerm("x" + v, 1.0);
-				ILPLinearExpression expr = ilpProblem.createLinearExpression(term);
+				ILPLinearExpression expr = ilpProblem.createLinearExpression();
+				expr.addTerm("x" + v, 1.0);
 				if (edgeToMarkingMatches.contains(edge)) {
 					for (int v2 : edgeToMarkingMatches.get(edge).toArray()) {
-						expr.addTerm(ilpProblem.createTerm("x" + v2, -1.0));
+						expr.addTerm("x" + v2, -1.0);
 					}
 					ilpProblem.addConstraint(expr, Comparator.le, 0.0, "IMPL" + nameCounter++);
 				} else {
@@ -266,13 +260,12 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected void defineILPObjective(ILPProblem ilpProblem) {
-		List<ILPTerm> ilpTerms = new LinkedList<>();
-		idToMatch.keySet().forEach(v -> {
-			int weight = getWeightForMatch(idToMatch.get(v), matchIdToRuleName.get(v));
-			ilpTerms.add(ilpProblem.createTerm("x" + v, weight));
+		ILPLinearExpression expr = ilpProblem.createLinearExpression();
+		matchToWeight.keySet().forEach(v -> {
+			int weight = matchToWeight.get(v);
+			expr.addTerm("x" + v, weight);
 			return true;
 		});
-		ILPLinearExpression expr = ilpProblem.createLinearExpression(ilpTerms.toArray(new ILPTerm[0]));
 		ilpProblem.setObjective(expr, Objective.maximize);
 	}
 
@@ -303,7 +296,9 @@ public abstract class OPT extends OperationalStrategy {
 		}
 	}
 
-	protected abstract void addUserDefinedConstraints(ILPProblem ilpProblem);
+	protected void addUserDefinedConstraints(ILPProblem ilpProblem) {
+		
+	}
 
 	protected void handleBundles(IMatch comatch, String ruleName) {
 		if(!getComplementRule(ruleName).isPresent()) {
@@ -372,5 +367,17 @@ public abstract class OPT extends OperationalStrategy {
 	@Override
 	public Resource loadResource(String workspaceRelativePath) throws IOException{
 		return super.loadResource(workspaceRelativePath);
+	}
+	
+	@Override
+	protected void removeBlackInterpreter() {
+		super.removeBlackInterpreter();
+		for(IMatch m : this.idToMatch.valueCollection()) {
+			for(String parameter : m.getParameterNames()) {
+				EObject object = (EObject) m.get(parameter);
+				object.eAdapters().clear();
+				object.eAllContents().forEachRemaining(c -> c.eAdapters().clear());
+			}
+		}
 	}
 }

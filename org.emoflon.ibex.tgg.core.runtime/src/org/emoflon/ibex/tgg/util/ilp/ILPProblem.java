@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import gnu.trove.function.TDoubleFunction;
-import gnu.trove.iterator.TIntDoubleIterator;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -27,12 +26,19 @@ import gnu.trove.set.hash.THashSet;
  */
 public final class ILPProblem {
 	
+	/**
+	 * Counter variable used for assigning IDs to variables
+	 */
 	private int variableCounter = 1;
 
 	/**
-	 * Contains all variables that have been defined
+	 * Contains all variables that have been defined and the mapping to their names
 	 */
 	private final TObjectIntHashMap<String> variables = new TObjectIntHashMap<String>();
+	/**
+	 * Contains the mapping of variable names to variable IDs
+	 * The additional map is used for efficiency reasons
+	 */
 	private final TIntObjectHashMap<String> variableIDsToVariables = new TIntObjectHashMap<String>();
 	/**
 	 * Set of constraints that have been defined using addConstraint
@@ -57,16 +63,20 @@ public final class ILPProblem {
 		return Collections.unmodifiableCollection(variables.keySet());
 	}
 	
+	/**
+	 * Gets all variable IDs of registered variables
+	 * @return the variable IDs
+	 */
 	public int[] getVariableIds() {
 		return variableIDsToVariables.keys();
 	}
-
+	
 	/**
-	 * Adds a variable to the set of defined variables. This method is called when using a new variable within a term.
-	 * This method should be overwritten if a special handling of variables within for the concrete ILP Solver is required.
-	 * @param	variable The (unique) name of the variable.
+	 * Returns the ID of the variable with the given name
+	 * @param variable The (unique) variable name 
+	 * @return The ID of the variable. If the variable is not yet contained, it will be registered with a new ID
 	 */
-	int addVariable(String variable) {
+	int getVariableId(String variable) {
 		if(!variables.contains(variable)) {
 			variables.put(variable, variableCounter);
 			variableIDsToVariables.put(variableCounter, variable);
@@ -75,10 +85,11 @@ public final class ILPProblem {
 		return variables.get(variable);
 	}
 	
-	int getVariableId(String variable) {
-		return this.variables.get(variable);
-	}
-	
+	/**
+	 * Gets the variable name for the given variable ID
+	 * @param variableId The variable ID to look for
+	 * @return
+	 */
 	String getVariable(int variableId) {
 		return this.variableIDsToVariables.get(variableId);
 	}
@@ -95,6 +106,13 @@ public final class ILPProblem {
 		return expr;
 	}
 	
+	/**
+	 * Creates a new Solution object for this problem
+	 * @param variableAllocations mapping of variable IDs to the assigning values of the solution
+	 * @param optimal identificator if the solution is optimal
+	 * @param solutionValue Value of the objective function in the given solution
+	 * @return the created solution
+	 */
 	ILPSolution createILPSolution(TIntIntHashMap variableAllocations, boolean optimal, double solutionValue) {
 		return new ILPSolution(variableAllocations, optimal, solutionValue);
 	}
@@ -272,7 +290,7 @@ public final class ILPProblem {
 		 * @param coefficient The coefficient
 		 */
 		private ILPTerm(String variable, double coefficient) {
-			this(addVariable(variable), coefficient);
+			this(ILPProblem.this.getVariableId(variable), coefficient);
 		}
 		
 		/**
@@ -627,13 +645,19 @@ public final class ILPProblem {
 		private final TIntDoubleHashMap terms = new TIntDoubleHashMap();
 
 		/**
-		 * Adds a term to the linear expression (additional summand)
-		 * @param term	The term to add
+		 * Adds a term (variable * coefficient) to the linear expression
+		 * @param variable The name of the variable
+		 * @param coefficient The coefficient of the variable
 		 */
 		public void addTerm(String variable, double coefficient) {
 			this.addTerm(getVariableId(variable), coefficient);
 		}
 		
+		/**
+		 * Adds a term (variable * coefficient) to the linear expression
+		 * @param variableID The id of the variable
+		 * @param coefficient The coefficient of the variable
+		 */
 		void addTerm(int variableID, double coefficient) {
 			double result = terms.adjustOrPutValue(variableID, coefficient, coefficient);
 			if(Double.doubleToLongBits(result) == Double.doubleToLongBits(0)) {
@@ -669,6 +693,11 @@ public final class ILPProblem {
 			return solution;
 		}
 		
+		/**
+		 * Builds a String representation of the term
+		 * @param variableId The variable ID of the term's variable
+		 * @return
+		 */
 		private String getTermString(int variableId) {
 			double coefficient = this.terms.get(variableId);
 			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(1.0)) {
