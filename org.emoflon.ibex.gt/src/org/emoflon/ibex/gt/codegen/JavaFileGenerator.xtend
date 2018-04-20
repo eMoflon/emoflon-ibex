@@ -86,7 +86,7 @@ class JavaFileGenerator {
 				 */
 				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model) {
 					super(engine, model);
-					URI uri = URI.createURI("../" + patternPath);
+					URI uri = URI.createFileURI("../" + patternPath);
 					this.interpreter.loadPatternSet(uri);
 				}
 			
@@ -106,7 +106,7 @@ class JavaFileGenerator {
 				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model,
 						final String workspacePath) {
 					super(engine, model);
-					URI uri = URI.createURI(workspacePath + patternPath);
+					URI uri = URI.createFileURI(workspacePath + patternPath);
 					this.interpreter.loadPatternSet(uri);
 				}
 			«FOR rule : rules»
