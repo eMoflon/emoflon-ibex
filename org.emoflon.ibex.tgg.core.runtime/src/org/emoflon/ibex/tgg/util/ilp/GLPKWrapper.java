@@ -11,7 +11,6 @@ import javax.naming.directory.InvalidAttributeValueException;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
-import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
 import org.gnu.glpk.SWIGTYPE_p_double;
@@ -117,12 +116,13 @@ final class GLPKWrapper extends ILPSolver {
 		GLPK.glp_set_row_name(problem, constraintCounter, constraint.getName());
 		
 		int counter = 1;
-		int numberOfVariables = constraint.getLinearExpression().getTerms().size();
+		int numberOfVariables = constraint.getLinearExpression().getVariables().length;
 		SWIGTYPE_p_int variableIndices = GLPK.new_intArray(numberOfVariables+1);
 		SWIGTYPE_p_double coefficients = GLPK.new_doubleArray(numberOfVariables+1);
-		for(ILPTerm term : constraint.getLinearExpression().getTerms()) {
-			GLPK.intArray_setitem(variableIndices, counter, term.getVariableId());
-			GLPK.doubleArray_setitem(coefficients, counter, term.getCoefficient());
+		for(int variableId : constraint.getLinearExpression().getVariables()) {
+			double coefficient = constraint.getLinearExpression().getCoefficient(variableId);
+			GLPK.intArray_setitem(variableIndices, counter, variableId);
+			GLPK.doubleArray_setitem(coefficients, counter, coefficient);
 			counter++;
 		}
 		GLPK.glp_set_mat_row(problem, constraintCounter, numberOfVariables, variableIndices, coefficients);
@@ -162,8 +162,9 @@ final class GLPKWrapper extends ILPSolver {
 		}
 	
 		//define terms
-		for(ILPTerm term : objective.getLinearExpression().getTerms()) {
-			GLPK.glp_set_obj_coef(problem, term.getVariableId(), term.getCoefficient());
+		for (int variableId : objective.getLinearExpression().getVariables()) {
+			double coefficient = objective.getLinearExpression().getCoefficient(variableId);
+			GLPK.glp_set_obj_coef(problem, variableId, coefficient);
 		}
 		
 	}
@@ -187,6 +188,7 @@ final class GLPKWrapper extends ILPSolver {
 			registerConstraint(constraint, counter++);
 		}
 		registerObjective(this.ilpProblem.getObjective());
+		GLPK.glp_write_lp(problem, null, "lp.lp");
 	}
 	
 	/**
@@ -196,7 +198,6 @@ final class GLPKWrapper extends ILPSolver {
 	private int solveModel() {
 		glp_smcp parm= new glp_smcp();
 		GLPK.glp_init_smcp(parm);
-		GLPK.glp_write_lp(problem, null, "lp.lp");
 		int exitCode = GLPK.glp_simplex(problem, parm);
 		GLPK.glp_print_sol(problem, "lp_sol_base.lp");
 		if(exitCode != 0) {
@@ -215,6 +216,7 @@ final class GLPKWrapper extends ILPSolver {
 	 */
 	private ILPSolution retrieveSolution() throws InvalidAttributeValueException {
 		int status = GLPK.glp_get_status(problem);
+		int status = GLPK.glp_mip_status(problem);
 		
 		boolean optimal = status == GLPKConstants.GLP_OPT;
 		boolean feasible = optimal || status == GLPKConstants.GLP_FEAS;

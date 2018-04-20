@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.lang.NullPointerException;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -260,7 +259,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		for(Object m : matches) {
 			this.operationalMatchContainer.removeMatch((IMatch) m);
 		}
-		logger.debug("Removed black interpreter");
+		if (options.debug())
+			logger.debug("Removed black interpreter");
 	}
 	
 	/**

@@ -13,7 +13,6 @@ import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TIntDoubleProcedure;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.hash.THashSet;
 
@@ -265,127 +264,6 @@ public final class ILPProblem {
 		@Override
 		public String toString() {
 			return stringRepresentation;
-		}
-	}
-
-	/**
-	 * A linear term of the form (c*x) where x is the variable and c is the coefficient.
-	 * 
-	 * @author Robin Oppermann
-	 *
-	 */
-	public final class ILPTerm {
-		/**
-		 * The variable identifier
-		 */
-		private final int variableId;
-		/**
-		 * The coefficient
-		 */
-		private double coefficient;
-
-		/**
-		 * Creates a new term
-		 * @param variable The variable
-		 * @param coefficient The coefficient
-		 */
-		private ILPTerm(String variable, double coefficient) {
-			this(ILPProblem.this.getVariableId(variable), coefficient);
-		}
-		
-		/**
-		 * Creates a new term
-		 * @param variableId The id of the variable
-		 * @param coefficient The coefficient
-		 */
-		private ILPTerm(int variableId, double coefficient) {
-			this.variableId = variableId;
-			this.coefficient = coefficient;
-		}
-
-		/**
-		 * Multiplies the term by the given factor. This can be used to get rid of non-integer coefficients.
-		 * @param factor The factor to multiply the term by
-		 */
-		void multiplyBy(double factor) {
-			this.coefficient *= factor; 
-		}
-
-		/**
-		 * @return the variable
-		 */
-		public String getVariable() {
-			return variableIDsToVariables.get(variableId);
-		}
-		
-		/**
-		 * @return the id of the variable
-		 */
-		int getVariableId() {
-			return this.variableId;
-		}
-
-		/**
-		 * @return the coefficient
-		 */
-		public double getCoefficient() {
-			return coefficient;
-		}
-
-		/**
-		 * Returns the value of the term when calculated with the variables of the given solution
-		 * @param ilpSolution	The solution to use
-		 * @return The calculated value
-		 */
-		final double getSolutionValue(ILPSolution ilpSolution) {
-			return coefficient * ilpSolution.getVariable(variableId);
-		}
-
-		@Override
-		public String toString() {
-			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(1.0)) {
-				return this.getVariable();
-			}
-			if(Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(-1.0)) {
-				return "-" + this.getVariable();
-			}
-			return "("+this.coefficient + " * " + this.getVariable()+")";
-		}
-		
-		
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			long temp;
-			temp = Double.doubleToLongBits(coefficient);
-			result = prime * result + (int) (temp ^ (temp >>> 32));
-			result = prime * result + variableId;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			ILPTerm other = (ILPTerm) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (Double.doubleToLongBits(coefficient) != Double.doubleToLongBits(other.coefficient))
-				return false;
-			if (variableId != other.variableId)
-				return false;
-			return true;
-		}
-
-		private ILPProblem getOuterType() {
-			return ILPProblem.this;
 		}
 	}
 
@@ -722,19 +600,30 @@ public final class ILPProblem {
 			return String.join(" + ", termStrings);
 		}
 
-		/**
-		 * @return the terms
-		 */
-		Collection<ILPTerm> getTerms() {
-			List<ILPTerm> terms = new LinkedList<ILPTerm>();
-			this.terms.forEachEntry(new TIntDoubleProcedure() {
-				@Override
-				public boolean execute(int variableId, double coefficient) {
-					terms.add(new ILPTerm(variableId, coefficient));
-					return true;
-				}
-			});
-			return Collections.unmodifiableCollection(terms);
+//		/**
+//		 * @return the terms
+//		 */
+//		Collection<ILPTerm> getTerms() {
+//			List<ILPTerm> terms = new LinkedList<ILPTerm>();
+//			this.terms.forEachEntry(new TIntDoubleProcedure() {
+//				@Override
+//				public boolean execute(int variableId, double coefficient) {
+//					terms.add(new ILPTerm(variableId, coefficient));
+//					return true;
+//				}
+//			});
+//			return Collections.unmodifiableCollection(terms);
+//		}
+		
+		int[] getVariables() {
+			return this.terms.keys();
+		}
+		
+		double getCoefficient(int variableId) {
+			if(this.terms.contains(variableId)) {
+				return this.terms.get(variableId);
+			}
+			return 0;
 		}
 
 		@Override

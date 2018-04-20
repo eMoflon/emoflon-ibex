@@ -4,7 +4,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
-import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -96,8 +95,9 @@ final class GurobiWrapper extends ILPSolver {
 	 */
 	private GRBLinExpr createGurobiExpression(ILPLinearExpression linearExpression) {
 		GRBLinExpr gurobiExpression = new GRBLinExpr();
-		for(ILPTerm term : linearExpression.getTerms()) {
-			gurobiExpression.addTerm(term.getCoefficient(), gurobiVariables.get(term.getVariableId()));
+		for (int variableId : linearExpression.getVariables()) {
+			double coefficient = linearExpression.getCoefficient(variableId);
+			gurobiExpression.addTerm(coefficient, gurobiVariables.get(variableId));
 		}
 		return gurobiExpression;
 	}
