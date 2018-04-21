@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXNode;
-import IBeXLanguage.IBeXPattern;
 
 /**
  * Utility for working with {@link IBeXPattern}s.
@@ -19,7 +19,7 @@ public class IBeXPatternUtils {
 	 *            the pattern
 	 * @return true if the pattern contains no nodes
 	 */
-	public static boolean isEmptyPattern(final IBeXPattern ibexPattern) {
+	public static boolean isEmptyPattern(final IBeXContextPattern ibexPattern) {
 		return ibexPattern.getSignatureNodes().isEmpty() && ibexPattern.getLocalNodes().isEmpty();
 	}
 
@@ -32,7 +32,7 @@ public class IBeXPatternUtils {
 	 *            the name to search for, must not be <code>null</code>
 	 * @return an Optional for a local IBeXNode
 	 */
-	public static Optional<IBeXNode> findIBeXNodeWithName(final IBeXPattern ibexPattern, final String name) {
+	public static Optional<IBeXNode> findIBeXNodeWithName(final IBeXContextPattern ibexPattern, final String name) {
 		Objects.requireNonNull(ibexPattern, "pattern must not be null!");
 		Objects.requireNonNull(name, "name must not be null!");
 		return findIBeXNodeWithName(ibexPattern.getLocalNodes(), ibexPattern.getSignatureNodes(), name);

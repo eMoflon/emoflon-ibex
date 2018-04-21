@@ -1,21 +1,30 @@
 package org.emoflon.ibex.gt.transformations;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
+import org.emoflon.ibex.gt.editor.gT.EditorOperator;
+import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
 
 import IBeXLanguage.IBeXEdge;
 import IBeXLanguage.IBeXLanguageFactory;
+import IBeXLanguage.IBeXNamedElement;
 import IBeXLanguage.IBeXNode;
 
 /**
  * Utility methods from the editor model to IBeX Patterns.
  */
 public class EditorToIBeXPatternUtils {
+	/**
+	 * A comparator for IBeXNamedElements.
+	 */
+	public static final Comparator<IBeXNamedElement> sortByName = (a, b) -> a.getName().compareTo(b.getName());
 
 	/**
 	 * Transforms the given editor reference into an {@link IBeXEdge}. If a source
@@ -50,7 +59,7 @@ public class EditorToIBeXPatternUtils {
 		ibexEdge.setTargetNode(ibexTargetNode);
 		return ibexEdge;
 	}
-	
+
 	/**
 	 * Searches the IBeXNode with the same name as the given editor node within the
 	 * given node lists. If such an IBeXNode exists, it is returned, otherwise it
@@ -76,7 +85,7 @@ public class EditorToIBeXPatternUtils {
 			return node;
 		}
 	}
-	
+
 	/**
 	 * Transforms an editor node into an IBeXNode.
 	 * 
@@ -91,5 +100,35 @@ public class EditorToIBeXPatternUtils {
 		ibexNode.setName(editorNode.getName());
 		ibexNode.setType(editorNode.getType());
 		return ibexNode;
+	}
+
+	/**
+	 * Transforms the nodes and edges of the given operator and adds them to the
+	 * correct lists.
+	 * 
+	 * @param editorPattern
+	 *            the editor pattern
+	 * @param editorOperator
+	 *            the editor operator
+	 * @param changedNodes
+	 *            the changed nodes
+	 * @param contextNodes
+	 *            the context nodes
+	 * @param changedEdges
+	 *            the changed edges
+	 */
+	public static void transformNodesAndEdgesOfOperator(final EditorPattern editorPattern,
+			final EditorOperator editorOperator, final List<IBeXNode> changedNodes, final List<IBeXNode> contextNodes,
+			final List<IBeXEdge> changedEdges) {
+		EditorModelUtils.getNodesByOperator(editorPattern, editorOperator).forEach(editorNode -> {
+			changedNodes.add(EditorToIBeXPatternUtils.transformNode(editorNode));
+		});
+
+		List<IBeXNode> context = new ArrayList<IBeXNode>();
+		EditorModelUtils.getReferencesByOperator(editorPattern, editorOperator).forEach(editorReference -> {
+			changedEdges.add(EditorToIBeXPatternUtils.transformEdge(editorReference, changedNodes, context));
+		});
+		context.sort(sortByName);
+		contextNodes.addAll(context);
 	}
 }

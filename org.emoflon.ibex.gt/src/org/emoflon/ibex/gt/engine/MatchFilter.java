@@ -12,7 +12,7 @@ import org.emoflon.ibex.common.operational.IMatch;
 
 import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXAttributeParameter;
-import IBeXLanguage.IBeXPattern;
+import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXRelation;
 
 /**
@@ -32,7 +32,7 @@ public class MatchFilter {
 	 *            the parameters
 	 * @return the filtered stream
 	 */
-	public static Stream<IMatch> filterNodeBindings(Stream<IMatch> matches, final IBeXPattern pattern,
+	public static Stream<IMatch> filterNodeBindings(Stream<IMatch> matches, final IBeXContextPattern pattern,
 			final Map<String, Object> parameters) {
 		List<String> nodeNames = pattern.getSignatureNodes().stream() //
 				.map(node -> node.getName()) //
@@ -62,7 +62,7 @@ public class MatchFilter {
 	 * @return the filtered stream
 	 */
 	public static Stream<IMatch> filterAttributeConstraintsWithParameter(Stream<IMatch> matches,
-			final IBeXPattern pattern, final Map<String, Object> parameters) {
+			final IBeXContextPattern pattern, final Map<String, Object> parameters) {
 		for (IBeXAttributeConstraint ac : pattern.getAttributeConstraint()) {
 			if (ac.getValue() instanceof IBeXAttributeParameter) {
 				String nodeName = ac.getNode().getName();

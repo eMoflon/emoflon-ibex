@@ -1,9 +1,9 @@
 package org.emoflon.ibex.common.visualization
 
+import IBeXLanguage.IBeXContextPattern
 import IBeXLanguage.IBeXCreatePattern
 import IBeXLanguage.IBeXDeletePattern
 import IBeXLanguage.IBeXEdge
-import IBeXLanguage.IBeXPattern
 import IBeXLanguage.IBeXPatternSet
 import IBeXLanguage.IBeXNode
 
@@ -25,11 +25,11 @@ class IBeXPatternPlantUMLGenerator {
 		'''
 			«commonLayoutSettings»
 			
-			«FOR pattern : patternSet.patterns»
+			«FOR pattern : patternSet.contextPatterns»
 				class "«pattern.name»"
 			«ENDFOR»
 			
-			«FOR pattern : patternSet.patterns»
+			«FOR pattern : patternSet.contextPatterns»
 				«FOR invocation: pattern.invocations»
 					"«pattern.name»" --> "«invocation.invokedPattern.name»"
 				«ENDFOR»
@@ -44,7 +44,7 @@ class IBeXPatternPlantUMLGenerator {
 	/**
 	 * Visualizes the pattern.
 	 */
-	static def String visualizePattern(IBeXPattern pattern) {
+	static def String visualizePattern(IBeXContextPattern pattern) {
 		'''
 			«commonLayoutSettings»
 			
@@ -63,7 +63,7 @@ class IBeXPatternPlantUMLGenerator {
 		'''
 	}
 
-	private static def String printPattern(IBeXPattern pattern, String prefix) {
+	private static def String printPattern(IBeXContextPattern pattern, String prefix) {
 		val packageName = prefix + pattern.name
 		'''
 			«visualizeNodes(pattern.signatureNodes, 'SIGNATURE', packageName)»

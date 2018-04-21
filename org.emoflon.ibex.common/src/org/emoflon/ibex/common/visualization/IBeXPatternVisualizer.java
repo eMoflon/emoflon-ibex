@@ -8,9 +8,9 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
 import org.moflon.core.ui.visualisation.EMoflonVisualiser;
 
+import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
-import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXPatternSet;
 
 /**
@@ -35,8 +35,8 @@ public class IBeXPatternVisualizer extends EMoflonVisualiser {
 			return IBeXPatternPlantUMLGenerator.visualizePatternInvocations((IBeXPatternSet) element);
 		}
 
-		if (isPattern(element)) {
-			return IBeXPatternPlantUMLGenerator.visualizePattern((IBeXPattern) element);
+		if (isContextPattern(element)) {
+			return IBeXPatternPlantUMLGenerator.visualizePattern((IBeXContextPattern) element);
 		}
 
 		if (isCreatePattern(element)) {
@@ -57,7 +57,7 @@ public class IBeXPatternVisualizer extends EMoflonVisualiser {
 				.map(EcoreEditor::getSelection) //
 				.flatMap(maybeCast(TreeSelection.class)) //
 				.map(TreeSelection::getFirstElement) //
-				.filter(o -> isPatternSet(o) || isPattern(o) || isCreatePattern(o) || isDeletePattern(o)) //
+				.filter(o -> isPatternSet(o) || isContextPattern(o) || isCreatePattern(o) || isDeletePattern(o)) //
 				.isPresent();
 	}
 
@@ -65,8 +65,8 @@ public class IBeXPatternVisualizer extends EMoflonVisualiser {
 		return object instanceof IBeXPatternSet;
 	}
 
-	private static boolean isPattern(final Object object) {
-		return object instanceof IBeXPattern;
+	private static boolean isContextPattern(final Object object) {
+		return object instanceof IBeXContextPattern;
 	}
 
 	private static boolean isCreatePattern(final Object object) {
