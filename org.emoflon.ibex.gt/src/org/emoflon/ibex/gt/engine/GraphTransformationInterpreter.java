@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -223,24 +222,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
-	 * Returns the pattern with the given name. If such a pattern does not exist, a
-	 * <code>NoSuchElementException</code> is thrown.
-	 * 
-	 * @param name
-	 *            the name of the pattern
-	 * @return the pattern
-	 */
-	private IBeXContextPattern getContextPattern(final String name) {
-		Optional<IBeXContextPattern> pattern = this.patternSet.getContextPatterns().stream() //
-				.filter(p -> p.getName().equals(name)) //
-				.findAny();
-		if (!pattern.isPresent()) {
-			throw new NoSuchElementException(String.format("No pattern called %s", name));
-		}
-		return pattern.get();
-	}
-
-	/**
 	 * Terminates the engine.
 	 */
 	public void terminate() {
@@ -298,25 +279,16 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters) {
 		String patternName = match.getPatternName();
 
-		Optional<IBeXDeletePattern> deletePattern = this.patternSet.getDeletePatterns().stream()
-				.filter(pattern -> pattern.getName().equals(patternName)).findAny();
-		if (!deletePattern.isPresent()) {
-			throw new IllegalArgumentException(String.format("No delete pattern called %s", patternName));
-		}
-
-		Optional<IBeXCreatePattern> createPattern = this.patternSet.getCreatePatterns().stream()
-				.filter(pattern -> pattern.getName().equals(patternName)).findAny();
-		if (!createPattern.isPresent()) {
-			throw new IllegalArgumentException(String.format("No create pattern called %s", patternName));
-		}
+		IBeXCreatePattern createPattern = IBeXPatternUtils.getCreatePattern(patternSet, patternName);
+		IBeXDeletePattern deletePattern = IBeXPatternUtils.getDeletePattern(patternSet, patternName);
 
 		// Execute deletion.
 		IMatch originalMatch = new GraphTransformationSimpleMatch(match);
-		Optional<IMatch> comatch = this.deletePatternInterpreter.apply(deletePattern.get(), originalMatch, po);
+		Optional<IMatch> comatch = this.deletePatternInterpreter.apply(deletePattern, originalMatch, po);
 
 		// Execute creation.
 		if (comatch.isPresent()) {
-			comatch = this.createPatternInterpreter.apply(createPattern.get(), comatch.get(), parameters);
+			comatch = this.createPatternInterpreter.apply(createPattern, comatch.get(), parameters);
 		}
 
 		// Rule application may invalidate existing or lead to new matches.
@@ -349,7 +321,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
-		IBeXContextPattern pattern = this.getContextPattern(patternName);
+		IBeXContextPattern pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			return Optional.of(this.createEmptyMatchForCreatePattern(patternName));
 		}
@@ -370,7 +342,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the parameter map
 	 * @return a stream containing matches
 	 */
-	private Stream<IMatch> getFilteredMatchStream(final IBeXContextPattern pattern, final Map<String, Object> parameters) {
+	private Stream<IMatch> getFilteredMatchStream(final IBeXContextPattern pattern,
+			final Map<String, Object> parameters) {
 		Stream<IMatch> matchesForPattern = this.matches.get(pattern.getName()).stream();
 		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, pattern, parameters);
 		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, pattern, parameters);
@@ -400,7 +373,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Collection<IMatch> findMatches(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
-		IBeXContextPattern pattern = this.getContextPattern(patternName);
+		IBeXContextPattern pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			return Arrays.asList(this.createEmptyMatchForCreatePattern(patternName));
 		}

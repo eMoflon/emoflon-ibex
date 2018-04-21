@@ -1,11 +1,15 @@
 package org.emoflon.ibex.common.utils;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
 import IBeXLanguage.IBeXContextPattern;
+import IBeXLanguage.IBeXCreatePattern;
+import IBeXLanguage.IBeXDeletePattern;
 import IBeXLanguage.IBeXNode;
+import IBeXLanguage.IBeXPatternSet;
 
 /**
  * Utility for working with {@link IBeXPattern}s.
@@ -74,5 +78,68 @@ public class IBeXPatternUtils {
 		} else {
 			return findIBeXNodeWithName(nodes2, name);
 		}
+	}
+
+	/**
+	 * Returns the context pattern with the given name.
+	 * 
+	 * @param patternSet
+	 *            the pattern set
+	 * @param name
+	 *            the name to search
+	 * @return the context pattern with the given name
+	 * @throws NoSuchElementException
+	 *             if no context pattern with the given name exists
+	 */
+	public static IBeXContextPattern getContextPattern(final IBeXPatternSet patternSet, final String name) {
+		Optional<IBeXContextPattern> pattern = patternSet.getContextPatterns().stream() //
+				.filter(p -> p.getName().equals(name)) //
+				.findAny();
+		if (!pattern.isPresent()) {
+			throw new NoSuchElementException(String.format("No context pattern called %s", name));
+		}
+		return pattern.get();
+	}
+
+	/**
+	 * Returns the create pattern with the given name.
+	 * 
+	 * @param patternSet
+	 *            the pattern set
+	 * @param name
+	 *            the name to search
+	 * @return the create pattern with the given name
+	 * @throws NoSuchElementException
+	 *             if no create pattern with the given name exists
+	 */
+	public static IBeXCreatePattern getCreatePattern(final IBeXPatternSet patternSet, final String name) {
+		Optional<IBeXCreatePattern> pattern = patternSet.getCreatePatterns().stream() //
+				.filter(p -> p.getName().equals(name)) //
+				.findAny();
+		if (!pattern.isPresent()) {
+			throw new NoSuchElementException(String.format("No create pattern called %s", name));
+		}
+		return pattern.get();
+	}
+
+	/**
+	 * Returns the a delete pattern with the given name.
+	 * 
+	 * @param patternSet
+	 *            the pattern set
+	 * @param name
+	 *            the name to search
+	 * @return the delete pattern with the given name
+	 * @throws NoSuchElementException
+	 *             if no delete pattern with the given name exists
+	 */
+	public static IBeXDeletePattern getDeletePattern(final IBeXPatternSet patternSet, final String name) {
+		Optional<IBeXDeletePattern> pattern = patternSet.getDeletePatterns().stream() //
+				.filter(p -> p.getName().equals(name)) //
+				.findAny();
+		if (!pattern.isPresent()) {
+			throw new NoSuchElementException(String.format("No delete pattern called %s", name));
+		}
+		return pattern.get();
 	}
 }
