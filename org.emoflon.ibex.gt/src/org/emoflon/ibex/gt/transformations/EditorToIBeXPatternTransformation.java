@@ -24,7 +24,6 @@ import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
-import org.emoflon.ibex.gt.editor.utils.GTFlattener;
 
 import IBeXLanguage.IBeXAttribute;
 import IBeXLanguage.IBeXAttributeAssignment;
@@ -47,7 +46,7 @@ import IBeXLanguage.IBeXRelation;
 /**
  * Transformation from the editor model to IBeX Patterns.
  */
-public class EditorToIBeXPatternTransformation extends AbstractModelTransformation<EditorGTFile, IBeXPatternSet> {
+public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransformation<IBeXPatternSet> {
 	/**
 	 * All context patterns.
 	 */
@@ -95,22 +94,15 @@ public class EditorToIBeXPatternTransformation extends AbstractModelTransformati
 	 *            the editor pattern to transform
 	 */
 	private void transformPattern(final EditorPattern editorPattern) {
-		EditorPattern flattened = editorPattern;
-		if (!editorPattern.getSuperPatterns().isEmpty()) {
-			GTFlattener flattener = new GTFlattener(editorPattern);
-			flattened = flattener.getFlattenedPattern();
+		Objects.requireNonNull(editorPattern, "The pattern must not be null!");
 
-			if (flattener.hasErrors()) {
-				flattener.getErrors().forEach(e -> logError(e));
-				return;
+		getFlattenedPattern(editorPattern).ifPresent(f -> {
+			transformToContextPattern(f, true);
+			if (editorPattern.getType() == EditorPatternType.RULE) {
+				transformToCreatePattern(f);
+				transformToDeletePattern(f);
 			}
-		}
-
-		transformToContextPattern(flattened, true);
-		if (editorPattern.getType() == EditorPatternType.RULE) {
-			transformToCreatePattern(flattened);
-			transformToDeletePattern(flattened);
-		}
+		});
 	}
 
 	/**

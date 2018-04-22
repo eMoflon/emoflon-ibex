@@ -117,7 +117,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 
 		// Transform editor models to rules of the GT API model.
 		GTRuleSet gtRuleSet = this.transformEditorModels(editorModels, new EditorToGTModelTransformation(),
-				"%s errors during editor to GT API model transformation of file %s");
+				"%s errors during editor to GT API model transformation");
 		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
 
 		// Transform editor models to IBeXPatterns.
@@ -263,10 +263,10 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		for (final IFile gtFile : editorModels.keySet()) {
 			EditorGTFile editorModel = editorModels.get(gtFile);
 			targetModel = transformation.transform(editorModel);
-			if (transformation.hasErrors()) {
-				logError(String.format(errorCountMessageFormat, transformation.countErrors()));
-				transformation.getErrors().forEach(e -> logError(e));
-			}
+		}
+		if (transformation.hasErrors()) {
+			logError(String.format(errorCountMessageFormat, transformation.countErrors()));
+			transformation.getErrors().forEach(e -> logError(e));
 		}
 		return targetModel;
 	}

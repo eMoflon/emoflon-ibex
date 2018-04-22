@@ -11,7 +11,6 @@ import org.emoflon.ibex.gt.editor.gT.EditorOperator;
 import org.emoflon.ibex.gt.editor.gT.EditorParameter;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
-import org.emoflon.ibex.gt.editor.utils.GTFlattener;
 
 import GTLanguage.GTLanguageFactory;
 import GTLanguage.GTNode;
@@ -22,7 +21,7 @@ import GTLanguage.GTRuleSet;
 /**
  * Transformation from the editor model to an representation of the GT API.
  */
-public class EditorToGTModelTransformation extends AbstractModelTransformation<EditorGTFile, GTRuleSet> {
+public class EditorToGTModelTransformation extends AbstractEditorModelTransformation<GTRuleSet> {
 	/**
 	 * The rules transformed into the GT API model.
 	 */
@@ -32,7 +31,7 @@ public class EditorToGTModelTransformation extends AbstractModelTransformation<E
 	public GTRuleSet transform(final EditorGTFile editorModel) {
 		Objects.requireNonNull(editorModel, "The editor model must not be null!");
 
-		editorModel.getPatterns().forEach(editorRule -> transformRule(editorRule));
+		editorModel.getPatterns().forEach(editorRule -> transformPattern(editorRule));
 
 		GTRuleSet gtRuleSet = GTLanguageFactory.eINSTANCE.createGTRuleSet();
 		gtRuleSet.getRules().addAll(gtRules.stream() //
@@ -44,34 +43,22 @@ public class EditorToGTModelTransformation extends AbstractModelTransformation<E
 	/**
 	 * Transforms an editor rule into a GTRule of the GT API model.
 	 * 
-	 * @param unflattenedEditorPattern
+	 * @param editorPattern
 	 *            the editor rule, must not be <code>null</code>
 	 */
-	private void transformRule(final EditorPattern unflattenedEditorPattern) {
-		Objects.requireNonNull(unflattenedEditorPattern, "The pattern must not be null!");
+	private void transformPattern(final EditorPattern editorPattern) {
+		Objects.requireNonNull(editorPattern, "The pattern must not be null!");
+		
+		getFlattenedPattern(editorPattern).ifPresent(flattened -> {
+			GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
+			gtRule.setName(flattened.getName());
+			gtRule.setExecutable(flattened.getType() == EditorPatternType.RULE);
+			
+			transformNodes(flattened, gtRule);
+			transformParameters(flattened, gtRule);
 
-		if (unflattenedEditorPattern.isAbstract()) {
-			return;
-		}
-
-		EditorPattern editorPattern = unflattenedEditorPattern;
-		if (!unflattenedEditorPattern.getSuperPatterns().isEmpty()) {
-			GTFlattener flattener = new GTFlattener(unflattenedEditorPattern);
-			editorPattern = flattener.getFlattenedPattern();
-
-			if (flattener.hasErrors()) {
-				flattener.getErrors().forEach(e -> this.logError(e));
-				return;
-			}
-		}
-
-		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
-		gtRule.setName(editorPattern.getName());
-		gtRule.setExecutable(editorPattern.getType() == EditorPatternType.RULE);
-		transformNodes(editorPattern, gtRule);
-		transformParameters(editorPattern, gtRule);
-
-		this.gtRules.add(gtRule);
+			this.gtRules.add(gtRule);
+		});
 	}
 
 	/**
