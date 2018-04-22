@@ -37,8 +37,9 @@ import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
+import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
-import org.emoflon.ibex.gt.transformations.EditorToInternalGTModelTransformation;
+import org.emoflon.ibex.gt.transformations.EditorToGTModelTransformation;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.utilities.ClasspathUtil;
 import org.moflon.core.utilities.ExtensionsUtil;
@@ -106,7 +107,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			Resource file = resourceSet.getResource(uri, true);
 			EcoreUtil2.resolveLazyCrossReferences(file, () -> false);
 
-			EditorGTFile editorModel = ((EditorGTFile) file.getContents().get(0));
+			EditorGTFile editorModel = (EditorGTFile) file.getContents().get(0);
 			editorModels.put(gtFile, editorModel);
 			editorModel.getImports().forEach(i -> metaModels.add(i.getName()));
 		});
@@ -114,12 +115,14 @@ public class GTPackageBuilder implements GTBuilderExtension {
 
 		this.checkEditorModelsForDuplicatePatternNames(editorModels);
 
-		// Transform editor models to rules of the internal GT model.
-		GTRuleSet gtRuleSet = this.transformEditorModelsToInternalModel(editorModels);
+		// Transform editor models to rules of the GT API model.
+		GTRuleSet gtRuleSet = this.transformEditorModels(editorModels, new EditorToGTModelTransformation(),
+				"%s errors during editor to GT API model transformation of file %s");
 		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
 
 		// Transform editor models to IBeXPatterns.
-		IBeXPatternSet ibexPatternSet = this.transformToIBeXPatterns(editorModels);
+		IBeXPatternSet ibexPatternSet = this.transformEditorModels(editorModels,
+				new EditorToIBeXPatternTransformation(), "%s errors during editor model to pattern transformation");
 		this.saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
 
 		// Generate the Java code.
@@ -248,46 +251,24 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
-	 * Transforms the editor models to a GTRuleSet.
+	 * Transforms the given editor models to the target model.
 	 * 
 	 * @param editorModels
 	 *            the editor files and models
-	 * @return the graph transformation rules
+	 * @return the target model
 	 */
-	private GTRuleSet transformEditorModelsToInternalModel(final Map<IFile, EditorGTFile> editorModels) {
-		GTRuleSet gtRuleSet = null;
-		EditorToInternalGTModelTransformation editor2internal = new EditorToInternalGTModelTransformation();
-		for (final IFile gtFile : editorModels.keySet()) {
-			gtRuleSet = editor2internal.transform(editorModels.get(gtFile));
-			if (editor2internal.hasErrors()) {
-				this.logError(String.format("%s errors during editor to internal model transformation of file %s",
-						editor2internal.countErrors(), gtFile.getName()));
-				editor2internal.getErrors().forEach(e -> this.logError(e));
-			}
-		}
-		return gtRuleSet;
-	}
-
-	/**
-	 * Transforms the given editor models to IBeXPatterns.
-	 * 
-	 * @param editorModels
-	 *            the editor files and models
-	 * @return the IBeXPatterns
-	 */
-	private IBeXPatternSet transformToIBeXPatterns(final Map<IFile, EditorGTFile> editorModels) {
-		EditorToIBeXPatternTransformation editorToPatterns = new EditorToIBeXPatternTransformation();
-		IBeXPatternSet ibexPatternSet = null;
+	private <T> T transformEditorModels(final Map<IFile, EditorGTFile> editorModels,
+			final AbstractModelTransformation<EditorGTFile, T> transformation, final String errorCountMessageFormat) {
+		T targetModel = null;
 		for (final IFile gtFile : editorModels.keySet()) {
 			EditorGTFile editorModel = editorModels.get(gtFile);
-			ibexPatternSet = editorToPatterns.transform(editorModel);
-			if (editorToPatterns.hasErrors()) {
-				this.logError(String.format("%s errors during editor model to pattern transformation",
-						editorToPatterns.countErrors()));
-				editorToPatterns.getErrors().forEach(e -> this.logError(e));
+			targetModel = transformation.transform(editorModel);
+			if (transformation.hasErrors()) {
+				logError(String.format(errorCountMessageFormat, transformation.countErrors()));
+				transformation.getErrors().forEach(e -> logError(e));
 			}
 		}
-		return ibexPatternSet;
+		return targetModel;
 	}
 
 	/**

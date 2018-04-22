@@ -20,12 +20,11 @@ import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
 
 /**
- * Transformation from the editor model to an representation of the Graph
- * Transformation API.
+ * Transformation from the editor model to an representation of the GT API.
  */
-public class EditorToInternalGTModelTransformation extends AbstractModelTransformation<EditorGTFile, GTRuleSet> {
+public class EditorToGTModelTransformation extends AbstractModelTransformation<EditorGTFile, GTRuleSet> {
 	/**
-	 * The rules transformed into the internal model.
+	 * The rules transformed into the GT API model.
 	 */
 	private List<GTRule> gtRules = new ArrayList<GTRule>();
 
@@ -43,22 +42,22 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	}
 
 	/**
-	 * Transforms an editor rule into a GTRule of the internal GT model.
+	 * Transforms an editor rule into a GTRule of the GT API model.
 	 * 
 	 * @param unflattenedEditorPattern
 	 *            the editor rule, must not be <code>null</code>
 	 */
 	private void transformRule(final EditorPattern unflattenedEditorPattern) {
-		Objects.requireNonNull(unflattenedEditorPattern, "pattern must not be null!");
+		Objects.requireNonNull(unflattenedEditorPattern, "The pattern must not be null!");
 
 		if (unflattenedEditorPattern.isAbstract()) {
 			return;
 		}
 
-		EditorPattern editorRule = unflattenedEditorPattern;
+		EditorPattern editorPattern = unflattenedEditorPattern;
 		if (!unflattenedEditorPattern.getSuperPatterns().isEmpty()) {
 			GTFlattener flattener = new GTFlattener(unflattenedEditorPattern);
-			editorRule = flattener.getFlattenedPattern();
+			editorPattern = flattener.getFlattenedPattern();
 
 			if (flattener.hasErrors()) {
 				flattener.getErrors().forEach(e -> this.logError(e));
@@ -67,36 +66,46 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 		}
 
 		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
-		gtRule.setName(editorRule.getName());
-		gtRule.setExecutable(editorRule.getType() == EditorPatternType.RULE);
+		gtRule.setName(editorPattern.getName());
+		gtRule.setExecutable(editorPattern.getType() == EditorPatternType.RULE);
+		transformNodes(editorPattern, gtRule);
+		transformParameters(editorPattern, gtRule);
 
-		for (EditorNode editorNode : editorRule.getNodes()) {
-			GTNode gtNode = this.transformNode(editorNode);
-			gtRule.getNodes().add(gtNode);
+		this.gtRules.add(gtRule);
+	}
+
+	/**
+	 * Transforms all nodes of the editor pattern to GTNodes and adds them to the
+	 * given rule.
+	 * 
+	 * @param editorPattern
+	 *            the editor pattern
+	 * @param gtRule
+	 *            the GTRule
+	 */
+	private void transformNodes(final EditorPattern editorPattern, final GTRule gtRule) {
+		for (EditorNode editorNode : editorPattern.getNodes()) {
 			if (!EditorModelUtils.isLocal(editorNode)) {
+				GTNode gtNode = this.transformNode(editorNode);
+				gtRule.getNodes().add(gtNode);
+
 				// Only context and deleted nodes can be bound on the rule.
 				if (editorNode.getOperator() != EditorOperator.CREATE) {
 					gtRule.getRuleNodes().add(gtNode);
 				}
 			}
 		}
-
-		for (EditorParameter editorParameter : editorRule.getParameters()) {
-			gtRule.getParameters().add(this.transformParameter(editorParameter));
-		}
-
-		this.gtRules.add(gtRule);
 	}
 
 	/**
-	 * Transforms an editor node into a GTNode.
+	 * Transforms an editor node to a GTNode.
 	 * 
 	 * @param editorNode
 	 *            the editor node, must not be <code>null</code>
 	 * @return the GTNode
 	 */
 	private GTNode transformNode(final EditorNode editorNode) {
-		Objects.requireNonNull(editorNode, "node must not be null!");
+		Objects.requireNonNull(editorNode, "The node must not be null!");
 		GTNode gtNode = GTLanguageFactory.eINSTANCE.createGTNode();
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
@@ -104,7 +113,22 @@ public class EditorToInternalGTModelTransformation extends AbstractModelTransfor
 	}
 
 	/**
-	 * Transforms an editor parameter into a GTParameter.
+	 * Transforms all parameters of the editor pattern to GTParameters and adds them
+	 * to the given rule.
+	 * 
+	 * @param editorPattern
+	 *            the editor pattern
+	 * @param gtRule
+	 *            the GTRule
+	 */
+	private void transformParameters(final EditorPattern editorPattern, final GTRule gtRule) {
+		for (EditorParameter editorParameter : editorPattern.getParameters()) {
+			gtRule.getParameters().add(this.transformParameter(editorParameter));
+		}
+	}
+
+	/**
+	 * Transforms an editor parameter to a GTParameter.
 	 * 
 	 * @param editorParameter
 	 *            the editor parameter, must not be <code>null</code>
