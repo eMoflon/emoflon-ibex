@@ -11,11 +11,13 @@ import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
+import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 
 import IBeXLanguage.IBeXEdge;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNamedElement;
 import IBeXLanguage.IBeXNode;
+import IBeXLanguage.IBeXRelation;
 
 /**
  * Utility methods from the editor model to IBeX Patterns.
@@ -130,5 +132,34 @@ public class EditorToIBeXPatternUtils {
 		});
 		context.sort(sortByName);
 		contextNodes.addAll(context);
+	}
+
+	/**
+	 * Converts the relation from the editor model to the equivalent from the IBeX
+	 * model.
+	 * 
+	 * @param relation
+	 *            the relation from the editor model
+	 * @return the binary relation
+	 */
+	public static IBeXRelation convertRelation(final EditorRelation relation) {
+		switch (relation) {
+		case GREATER:
+			return IBeXRelation.GREATER;
+		case GREATER_OR_EQUAL:
+			return IBeXRelation.GREATER_OR_EQUAL;
+		case EQUAL:
+			return IBeXRelation.EQUAL;
+		case UNEQUAL:
+			return IBeXRelation.UNEQUAL;
+		case SMALLER:
+			return IBeXRelation.SMALLER;
+		case SMALLER_OR_EQUAL:
+			return IBeXRelation.SMALLER_OR_EQUAL;
+		case ASSIGNMENT:
+			throw new IllegalArgumentException("Cannot convert assignment relation.");
+		default:
+			throw new IllegalArgumentException("Cannot convert relation.");
+		}
 	}
 }

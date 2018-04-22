@@ -287,7 +287,7 @@ public class EditorToIBeXPatternTransformation extends AbstractModelTransformati
 		ibexAttrConstraint.setNode(ibexNode);
 		ibexAttrConstraint.setType(editorAttribute.getAttribute());
 
-		IBeXRelation ibexRelation = EditorToInternalGTModelUtils.convertRelation(editorAttribute.getRelation());
+		IBeXRelation ibexRelation = EditorToIBeXPatternUtils.convertRelation(editorAttribute.getRelation());
 		ibexAttrConstraint.setRelation(ibexRelation);
 		setAttributeValue(ibexAttrConstraint, editorAttribute);
 		return ibexAttrConstraint;

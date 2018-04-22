@@ -306,12 +306,10 @@ public class GTPackageBuilder implements GTBuilderExtension {
 				eClassifiersManager);
 		IFolder matchesPackage = this.ensureFolderExists(apiPackage.getFolder("matches"));
 		IFolder rulesPackage = this.ensureFolderExists(apiPackage.getFolder("rules"));
-		gtRuleSet.getRules().stream() //
-				.filter(gtRule -> !gtRule.isAbstract()) // ignore abstract rules
-				.forEach(gtRule -> {
-					generator.generateMatchClass(matchesPackage, gtRule);
-					generator.generateRuleClass(rulesPackage, gtRule);
-				});
+		gtRuleSet.getRules().forEach(gtRule -> {
+			generator.generateMatchClass(matchesPackage, gtRule);
+			generator.generateRuleClass(rulesPackage, gtRule);
+		});
 
 		String patternPath = project.getName() + "/" + SOURCE_GEN_FOLDER + "/" + path.toString()
 				+ "/api/ibex-patterns.xmi";
