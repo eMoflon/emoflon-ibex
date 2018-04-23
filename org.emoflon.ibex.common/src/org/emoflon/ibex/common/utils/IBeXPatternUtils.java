@@ -9,6 +9,7 @@ import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
 import IBeXLanguage.IBeXNode;
+import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXPatternSet;
 
 /**
@@ -36,10 +37,31 @@ public class IBeXPatternUtils {
 	 *            the name to search for, must not be <code>null</code>
 	 * @return an Optional for a local IBeXNode
 	 */
-	public static Optional<IBeXNode> findIBeXNodeWithName(final IBeXContextPattern ibexPattern, final String name) {
+	public static Optional<IBeXNode> findIBeXNodeWithName(final IBeXPattern ibexPattern, final String name) {
 		Objects.requireNonNull(ibexPattern, "pattern must not be null!");
 		Objects.requireNonNull(name, "name must not be null!");
+
+		if (ibexPattern instanceof IBeXContextPattern) {
+			return findIBeXNodeWithName((IBeXContextPattern) ibexPattern, name);
+		} else if (ibexPattern instanceof IBeXCreatePattern) {
+			return findIBeXNodeWithName((IBeXCreatePattern) ibexPattern, name);
+		} else if (ibexPattern instanceof IBeXDeletePattern) {
+			return findIBeXNodeWithName((IBeXDeletePattern) ibexPattern, name);
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	private static Optional<IBeXNode> findIBeXNodeWithName(final IBeXContextPattern ibexPattern, final String name) {
 		return findIBeXNodeWithName(ibexPattern.getLocalNodes(), ibexPattern.getSignatureNodes(), name);
+	}
+
+	private static Optional<IBeXNode> findIBeXNodeWithName(final IBeXCreatePattern ibexPattern, final String name) {
+		return findIBeXNodeWithName(ibexPattern.getCreatedNodes(), ibexPattern.getContextNodes(), name);
+	}
+
+	private static Optional<IBeXNode> findIBeXNodeWithName(final IBeXDeletePattern ibexPattern, final String name) {
+		return findIBeXNodeWithName(ibexPattern.getDeletedNodes(), ibexPattern.getContextNodes(), name);
 	}
 
 	/**
