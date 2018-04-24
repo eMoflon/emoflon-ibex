@@ -1,5 +1,6 @@
 package org.emoflon.ibex.common.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -29,7 +30,7 @@ public class IBeXPatternUtils {
 	}
 
 	/**
-	 * Finds an {@link IBeXNode} with the given name in the given IBeXPattern.
+	 * Finds a node with the given name in the given pattern.
 	 * 
 	 * @param ibexPattern
 	 *            the IBeXPattern, must not be <code>null</code>
@@ -163,5 +164,19 @@ public class IBeXPatternUtils {
 			throw new NoSuchElementException(String.format("No delete pattern called %s", name));
 		}
 		return pattern.get();
+	}
+
+	/**
+	 * Returns all nodes of a context pattern.
+	 * 
+	 * @param ibexPattern
+	 *            the context pattern
+	 * @return all signature and local nodes
+	 */
+	public static List<IBeXNode> getAllNodes(final IBeXContextPattern ibexPattern) {
+		List<IBeXNode> allNodes = new ArrayList<IBeXNode>();
+		allNodes.addAll(ibexPattern.getLocalNodes());
+		allNodes.addAll(ibexPattern.getSignatureNodes());
+		return allNodes;
 	}
 }

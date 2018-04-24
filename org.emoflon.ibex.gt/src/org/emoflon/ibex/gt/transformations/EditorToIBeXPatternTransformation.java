@@ -87,6 +87,12 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 */
 	private void transformPattern(final EditorPattern editorPattern) {
 		Objects.requireNonNull(editorPattern, "The pattern must not be null!");
+
+		if (nameToPattern.containsKey(editorPattern.getName())) {
+			// Already transformed.
+			return;
+		}
+
 		getFlattenedPattern(editorPattern).ifPresent(flattenedPattern -> {
 			transformToContextPattern(flattenedPattern, true);
 			if (editorPattern.getType() == EditorPatternType.RULE) {
@@ -102,10 +108,24 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * @param ibexPattern
 	 *            the IBeXPattern to add, must not be <code>null</code>
 	 */
-	private void addPattern(final IBeXContextPattern ibexPattern) {
+	private void addContextPattern(final IBeXContextPattern ibexPattern) {
 		Objects.requireNonNull(ibexPattern, "The pattern must not be null!");
 		ibexContextPatterns.add(ibexPattern);
 		nameToPattern.put(ibexPattern.getName(), ibexPattern);
+	}
+
+	/**
+	 * Returns the IBeXContextPattern for the given editor pattern.
+	 * 
+	 * @param editorPattern
+	 *            the editor pattern
+	 * @return the IBeXContextPattern
+	 */
+	public IBeXContextPattern getContextPattern(final EditorPattern editorPattern) {
+		if (!nameToPattern.containsKey(editorPattern.getName())) {
+			transformPattern(editorPattern);
+		}
+		return nameToPattern.get(editorPattern.getName());
 	}
 
 	/**
@@ -136,9 +156,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				});
 
 		// Ensure that all nodes must be disjoint even if they have the same type.
-		List<IBeXNode> allNodes = new ArrayList<IBeXNode>();
-		allNodes.addAll(ibexPattern.getLocalNodes());
-		allNodes.addAll(ibexPattern.getSignatureNodes());
+		List<IBeXNode> allNodes = IBeXPatternUtils.getAllNodes(ibexPattern);
 		for (int i = 0; i < allNodes.size(); i++) {
 			for (int j = i + 1; j < allNodes.size(); j++) {
 				IBeXNode node1 = allNodes.get(i);
@@ -163,7 +181,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			});
 		}
 
-		addPattern(ibexPattern);
+		// Transform conditions to patterns.s
+		new EditorToIBeXConditionHelper(this, editorPattern, ibexPattern).transformConditions();
+
+		addContextPattern(ibexPattern);
 	}
 
 	/**
@@ -186,7 +207,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 
 		IBeXContextPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
 		edgePattern.setName(name);
-		addPattern(edgePattern);
+		addContextPattern(edgePattern);
 
 		IBeXNode ibexSignatureSourceNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
 		ibexSignatureSourceNode.setName("src");
