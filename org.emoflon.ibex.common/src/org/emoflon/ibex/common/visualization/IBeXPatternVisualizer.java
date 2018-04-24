@@ -28,6 +28,13 @@ public class IBeXPatternVisualizer extends EMoflonVisualiser {
 		throw new IllegalArgumentException("Invalid selection: " + selection);
 	}
 
+	/**
+	 * Visualizes the first selected element
+	 * 
+	 * @param selection
+	 *            the selection
+	 * @return the PlantUMl code for the visualization
+	 */
 	private static String visualizeSelection(final IStructuredSelection selection) {
 		Object element = selection.getFirstElement();
 
@@ -36,7 +43,7 @@ public class IBeXPatternVisualizer extends EMoflonVisualiser {
 		}
 
 		if (isContextPattern(element)) {
-			return IBeXPatternPlantUMLGenerator.visualizePattern((IBeXContextPattern) element);
+			return IBeXPatternPlantUMLGenerator.visualizeContextPattern((IBeXContextPattern) element);
 		}
 
 		if (isCreatePattern(element)) {
