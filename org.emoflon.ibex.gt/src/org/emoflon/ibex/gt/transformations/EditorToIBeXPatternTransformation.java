@@ -176,9 +176,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 					.forEach(gtEdge -> transformEdgeToPatternInvocation(gtEdge, ibexPattern));
 		} else {
 			// No invocations, so include all edges as well.
-			EditorModelUtils.getReferences(editorPattern).forEach(editorReference -> {
-				ibexPattern.getLocalEdges().add(transformEdge(editorReference, ibexPattern));
-			});
+			EditorModelUtils.getReferencesByOperator(editorPattern, EditorOperator.CONTEXT, EditorOperator.DELETE)
+					.forEach(editorReference -> {
+						ibexPattern.getLocalEdges().add(transformEdge(editorReference, ibexPattern));
+					});
 		}
 
 		// Transform conditions to patterns.s
