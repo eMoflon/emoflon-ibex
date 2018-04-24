@@ -17,6 +17,7 @@ import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
+import org.gnu.glpk.glp_smcp;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 
@@ -44,8 +45,8 @@ final class GLPKWrapper extends ILPSolver {
 		}
 	}
 	
-	private static final int MIN_TIMEOUT = 3;
-	private static final int MAX_TIMEOUT = 60*60;
+	private static final int MIN_TIMEOUT = 30;
+	private static final int MAX_TIMEOUT = 60*60; //1 hour
 
 	/**
 	 * This setting defines the variable range of variables registered at GLPK
@@ -184,13 +185,47 @@ final class GLPKWrapper extends ILPSolver {
 			this.registerVariable(variable, this.ilpProblem.getVariableId(variable));
 		}
 		
+		registerObjective(this.ilpProblem.getObjective());
+		
+//		//create basis solution using primal simplex
+//		glp_smcp simplexParams= new glp_smcp();
+//		GLPK.glp_init_smcp(simplexParams);
+//		int exitCode = GLPK.glp_simplex(problem, simplexParams);
+//		if(exitCode != 0) {
+//			throw new RuntimeException("Solving model failed");
+//		}
+		
 		//register constraints
 		int counter = 1;
-		GLPK.glp_add_rows(problem, this.ilpProblem.getConstraints().size());
+//		GLPK.glp_add_rows(problem, this.ilpProblem.getConstraints().size());
 		for(ILPConstraint constraint : this.ilpProblem.getConstraints()) {
+			GLPK.glp_add_rows(problem, 1);
 			registerConstraint(constraint, counter++);
+//			if(counter % 10000 == 0) {
+//				//update solution with dual simplex
+//				simplexParams = new glp_smcp();
+//				GLPK.glp_init_smcp(simplexParams);
+//				simplexParams.setMeth(GLPK.GLP_DUAL);
+//				simplexParams.setPresolve(GLPK.GLP_OFF);
+//				exitCode = GLPK.glp_simplex(problem, simplexParams);
+//				if(exitCode != 0) {
+//					throw new RuntimeException("Solving model failed");
+//				}
+//			}
 		}
-		registerObjective(this.ilpProblem.getObjective());
+		
+//		if(counter % 10000 != 0) {
+//			//update solution with dual simplex
+//			simplexParams = new glp_smcp();
+//			GLPK.glp_init_smcp(simplexParams);
+//			simplexParams.setMeth(GLPK.GLP_DUAL);
+//			simplexParams.setPresolve(GLPK.GLP_OFF);
+//			exitCode = GLPK.glp_simplex(problem, simplexParams);
+//			if(exitCode != 0) {
+//				throw new RuntimeException("Solving model failed");
+//			}
+//		}
+		
 		GLPK.glp_write_lp(problem, null, "lp.lp");
 	}
 	
@@ -202,19 +237,31 @@ final class GLPKWrapper extends ILPSolver {
 		System.out.println("Setting time-limit for each step to "+timeout+ " seconds.");
 		timeout *= 1000;
 		
-//		glp_smcp simplexParams= new glp_smcp();
-//		GLPK.glp_init_smcp(simplexParams);
+		glp_smcp simplexParams= new glp_smcp();
+		GLPK.glp_init_smcp(simplexParams);
+//		simplexParams.setPresolve(GLPK.GLP_ON);
 //		simplexParams.setTm_lim(timeout);
-//		int exitCode = GLPK.glp_simplex(problem, simplexParams);
-//		GLPK.glp_print_sol(problem, "lp_sol_base.lp");
+//		simplexParams.setMeth(GLPK.GLP_DUAL);
+		int exitCode = GLPK.glp_simplex(problem, simplexParams);
+		GLPK.glp_print_sol(problem, "lp_sol_base.lp");
 //		glp_iptcp ipmParams = new glp_iptcp();
 //		GLPK.glp_init_iptcp(ipmParams);
 //		int exitCode = GLPK.glp_interior(problem, ipmParams);
 //		GLPK.glp_print_ipt(problem, "lp_ipt_base.lp");
 //		
-//		if(exitCode != 0) {
-//			return exitCode;
-//		}
+		if(exitCode != 0) {
+			if(exitCode == GLPK.GLP_ETMLIM ) {
+				int status = GLPK.glp_get_status(problem);
+				
+				boolean optimal = status == GLPKConstants.GLP_OPT;
+				boolean feasible = optimal || status == GLPKConstants.GLP_FEAS;
+				if (!feasible) { 
+					return exitCode;
+				}
+			} else {
+				return exitCode;
+			}
+		}
 		glp_iocp mipParameters = new glp_iocp();
 		GLPK.glp_init_iocp(mipParameters);
 		mipParameters.setBt_tech(GLPK.GLP_BT_BPH);
@@ -225,9 +272,9 @@ final class GLPKWrapper extends ILPSolver {
 		mipParameters.setClq_cuts(GLPK.GLP_ON);
 		mipParameters.setTm_lim(timeout);
 		mipParameters.setSr_heur(GLPK.GLP_ON);
-		mipParameters.setPresolve(GLPK.GLP_ON);
+		mipParameters.setPresolve(GLPK.GLP_OFF);
 		
-		int exitCode = GLPK.glp_intopt(problem, mipParameters);
+		exitCode = GLPK.glp_intopt(problem, mipParameters);
 		//For debugging: Write model to file
 		GLPK.glp_print_mip(problem, "lp_sol_mip.lp");
 		
@@ -276,6 +323,9 @@ final class GLPKWrapper extends ILPSolver {
 		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
 		int currentTimeout = this.ilpProblem.getVariables().size();
 		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
+		if(currentTimeout < 0) {
+			currentTimeout = MAX_TIMEOUT;
+		}
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
 		if(this.ilpProblem.getVariables().size() <= 0) {
 			return this.ilpProblem.createILPSolution(new TIntIntHashMap(), true, 0);
