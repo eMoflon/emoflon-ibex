@@ -171,6 +171,10 @@ public abstract class OPT extends OperationalStrategy {
 	protected void defineILPExclusions(ILPProblem ilpProblem) {
 		for (EObject node : nodeToMarkingMatches.keySet()) {
 			TIntHashSet variables = nodeToMarkingMatches.get(node);
+			if(variables.size() <= 1) {
+				//there is only one match creating this node, no exclusion needed
+				continue;
+			}
 			ILPLinearExpression expr = ilpProblem.createLinearExpression();
 			variables.forEach(v -> {
 				expr.addTerm("x" + v, 1.0);
@@ -182,6 +186,10 @@ public abstract class OPT extends OperationalStrategy {
 
 		for (RuntimeEdge edge : edgeToMarkingMatches.keySet()) {
 			TIntHashSet variables = edgeToMarkingMatches.get(edge);
+			if(variables.size() <= 1) {
+				//there is only one match creating this edge, no exclusion needed
+				continue;
+			}
 			ILPLinearExpression expr = ilpProblem.createLinearExpression();
 			variables.forEach(v -> {
 				expr.addTerm("x" + v, 1.0);
