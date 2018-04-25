@@ -40,7 +40,6 @@ import gnu.trove.map.hash.TCustomHashMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.set.hash.THashSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -55,6 +54,8 @@ public abstract class OPT extends OperationalStrategy {
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 	protected int nameCounter = 0;
 	protected TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
+	protected THashMap<EObject, TIntHashSet> contextNodeToNeedingMatches = new THashMap<EObject, TIntHashSet>();
+	protected TCustomHashMap<RuntimeEdge, TIntHashSet> contextEdgeToNeedingMatches = new TCustomHashMap<RuntimeEdge, TIntHashSet>(new RuntimeEdgeHashingStrategy());
 	protected TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
 	protected TIntIntHashMap matchToWeight = new TIntIntHashMap();
 
@@ -229,30 +230,40 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected void defineILPImplications(ILPProblem ilpProblem) {
-		for (int v : idToMatch.keySet().toArray()) {			
-			THashSet<EObject> contextNodes = matchToContextNodes.get(v);
+		for(EObject node : contextNodeToNeedingMatches.keySet()) {
+			TIntHashSet needingMatchIDs = contextNodeToNeedingMatches.get(node);
+			int needingMatches = needingMatchIDs.size();
+			TIntHashSet creatingMatchIDs = nodeToMarkingMatches.get(node);
 			ILPLinearExpression expr = ilpProblem.createLinearExpression();
-			for (EObject node : contextNodes) {
-				if (nodeToMarkingMatches.contains(node)) {
-					//exclusions prevent creating the same node multiple times
-					//this way adding all terms for marking matches has to <= 1
-					for (int v2 : nodeToMarkingMatches.get(node).toArray()) {
-						expr.addTerm("x" + v2, -1.0);
-					}
-					expr.addTerm("x" + v, 1.0);
-				}
+			needingMatchIDs.forEach(m -> {
+				expr.addTerm("x" + m, 1);
+				return true;
+			});
+			//only one or none of the creating matches can be chosen (defined by exclusions)
+			if(creatingMatchIDs != null) {
+				creatingMatchIDs.forEach(m -> {
+					expr.addTerm("x" + m, - needingMatches);
+					return true;
+				});
 			}
-
-			TCustomHashSet<RuntimeEdge> contextEdges = matchToContextEdges.get(v);
-			for (RuntimeEdge edge : contextEdges) {
-				if (edgeToMarkingMatches.contains(edge)) {
-					//exclusions prevent creating the same edge multiple times
-					//this way adding all terms for marking matches has to <= 1
-					for (int v2 : edgeToMarkingMatches.get(edge).toArray()) {
-						expr.addTerm("x" + v2, -1.0);
-					}
-					expr.addTerm("x" + v, 1.0);
-				}
+			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "IMPL" + nameCounter++);
+		}
+		
+		for(RuntimeEdge edge : contextEdgeToNeedingMatches.keySet()) {
+			TIntHashSet needingMatchIDs = contextEdgeToNeedingMatches.get(edge);
+			int needingMatches = needingMatchIDs.size();
+			TIntHashSet creatingMatchIDs = edgeToMarkingMatches.get(edge);
+			ILPLinearExpression expr = ilpProblem.createLinearExpression();
+			needingMatchIDs.forEach(m -> {
+				expr.addTerm("x" + m, 1);
+				return true;
+			});
+			//only one or none of the creating matches can be chosen (defined by exclusions)
+			if(creatingMatchIDs != null) {
+				creatingMatchIDs.forEach(m -> {
+					expr.addTerm("x" + m, - needingMatches);
+					return true;
+				});
 			}
 			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "IMPL" + nameCounter++);
 		}

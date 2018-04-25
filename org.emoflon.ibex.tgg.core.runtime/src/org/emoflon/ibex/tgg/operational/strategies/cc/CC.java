@@ -261,9 +261,23 @@ public abstract class CC extends OPT {
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
+		
+		getBlackNodes(comatch, ruleName).forEach(e -> {
+			if (!contextNodeToNeedingMatches.containsKey(e))
+				contextNodeToNeedingMatches.put(e, new TIntHashSet());
+			contextNodeToNeedingMatches.get(e).add(idCounter);
+		});
+		
+		getBlackEdges(comatch, ruleName).forEach(e -> {
+			if (!contextEdgeToNeedingMatches.containsKey(e)) {
+				contextEdgeToNeedingMatches.put(e, new TIntHashSet());
+			}
+			contextEdgeToNeedingMatches.get(e).add(idCounter);
+		});
 
 		matchToContextNodes.put(idCounter, new THashSet<>());
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
+		
 
 		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
