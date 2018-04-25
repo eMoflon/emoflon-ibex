@@ -39,6 +39,11 @@ final class Sat4JWrapper extends ILPSolver {
 	
 	private static final int MIN_TIMEOUT = 3;
 	private static final int MAX_TIMEOUT = 60*60;
+	
+	/**
+	 * Contains the mapping of the problem's variable IDs to SAT4J's variable IDs
+	 */
+	private TIntIntHashMap variableIdToSat4JVarId = new TIntIntHashMap();
 
 	/**
 	 * Creates a new SAT4JWrapper
@@ -94,9 +99,10 @@ final class Sat4JWrapper extends ILPSolver {
 			TIntIntHashMap variableSolutions = new TIntIntHashMap();
 			for(int i : model) {
 				int solution = i>0? 1 : 0;
-				for(int var : this.ilpProblem.getVariableIds()) {
-					if(Math.abs(i) == var) {
-						variableSolutions.put(var, solution);
+				for(int variableId : this.ilpProblem.getVariableIds()) {
+					int sat4JVariable = this.variableIdToSat4JVarId.get(variableId);
+					if(Math.abs(i) == sat4JVariable) {
+						variableSolutions.put(variableId, solution);
 						break;
 					}
 				}
@@ -118,7 +124,12 @@ final class Sat4JWrapper extends ILPSolver {
 	private IVecInt getLiterals(ILPLinearExpression linearExpression) {
 		IVecInt vec = new VecInt();
 		for (int variableId : linearExpression.getVariables()) {
-			vec.push(variableId);
+			if(!variableIdToSat4JVarId.contains(variableId)) {
+				//first usage of variable -> reserve internal SAT4J variable and save it
+				 variableIdToSat4JVarId.put(variableId, solver.nextFreeVarId(true));
+			}
+			int sat4JVariableId = variableIdToSat4JVarId.get(variableId);
+			vec.push(sat4JVariableId);
 		}
 		return vec;
 	}
