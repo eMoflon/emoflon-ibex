@@ -52,6 +52,9 @@ final class Sat4JWrapper extends ILPSolver {
 		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
 		int currentTimeout = this.ilpProblem.getVariables().size();
 		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
+		if(currentTimeout < 0) {
+			currentTimeout = MAX_TIMEOUT;
+		}
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
 		ILPSolution solution = null;
 		while(solution == null && currentTimeout <= MAX_TIMEOUT) {
