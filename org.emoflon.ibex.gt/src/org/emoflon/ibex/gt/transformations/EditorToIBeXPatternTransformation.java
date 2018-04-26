@@ -132,17 +132,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	}
 
 	/**
-	 * Returns the IBeXContextPattern with the given name.
-	 * 
-	 * @param name
-	 *            the name
-	 * @return an {@link Optional} for the pattern with the given name
-	 */
-	public Optional<IBeXContextPattern> getContextPattern(final String name) {
-		return Optional.ofNullable(nameToPattern.get(name));
-	}
-
-	/**
 	 * Transforms an editor pattern to an IBeXContextPattern.
 	 * 
 	 * @param editorPattern
@@ -158,6 +147,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 */
 	public IBeXContextPattern transformToContextPattern(final EditorPattern editorPattern, final String name,
 			final boolean useInvocations, final Predicate<EditorNode> isLocalCheck) {
+		if (nameToPattern.containsKey(name)) {
+			return nameToPattern.get(name);
+		}
+
 		IBeXContextPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
 		ibexPattern.setName(name);
 
