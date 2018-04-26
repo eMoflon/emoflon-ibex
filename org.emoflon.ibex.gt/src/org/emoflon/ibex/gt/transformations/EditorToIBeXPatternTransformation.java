@@ -65,7 +65,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		Objects.requireNonNull(file, "The editor file must not be null!");
 
 		// Transform patterns.
-		file.getPatterns().forEach(editorPattern -> transformPattern(editorPattern));
+		file.getPatterns().stream().filter(p -> !p.isAbstract())
+				.forEach(editorPattern -> transformPattern(editorPattern));
 
 		// Sort pattern lists alphabetically.
 		ibexContextPatterns.sort(EditorToIBeXPatternHelper.sortByName);

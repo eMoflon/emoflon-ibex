@@ -24,10 +24,6 @@ public abstract class AbstractEditorModelTransformation<TargetModel>
 	 * @return an Optional for the flattened pattern
 	 */
 	protected Optional<EditorPattern> getFlattenedPattern(final EditorPattern editorPattern) {
-		if (editorPattern.isAbstract()) {
-			return Optional.empty();
-		}
-
 		if (editorPattern.getSuperPatterns().isEmpty()) {
 			return Optional.of(editorPattern);
 		}

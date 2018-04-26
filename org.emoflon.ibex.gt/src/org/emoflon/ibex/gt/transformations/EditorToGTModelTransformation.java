@@ -48,16 +48,18 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 	 */
 	private void transformPattern(final EditorPattern editorPattern) {
 		Objects.requireNonNull(editorPattern, "The pattern must not be null!");
-		
+
+		if (editorPattern.isAbstract()) {
+			return;
+		}
+
 		getFlattenedPattern(editorPattern).ifPresent(flattened -> {
 			GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
 			gtRule.setName(flattened.getName());
 			gtRule.setExecutable(flattened.getType() == EditorPatternType.RULE);
-			
 			transformNodes(flattened, gtRule);
 			transformParameters(flattened, gtRule);
-
-			this.gtRules.add(gtRule);
+			gtRules.add(gtRule);
 		});
 	}
 
@@ -71,17 +73,15 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 	 *            the GTRule
 	 */
 	private void transformNodes(final EditorPattern editorPattern, final GTRule gtRule) {
-		for (EditorNode editorNode : editorPattern.getNodes()) {
-			if (!EditorModelUtils.isLocal(editorNode)) {
-				GTNode gtNode = this.transformNode(editorNode);
-				gtRule.getNodes().add(gtNode);
+		editorPattern.getNodes().stream().filter(n -> !EditorModelUtils.isLocal(n)).forEach(editorNode -> {
+			GTNode gtNode = transformNode(editorNode);
+			gtRule.getNodes().add(gtNode);
 
-				// Only context and deleted nodes can be bound on the rule.
-				if (editorNode.getOperator() != EditorOperator.CREATE) {
-					gtRule.getRuleNodes().add(gtNode);
-				}
+			// Only context and deleted nodes can be bound on the rule.
+			if (editorNode.getOperator() != EditorOperator.CREATE) {
+				gtRule.getRuleNodes().add(gtNode);
 			}
-		}
+		});
 	}
 
 	/**
@@ -93,6 +93,7 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 	 */
 	private GTNode transformNode(final EditorNode editorNode) {
 		Objects.requireNonNull(editorNode, "The node must not be null!");
+
 		GTNode gtNode = GTLanguageFactory.eINSTANCE.createGTNode();
 		gtNode.setName(editorNode.getName());
 		gtNode.setType(editorNode.getType());
