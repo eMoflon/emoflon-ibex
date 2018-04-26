@@ -1,6 +1,10 @@
 package org.emoflon.ibex.gt.transformations;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorAndCondition;
@@ -56,6 +60,7 @@ public class EditorToIBeXConditionHelper {
 	 * Transforms the conditions of the editor pattern.
 	 */
 	public void transformConditions() {
+		// TODO Generate separate pattern for each condition (semantics for OR).
 		for (EditorCondition editorCondition : editorPattern.getConditions()) {
 			transformCondition(editorCondition.getExpression());
 		}
@@ -78,7 +83,7 @@ public class EditorToIBeXConditionHelper {
 			transformCondition(((EditorAndCondition) condition).getLeft());
 			transformCondition(((EditorAndCondition) condition).getRight());
 		} else {
-			System.out.println(condition);
+			throw new IllegalArgumentException("Invalid condition expression " + condition);
 		}
 	}
 
@@ -103,7 +108,8 @@ public class EditorToIBeXConditionHelper {
 	}
 
 	/**
-	 * Creates a pattern invocation for the given editor pattern.
+	 * Creates a pattern invocation for the given editor pattern mapping nodes of
+	 * the same name.
 	 * 
 	 * @param editorPattern
 	 *            the editor pattern
@@ -112,20 +118,53 @@ public class EditorToIBeXConditionHelper {
 	 *            negative invocation
 	 */
 	private void transformPattern(final EditorPattern editorPattern, final boolean invocationType) {
+		IBeXContextPattern invokedPattern = transformation.getContextPattern(editorPattern);
+
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(invocationType);
 		invocation.setInvokedBy(ibexPattern);
 
-		IBeXContextPattern invokedPattern = transformation.getContextPattern(editorPattern);
-		invocation.setInvokedPattern(invokedPattern);
-
-		// Map nodes of the same name.
+		// Determine which nodes can be mapped.
+		Map<IBeXNode, IBeXNode> nodeMap = new HashMap<IBeXNode, IBeXNode>();
 		for (IBeXNode nodeInPattern : IBeXPatternUtils.getAllNodes(ibexPattern)) {
-			Optional<IBeXNode> nodeInInvokedPattern = IBeXPatternUtils.findIBeXNodeWithName(invokedPattern,
-					nodeInPattern.getName());
-			nodeInInvokedPattern.ifPresent(n -> invocation.getMapping().put(nodeInPattern, n));
+			IBeXPatternUtils.findIBeXNodeWithName(invokedPattern, nodeInPattern.getName())
+					.ifPresent(nodeInInvokedPattern -> nodeMap.put(nodeInPattern, nodeInInvokedPattern));
+		}
+
+		if (nodeMap.size() == invokedPattern.getSignatureNodes().size()) {
+			invocation.setInvokedPattern(invokedPattern);
+			invocation.getMapping().putAll(nodeMap);
+		} else { // not all signature nodes are mapped.
+			transformContextPatternForSignature(editorPattern, nodeMap).ifPresent(p -> {
+				invocation.setInvokedPattern(p);
+				for (IBeXNode node : nodeMap.keySet()) {
+					IBeXPatternUtils.findIBeXNodeWithName(p, node.getName()).ifPresent(nodeInInvokedPattern -> {
+						invocation.getMapping().put(node, nodeInInvokedPattern);
+					});
+				}
+			});
 		}
 
 		ibexPattern.getInvocations().add(invocation);
+	}
+
+	/**
+	 * Creates a context pattern for the given editor pattern which has the
+	 * signature nodes of the given map. All other nodes will become local nodes.
+	 * 
+	 * @param editorPattern
+	 *            the editor pattern
+	 * @param nodeMap
+	 *            the node mapping
+	 * @return the IBeXContextPattern if it exists
+	 */
+	private Optional<IBeXContextPattern> transformContextPatternForSignature(final EditorPattern editorPattern,
+			final Map<IBeXNode, IBeXNode> nodeMap) {
+		List<String> signatureNodeNames = nodeMap.values().stream().map(n -> n.getName()).collect(Collectors.toList());
+		String patternName = editorPattern.getName() + "-CONDITION-"
+				+ signatureNodeNames.stream().collect(Collectors.joining(","));
+		return transformation.getFlattenedPattern(editorPattern)
+				.map(flattenedPattern -> transformation.transformToContextPattern(flattenedPattern, patternName, true,
+						editorNode -> !signatureNodeNames.contains(editorNode.getName())));
 	}
 }

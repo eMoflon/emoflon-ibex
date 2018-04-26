@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EReference;
@@ -94,7 +95,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		}
 
 		getFlattenedPattern(editorPattern).ifPresent(flattenedPattern -> {
-			transformToContextPattern(flattenedPattern, true);
+			transformToContextPattern(flattenedPattern, flattenedPattern.getName(), true,
+					editorNode -> EditorModelUtils.isLocal(editorNode));
 			if (editorPattern.getType() == EditorPatternType.RULE) {
 				transformToCreatePattern(flattenedPattern);
 				transformToDeletePattern(flattenedPattern);
@@ -115,7 +117,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	}
 
 	/**
-	 * Returns the IBeXContextPattern for the given editor pattern.
+	 * Returns the IBeXContextPattern for the given editor pattern. If it does not
+	 * exist, it is created.
 	 * 
 	 * @param editorPattern
 	 *            the editor pattern
@@ -129,24 +132,40 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	}
 
 	/**
-	 * Transforms a GTRule into IBeXPatterns.
+	 * Returns the IBeXContextPattern with the given name.
+	 * 
+	 * @param name
+	 *            the name
+	 * @return an {@link Optional} for the pattern with the given name
+	 */
+	public Optional<IBeXContextPattern> getContextPattern(final String name) {
+		return Optional.ofNullable(nameToPattern.get(name));
+	}
+
+	/**
+	 * Transforms an editor pattern to an IBeXContextPattern.
 	 * 
 	 * @param editorPattern
 	 *            the editor pattern, must not be <code>null</code>
+	 * @param name
+	 *            the name of the added pattern
 	 * @param useInvocations
 	 *            whether to use invocations or not. If set to <code>false</code>,
 	 *            one large pattern will be created, otherwise the pattern will use
 	 *            invocations.
+	 * @param isLocalCheck
+	 *            the condition which nodes shall be local nodes
 	 */
-	private void transformToContextPattern(final EditorPattern editorPattern, final boolean useInvocations) {
+	public IBeXContextPattern transformToContextPattern(final EditorPattern editorPattern, final String name,
+			final boolean useInvocations, final Predicate<EditorNode> isLocalCheck) {
 		IBeXContextPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
-		ibexPattern.setName(editorPattern.getName());
+		ibexPattern.setName(name);
 
 		// Transform nodes and attributes.
 		EditorModelUtils.getNodesByOperator(editorPattern, EditorOperator.CONTEXT, EditorOperator.DELETE)
 				.forEach(editorNode -> {
 					IBeXNode ibexNode = EditorToIBeXPatternHelper.transformNode(editorNode);
-					if (EditorModelUtils.isLocal(editorNode)) {
+					if (isLocalCheck.test(editorNode)) {
 						ibexPattern.getLocalNodes().add(ibexNode);
 					} else {
 						ibexPattern.getSignatureNodes().add(ibexNode);
@@ -186,6 +205,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		new EditorToIBeXConditionHelper(this, editorPattern, ibexPattern).transformConditions();
 
 		addContextPattern(ibexPattern);
+		return ibexPattern;
 	}
 
 	/**
