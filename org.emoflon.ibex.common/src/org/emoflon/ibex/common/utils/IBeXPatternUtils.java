@@ -1,6 +1,7 @@
 package org.emoflon.ibex.common.utils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
+import IBeXLanguage.IBeXNamedElement;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXPatternSet;
@@ -17,7 +19,11 @@ import IBeXLanguage.IBeXPatternSet;
  * Utility for working with {@link IBeXPattern}s.
  */
 public class IBeXPatternUtils {
-
+	/**
+	 * A comparator for IBeXNamedElements.
+	 */
+	public static final Comparator<IBeXNamedElement> sortByName = (a, b) -> a.getName().compareTo(b.getName());
+	
 	/**
 	 * Checks whether the given pattern is empty.
 	 * 
@@ -177,6 +183,7 @@ public class IBeXPatternUtils {
 		List<IBeXNode> allNodes = new ArrayList<IBeXNode>();
 		allNodes.addAll(ibexPattern.getLocalNodes());
 		allNodes.addAll(ibexPattern.getSignatureNodes());
+		allNodes.sort(sortByName);
 		return allNodes;
 	}
 }

@@ -1,7 +1,6 @@
 package org.emoflon.ibex.gt.transformations;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,17 +13,12 @@ import org.emoflon.ibex.gt.editor.gT.EditorReference;
 
 import IBeXLanguage.IBeXEdge;
 import IBeXLanguage.IBeXLanguageFactory;
-import IBeXLanguage.IBeXNamedElement;
 import IBeXLanguage.IBeXNode;
 
 /**
  * Utility methods to transform editor patterns to IBeX Patterns.
  */
 public class EditorToIBeXPatternHelper {
-	/**
-	 * A comparator for IBeXNamedElements.
-	 */
-	public static final Comparator<IBeXNamedElement> sortByName = (a, b) -> a.getName().compareTo(b.getName());
 
 	/**
 	 * Transforms the given editor reference into an {@link IBeXEdge}. If a source
@@ -128,7 +122,7 @@ public class EditorToIBeXPatternHelper {
 		EditorModelUtils.getReferencesByOperator(editorPattern, editorOperator).forEach(editorReference -> {
 			changedEdges.add(transformEdge(editorReference, changedNodes, context));
 		});
-		context.sort(sortByName);
+		context.sort(IBeXPatternUtils.sortByName);
 		contextNodes.addAll(context);
 	}
 }

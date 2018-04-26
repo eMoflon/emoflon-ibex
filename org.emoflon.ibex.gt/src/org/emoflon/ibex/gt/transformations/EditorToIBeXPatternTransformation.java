@@ -69,9 +69,9 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				.forEach(editorPattern -> transformPattern(editorPattern));
 
 		// Sort pattern lists alphabetically.
-		ibexContextPatterns.sort(EditorToIBeXPatternHelper.sortByName);
-		ibexCreatePatterns.sort(EditorToIBeXPatternHelper.sortByName);
-		ibexDeletePatterns.sort(EditorToIBeXPatternHelper.sortByName);
+		ibexContextPatterns.sort(IBeXPatternUtils.sortByName);
+		ibexCreatePatterns.sort(IBeXPatternUtils.sortByName);
+		ibexDeletePatterns.sort(IBeXPatternUtils.sortByName);
 
 		// Create pattern set with alphabetically pattern lists.
 		IBeXPatternSet ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet();

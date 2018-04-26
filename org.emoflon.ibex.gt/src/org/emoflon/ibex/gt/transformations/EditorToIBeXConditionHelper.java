@@ -122,7 +122,7 @@ public class EditorToIBeXConditionHelper {
 
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(invocationType);
-		invocation.setInvokedBy(ibexPattern);
+		ibexPattern.getInvocations().add(invocation);
 
 		// Determine which nodes can be mapped.
 		Map<IBeXNode, IBeXNode> nodeMap = new HashMap<IBeXNode, IBeXNode>();
@@ -137,15 +137,13 @@ public class EditorToIBeXConditionHelper {
 		} else { // not all signature nodes are mapped.
 			transformContextPatternForSignature(editorPattern, nodeMap).ifPresent(p -> {
 				invocation.setInvokedPattern(p);
-				for (IBeXNode node : nodeMap.keySet()) {
+				for (IBeXNode node : IBeXPatternUtils.getAllNodes(ibexPattern)) {
 					IBeXPatternUtils.findIBeXNodeWithName(p, node.getName()).ifPresent(nodeInInvokedPattern -> {
 						invocation.getMapping().put(node, nodeInInvokedPattern);
 					});
 				}
 			});
 		}
-
-		ibexPattern.getInvocations().add(invocation);
 	}
 
 	/**
