@@ -15,6 +15,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorEnforce;
 import org.emoflon.ibex.gt.editor.gT.EditorForbid;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 
+import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
@@ -30,11 +31,6 @@ public class EditorToIBeXConditionHelper {
 	private final EditorToIBeXPatternTransformation transformation;
 
 	/**
-	 * The editor pattern.
-	 */
-	private final EditorPattern editorPattern;
-
-	/**
 	 * The context pattern.
 	 */
 	private final IBeXContextPattern ibexPattern;
@@ -44,26 +40,20 @@ public class EditorToIBeXConditionHelper {
 	 * 
 	 * @param transformation
 	 *            the transformation used to log errors and get patterns
-	 * @param editorPattern
-	 *            the editor pattern whose conditions to transform
 	 * @param ibexPattern
 	 *            the pattern where the pattern invocations shall be added
 	 */
 	public EditorToIBeXConditionHelper(final EditorToIBeXPatternTransformation transformation,
-			final EditorPattern editorPattern, final IBeXContextPattern ibexPattern) {
+			final IBeXContextPattern ibexPattern) {
 		this.transformation = transformation;
-		this.editorPattern = editorPattern;
 		this.ibexPattern = ibexPattern;
 	}
 
 	/**
-	 * Transforms the conditions of the editor pattern.
+	 * Transforms the condition of the editor pattern.
 	 */
-	public void transformConditions() {
-		// TODO Generate separate pattern for each condition (semantics for OR).
-		for (EditorCondition editorCondition : editorPattern.getConditions()) {
-			transformCondition(editorCondition.getExpression());
-		}
+	public void transformCondition(EditorCondition editorCondition) {
+		transformCondition(editorCondition.getExpression());
 	}
 
 	/**
@@ -118,7 +108,12 @@ public class EditorToIBeXConditionHelper {
 	 *            negative invocation
 	 */
 	private void transformPattern(final EditorPattern editorPattern, final boolean invocationType) {
-		IBeXContextPattern invokedPattern = transformation.getContextPattern(editorPattern);
+		IBeXContext contextPattern = transformation.getContextPattern(editorPattern);
+		if (!(contextPattern instanceof IBeXContextPattern)) {
+			transformation.logError(editorPattern.getName() + " not allowed in condition.");
+			return;
+		}
+		IBeXContextPattern invokedPattern = (IBeXContextPattern) contextPattern;
 
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(invocationType);
@@ -161,8 +156,12 @@ public class EditorToIBeXConditionHelper {
 		List<String> signatureNodeNames = nodeMap.values().stream().map(n -> n.getName()).collect(Collectors.toList());
 		String patternName = editorPattern.getName() + "-CONDITION-"
 				+ signatureNodeNames.stream().collect(Collectors.joining(","));
-		return transformation.getFlattenedPattern(editorPattern)
-				.map(flattenedPattern -> transformation.transformToContextPattern(flattenedPattern, patternName, true,
-						editorNode -> !signatureNodeNames.contains(editorNode.getName())));
+		return transformToContextPatternForCondition(editorPattern, patternName, signatureNodeNames);
+	}
+
+	private Optional<IBeXContextPattern> transformToContextPatternForCondition(final EditorPattern editorPattern,
+			final String patternName, final List<String> signatureNodeNames) {
+		return transformation.getFlattenedPattern(editorPattern).map(p -> transformation.transformToContextPattern(p,
+				patternName, editorNode -> !signatureNodeNames.contains(editorNode.getName())));
 	}
 }

@@ -12,6 +12,8 @@ import org.emoflon.ibex.common.operational.IMatch;
 
 import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXAttributeParameter;
+import IBeXLanguage.IBeXContext;
+import IBeXLanguage.IBeXContextAlternatives;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXRelation;
 
@@ -19,6 +21,57 @@ import IBeXLanguage.IBeXRelation;
  * Utility methods to filter match streams.
  */
 public class MatchFilter {
+
+	/**
+	 * Returns a stream of matches for the pattern such that the parameter values of
+	 * the matches are equal to the given parameters.
+	 * 
+	 * @param pattern
+	 *            the context pattern or context alternatives
+	 * @param parameters
+	 *            the parameter map
+	 * @param matches
+	 *            the matches
+	 * @return a stream containing matches
+	 */
+	public static Stream<IMatch> getFilteredMatchStream(final IBeXContext pattern, final Map<String, Object> parameters,
+			final Map<String, List<IMatch>> matches) {
+		if (pattern instanceof IBeXContextPattern) {
+			return getFilteredMatchStream((IBeXContextPattern) pattern, parameters, matches);
+		} else if (pattern instanceof IBeXContextAlternatives) {
+			Stream<IMatch> matchStream = Stream.empty();
+			for (IBeXContextPattern alternativePattern : ((IBeXContextAlternatives) pattern).getAlternativePatterns()) {
+				Stream<IMatch> matchesForAlterative = getFilteredMatchStream(alternativePattern, parameters, matches);
+				matchStream = Stream.concat(matchStream, matchesForAlterative);
+			}
+			return matchStream;
+		}
+		return Stream.empty();
+	}
+
+	/**
+	 * Returns a stream of matches for the pattern such that the parameter values of
+	 * the matches are equal to the given parameters.
+	 * 
+	 * @param pattern
+	 *            the context pattern
+	 * @param parameters
+	 *            the parameter map
+	 * @param matches
+	 *            the matches
+	 * @return a stream containing matches
+	 */
+	private static Stream<IMatch> getFilteredMatchStream(final IBeXContextPattern pattern,
+			final Map<String, Object> parameters, final Map<String, List<IMatch>> matches) {
+		if (!matches.containsKey(pattern.getName())) {
+			return Stream.empty();
+		}
+
+		Stream<IMatch> matchesForPattern = matches.get(pattern.getName()).stream();
+		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, pattern, parameters);
+		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, pattern, parameters);
+		return matchesForPattern;
+	}
 
 	/**
 	 * Filters the given matches for the ones whose node bindings are conform to the

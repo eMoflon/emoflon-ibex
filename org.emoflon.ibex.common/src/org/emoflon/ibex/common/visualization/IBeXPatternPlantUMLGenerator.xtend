@@ -30,9 +30,11 @@ class IBeXPatternPlantUMLGenerator {
 			«ENDFOR»
 			
 			«FOR pattern : patternSet.contextPatterns»
-				«FOR invocation: pattern.invocations»
-					"«pattern.name»" --> "«invocation.invokedPattern.name»"
-				«ENDFOR»
+				«IF pattern instanceof IBeXContextPattern»
+					«FOR invocation: (pattern as IBeXContextPattern).invocations»
+						"«pattern.name»" --> "«invocation.invokedPattern.name»"
+					«ENDFOR»
+				«ENDIF»
 			«ENDFOR»
 			
 			center footer

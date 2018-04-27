@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.utils.EcoreUtils;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
+import org.emoflon.ibex.gt.editor.gT.EditorCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
@@ -24,6 +25,8 @@ import IBeXLanguage.IBeXAttribute;
 import IBeXLanguage.IBeXAttributeAssignment;
 import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXAttributeValue;
+import IBeXLanguage.IBeXContext;
+import IBeXLanguage.IBeXContextAlternatives;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
@@ -41,9 +44,14 @@ import IBeXLanguage.IBeXRelation;
  */
 public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransformation<IBeXPatternSet> {
 	/**
+	 * Setting: usage of invocations for references.
+	 */
+	static final boolean USE_INVOCATIONS_FOR_REFERENCES = true;
+
+	/**
 	 * All context patterns.
 	 */
-	private List<IBeXContextPattern> ibexContextPatterns = new ArrayList<IBeXContextPattern>();
+	private List<IBeXContext> ibexContextPatterns = new ArrayList<IBeXContext>();
 
 	/**
 	 * All create patterns.
@@ -58,7 +66,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	/**
 	 * Mapping between pattern names and the context patterns.
 	 */
-	private HashMap<String, IBeXContextPattern> nameToPattern = new HashMap<String, IBeXContextPattern>();
+	private HashMap<String, IBeXContext> nameToPattern = new HashMap<String, IBeXContext>();
 
 	@Override
 	public IBeXPatternSet transform(final EditorGTFile file) {
@@ -96,8 +104,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		}
 
 		getFlattenedPattern(editorPattern).ifPresent(flattenedPattern -> {
-			transformToContextPattern(flattenedPattern, flattenedPattern.getName(), true,
-					editorNode -> EditorModelUtils.isLocal(editorNode));
+			transformToContextPattern(flattenedPattern);
 			if (editorPattern.getType() == EditorPatternType.RULE) {
 				transformToCreatePattern(flattenedPattern);
 				transformToDeletePattern(flattenedPattern);
@@ -109,11 +116,16 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * Add the given pattern to the list.
 	 * 
 	 * @param ibexPattern
-	 *            the IBeXPattern to add, must not be <code>null</code>
+	 *            the context pattern to add, must not be <code>null</code>
 	 */
-	private void addContextPattern(final IBeXContextPattern ibexPattern) {
+	private void addContextPattern(final IBeXContext ibexPattern) {
 		Objects.requireNonNull(ibexPattern, "The pattern must not be null!");
+
 		ibexContextPatterns.add(ibexPattern);
+		if (ibexPattern instanceof IBeXContextAlternatives) {
+			ibexContextPatterns.removeAll(((IBeXContextAlternatives) ibexPattern).getAlternativePatterns());
+		}
+
 		nameToPattern.put(ibexPattern.getName(), ibexPattern);
 	}
 
@@ -125,7 +137,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 *            the editor pattern
 	 * @return the IBeXContextPattern
 	 */
-	public IBeXContextPattern getContextPattern(final EditorPattern editorPattern) {
+	public IBeXContext getContextPattern(final EditorPattern editorPattern) {
 		if (!nameToPattern.containsKey(editorPattern.getName())) {
 			transformPattern(editorPattern);
 		}
@@ -136,20 +148,50 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * Transforms an editor pattern to an IBeXContextPattern.
 	 * 
 	 * @param editorPattern
+	 *            the editor pattern
+	 */
+	private void transformToContextPattern(final EditorPattern editorPattern) {
+		if (editorPattern.getConditions().size() > 1) {
+			transformToAlternatives(editorPattern);
+		} else {
+			IBeXContextPattern ibexPattern = transformToContextPattern(editorPattern, editorPattern.getName(),
+					editorNode -> EditorModelUtils.isLocal(editorNode));
+			if (editorPattern.getConditions().size() == 1) {
+				EditorCondition editorCondition = editorPattern.getConditions().get(0);
+				new EditorToIBeXConditionHelper(this, ibexPattern).transformCondition(editorCondition);
+			}
+		}
+	}
+
+	private void transformToAlternatives(final EditorPattern editorPattern) {
+		IBeXContextAlternatives ibexAlternatives = IBeXLanguageFactory.eINSTANCE.createIBeXContextAlternatives();
+		ibexAlternatives.setName(editorPattern.getName());
+
+		for (final EditorCondition editorCondition : editorPattern.getConditions()) {
+			String name = editorPattern.getName() + "-ALTERNATIVE-" + editorCondition.getName();
+			IBeXContextPattern ibexPattern = transformToContextPattern(editorPattern, name,
+					editorNode -> EditorModelUtils.isLocal(editorNode));
+			new EditorToIBeXConditionHelper(this, ibexPattern).transformCondition(editorCondition);
+			ibexAlternatives.getAlternativePatterns().add(ibexPattern);
+		}
+
+		addContextPattern(ibexAlternatives);
+	}
+
+	/**
+	 * Transforms an editor pattern to an IBeXContextPattern.
+	 * 
+	 * @param editorPattern
 	 *            the editor pattern, must not be <code>null</code>
 	 * @param name
 	 *            the name of the added pattern
-	 * @param useInvocations
-	 *            whether to use invocations or not. If set to <code>false</code>,
-	 *            one large pattern will be created, otherwise the pattern will use
-	 *            invocations.
 	 * @param isLocalCheck
 	 *            the condition which nodes shall be local nodes
 	 */
 	public IBeXContextPattern transformToContextPattern(final EditorPattern editorPattern, final String name,
-			final boolean useInvocations, final Predicate<EditorNode> isLocalCheck) {
+			final Predicate<EditorNode> isLocalCheck) {
 		if (nameToPattern.containsKey(name)) {
-			return nameToPattern.get(name);
+			return (IBeXContextPattern) nameToPattern.get(name);
 		}
 
 		IBeXContextPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
@@ -184,7 +226,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		}
 
 		// Transform edges.
-		if (useInvocations) {
+		if (USE_INVOCATIONS_FOR_REFERENCES) {
 			EditorModelUtils.getReferencesByOperator(editorPattern, EditorOperator.CONTEXT, EditorOperator.DELETE)
 					.forEach(gtEdge -> transformEdgeToPatternInvocation(gtEdge, ibexPattern));
 		} else {
@@ -194,9 +236,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 						ibexPattern.getLocalEdges().add(transformEdge(editorReference, ibexPattern));
 					});
 		}
-
-		// Transform conditions to patterns.s
-		new EditorToIBeXConditionHelper(this, editorPattern, ibexPattern).transformConditions();
 
 		addContextPattern(ibexPattern);
 		return ibexPattern;
@@ -217,7 +256,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		String name = "edge-" + edgeType.getEContainingClass().getName() + "-" + edgeType.getName() + "-"
 				+ edgeType.getEReferenceType().getName();
 		if (nameToPattern.containsKey(name)) {
-			return nameToPattern.get(name);
+			return (IBeXContextPattern) nameToPattern.get(name);
 		}
 
 		IBeXContextPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();

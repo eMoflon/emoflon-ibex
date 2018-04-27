@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -26,7 +25,7 @@ import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 
-import IBeXLanguage.IBeXContextPattern;
+import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
 import IBeXLanguage.IBeXLanguagePackage;
@@ -321,33 +320,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
-		IBeXContextPattern pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
+		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			return Optional.of(this.createEmptyMatchForCreatePattern(patternName));
 		}
 
-		if (!this.matches.containsKey(patternName) || this.matches.get(patternName).isEmpty()) {
-			return Optional.empty();
-		}
-		return this.getFilteredMatchStream(pattern, parameters).findAny();
-	}
-
-	/**
-	 * Returns a stream of matches for the pattern such that the parameter values of
-	 * the matches are equal to the given parameters.
-	 * 
-	 * @param pattern
-	 *            the pattern
-	 * @param parameters
-	 *            the parameter map
-	 * @return a stream containing matches
-	 */
-	private Stream<IMatch> getFilteredMatchStream(final IBeXContextPattern pattern,
-			final Map<String, Object> parameters) {
-		Stream<IMatch> matchesForPattern = this.matches.get(pattern.getName()).stream();
-		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, pattern, parameters);
-		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, pattern, parameters);
-		return matchesForPattern;
+		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches).findAny();
 	}
 
 	/**
@@ -373,15 +351,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Collection<IMatch> findMatches(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
-		IBeXContextPattern pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
+		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			return Arrays.asList(this.createEmptyMatchForCreatePattern(patternName));
 		}
 
-		if (!this.matches.containsKey(patternName)) {
-			return new ArrayList<IMatch>();
-		}
-		return this.getFilteredMatchStream(pattern, parameters).collect(Collectors.toList());
+		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches).collect(Collectors.toList());
 	}
 
 	/**

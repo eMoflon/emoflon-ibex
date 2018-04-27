@@ -2,9 +2,7 @@
 <?eclipse version="3.0"?><!--
 --><plugin>
   <extension point="net.sourceforge.plantuml.eclipse.diagramTextProvider">
-    <diagramTextProvider
-          priority="3"
-          providerClass="org.emoflon.ibex.common.visualization.IBeXPatternVisualizer"/>
+    <diagramTextProvider priority="3" providerClass="org.emoflon.ibex.common.visualization.IBeXPatternVisualizer"/>
   </extension>
   <extension point="org.moflon.emf.codegen.URIPreferenceExtension">
     <uri_preference_extension class="org.emoflon.ibex.common.utils.URIPreferenceExtension"/>

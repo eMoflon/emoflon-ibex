@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
+import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
@@ -23,7 +24,11 @@ public class IBeXPatternUtils {
 	 * A comparator for IBeXNamedElements.
 	 */
 	public static final Comparator<IBeXNamedElement> sortByName = (a, b) -> a.getName().compareTo(b.getName());
-	
+
+	public static boolean isEmptyPattern(final IBeXContext ibexPattern) {
+		return ibexPattern instanceof IBeXContextPattern && isEmptyPattern((IBeXContextPattern) ibexPattern);
+	}
+
 	/**
 	 * Checks whether the given pattern is empty.
 	 * 
@@ -110,7 +115,7 @@ public class IBeXPatternUtils {
 	}
 
 	/**
-	 * Returns the context pattern with the given name.
+	 * Returns the context pattern alternative with the given name.
 	 * 
 	 * @param patternSet
 	 *            the pattern set
@@ -120,8 +125,8 @@ public class IBeXPatternUtils {
 	 * @throws NoSuchElementException
 	 *             if no context pattern with the given name exists
 	 */
-	public static IBeXContextPattern getContextPattern(final IBeXPatternSet patternSet, final String name) {
-		Optional<IBeXContextPattern> pattern = patternSet.getContextPatterns().stream() //
+	public static IBeXContext getContextPattern(final IBeXPatternSet patternSet, final String name) {
+		Optional<IBeXContext> pattern = patternSet.getContextPatterns().stream() //
 				.filter(p -> p.getName().equals(name)) //
 				.findAny();
 		if (!pattern.isPresent()) {

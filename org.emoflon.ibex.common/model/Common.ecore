@@ -49,7 +49,12 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="stringValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXContextPattern" eSuperTypes="#//IBeXPattern">
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXContext" abstract="true" eSuperTypes="#//IBeXPattern"/>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXContextAlternatives" eSuperTypes="#//IBeXContext">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="alternativePatterns" upperBound="-1"
+        eType="#//IBeXContextPattern" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXContextPattern" eSuperTypes="#//IBeXContext">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="A pattern consists of local edges and nodes, signature nodes. It can invoke other patterns and force nodes be different."/>
     </eAnnotations>
@@ -153,7 +158,7 @@
       <details key="documentation" value="A set of IBeXPatterns. Each pattern in a set must have an unique name."/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="contextPatterns" upperBound="-1"
-        eType="#//IBeXContextPattern" containment="true"/>
+        eType="#//IBeXContext" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="createPatterns" upperBound="-1"
         eType="#//IBeXCreatePattern" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="deletePatterns" upperBound="-1"
