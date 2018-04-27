@@ -54,21 +54,24 @@ final class Sat4JWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() throws ContradictionException {
-		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
-		int currentTimeout = this.ilpProblem.getVariables().size();
+		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables");
+		int currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
 		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		if(currentTimeout < 0) {
 			currentTimeout = MAX_TIMEOUT;
 		}
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
 		ILPSolution solution = null;
-		while(solution == null && currentTimeout <= MAX_TIMEOUT) {
+		while(solution == null) {
 			System.out.println("Attempting to solve ILP. Timeout="+currentTimeout+" seconds.");
 			try {
 				solution = solveILP(currentTimeout);
 			} catch(TimeoutException e) {
 				System.err.println("Could not solve ILP within "+currentTimeout+" seconds");
 				currentTimeout*=2;
+				if(currentTimeout > MAX_TIMEOUT) {
+					throw new RuntimeException("Could not solve ILP within "+currentTimeout+" seconds", e);
+				}
 			}
 		}
 		return solution;
@@ -99,7 +102,7 @@ final class Sat4JWrapper extends ILPSolver {
 			TIntIntHashMap variableSolutions = new TIntIntHashMap();
 			for(int i : model) {
 				int solution = i>0? 1 : 0;
-				for(int variableId : this.ilpProblem.getVariableIds()) {
+				for(int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
 					int sat4JVariable = this.variableIdToSat4JVarId.get(variableId);
 					if(Math.abs(i) == sat4JVariable) {
 						variableSolutions.put(variableId, solution);

@@ -54,23 +54,24 @@ final class GurobiWrapper extends ILPSolver {
 	 * @param variable		Name of the variable to register
 	 * @throws GRBException	
 	 */
-	private void registerVariable(String variable) throws GRBException {
+	private void registerVariable(int variableId) throws GRBException {
 		//add var (lowerBound,upperBound, Objective coefficient, type, name)
+		String variable = this.ilpProblem.getVariable(variableId);
 		if(onlyBinaryVariables) {
-			gurobiVariables.put(this.ilpProblem.getVariableId(variable), model.addVar(0.0, 1.0, 0.0, GRB.BINARY, variable));
+			gurobiVariables.put(variableId, model.addVar(0.0, 1.0, 0.0, GRB.BINARY, variable));
 		} else {
-			gurobiVariables.put(this.ilpProblem.getVariableId(variable), model.addVar(Integer.MIN_VALUE, Integer.MAX_VALUE, 0.0, GRB.INTEGER, variable));
+			gurobiVariables.put(variableId, model.addVar(Integer.MIN_VALUE, Integer.MAX_VALUE, 0.0, GRB.INTEGER, variable));
 		}
 	}
 
 	@Override
 	public ILPSolution solveILP() throws GRBException {
-		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
+		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables");
 		env = new GRBEnv("Gurobi_ILP.log");
 		model = new GRBModel(env);
 
-		for(String variableName : this.ilpProblem.getVariables()) {
-			this.registerVariable(variableName);
+		for(int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
+			this.registerVariable(variableId);
 		}
 		for(ILPConstraint constraint : this.ilpProblem.getConstraints()) {
 			registerConstraint(constraint);
@@ -79,7 +80,7 @@ final class GurobiWrapper extends ILPSolver {
 
 		model.optimize();
 		TIntIntHashMap solutionVariables = new TIntIntHashMap();
-		for (int variableId : this.ilpProblem.getVariableIds()) {
+		for (int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			GRBVar gurobiVar = gurobiVariables.get(variableId);
 			solutionVariables.put(variableId, (int) gurobiVar.get(DoubleAttr.X));
 		}

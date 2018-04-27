@@ -17,7 +17,6 @@ import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
-import org.gnu.glpk.glp_smcp;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 
@@ -44,7 +43,7 @@ final class GLPKWrapper extends ILPSolver {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private static final int MIN_TIMEOUT = 30;
 	private static final int MAX_TIMEOUT = 60*60; //1 hour
 
@@ -52,7 +51,7 @@ final class GLPKWrapper extends ILPSolver {
 	 * This setting defines the variable range of variables registered at GLPK
 	 */
 	private final boolean onlyBinaryVariables;
-	
+
 	/**
 	 * The GLPK problem
 	 */
@@ -107,7 +106,6 @@ final class GLPKWrapper extends ILPSolver {
 			GLPK.glp_set_col_kind(problem, variableID, GLPKConstants.GLP_IV);
 			GLPK.glp_set_col_bnds(problem, variableID, GLPKConstants.GLP_FR, 0, 0);
 		}
-		
 	}
 
 	/**
@@ -118,7 +116,7 @@ final class GLPKWrapper extends ILPSolver {
 	 */
 	private void registerConstraint(ILPConstraint constraint, int constraintCounter){
 		GLPK.glp_set_row_name(problem, constraintCounter, constraint.getName());
-		
+
 		int counter = 1;
 		int numberOfVariables = constraint.getLinearExpression().getVariables().length;
 		SWIGTYPE_p_int variableIndices = GLPK.new_intArray(numberOfVariables+1);
@@ -147,7 +145,7 @@ final class GLPKWrapper extends ILPSolver {
 		GLPK.delete_intArray(variableIndices);
 		GLPK.delete_doubleArray(coefficients);
 	}
-	
+
 	/**
 	 * Registers the objective in GLPK
 	 * @param objective The objective function
@@ -164,15 +162,15 @@ final class GLPKWrapper extends ILPSolver {
 		default:
 			throw new IllegalArgumentException("Unsupported operation: "+objective.getObjectiveOperation().toString());
 		}
-	
+
 		//define terms
 		for (int variableId : objective.getLinearExpression().getVariables()) {
 			double coefficient = objective.getLinearExpression().getCoefficient(variableId);
 			GLPK.glp_set_obj_coef(problem, variableId, coefficient);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Creates and fills the GLPK problem
 	 */
@@ -181,54 +179,21 @@ final class GLPKWrapper extends ILPSolver {
 		//register variables
 		int numberOfVariables = this.ilpProblem.getVariables().size();
 		GLPK.glp_add_cols(problem, numberOfVariables);
-		for(String variable : this.ilpProblem.getVariables()) {
-			this.registerVariable(variable, this.ilpProblem.getVariableId(variable));
+		for(int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
+			this.registerVariable(this.ilpProblem.getVariable(variableId), variableId);
 		}
-		
+
 		registerObjective(this.ilpProblem.getObjective());
-		
-//		//create basis solution using primal simplex
-//		glp_smcp simplexParams= new glp_smcp();
-//		GLPK.glp_init_smcp(simplexParams);
-//		int exitCode = GLPK.glp_simplex(problem, simplexParams);
-//		if(exitCode != 0) {
-//			throw new RuntimeException("Solving model failed");
-//		}
-		
+
 		//register constraints
 		int counter = 1;
-//		GLPK.glp_add_rows(problem, this.ilpProblem.getConstraints().size());
 		for(ILPConstraint constraint : this.ilpProblem.getConstraints()) {
 			GLPK.glp_add_rows(problem, 1);
 			registerConstraint(constraint, counter++);
-//			if(counter % 10000 == 0) {
-//				//update solution with dual simplex
-//				simplexParams = new glp_smcp();
-//				GLPK.glp_init_smcp(simplexParams);
-//				simplexParams.setMeth(GLPK.GLP_DUAL);
-//				simplexParams.setPresolve(GLPK.GLP_OFF);
-//				exitCode = GLPK.glp_simplex(problem, simplexParams);
-//				if(exitCode != 0) {
-//					throw new RuntimeException("Solving model failed");
-//				}
-//			}
 		}
-		
-//		if(counter % 10000 != 0) {
-//			//update solution with dual simplex
-//			simplexParams = new glp_smcp();
-//			GLPK.glp_init_smcp(simplexParams);
-//			simplexParams.setMeth(GLPK.GLP_DUAL);
-//			simplexParams.setPresolve(GLPK.GLP_OFF);
-//			exitCode = GLPK.glp_simplex(problem, simplexParams);
-//			if(exitCode != 0) {
-//				throw new RuntimeException("Solving model failed");
-//			}
-//		}
-		
 		GLPK.glp_write_lp(problem, null, "lp.lp");
 	}
-	
+
 	/**
 	 * Uses GLPK to solve the model
 	 * @return the GLPK exit code, 0 for success
@@ -236,57 +201,39 @@ final class GLPKWrapper extends ILPSolver {
 	private int solveModel(int timeout) {
 		System.out.println("Setting time-limit for each step to "+timeout+ " seconds.");
 		timeout *= 1000;
-		
-		glp_smcp simplexParams= new glp_smcp();
-		GLPK.glp_init_smcp(simplexParams);
-//		simplexParams.setPresolve(GLPK.GLP_ON);
-//		simplexParams.setTm_lim(timeout);
-//		simplexParams.setMeth(GLPK.GLP_DUAL);
-		int exitCode = GLPK.glp_simplex(problem, simplexParams);
-		GLPK.glp_print_sol(problem, "lp_sol_base.lp");
-//		glp_iptcp ipmParams = new glp_iptcp();
-//		GLPK.glp_init_iptcp(ipmParams);
-//		int exitCode = GLPK.glp_interior(problem, ipmParams);
-//		GLPK.glp_print_ipt(problem, "lp_ipt_base.lp");
-//		
-		if(exitCode != 0) {
-			if(exitCode == GLPK.GLP_ETMLIM ) {
-				int status = GLPK.glp_get_status(problem);
-				
-				boolean optimal = status == GLPKConstants.GLP_OPT;
-				boolean feasible = optimal || status == GLPKConstants.GLP_FEAS;
-				if (!feasible) { 
-					return exitCode;
-				}
-			} else {
-				return exitCode;
-			}
-		}
+		GLPK.glp_scale_prob(problem, GLPK.GLP_SF_AUTO);
 		glp_iocp mipParameters = new glp_iocp();
 		GLPK.glp_init_iocp(mipParameters);
+		//branching
 		mipParameters.setBt_tech(GLPK.GLP_BT_BPH);
+		//backtracking
 		mipParameters.setBr_tech(GLPK.GLP_BR_PCH);
-		mipParameters.setGmi_cuts(GLPK.GLP_ON);
-		mipParameters.setMir_cuts(GLPK.GLP_ON);
-		mipParameters.setCov_cuts(GLPK.GLP_ON);
+		//cuts
+//		mipParameters.setGmi_cuts(GLPK.GLP_ON);
+//		mipParameters.setMir_cuts(GLPK.GLP_ON);
+//		mipParameters.setCov_cuts(GLPK.GLP_ON);
 		mipParameters.setClq_cuts(GLPK.GLP_ON);
+		//time limit
 		mipParameters.setTm_lim(timeout);
+
+		//proximty heuristic
+		//		mipParameters.setPs_heur(GLPK.GLP_ON);
+		//		mipParameters.setPs_tm_lim(timeout/10);
+
+//		mipParameters.setFp_heur(GLPK.GLP_ON);
 		mipParameters.setSr_heur(GLPK.GLP_ON);
-		mipParameters.setPresolve(GLPK.GLP_OFF);
-		
-		exitCode = GLPK.glp_intopt(problem, mipParameters);
+
+		//presolving
+		mipParameters.setPresolve(GLPK.GLP_ON);
+		mipParameters.setPp_tech(GLPK.GLP_PP_ALL);
+
+		int exitCode = GLPK.glp_intopt(problem, mipParameters);
 		//For debugging: Write model to file
 		GLPK.glp_print_mip(problem, "lp_sol_mip.lp");
-		
-		if(exitCode != 0) {
-			//solver did not complete successfully
-			if(exitCode == GLPK.GLP_ETMLIM) {
-				return 0; //
-			}
-		}
-		return exitCode;
+
+		return exitCode == GLPK.GLP_ETMLIM ? 0 : exitCode;
 	}
-	
+
 	/**
 	 * Retrieves the solution from the GLPK model
 	 * @return the solution containing the variable mapping provided by GLPK
@@ -294,17 +241,17 @@ final class GLPKWrapper extends ILPSolver {
 	 */
 	private ILPSolution retrieveSolution() throws InvalidAttributeValueException {
 		int status = GLPK.glp_mip_status(problem);
-		
+
 		boolean optimal = status == GLPKConstants.GLP_OPT;
 		boolean feasible = optimal || status == GLPKConstants.GLP_FEAS;
 		if (!feasible) { 
 			System.err.println("No optimal or feasible solution found.");
-			return null;
+			throw new RuntimeException("No optimal or feasible solution found.");
 		}
 		TIntIntHashMap variableSolutions = new TIntIntHashMap();
 		double optimum = GLPK.glp_mip_obj_val(problem);
 		System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
-		for(int variable : ilpProblem.getVariableIds()) {
+		for(int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			double value = GLPK.glp_mip_col_val(problem, variable);
 			if(value != 0 && value != 1) {
 				throw new InvalidAttributeValueException("Solution may only be 0 or 1");
@@ -320,14 +267,14 @@ final class GLPKWrapper extends ILPSolver {
 	 */
 	@Override
 	public ILPSolution solveILP() throws Exception {
-		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
-		int currentTimeout = this.ilpProblem.getVariables().size();
+		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables");
+		int currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
 		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		if(currentTimeout < 0) {
 			currentTimeout = MAX_TIMEOUT;
 		}
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
-		if(this.ilpProblem.getVariables().size() <= 0) {
+		if(this.ilpProblem.getVariableIdsOfUnfixedVariables().length <= 0) {
 			return this.ilpProblem.createILPSolution(new TIntIntHashMap(), true, 0);
 		}
 		try {
@@ -339,11 +286,11 @@ final class GLPKWrapper extends ILPSolver {
 			} else {
 				System.err.println("The problem could not be solved");
 				GLPK.glp_delete_prob(problem);
-				return null;
+				throw new RuntimeException("The problem could not be solved.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			throw new RuntimeException("The problem could not be solved.", e);
 		}
 	}
 }

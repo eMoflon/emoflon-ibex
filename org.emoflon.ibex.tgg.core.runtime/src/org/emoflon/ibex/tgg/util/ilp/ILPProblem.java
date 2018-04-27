@@ -9,12 +9,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import gnu.trove.function.TDoubleFunction;
+import gnu.trove.iterator.hash.TObjectHashIterator;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.hash.THashSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 /**
  * This class is used to define ILPProblems that can be given to {@link ILPSolver} to be solved.
@@ -47,6 +49,13 @@ public final class ILPProblem {
 	 * The objective function that has been defined using setObjective
 	 */
 	private ILPObjective objective = null;
+	
+	/**
+	 * Contains pre-fixed variables the solver does not need to care about
+	 */
+	private final TIntIntHashMap fixedVariableValues = new TIntIntHashMap();
+	
+	private final TIntHashSet unfixedVariables = new TIntHashSet();
 
 	/**
 	 * Creates a new ILPProblem. Instances can be obtained using the {@link ILPFactory}
@@ -66,8 +75,29 @@ public final class ILPProblem {
 	 * Gets all variable IDs of registered variables
 	 * @return the variable IDs
 	 */
-	public int[] getVariableIds() {
-		return variableIDsToVariables.keys();
+	int[] getVariableIdsOfUnfixedVariables() {
+		return unfixedVariables.toArray();
+	}
+	
+	public void fixVariable(String variableName, int value) {
+		int variableId = this.getVariableId(variableName);
+		if(this.fixedVariableValues.contains(variableId) && this.fixedVariableValues.get(variableId) == value) {
+			//unchanged
+			return;
+		}
+		this.unfixedVariables.remove(variableId);
+		this.fixedVariableValues.put(variableId, value);
+		TObjectHashIterator<ILPConstraint> it = this.constraints.iterator();
+		while(it.hasNext()) {
+			ILPConstraint constraint = it.next();
+			constraint.removeFixedVariables();
+			if(constraint.isEmpty()) {
+				it.remove();
+			}
+		}
+		if(objective != null) {
+			objective.removeFixedVariables();
+		}
 	}
 	
 	/**
@@ -79,6 +109,7 @@ public final class ILPProblem {
 		if(!variables.contains(variable)) {
 			variables.put(variable, variableCounter);
 			variableIDsToVariables.put(variableCounter, variable);
+			unfixedVariables.add(variableCounter);
 			return variableCounter++;
 		}
 		return variables.get(variable);
@@ -135,8 +166,8 @@ public final class ILPProblem {
 	 * @param constraint the constraint to add
 	 */
 	void addConstraint(ILPConstraint constraint) {
-		if(!this.constraints.contains(constraint)) {
-//			System.out.println("Constraint added ("+constraints.size()+")");
+		constraint.removeFixedVariables();
+		if(!constraint.isEmpty() && !this.constraints.contains(constraint)) {
 			this.constraints.add(constraint);
 		}
 	}
@@ -173,6 +204,7 @@ public final class ILPProblem {
 	 * @param objective the objective
 	 */
 	void setObjective(ILPObjective objective) {
+		objective.removeFixedVariables();
 		this.objective = objective;
 	}
 	
@@ -318,6 +350,27 @@ public final class ILPProblem {
 			this.linearExpression.multiplyBy(factor);
 			this.value *= factor;
 		}
+		
+		private void removeFixedVariables() {
+			fixedVariableValues.forEachEntry((variableID, value) -> {
+				double termValue = linearExpression.removeTerm(variableID) * value;
+				this.value += termValue;
+				return true;
+			});
+			if(this.isEmpty()) {
+				boolean feasible = true;
+				switch(comparator) {
+				case eq: feasible = 0 == this.value; break;
+				case ge: feasible = 0 >= this.value; break;
+				case gt: feasible = 0 > this.value; break;
+				case lt: feasible = 0 < this.value; break;
+				case le: feasible = 0 <= this.value; break;
+				}
+				if(!feasible) {
+					throw new RuntimeException("The problem is infeasible: "+this.toString());
+				}
+			}
+		}
 
 		/**
 		 * Checks whether the constraint is fulfilled by the given solution
@@ -343,6 +396,10 @@ public final class ILPProblem {
 		 */
 		ILPLinearExpression getLinearExpression() {
 			return linearExpression;
+		}
+		
+		private boolean isEmpty() {
+			return this.linearExpression.isEmpty();
 		}
 
 		/**
@@ -423,6 +480,8 @@ public final class ILPProblem {
 		 * Either minimize or maximize the function
 		 */
 		private final Objective objectiveOperation;
+		
+		private double fixedVariablesValue = 0;
 
 		/**
 		 * Creates a new objective function
@@ -448,7 +507,7 @@ public final class ILPProblem {
 		 * @return	The value of the solution
 		 */
 		double getSolutionValue(ILPSolution ilpSolution) {
-			return linearExpression.getSolutionValue(ilpSolution);
+			return linearExpression.getSolutionValue(ilpSolution) + fixedVariablesValue;
 		}
 		
 		/**
@@ -468,6 +527,14 @@ public final class ILPProblem {
 		@Override
 		public String toString() {
 			return "OBJECTIVE: "+this.objectiveOperation.toString() + ": "+ this.linearExpression.toString();
+		}
+		
+		private void removeFixedVariables() {
+			fixedVariableValues.forEachEntry((variableID, value) -> {
+				double termValue = linearExpression.removeTerm(variableID) * value;
+				this.fixedVariablesValue += termValue;
+				return true;
+			});
 		}
 
 		/* (non-Javadoc)
@@ -625,6 +692,20 @@ public final class ILPProblem {
 			}
 			return 0;
 		}
+		
+		/**
+		 * @param variableId
+		 * @return the coefficient of the variable that was removed
+		 */
+		double removeTerm(int variableId) {
+			double coefficient = this.getCoefficient(variableId);
+			this.terms.remove(variableId);
+			return coefficient;
+		}
+		
+		private boolean isEmpty() {
+			return this.terms.isEmpty();
+		}
 
 		@Override
 		public int hashCode() {
@@ -701,7 +782,7 @@ public final class ILPProblem {
 			super();
 			this.variableAllocations = variableAllocations;
 			this.optimal = optimal;
-			this.solutionValue = solutionValue;
+			this.solutionValue = solutionValue + objective.fixedVariablesValue;
 		}
 
 		/**
@@ -714,6 +795,9 @@ public final class ILPProblem {
 		}
 		
 		int getVariable(int variableId) {
+			if(fixedVariableValues.contains(variableId)) {
+				return fixedVariableValues.get(variableId);
+			}
 			return variableAllocations.get(variableId);
 		}
 

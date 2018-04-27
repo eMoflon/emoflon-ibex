@@ -248,9 +248,15 @@ public abstract class OPT extends OperationalStrategy {
 				return true;
 			});
 			//only one or none of the creating matches can be chosen (defined by exclusions)
-			if(creatingMatchIDs != null) {
+			if(creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
 				creatingMatchIDs.forEach(m -> {
 					expr.addTerm("x" + m, - needingMatches);
+					return true;
+				});
+			} else {
+				//there is no match creating this node -> forbid all matches needing it
+				needingMatchIDs.forEach(m -> {
+					ilpProblem.fixVariable("x"+m, 0);
 					return true;
 				});
 			}
@@ -267,9 +273,15 @@ public abstract class OPT extends OperationalStrategy {
 				return true;
 			});
 			//only one or none of the creating matches can be chosen (defined by exclusions)
-			if(creatingMatchIDs != null) {
+			if(creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
 				creatingMatchIDs.forEach(m -> {
 					expr.addTerm("x" + m, - needingMatches);
+					return true;
+				});
+			}  else {
+				//there is no match creating this node -> forbid all matches needing it
+				needingMatchIDs.forEach(m -> {
+					ilpProblem.fixVariable("x"+m, 0);
 					return true;
 				});
 			}
@@ -325,7 +337,7 @@ public abstract class OPT extends OperationalStrategy {
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			throw new RuntimeException("Solving ILP failed", e);
 		}
 	}
 
