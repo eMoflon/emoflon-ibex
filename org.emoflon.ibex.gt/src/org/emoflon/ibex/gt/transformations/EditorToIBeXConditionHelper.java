@@ -120,26 +120,34 @@ public class EditorToIBeXConditionHelper {
 		invocation.setPositive(invocationType);
 		ibexPattern.getInvocations().add(invocation);
 
-		// Determine which nodes can be mapped.
-		Map<IBeXNode, IBeXNode> nodeMap = new HashMap<IBeXNode, IBeXNode>();
-		for (IBeXNode nodeInPattern : IBeXPatternUtils.getAllNodes(ibexPattern)) {
-			IBeXPatternUtils.findIBeXNodeWithName(invokedPattern, nodeInPattern.getName())
-					.ifPresent(nodeInInvokedPattern -> nodeMap.put(nodeInPattern, nodeInInvokedPattern));
-		}
-
+		Map<IBeXNode, IBeXNode> nodeMap = determineNodeMapping(invokedPattern);
 		if (nodeMap.size() == invokedPattern.getSignatureNodes().size()) {
 			invocation.setInvokedPattern(invokedPattern);
 			invocation.getMapping().putAll(nodeMap);
 		} else { // not all signature nodes are mapped.
 			transformContextPatternForSignature(editorPattern, nodeMap).ifPresent(p -> {
 				invocation.setInvokedPattern(p);
-				for (IBeXNode node : IBeXPatternUtils.getAllNodes(ibexPattern)) {
-					IBeXPatternUtils.findIBeXNodeWithName(p, node.getName()).ifPresent(nodeInInvokedPattern -> {
-						invocation.getMapping().put(node, nodeInInvokedPattern);
-					});
-				}
+				invocation.getMapping().putAll(determineNodeMapping(p));
 			});
 		}
+	}
+
+	/**
+	 * Check which nodes from the context pattern can be mapped to the invoked
+	 * pattern based on the equal name convention.
+	 * 
+	 * @param invokedPattern
+	 *            the pattern invoked by the context pattern
+	 * @return the mapping between nodes of the context pattern to nodes of the
+	 *         invoked pattern
+	 */
+	private Map<IBeXNode, IBeXNode> determineNodeMapping(final IBeXContextPattern invokedPattern) {
+		Map<IBeXNode, IBeXNode> nodeMap = new HashMap<IBeXNode, IBeXNode>();
+		for (final IBeXNode nodeInPattern : IBeXPatternUtils.getAllNodes(ibexPattern)) {
+			IBeXPatternUtils.findIBeXNodeWithName(invokedPattern, nodeInPattern.getName())
+					.ifPresent(nodeInInvokedPattern -> nodeMap.put(nodeInPattern, nodeInInvokedPattern));
+		}
+		return nodeMap;
 	}
 
 	/**
@@ -154,15 +162,14 @@ public class EditorToIBeXConditionHelper {
 	 */
 	private Optional<IBeXContextPattern> transformContextPatternForSignature(final EditorPattern editorPattern,
 			final Map<IBeXNode, IBeXNode> nodeMap) {
-		List<String> signatureNodeNames = nodeMap.values().stream().map(n -> n.getName()).collect(Collectors.toList());
+		List<String> signatureNodeNames = nodeMap.values().stream() //
+				.map(n -> n.getName()) //
+				.collect(Collectors.toList());
 		String patternName = editorPattern.getName() + "-CONDITION-"
 				+ signatureNodeNames.stream().collect(Collectors.joining(","));
-		return transformToContextPatternForCondition(editorPattern, patternName, signatureNodeNames);
-	}
 
-	private Optional<IBeXContextPattern> transformToContextPatternForCondition(final EditorPattern editorPattern,
-			final String patternName, final List<String> signatureNodeNames) {
-		return transformation.getFlattenedPattern(editorPattern).map(p -> transformation.transformToContextPattern(p,
-				patternName, editorNode -> !signatureNodeNames.contains(editorNode.getName())));
+		return transformation.getFlattenedPattern(editorPattern) //
+				.map(p -> transformation.transformToContextPattern(p, patternName,
+						editorNode -> !signatureNodeNames.contains(editorNode.getName())));
 	}
 }

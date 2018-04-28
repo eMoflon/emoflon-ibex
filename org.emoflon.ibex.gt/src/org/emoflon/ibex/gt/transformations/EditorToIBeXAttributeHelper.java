@@ -247,18 +247,17 @@ public class EditorToIBeXAttributeHelper {
 		ibexAttributeExpression.setAttribute(editorExpression.getAttribute());
 		Optional<IBeXNode> ibexExistingNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern,
 				editorExpression.getNode().getName());
-		if (ibexExistingNode.isPresent()) {
-			ibexAttributeExpression.setNode(ibexExistingNode.get());
-			return Optional.of(ibexAttributeExpression);
-		} else {
-			if (ibexPattern instanceof IBeXCreatePattern) {
-				IBeXNode ibexNode = EditorToIBeXPatternHelper.transformNode(editorExpression.getNode());
-				ibexAttributeExpression.setNode(ibexNode);
-				((IBeXCreatePattern) ibexPattern).getContextNodes().add(ibexNode);
-				return Optional.of(ibexAttributeExpression);
-			}
-			return Optional.empty();
+
+		if (!ibexExistingNode.isPresent() && ibexPattern instanceof IBeXCreatePattern) {
+			IBeXNode ibexNode = EditorToIBeXPatternHelper.transformNode(editorExpression.getNode());
+			ibexExistingNode = Optional.of(ibexNode);
+			((IBeXCreatePattern) ibexPattern).getContextNodes().add(ibexNode);
 		}
+
+		return ibexExistingNode.map(ibexNode -> {
+			ibexAttributeExpression.setNode(ibexNode);
+			return ibexAttributeExpression;
+		});
 	}
 
 	/**
