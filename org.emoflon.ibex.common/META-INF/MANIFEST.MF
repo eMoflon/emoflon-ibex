@@ -22,7 +22,8 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.moflon.emf.codegen,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
- org.eclipse.xtend.lib.macro
+ org.eclipse.xtend.lib.macro,
+ org.moflon.core.utilities
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
 

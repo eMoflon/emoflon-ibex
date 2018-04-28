@@ -8,7 +8,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
@@ -120,7 +123,19 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 
 		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
 			EObject entry = (EObject) comatch.get(cspVal.getLeft().getObjectVar().getName());
-			entry.eSet(cspVal.getLeft().getAttribute(), cspVal.getRight());
+			EAttribute attr = cspVal.getLeft().getAttribute();
+			EDataType type = attr.getEAttributeType();
+			entry.eSet(attr, coerceToType(type, cspVal.getRight()));
 		}
+	}
+
+	private Object coerceToType(EDataType type, Object o) {
+		if (EcoreUtil.wrapperClassFor(type.getInstanceClass()).isInstance(o))
+			return o;
+		else if(type.getInstanceClass().equals(int.class) && o.getClass().equals(Double.class))
+			// Approximate result and squeeze into an int
+			return ((Double)o).intValue();
+		else
+			throw new IllegalStateException("Cannot coerce " + o.getClass() + " to " + type.getInstanceClassName());
 	}
 }
