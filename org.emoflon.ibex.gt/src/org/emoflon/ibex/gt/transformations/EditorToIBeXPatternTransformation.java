@@ -61,17 +61,22 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	@Override
 	public IBeXPatternSet transform(final EditorGTFile file) {
 		Objects.requireNonNull(file, "The editor file must not be null!");
-
-		// Transform patterns.
-		file.getPatterns().stream().filter(p -> !p.isAbstract())
+		file.getPatterns().stream() //
+				.filter(p -> !p.isAbstract()) //
 				.forEach(editorPattern -> transformPattern(editorPattern));
+		return createSortedPatternSet();
+	}
 
-		// Sort pattern lists alphabetically.
+	/**
+	 * Creates a pattern set with pattern lists sorted alphabetically.
+	 * 
+	 * @return the IBeXPatternSet
+	 */
+	private IBeXPatternSet createSortedPatternSet() {
 		ibexContextPatterns.sort(IBeXPatternUtils.sortByName);
 		ibexCreatePatterns.sort(IBeXPatternUtils.sortByName);
 		ibexDeletePatterns.sort(IBeXPatternUtils.sortByName);
 
-		// Create pattern set with alphabetically pattern lists.
 		IBeXPatternSet ibexPatternSet = IBeXLanguageFactory.eINSTANCE.createIBeXPatternSet();
 		ibexPatternSet.getContextPatterns().addAll(ibexContextPatterns);
 		ibexPatternSet.getCreatePatterns().addAll(ibexCreatePatterns);

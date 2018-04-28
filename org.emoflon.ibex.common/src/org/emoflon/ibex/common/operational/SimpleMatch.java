@@ -84,17 +84,11 @@ public class SimpleMatch implements IMatch {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("IMatch for ");
-		s.append(getPatternName());
-		s.append(" {");
-		s.append(System.lineSeparator());
+		s.append("IMatch for ").append(getPatternName()).append(" {").append(System.lineSeparator());
 
 		for (final String parameterName : getParameterNames()) {
-			s.append("	");
-			s.append(parameterName);
-			s.append(" -> ");
-			s.append(get(parameterName));
-			s.append(System.lineSeparator());
+			s.append("	").append(parameterName);
+			s.append(" -> ").append(get(parameterName)).append(System.lineSeparator());
 		}
 		s.append("}");
 

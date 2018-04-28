@@ -140,15 +140,28 @@ public class EditorToIBeXPatternHelper {
 		List<IBeXNode> allNodes = IBeXPatternUtils.getAllNodes(ibexPattern);
 		for (int i = 0; i < allNodes.size(); i++) {
 			for (int j = i + 1; j < allNodes.size(); j++) {
-				IBeXNode node1 = allNodes.get(i);
-				IBeXNode node2 = allNodes.get(j);
-				if (EcoreUtils.areTypesCompatible(node1.getType(), node2.getType())) {
-					IBeXNodePair nodePair = IBeXLanguageFactory.eINSTANCE.createIBeXNodePair();
-					nodePair.getValues().add(node1);
-					nodePair.getValues().add(node2);
-					ibexPattern.getInjectivityConstraints().add(nodePair);
-				}
+				addInjectivityConstraintIfNecessary(ibexPattern, allNodes.get(i), allNodes.get(j));
 			}
+		}
+	}
+
+	/**
+	 * Adds an injectivity constraint for the nodes if their types are compatible.
+	 * 
+	 * @param ibexPattern
+	 *            the context pattern
+	 * @param node1
+	 *            the first node
+	 * @param node2
+	 *            the second node
+	 */
+	private static void addInjectivityConstraintIfNecessary(final IBeXContextPattern ibexPattern, final IBeXNode node1,
+			final IBeXNode node2) {
+		if (EcoreUtils.areTypesCompatible(node1.getType(), node2.getType())) {
+			IBeXNodePair nodePair = IBeXLanguageFactory.eINSTANCE.createIBeXNodePair();
+			nodePair.getValues().add(node1);
+			nodePair.getValues().add(node2);
+			ibexPattern.getInjectivityConstraints().add(nodePair);
 		}
 	}
 }
