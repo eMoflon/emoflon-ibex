@@ -215,15 +215,15 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		EditorToIBeXPatternHelper.addInjectivityConstraints(ibexPattern);
 
 		// Transform edges.
+		List<EditorReference> edges = EditorModelUtils.getReferencesByOperator(editorPattern, EditorOperator.CONTEXT,
+				EditorOperator.DELETE);
 		if (USE_INVOCATIONS_FOR_REFERENCES) {
-			EditorModelUtils.getReferencesByOperator(editorPattern, EditorOperator.CONTEXT, EditorOperator.DELETE)
-					.forEach(gtEdge -> transformEdgeToPatternInvocation(gtEdge, ibexPattern));
+			edges.forEach(gtEdge -> transformEdgeToPatternInvocation(gtEdge, ibexPattern));
 		} else {
 			// No invocations, so include all edges as well.
-			EditorModelUtils.getReferencesByOperator(editorPattern, EditorOperator.CONTEXT, EditorOperator.DELETE)
-					.forEach(editorReference -> {
-						ibexPattern.getLocalEdges().add(transformEdge(editorReference, ibexPattern));
-					});
+			edges.forEach(editorReference -> {
+				ibexPattern.getLocalEdges().add(transformEdge(editorReference, ibexPattern));
+			});
 		}
 
 		addContextPattern(ibexPattern);
@@ -352,7 +352,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		for (final EditorNode editorNode : editorNodes) {
 			new EditorToIBeXAttributeHelper(this, editorNode).transformAttributeAssignments(ibexCreatePattern);
 		}
-		
+
 		ibexCreatePatterns.add(ibexCreatePattern);
 	}
 
@@ -365,11 +365,11 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	private void transformToDeletePattern(final EditorPattern editorPattern) {
 		IBeXDeletePattern ibexDeletePattern = IBeXLanguageFactory.eINSTANCE.createIBeXDeletePattern();
 		ibexDeletePattern.setName(editorPattern.getName());
-		
+
 		EditorToIBeXPatternHelper.transformNodesAndEdgesOfOperator(editorPattern, EditorOperator.DELETE,
 				ibexDeletePattern.getDeletedNodes(), ibexDeletePattern.getContextNodes(),
 				ibexDeletePattern.getDeletedEdges());
-		
+
 		ibexDeletePatterns.add(ibexDeletePattern);
 	}
 }

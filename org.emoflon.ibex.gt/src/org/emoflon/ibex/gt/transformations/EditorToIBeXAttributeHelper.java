@@ -1,8 +1,10 @@
 package org.emoflon.ibex.gt.transformations;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EDataType;
@@ -17,7 +19,6 @@ import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
 
-import IBeXLanguage.IBeXAttribute;
 import IBeXLanguage.IBeXAttributeAssignment;
 import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXAttributeExpression;
@@ -36,6 +37,23 @@ import IBeXLanguage.IBeXRelation;
  * Helper to transform attributes from the editor to the IBeX model.
  */
 public class EditorToIBeXAttributeHelper {
+	/**
+	 * A comparator for editor attributes.
+	 */
+	private static final Comparator<EditorAttribute> sortAttribute = (a, b) -> {
+		int compareAttributes = a.getAttribute().getName().compareTo(b.getAttribute().getName());
+		if (compareAttributes != 0) {
+			return compareAttributes;
+		}
+
+		return a.getRelation().compareTo(b.getRelation());
+	};
+
+	/**
+	 * Checks whether the editor attribute is an assignment.
+	 */
+	private static final Predicate<EditorAttribute> isAssignment = a -> a.getRelation() == EditorRelation.ASSIGNMENT;
+
 	/**
 	 * The transformation.
 	 */
@@ -63,7 +81,8 @@ public class EditorToIBeXAttributeHelper {
 	}
 
 	/**
-	 * Transforms an editor attribute constraint to an IBeXAttributeConstraint.
+	 * Transforms each attribute condition of the editor node to an
+	 * {@link IBeXAttributeConstraint} and adds them to the given context pattern.
 	 * 
 	 * @param ibexContextPattern
 	 *            the context pattern
@@ -77,28 +96,42 @@ public class EditorToIBeXAttributeHelper {
 			return;
 		}
 
-		EditorModelUtils.getAttributeConditions(editorNode).forEach(editorAttribute -> {
-			IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
-			ibexAttrConstraint.setNode(ibexNode.get());
-			ibexAttrConstraint.setType(editorAttribute.getAttribute());
-
-			IBeXRelation ibexRelation = EditorToIBeXAttributeHelper.convertRelation(editorAttribute.getRelation());
-			ibexAttrConstraint.setRelation(ibexRelation);
-			setAttributeValue(ibexAttrConstraint, editorAttribute, ibexContextPattern);
-			ibexContextPattern.getAttributeConstraint().add(ibexAttrConstraint);
-		});
+		for (final EditorAttribute editorAttribute : filterAttributes(editorNode, isAssignment.negate())) {
+			transformAttributeCondition(editorAttribute, ibexNode.get(), ibexContextPattern);
+		}
 	}
 
 	/**
-	 * Transforms the attribute assignments of the given node and adds them to the
-	 * given create pattern
+	 * Transforms an attribute condition to an {@link IBeXAttributeConstraint}.
+	 * 
+	 * @param editorAttribute
+	 *            the editor attribute to transform
+	 * @param ibexNode
+	 *            the IBeXNode
+	 * @param ibexContextPattern
+	 *            the context pattern
+	 */
+	private void transformAttributeCondition(final EditorAttribute editorAttribute, final IBeXNode ibexNode,
+			final IBeXContextPattern ibexContextPattern) {
+		IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
+		ibexAttrConstraint.setNode(ibexNode);
+		ibexAttrConstraint.setType(editorAttribute.getAttribute());
+
+		IBeXRelation ibexRelation = convertRelation(editorAttribute.getRelation());
+		ibexAttrConstraint.setRelation(ibexRelation);
+		convertAttributeValue(editorAttribute, ibexContextPattern).ifPresent(v -> ibexAttrConstraint.setValue(v));
+		ibexContextPattern.getAttributeConstraint().add(ibexAttrConstraint);
+	}
+
+	/**
+	 * Transforms each attribute assignment of the editor node to an
+	 * {@link IBeXAttributeAssignment} and adds them to the given create pattern.
 	 *
 	 * @param ibexCreatePattern
 	 *            the create pattern
 	 */
 	public void transformAttributeAssignments(final IBeXCreatePattern ibexCreatePattern) {
-		List<EditorAttribute> attributeAssignments = EditorModelUtils.getAttributeAssignments(editorNode)
-				.collect(Collectors.toList());
+		List<EditorAttribute> attributeAssignments = filterAttributes(editorNode, isAssignment);
 		if (attributeAssignments.size() == 0) {
 			return;
 		}
@@ -106,33 +139,44 @@ public class EditorToIBeXAttributeHelper {
 		IBeXNode ibexNode = EditorToIBeXPatternHelper.addIBeXNodeToContextNodes(editorNode,
 				ibexCreatePattern.getCreatedNodes(), ibexCreatePattern.getContextNodes());
 		for (EditorAttribute editorAttribute : attributeAssignments) {
-			IBeXAttributeAssignment ibexAssignment = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeAssignment();
-			ibexAssignment.setNode(ibexNode);
-			ibexAssignment.setType(editorAttribute.getAttribute());
-			setAttributeValue(ibexAssignment, editorAttribute, ibexCreatePattern);
-			ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
+			transformAttributeAssignment(editorAttribute, ibexNode, ibexCreatePattern);
 		}
 	}
 
 	/**
-	 * Sets the attribute value of the IBeXAttribute.
+	 * Transforms an attribute assignment to an {@link IBeXAttributeAssignment}.
 	 * 
-	 * @param ibexAttribute
-	 *            the IBeXAttribute
 	 * @param editorAttribute
-	 *            the editor attribute
-	 * @param ibexPattern
-	 *            the IBeXPattern
+	 *            the editor attribute to transform
+	 * @param ibexNode
+	 *            the IBeXNode
+	 * @param ibexCreatePattern
+	 *            the create pattern
 	 */
-	private void setAttributeValue(final IBeXAttribute ibexAttribute, final EditorAttribute editorAttribute,
-			final IBeXPattern ibexPattern) {
-		Optional<IBeXAttributeValue> value = EditorToIBeXAttributeHelper.convertAttributeValue(editorAttribute,
-				ibexPattern);
-		if (value.isPresent()) {
-			ibexAttribute.setValue(value.get());
-		} else {
-			transformation.logError("Invalid attribute value: " + editorAttribute.getValue());
-		}
+	private void transformAttributeAssignment(final EditorAttribute editorAttribute, final IBeXNode ibexNode,
+			final IBeXCreatePattern ibexCreatePattern) {
+		IBeXAttributeAssignment ibexAssignment = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeAssignment();
+		ibexAssignment.setNode(ibexNode);
+		ibexAssignment.setType(editorAttribute.getAttribute());
+		convertAttributeValue(editorAttribute, ibexCreatePattern).ifPresent(v -> ibexAssignment.setValue(v));
+		ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
+	}
+
+	/**
+	 * Returns the attribute assignments of the given node.
+	 * 
+	 * @param editorNode
+	 *            the editor node
+	 * @param filterCondition
+	 *            the condition for filtering attributes
+	 * @return the attribute assignments
+	 */
+	private static List<EditorAttribute> filterAttributes(final EditorNode editorNode,
+			final Predicate<EditorAttribute> filterCondition) {
+		return editorNode.getAttributes().stream() //
+				.filter(filterCondition) //
+				.sorted(sortAttribute) //
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -142,7 +186,7 @@ public class EditorToIBeXAttributeHelper {
 	 *            the relation from the editor model
 	 * @return the IBeXRelation
 	 */
-	public static IBeXRelation convertRelation(final EditorRelation relation) {
+	private static IBeXRelation convertRelation(final EditorRelation relation) {
 		switch (relation) {
 		case GREATER:
 			return IBeXRelation.GREATER;
@@ -170,7 +214,7 @@ public class EditorToIBeXAttributeHelper {
 	 *            the IBeXPattern
 	 * @return an {@link Optional} for the IBeXAttributeValue
 	 */
-	public static Optional<IBeXAttributeValue> convertAttributeValue(final EditorAttribute editorAttribute,
+	private Optional<IBeXAttributeValue> convertAttributeValue(final EditorAttribute editorAttribute,
 			final IBeXPattern ibexPattern) {
 		EditorExpression value = editorAttribute.getValue();
 		if (value instanceof EditorAttributeExpression) {
@@ -183,6 +227,7 @@ public class EditorToIBeXAttributeHelper {
 		} else if (value instanceof EditorParameterExpression) {
 			return Optional.of(convertAttributeValue((EditorParameterExpression) value));
 		} else {
+			transformation.logError("Invalid attribute value: " + editorAttribute.getValue());
 			return Optional.empty();
 		}
 	}
