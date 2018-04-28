@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.PushoutApproach;
+import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
@@ -282,7 +283,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		IBeXDeletePattern deletePattern = IBeXPatternUtils.getDeletePattern(patternSet, patternName);
 
 		// Execute deletion.
-		IMatch originalMatch = new GraphTransformationSimpleMatch(match);
+		IMatch originalMatch = new SimpleMatch(match);
 		Optional<IMatch> comatch = this.deletePatternInterpreter.apply(deletePattern, originalMatch, po);
 
 		// Execute creation.
@@ -372,7 +373,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 				.filter(p -> p.getName().equals(patternName)) //
 				.findAny();
 		if (pattern.isPresent()) {
-			IMatch match = new GraphTransformationSimpleMatch(patternName);
+			IMatch match = new SimpleMatch(patternName);
 			pattern.get().getCreatedNodes().forEach(node -> match.put(node.getName(), null));
 			return match;
 		} else {

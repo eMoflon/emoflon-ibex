@@ -3,6 +3,7 @@ package org.emoflon.ibex.gt.engine;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,12 +40,19 @@ public class MatchFilter {
 		if (pattern instanceof IBeXContextPattern) {
 			return getFilteredMatchStream((IBeXContextPattern) pattern, parameters, matches);
 		} else if (pattern instanceof IBeXContextAlternatives) {
+			IBeXContextAlternatives alternatives = (IBeXContextAlternatives) pattern;
+			Function<IMatch, IMatch> renameMatchToAlternativePattern = m -> {
+				m.setPatternName(alternatives.getName());
+				return m;
+			};
+
 			Stream<IMatch> matchStream = Stream.empty();
-			for (IBeXContextPattern alternativePattern : ((IBeXContextAlternatives) pattern).getAlternativePatterns()) {
-				Stream<IMatch> matchesForAlterative = getFilteredMatchStream(alternativePattern, parameters, matches);
+			for (IBeXContextPattern alternativePattern : alternatives.getAlternativePatterns()) {
+				Stream<IMatch> matchesForAlterative = getFilteredMatchStream(alternativePattern, parameters, matches)
+						.map(renameMatchToAlternativePattern);
 				matchStream = Stream.concat(matchStream, matchesForAlterative);
 			}
-			return matchStream;
+			return matchStream.distinct();
 		}
 		return Stream.empty();
 	}

@@ -7,6 +7,24 @@ import java.util.Collection;
  * names and objects.
  */
 public interface IMatch {
+
+	/**
+	 * Returns the name of the pattern.
+	 * 
+	 * @return the name of the pattern
+	 */
+	String getPatternName();
+
+	/**
+	 * Sets the name of the pattern
+	 * 
+	 * @param patternName
+	 *            the name of the pattern.
+	 */
+	default void setPatternName(String patternName) {
+		throw new UnsupportedOperationException("Cannot change pattern name!");
+	}
+
 	/**
 	 * Returns the object with the given name.
 	 * 
@@ -36,13 +54,6 @@ public interface IMatch {
 	Collection<String> getParameterNames();
 
 	/**
-	 * Returns the name of the pattern.
-	 * 
-	 * @return the name of the pattern
-	 */
-	String getPatternName();
-
-	/**
 	 * Returns whether there is a parameter with the given name in the match.
 	 * 
 	 * @param name
@@ -51,5 +62,35 @@ public interface IMatch {
 	 */
 	default boolean isInMatch(String name) {
 		return getParameterNames().contains(name);
+	}
+
+	/**
+	 * Checks whether this match is equal to the given match.
+	 * 
+	 * @param match
+	 *            the other match
+	 * @return <code>true</code> if and only if the two matches are for the same
+	 *         pattern and map all parameters to the same name
+	 */
+	default boolean isEqual(final IMatch match) {
+		if (!getPatternName().equals(match.getPatternName())) {
+			return false;
+		}
+
+		// Parameters of given match must exist in this match as well.
+		for (final String parameterName : match.getParameterNames()) {
+			if (!getParameterNames().contains(parameterName)) {
+				return false;
+			}
+		}
+
+		// Parameter values must be equal.
+		for (final String parameterName : getParameterNames()) {
+			if (!get(parameterName).equals(match.get(parameterName))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
