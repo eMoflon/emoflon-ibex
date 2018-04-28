@@ -1,6 +1,9 @@
 package org.emoflon.ibex.gt.transformations;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
@@ -9,14 +12,19 @@ import org.emoflon.ibex.gt.editor.gT.EditorAttributeExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
 
+import IBeXLanguage.IBeXAttribute;
+import IBeXLanguage.IBeXAttributeAssignment;
+import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXAttributeExpression;
 import IBeXLanguage.IBeXAttributeParameter;
 import IBeXLanguage.IBeXAttributeValue;
 import IBeXLanguage.IBeXConstant;
+import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXEnumLiteral;
 import IBeXLanguage.IBeXLanguageFactory;
@@ -25,10 +33,107 @@ import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXRelation;
 
 /**
- * Utility methods to transform attributes from the editor model to the
- * IBeXPattern presentation.
+ * Helper to transform attributes from the editor to the IBeX model.
  */
 public class EditorToIBeXAttributeHelper {
+	/**
+	 * The transformation.
+	 */
+	private final EditorToIBeXPatternTransformation transformation;
+
+	/**
+	 * The editor node whose attributes are transformed.
+	 */
+	private final EditorNode editorNode;
+
+	/**
+	 * Creates a new EditorToIBeXAttributeHelper.
+	 * 
+	 * @param transformation
+	 *            the transformation
+	 * @param editorNode
+	 *            the editor node
+	 */
+	public EditorToIBeXAttributeHelper(final EditorToIBeXPatternTransformation transformation,
+			final EditorNode editorNode) {
+		Objects.requireNonNull(editorNode, "editorAttribute must not be null!");
+
+		this.transformation = transformation;
+		this.editorNode = editorNode;
+	}
+
+	/**
+	 * Transforms an editor attribute constraint to an IBeXAttributeConstraint.
+	 * 
+	 * @param ibexContextPattern
+	 *            the context pattern
+	 */
+	public void transformAttributeConditions(final IBeXContextPattern ibexContextPattern) {
+		Objects.requireNonNull(ibexContextPattern, "ibexContextPattern must not be null!");
+
+		Optional<IBeXNode> ibexNode = IBeXPatternUtils.findIBeXNodeWithName(ibexContextPattern, editorNode.getName());
+		if (!ibexNode.isPresent()) {
+			transformation.logError("Node " + editorNode.getName() + " missing!");
+			return;
+		}
+
+		EditorModelUtils.getAttributeConditions(editorNode).forEach(editorAttribute -> {
+			IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
+			ibexAttrConstraint.setNode(ibexNode.get());
+			ibexAttrConstraint.setType(editorAttribute.getAttribute());
+
+			IBeXRelation ibexRelation = EditorToIBeXAttributeHelper.convertRelation(editorAttribute.getRelation());
+			ibexAttrConstraint.setRelation(ibexRelation);
+			setAttributeValue(ibexAttrConstraint, editorAttribute, ibexContextPattern);
+			ibexContextPattern.getAttributeConstraint().add(ibexAttrConstraint);
+		});
+	}
+
+	/**
+	 * Transforms the attribute assignments of the given node and adds them to the
+	 * given create pattern
+	 *
+	 * @param ibexCreatePattern
+	 *            the create pattern
+	 */
+	public void transformAttributeAssignments(final IBeXCreatePattern ibexCreatePattern) {
+		List<EditorAttribute> attributeAssignments = EditorModelUtils.getAttributeAssignments(editorNode)
+				.collect(Collectors.toList());
+		if (attributeAssignments.size() == 0) {
+			return;
+		}
+
+		IBeXNode ibexNode = EditorToIBeXPatternHelper.addIBeXNodeToContextNodes(editorNode,
+				ibexCreatePattern.getCreatedNodes(), ibexCreatePattern.getContextNodes());
+		for (EditorAttribute editorAttribute : attributeAssignments) {
+			IBeXAttributeAssignment ibexAssignment = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeAssignment();
+			ibexAssignment.setNode(ibexNode);
+			ibexAssignment.setType(editorAttribute.getAttribute());
+			setAttributeValue(ibexAssignment, editorAttribute, ibexCreatePattern);
+			ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
+		}
+	}
+
+	/**
+	 * Sets the attribute value of the IBeXAttribute.
+	 * 
+	 * @param ibexAttribute
+	 *            the IBeXAttribute
+	 * @param editorAttribute
+	 *            the editor attribute
+	 * @param ibexPattern
+	 *            the IBeXPattern
+	 */
+	private void setAttributeValue(final IBeXAttribute ibexAttribute, final EditorAttribute editorAttribute,
+			final IBeXPattern ibexPattern) {
+		Optional<IBeXAttributeValue> value = EditorToIBeXAttributeHelper.convertAttributeValue(editorAttribute,
+				ibexPattern);
+		if (value.isPresent()) {
+			ibexAttribute.setValue(value.get());
+		} else {
+			transformation.logError("Invalid attribute value: " + editorAttribute.getValue());
+		}
+	}
 
 	/**
 	 * Converts the relation.

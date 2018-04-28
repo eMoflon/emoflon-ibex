@@ -5,15 +5,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.emoflon.ibex.common.utils.EcoreUtils;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
 
+import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXEdge;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
+import IBeXLanguage.IBeXNodePair;
 
 /**
  * Utility methods to transform editor patterns to IBeX Patterns.
@@ -124,5 +127,28 @@ public class EditorToIBeXPatternHelper {
 		});
 		context.sort(IBeXPatternUtils.sortByName);
 		contextNodes.addAll(context);
+	}
+
+	/**
+	 * Adds injectivity constraints to the pattern such that all nodes in the
+	 * pattern must be disjoint.
+	 * 
+	 * @param ibexPattern
+	 *            the context pattern
+	 */
+	public static void addInjectivityConstraints(final IBeXContextPattern ibexPattern) {
+		List<IBeXNode> allNodes = IBeXPatternUtils.getAllNodes(ibexPattern);
+		for (int i = 0; i < allNodes.size(); i++) {
+			for (int j = i + 1; j < allNodes.size(); j++) {
+				IBeXNode node1 = allNodes.get(i);
+				IBeXNode node2 = allNodes.get(j);
+				if (EcoreUtils.areTypesCompatible(node1.getType(), node2.getType())) {
+					IBeXNodePair nodePair = IBeXLanguageFactory.eINSTANCE.createIBeXNodePair();
+					nodePair.getValues().add(node1);
+					nodePair.getValues().add(node2);
+					ibexPattern.getInjectivityConstraints().add(nodePair);
+				}
+			}
+		}
 	}
 }

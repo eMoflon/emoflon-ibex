@@ -1,8 +1,10 @@
 package org.emoflon.ibex.gt.transformations;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
@@ -16,6 +18,17 @@ import org.emoflon.ibex.gt.editor.gT.EditorRelation;
  * Utility methods for the editor model.
  */
 public class EditorModelUtils {
+	/**
+	 * A comparator for editor attributes.
+	 */
+	private static final Comparator<EditorAttribute> sortAttribute = (a, b) -> {
+		int compareAttributes = a.getAttribute().getName().compareTo(b.getAttribute().getName());
+		if (compareAttributes != 0) {
+			return compareAttributes;
+		}
+
+		return a.getRelation().compareTo(b.getRelation());
+	};
 
 	/**
 	 * Returns the source node of the editor reference.
@@ -29,6 +42,17 @@ public class EditorModelUtils {
 	}
 
 	/**
+	 * Returns the node of the editor attribute.
+	 * 
+	 * @param editorAttribute
+	 *            the editor attribute
+	 * @return the editor node
+	 */
+	public static EditorNode getNode(final EditorAttribute editorAttribute) {
+		return (EditorNode) editorAttribute.eContainer();
+	}
+
+	/**
 	 * Returns the attribute assignments of the given node.
 	 * 
 	 * @param editorNode
@@ -37,8 +61,8 @@ public class EditorModelUtils {
 	 */
 	public static Stream<EditorAttribute> getAttributeAssignments(final EditorNode editorNode) {
 		return editorNode.getAttributes().stream() //
-				.filter(a -> a.getRelation().equals(EditorRelation.ASSIGNMENT))
-				.sorted((a, b) -> a.getAttribute().getName().compareTo(b.getAttribute().getName()));
+				.filter(a -> a.getRelation().equals(EditorRelation.ASSIGNMENT)) //
+				.sorted(sortAttribute);
 	}
 
 	/**
@@ -50,8 +74,8 @@ public class EditorModelUtils {
 	 */
 	public static Stream<EditorAttribute> getAttributeConditions(final EditorNode editorNode) {
 		return editorNode.getAttributes().stream() //
-				.filter(a -> !a.getRelation().equals(EditorRelation.ASSIGNMENT))
-				.sorted((a, b) -> a.getAttribute().getName().compareTo(b.getAttribute().getName()));
+				.filter(a -> !a.getRelation().equals(EditorRelation.ASSIGNMENT)) //
+				.sorted(sortAttribute);
 	}
 
 	/**
@@ -63,13 +87,13 @@ public class EditorModelUtils {
 	 *            the operators
 	 * @return the stream of nodes, sorted alphabetically by the name
 	 */
-	public static Stream<EditorNode> getNodesByOperator(final EditorPattern editorPattern,
+	public static List<EditorNode> getNodesByOperator(final EditorPattern editorPattern,
 			final EditorOperator... operators) {
 		Objects.requireNonNull(editorPattern, "The editor pattern must not be null!");
 		List<EditorOperator> operatorsList = Arrays.asList(operators);
 		return editorPattern.getNodes().stream() //
 				.filter(n -> operatorsList.contains(n.getOperator()))
-				.sorted((a, b) -> a.getName().compareTo(b.getName()));
+				.sorted((a, b) -> a.getName().compareTo(b.getName())).collect(Collectors.toList());
 	}
 
 	/**

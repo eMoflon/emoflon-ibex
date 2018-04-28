@@ -22,11 +22,11 @@ import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
 
 /**
- * Helper to transform conditions from the editor model to the IBeXPatterns.
+ * Helper to transform conditions from the editor to the IBeX model.
  */
 public class EditorToIBeXConditionHelper {
 	/**
-	 * The transformation
+	 * The transformation.
 	 */
 	private final EditorToIBeXPatternTransformation transformation;
 
@@ -41,7 +41,8 @@ public class EditorToIBeXConditionHelper {
 	 * @param transformation
 	 *            the transformation used to log errors and get patterns
 	 * @param ibexPattern
-	 *            the pattern where the pattern invocations shall be added
+	 *            the pattern where the pattern invocations for the conditions shall
+	 *            be added
 	 */
 	public EditorToIBeXConditionHelper(final EditorToIBeXPatternTransformation transformation,
 			final IBeXContextPattern ibexPattern) {
