@@ -1,9 +1,9 @@
 package org.emoflon.ibex.common.visualization
 
+import IBeXLanguage.IBeXContextPattern
 import IBeXLanguage.IBeXCreatePattern
 import IBeXLanguage.IBeXDeletePattern
 import IBeXLanguage.IBeXEdge
-import IBeXLanguage.IBeXPattern
 import IBeXLanguage.IBeXPatternSet
 import IBeXLanguage.IBeXNode
 
@@ -25,14 +25,16 @@ class IBeXPatternPlantUMLGenerator {
 		'''
 			«commonLayoutSettings»
 			
-			«FOR pattern : patternSet.patterns»
+			«FOR pattern : patternSet.contextPatterns»
 				class "«pattern.name»"
 			«ENDFOR»
 			
-			«FOR pattern : patternSet.patterns»
-				«FOR invocation: pattern.invocations»
-					"«pattern.name»" --> "«invocation.invokedPattern.name»"
-				«ENDFOR»
+			«FOR pattern : patternSet.contextPatterns»
+				«IF pattern instanceof IBeXContextPattern»
+					«FOR invocation: (pattern as IBeXContextPattern).invocations»
+						"«pattern.name»" --> "«invocation.invokedPattern.name»"
+					«ENDFOR»
+				«ENDIF»
 			«ENDFOR»
 			
 			center footer
@@ -42,9 +44,9 @@ class IBeXPatternPlantUMLGenerator {
 	}
 
 	/**
-	 * Visualizes the pattern.
+	 * Visualizes the context pattern.
 	 */
-	static def String visualizePattern(IBeXPattern pattern) {
+	static def String visualizeContextPattern(IBeXContextPattern pattern) {
 		'''
 			«commonLayoutSettings»
 			
@@ -55,24 +57,28 @@ class IBeXPatternPlantUMLGenerator {
 				FontColor<<LOCAL>> «LocalColor»
 			}
 			
-			«printPattern(pattern, '')»
+			«printPattern(pattern, '', true)»
 			
 			center footer
-				= Pattern «pattern.name»
+				= Context Pattern «pattern.name»
 			end footer
 		'''
 	}
 
-	private static def String printPattern(IBeXPattern pattern, String prefix) {
+	/**
+	 * Outputs the context pattern.
+	 */
+	private static def String printPattern(IBeXContextPattern pattern, String prefix, boolean positive) {
 		val packageName = prefix + pattern.name
 		'''
+			package "«packageName»" «IF !positive»#FFCCCC«ENDIF» {}
 			«visualizeNodes(pattern.signatureNodes, 'SIGNATURE', packageName)»
 			«visualizeNodes(pattern.localNodes, 'LOCAL', packageName)»
 			«visualizeEdges(pattern.localEdges, ContextColor, packageName)»
 			«var j = 0»
 			«FOR invocation : pattern.invocations»
 				«val newPrefix = j++ + "\\"»
-				«printPattern(invocation.invokedPattern, newPrefix)»
+				«printPattern(invocation.invokedPattern, newPrefix, invocation.positive)»
 				
 				«FOR mapEntry : invocation.mapping.entrySet»
 					"«node(mapEntry.key, packageName)»" #--# "«node(mapEntry.value, newPrefix + invocation.invokedPattern.name)»"
@@ -130,7 +136,7 @@ class IBeXPatternPlantUMLGenerator {
 	}
 
 	/**
-	 * Visualizes the nodes.
+	 * Outputs the nodes.
 	 */
 	private static def String visualizeNodes(EList<IBeXNode> nodes, String type, String nodePrefix) {
 		'''
@@ -148,7 +154,7 @@ class IBeXPatternPlantUMLGenerator {
 	}
 
 	/**
-	 * Visualizes the edges.
+	 * Outputs the edges.
 	 */
 	private static def String visualizeEdges(EList<IBeXEdge> edges, String color, String nodePrefix) {
 		'''

@@ -6,12 +6,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -22,15 +20,16 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.PushoutApproach;
+import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 
+import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
 import IBeXLanguage.IBeXLanguagePackage;
-import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXPatternSet;
 
 /**
@@ -223,24 +222,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
-	 * Returns the pattern with the given name. If such a pattern does not exist, a
-	 * <code>NoSuchElementException</code> is thrown.
-	 * 
-	 * @param name
-	 *            the name of the pattern
-	 * @return the pattern
-	 */
-	private IBeXPattern getContextPattern(final String name) {
-		Optional<IBeXPattern> pattern = this.patternSet.getPatterns().stream() //
-				.filter(p -> p.getName().equals(name)) //
-				.findAny();
-		if (!pattern.isPresent()) {
-			throw new NoSuchElementException(String.format("No pattern called %s", name));
-		}
-		return pattern.get();
-	}
-
-	/**
 	 * Terminates the engine.
 	 */
 	public void terminate() {
@@ -298,25 +279,16 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters) {
 		String patternName = match.getPatternName();
 
-		Optional<IBeXDeletePattern> deletePattern = this.patternSet.getDeletePatterns().stream()
-				.filter(pattern -> pattern.getName().equals(patternName)).findAny();
-		if (!deletePattern.isPresent()) {
-			throw new IllegalArgumentException(String.format("No delete pattern called %s", patternName));
-		}
-
-		Optional<IBeXCreatePattern> createPattern = this.patternSet.getCreatePatterns().stream()
-				.filter(pattern -> pattern.getName().equals(patternName)).findAny();
-		if (!createPattern.isPresent()) {
-			throw new IllegalArgumentException(String.format("No create pattern called %s", patternName));
-		}
+		IBeXCreatePattern createPattern = IBeXPatternUtils.getCreatePattern(patternSet, patternName);
+		IBeXDeletePattern deletePattern = IBeXPatternUtils.getDeletePattern(patternSet, patternName);
 
 		// Execute deletion.
-		IMatch originalMatch = new GraphTransformationSimpleMatch(match);
-		Optional<IMatch> comatch = this.deletePatternInterpreter.apply(deletePattern.get(), originalMatch, po);
+		IMatch originalMatch = new SimpleMatch(match);
+		Optional<IMatch> comatch = this.deletePatternInterpreter.apply(deletePattern, originalMatch, po);
 
 		// Execute creation.
 		if (comatch.isPresent()) {
-			comatch = this.createPatternInterpreter.apply(createPattern.get(), comatch.get(), parameters);
+			comatch = this.createPatternInterpreter.apply(createPattern, comatch.get(), parameters);
 		}
 
 		// Rule application may invalidate existing or lead to new matches.
@@ -349,32 +321,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
-		IBeXPattern pattern = this.getContextPattern(patternName);
+		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			return Optional.of(this.createEmptyMatchForCreatePattern(patternName));
 		}
 
-		if (!this.matches.containsKey(patternName) || this.matches.get(patternName).isEmpty()) {
-			return Optional.empty();
-		}
-		return this.getFilteredMatchStream(pattern, parameters).findAny();
-	}
-
-	/**
-	 * Returns a stream of matches for the pattern such that the parameter values of
-	 * the matches are equal to the given parameters.
-	 * 
-	 * @param pattern
-	 *            the pattern
-	 * @param parameters
-	 *            the parameter map
-	 * @return a stream containing matches
-	 */
-	private Stream<IMatch> getFilteredMatchStream(final IBeXPattern pattern, final Map<String, Object> parameters) {
-		Stream<IMatch> matchesForPattern = this.matches.get(pattern.getName()).stream();
-		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, pattern, parameters);
-		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, pattern, parameters);
-		return matchesForPattern;
+		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches).findAny();
 	}
 
 	/**
@@ -400,15 +352,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Collection<IMatch> findMatches(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
-		IBeXPattern pattern = this.getContextPattern(patternName);
+		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			return Arrays.asList(this.createEmptyMatchForCreatePattern(patternName));
 		}
 
-		if (!this.matches.containsKey(patternName)) {
-			return new ArrayList<IMatch>();
-		}
-		return this.getFilteredMatchStream(pattern, parameters).collect(Collectors.toList());
+		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches).collect(Collectors.toList());
 	}
 
 	/**
@@ -424,7 +373,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 				.filter(p -> p.getName().equals(patternName)) //
 				.findAny();
 		if (pattern.isPresent()) {
-			IMatch match = new GraphTransformationSimpleMatch(patternName);
+			IMatch match = new SimpleMatch(patternName);
 			pattern.get().getCreatedNodes().forEach(node -> match.put(node.getName(), null));
 			return match;
 		} else {
