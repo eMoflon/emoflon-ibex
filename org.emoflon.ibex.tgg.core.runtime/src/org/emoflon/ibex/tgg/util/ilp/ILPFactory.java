@@ -68,9 +68,21 @@ public final class ILPFactory {
 	 *
 	 */
 	public enum SupportedILPSolver {
+		/**
+		 * Use the Gurobi solver (must be manually installed)
+		 */
 		Gurobi,
+		/**
+		 * Use the SAT4J solver (distributed with eclipse)
+		 */
 		Sat4J,
+		/**
+		 * Use the GLPK solver (must be manually installed)
+		 */
 		GLPK,
+		/**
+		 * Use the Coin-OR CBC solver using Google-OR (must be manually installed for non-Windows systems) 
+		 */
 		CBC
 	}
 }

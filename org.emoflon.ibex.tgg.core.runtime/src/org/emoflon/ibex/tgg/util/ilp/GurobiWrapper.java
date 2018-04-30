@@ -83,6 +83,10 @@ final class GurobiWrapper extends ILPSolver {
 		return this.retrieveSolution();
 	}
 	
+	/**
+	 * Fills the Gurobi model with all problem details
+	 * @throws GRBException
+	 */
 	private void prepareModel() throws GRBException {
 		env = new GRBEnv("Gurobi_ILP.log");
 		model = new GRBModel(env);
@@ -96,12 +100,22 @@ final class GurobiWrapper extends ILPSolver {
 		registerObjective(this.ilpProblem.getObjective());
 	}
 	
+	/**
+	 * Solves the model using Gurobi
+	 * @param timeout the maximum time to take
+	 * @throws GRBException
+	 */
 	private void solveModel(long timeout) throws GRBException {
 		System.out.println("Setting time-limit to "+timeout+ " seconds.");
 		this.model.set(GRB.DoubleParam.TimeLimit, timeout);
 		this.model.optimize();
 	}
 	
+	/**
+	 * Retrieve the solution from Gurobi
+	 * @return
+	 * @throws GRBException
+	 */
 	private ILPSolution retrieveSolution() throws GRBException {
 		int status = model.get(GRB.IntAttr.Status);
 		int solutionCount = model.get(GRB.IntAttr.SolCount);

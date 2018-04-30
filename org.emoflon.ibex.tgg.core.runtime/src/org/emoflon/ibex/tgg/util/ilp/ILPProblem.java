@@ -79,6 +79,11 @@ public final class ILPProblem {
 		return unfixedVariables.toArray();
 	}
 	
+	/**
+	 * Sets one of the variables to a fixed value
+	 * @param variableName The name of the variable
+	 * @param value Value to set the variable to
+	 */
 	public void fixVariable(String variableName, int value) {
 		int variableId = this.getVariableId(variableName);
 		if(this.fixedVariableValues.contains(variableId) && this.fixedVariableValues.get(variableId) == value) {
@@ -88,15 +93,19 @@ public final class ILPProblem {
 		this.unfixedVariables.remove(variableId);
 		this.fixedVariableValues.put(variableId, value);
 		TObjectHashIterator<ILPConstraint> it = this.constraints.iterator();
+		LinkedList<ILPConstraint> modifiedConstraints = new LinkedList<ILPProblem.ILPConstraint>();
 		while(it.hasNext()) {
 			ILPConstraint constraint = it.next();
-			constraint.removeFixedVariables();
-			if(constraint.isEmpty()) {
+			if(constraint.getLinearExpression().getCoefficient(variableId) != 0) {
+				//needs to be updated
 				it.remove();
+				constraint.fixVariable(variableId, value);
+				modifiedConstraints.add(constraint);
 			}
 		}
+		modifiedConstraints.stream().forEach(c -> this.addConstraint(c));
 		if(objective != null) {
-			objective.removeFixedVariables();
+			objective.fixVariable(variableId, value);
 		}
 	}
 	
@@ -157,6 +166,7 @@ public final class ILPProblem {
 	 */
 	public ILPConstraint addConstraint(ILPLinearExpression linearExpression, Comparator comparator, double value, String name) {
 		ILPConstraint constr = new ILPConstraint(linearExpression, comparator, value, name);
+		constr.removeFixedVariables();
 		this.addConstraint(constr);
 		return constr;
 	}
@@ -166,7 +176,6 @@ public final class ILPProblem {
 	 * @param constraint the constraint to add
 	 */
 	void addConstraint(ILPConstraint constraint) {
-		constraint.removeFixedVariables();
 		if(!constraint.isEmpty() && !this.constraints.contains(constraint)) {
 			this.constraints.add(constraint);
 		}
@@ -281,9 +290,12 @@ public final class ILPProblem {
 	 *
 	 */
 	public enum Objective {
+		/**
+		 * maximize objective function
+		 */
 		maximize("MAX"),
 		/**
-		 * minimize objective
+		 * minimize objective function
 		 */
 		minimize("MIN");
 
@@ -357,6 +369,13 @@ public final class ILPProblem {
 				this.value += termValue;
 				return true;
 			});
+			checkFeasibility();
+		}
+		
+		/**
+		 * Checks if the constraint can still be fulfilled after fixing variables
+		 */
+		private void checkFeasibility() {
 			if(this.isEmpty()) {
 				boolean feasible = true;
 				switch(comparator) {
@@ -370,6 +389,20 @@ public final class ILPProblem {
 					throw new RuntimeException("The problem is infeasible: "+this.toString());
 				}
 			}
+		}
+		
+		/**
+		 * Sets the variable to the given fixed value
+		 * @param variableID variable ID
+		 * @param value fixed value of the variable
+		 * @return true if the constraint has been changed by this action
+		 */
+		private boolean fixVariable(int variableID, int value) {
+			double termValue = linearExpression.removeTerm(variableID) * value;
+			this.value += termValue;
+			
+			checkFeasibility();
+			return termValue != 0;
 		}
 
 		/**
@@ -398,6 +431,10 @@ public final class ILPProblem {
 			return linearExpression;
 		}
 		
+		/**
+		 * Checks whether the constraint is empty (i.e. the expression contains no terms)
+		 * @return
+		 */
 		private boolean isEmpty() {
 			return this.linearExpression.isEmpty();
 		}
@@ -529,12 +566,26 @@ public final class ILPProblem {
 			return "OBJECTIVE: "+this.objectiveOperation.toString() + ": "+ this.linearExpression.toString();
 		}
 		
+		/**
+		 * removes variables that have been fixed from the objective
+		 */
 		private void removeFixedVariables() {
 			fixedVariableValues.forEachEntry((variableID, value) -> {
-				double termValue = linearExpression.removeTerm(variableID) * value;
-				this.fixedVariablesValue += termValue;
+				fixVariable(variableID, value);
 				return true;
 			});
+		}
+		
+		/**
+		 * Sets the variable to the given fixed value
+		 * @param variableID variable ID
+		 * @param value fixed value of the variable
+		 * @return true if the objective has been changed by this action
+		 */
+		private boolean fixVariable(int variableID, int value) {
+			double termValue = linearExpression.removeTerm(variableID) * value;
+			this.fixedVariablesValue += termValue;
+			return termValue != 0;
 		}
 
 		/* (non-Javadoc)
@@ -666,26 +717,20 @@ public final class ILPProblem {
 			});
 			return String.join(" + ", termStrings);
 		}
-
-//		/**
-//		 * @return the terms
-//		 */
-//		Collection<ILPTerm> getTerms() {
-//			List<ILPTerm> terms = new LinkedList<ILPTerm>();
-//			this.terms.forEachEntry(new TIntDoubleProcedure() {
-//				@Override
-//				public boolean execute(int variableId, double coefficient) {
-//					terms.add(new ILPTerm(variableId, coefficient));
-//					return true;
-//				}
-//			});
-//			return Collections.unmodifiableCollection(terms);
-//		}
 		
+		/**
+		 * Returns all variable IDs of variables contained in this expression
+		 * @return
+		 */
 		int[] getVariables() {
 			return this.terms.keys();
 		}
 		
+		/**
+		 * Gets the coefficient of a term in this expression
+		 * @param variableId the id of the variable
+		 * @return the coefficient, or 0 if no term for this variable has been defined
+		 */
 		double getCoefficient(int variableId) {
 			if(this.terms.contains(variableId)) {
 				return this.terms.get(variableId);
@@ -703,6 +748,10 @@ public final class ILPProblem {
 			return coefficient;
 		}
 		
+		/**
+		 * Returns true if the expression is empty, i.e. contains no terms
+		 * @return true if no terms are contained
+		 */
 		private boolean isEmpty() {
 			return this.terms.isEmpty();
 		}
@@ -794,6 +843,11 @@ public final class ILPProblem {
 			return getVariable(getVariableId(variable));
 		}
 		
+		/**
+		 * Returns the value of the solution for the variable
+		 * @param variableId the id of the variable
+		 * @return
+		 */
 		int getVariable(int variableId) {
 			if(fixedVariableValues.contains(variableId)) {
 				return fixedVariableValues.get(variableId);
