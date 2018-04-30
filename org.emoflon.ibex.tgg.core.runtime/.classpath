@@ -3,6 +3,8 @@
 	<classpathentry excluding="org/emoflon/ibex/tgg/compiler/pattern/rulepart/support/DEC/DECTrackingHelper.java|org/emoflon/ibex/tgg/compiler/patterns/common/RulePartPattern.java|org/emoflon/ibex/tgg/operational/csp/sorting/solver/extension/|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/common/TypeModuleProxy.java|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/common/PatternMatcherPlugin.java|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/event/|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/specification/|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/common/emf/|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/common/runtime/|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/common/ConstraintBuilder.java|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/common/PatternMatcher.java|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/common/VariableBuilder.java|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/common/TypeModuleSerializationSession.java|org/emoflon/ibex/tgg/operational/csp/sorting/solver/democles/common/TypeModule.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="xtend-gen"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry exported="true" kind="lib" path="lib/com.google.ortools.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/protobuf.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/glpk-java.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javabdd-1.0b2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gurobi.jar"/>

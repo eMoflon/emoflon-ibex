@@ -38,11 +38,11 @@ import runtime.TGGRuleApplication;
 public abstract class MODELGEN extends OperationalStrategy {
 
 	protected MODELGENStopCriterion stopCriterion;
-		
+
 	public MODELGEN(IbexOptions options) throws IOException {
 		super(options);
 	}
-	
+
 	public void setStopCriterion(MODELGENStopCriterion stop) {
 		this.stopCriterion = stop;
 	}
@@ -50,9 +50,9 @@ public abstract class MODELGEN extends OperationalStrategy {
 	@Override
 	public void saveModels() throws IOException {
 		s.save(null);
-	 	t.save(null);
-	 	c.save(null);
-	 	p.save(null);
+		t.save(null);
+		c.save(null);
+		p.save(null);
 	}
 
 	@Override
@@ -61,11 +61,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 		t = createResource(projectPath + "/instances/trg.xmi");
 		c = createResource(projectPath + "/instances/corr.xmi");
 		p = createResource(projectPath + "/instances/protocol.xmi");
-		
+
 		EcoreUtil.resolveAll(rs);
 	}
-	
-	
+
+
 
 	/**
 	 * If we get notified about a new match that is the NAC of an axiom (i.e. a match for an GENAxiomNacPattern) we need to remove the always available empty axiom match.
@@ -86,12 +86,12 @@ public abstract class MODELGEN extends OperationalStrategy {
 	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.GEN) || patternName.endsWith(PatternSuffixes.GEN_AXIOM_NAC);
 	}
-	
+
 	@Override
 	protected void setModelGen() {
 		options.setModelGen(true);
 	}
-	
+
 	/**
 	 * differently from the super class implementation, MODELGEN
 	 * (i) does not remove successful matches (but uses them repeatedly)
@@ -104,7 +104,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		
+
 		if (stopCriterion.dont(ruleName))
 			removeOperationalRuleMatch(match);
 		else {
@@ -117,7 +117,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * We have found a match for a NAC of an axiom. This means this axiom is no longer applicable and thus needs to be removed from the set of matches
 	 * @param match the match of a NAC for an Axiom
@@ -126,7 +126,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 		Set<IMatch> matchesToRemove = new HashSet<>();
 		String axiomName = GENBlackPattern.getName(GENAxiomNacPattern.getAxiomName(match.getPatternName()));
 		operationalMatchContainer.getMatches().stream()
-			.filter(m -> m.getPatternName().equals(axiomName)).forEach(m -> {
+		.filter(m -> m.getPatternName().equals(axiomName)).forEach(m -> {
 			matchesToRemove.add(m);
 		});
 		matchesToRemove.stream().forEach(m -> removeMatch(m));
@@ -136,18 +136,18 @@ public abstract class MODELGEN extends OperationalStrategy {
 	private void processComplementRuleMatches(IMatch comatch) {
 		blackInterpreter.updateMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
-		
+
 		if (! complementRuleMatches.isEmpty()) {
 			HashMap<String, Integer> complementRulesBounds = callUpdatePolicy(complementRuleMatches);
-			
+
 			while (! complementRuleMatches.isEmpty()) {
-					IMatch match = complementRuleMatches.iterator().next();
-					processComplementRuleMatch(match, complementRulesBounds);
-					complementRuleMatches.remove(match);
-					removeOperationalRuleMatch(match);
-				}
+				IMatch match = complementRuleMatches.iterator().next();
+				processComplementRuleMatch(match, complementRulesBounds);
+				complementRuleMatches.remove(match);
+				removeOperationalRuleMatch(match);
+			}
 		}
-		
+
 		// Close the kernel, so other complement rules cannot find this match anymore
 		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		application.setAmalgamated(true);
@@ -159,9 +159,9 @@ public abstract class MODELGEN extends OperationalStrategy {
 				.distinct()
 				.collect(Collectors.toSet());
 		HashMap<String, Integer> complementRulesBounds = updatePolicy.getNumberOfApplications(uniqueRulesNames);
-		
+
 		checkComplianceWithSchema(complementRulesBounds);
-		
+
 		return complementRulesBounds;
 	}
 
@@ -174,10 +174,10 @@ public abstract class MODELGEN extends OperationalStrategy {
 		}
 		else {
 			IntStream.range(0, complementRulesBounds.get(ruleName))
-					.forEach(i -> processOperationalRuleMatch(ruleName, match));
+			.forEach(i -> processOperationalRuleMatch(ruleName, match));
 		}
 	}
-	
+
 	private Set<IMatch> findAllComplementRuleMatches() {
 		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
 				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.getPatternName())))
@@ -191,14 +191,14 @@ public abstract class MODELGEN extends OperationalStrategy {
 				ruleName,
 				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + getGreenFactory(ruleName).getGreenSrcEdgesInRule().size(),
 				getGreenFactory(ruleName).getGreenTrgNodesInRule().size() + getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
-		);
+				);
 	}
-	
+
 	@Override
 	protected void wrapUp() {
 		
 	}
-	
+
 	@Override
 	public void run() throws IOException {
 		collectMatchesForAxioms();

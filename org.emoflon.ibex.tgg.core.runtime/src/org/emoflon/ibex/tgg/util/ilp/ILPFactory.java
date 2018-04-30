@@ -27,6 +27,8 @@ public final class ILPFactory {
 				return new Sat4JWrapper(ilpProblem);
 			case GLPK:
 				return new GLPKWrapper(ilpProblem, true);
+			case CBC:
+				return new CBCWrapper(ilpProblem, true);
 			default:
 				throw new UnsupportedOperationException("Unknown Solver: "+solver.toString());
 		}
@@ -45,6 +47,8 @@ public final class ILPFactory {
 				return new GLPKWrapper(ilpProblem, false);
 			case Sat4J:
 				throw new UnsupportedOperationException("SAT4J does not support arbitrary ILP");
+			case CBC:
+				return new CBCWrapper(ilpProblem, false);
 			default:
 				throw new UnsupportedOperationException("Unknown Solver: "+solver.toString());
 		}
@@ -64,8 +68,21 @@ public final class ILPFactory {
 	 *
 	 */
 	public enum SupportedILPSolver {
+		/**
+		 * Use the Gurobi solver (must be manually installed)
+		 */
 		Gurobi,
+		/**
+		 * Use the SAT4J solver (distributed with eclipse)
+		 */
 		Sat4J,
-		GLPK
+		/**
+		 * Use the GLPK solver (must be manually installed)
+		 */
+		GLPK,
+		/**
+		 * Use the Coin-OR CBC solver using Google-OR (must be manually installed for non-Windows systems) 
+		 */
+		CBC
 	}
 }

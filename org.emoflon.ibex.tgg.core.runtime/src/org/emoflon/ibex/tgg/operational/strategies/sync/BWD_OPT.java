@@ -20,11 +20,11 @@ import language.TGGRuleCorr;
 import language.TGGRuleNode;
 
 public abstract class BWD_OPT extends OPT {
-	
+
 	public BWD_OPT(IbexOptions options) throws IOException {
 		super(options);
 	}
-	
+
 	@Override
 	public void loadModels() throws IOException {
 		s = createResource(projectPath + "/instances/src.xmi");
@@ -34,50 +34,43 @@ public abstract class BWD_OPT extends OPT {
 
 		EcoreUtil.resolveAll(rs);
 	}
-	
+
 	@Override
 	protected void wrapUp() {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
-		
-		  for (int v : chooseTGGRuleApplications()) {
-			  int id = v < 0 ? -v : v;
-			  IMatch comatch = idToMatch.get(id);
-			   if (v < 0) {
-					for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
-						objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
-					
-					for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
-						objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
-					
-					objectsToDelete.addAll(getRuleApplicationNodes(comatch));
-				}
-		  }
-		  
-		  EcoreUtil.deleteAll(objectsToDelete, true);
-		  consistencyReporter.initTrg(this);
+		for (int v : chooseTGGRuleApplications()) {
+			int id = v < 0 ? -v : v;
+			IMatch comatch = idToMatch.get(id);
+			if (v < 0) {
+				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
+
+				for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
+					objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
+
+				objectsToDelete.addAll(getRuleApplicationNodes(comatch));
+			}
+		}
+
+		EcoreUtil.deleteAll(objectsToDelete, true);
+		consistencyReporter.initTrg(this);
 	}
-	
+
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.BWD_OPT);
 	}
-	
+
 	@Override
 	public boolean isPatternRelevantForInterpreter(String patternName) {
 		return patternName.endsWith(PatternSuffixes.BWD_OPT);
 	}
-	
+
 	@Override
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
-		
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
-
-		int weight = 
-				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
-
-		weights.put(idCounter, weight);
+		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
 
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
@@ -91,41 +84,64 @@ public abstract class BWD_OPT extends OPT {
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
+		
+		getBlackNodes(comatch, ruleName).forEach(e -> {
+			if (!contextNodeToNeedingMatches.containsKey(e))
+				contextNodeToNeedingMatches.put(e, new TIntHashSet());
+			contextNodeToNeedingMatches.get(e).add(idCounter);
+		});
+		
+		getBlackEdges(comatch, ruleName).forEach(e -> {
+			if (!contextEdgeToNeedingMatches.containsKey(e)) {
+				contextEdgeToNeedingMatches.put(e, new TIntHashSet());
+			}
+			contextEdgeToNeedingMatches.get(e).add(idCounter);
+		});
 
 		matchToContextNodes.put(idCounter, new THashSet<>());
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
 
 		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
-		
+
 		handleBundles(comatch, ruleName);
 
 		idCounter++;
 	}
-	
+
 	@Override
 	public void saveModels() throws IOException {
-	 	p.save(null);
-		
-	 	// Unrelax the metamodel
+		p.save(null);
+
+		// Unrelax the metamodel
 		unrelaxReferences(options.tgg().getSrc());
-		
+
 		// Remove adapters to avoid problems with notifications
 		s.eAdapters().clear();
 		s.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
-		
+
 		// Copy and fix the model in the process
 		FixingCopier.fixAll(s, c, "source");
-		
+
 		// Now save fixed models
 		s.save(null);
 		c.save(null);
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
+	 */
+	@Override
+	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+		return
+				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
+	}
+
 	public void backward() throws IOException {
 		run();
 	}
-	
+
 	@Override
 	public void run() throws IOException {
 		do {
@@ -134,7 +150,7 @@ public abstract class BWD_OPT extends OPT {
 
 		wrapUp();
 	}
-	
+
 	@Override
 	public void loadTGG() throws IOException {
 		super.loadTGG();

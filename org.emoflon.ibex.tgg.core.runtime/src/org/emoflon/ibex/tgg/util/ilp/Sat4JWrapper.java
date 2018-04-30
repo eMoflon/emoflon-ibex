@@ -1,13 +1,11 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
-import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPTerm;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
@@ -19,6 +17,8 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
+
+import gnu.trove.map.hash.TIntIntHashMap;
 
 /**
  * This class is a wrapper around SAT4J allowing the usage of this ILPSolver with the unified API of the {@link ILPSolver} class.
@@ -39,6 +39,11 @@ final class Sat4JWrapper extends ILPSolver {
 	
 	private static final int MIN_TIMEOUT = 3;
 	private static final int MAX_TIMEOUT = 60*60;
+	
+	/**
+	 * Contains the mapping of the problem's variable IDs to SAT4J's variable IDs
+	 */
+	private TIntIntHashMap variableIdToSat4JVarId = new TIntIntHashMap();
 
 	/**
 	 * Creates a new SAT4JWrapper
@@ -49,18 +54,24 @@ final class Sat4JWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() throws ContradictionException {
-		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariables().size()+ " variables");
-		int currentTimeout = this.ilpProblem.getVariables().size();
+		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables");
+		int currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
 		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
+		if(currentTimeout < 0) {
+			currentTimeout = MAX_TIMEOUT;
+		}
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
 		ILPSolution solution = null;
-		while(solution == null && currentTimeout <= MAX_TIMEOUT) {
+		while(solution == null) {
 			System.out.println("Attempting to solve ILP. Timeout="+currentTimeout+" seconds.");
 			try {
 				solution = solveILP(currentTimeout);
 			} catch(TimeoutException e) {
 				System.err.println("Could not solve ILP within "+currentTimeout+" seconds");
 				currentTimeout*=2;
+				if(currentTimeout > MAX_TIMEOUT) {
+					throw new RuntimeException("Could not solve ILP within "+currentTimeout+" seconds", e);
+				}
 			}
 		}
 		return solution;
@@ -88,21 +99,22 @@ final class Sat4JWrapper extends ILPSolver {
 		optimizer.setVerbose(true);
 		if(optimizer.isSatisfiable()) {
 			int[] model = solver.model();
-			Map<String, Integer> variableSolutions = new HashMap<>();
+			TIntIntHashMap variableSolutions = new TIntIntHashMap();
 			for(int i : model) {
 				int solution = i>0? 1 : 0;
-				for(String var : this.ilpProblem.getVariables()) {
-					if(Math.abs(i) == var.hashCode()) {
-						variableSolutions.put(var, solution);
+				for(int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
+					int sat4JVariable = this.variableIdToSat4JVarId.get(variableId);
+					if(Math.abs(i) == sat4JVariable) {
+						variableSolutions.put(variableId, solution);
 						break;
 					}
 				}
 			}
 			boolean optimal = optimizer.isOptimal();
-			ILPSolution solution = new ILPSolution(variableSolutions, optimal, -1);
+			ILPSolution solution = this.ilpProblem.createILPSolution(variableSolutions, optimal, -1);
 			double optimum = this.ilpProblem.getObjective().getSolutionValue(solution);
 			System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
-			return new ILPSolution(variableSolutions, optimal, optimum);
+			return this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
 		}
 		return null;
 	}
@@ -114,8 +126,13 @@ final class Sat4JWrapper extends ILPSolver {
 	 */
 	private IVecInt getLiterals(ILPLinearExpression linearExpression) {
 		IVecInt vec = new VecInt();
-		for (ILPTerm term : linearExpression.getTerms()) {
-			vec.push(term.getVariable().hashCode());
+		for (int variableId : linearExpression.getVariables()) {
+			if(!variableIdToSat4JVarId.contains(variableId)) {
+				//first usage of variable -> reserve internal SAT4J variable and save it
+				 variableIdToSat4JVarId.put(variableId, solver.nextFreeVarId(true));
+			}
+			int sat4JVariableId = variableIdToSat4JVarId.get(variableId);
+			vec.push(sat4JVariableId);
 		}
 		return vec;
 	}
@@ -126,8 +143,9 @@ final class Sat4JWrapper extends ILPSolver {
 	 */
 	private IVec<BigInteger> getCoefs(ILPLinearExpression linearExpression) {
 		IVec<BigInteger> vec = new Vec<>();
-		for (ILPTerm term : linearExpression.getTerms()) {
-			vec.push(BigInteger.valueOf((long)term.getCoefficient()));
+		for (int variableId : linearExpression.getVariables()) {
+			double coefficient = linearExpression.getCoefficient(variableId);
+			vec.push(BigInteger.valueOf((long)coefficient));
 		}
 		return vec;
 	}
@@ -137,9 +155,15 @@ final class Sat4JWrapper extends ILPSolver {
 	 * @throws ContradictionException
 	 */
 	private void registerConstraint(ILPConstraint constraint) throws ContradictionException {
-		for (ILPTerm term : constraint.getLinearExpression().getTerms()) {
-			while(Math.abs(term.getCoefficient() - ((long)term.getCoefficient())) >= 0.00000000001) {
+		if(constraint.getLinearExpression().getVariables().length < 1) {
+			//Do not register empty clauses
+			return;
+		}
+		for (int variableId : constraint.getLinearExpression().getVariables()) {
+			double coefficient = constraint.getLinearExpression().getCoefficient(variableId);
+			while(Math.abs(coefficient - ((long)coefficient)) >= 0.00000000001) {
 				constraint.multiplyBy(10);
+				coefficient = constraint.getLinearExpression().getCoefficient(variableId);
 			}
 		}
 		while(Math.abs(constraint.getValue() - ((long)constraint.getValue())) >= 0.00000000001) {
@@ -167,17 +191,20 @@ final class Sat4JWrapper extends ILPSolver {
 	 * Register the objective for SAT4J
 	 */
 	private void registerObjective(ILPObjective objective) {
-		for (ILPTerm term : objective.getLinearExpression().getTerms()) {
-			while(Math.abs(term.getCoefficient() - ((long)term.getCoefficient())) >= 0.00000000001) {
+		for (int variableId : objective.getLinearExpression().getVariables()) {
+			double coefficient = objective.getLinearExpression().getCoefficient(variableId);
+			while(Math.abs(coefficient - ((long)coefficient)) >= 0.00000000001) {
 				objective.getLinearExpression().multiplyBy(10);
+				coefficient = objective.getLinearExpression().getCoefficient(variableId);
 			}
 		}
 		ILPLinearExpression expr = objective.getLinearExpression();
 		switch(objective.getObjectiveOperation()) {
 		case maximize:
 			ILPLinearExpression invertedExpression = ilpProblem.createLinearExpression();
-			for(ILPTerm term : expr.getTerms()) {
-				invertedExpression.addTerm(ilpProblem.createTerm(term.getVariable(), -term.getCoefficient()));
+			for (int variableId : objective.getLinearExpression().getVariables()) {
+				double coefficient = objective.getLinearExpression().getCoefficient(variableId);
+				invertedExpression.addTerm(variableId, -coefficient);
 			}
 			expr = invertedExpression;
 			break;

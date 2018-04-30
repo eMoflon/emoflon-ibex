@@ -54,6 +54,20 @@ public abstract class CC extends OPT {
 		c.save(null);
 		p.save(null);
 	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
+	 */
+	@Override
+	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+		return
+				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
+	}
 
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
@@ -74,8 +88,11 @@ public abstract class CC extends OPT {
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		
-		if(ruleName == null)
+		if(ruleName == null) {
+			removeOperationalRuleMatch(match);
 			return true;  //FIXME[Anjorin]:  This should be avoided (all matches that do not correspond to rules should be filtered)
+		}
+			
 		
 		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
 		comatch.ifPresent(cm -> {
@@ -229,15 +246,8 @@ public abstract class CC extends OPT {
 	@Override
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);
+		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
 		matchIdToRuleName.put(idCounter, ruleName);
-
-		int weight = 
-				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
-
-		weights.put(idCounter, weight);
 
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
@@ -251,9 +261,23 @@ public abstract class CC extends OPT {
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
+		
+		getBlackNodes(comatch, ruleName).forEach(e -> {
+			if (!contextNodeToNeedingMatches.containsKey(e))
+				contextNodeToNeedingMatches.put(e, new TIntHashSet());
+			contextNodeToNeedingMatches.get(e).add(idCounter);
+		});
+		
+		getBlackEdges(comatch, ruleName).forEach(e -> {
+			if (!contextEdgeToNeedingMatches.containsKey(e)) {
+				contextEdgeToNeedingMatches.put(e, new TIntHashSet());
+			}
+			contextEdgeToNeedingMatches.get(e).add(idCounter);
+		});
 
 		matchToContextNodes.put(idCounter, new THashSet<>());
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
+		
 
 		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));

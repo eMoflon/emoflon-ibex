@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 
 /**
  * This class is used to abstract from the usage of a concrete ILP solver. It provides common methods to define ILP problems, 
