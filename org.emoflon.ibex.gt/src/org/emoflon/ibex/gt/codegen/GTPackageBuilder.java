@@ -41,6 +41,7 @@ import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToGTModelTransformation;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
+import org.moflon.core.propertycontainer.MoflonPropertiesContainerHelper;
 import org.moflon.core.utilities.ClasspathUtil;
 import org.moflon.core.utilities.ExtensionsUtil;
 import org.moflon.core.utilities.WorkspaceHelper;
@@ -210,7 +211,12 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @return the mapping between EClassifier names to meta-model names
 	 */
 	private EClassifiersManager loadMetaModels(final Set<String> metaModels, final ResourceSet resourceSet) {
-		EClassifiersManager eClassifiersManager = new EClassifiersManager();
+		Map<String, String> map = MoflonPropertiesContainerHelper.loadIfExists(project) //
+				.map(m -> m.getImportMappings()) //
+				.map(i -> MoflonPropertiesContainerHelper.mappingsToMap(i)) //
+				.orElse(new HashMap<String, String>());
+
+		EClassifiersManager eClassifiersManager = new EClassifiersManager(map);
 		metaModels.forEach(uri -> {
 			Resource ecoreFile = resourceSet.getResource(URI.createURI(uri), true);
 			try {
