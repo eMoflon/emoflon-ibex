@@ -29,7 +29,8 @@ public class EClassifiersManager {
 	private Map<String, String> eClassifierNameToPath = new HashMap<String, String>();
 
 	/**
-	 * The meta-model names.
+	 * The mapping name of the meta-model Java Package to the name of the package
+	 * containing it.
 	 */
 	private Map<String, String> packageNameToPath = new HashMap<String, String>();
 
@@ -57,12 +58,11 @@ public class EClassifiersManager {
 			EPackage ePackage = (EPackage) rootElement;
 			boolean isEcore = "ecore".equals(ePackage.getName());
 			String name = isEcore ? "org.eclipse.emf.ecore" : getPackagePath(ePackage);
-			ePackage.getEClassifiers().stream().filter(c -> !isEcore || c instanceof EClass) //
+			ePackage.getEClassifiers().stream() //
+					.filter(c -> !isEcore || c instanceof EClass) //
 					.forEach(c -> eClassifierNameToPath.put(c.getName(), name));
 			if (!isEcore) {
-				String packageClassName = getPackageClassName(ePackage.getName());
-				String packageImport = getPackagePath(ePackage) + "." + packageClassName;
-				packageNameToPath.put(packageClassName, packageImport);
+				addPackage(ePackage);
 			}
 		}
 	}
@@ -82,6 +82,18 @@ public class EClassifiersManager {
 		} else {
 			return ePackage.getName();
 		}
+	}
+
+	/**
+	 * Adds the EPackage to the meta-models.
+	 * 
+	 * @param ePackage
+	 *            the package to add
+	 */
+	private void addPackage(final EPackage ePackage) {
+		String packageClassName = getPackageClassName(ePackage.getName());
+		String packageImport = getPackagePath(ePackage) + "." + packageClassName;
+		packageNameToPath.put(packageClassName, packageImport);
 	}
 
 	/**
