@@ -39,6 +39,9 @@ final class GurobiWrapper extends ILPSolver {
 	 * This setting defines the variable range of variables registered at Gurobi
 	 */
 	private final boolean onlyBinaryVariables;
+	
+	private static final int MIN_TIMEOUT = 30;
+	private static final int MAX_TIMEOUT = 60*60; //1 hour
 
 	/**
 	 * Creates a new Gurobi ILP solver
@@ -67,6 +70,20 @@ final class GurobiWrapper extends ILPSolver {
 	@Override
 	public ILPSolution solveILP() throws GRBException {
 		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables");
+		
+		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
+		currentTimeout = MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
+		if(currentTimeout < 0) {
+			currentTimeout = MAX_TIMEOUT;
+		}
+		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
+		
+		this.prepareModel();
+		this.solveModel(currentTimeout);
+		return this.retrieveSolution();
+	}
+	
+	private void prepareModel() throws GRBException {
 		env = new GRBEnv("Gurobi_ILP.log");
 		model = new GRBModel(env);
 
@@ -77,18 +94,37 @@ final class GurobiWrapper extends ILPSolver {
 			registerConstraint(constraint);
 		}
 		registerObjective(this.ilpProblem.getObjective());
-
-		model.optimize();
+	}
+	
+	private void solveModel(long timeout) throws GRBException {
+		System.out.println("Setting time-limit to "+timeout+ " seconds.");
+		this.model.set(GRB.DoubleParam.TimeLimit, timeout);
+		this.model.optimize();
+	}
+	
+	private ILPSolution retrieveSolution() throws GRBException {
+		int status = model.get(GRB.IntAttr.Status);
+		int solutionCount = model.get(GRB.IntAttr.SolCount);
+		boolean optimal = status == GRB.Status.OPTIMAL;
+		boolean feasible = solutionCount > 0;
+		if (!feasible) {
+			System.err.println("No optimal or feasible solution found.");
+			throw new RuntimeException("No optimal or feasible solution found.");
+		}
+		
+		double optimum = model.get(GRB.DoubleAttr.ObjVal);
+		
 		TIntIntHashMap solutionVariables = new TIntIntHashMap();
 		for (int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			GRBVar gurobiVar = gurobiVariables.get(variableId);
 			solutionVariables.put(variableId, (int) gurobiVar.get(DoubleAttr.X));
 		}
-		double optimum = model.get(GRB.DoubleAttr.ObjVal);
+		
 		System.out.println("Solution found: "+optimum);
+		
 		env.dispose();
 		model.dispose();
-		return ilpProblem.createILPSolution(solutionVariables, true, optimum);
+		return ilpProblem.createILPSolution(solutionVariables, optimal, optimum);
 	}
 	
 	/**

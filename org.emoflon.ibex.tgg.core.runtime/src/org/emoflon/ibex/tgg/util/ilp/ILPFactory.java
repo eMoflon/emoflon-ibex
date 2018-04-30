@@ -27,6 +27,8 @@ public final class ILPFactory {
 				return new Sat4JWrapper(ilpProblem);
 			case GLPK:
 				return new GLPKWrapper(ilpProblem, true);
+			case CBC:
+				return new CBCWrapper(ilpProblem, true);
 			default:
 				throw new UnsupportedOperationException("Unknown Solver: "+solver.toString());
 		}
@@ -45,6 +47,8 @@ public final class ILPFactory {
 				return new GLPKWrapper(ilpProblem, false);
 			case Sat4J:
 				throw new UnsupportedOperationException("SAT4J does not support arbitrary ILP");
+			case CBC:
+				return new CBCWrapper(ilpProblem, false);
 			default:
 				throw new UnsupportedOperationException("Unknown Solver: "+solver.toString());
 		}
@@ -66,6 +70,7 @@ public final class ILPFactory {
 	public enum SupportedILPSolver {
 		Gurobi,
 		Sat4J,
-		GLPK
+		GLPK,
+		CBC
 	}
 }

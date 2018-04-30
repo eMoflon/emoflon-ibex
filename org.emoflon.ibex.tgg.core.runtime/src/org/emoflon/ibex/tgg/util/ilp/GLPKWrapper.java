@@ -209,9 +209,9 @@ final class GLPKWrapper extends ILPSolver {
 		//backtracking
 		mipParameters.setBr_tech(GLPK.GLP_BR_PCH);
 		//cuts
-//		mipParameters.setGmi_cuts(GLPK.GLP_ON);
-//		mipParameters.setMir_cuts(GLPK.GLP_ON);
-//		mipParameters.setCov_cuts(GLPK.GLP_ON);
+		mipParameters.setGmi_cuts(GLPK.GLP_ON);
+		mipParameters.setMir_cuts(GLPK.GLP_ON);
+		mipParameters.setCov_cuts(GLPK.GLP_ON);
 		mipParameters.setClq_cuts(GLPK.GLP_ON);
 		//time limit
 		mipParameters.setTm_lim(timeout);

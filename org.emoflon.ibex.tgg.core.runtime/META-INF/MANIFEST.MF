@@ -30,8 +30,12 @@ Bundle-ClassPath: lib/trove-3.1a1.jar,
  lib/gurobi.jar,
  lib/javabdd-1.0b2.jar,
  .,
- lib/glpk-java.jar
+ lib/glpk-java.jar,
+ lib/com.google.ortools.jar,
+ lib/protobuf.jar
 Export-Package: .,
+ com.google.ortools.linearsolver,
+ com.google.protobuf,
  gnu.trove,
  gnu.trove.decorator,
  gnu.trove.function,
