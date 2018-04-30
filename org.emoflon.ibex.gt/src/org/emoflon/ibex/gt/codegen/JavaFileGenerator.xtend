@@ -10,7 +10,6 @@ import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EEnum
 import org.emoflon.ibex.gt.codegen.EClassifiersManager
 
-import GTLanguage.GTBindingType
 import GTLanguage.GTNode
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
@@ -53,14 +52,13 @@ class JavaFileGenerator {
 	 * Generates the Java API class.
 	 */
 	public def generateAPIClass(IFolder apiPackage, String patternPath) {
-		val rules = this.gtRuleSet.rules.filter[!it.abstract]
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
 			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI'
 		)
-		rules.forEach [
+		gtRuleSet.rules.forEach [
 			imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(it)»''')
 			imports.addAll(this.eClassifiersManager.getImportsForDataTypes(it.parameters))
 		]
@@ -86,7 +84,7 @@ class JavaFileGenerator {
 				 */
 				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model) {
 					super(engine, model);
-					URI uri = URI.createURI("../" + patternPath);
+					URI uri = URI.createFileURI("../" + patternPath);
 					this.interpreter.loadPatternSet(uri);
 				}
 			
@@ -106,10 +104,10 @@ class JavaFileGenerator {
 				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model,
 						final String workspacePath) {
 					super(engine, model);
-					URI uri = URI.createURI(workspacePath + patternPath);
+					URI uri = URI.createFileURI(workspacePath + patternPath);
 					this.interpreter.loadPatternSet(uri);
 				}
-			«FOR rule : rules»
+			«FOR rule : gtRuleSet.rules»
 				
 					/**
 					 * Creates a new «getRuleType(rule)» «getRuleSignature(rule)».
@@ -188,14 +186,13 @@ class JavaFileGenerator {
 	 * Generates the Java Match class for the given rule.
 	 */
 	public def generateMatchClass(IFolder apiMatchesPackage, GTRule rule) {
-		val imports = this.eClassifiersManager.getImportsForNodeTypes(rule.graph.nodes.filter[!it.local].toList)
+		val imports = this.eClassifiersManager.getImportsForNodeTypes(rule.nodes.toList)
 		imports.addAll(
 			'org.emoflon.ibex.common.operational.IMatch',
 			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
 			'''«this.getSubPackageName('api.rules')».«getRuleClassName(rule)»'''
 		)
 
-		val signatureNodes = rule.graph.nodes.filter[!it.local]
 		val matchSourceCode = '''
 			«printHeader(this.getSubPackageName('api.matches'), imports)»
 			
@@ -203,7 +200,7 @@ class JavaFileGenerator {
 			 * A match for the «getRuleType(rule)» «getRuleSignature(rule)».
 			 */
 			public class «getMatchClassName(rule)» extends GraphTransformationMatch<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
-				«FOR node : signatureNodes»
+				«FOR node : rule.nodes»
 					private «getVariableType(node)» «getVariableName(node)»;
 				«ENDFOR»
 			
@@ -217,11 +214,11 @@ class JavaFileGenerator {
 				 */
 				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» pattern, final IMatch match) {
 					super(pattern, match);
-					«FOR node : signatureNodes»
+					«FOR node : rule.nodes»
 						this.«getVariableName(node)» = («getVariableType(node)») match.get("«node.name»");
 					«ENDFOR»
 				}
-			«FOR node : signatureNodes»
+			«FOR node : rule.nodes»
 				
 					/**
 					 * Returns the «node.name».
@@ -236,7 +233,7 @@ class JavaFileGenerator {
 				@Override
 				public String toString() {
 					String s = "match {" + System.lineSeparator();
-					«FOR node : signatureNodes»
+					«FOR node : rule.nodes»
 						s += "	«node.name» --> " + this.«getVariableName(node)» + System.lineSeparator();
 					«ENDFOR»
 					s += "} for " + this.getPattern();
@@ -253,8 +250,7 @@ class JavaFileGenerator {
 	public def generateRuleClass(IFolder rulesPackage, GTRule rule) {
 		val ruleType = if(rule.executable) 'rule' else 'pattern'
 		val ruleClassType = if(rule.executable) 'GraphTransformationRule' else 'GraphTransformationPattern'
-		val parameterNodes = rule.graph.nodes.filter[it.bindingType != GTBindingType.CREATE && !it.local].toList
-		val imports = this.eClassifiersManager.getImportsForNodeTypes(parameterNodes)
+		val imports = this.eClassifiersManager.getImportsForNodeTypes(rule.ruleNodes)
 		imports.addAll(this.eClassifiersManager.getImportsForDataTypes(rule.parameters))
 		imports.addAll(
 			'java.util.ArrayList',
@@ -265,7 +261,7 @@ class JavaFileGenerator {
 			'''«this.getSubPackageName('api')».«APIClassName»''',
 			'''«this.getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
 		)
-		if (rule.parameters.size > 0 || parameterNodes.size > 0) {
+		if (rule.parameters.size > 0 || rule.ruleNodes.size > 0) {
 			imports.add('java.util.Objects');
 		}
 
@@ -306,12 +302,12 @@ class JavaFileGenerator {
 				@Override
 				protected List<String> getParameterNames() {
 					List<String> names = new ArrayList<String>();
-					«FOR node : parameterNodes»
+					«FOR node : rule.ruleNodes»
 						names.add("«node.name»");
 					«ENDFOR»
 					return names;
 				}
-			«FOR node : parameterNodes»
+			«FOR node : rule.ruleNodes»
 				
 					/**
 					 * Binds the parameter «node.name» to the given object.
@@ -341,7 +337,7 @@ class JavaFileGenerator {
 				@Override
 				public String toString() {
 					String s = "«ruleType» " + patternName + " {" + System.lineSeparator();
-					«FOR node : parameterNodes»
+					«FOR node : rule.ruleNodes»
 						s += "	«node.name» --> " + this.parameters.get("«node.name»") + System.lineSeparator();
 					«ENDFOR»
 					«FOR parameter : rule.parameters»

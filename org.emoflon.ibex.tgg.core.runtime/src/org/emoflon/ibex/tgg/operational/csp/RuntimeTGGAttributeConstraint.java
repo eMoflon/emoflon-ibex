@@ -70,7 +70,6 @@ public abstract class RuntimeTGGAttributeConstraint {
 	}
 
 	public static Object generateValue(String type) {
-
 		if (type.equals("java.lang.String"))
 			return LoremIpsum.getInstance().randomWord();
 		if (type.equals("int") || type.equals("java.lang.Integer"))

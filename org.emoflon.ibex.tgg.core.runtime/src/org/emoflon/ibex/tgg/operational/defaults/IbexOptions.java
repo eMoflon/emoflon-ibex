@@ -154,21 +154,41 @@ public class IbexOptions {
 	public boolean blackInterpSupportsAttrConstrs() {
 		return blackInterpSupportsAttrConstrs;
 	}
+	
+	public void blackInterpSupportsAttrConstrs(boolean value) {
+		blackInterpSupportsAttrConstrs = value;
+	}
 
 	public int minimumNumberOfEdgesToCreateEdgePatterns() {
 		return minimumNumberOfEdgesToCreateEdgePatterns;
 	}
 
+	public IbexOptions minimumNumberOfEdgesToCreateEdgePatterns(int n) {
+		minimumNumberOfEdgesToCreateEdgePatterns = n;
+		return this;
+	}
+	
 	public boolean setCorrContextNodesAsLocalNodes() {
 		return setCorrContextNodesAsLocalNodes;
+	}
+	
+	public IbexOptions setCorrContextNodesAsLocalNodes(boolean value) {
+		setCorrContextNodesAsLocalNodes = value;
+		return this;
 	}
 
 	public boolean stronglyTypedEdgedPatterns() {
 		return stronglyTypedEdgedPatterns;
 	}
 
-	public void setFilterNACStrategy(FilterNACStrategy filterNACStrategy) {
+	public IbexOptions stronglyTypedEdgedPatterns(boolean value) {
+		stronglyTypedEdgedPatterns = value;
+		return this;
+	}	
+	
+	public IbexOptions setFilterNACStrategy(FilterNACStrategy filterNACStrategy) {
 		this.filterNACStrategy = filterNACStrategy;
+		return this;
 	}
 
 	/**

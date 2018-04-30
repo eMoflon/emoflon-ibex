@@ -125,7 +125,7 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 			calculatedValue = ((IBeXConstant) value).getValue();
 		} else if (value instanceof IBeXAttributeExpression) {
 			IBeXAttributeExpression attributeExpression = (IBeXAttributeExpression) value;
-			EObject node = (EObject) match.get(attributeExpression.getNodeName());
+			EObject node = (EObject) match.get(attributeExpression.getNode().getName());
 			calculatedValue = node.eGet(attributeExpression.getAttribute());
 		} else if (value instanceof IBeXEnumLiteral) {
 			EEnumLiteral enumLiteral = ((IBeXEnumLiteral) value).getLiteral();

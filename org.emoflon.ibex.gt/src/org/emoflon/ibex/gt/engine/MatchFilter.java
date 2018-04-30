@@ -3,6 +3,7 @@ package org.emoflon.ibex.gt.engine;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,13 +13,73 @@ import org.emoflon.ibex.common.operational.IMatch;
 
 import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXAttributeParameter;
-import IBeXLanguage.IBeXPattern;
+import IBeXLanguage.IBeXContext;
+import IBeXLanguage.IBeXContextAlternatives;
+import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXRelation;
 
 /**
  * Utility methods to filter match streams.
  */
 public class MatchFilter {
+
+	/**
+	 * Returns a stream of matches for the pattern such that the parameter values of
+	 * the matches are equal to the given parameters.
+	 * 
+	 * @param pattern
+	 *            the context pattern or context alternatives
+	 * @param parameters
+	 *            the parameter map
+	 * @param matches
+	 *            the matches
+	 * @return a stream containing matches
+	 */
+	public static Stream<IMatch> getFilteredMatchStream(final IBeXContext pattern, final Map<String, Object> parameters,
+			final Map<String, List<IMatch>> matches) {
+		if (pattern instanceof IBeXContextPattern) {
+			return getFilteredMatchStream((IBeXContextPattern) pattern, parameters, matches);
+		} else if (pattern instanceof IBeXContextAlternatives) {
+			IBeXContextAlternatives alternatives = (IBeXContextAlternatives) pattern;
+			Function<IMatch, IMatch> renameMatchToAlternativePattern = m -> {
+				m.setPatternName(alternatives.getName());
+				return m;
+			};
+
+			Stream<IMatch> matchStream = Stream.empty();
+			for (IBeXContextPattern alternativePattern : alternatives.getAlternativePatterns()) {
+				Stream<IMatch> matchesForAlterative = getFilteredMatchStream(alternativePattern, parameters, matches)
+						.map(renameMatchToAlternativePattern);
+				matchStream = Stream.concat(matchStream, matchesForAlterative);
+			}
+			return matchStream.distinct();
+		}
+		return Stream.empty();
+	}
+
+	/**
+	 * Returns a stream of matches for the pattern such that the parameter values of
+	 * the matches are equal to the given parameters.
+	 * 
+	 * @param pattern
+	 *            the context pattern
+	 * @param parameters
+	 *            the parameter map
+	 * @param matches
+	 *            the matches
+	 * @return a stream containing matches
+	 */
+	private static Stream<IMatch> getFilteredMatchStream(final IBeXContextPattern pattern,
+			final Map<String, Object> parameters, final Map<String, List<IMatch>> matches) {
+		if (!matches.containsKey(pattern.getName())) {
+			return Stream.empty();
+		}
+
+		Stream<IMatch> matchesForPattern = matches.get(pattern.getName()).stream();
+		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, pattern, parameters);
+		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, pattern, parameters);
+		return matchesForPattern;
+	}
 
 	/**
 	 * Filters the given matches for the ones whose node bindings are conform to the
@@ -32,7 +93,7 @@ public class MatchFilter {
 	 *            the parameters
 	 * @return the filtered stream
 	 */
-	public static Stream<IMatch> filterNodeBindings(Stream<IMatch> matches, final IBeXPattern pattern,
+	public static Stream<IMatch> filterNodeBindings(Stream<IMatch> matches, final IBeXContextPattern pattern,
 			final Map<String, Object> parameters) {
 		List<String> nodeNames = pattern.getSignatureNodes().stream() //
 				.map(node -> node.getName()) //
@@ -62,7 +123,7 @@ public class MatchFilter {
 	 * @return the filtered stream
 	 */
 	public static Stream<IMatch> filterAttributeConstraintsWithParameter(Stream<IMatch> matches,
-			final IBeXPattern pattern, final Map<String, Object> parameters) {
+			final IBeXContextPattern pattern, final Map<String, Object> parameters) {
 		for (IBeXAttributeConstraint ac : pattern.getAttributeConstraint()) {
 			if (ac.getValue() instanceof IBeXAttributeParameter) {
 				String nodeName = ac.getNode().getName();

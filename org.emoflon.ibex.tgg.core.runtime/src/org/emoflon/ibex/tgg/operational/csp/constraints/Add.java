@@ -17,7 +17,7 @@ public class Add extends RuntimeTGGAttributeConstraint {
 		RuntimeTGGAttributeConstraintVariable c = variables.get(2);
 		
 		String bindingStates = getBindingStates(a, b, c);
-
+		
 		if (bindingStates.equals("BBB")) {
 			// a + b == c
 			setSatisfied((((Number) a.getValue()).doubleValue()
