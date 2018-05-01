@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.gt.codegen.CommentExtractor;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
 import org.emoflon.ibex.gt.editor.gT.EditorParameter;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
+import org.emoflon.ibex.gt.editor.utils.GTCommentExtractor;
 
 import GTLanguage.GTLanguageFactory;
 import GTLanguage.GTNode;
@@ -55,7 +55,7 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 		}
 
 		getFlattenedPattern(editorPattern).ifPresent(flattened -> {
-			addRuleForFlattenedPattern(flattened, CommentExtractor.getComment(editorPattern));
+			addRuleForFlattenedPattern(flattened, GTCommentExtractor.getComment(editorPattern));
 		});
 	}
 
