@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.gt.codegen.CommentExtractor;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
@@ -54,13 +55,28 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 		}
 
 		getFlattenedPattern(editorPattern).ifPresent(flattened -> {
-			GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
-			gtRule.setName(flattened.getName());
-			gtRule.setExecutable(flattened.getType() == EditorPatternType.RULE);
-			transformNodes(flattened, gtRule);
-			transformParameters(flattened, gtRule);
-			gtRules.add(gtRule);
+			addRuleForFlattenedPattern(flattened, CommentExtractor.getComment(editorPattern));
 		});
+	}
+
+	/**
+	 * Adds a GTRule for the given flattened pattern.
+	 * 
+	 * @param flattenedPattern
+	 *            the flattened editor pattern
+	 * @param documentation
+	 *            the documentation
+	 */
+	private void addRuleForFlattenedPattern(final EditorPattern flattenedPattern, final String documentation) {
+		GTRule gtRule = GTLanguageFactory.eINSTANCE.createGTRule();
+		gtRule.setName(flattenedPattern.getName());
+		gtRule.setDocumentation(documentation);
+		gtRule.setExecutable(flattenedPattern.getType() == EditorPatternType.RULE);
+
+		transformNodes(flattenedPattern, gtRule);
+		transformParameters(flattenedPattern, gtRule);
+
+		gtRules.add(gtRule);
 	}
 
 	/**
