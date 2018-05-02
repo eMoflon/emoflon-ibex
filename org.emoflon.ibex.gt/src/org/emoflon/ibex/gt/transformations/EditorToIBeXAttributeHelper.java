@@ -92,7 +92,7 @@ public class EditorToIBeXAttributeHelper {
 
 		Optional<IBeXNode> ibexNode = IBeXPatternUtils.findIBeXNodeWithName(ibexContextPattern, editorNode.getName());
 		if (!ibexNode.isPresent()) {
-			transformation.logError("Node " + editorNode.getName() + " missing!");
+			transformation.logError("Node %s missing!", editorNode.getName());
 			return;
 		}
 
@@ -227,7 +227,7 @@ public class EditorToIBeXAttributeHelper {
 		} else if (value instanceof EditorParameterExpression) {
 			return Optional.of(convertAttributeValue((EditorParameterExpression) value));
 		} else {
-			transformation.logError("Invalid attribute value: " + editorAttribute.getValue());
+			transformation.logError("Invalid attribute value: %s", editorAttribute.getValue());
 			return Optional.empty();
 		}
 	}

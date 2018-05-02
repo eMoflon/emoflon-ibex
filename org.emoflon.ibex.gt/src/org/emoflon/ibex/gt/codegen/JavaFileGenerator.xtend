@@ -29,11 +29,6 @@ class JavaFileGenerator {
 	String classNamePrefix
 
 	/**
-	 * The graph transformation rules as instance of the internal GT model.
-	 */
-	GTRuleSet gtRuleSet
-
-	/**
 	 * Utility to handle the mapping between EClassifier names to meta-model names.
 	 */
 	EClassifiersManager eClassifiersManager
@@ -41,17 +36,16 @@ class JavaFileGenerator {
 	/**
 	 * Creates a new JavaFileGenerator.
 	 */
-	new(String classNamePrefix, String packageName, GTRuleSet gtRuleSet, EClassifiersManager eClassifiersManager) {
+	new(String classNamePrefix, String packageName, EClassifiersManager eClassifiersManager) {
 		this.classNamePrefix = classNamePrefix
 		this.packageName = packageName
-		this.gtRuleSet = gtRuleSet
 		this.eClassifiersManager = eClassifiersManager
 	}
 
 	/**
 	 * Generates the Java API class.
 	 */
-	public def generateAPIClass(IFolder apiPackage, String patternPath) {
+	public def generateAPIClass(IFolder apiPackage, GTRuleSet gtRuleSet, String patternPath) {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',

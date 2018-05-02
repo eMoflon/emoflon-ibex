@@ -3,6 +3,7 @@ package org.emoflon.ibex.gt.transformations;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -53,28 +54,36 @@ public class EditorToIBeXConditionHelper {
 	/**
 	 * Transforms the condition of the editor pattern.
 	 */
-	public void transformCondition(EditorCondition editorCondition) {
-		transformCondition(editorCondition.getExpression());
+	public void transformCondition(final EditorCondition condition) {
+		Objects.requireNonNull(condition, "The condition must not be null!");
+
+		if (condition.getExpression() == null) {
+			transformation.logError("One condition for pattern %s could not be found.", ibexPattern.getName());
+			return;
+		}
+		transformCondition(condition.getExpression());
 	}
 
 	/**
 	 * Transforms a single condition.
 	 * 
-	 * @param condition
+	 * @param expression
 	 *            the editor condition to transform
 	 */
-	private void transformCondition(final EditorConditionExpression condition) {
-		if (condition instanceof EditorEnforce) {
-			transformEnforcePattern((EditorEnforce) condition);
-		} else if (condition instanceof EditorForbid) {
-			transformForbidPattern((EditorForbid) condition);
-		} else if (condition instanceof EditorConditionReference) {
-			transformCondition(((EditorConditionReference) condition).getCondition().getExpression());
-		} else if (condition instanceof EditorAndCondition) {
-			transformCondition(((EditorAndCondition) condition).getLeft());
-			transformCondition(((EditorAndCondition) condition).getRight());
+	private void transformCondition(final EditorConditionExpression expression) {
+		Objects.requireNonNull(expression, "The expression of the condition must not be null!");
+
+		if (expression instanceof EditorEnforce) {
+			transformEnforcePattern((EditorEnforce) expression);
+		} else if (expression instanceof EditorForbid) {
+			transformForbidPattern((EditorForbid) expression);
+		} else if (expression instanceof EditorConditionReference) {
+			transformCondition(((EditorConditionReference) expression).getCondition().getExpression());
+		} else if (expression instanceof EditorAndCondition) {
+			transformCondition(((EditorAndCondition) expression).getLeft());
+			transformCondition(((EditorAndCondition) expression).getRight());
 		} else {
-			throw new IllegalArgumentException("Invalid condition expression " + condition);
+			throw new IllegalArgumentException("Invalid condition expression " + expression);
 		}
 	}
 
@@ -111,7 +120,7 @@ public class EditorToIBeXConditionHelper {
 	private void transformPattern(final EditorPattern editorPattern, final boolean invocationType) {
 		IBeXContext contextPattern = transformation.getContextPattern(editorPattern);
 		if (!(contextPattern instanceof IBeXContextPattern)) {
-			transformation.logError(editorPattern.getName() + " not allowed in condition.");
+			transformation.logError("%s not allowed in condition.", editorPattern.getName());
 			return;
 		}
 		IBeXContextPattern invokedPattern = (IBeXContextPattern) contextPattern;
