@@ -2,6 +2,7 @@ package org.emoflon.ibex.gt.transformations;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import IBeXLanguage.IBeXEdge;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXNodePair;
+import IBeXLanguage.IBeXPatternInvocation;
 
 /**
  * Utility methods to transform editor patterns to IBeX Patterns.
@@ -163,5 +165,20 @@ public class EditorToIBeXPatternHelper {
 			nodePair.getValues().add(node2);
 			ibexPattern.getInjectivityConstraints().add(nodePair);
 		}
+	}
+
+	/**
+	 * Adds the nodes of the given map to the mappings of the invocation.
+	 * 
+	 * @param invocation
+	 *            the invocation
+	 * @param nodeMap
+	 *            the mapping of nodes
+	 */
+	public static void addNodeMapping(final IBeXPatternInvocation invocation, final Map<IBeXNode, IBeXNode> nodeMap) {
+		// sorting necessary for deterministic output
+		nodeMap.keySet().stream().sorted(IBeXPatternUtils.sortByName).forEach(k -> {
+			invocation.getMapping().put(k, nodeMap.get(k));
+		});
 	}
 }

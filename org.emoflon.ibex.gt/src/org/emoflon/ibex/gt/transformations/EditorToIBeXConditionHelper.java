@@ -132,11 +132,11 @@ public class EditorToIBeXConditionHelper {
 		Map<IBeXNode, IBeXNode> nodeMap = determineNodeMapping(invokedPattern);
 		if (nodeMap.size() == invokedPattern.getSignatureNodes().size()) {
 			invocation.setInvokedPattern(invokedPattern);
-			invocation.getMapping().putAll(nodeMap);
+			EditorToIBeXPatternHelper.addNodeMapping(invocation, nodeMap);
 		} else { // not all signature nodes are mapped.
 			transformContextPatternForSignature(editorPattern, nodeMap).ifPresent(p -> {
 				invocation.setInvokedPattern(p);
-				invocation.getMapping().putAll(determineNodeMapping(p));
+				EditorToIBeXPatternHelper.addNodeMapping(invocation, determineNodeMapping(p));
 			});
 		}
 	}
