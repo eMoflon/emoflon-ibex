@@ -55,8 +55,12 @@ public class EditorToIBeXConditionHelper {
 	public void transformCondition(final EditorCondition condition) {
 		Objects.requireNonNull(condition, "The condition must not be null!");
 
-		for (EditorApplicationCondition applicationCondition : new GTConditionHelper(condition)
-				.getApplicationConditions()) {
+		List<EditorApplicationCondition> applicationConditions = new GTConditionHelper(condition)
+				.getApplicationConditions().stream()
+				.sorted((a, b) -> a.getPattern().getName().compareTo(b.getPattern().getName()))
+				.collect(Collectors.toList());
+
+		for (EditorApplicationCondition applicationCondition : applicationConditions) {
 			transformPattern(applicationCondition.getPattern(),
 					applicationCondition.getType() == EditorApplicationConditionType.POSITIVE);
 		}
