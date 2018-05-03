@@ -8,11 +8,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
+import org.emoflon.ibex.gt.editor.gT.EditorApplicationCondition;
+import org.emoflon.ibex.gt.editor.gT.EditorApplicationConditionType;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;
-import org.emoflon.ibex.gt.editor.gT.EditorEnforce;
-import org.emoflon.ibex.gt.editor.gT.EditorForbid;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
-import org.emoflon.ibex.gt.editor.gT.EditorSimpleCondition;
 import org.emoflon.ibex.gt.editor.utils.GTConditionHelper;
 
 import IBeXLanguage.IBeXContext;
@@ -56,47 +55,11 @@ public class EditorToIBeXConditionHelper {
 	public void transformCondition(final EditorCondition condition) {
 		Objects.requireNonNull(condition, "The condition must not be null!");
 
-		for (EditorSimpleCondition simpleCondition : new GTConditionHelper(condition).getAllConditions()) {
-			transformCondition(simpleCondition);
+		for (EditorApplicationCondition applicationCondition : new GTConditionHelper(condition)
+				.getApplicationConditions()) {
+			transformPattern(applicationCondition.getPattern(),
+					applicationCondition.getType() == EditorApplicationConditionType.POSITIVE);
 		}
-	}
-
-	/**
-	 * Transforms a single condition.
-	 * 
-	 * @param conditions
-	 *            the editor condition to transform
-	 */
-	private void transformCondition(final EditorSimpleCondition conditions) {
-		Objects.requireNonNull(conditions, "The expression of the condition must not be null!");
-
-		if (conditions instanceof EditorEnforce) {
-			transformEnforcePattern((EditorEnforce) conditions);
-		} else if (conditions instanceof EditorForbid) {
-			transformForbidPattern((EditorForbid) conditions);
-		} else {
-			throw new IllegalArgumentException("Invalid condition expression " + conditions);
-		}
-	}
-
-	/**
-	 * Transforms the enforce condition (PAC) to a positive pattern invocation.
-	 * 
-	 * @param enforce
-	 *            the enforce condition
-	 */
-	private void transformEnforcePattern(final EditorEnforce enforce) {
-		transformPattern(enforce.getPattern(), true);
-	}
-
-	/**
-	 * Transforms the forbid condition (NAC) to a negative pattern invocation.
-	 * 
-	 * @param forbid
-	 *            the forbid condition
-	 */
-	private void transformForbidPattern(final EditorForbid forbid) {
-		transformPattern(forbid.getPattern(), false);
 	}
 
 	/**
