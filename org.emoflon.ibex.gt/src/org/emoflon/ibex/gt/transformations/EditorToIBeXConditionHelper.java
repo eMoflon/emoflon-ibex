@@ -8,13 +8,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
-import org.emoflon.ibex.gt.editor.gT.EditorAndCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;
-import org.emoflon.ibex.gt.editor.gT.EditorConditionExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorConditionReference;
 import org.emoflon.ibex.gt.editor.gT.EditorEnforce;
 import org.emoflon.ibex.gt.editor.gT.EditorForbid;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
+import org.emoflon.ibex.gt.editor.gT.EditorSimpleCondition;
 
 import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXContextPattern;
@@ -57,33 +56,42 @@ public class EditorToIBeXConditionHelper {
 	public void transformCondition(final EditorCondition condition) {
 		Objects.requireNonNull(condition, "The condition must not be null!");
 
-		if (condition.getExpression() == null) {
-			transformation.logError("One condition for pattern %s could not be found.", ibexPattern.getName());
+		if (condition.getConditions() == null) {
+			transformation.logError("Conditions for pattern %s could not be found.", ibexPattern.getName());
 			return;
 		}
-		transformCondition(condition.getExpression());
+		transformCondition(condition.getConditions());
+	}
+
+	/**
+	 * Transforms the condition of the editor pattern.
+	 * 
+	 * @param conditions
+	 *            the simple conditions
+	 */
+	private void transformCondition(final List<EditorSimpleCondition> conditions) {
+		for (EditorSimpleCondition c : conditions) {
+			transformCondition(c);
+		}
 	}
 
 	/**
 	 * Transforms a single condition.
 	 * 
-	 * @param expression
+	 * @param conditions
 	 *            the editor condition to transform
 	 */
-	private void transformCondition(final EditorConditionExpression expression) {
-		Objects.requireNonNull(expression, "The expression of the condition must not be null!");
+	private void transformCondition(final EditorSimpleCondition conditions) {
+		Objects.requireNonNull(conditions, "The expression of the condition must not be null!");
 
-		if (expression instanceof EditorEnforce) {
-			transformEnforcePattern((EditorEnforce) expression);
-		} else if (expression instanceof EditorForbid) {
-			transformForbidPattern((EditorForbid) expression);
-		} else if (expression instanceof EditorConditionReference) {
-			transformCondition(((EditorConditionReference) expression).getCondition().getExpression());
-		} else if (expression instanceof EditorAndCondition) {
-			transformCondition(((EditorAndCondition) expression).getLeft());
-			transformCondition(((EditorAndCondition) expression).getRight());
+		if (conditions instanceof EditorEnforce) {
+			transformEnforcePattern((EditorEnforce) conditions);
+		} else if (conditions instanceof EditorForbid) {
+			transformForbidPattern((EditorForbid) conditions);
+		} else if (conditions instanceof EditorConditionReference) {
+			transformCondition(((EditorConditionReference) conditions).getCondition().getConditions());
 		} else {
-			throw new IllegalArgumentException("Invalid condition expression " + expression);
+			throw new IllegalArgumentException("Invalid condition expression " + conditions);
 		}
 	}
 
