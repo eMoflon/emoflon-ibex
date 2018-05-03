@@ -32,8 +32,11 @@ Bundle-ClassPath: lib/trove-3.1a1.jar,
  .,
  lib/glpk-java.jar,
  lib/com.google.ortools.jar,
- lib/protobuf.jar
+ lib/protobuf.jar,
+ lib/mipcl.jar
 Export-Package: .,
+ by.bsu.JVmipcl,
+ by.bsu.JVmipshell,
  com.google.ortools.linearsolver,
  com.google.protobuf,
  gnu.trove,
