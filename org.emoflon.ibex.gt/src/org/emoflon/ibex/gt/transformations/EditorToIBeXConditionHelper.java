@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;
-import org.emoflon.ibex.gt.editor.gT.EditorConditionReference;
 import org.emoflon.ibex.gt.editor.gT.EditorEnforce;
 import org.emoflon.ibex.gt.editor.gT.EditorForbid;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorSimpleCondition;
+import org.emoflon.ibex.gt.editor.utils.GTConditionHelper;
 
 import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXContextPattern;
@@ -56,22 +56,8 @@ public class EditorToIBeXConditionHelper {
 	public void transformCondition(final EditorCondition condition) {
 		Objects.requireNonNull(condition, "The condition must not be null!");
 
-		if (condition.getConditions() == null) {
-			transformation.logError("Conditions for pattern %s could not be found.", ibexPattern.getName());
-			return;
-		}
-		transformCondition(condition.getConditions());
-	}
-
-	/**
-	 * Transforms the condition of the editor pattern.
-	 * 
-	 * @param conditions
-	 *            the simple conditions
-	 */
-	private void transformCondition(final List<EditorSimpleCondition> conditions) {
-		for (EditorSimpleCondition c : conditions) {
-			transformCondition(c);
+		for (EditorSimpleCondition simpleCondition : new GTConditionHelper(condition).getAllConditions()) {
+			transformCondition(simpleCondition);
 		}
 	}
 
@@ -88,8 +74,6 @@ public class EditorToIBeXConditionHelper {
 			transformEnforcePattern((EditorEnforce) conditions);
 		} else if (conditions instanceof EditorForbid) {
 			transformForbidPattern((EditorForbid) conditions);
-		} else if (conditions instanceof EditorConditionReference) {
-			transformCondition(((EditorConditionReference) conditions).getCondition().getConditions());
 		} else {
 			throw new IllegalArgumentException("Invalid condition expression " + conditions);
 		}
