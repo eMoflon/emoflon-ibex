@@ -29,11 +29,6 @@ class JavaFileGenerator {
 	String classNamePrefix
 
 	/**
-	 * The graph transformation rules as instance of the internal GT model.
-	 */
-	GTRuleSet gtRuleSet
-
-	/**
 	 * Utility to handle the mapping between EClassifier names to meta-model names.
 	 */
 	EClassifiersManager eClassifiersManager
@@ -41,17 +36,16 @@ class JavaFileGenerator {
 	/**
 	 * Creates a new JavaFileGenerator.
 	 */
-	new(String classNamePrefix, String packageName, GTRuleSet gtRuleSet, EClassifiersManager eClassifiersManager) {
+	new(String classNamePrefix, String packageName, EClassifiersManager eClassifiersManager) {
 		this.classNamePrefix = classNamePrefix
 		this.packageName = packageName
-		this.gtRuleSet = gtRuleSet
 		this.eClassifiersManager = eClassifiersManager
 	}
 
 	/**
 	 * Generates the Java API class.
 	 */
-	public def generateAPIClass(IFolder apiPackage, String patternPath) {
+	public def generateAPIClass(IFolder apiPackage, GTRuleSet gtRuleSet, String patternPath) {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
@@ -110,9 +104,10 @@ class JavaFileGenerator {
 			«FOR rule : gtRuleSet.rules»
 				
 					/**
-					 * Creates a new «getRuleType(rule)» «getRuleSignature(rule)».
-					 * 
-					 * @return the created «getRuleType(rule)»
+					 * Creates a new instance of the «getRuleType(rule)» «getRuleSignature(rule)» which does the following:
+					 * «getRuleDocumentation(rule)»
+					 *
+					 * @return the new instance of the «getRuleType(rule)»
 					 */
 					public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
 						return new «getRuleClassName(rule)»(this, this.interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
@@ -269,7 +264,8 @@ class JavaFileGenerator {
 			«printHeader(this.getSubPackageName('api.rules'), imports)»
 			
 			/**
-			 * The «ruleType» «getRuleSignature(rule)».
+			 * The «ruleType» «getRuleSignature(rule)» which does the following:
+			 * «getRuleDocumentation(rule)»
 			 */
 			public class «getRuleClassName(rule)» extends «ruleClassType»<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				private static String patternName = "«rule.name»";
@@ -404,7 +400,21 @@ class JavaFileGenerator {
 	 * Returns the concatenation of rule name and the list of parameter names.
 	 */
 	private static def getRuleSignature(GTRule rule) {
-		return '''«rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»)'''
+		return '''<code>«rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»)</code>'''
+	}
+
+	/**
+	 * Returns the documentation for the rule.
+	 */
+	private static def getRuleDocumentation(GTRule rule) {
+		if (rule.documentation.isEmpty) {
+			return String.format(
+				"If this %s is not self-explaining, you really should add some comment in the specification.",
+				getRuleType(rule)
+			)
+		} else {
+			return rule.documentation
+		}
 	}
 
 	/**

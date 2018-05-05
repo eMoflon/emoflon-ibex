@@ -289,8 +289,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private void generateAPI(final IFolder apiPackage, final GTRuleSet gtRuleSet,
 			final EClassifiersManager eClassifiersManager) {
-		JavaFileGenerator generator = new JavaFileGenerator(getClassNamePrefix(), packageName, gtRuleSet,
-				eClassifiersManager);
+		JavaFileGenerator generator = new JavaFileGenerator(getClassNamePrefix(), packageName, eClassifiersManager);
 		IFolder matchesPackage = this.ensureFolderExists(apiPackage.getFolder("matches"));
 		IFolder rulesPackage = this.ensureFolderExists(apiPackage.getFolder("rules"));
 		gtRuleSet.getRules().forEach(gtRule -> {
@@ -298,9 +297,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			generator.generateRuleClass(rulesPackage, gtRule);
 		});
 
-		String patternPath = project.getName() + "/" + SOURCE_GEN_FOLDER + "/" + path.toString()
-				+ "/api/ibex-patterns.xmi";
-		generator.generateAPIClass(apiPackage, patternPath);
+		generator.generateAPIClass(apiPackage, gtRuleSet,
+				String.format("%s/%s/%s/api/ibex-patterns.xmi", project.getName(), SOURCE_GEN_FOLDER, path.toString()));
 		generator.generateAppClass(apiPackage);
 		this.collectEngineExtensions().forEach(e -> generator.generateAppClassForEngine(apiPackage, e));
 	}

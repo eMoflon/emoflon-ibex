@@ -3,17 +3,16 @@ package org.emoflon.ibex.gt.transformations;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
-import org.emoflon.ibex.gt.editor.gT.EditorAndCondition;
+import org.emoflon.ibex.gt.editor.gT.EditorApplicationCondition;
+import org.emoflon.ibex.gt.editor.gT.EditorApplicationConditionType;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;
-import org.emoflon.ibex.gt.editor.gT.EditorConditionExpression;
-import org.emoflon.ibex.gt.editor.gT.EditorConditionReference;
-import org.emoflon.ibex.gt.editor.gT.EditorEnforce;
-import org.emoflon.ibex.gt.editor.gT.EditorForbid;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
+import org.emoflon.ibex.gt.editor.utils.GTConditionHelper;
 
 import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXContextPattern;
@@ -52,50 +51,31 @@ public class EditorToIBeXConditionHelper {
 
 	/**
 	 * Transforms the condition of the editor pattern.
-	 */
-	public void transformCondition(EditorCondition editorCondition) {
-		transformCondition(editorCondition.getExpression());
-	}
-
-	/**
-	 * Transforms a single condition.
 	 * 
 	 * @param condition
-	 *            the editor condition to transform
+	 *            the condition
 	 */
-	private void transformCondition(final EditorConditionExpression condition) {
-		if (condition instanceof EditorEnforce) {
-			transformEnforcePattern((EditorEnforce) condition);
-		} else if (condition instanceof EditorForbid) {
-			transformForbidPattern((EditorForbid) condition);
-		} else if (condition instanceof EditorConditionReference) {
-			transformCondition(((EditorConditionReference) condition).getCondition().getExpression());
-		} else if (condition instanceof EditorAndCondition) {
-			transformCondition(((EditorAndCondition) condition).getLeft());
-			transformCondition(((EditorAndCondition) condition).getRight());
-		} else {
-			throw new IllegalArgumentException("Invalid condition expression " + condition);
+	public void transformCondition(final EditorCondition condition) {
+		Objects.requireNonNull(condition, "The condition must not be null!");
+
+		for (EditorApplicationCondition applicationCondition : getApplicationConditions(condition)) {
+			transformPattern(applicationCondition.getPattern(),
+					applicationCondition.getType() == EditorApplicationConditionType.POSITIVE);
 		}
 	}
 
 	/**
-	 * Transforms the enforce condition (PAC) to a positive pattern invocation.
+	 * Returns the application conditions referenced by the given condition ordered
+	 * by the name of the pattern.
 	 * 
-	 * @param enforce
-	 *            the enforce condition
+	 * @param condition
+	 *            the condition
+	 * @return the application condition
 	 */
-	private void transformEnforcePattern(final EditorEnforce enforce) {
-		transformPattern(enforce.getPattern(), true);
-	}
-
-	/**
-	 * Transforms the forbid condition (NAC) to a negative pattern invocation.
-	 * 
-	 * @param forbid
-	 *            the forbid condition
-	 */
-	private void transformForbidPattern(final EditorForbid forbid) {
-		transformPattern(forbid.getPattern(), false);
+	private static List<EditorApplicationCondition> getApplicationConditions(final EditorCondition condition) {
+		return new GTConditionHelper(condition).getApplicationConditions().stream()
+				.sorted((a, b) -> a.getPattern().getName().compareTo(b.getPattern().getName()))
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -111,7 +91,7 @@ public class EditorToIBeXConditionHelper {
 	private void transformPattern(final EditorPattern editorPattern, final boolean invocationType) {
 		IBeXContext contextPattern = transformation.getContextPattern(editorPattern);
 		if (!(contextPattern instanceof IBeXContextPattern)) {
-			transformation.logError(editorPattern.getName() + " not allowed in condition.");
+			transformation.logError("%s not allowed in condition.", editorPattern.getName());
 			return;
 		}
 		IBeXContextPattern invokedPattern = (IBeXContextPattern) contextPattern;
@@ -123,11 +103,11 @@ public class EditorToIBeXConditionHelper {
 		Map<IBeXNode, IBeXNode> nodeMap = determineNodeMapping(invokedPattern);
 		if (nodeMap.size() == invokedPattern.getSignatureNodes().size()) {
 			invocation.setInvokedPattern(invokedPattern);
-			invocation.getMapping().putAll(nodeMap);
+			EditorToIBeXPatternHelper.addNodeMapping(invocation, nodeMap);
 		} else { // not all signature nodes are mapped.
 			transformContextPatternForSignature(editorPattern, nodeMap).ifPresent(p -> {
 				invocation.setInvokedPattern(p);
-				invocation.getMapping().putAll(determineNodeMapping(p));
+				EditorToIBeXPatternHelper.addNodeMapping(invocation, determineNodeMapping(p));
 			});
 		}
 	}

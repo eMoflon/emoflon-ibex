@@ -44,6 +44,18 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	}
 
 	/**
+	 * Logs an error.
+	 * 
+	 * @param error
+	 *            the error
+	 * @param args
+	 *            arguments for String.format
+	 */
+	protected final void logError(final String error, final Object... args) {
+		this.errors.add(String.format(error, args));
+	}
+
+	/**
 	 * Returns the errors occurred during the transformation.
 	 * 
 	 * @return the error messages
