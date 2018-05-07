@@ -204,11 +204,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the URI of the ibex-pattern.xmi file
 	 */
 	public void loadPatternSet(final URI uri) {
-		ResourceSet rs = new ResourceSetImpl();
-		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-		rs.getPackageRegistry().put(IBeXLanguagePackage.eNS_URI, IBeXLanguagePackage.eINSTANCE);
-
-		Resource ibexPatternResource = rs.getResource(uri, true);
+		model.getPackageRegistry().put(IBeXLanguagePackage.eNS_URI, IBeXLanguagePackage.eINSTANCE);
+		Resource ibexPatternResource = model.getResource(uri, true);
+		model.getResources().remove(ibexPatternResource);
 		this.loadPatternSet(ibexPatternResource);
 	}
 
