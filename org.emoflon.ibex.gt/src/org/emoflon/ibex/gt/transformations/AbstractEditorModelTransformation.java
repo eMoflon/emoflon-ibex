@@ -30,7 +30,7 @@ public abstract class AbstractEditorModelTransformation<TargetModel>
 
 		GTFlattener flattener = new GTFlattener(editorPattern);
 		if (flattener.hasErrors()) {
-			flattener.getErrors().forEach(e -> logError("Flattening of " + editorPattern.getName() + ": " + e));
+			flattener.getErrors().forEach(e -> logError("Flattening of %s: %s", editorPattern.getName(), e));
 			return Optional.empty();
 		} else {
 			return Optional.of(flattener.getFlattenedPattern());

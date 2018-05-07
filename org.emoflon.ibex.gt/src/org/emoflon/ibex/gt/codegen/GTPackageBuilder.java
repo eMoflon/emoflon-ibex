@@ -41,6 +41,7 @@ import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToGTModelTransformation;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
+import org.moflon.core.propertycontainer.MoflonPropertiesContainerHelper;
 import org.moflon.core.utilities.ClasspathUtil;
 import org.moflon.core.utilities.ExtensionsUtil;
 import org.moflon.core.utilities.WorkspaceHelper;
@@ -210,7 +211,12 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @return the mapping between EClassifier names to meta-model names
 	 */
 	private EClassifiersManager loadMetaModels(final Set<String> metaModels, final ResourceSet resourceSet) {
-		EClassifiersManager eClassifiersManager = new EClassifiersManager();
+		Map<String, String> map = MoflonPropertiesContainerHelper.loadIfExists(project) //
+				.map(m -> m.getImportMappings()) //
+				.map(i -> MoflonPropertiesContainerHelper.mappingsToMap(i)) //
+				.orElse(new HashMap<String, String>());
+
+		EClassifiersManager eClassifiersManager = new EClassifiersManager(map);
 		metaModels.forEach(uri -> {
 			Resource ecoreFile = resourceSet.getResource(URI.createURI(uri), true);
 			try {
@@ -283,8 +289,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private void generateAPI(final IFolder apiPackage, final GTRuleSet gtRuleSet,
 			final EClassifiersManager eClassifiersManager) {
-		JavaFileGenerator generator = new JavaFileGenerator(getClassNamePrefix(), packageName, gtRuleSet,
-				eClassifiersManager);
+		JavaFileGenerator generator = new JavaFileGenerator(getClassNamePrefix(), packageName, eClassifiersManager);
 		IFolder matchesPackage = this.ensureFolderExists(apiPackage.getFolder("matches"));
 		IFolder rulesPackage = this.ensureFolderExists(apiPackage.getFolder("rules"));
 		gtRuleSet.getRules().forEach(gtRule -> {
@@ -292,9 +297,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			generator.generateRuleClass(rulesPackage, gtRule);
 		});
 
-		String patternPath = project.getName() + "/" + SOURCE_GEN_FOLDER + "/" + path.toString()
-				+ "/api/ibex-patterns.xmi";
-		generator.generateAPIClass(apiPackage, patternPath);
+		generator.generateAPIClass(apiPackage, gtRuleSet,
+				String.format("%s/%s/%s/api/ibex-patterns.xmi", project.getName(), SOURCE_GEN_FOLDER, path.toString()));
 		generator.generateAppClass(apiPackage);
 		this.collectEngineExtensions().forEach(e -> generator.generateAppClassForEngine(apiPackage, e));
 	}
