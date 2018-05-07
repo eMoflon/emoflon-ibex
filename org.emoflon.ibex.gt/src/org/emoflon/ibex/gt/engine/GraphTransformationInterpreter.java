@@ -15,16 +15,15 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
+import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
+import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
-import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
-import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
-import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 
 import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXCreatePattern;
@@ -206,6 +205,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public void loadPatternSet(final URI uri) {
 		model.getPackageRegistry().put(IBeXLanguagePackage.eNS_URI, IBeXLanguagePackage.eINSTANCE);
 		Resource ibexPatternResource = model.getResource(uri, true);
+		EcoreUtil.resolveAll(model);
 		model.getResources().remove(ibexPatternResource);
 		this.loadPatternSet(ibexPatternResource);
 	}
