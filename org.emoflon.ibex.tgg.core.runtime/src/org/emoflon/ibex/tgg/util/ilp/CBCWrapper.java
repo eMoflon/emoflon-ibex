@@ -66,7 +66,8 @@ public class CBCWrapper extends ILPSolver{
 			if (path.startsWith("jar:")) path = path.substring(4, path.length() - 2);
 			try {
 				File jar = new File(new URI(path));
-				System.load(jar.getParent() + "/jniortools.dll");;
+				System.load(jar.getParent() + "/pthreadVC2.dll");
+				System.load(jar.getParent() + "/jniortools.dll");
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
@@ -128,6 +129,8 @@ public class CBCWrapper extends ILPSolver{
 	 */
 	private ResultStatus solveModel(long timeout) {
 		this.solver.enableOutput();
+		int numberOfThreads = Runtime.getRuntime().availableProcessors();
+		this.solver.setSolverSpecificParametersAsString("-threads " + numberOfThreads + " -CutL 0");
 		System.out.println("Setting time-limit for each step to "+timeout+ " seconds.");
 		timeout *= 1000;
 		this.solver.setTimeLimit(timeout);

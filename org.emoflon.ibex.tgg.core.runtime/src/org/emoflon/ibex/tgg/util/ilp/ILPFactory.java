@@ -29,6 +29,8 @@ public final class ILPFactory {
 				return new GLPKWrapper(ilpProblem, true);
 			case CBC:
 				return new CBCWrapper(ilpProblem, true);
+			case MIPCL:
+				return new MIPCLWrapper(ilpProblem, true);
 			default:
 				throw new UnsupportedOperationException("Unknown Solver: "+solver.toString());
 		}
@@ -49,6 +51,8 @@ public final class ILPFactory {
 				throw new UnsupportedOperationException("SAT4J does not support arbitrary ILP");
 			case CBC:
 				return new CBCWrapper(ilpProblem, false);
+			case MIPCL:
+				return new MIPCLWrapper(ilpProblem, false);
 			default:
 				throw new UnsupportedOperationException("Unknown Solver: "+solver.toString());
 		}
@@ -83,6 +87,7 @@ public final class ILPFactory {
 		/**
 		 * Use the Coin-OR CBC solver using Google-OR (must be manually installed for non-Windows systems) 
 		 */
-		CBC
+		CBC,
+		MIPCL
 	}
 }
