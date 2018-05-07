@@ -75,6 +75,13 @@ public abstract class GraphTransformationAPI {
 	}
 
 	/**
+	 * Terminates the interpreter.
+	 */
+	public final void terminate() {
+		this.interpreter.terminate();
+	}
+
+	/**
 	 * Sets the default pushout approach.
 	 * 
 	 * @param defaultPushoutApproach
