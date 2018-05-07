@@ -41,8 +41,9 @@ public class EcoreUtils {
 	 * @return true if and only if both classes have the same fully qualified name.
 	 */
 	public static boolean equalsFQN(final EClass class1, final EClass class2) {
-		Objects.requireNonNull(class1);
-		Objects.requireNonNull(class2);
-		return MoflonUtil.getFQN(class1).equals(MoflonUtil.getFQN(class2));
+		if(class1 != null && class2 != null)
+			return MoflonUtil.getFQN(class1).equals(MoflonUtil.getFQN(class2));
+		else
+			return false;
 	}
 }
