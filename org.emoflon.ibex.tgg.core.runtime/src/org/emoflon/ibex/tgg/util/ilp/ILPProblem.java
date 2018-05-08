@@ -86,9 +86,13 @@ public final class ILPProblem {
 	 */
 	public void fixVariable(String variableName, int value) {
 		int variableId = this.getVariableId(variableName);
-		if(this.fixedVariableValues.contains(variableId) && this.fixedVariableValues.get(variableId) == value) {
-			//unchanged
-			return;
+		if(this.fixedVariableValues.contains(variableId)) {
+			if(this.fixedVariableValues.get(variableId) == value) {
+				return;
+				//unchanged
+			} else {
+				throw new RuntimeException("The variable has already been fixed to a different value");
+			}
 		}
 		this.unfixedVariables.remove(variableId);
 		this.fixedVariableValues.put(variableId, value);
@@ -366,7 +370,7 @@ public final class ILPProblem {
 		private void removeFixedVariables() {
 			fixedVariableValues.forEachEntry((variableID, value) -> {
 				double termValue = linearExpression.removeTerm(variableID) * value;
-				this.value += termValue;
+				this.value -= termValue;
 				return true;
 			});
 			checkFeasibility();
@@ -399,7 +403,7 @@ public final class ILPProblem {
 		 */
 		private boolean fixVariable(int variableID, int value) {
 			double termValue = linearExpression.removeTerm(variableID) * value;
-			this.value += termValue;
+			this.value -= termValue;
 			
 			checkFeasibility();
 			return termValue != 0;
