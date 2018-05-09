@@ -23,7 +23,6 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.cc.Bundle;
 import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
-import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem;
@@ -181,7 +180,7 @@ public abstract class OPT extends OperationalStrategy {
 				return true;
 			});
 
-			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
+			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL_nodeOnce_"+node.toString() + nameCounter++);
 		}
 
 		for (RuntimeEdge edge : edgeToMarkingMatches.keySet()) {
@@ -195,7 +194,7 @@ public abstract class OPT extends OperationalStrategy {
 				expr.addTerm("x" + v, 1.0);
 				return true;
 			});
-			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
+			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL_edgeOnce" + nameCounter++);
 		}
 
 		for (Integer match : sameComplementMatches.keySet()) {
@@ -205,7 +204,7 @@ public abstract class OPT extends OperationalStrategy {
 				expr.addTerm("x" + v, 1.0);
 				return true;
 			});
-			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
+			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL_sameCompl" + nameCounter++);
 		}
 
 		if (!invalidKernels.isEmpty()) {
@@ -215,7 +214,7 @@ public abstract class OPT extends OperationalStrategy {
 				expr.addTerm("x" + v, 1.0);
 				return true;
 			});
-			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "EXCL" + nameCounter++);
+			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "EXCL_invKern" + nameCounter++);
 		}
 
 		HandleDependencies handleCycles = new HandleDependencies(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
@@ -324,6 +323,9 @@ public abstract class OPT extends OperationalStrategy {
 
 		try {
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, this.options.getIlpSolver());
+			if(!ilpProblem.checkValidity(ilpSolution)) {
+				throw new AssertionError("Invalid solution");
+			};
 
 			int[] result = new int[idToMatch.size()];
 			idToMatch.keySet().forEach(v -> {

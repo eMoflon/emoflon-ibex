@@ -269,7 +269,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	 */
 	protected void reinitializeBlackInterpreter(IBlackInterpreter newBlackInterpreter) {
 		this.removeBlackInterpreter();
-		Runtime.getRuntime().gc();
+//		Runtime.getRuntime().gc();
 		this.blackInterpreter = newBlackInterpreter;
 		this.blackInterpreter.initialise(rs.getPackageRegistry(), this);
 		this.blackInterpreter.setOptions(options);
@@ -375,7 +375,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		if (!isPatternRelevantForInterpreter(match.getPatternName())) {
+		if (!isPatternRelevantForInterpreter(match.getPatternName()) || !updatePolicy.matchShouldBeApplied(match, ruleName)) {
 			return Optional.empty();
 		}
 
@@ -389,6 +389,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			markedAndCreatedEdges.addAll(cm.getCreatedEdges());
 			greenPattern.getEdgesMarkedByPattern().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
 			createMarkers(greenPattern, cm, ruleName);
+			updatePolicy.notifyMatchHasBeenApplied(match, ruleName);
 		});
 
 		return comatch;

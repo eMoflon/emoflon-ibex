@@ -86,7 +86,7 @@ public final class ILPProblem {
 	 */
 	public void fixVariable(String variableName, int value) {
 		int variableId = this.getVariableId(variableName);
-		if(this.fixedVariableValues.contains(variableId)) {
+		if(this.fixedVariableValues.containsKey(variableId)) {
 			if(this.fixedVariableValues.get(variableId) == value) {
 				return;
 				//unchanged
@@ -119,7 +119,7 @@ public final class ILPProblem {
 	 * @return The ID of the variable. If the variable is not yet contained, it will be registered with a new ID
 	 */
 	int getVariableId(String variable) {
-		if(!variables.contains(variable)) {
+		if(!variables.containsKey(variable)) {
 			variables.put(variable, variableCounter);
 			variableIDsToVariables.put(variableCounter, variable);
 			unfixedVariables.add(variableCounter);
@@ -736,7 +736,7 @@ public final class ILPProblem {
 		 * @return the coefficient, or 0 if no term for this variable has been defined
 		 */
 		double getCoefficient(int variableId) {
-			if(this.terms.contains(variableId)) {
+			if(this.terms.containsKey(variableId)) {
 				return this.terms.get(variableId);
 			}
 			return 0;
@@ -789,7 +789,7 @@ public final class ILPProblem {
 				if(terms.size() != other.terms.size())
 					return false;
 				for(int variableID : terms.keys()) {
-					if(!other.terms.contains(variableID)) {
+					if(!other.terms.containsKey(variableID)) {
 						return false;
 					}
 					if(terms.get(variableID) != other.terms.get(variableID)) {
@@ -853,7 +853,7 @@ public final class ILPProblem {
 		 * @return
 		 */
 		int getVariable(int variableId) {
-			if(fixedVariableValues.contains(variableId)) {
+			if(fixedVariableValues.containsKey(variableId)) {
 				return fixedVariableValues.get(variableId);
 			}
 			return variableAllocations.get(variableId);
