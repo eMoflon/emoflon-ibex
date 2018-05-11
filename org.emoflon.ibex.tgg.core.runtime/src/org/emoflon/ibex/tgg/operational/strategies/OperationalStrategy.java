@@ -389,7 +389,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			markedAndCreatedEdges.addAll(cm.getCreatedEdges());
 			greenPattern.getEdgesMarkedByPattern().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
 			createMarkers(greenPattern, cm, ruleName);
-			updatePolicy.notifyMatchHasBeenApplied(match, ruleName);
+			updatePolicy.notifyMatchHasBeenApplied(cm, ruleName);
 		});
 
 		return comatch;

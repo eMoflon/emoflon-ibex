@@ -80,37 +80,61 @@ public final class ILPProblem {
 	}
 	
 	/**
-	 * Sets one of the variables to a fixed value
-	 * @param variableName The name of the variable
-	 * @param value Value to set the variable to
+	 * Fixes all variables to the given values
+	 * @param variableMapping a mapping of the variable name to the assigned value
 	 */
-	public void fixVariable(String variableName, int value) {
-		int variableId = this.getVariableId(variableName);
-		if(this.fixedVariableValues.containsKey(variableId)) {
-			if(this.fixedVariableValues.get(variableId) == value) {
-				return;
-				//unchanged
-			} else {
-				throw new RuntimeException("The variable has already been fixed to a different value");
+	public void fixVariables(TObjectIntHashMap<String> variableMapping) {
+		TIntIntHashMap variableIdToValue = new TIntIntHashMap();
+		for(String variableName : variableMapping.keySet()) {
+			int variableId = this.getVariableId(variableName);
+			int value = variableMapping.get(variableName);
+			if(this.fixedVariableValues.containsKey(variableId)) {
+				if(this.fixedVariableValues.get(variableId) == value) {
+					continue;
+					//unchanged
+				} else {
+					throw new RuntimeException("The variable "+variableName+" has already been fixed to a different value");
+				}
 			}
+			variableIdToValue.put(variableId, value);
+			this.unfixedVariables.remove(variableId);
+			this.fixedVariableValues.put(variableId, value);
 		}
-		this.unfixedVariables.remove(variableId);
-		this.fixedVariableValues.put(variableId, value);
+		
 		TObjectHashIterator<ILPConstraint> it = this.constraints.iterator();
 		LinkedList<ILPConstraint> modifiedConstraints = new LinkedList<ILPProblem.ILPConstraint>();
 		while(it.hasNext()) {
 			ILPConstraint constraint = it.next();
-			if(constraint.getLinearExpression().getCoefficient(variableId) != 0) {
-				//needs to be updated
-				it.remove();
-				constraint.fixVariable(variableId, value);
+			boolean changed = false;
+			for(int variableId : variableIdToValue.keys()) {
+				if(constraint.getLinearExpression().getCoefficient(variableId) != 0) {
+					//needs to be updated
+					it.remove();
+					changed = true;
+					constraint.fixVariable(variableId, variableIdToValue.get(variableId));
+				}
+			}
+			if(changed) {
 				modifiedConstraints.add(constraint);
 			}
 		}
 		modifiedConstraints.stream().forEach(c -> this.addConstraint(c));
 		if(objective != null) {
-			objective.fixVariable(variableId, value);
+			for(int variableId : variableIdToValue.keys()) {
+				objective.fixVariable(variableId, variableIdToValue.get(variableId));
+			}
 		}
+	}
+	
+	/**
+	 * Sets one of the variables to a fixed value
+	 * @param variableName The name of the variable
+	 * @param value Value to set the variable to
+	 */
+	public void fixVariable(String variableName, int value) {
+		TObjectIntHashMap<String> variableMapping = new TObjectIntHashMap<String>();
+		variableMapping.put(variableName, value);
+		this.fixVariables(variableMapping);
 	}
 	
 	/**
