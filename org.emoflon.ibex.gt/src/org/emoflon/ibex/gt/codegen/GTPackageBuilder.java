@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -106,7 +107,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		this.getFiles().forEach(gtFile -> {
 			URI uri = URI.createPlatformResourceURI(gtFile.getFullPath().toString(), true);
 			Resource file = resourceSet.getResource(uri, true);
-			EcoreUtil2.resolveLazyCrossReferences(file, () -> false);
+			try {
+				EcoreUtil2.resolveLazyCrossReferences(file, () -> false);
+			} catch (WrappedException e) {
+				this.log(String.format("Error resolving cross references in file %s.", gtFile.getName()));
+			}
 
 			EditorGTFile editorModel = (EditorGTFile) file.getContents().get(0);
 			editorModels.put(gtFile, editorModel);
