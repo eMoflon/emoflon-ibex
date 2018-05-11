@@ -25,6 +25,13 @@ public class IBeXPatternUtils {
 	 */
 	public static final Comparator<IBeXNamedElement> sortByName = (a, b) -> a.getName().compareTo(b.getName());
 
+	/**
+	 * Checks whether the given pattern is empty.
+	 * 
+	 * @param ibexPattern
+	 *            the pattern
+	 * @return <code>true</code> if the pattern contains no nodes
+	 */
 	public static boolean isEmptyPattern(final IBeXContext ibexPattern) {
 		return ibexPattern instanceof IBeXContextPattern && isEmptyPattern((IBeXContextPattern) ibexPattern);
 	}
@@ -34,7 +41,7 @@ public class IBeXPatternUtils {
 	 * 
 	 * @param ibexPattern
 	 *            the pattern
-	 * @return true if the pattern contains no nodes
+	 * @return <code>true</code> if the pattern contains no nodes
 	 */
 	public static boolean isEmptyPattern(final IBeXContextPattern ibexPattern) {
 		return ibexPattern.getSignatureNodes().isEmpty() && ibexPattern.getLocalNodes().isEmpty();

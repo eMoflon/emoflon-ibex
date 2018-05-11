@@ -223,11 +223,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 
 		EClassifiersManager eClassifiersManager = new EClassifiersManager(map);
 		metaModels.forEach(uri -> {
-			Resource ecoreFile = resourceSet.getResource(URI.createURI(uri), true);
 			try {
+				Resource ecoreFile = resourceSet.getResource(URI.createURI(uri), true);
 				ecoreFile.load(null);
 				eClassifiersManager.loadMetaModelClasses(ecoreFile);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				this.log("Could not load meta-model " + uri + ".");
 			}
 		});
