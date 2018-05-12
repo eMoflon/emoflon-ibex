@@ -77,9 +77,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			new RuntimeEdgeHashingStrategy());
 	protected THashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new THashMap<>();
 
-	protected String workspacePath;
-	protected String projectPath;
-
 	protected IbexOptions options;
 
 	protected IBlackInterpreter blackInterpreter;
@@ -96,8 +93,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	public OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
 		base = URI.createPlatformResourceURI("/", true);
-		this.workspacePath = options.workspacePath();
-		this.projectPath = options.projectPath();
 
 		this.options = options;
 
@@ -299,11 +294,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Resource loadFlattenedTGGResource() throws IOException {
-		return loadResource(projectPath + "/model/" + projectPath + "_flattened.tgg.xmi");
+		return loadResource(options.projectPath() + "/model/" + options.projectName() + "_flattened.tgg.xmi");
 	}
 
 	protected Resource loadTGGResource() throws IOException {
-		return loadResource(projectPath + "/model/" + projectPath + ".tgg.xmi");
+		return loadResource(options.projectPath() + "/model/" + options.projectName() + ".tgg.xmi");
 	}
 
 	/**
@@ -313,7 +308,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	 * @throws IOException
 	 */
 	protected void createAndPrepareResourceSet() {
-		rs = blackInterpreter.createAndPrepareResourceSet(workspacePath);
+		rs = blackInterpreter.createAndPrepareResourceSet(options.workspacePath());
 	}
 
 	protected void registerInternalMetamodels() {

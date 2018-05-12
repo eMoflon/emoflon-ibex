@@ -74,10 +74,10 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	public void loadModels() throws IOException {
-		s = loadResource(projectPath + "/instances/src.xmi");
-		t = loadResource(projectPath + "/instances/trg.xmi");
-		c = loadResource(projectPath + "/instances/corr.xmi");
-		p = loadResource(projectPath + "/instances/protocol.xmi");
+		s = loadResource(options.projectPath() + "/instances/src.xmi");
+		t = loadResource(options.projectPath() + "/instances/trg.xmi");
+		c = loadResource(options.projectPath() + "/instances/corr.xmi");
+		p = loadResource(options.projectPath() + "/instances/protocol.xmi");
 
 		EcoreUtil.resolveAll(rs);
 	}

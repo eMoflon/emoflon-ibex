@@ -105,11 +105,7 @@ class DefaultFilesGenerator {
 				«generateMetamodelRegistration()»
 				
 				private static IbexOptions createIbexOptions() {
-					IbexOptions options = new IbexOptions();
-					options.projectName("«projectName»");
-					options.projectPath("«projectName»");
-					options.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
-					return options;
+					return _RegistrationHelper.createIbexOptions();
 				}
 			}
 		'''
@@ -305,10 +301,10 @@ class DefaultFilesGenerator {
 			'''
 				@Override
 				public void loadModels() throws IOException {
-					s = loadResource(projectPath + "/instances/src.xmi");
-					t = createResource(projectPath + "/instances/trg.xmi");
-					c = createResource(projectPath + "/instances/corr.xmi");
-					p = createResource(projectPath + "/instances/protocol.xmi");
+					s = loadResource(options.projectPath() + "/instances/src.xmi");
+					t = createResource(options.projectPath() + "/instances/trg.xmi");
+					c = createResource(options.projectPath() + "/instances/corr.xmi");
+					p = createResource(options.projectPath() + "/instances/protocol.xmi");
 					
 					EcoreUtil.resolveAll(rs);
 				}
@@ -349,10 +345,10 @@ class DefaultFilesGenerator {
 			'''
 				@Override
 				public void loadModels() throws IOException {
-					t = loadResource(projectPath + "/instances/trg.xmi");
-					s = createResource(projectPath + "/instances/src.xmi");
-					c = createResource(projectPath + "/instances/corr.xmi");
-					p = createResource(projectPath + "/instances/protocol.xmi");
+					t = loadResource(options.projectPath() + "/instances/trg.xmi");
+					s = createResource(options.projectPath() + "/instances/src.xmi");
+					c = createResource(options.projectPath() + "/instances/corr.xmi");
+					p = createResource(options.projectPath() + "/instances/protocol.xmi");
 					
 					EcoreUtil.resolveAll(rs);
 				}
@@ -389,6 +385,9 @@ class DefaultFilesGenerator {
 			import org.eclipse.emf.ecore.resource.ResourceSet;
 			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 			
+			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
+			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 			
 			public class _RegistrationHelper {
 			
@@ -411,6 +410,16 @@ class DefaultFilesGenerator {
 					// URI value = URI.createURI(pathToEcoreFile);
 					// strategy.loadAndRegisterMetamodel(pathToEcoreFile);
 					// rs.getURIConverter().getURIMap().put(key, value);
+				}
+				
+				/** Create default options **/
+				public static IbexOptions createIbexOptions() {
+					IbexOptions options = new IbexOptions();
+					options.projectName("«projectName»");
+					options.projectPath("«projectName»");
+					options.debug(false);
+					options.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
+					return options;
 				}
 			}
 		'''
