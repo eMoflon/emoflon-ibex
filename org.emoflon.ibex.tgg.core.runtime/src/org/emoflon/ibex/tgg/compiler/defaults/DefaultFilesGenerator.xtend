@@ -83,7 +83,6 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Level;
 			import org.apache.log4j.Logger;
 			
-			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			«additionalImports»
 			
