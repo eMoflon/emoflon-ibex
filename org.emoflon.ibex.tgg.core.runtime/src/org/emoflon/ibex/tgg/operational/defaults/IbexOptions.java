@@ -3,6 +3,8 @@ package org.emoflon.ibex.tgg.operational.defaults;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
@@ -46,7 +48,7 @@ public class IbexOptions {
 	private SupportedILPSolver ilpSolver;
 
 	public IbexOptions() {
-		debug = false;
+		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
 		projectPath = "/";
 		workspacePath = "./../";
 		setIlpSolver(SupportedILPSolver.Sat4J);
