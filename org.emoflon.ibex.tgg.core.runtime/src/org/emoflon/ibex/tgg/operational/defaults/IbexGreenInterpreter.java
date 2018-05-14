@@ -107,7 +107,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				}
 				if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
 					TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
-					newObj.eSet(attrExpr.getAttribute(), tee.getLiteral());
+					newObj.eSet(attrExpr.getAttribute(), tee.getLiteral().getInstance());
 					continue;
 				}
 				if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
