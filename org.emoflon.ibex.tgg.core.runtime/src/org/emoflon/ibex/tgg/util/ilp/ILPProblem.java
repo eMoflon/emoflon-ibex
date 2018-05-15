@@ -55,7 +55,15 @@ public final class ILPProblem {
 	 */
 	private final TIntIntHashMap fixedVariableValues = new TIntIntHashMap();
 	
+	/**
+	 * Contains the IDs of the unassigned variables
+	 */
 	private final TIntHashSet unfixedVariables = new TIntHashSet();
+	
+	/**
+	 * Contains the IDs of the variables that have been fixed but have not yet been removed from the constraints and objective
+	 */
+	private final TIntHashSet lazyFixedVariables = new TIntHashSet();
 
 	/**
 	 * Creates a new ILPProblem. Instances can be obtained using the {@link ILPFactory}
@@ -84,34 +92,30 @@ public final class ILPProblem {
 	 * @param variableMapping a mapping of the variable name to the assigned value
 	 */
 	public void fixVariables(TObjectIntHashMap<String> variableMapping) {
-		TIntIntHashMap variableIdToValue = new TIntIntHashMap();
 		for(String variableName : variableMapping.keySet()) {
-			int variableId = this.getVariableId(variableName);
-			int value = variableMapping.get(variableName);
-			if(this.fixedVariableValues.containsKey(variableId)) {
-				if(this.fixedVariableValues.get(variableId) == value) {
-					continue;
-					//unchanged
-				} else {
-					throw new RuntimeException("The variable "+variableName+" has already been fixed to a different value");
-				}
-			}
-			variableIdToValue.put(variableId, value);
-			this.unfixedVariables.remove(variableId);
-			this.fixedVariableValues.put(variableId, value);
+			this.fixVariable(variableName, variableMapping.get(variableName));
 		}
-		
+	}
+	
+	/**
+	 * Adapts the constraints and objectives to no longer contain fixed variables.
+	 * Adapting constraints is a costly operation so it should only be done before accessing constraints or objective
+	 */
+	private void applyLazyFixedVariables() {
+		if(lazyFixedVariables.isEmpty()) {
+			return;
+		}
 		TObjectHashIterator<ILPConstraint> it = this.constraints.iterator();
 		LinkedList<ILPConstraint> modifiedConstraints = new LinkedList<ILPProblem.ILPConstraint>();
 		while(it.hasNext()) {
 			ILPConstraint constraint = it.next();
 			boolean changed = false;
-			for(int variableId : variableIdToValue.keys()) {
+			for(int variableId : lazyFixedVariables.toArray()) {
 				if(constraint.getLinearExpression().getCoefficient(variableId) != 0) {
 					//needs to be updated
 					it.remove();
 					changed = true;
-					constraint.fixVariable(variableId, variableIdToValue.get(variableId));
+					constraint.fixVariable(variableId, fixedVariableValues.get(variableId));
 				}
 			}
 			if(changed) {
@@ -120,10 +124,11 @@ public final class ILPProblem {
 		}
 		modifiedConstraints.stream().forEach(c -> this.addConstraint(c));
 		if(objective != null) {
-			for(int variableId : variableIdToValue.keys()) {
-				objective.fixVariable(variableId, variableIdToValue.get(variableId));
+			for(int variableId : fixedVariableValues.keys()) {
+				objective.fixVariable(variableId, fixedVariableValues.get(variableId));
 			}
 		}
+		lazyFixedVariables.clear();
 	}
 	
 	/**
@@ -132,9 +137,20 @@ public final class ILPProblem {
 	 * @param value Value to set the variable to
 	 */
 	public void fixVariable(String variableName, int value) {
-		TObjectIntHashMap<String> variableMapping = new TObjectIntHashMap<String>();
-		variableMapping.put(variableName, value);
-		this.fixVariables(variableMapping);
+		int variableId = this.getVariableId(variableName);
+		if(this.fixedVariableValues.containsKey(variableId)) {
+			if(this.fixedVariableValues.get(variableId) == value) {
+				//unchanged
+				return;
+			} else {
+				throw new RuntimeException("The variable "+variableName+" has already been fixed to a different value");
+			}
+		}
+		this.unfixedVariables.remove(variableId);
+		this.fixedVariableValues.put(variableId, value);
+		//variable is not directly removed from the constraints or objective (to reduce overhead), but only just before the first time we 
+		//access the constraints/objective  
+		this.lazyFixedVariables.add(variableId);
 	}
 	
 	/**
@@ -214,6 +230,7 @@ public final class ILPProblem {
 	 * @return the constraints that have been defined
 	 */
 	public final Collection<ILPConstraint> getConstraints() {
+		this.applyLazyFixedVariables();
 		return Collections.unmodifiableCollection(this.constraints);
 	}
 
@@ -222,6 +239,7 @@ public final class ILPProblem {
 	 * @return The objective function
 	 */
 	public final ILPObjective getObjective() {
+		this.applyLazyFixedVariables();
 		return this.objective;
 	}
 
@@ -260,11 +278,13 @@ public final class ILPProblem {
 	 * @return the value of the objective function for the given solution
 	 */
 	public double getSolutionValue(ILPSolution solution) {
+		this.applyLazyFixedVariables();
 		return this.objective.getSolutionValue(solution);
 	}
 
 	@Override
 	public String toString() {
+		applyLazyFixedVariables();
 		StringBuilder b = new StringBuilder();
 		b.append(objective);
 		for(ILPConstraint constraint : constraints) {
