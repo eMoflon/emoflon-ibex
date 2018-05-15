@@ -63,7 +63,7 @@ public class MODELGENStopCriterion {
 				.orElseThrow(() -> new IllegalArgumentException(
 						ruleName + " is not a name of a TGG rule in " + tgg.getName()));
 
-		if (r.isAbstract())
+		if (r.isAbstract() && maxNoOfApplications > 0)
 			throw new IllegalArgumentException(
 					"It makes no sense to set a max count for " + ruleName + ", as it is abstract.");
 
