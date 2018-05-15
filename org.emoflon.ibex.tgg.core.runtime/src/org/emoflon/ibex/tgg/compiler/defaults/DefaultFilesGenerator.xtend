@@ -334,7 +334,7 @@ class DefaultFilesGenerator {
 				
 				logger.info("Starting INITIAL BWD");
 				long tic = System.currentTimeMillis();
-				init_bwd.forward();
+				init_bwd.backward();
 				long toc = System.currentTimeMillis();
 				logger.info("Completed INITIAL BWD in: " + (toc - tic) + " ms");
 				
