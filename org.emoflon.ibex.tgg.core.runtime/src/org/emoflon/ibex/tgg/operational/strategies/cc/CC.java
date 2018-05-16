@@ -313,7 +313,7 @@ public abstract class CC extends OPT {
 		if (modelsAreConsistent())
 			result += "Your models are consistent";
 		else {
-			result += "Your models are inconsistent. Following elements are not part of a consistent triple:";
+			result += "Your models are inconsistent. The following elements are not part of a consistent triple:";
 			result += "\n" + "Source nodes:" + "\n";
 			result += String.join("\n",
 					getInconsistentSrcNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
