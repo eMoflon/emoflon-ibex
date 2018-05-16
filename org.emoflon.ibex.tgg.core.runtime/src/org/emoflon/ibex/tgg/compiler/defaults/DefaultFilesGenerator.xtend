@@ -279,6 +279,7 @@ class DefaultFilesGenerator {
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
+				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 				«additionalImports»
 			''',
 			fileName,
@@ -328,6 +329,7 @@ class DefaultFilesGenerator {
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
+				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 				«additionalImports»
 			''',
 			fileName,
