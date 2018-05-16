@@ -299,6 +299,11 @@ class DefaultFilesGenerator {
 			''',
 			'''
 				@Override
+				public boolean isPatternRelevantForCompiler(String patternName) {
+					return patternName.endsWith(PatternSuffixes.FWD);
+				}
+				
+				@Override
 				public void loadModels() throws IOException {
 					s = loadResource(options.projectPath() + "/instances/src.xmi");
 					t = createResource(options.projectPath() + "/instances/trg.xmi");
@@ -342,6 +347,11 @@ class DefaultFilesGenerator {
 				init_bwd.terminate();
 			''',
 			'''
+				@Override
+				public boolean isPatternRelevantForCompiler(String patternName) {
+					return patternName.endsWith(PatternSuffixes.BWD);
+				}
+				
 				@Override
 				public void loadModels() throws IOException {
 					t = loadResource(options.projectPath() + "/instances/trg.xmi");
