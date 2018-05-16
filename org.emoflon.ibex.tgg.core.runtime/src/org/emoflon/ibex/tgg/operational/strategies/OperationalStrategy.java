@@ -167,7 +167,9 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	public void addOperationalRuleMatch(String ruleName, IMatch match) {
-		if (matchIsDomainConform(ruleName, match) && matchIsValidIsomorphism(ruleName, match)) {
+		if (isPatternRelevantForInterpreter(match.getPatternName()) && 
+				matchIsDomainConform(ruleName, match) 
+				&& matchIsValidIsomorphism(ruleName, match)) {
 			operationalMatchContainer.addMatch(ruleName, match);
 			if (options.debug())
 				logger.debug("Received and added " + match.getPatternName());
@@ -375,7 +377,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		if (!isPatternRelevantForInterpreter(match.getPatternName()) || !updatePolicy.matchShouldBeApplied(match, ruleName)) {
+		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
 			return Optional.empty();
 		}
 
