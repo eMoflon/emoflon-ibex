@@ -306,7 +306,7 @@ class JavaFileGenerator {
 			«FOR node : rule.ruleNodes»
 				
 					/**
-					 * Binds the parameter «node.name» to the given object.
+					 * Binds the node «node.name» to the given object.
 					 *
 					 * @param object
 					 *            the object to set
