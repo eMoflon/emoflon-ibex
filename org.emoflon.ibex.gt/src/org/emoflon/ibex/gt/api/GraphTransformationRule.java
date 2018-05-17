@@ -17,9 +17,8 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
  * deleted node or attribute assignments. Via <code>apply()</code> and its
  * variants, rules can be applied.
  * 
- * If no pushout approach is set for the rule before calling an
- * <code>apply</code> method, the pushout approach of the API which created the
- * rule will be used.
+ * If no pushout approach is set for the rule before the application, the
+ * pushout approach of the API which created the rule will be used.
  * 
  * Concrete Implementations of this class should provide typed methods for
  * binding the parameters.
@@ -92,14 +91,16 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Sets the pushout approach for the rule to double pushout.
+	 * Sets the pushout approach for the rule to double pushout (see
+	 * {@link PushoutApproach}).
 	 */
 	public final P setDPO() {
 		return this.setPushoutApproach(PushoutApproach.DPO);
 	}
 
 	/**
-	 * Sets the pushout approach for the rule to single pushout.
+	 * Sets the pushout approach for the rule to single pushout (see
+	 * {@link PushoutApproach}).
 	 */
 	public final P setSPO() {
 		return this.setPushoutApproach(PushoutApproach.SPO);
@@ -255,7 +256,9 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Subscribe a notification when the given rule is applied.
+	 * Subscribe a notification when the given rule is applied. Directly after the
+	 * rule application, the <code>accept</code> method of the {@link Consumer} will
+	 * be called.
 	 * 
 	 * @param action
 	 *            the {@link Consumer} to notify of rule applications
@@ -265,7 +268,8 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Removes the subscriptions of notification of rule applications.
+	 * Removes the subscriptions of notification of rule applications for the given
+	 * {@link Consumer}.
 	 * 
 	 * @param action
 	 *            the {@link Consumer} to remove
@@ -279,9 +283,10 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	}
 
 	/**
-	 * Deletes all subscriptions of notifications of rule applications.
+	 * Deletes all subscriptions of notifications of rule applications, i. e. all
+	 * registered {@link Consumer}s will be removed.
 	 */
-	public final void unsubscribeRuleApplicationsAll() {
+	public final void unsubscribeRuleApplications() {
 		this.ruleApplicationConsumers.clear();
 	}
 }
