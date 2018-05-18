@@ -19,10 +19,10 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OPT;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.TCustomHashSet;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.set.hash.TIntHashSet;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGComplementRule;
 import language.TGGRuleCorr;
 import runtime.TGGRuleApplication;
@@ -115,7 +115,7 @@ public abstract class CC extends OPT {
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 		
 		// collection needed to handle uniqueness
-		THashMap<Integer, THashSet<EObject>> complementMatchToContextNodes = new THashMap<>();
+		Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes = new Int2ObjectOpenHashMap<>();
 		
 		while (complementRuleMatches.iterator().hasNext()) {
 			IMatch match = complementRuleMatches.iterator().next();
@@ -146,14 +146,14 @@ public abstract class CC extends OPT {
 		TGGComplementRule rule = getComplementRule(ruleName).get();
 		if(rule.isBounded()) {
 		//check if the complement rule was applied. If not, mark its kernel as invalid.
-			THashSet<EObject> contextNodes = getGenContextNodes(match);
+			ObjectOpenHashSet<EObject> contextNodes = getGenContextNodes(match);
 			if (!matchToContextNodes.containsValue(contextNodes))
 				invalidKernels.add(kernelMatchID);
 		}
 	}
 
 	private void applyMatchAndHandleUniqueness(IMatch match,
-			THashMap<Integer, THashSet<EObject>> complementMatchToContextNodes) {
+			Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		if (processOperationalRuleMatch(ruleName, match) != null) {
 			TGGComplementRule rule = getComplementRule(ruleName).get();
@@ -168,15 +168,15 @@ public abstract class CC extends OPT {
 	 * edges.
 	 */
 	private void findDuplicatedMatches(int currentComplementMatch,
-			THashMap<Integer, THashSet<EObject>> complementMatchToContextNodes) {
+			Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes) {
 
-		THashSet<EObject> contextNodesForCurrentComplementMatch = matchToContextNodes.get(currentComplementMatch);
-		for (Integer previousComplementMatch : complementMatchToContextNodes.keySet()) {
+		ObjectOpenHashSet<EObject> contextNodesForCurrentComplementMatch = matchToContextNodes.get(currentComplementMatch);
+		for (int previousComplementMatch : complementMatchToContextNodes.keySet()) {
 		//check if matches belong to the same complement rule
 			if (matchIdToRuleName.get(currentComplementMatch).equals(matchIdToRuleName.get(previousComplementMatch))) {
 				if(matchToContextNodes.get(previousComplementMatch).equals(contextNodesForCurrentComplementMatch)) {
 					if (!sameComplementMatches.containsKey(currentComplementMatch)) {
-						sameComplementMatches.put(currentComplementMatch, new TIntHashSet());
+						sameComplementMatches.put(currentComplementMatch, new IntOpenHashSet());
 						sameComplementMatches.get(currentComplementMatch).add(currentComplementMatch);
 						sameComplementMatches.get(currentComplementMatch).add(previousComplementMatch);
 					}
@@ -195,9 +195,9 @@ public abstract class CC extends OPT {
 		return name.substring(0, name.indexOf(PatternSuffixes.GENForCC));
 	}
 
-	private THashSet<EObject> getGenContextNodes(IMatch match){
-		THashSet<EObject> contextNodes = match.getParameterNames().stream()
-				.map(n -> match.get(n)).collect(Collectors.toCollection(THashSet<EObject>::new));
+	private ObjectOpenHashSet<EObject> getGenContextNodes(IMatch match){
+		ObjectOpenHashSet<EObject> contextNodes = match.getParameterNames().stream()
+				.map(n -> match.get(n)).collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
 		return contextNodes;
 	}
 	
@@ -251,35 +251,35 @@ public abstract class CC extends OPT {
 
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
-				nodeToMarkingMatches.put(e, new TIntHashSet());
+				nodeToMarkingMatches.put(e, new IntOpenHashSet());
 			nodeToMarkingMatches.get(e).add(idCounter);
 		});
 
 		getGreenEdges(comatch, ruleName).forEach(e -> {
 			if (!edgeToMarkingMatches.containsKey(e)) {
-				edgeToMarkingMatches.put(e, new TIntHashSet());
+				edgeToMarkingMatches.put(e, new IntOpenHashSet());
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
 		
 		getBlackNodes(comatch, ruleName).forEach(e -> {
 			if (!contextNodeToNeedingMatches.containsKey(e))
-				contextNodeToNeedingMatches.put(e, new TIntHashSet());
+				contextNodeToNeedingMatches.put(e, new IntOpenHashSet());
 			contextNodeToNeedingMatches.get(e).add(idCounter);
 		});
 		
 		getBlackEdges(comatch, ruleName).forEach(e -> {
 			if (!contextEdgeToNeedingMatches.containsKey(e)) {
-				contextEdgeToNeedingMatches.put(e, new TIntHashSet());
+				contextEdgeToNeedingMatches.put(e, new IntOpenHashSet());
 			}
 			contextEdgeToNeedingMatches.get(e).add(idCounter);
 		});
 
-		matchToContextNodes.put(idCounter, new THashSet<>());
+		matchToContextNodes.put(idCounter, new ObjectOpenHashSet<>());
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
 		
 
-		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
+		matchToContextEdges.put(idCounter, new ObjectOpenCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 		
 		handleBundles(comatch, ruleName);

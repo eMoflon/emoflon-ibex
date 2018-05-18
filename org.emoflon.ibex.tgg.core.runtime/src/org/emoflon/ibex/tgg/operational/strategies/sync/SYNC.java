@@ -17,7 +17,7 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGComplementRule;
 import runtime.TGGRuleApplication;
 
@@ -138,10 +138,10 @@ public abstract class SYNC extends OperationalStrategy {
 		for (IMatch match : complementMatches) {
 			if (!isComplementMatchRelevant(match, comatch))
 				continue;
-			THashSet<EObject> fusedNodes = comatch.getParameterNames().stream().map(n -> comatch.get(n))
-					.collect(Collectors.toCollection(THashSet<EObject>::new));
-			THashSet<EObject> complementNodes = match.getParameterNames().stream().map(n -> match.get(n))
-					.collect(Collectors.toCollection(THashSet<EObject>::new));
+			ObjectOpenHashSet<EObject> fusedNodes = comatch.getParameterNames().stream().map(n -> comatch.get(n))
+					.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
+			ObjectOpenHashSet<EObject> complementNodes = match.getParameterNames().stream().map(n -> match.get(n))
+					.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
 
 			if (fusedNodes.containsAll(complementNodes))
 				removeOperationalRuleMatch(match);
@@ -210,7 +210,7 @@ public abstract class SYNC extends OperationalStrategy {
 			return true;
 
 		EObject kernelProtocol = (EObject) match.get(ConsistencyPattern.getProtocolNodeName(cr.getKernel().getName()));
-		THashSet<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
+		ObjectOpenHashSet<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
 
 		// If any node from bounded CR context was created after
 		// its kernel was applied, CR is not applicable!
@@ -221,10 +221,10 @@ public abstract class SYNC extends OperationalStrategy {
 		return true;
 	}
 
-	private THashSet<EObject> getContextNodesWithoutProtocolNode(IMatch match) {
-		THashSet<EObject> contextNodes = match.getParameterNames().stream()
+	private ObjectOpenHashSet<EObject> getContextNodesWithoutProtocolNode(IMatch match) {
+		ObjectOpenHashSet<EObject> contextNodes = match.getParameterNames().stream()
 				.filter(n -> !(match.get(n) instanceof TGGRuleApplication)).map(n -> match.get(n))
-				.collect(Collectors.toCollection(THashSet<EObject>::new));
+				.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
 		return contextNodes;
 	}
 

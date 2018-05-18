@@ -5,8 +5,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gurobi.GRB;
 import gurobi.GRB.DoubleAttr;
 import gurobi.GRBEnv;
@@ -14,6 +12,8 @@ import gurobi.GRBException;
 import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 /**
  * This class is a wrapper around Gurobi allowing the usage of this ILPSolver with the unified API of the {@link ILPSolver} class.
@@ -26,7 +26,7 @@ final class GurobiWrapper extends ILPSolver {
 	/**
 	 * A mapping of the variable identifiers to the variables registered in the Gurobi model
 	 */
-	private final TIntObjectHashMap<GRBVar> gurobiVariables = new TIntObjectHashMap<GRBVar>();
+	private final Int2ObjectOpenHashMap<GRBVar> gurobiVariables = new Int2ObjectOpenHashMap<GRBVar>();
 	/**
 	 * The Gurobi model
 	 */
@@ -128,7 +128,7 @@ final class GurobiWrapper extends ILPSolver {
 		
 		double optimum = model.get(GRB.DoubleAttr.ObjVal);
 		
-		TIntIntHashMap solutionVariables = new TIntIntHashMap();
+		Int2IntOpenHashMap solutionVariables = new Int2IntOpenHashMap();
 		for (int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			GRBVar gurobiVar = gurobiVariables.get(variableId);
 			solutionVariables.put(variableId, (int) gurobiVar.get(DoubleAttr.X));

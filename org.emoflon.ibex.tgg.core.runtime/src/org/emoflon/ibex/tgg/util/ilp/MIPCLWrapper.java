@@ -13,8 +13,8 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import by.bsu.JVmipshell.LinSum;
 import by.bsu.JVmipshell.MIPshell;
 import by.bsu.JVmipshell.Var;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class MIPCLWrapper extends ILPSolver {
 
@@ -60,7 +60,7 @@ public class MIPCLWrapper extends ILPSolver {
 
 	private MIPshell solver;
 	
-	private TIntObjectHashMap<Var> variableIdToMIPCLVar = new TIntObjectHashMap<Var>();
+	private Int2ObjectOpenHashMap<Var> variableIdToMIPCLVar = new Int2ObjectOpenHashMap<Var>();
 
 	/**
 	 * This setting defines the variable range of variables registered at GLPK
@@ -85,7 +85,7 @@ public class MIPCLWrapper extends ILPSolver {
 		System.out.println("The ILP to solve has " + this.ilpProblem.getConstraints().size() + " constraints and "
 				+ this.ilpProblem.getVariableIdsOfUnfixedVariables().length + " variables");
 		if(this.ilpProblem.getVariableIdsOfUnfixedVariables().length < 1) {
-			return this.ilpProblem.createILPSolution(new TIntIntHashMap() , true, 0);
+			return this.ilpProblem.createILPSolution(new Int2IntOpenHashMap() , true, 0);
 		}
 		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
 		currentTimeout = MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
@@ -145,7 +145,7 @@ public class MIPCLWrapper extends ILPSolver {
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
 		
-		TIntIntHashMap variableSolutions = new TIntIntHashMap();
+		Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
 		double optimum = solver.getobjVal();
 		System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
 		for(int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {

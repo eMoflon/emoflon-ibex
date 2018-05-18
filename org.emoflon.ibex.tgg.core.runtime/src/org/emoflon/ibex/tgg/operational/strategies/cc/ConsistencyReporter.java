@@ -11,8 +11,8 @@ import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-import gnu.trove.set.hash.TCustomHashSet;
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
@@ -76,7 +76,7 @@ public class ConsistencyReporter {
 	private Collection<EObject> extractInconsistentNodes(Resource resource, Resource protocol, Domain domain) {
 		Iterator<EObject> it = resource.getAllContents();
 
-		Collection<EObject> nodes = new THashSet<>();
+		Collection<EObject> nodes = new ObjectOpenHashSet<>();
 
 		while (it.hasNext()) {
 			nodes.add(it.next());
@@ -102,7 +102,7 @@ public class ConsistencyReporter {
 
 	private Collection<RuntimeEdge> extractInconsistentEdges(Resource resource, Resource protocol, Domain domain) {
 		Iterator<EObject> it = resource.getAllContents();
-		Collection<RuntimeEdge> edges = new TCustomHashSet<>(new RuntimeEdgeHashingStrategy());
+		Collection<RuntimeEdge> edges = new ObjectOpenCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 
 		while (it.hasNext()) {
 			EObject node = it.next();

@@ -9,10 +9,9 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import language.TGG;
 import language.TGGComplementRule;
 import language.TGGRule;
@@ -24,17 +23,17 @@ import language.TGGRule;
  */
 public class MatchContainer {
 
-	private TObjectIntMap<String> ruleNameToId;
-	private TIntObjectMap<String> idToRuleName;
+	private Object2IntOpenHashMap<String> ruleNameToId;
+	private Int2ObjectOpenHashMap<String> idToRuleName;
 
-	private TObjectIntMap<IMatch> matchToRuleNameID;
+	private Object2IntLinkedOpenHashMap<IMatch> matchToRuleNameID;
 
 	private Random random;
 
 	public MatchContainer(TGG tgg) {
-		this.ruleNameToId = new TObjectIntHashMap<>(tgg.getRules().size());
-		this.idToRuleName = new TIntObjectHashMap<>(tgg.getRules().size());
-		this.matchToRuleNameID = new TObjectIntHashMap<>();
+		this.ruleNameToId = new Object2IntOpenHashMap<>(tgg.getRules().size());
+		this.idToRuleName = new Int2ObjectOpenHashMap<>(tgg.getRules().size());
+		this.matchToRuleNameID = new Object2IntLinkedOpenHashMap<>();
 		this.random = new Random();
 		assignIDsToRuleNames(tgg);
 	}
@@ -49,12 +48,12 @@ public class MatchContainer {
 	}
 
 	public void addMatch(String ruleName, IMatch match) {
-		matchToRuleNameID.put(match, ruleNameToId.get(ruleName));
+		matchToRuleNameID.put(match, ruleNameToId.getInt(ruleName));
 	}
 
 	public void removeMatch(IMatch match) {
 		if (matchToRuleNameID.containsKey(match))
-			matchToRuleNameID.remove(match);
+			matchToRuleNameID.removeInt(match);
 	}
 	
 	public void removeMatches(Collection<IMatch> matches) {
@@ -72,9 +71,7 @@ public class MatchContainer {
 	public IMatch getNextRandom() {
 		Iterator<IMatch> it = matchToRuleNameID.keySet().iterator();
 		int randomIndex = random.nextInt(matchToRuleNameID.size());
-		int count = 0;
-		while (count < randomIndex) {
-			count++;
+		for(int count = 0; count < randomIndex; count++) {
 			it.next();
 		}
 		return it.next();
@@ -107,7 +104,7 @@ public class MatchContainer {
 	public String getRuleName(IMatch match) {
 		if (isFusedPatternMatch(match.getPatternName()))
 				return match.getPatternName();
-		return idToRuleName.get(matchToRuleNameID.get(match));
+		return idToRuleName.get(matchToRuleNameID.getInt(match));
 	}
 
 }

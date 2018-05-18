@@ -1,7 +1,8 @@
 package org.emoflon.ibex.common.operational;
 
 import java.util.Collection;
-import java.util.HashMap;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 /**
  * A simple implementation of {@link IMatch}.
@@ -15,7 +16,7 @@ public class SimpleMatch implements IMatch {
 	/**
 	 * The mapping between parameter names and objects.
 	 */
-	private HashMap<String, Object> parameters = new HashMap<String, Object>();
+	private Object2ObjectOpenHashMap<String, Object> parameters = new Object2ObjectOpenHashMap<String, Object>();
 
 	/**
 	 * Initializes an empty match with the given pattern name.

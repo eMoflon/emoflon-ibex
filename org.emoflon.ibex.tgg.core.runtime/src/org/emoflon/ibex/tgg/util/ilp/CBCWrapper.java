@@ -17,8 +17,8 @@ import com.google.ortools.linearsolver.MPSolver;
 import com.google.ortools.linearsolver.MPSolver.ResultStatus;
 import com.google.ortools.linearsolver.MPVariable;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 /**
  * This class is a wrapper that allows usage of the CBC solver (<href a="https://projects.coin-or.org/Cbc">https://projects.coin-or.org/Cbc</href>)<br>
@@ -42,7 +42,7 @@ public class CBCWrapper extends ILPSolver{
 	/**
 	 * Mapping of the internally registered variables to the variable Ids of the problem
 	 */
-	private final TIntObjectHashMap<MPVariable> variableIdToCBCVar = new TIntObjectHashMap<MPVariable>();
+	private final Int2ObjectOpenHashMap<MPVariable> variableIdToCBCVar = new Int2ObjectOpenHashMap<MPVariable>();
 
 	private static final int MIN_TIMEOUT = 30;
 	private static final int MAX_TIMEOUT = 60*60; //1 hour
@@ -151,7 +151,7 @@ public class CBCWrapper extends ILPSolver{
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
 
-		TIntIntHashMap variableSolutions = new TIntIntHashMap();
+		Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
 		double optimum = solver.objective().value();
 		System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
 		for(int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {

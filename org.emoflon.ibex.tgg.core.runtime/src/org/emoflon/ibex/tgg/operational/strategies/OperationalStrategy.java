@@ -41,9 +41,9 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.TCustomHashSet;
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGG;
 import language.TGGComplementRule;
 import language.TGGRule;
@@ -73,9 +73,9 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 
-	protected TCustomHashSet<RuntimeEdge> markedAndCreatedEdges = new TCustomHashSet<>(
+	protected ObjectOpenCustomHashSet<RuntimeEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(
 			new RuntimeEdgeHashingStrategy());
-	protected THashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new THashMap<>();
+	protected Object2ObjectOpenHashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
 
 	protected String workspacePath;
 	protected String projectPath;
@@ -167,7 +167,9 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	public void addOperationalRuleMatch(String ruleName, IMatch match) {
-		if (matchIsDomainConform(ruleName, match) && matchIsValidIsomorphism(ruleName, match)) {
+		if (this.isPatternRelevantForInterpreter(match.getPatternName())
+				&& matchIsDomainConform(ruleName, match) 
+				&& matchIsValidIsomorphism(ruleName, match)) {
 			operationalMatchContainer.addMatch(ruleName, match);
 			if (options.debug())
 				logger.debug("Received and added " + match.getPatternName());
@@ -461,7 +463,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	private void revokeAllMatches() {
 		while (!brokenRuleApplications.isEmpty()) {
-			THashSet<TGGRuleApplication> revoked = new THashSet<>();
+			ObjectOpenHashSet<TGGRuleApplication> revoked = new ObjectOpenHashSet<>();
 			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
 				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
 				revoked.add(ra);

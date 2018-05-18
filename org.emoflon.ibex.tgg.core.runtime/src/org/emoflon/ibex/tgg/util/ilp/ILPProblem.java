@@ -8,15 +8,13 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import gnu.trove.function.TDoubleFunction;
-import gnu.trove.iterator.hash.TObjectHashIterator;
-import gnu.trove.map.hash.TIntDoubleHashMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TIntProcedure;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.set.hash.TIntHashSet;
+import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
 /**
  * This class is used to define ILPProblems that can be given to {@link ILPSolver} to be solved.
@@ -35,16 +33,16 @@ public final class ILPProblem {
 	/**
 	 * Contains all variables that have been defined and the mapping to their names
 	 */
-	private final TObjectIntHashMap<String> variables = new TObjectIntHashMap<String>();
+	private final Object2IntOpenHashMap<String> variables = new Object2IntOpenHashMap<String>();
 	/**
 	 * Contains the mapping of variable names to variable IDs
 	 * The additional map is used for efficiency reasons
 	 */
-	private final TIntObjectHashMap<String> variableIDsToVariables = new TIntObjectHashMap<String>();
+	private final Int2ObjectOpenHashMap<String> variableIDsToVariables = new Int2ObjectOpenHashMap<String>();
 	/**
 	 * Set of constraints that have been defined using addConstraint
 	 */
-	private final THashSet<ILPConstraint> constraints = new THashSet<>();
+	private final ObjectLinkedOpenHashSet<ILPConstraint> constraints = new ObjectLinkedOpenHashSet<>();
 	/**
 	 * The objective function that has been defined using setObjective
 	 */
@@ -53,17 +51,17 @@ public final class ILPProblem {
 	/**
 	 * Contains pre-fixed variables the solver does not need to care about
 	 */
-	private final TIntIntHashMap fixedVariableValues = new TIntIntHashMap();
+	private final Int2IntOpenHashMap fixedVariableValues = new Int2IntOpenHashMap();
 	
 	/**
 	 * Contains the IDs of the unassigned variables
 	 */
-	private final TIntHashSet unfixedVariables = new TIntHashSet();
+	private final IntOpenHashSet unfixedVariables = new IntOpenHashSet();
 	
 	/**
 	 * Contains the IDs of the variables that have been fixed but have not yet been removed from the constraints and objective
 	 */
-	private final TIntHashSet lazyFixedVariables = new TIntHashSet();
+	private final IntOpenHashSet lazyFixedVariables = new IntOpenHashSet();
 
 	/**
 	 * Creates a new ILPProblem. Instances can be obtained using the {@link ILPFactory}
@@ -84,17 +82,7 @@ public final class ILPProblem {
 	 * @return the variable IDs
 	 */
 	int[] getVariableIdsOfUnfixedVariables() {
-		return unfixedVariables.toArray();
-	}
-	
-	/**
-	 * Fixes all variables to the given values
-	 * @param variableMapping a mapping of the variable name to the assigned value
-	 */
-	public void fixVariables(TObjectIntHashMap<String> variableMapping) {
-		for(String variableName : variableMapping.keySet()) {
-			this.fixVariable(variableName, variableMapping.get(variableName));
-		}
+		return unfixedVariables.toIntArray();
 	}
 	
 	/**
@@ -105,28 +93,19 @@ public final class ILPProblem {
 		if(lazyFixedVariables.isEmpty()) {
 			return;
 		}
-		TObjectHashIterator<ILPConstraint> it = this.constraints.iterator();
+		ObjectIterator<ILPConstraint> it = this.constraints.iterator();
 		LinkedList<ILPConstraint> modifiedConstraints = new LinkedList<ILPProblem.ILPConstraint>();
 		while(it.hasNext()) {
 			ILPConstraint constraint = it.next();
-			boolean changed = false;
-			for(int variableId : lazyFixedVariables.toArray()) {
-				if(constraint.getLinearExpression().getCoefficient(variableId) != 0) {
-					//needs to be updated
-					it.remove();
-					changed = true;
-					constraint.fixVariable(variableId, fixedVariableValues.get(variableId));
-				}
-			}
-			if(changed) {
+			if(lazyFixedVariables.stream().anyMatch((variableId) -> constraint.getLinearExpression().getCoefficient(variableId) != 0)) {
+				it.remove();
 				modifiedConstraints.add(constraint);
+				lazyFixedVariables.stream().forEach((variableId) -> constraint.fixVariable(variableId, fixedVariableValues.get((int) variableId)));
 			}
 		}
 		modifiedConstraints.stream().forEach(c -> this.addConstraint(c));
 		if(objective != null) {
-			for(int variableId : fixedVariableValues.keys()) {
-				objective.fixVariable(variableId, fixedVariableValues.get(variableId));
-			}
+			lazyFixedVariables.stream().forEach((variableId) -> objective.fixVariable(variableId, fixedVariableValues.get((int) variableId)));
 		}
 		lazyFixedVariables.clear();
 	}
@@ -165,7 +144,7 @@ public final class ILPProblem {
 			unfixedVariables.add(variableCounter);
 			return variableCounter++;
 		}
-		return variables.get(variable);
+		return variables.getInt(variable);
 	}
 	
 	/**
@@ -196,7 +175,7 @@ public final class ILPProblem {
 	 * @param solutionValue Value of the objective function in the given solution
 	 * @return the created solution
 	 */
-	ILPSolution createILPSolution(TIntIntHashMap variableAllocations, boolean optimal, double solutionValue) {
+	ILPSolution createILPSolution(Int2IntOpenHashMap variableAllocations, boolean optimal, double solutionValue) {
 		return new ILPSolution(variableAllocations, optimal, solutionValue);
 	}
 
@@ -412,10 +391,9 @@ public final class ILPProblem {
 		}
 		
 		private void removeFixedVariables() {
-			fixedVariableValues.forEachEntry((variableID, value) -> {
+			fixedVariableValues.forEach((variableID, value) -> {
 				double termValue = linearExpression.removeTerm(variableID) * value;
 				this.value -= termValue;
-				return true;
 			});
 			checkFeasibility();
 		}
@@ -618,9 +596,8 @@ public final class ILPProblem {
 		 * removes variables that have been fixed from the objective
 		 */
 		private void removeFixedVariables() {
-			fixedVariableValues.forEachEntry((variableID, value) -> {
+			fixedVariableValues.forEach((variableID, value) -> {
 				fixVariable(variableID, value);
-				return true;
 			});
 		}
 		
@@ -686,8 +663,8 @@ public final class ILPProblem {
 		/**
 		 * The terms the linear expression uses
 		 */
-		private final TIntDoubleHashMap terms = new TIntDoubleHashMap();
-
+		private final Int2DoubleOpenHashMap terms = new Int2DoubleOpenHashMap();
+		
 		/**
 		 * Adds a term (variable * coefficient) to the linear expression
 		 * @param variable The name of the variable
@@ -703,8 +680,8 @@ public final class ILPProblem {
 		 * @param coefficient The coefficient of the variable
 		 */
 		void addTerm(int variableID, double coefficient) {
-			double result = terms.adjustOrPutValue(variableID, coefficient, coefficient);
-			if(Double.doubleToLongBits(result) == Double.doubleToLongBits(0)) {
+			double result = terms.addTo(variableID, coefficient);
+			if(Double.doubleToLongBits(result) == Double.doubleToLongBits(-coefficient)) {
 				terms.remove(variableID);
 			}
 		}
@@ -714,13 +691,7 @@ public final class ILPProblem {
 		 * @param factor	The factor to multiply by
 		 */
 		void multiplyBy(double factor) {
-			terms.transformValues(new TDoubleFunction() {
-				
-				@Override
-				public double execute(double arg0) {
-					return arg0 * factor;
-				}
-			});
+			terms.replaceAll((variableID, coefficient) -> coefficient * factor);
 		}
 
 		/**
@@ -730,7 +701,7 @@ public final class ILPProblem {
 		 */
 		final double getSolutionValue(ILPSolution ilpSolution) {
 			double solution = 0;
-			for(int variableId : this.terms.keys()) {
+			for(int variableId : this.terms.keySet()) {
 				double coefficient = terms.get(variableId);
 				solution += coefficient * ilpSolution.getVariable(variableId);
 			}
@@ -756,12 +727,8 @@ public final class ILPProblem {
 		@Override
 		public String toString() {
 			List<String> termStrings = new LinkedList<String>();
-			this.terms.keySet().forEach(new TIntProcedure() {
-				@Override
-				public boolean execute(int arg0) {
-					termStrings.add(getTermString(arg0));
-					return true;
-				}
+			this.terms.keySet().stream().forEach((variableId) -> {
+					termStrings.add(getTermString(variableId));
 			});
 			return String.join(" + ", termStrings);
 		}
@@ -771,7 +738,7 @@ public final class ILPProblem {
 		 * @return
 		 */
 		int[] getVariables() {
-			return this.terms.keys();
+			return this.terms.keySet().toIntArray();
 		}
 		
 		/**
@@ -832,7 +799,7 @@ public final class ILPProblem {
 					return false;
 				if(terms.size() != other.terms.size())
 					return false;
-				for(int variableID : terms.keys()) {
+				for(int variableID : terms.keySet()) {
 					if(!other.terms.containsKey(variableID)) {
 						return false;
 					}
@@ -858,7 +825,7 @@ public final class ILPProblem {
 		/**
 		 * Mapping of variables to the found solutions
 		 */
-		private final TIntIntHashMap variableAllocations;
+		private final Int2IntOpenHashMap variableAllocations;
 		/**
 		 * Whether the found solution is optimal 
 		 */
@@ -875,7 +842,7 @@ public final class ILPProblem {
 		 * @param variableAllocations	Mapping of variables to the found solutions
 		 * @param optimal			Whether the found solution is optimal 
 		 */
-		private ILPSolution(TIntIntHashMap variableAllocations, boolean optimal, double solutionValue) {
+		private ILPSolution(Int2IntOpenHashMap variableAllocations, boolean optimal, double solutionValue) {
 			super();
 			this.variableAllocations = variableAllocations;
 			this.optimal = optimal;
@@ -923,7 +890,7 @@ public final class ILPProblem {
 		public String toString() {
 			StringBuilder s = new StringBuilder();
 			s.append("Solution value: "+solutionValue+"\n");
-			for (int variableId : variableAllocations.keys()) {
+			for (int variableId : variableAllocations.keySet()) {
 				s.append("("+getVariable(variableId)+","+variableAllocations.get(variableId)+")\n");
 			}
 			return s.toString();
