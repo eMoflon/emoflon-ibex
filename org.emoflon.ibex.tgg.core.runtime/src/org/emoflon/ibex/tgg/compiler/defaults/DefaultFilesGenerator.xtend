@@ -279,6 +279,7 @@ class DefaultFilesGenerator {
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
+				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 				«additionalImports»
 			''',
 			fileName,
@@ -298,6 +299,11 @@ class DefaultFilesGenerator {
 				init_fwd.terminate();
 			''',
 			'''
+				@Override
+				public boolean isPatternRelevantForCompiler(String patternName) {
+					return patternName.endsWith(PatternSuffixes.FWD);
+				}
+				
 				@Override
 				public void loadModels() throws IOException {
 					s = loadResource(options.projectPath() + "/instances/src.xmi");
@@ -323,6 +329,7 @@ class DefaultFilesGenerator {
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
+				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 				«additionalImports»
 			''',
 			fileName,
@@ -342,6 +349,11 @@ class DefaultFilesGenerator {
 				init_bwd.terminate();
 			''',
 			'''
+				@Override
+				public boolean isPatternRelevantForCompiler(String patternName) {
+					return patternName.endsWith(PatternSuffixes.BWD);
+				}
+				
 				@Override
 				public void loadModels() throws IOException {
 					t = loadResource(options.projectPath() + "/instances/trg.xmi");
