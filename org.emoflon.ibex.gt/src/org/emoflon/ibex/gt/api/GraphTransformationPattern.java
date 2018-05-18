@@ -46,7 +46,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	protected Map<String, Object> parameters = new HashMap<String, Object>();
 
 	/**
-	 * The mapping between consumers for typed and untyped matches.
+	 * The mapping between consumers for typed and untyped consumers.
 	 */
 	private Map<Consumer<M>, Consumer<IMatch>> consumers = new HashMap<Consumer<M>, Consumer<IMatch>>();
 
@@ -114,7 +114,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Finds an arbitrary match for the pattern.
+	 * Finds and returns an arbitrary match for the pattern if a match exists.
 	 * 
 	 * @return an {@link Optional} for the match
 	 */
@@ -124,9 +124,9 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Finds all matches for the pattern.
+	 * Finds and returns all matches for the pattern.
 	 * 
-	 * @return the list of matches
+	 * @return the list of matches (can be empty if no matches exist)
 	 */
 	public final Collection<M> findMatches() {
 		return this.interpreter.findMatches(this.patternName, this.parameters).stream() //
@@ -135,7 +135,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Finds all matches for the pattern.
+	 * Executes the <code>accept</code> of the given {@link Consumer} for all
+	 * matches found for the pattern.
 	 * 
 	 * @param action
 	 *            a Consumer for the matches found
@@ -145,7 +146,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Returns whether matches for the pattern exist.
+	 * Returns whether any matches for the pattern exist.
 	 * 
 	 * @return <code>true</code> if and only if there is at least one match
 	 */
@@ -163,7 +164,9 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Subscribes notifications of all new matches found for the pattern.
+	 * Subscribes notifications of all new matches found for the pattern. Whenever a
+	 * new match for this pattern appears, the <code>accept</code> methods of all
+	 * {@link Consumer}s will be called immediately.
 	 * 
 	 * @param action
 	 *            the {@link Consumer} to notify
@@ -173,7 +176,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	}
 
 	/**
-	 * Removes the subscription of notifications of all new matches for the given
+	 * Removes the subscription of notifications of new matches for the given
 	 * {@link Consumer}.
 	 * 
 	 * @param action
@@ -189,6 +192,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 
 	/**
 	 * Subscribes notifications of all disappearing matches found for the pattern.
+	 * Whenever a match for this pattern disappears, the <code>accept</code> methods
+	 * of all {@link Consumer}s will be called immediately.
 	 * 
 	 * @param action
 	 *            the {@link Consumer} to notify
@@ -250,12 +255,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the {@link IMatch} Consumer
 	 */
 	private Consumer<IMatch> convertConsumer(final Consumer<M> action) {
-		Consumer<IMatch> consumer = new Consumer<IMatch>() {
-			@Override
-			public void accept(IMatch m) {
-				action.accept(convertMatch(m));
-			}
-		};
+		Consumer<IMatch> consumer = m -> action.accept(convertMatch(m));
 		this.consumers.put(action, consumer);
 		return consumer;
 	}
