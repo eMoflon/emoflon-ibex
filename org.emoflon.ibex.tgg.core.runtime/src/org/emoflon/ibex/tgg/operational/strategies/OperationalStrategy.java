@@ -377,7 +377,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		if (!isPatternRelevantForInterpreter(match.getPatternName()) || !updatePolicy.matchShouldBeApplied(match, ruleName)) {
+		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
 			return Optional.empty();
 		}
 
