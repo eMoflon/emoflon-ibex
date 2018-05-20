@@ -2,7 +2,7 @@ package org.emoflon.ibex.common.operational;
 
 import java.util.Collection;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 
 /**
  * A simple implementation of {@link IMatch}.
@@ -16,7 +16,7 @@ public class SimpleMatch implements IMatch {
 	/**
 	 * The mapping between parameter names and objects.
 	 */
-	private Object2ObjectOpenHashMap<String, Object> parameters = new Object2ObjectOpenHashMap<String, Object>();
+	private final Object2ObjectLinkedOpenHashMap<String, Object> parameters;
 
 	/**
 	 * Initializes an empty match with the given pattern name.
@@ -26,6 +26,7 @@ public class SimpleMatch implements IMatch {
 	 */
 	public SimpleMatch(final String patternName) {
 		this.patternName = patternName;
+		this.parameters = new Object2ObjectLinkedOpenHashMap<String, Object>();
 	}
 
 	/**
@@ -36,6 +37,7 @@ public class SimpleMatch implements IMatch {
 	 */
 	public SimpleMatch(final IMatch match) {
 		this.patternName = match.getPatternName();
+		this.parameters = new Object2ObjectLinkedOpenHashMap<String, Object>((int) (match.getParameterNames().size() * Object2ObjectLinkedOpenHashMap.DEFAULT_LOAD_FACTOR)); 
 		match.getParameterNames().forEach(parameterName -> {
 			this.parameters.put(parameterName, match.get(parameterName));
 		});
@@ -94,5 +96,10 @@ public class SimpleMatch implements IMatch {
 		s.append("}");
 
 		return s.toString();
+	}
+	
+	public IMatch copy() {
+		SimpleMatch copy = new SimpleMatch(this);
+		return copy;
 	}
 }
