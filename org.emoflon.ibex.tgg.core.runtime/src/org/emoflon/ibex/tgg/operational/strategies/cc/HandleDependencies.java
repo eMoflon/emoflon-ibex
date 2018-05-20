@@ -40,10 +40,17 @@ public class HandleDependencies {
 	ObjectLinkedOpenHashSet<Bundle> appliedBundles;
 	Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> matchToContextNodes = new Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>>();
 	Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<RuntimeEdge>> matchToContextEdges = new Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<RuntimeEdge>>();
+	Int2ObjectOpenHashMap<Bundle> matchToBundle = new Int2ObjectOpenHashMap<Bundle>();
 	
 	public HandleDependencies(ObjectLinkedOpenHashSet<Bundle> appliedBundles, Object2ObjectOpenCustomHashMap<RuntimeEdge, IntOpenHashSet> edgeToMarkingMatches, Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches,
 			Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> matchToContextNodes,Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<RuntimeEdge>> matchToContextEdges) {
 		this.appliedBundles = appliedBundles;
+		appliedBundles
+			.forEach(b -> 
+				b.getAllMatches().stream().forEach(m -> 
+					matchToBundle.put(m,  b)
+					)
+				);
 		this.nodeToMarkingMatches = nodeToMarkingMatches;
 		this.edgeToMarkingMatches = edgeToMarkingMatches;
 		this.matchToContextNodes = matchToContextNodes;
@@ -86,10 +93,7 @@ public class HandleDependencies {
 
 
 	private int matchToBundle(int match) {
-		return appliedBundles.stream()
-				.filter(b -> b.getAllMatches().contains(match))
-				.findAny().get()
-				.getKernelMatch();
+		return matchToBundle.get(match).getKernelMatch();
 	}
 
 	/**
