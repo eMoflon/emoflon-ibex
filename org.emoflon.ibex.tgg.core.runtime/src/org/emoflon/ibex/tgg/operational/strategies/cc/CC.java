@@ -41,10 +41,10 @@ public abstract class CC extends OPT {
 
 	@Override
 	public void loadModels() throws IOException {
-		s = loadResource(projectPath + "/instances/src.xmi");
-		t = loadResource(projectPath + "/instances/trg.xmi");
-		c = createResource(projectPath + "/instances/corr.xmi");
-		p = createResource(projectPath + "/instances/protocol.xmi");
+		s = loadResource(options.projectPath() + "/instances/src.xmi");
+		t = loadResource(options.projectPath() + "/instances/trg.xmi");
+		c = createResource(options.projectPath() + "/instances/corr.xmi");
+		p = createResource(options.projectPath() + "/instances/protocol.xmi");
 
 		EcoreUtil.resolveAll(rs);
 	}
@@ -107,7 +107,7 @@ public abstract class CC extends OPT {
 	private void processComplementRuleMatches(IMatch comatch) {
 		blackInterpreter.updateMatches();
 		// last applied match was kernel
-		int kernelMatchID = idToMatch.size();
+		int kernelMatchID = this.idToMatch.size();
 
 		// collection needed to handle maximality
 		Set<IMatch> complementRuleContextMatches = findAllComplementRuleContextMatches();
@@ -313,7 +313,7 @@ public abstract class CC extends OPT {
 		if (modelsAreConsistent())
 			result += "Your models are consistent";
 		else {
-			result += "Your models are inconsistent. Following elements are not part of a consistent triple:";
+			result += "Your models are inconsistent. The following elements are not part of a consistent triple:";
 			result += "\n" + "Source nodes:" + "\n";
 			result += String.join("\n",
 					getInconsistentSrcNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));

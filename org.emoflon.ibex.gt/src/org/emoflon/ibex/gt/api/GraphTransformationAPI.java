@@ -92,14 +92,14 @@ public abstract class GraphTransformationAPI {
 	}
 
 	/**
-	 * Sets the pushout approach to double pushout.
+	 * Sets the pushout approach to double pushout (see {@link PushoutApproach}).
 	 */
 	public final void setDPO() {
 		this.setDefaultPushoutApproach(PushoutApproach.DPO);
 	}
 
 	/**
-	 * Sets the pushout approach to single pushout.
+	 * Sets the pushout approach to single pushout (see {@link PushoutApproach}).
 	 */
 	public final void setSPO() {
 		this.setDefaultPushoutApproach(PushoutApproach.SPO);

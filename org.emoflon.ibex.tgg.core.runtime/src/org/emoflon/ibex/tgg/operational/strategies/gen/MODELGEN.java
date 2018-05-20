@@ -26,11 +26,11 @@ import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
 /**
- * Different than other OperationalStrategy subtypes, MODELGEN
- * (i) additionally has a stop criterion (see MODELGENStopCriterion) (ii) does
- * not remove processed matches from its MatchContainer in
- * processOperationalRuleMatches() (iii) gets matches randomly from
- * MatchContainer (iv) does not create a protocol for scalability
+ * Different than other OperationalStrategy subtypes, MODELGEN (i) additionally
+ * has a stop criterion (see MODELGENStopCriterion) (ii) does not remove
+ * processed matches from its MatchContainer in processOperationalRuleMatches()
+ * (iii) gets matches randomly from MatchContainer (iv) does not create a
+ * protocol for scalability
  * 
  * @author leblebici
  *
@@ -57,23 +57,22 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 	@Override
 	public void loadModels() throws IOException {
-		s = createResource(projectPath + "/instances/src.xmi");
-		t = createResource(projectPath + "/instances/trg.xmi");
-		c = createResource(projectPath + "/instances/corr.xmi");
-		p = createResource(projectPath + "/instances/protocol.xmi");
+		s = createResource(options.projectPath() + "/instances/src.xmi");
+		t = createResource(options.projectPath() + "/instances/trg.xmi");
+		c = createResource(options.projectPath() + "/instances/corr.xmi");
+		p = createResource(options.projectPath() + "/instances/protocol.xmi");
 
 		EcoreUtil.resolveAll(rs);
 	}
 
-
-
 	/**
-	 * If we get notified about a new match that is the NAC of an axiom (i.e. a match for an GENAxiomNacPattern) we need to remove the always available empty axiom match.
-	 * Otherwise we can add the match as usual.
+	 * If we get notified about a new match that is the NAC of an axiom (i.e. a
+	 * match for an GENAxiomNacPattern) we need to remove the always available empty
+	 * axiom match. Otherwise we can add the match as usual.
 	 */
 	@Override
 	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if(GENAxiomNacPattern.isGENAxiomNacPattern(match.getPatternName())) {
+		if (GENAxiomNacPattern.isGENAxiomNacPattern(match.getPatternName())) {
 			this.deleteAxiomMatchesForFoundNACs(match);
 		} else {
 			super.addMatch(match);
@@ -93,13 +92,13 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	/**
-	 * differently from the super class implementation, MODELGEN
-	 * (i) does not remove successful matches (but uses them repeatedly)
-	 * (ii) updates the state of its stop criterion 
+	 * differently from the super class implementation, MODELGEN (i) does not remove
+	 * successful matches (but uses them repeatedly) (ii) updates the state of its
+	 * stop criterion
 	 */
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
-		if(stopCriterion.dont() || operationalMatchContainer.isEmpty())
+		if (stopCriterion.dont() || operationalMatchContainer.isEmpty())
 			return false;
 
 		IMatch match = chooseOneMatch();
@@ -119,28 +118,29 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	/**
-	 * We have found a match for a NAC of an axiom. This means this axiom is no longer applicable and thus needs to be removed from the set of matches
-	 * @param match the match of a NAC for an Axiom
+	 * We have found a match for a NAC of an axiom. This means this axiom is no
+	 * longer applicable and thus needs to be removed from the set of matches
+	 * 
+	 * @param match
+	 *            the match of a NAC for an Axiom
 	 */
 	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
 		Set<IMatch> matchesToRemove = new HashSet<>();
 		String axiomName = GENBlackPattern.getName(GENAxiomNacPattern.getAxiomName(match.getPatternName()));
-		operationalMatchContainer.getMatches().stream()
-		.filter(m -> m.getPatternName().equals(axiomName)).forEach(m -> {
+		operationalMatchContainer.getMatches().stream().filter(m -> m.getPatternName().equals(axiomName)).forEach(m -> {
 			matchesToRemove.add(m);
 		});
 		matchesToRemove.stream().forEach(m -> removeMatch(m));
 	}
 
-
 	private void processComplementRuleMatches(IMatch comatch) {
 		blackInterpreter.updateMatches();
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 
-		if (! complementRuleMatches.isEmpty()) {
+		if (!complementRuleMatches.isEmpty()) {
 			HashMap<String, Integer> complementRulesBounds = callUpdatePolicy(complementRuleMatches);
 
-			while (! complementRuleMatches.isEmpty()) {
+			while (!complementRuleMatches.isEmpty()) {
 				IMatch match = complementRuleMatches.iterator().next();
 				processComplementRuleMatch(match, complementRulesBounds);
 				complementRuleMatches.remove(match);
@@ -149,15 +149,14 @@ public abstract class MODELGEN extends OperationalStrategy {
 		}
 
 		// Close the kernel, so other complement rules cannot find this match anymore
-		TGGRuleApplication application = (TGGRuleApplication) comatch.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
+		TGGRuleApplication application = (TGGRuleApplication) comatch
+				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		application.setAmalgamated(true);
 	}
 
 	private HashMap<String, Integer> callUpdatePolicy(Set<IMatch> complementRuleMatches) {
 		Set<String> uniqueRulesNames = complementRuleMatches.stream()
-				.map(m -> PatternSuffixes.removeSuffix(m.getPatternName()))
-				.distinct()
-				.collect(Collectors.toSet());
+				.map(m -> PatternSuffixes.removeSuffix(m.getPatternName())).distinct().collect(Collectors.toSet());
 		HashMap<String, Integer> complementRulesBounds = updatePolicy.getNumberOfApplications(uniqueRulesNames);
 
 		checkComplianceWithSchema(complementRulesBounds);
@@ -169,12 +168,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		TGGComplementRule rule = (TGGComplementRule) getRule(ruleName).get();
 
-		if(rule.isBounded()) {
+		if (rule.isBounded()) {
 			processOperationalRuleMatch(ruleName, match);
-		}
-		else {
+		} else {
 			IntStream.range(0, complementRulesBounds.get(ruleName))
-			.forEach(i -> processOperationalRuleMatch(ruleName, match));
+					.forEach(i -> processOperationalRuleMatch(ruleName, match));
 		}
 	}
 
@@ -187,16 +185,16 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	private void updateStopCriterion(String ruleName) {
-		stopCriterion.update(
-				ruleName,
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + getGreenFactory(ruleName).getGreenSrcEdgesInRule().size(),
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size() + getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
-				);
+		stopCriterion.update(ruleName,
+				getGreenFactory(ruleName).getGreenSrcNodesInRule().size()
+						+ getGreenFactory(ruleName).getGreenSrcEdgesInRule().size(),
+				getGreenFactory(ruleName).getGreenTrgNodesInRule().size()
+						+ getGreenFactory(ruleName).getGreenTrgEdgesInRule().size());
 	}
 
 	@Override
 	protected void wrapUp() {
-		
+
 	}
 
 	@Override
@@ -206,54 +204,55 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	/**
-	 *	Axioms are always applicable but the PatternMatcher does not return empty matches enabling the application of the axioms.
-	 *	Therefore we add the empty matches ourself. The match of an axiom will be removed once a match of a NAC of the axiom is found. 
+	 * Axioms are always applicable but the PatternMatcher does not return empty
+	 * matches enabling the application of the axioms. Therefore we add the empty
+	 * matches ourself. The match of an axiom will be removed once a match of a NAC
+	 * of the axiom is found.
 	 */
 	private void collectMatchesForAxioms() {
-		options.tgg().getRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom()).forEach(r -> {			
+		options.tgg().getRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom()).forEach(r -> {
 			addOperationalRuleMatch(r.getName(), new SimpleMatch(GENBlackPattern.getName(r.getName())));
 		});
 	}
-	
+
 	private void checkComplianceWithSchema(HashMap<String, Integer> complementRulesBounds) {
 		HashMap<EReference, Integer> edgesToBeCreated = new HashMap<EReference, Integer>();
-		
-		complementRulesBounds.keySet().stream()
-        	.forEach( name -> {
-        		if((getComplementRule(name).get()).isBounded()) {
-        			processBoundedRuleLimits(name, edgesToBeCreated);
-        		}
-        		else {
-        		getRelevantEdges(getComplementRule(name).get()).stream()
-        		.forEach( e -> {
-        			if(! edgesToBeCreated.containsKey(e.getType())) {
-        				edgesToBeCreated.put(e.getType(), complementRulesBounds.get(name));
-        			}
-        			else {
-        				edgesToBeCreated.put(e.getType(), edgesToBeCreated.get(e.getType()) + complementRulesBounds.get(name));
-        			}
-        		});
-        		}});
+
+		complementRulesBounds.keySet().stream().forEach(name -> {
+			if ((getComplementRule(name).get()).isBounded()) {
+				processBoundedRuleLimits(name, edgesToBeCreated);
+			} else {
+				getRelevantEdges(getComplementRule(name).get()).stream().forEach(e -> {
+					if (!edgesToBeCreated.containsKey(e.getType())) {
+						edgesToBeCreated.put(e.getType(), complementRulesBounds.get(name));
+					} else {
+						edgesToBeCreated.put(e.getType(),
+								edgesToBeCreated.get(e.getType()) + complementRulesBounds.get(name));
+					}
+				});
+			}
+		});
 		edgesToBeCreated.keySet().stream()
-					.filter(e -> e.getUpperBound() != -1 && edgesToBeCreated.get(e) > e.getUpperBound())
-					.findAny()
-					.ifPresent(e -> {throw new IllegalArgumentException("Cardinalities for " + e.getName() + " are violated");});
+				.filter(e -> e.getUpperBound() != -1 && edgesToBeCreated.get(e) > e.getUpperBound()).findAny()
+				.ifPresent(e -> {
+					throw new IllegalArgumentException("Cardinalities for " + e.getName() + " are violated");
+				});
 	}
-	
+
 	private void processBoundedRuleLimits(String name, HashMap<EReference, Integer> edgesToBeCreated) {
-		//find all matches for bounded rule collected by operational match container
-		int number = (int) findAllComplementRuleMatches().stream()
-				.filter(m -> m.getPatternName().contains(name)).count();
-		getRelevantEdges(getComplementRule(name).get()).stream()
-		.forEach( e -> {edgesToBeCreated.put(e.getType(), number);});
+		// find all matches for bounded rule collected by operational match container
+		int number = (int) findAllComplementRuleMatches().stream().filter(m -> m.getPatternName().contains(name))
+				.count();
+		getRelevantEdges(getComplementRule(name).get()).stream().forEach(e -> {
+			edgesToBeCreated.put(e.getType(), number);
+		});
 	}
 
 	private Set<TGGRuleEdge> getRelevantEdges(TGGRule rule) {
-		Set<TGGRuleEdge> relevantEdges = rule.getEdges().stream()
-				   .filter(e -> e.getBindingType() == BindingType.CREATE
-						   && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
-				   .collect(Collectors.toSet());
-        return relevantEdges;
+		Set<TGGRuleEdge> relevantEdges = rule.getEdges().stream().filter(
+				e -> e.getBindingType() == BindingType.CREATE && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
+				.collect(Collectors.toSet());
+		return relevantEdges;
 	}
-	
+
 }

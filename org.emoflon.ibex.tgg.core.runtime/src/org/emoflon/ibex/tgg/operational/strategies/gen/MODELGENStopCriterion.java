@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 
 import language.TGG;
 import language.TGGRule;
@@ -11,7 +12,7 @@ public class MODELGENStopCriterion {
 	private long startTime = System.currentTimeMillis();
 
 	private TGG tgg;
-	
+
 	private long timeOutInMS = -1;
 
 	private int maxElementCount = -1;
@@ -25,19 +26,18 @@ public class MODELGENStopCriterion {
 	private HashMap<String, Integer> maxRuleCount = new HashMap<>();
 
 	private HashMap<String, Integer> currentRuleCount = new HashMap<>();
-	
+
 	private HashSet<String> abstractRules = new HashSet<>();
-	
 
 	public MODELGENStopCriterion(TGG tgg) {
 		this.tgg = tgg;
-		
+
 		for (TGGRule rule : tgg.getRules()) {
 			if (rule.isAbstract())
 				abstractRules.add(rule.getName());
 		}
 	}
-	
+
 	public void setTimeOutInMS(long timeOutInMS) {
 		this.timeOutInMS = timeOutInMS;
 	}
@@ -55,9 +55,18 @@ public class MODELGENStopCriterion {
 	}
 
 	public void setMaxRuleCount(String ruleName, int maxNoOfApplications) {
-		if(tgg.getRules().stream().noneMatch(r -> r.getName().contentEquals(ruleName)))
-			throw new IllegalArgumentException(ruleName + " is not a name of a TGG rule in " + tgg.getName());
-			
+		Optional<TGGRule> ruleWithMaxCount = tgg.getRules().stream()//
+				.filter(r -> r.getName().contentEquals(ruleName))//
+				.findAny();
+
+		TGGRule r = ruleWithMaxCount//
+				.orElseThrow(() -> new IllegalArgumentException(
+						ruleName + " is not a name of a TGG rule in " + tgg.getName()));
+
+		if (r.isAbstract() && maxNoOfApplications > 0)
+			throw new IllegalArgumentException(
+					"It makes no sense to set a max count for " + ruleName + ", as it is abstract.");
+
 		maxRuleCount.put(ruleName, maxNoOfApplications);
 	}
 
@@ -68,9 +77,9 @@ public class MODELGENStopCriterion {
 
 		// prevent rule from being applied if max number of applications is reached
 		if (maxRuleCount.containsKey(ruleName) && ((maxRuleCount.get(ruleName).equals(new Integer(0))
-													|| maxRuleCount.get(ruleName).equals(currentRuleCount.get(ruleName)))))
+				|| maxRuleCount.get(ruleName).equals(currentRuleCount.get(ruleName)))))
 			return true;
-		
+
 		return dont();
 	}
 
@@ -98,9 +107,5 @@ public class MODELGENStopCriterion {
 		else
 			currentRuleCount.put(ruleName, 1);
 	}
-	
+
 }
-
-
-
-
