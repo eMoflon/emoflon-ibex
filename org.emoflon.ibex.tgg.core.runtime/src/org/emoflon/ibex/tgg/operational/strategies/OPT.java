@@ -68,14 +68,14 @@ public abstract class OPT extends OperationalStrategy {
 	protected Int2ObjectOpenHashMap<IntOpenHashSet> sameComplementMatches = new Int2ObjectOpenHashMap<>();
 
 	/**
-	 * Collection of constraints to guarantee maximality property;
-	 * value: kernels whose complement rules did not fulfill maximality property
+	 * Collection of constraints to guarantee maximality property; value: kernels
+	 * whose complement rules did not fulfill maximality property
 	 */
 	protected IntOpenHashSet invalidKernels = new IntOpenHashSet();
 
 	/**
-	 * Collection of constraints to guarantee cyclic dependences are avoided;
-	 * value: correctly applied bundles (kernel match + its CRs matches)
+	 * Collection of constraints to guarantee cyclic dependences are avoided; value:
+	 * correctly applied bundles (kernel match + its CRs matches)
 	 */
 	protected ObjectLinkedOpenHashSet<Bundle> appliedBundles = new ObjectLinkedOpenHashSet<Bundle>();
 	protected Bundle lastAppliedBundle;
@@ -99,7 +99,7 @@ public abstract class OPT extends OperationalStrategy {
 
 	public void relaxReferences(EList<EPackage> model) {
 
-		EPackage[] packages = (EPackage[])model.toArray();
+		EPackage[] packages = (EPackage[]) model.toArray();
 
 		for (EPackage p : packages) {
 			TreeIterator<EObject> it = p.eAllContents();
@@ -107,38 +107,36 @@ public abstract class OPT extends OperationalStrategy {
 			while (it.hasNext()) {
 				EObject next = it.next();
 				if (next instanceof EClassImpl) {
-					EClassImpl nextEClassImpl = (EClassImpl)next;
+					EClassImpl nextEClassImpl = (EClassImpl) next;
 
 					for (EReference reference : nextEClassImpl.getEAllReferences()) {
-						if (referenceToUpperBound.containsKey(reference) &&
-								referenceToLowerBound.containsKey(reference) &&
-								referenceToContainment.containsKey(reference) &&
-								referenceToEOpposite.containsKey(reference)) {
+						if (referenceToUpperBound.containsKey(reference) && referenceToLowerBound.containsKey(reference)
+								&& referenceToContainment.containsKey(reference)
+								&& referenceToEOpposite.containsKey(reference)) {
 							// Reference already exists, values must not be overwritten
 							continue;
 						}
 
-						//Save metamodel values
+						// Save metamodel values
 						referenceToUpperBound.put(reference, reference.getUpperBound());
 						referenceToLowerBound.put(reference, reference.getLowerBound());
 						referenceToContainment.put(reference, reference.isContainment());
 						referenceToEOpposite.put(reference, reference.getEOpposite());
 
-
-						//Change metamodel values
+						// Change metamodel values
 						reference.setUpperBound(-1);
 						reference.setLowerBound(0);
 						reference.setContainment(false);
-						reference.setEOpposite(null);						
+						reference.setEOpposite(null);
 					}
 				}
 			}
-		}		
+		}
 	}
 
 	public void unrelaxReferences(EList<EPackage> model) {
 
-		EPackage[] packages = (EPackage[])model.toArray();
+		EPackage[] packages = (EPackage[]) model.toArray();
 
 		for (EPackage p : packages) {
 			TreeIterator<EObject> it = p.eAllContents();
@@ -146,9 +144,9 @@ public abstract class OPT extends OperationalStrategy {
 			while (it.hasNext()) {
 				EObject next = it.next();
 				if (next instanceof EClassImpl) {
-					EClassImpl nextEClassImpl = (EClassImpl)next;
+					EClassImpl nextEClassImpl = (EClassImpl) next;
 
-					for (EReference reference : nextEClassImpl.getEAllReferences()) {				
+					for (EReference reference : nextEClassImpl.getEAllReferences()) {
 						// Get old metamodel values
 						int upperBound = referenceToUpperBound.getInt(reference);
 						int lowerBound = referenceToLowerBound.getInt(reference);
@@ -215,17 +213,19 @@ public abstract class OPT extends OperationalStrategy {
 			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "EXCL_invKern" + nameCounter++);
 		}
 
-		HandleDependencies handleCycles = new HandleDependencies(appliedBundles, edgeToMarkingMatches, nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
+		HandleDependencies handleCycles = new HandleDependencies(appliedBundles, edgeToMarkingMatches,
+				nodeToMarkingMatches, matchToContextNodes, matchToContextEdges);
 		Set<Integer> allCyclicBundles = handleCycles.getCyclicDependenciesBetweenBundles().keySet();
 
 		for (int cycle : allCyclicBundles) {
-			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getComplementRuleApplications(cycle));
+			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(
+					handleCycles.getComplementRuleApplications(cycle));
 			for (List<Integer> variables : cyclicConstraints) {
 				ILPLinearExpression expr = ilpProblem.createLinearExpression();
 				variables.forEach(v -> {
 					expr.addTerm("x" + v, 1.0);
 				});
-				ilpProblem.addConstraint(expr, Comparator.le, variables.size()-1, "EXCL" + nameCounter++);
+				ilpProblem.addConstraint(expr, Comparator.le, variables.size() - 1, "EXCL" + nameCounter++);
 			}
 		}
 	}
@@ -290,26 +290,26 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected int[] chooseTGGRuleApplications() {
-		if (options.debug())
-			logger.debug("Creating ILP problem for "+idToMatch.size()+" matches");
+		logger.debug("Creating ILP problem for " + idToMatch.size() + " matches");
+
 		ILPProblem ilpProblem = ILPFactory.createILPProblem();
-		if (options.debug())
-			logger.debug("Adding exclusions...");
+
+		logger.debug("Adding exclusions...");
 		defineILPExclusions(ilpProblem);
-		if (options.debug()) {
-			logger.debug("Problem has "+ilpProblem.getConstraints().size()+" constraints.");
-			logger.debug("Adding implications...");
-		}
+
+		logger.debug("Problem has " + ilpProblem.getConstraints().size() + " constraints.");
+		logger.debug("Adding implications...");
+
 		defineILPImplications(ilpProblem);
-		if (options.debug()) {
-			logger.debug("Problem has "+ilpProblem.getConstraints().size()+" constraints.");
-			logger.debug("Adding user defined constraints...");
-		}
+
+		logger.debug("Problem has " + ilpProblem.getConstraints().size() + " constraints.");
+		logger.debug("Adding user defined constraints...");
+
 		addUserDefinedConstraints(ilpProblem);
-		if (options.debug()) {
-			logger.debug("Problem has "+ilpProblem.getConstraints().size()+" constraints.");
-			logger.debug("Defining objective...");
-		}
+
+		logger.debug("Problem has " + ilpProblem.getConstraints().size() + " constraints.");
+		logger.debug("Defining objective...");
+
 		defineILPObjective(ilpProblem);
 
 		try {
@@ -338,7 +338,7 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected void handleBundles(IMatch comatch, String ruleName) {
-		if(!getComplementRule(ruleName).isPresent()) {
+		if (!getComplementRule(ruleName).isPresent()) {
 			Bundle appliedBundle = new Bundle(idCounter);
 			appliedBundles.add(appliedBundle);
 			lastAppliedBundle = appliedBundle;
@@ -391,18 +391,14 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected Collection<EObject> getRuleApplicationNodes(IMatch comatch) {
-		return comatch.getParameterNames()
-				.stream()
-				.filter(p -> p.endsWith(ConsistencyPattern.protocolNodeSuffix))
-				.map(comatch::get)
-				.map(EObject.class::cast)
-				.collect(Collectors.toList());
+		return comatch.getParameterNames().stream().filter(p -> p.endsWith(ConsistencyPattern.protocolNodeSuffix))
+				.map(comatch::get).map(EObject.class::cast).collect(Collectors.toList());
 	}
 
 	protected abstract int getWeightForMatch(IMatch comatch, String ruleName);
 
 	@Override
-	public Resource loadResource(String workspaceRelativePath) throws IOException{
+	public Resource loadResource(String workspaceRelativePath) throws IOException {
 		return super.loadResource(workspaceRelativePath);
 	}
 

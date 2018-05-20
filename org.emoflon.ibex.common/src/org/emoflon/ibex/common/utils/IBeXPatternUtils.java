@@ -25,6 +25,13 @@ public class IBeXPatternUtils {
 	 */
 	public static final Comparator<IBeXNamedElement> sortByName = (a, b) -> a.getName().compareTo(b.getName());
 
+	/**
+	 * Checks whether the given pattern is empty.
+	 * 
+	 * @param ibexPattern
+	 *            the pattern
+	 * @return <code>true</code> if the pattern contains no nodes
+	 */
 	public static boolean isEmptyPattern(final IBeXContext ibexPattern) {
 		return ibexPattern instanceof IBeXContextPattern && isEmptyPattern((IBeXContextPattern) ibexPattern);
 	}
@@ -34,7 +41,7 @@ public class IBeXPatternUtils {
 	 * 
 	 * @param ibexPattern
 	 *            the pattern
-	 * @return true if the pattern contains no nodes
+	 * @return <code>true</code> if the pattern contains no nodes
 	 */
 	public static boolean isEmptyPattern(final IBeXContextPattern ibexPattern) {
 		return ibexPattern.getSignatureNodes().isEmpty() && ibexPattern.getLocalNodes().isEmpty();
@@ -46,12 +53,11 @@ public class IBeXPatternUtils {
 	 * @param ibexPattern
 	 *            the IBeXPattern, must not be <code>null</code>
 	 * @param name
-	 *            the name to search for, must not be <code>null</code>
+	 *            the name to search for
 	 * @return an Optional for a local IBeXNode
 	 */
 	public static Optional<IBeXNode> findIBeXNodeWithName(final IBeXPattern ibexPattern, final String name) {
 		Objects.requireNonNull(ibexPattern, "pattern must not be null!");
-		Objects.requireNonNull(name, "name must not be null!");
 
 		if (ibexPattern instanceof IBeXContextPattern) {
 			return findIBeXNodeWithName((IBeXContextPattern) ibexPattern, name);
@@ -88,7 +94,9 @@ public class IBeXPatternUtils {
 	 */
 	public static Optional<IBeXNode> findIBeXNodeWithName(final List<IBeXNode> nodes, final String name) {
 		Objects.requireNonNull(nodes, "nodes must not be null!");
-		Objects.requireNonNull(name, "name must not be null!");
+		if (name == null) {
+			return Optional.empty();
+		}
 		return nodes.stream().filter(node -> name.equals(node.getName())).findAny();
 	}
 

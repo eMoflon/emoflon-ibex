@@ -74,8 +74,23 @@ public class EditorModelUtils {
 		return editorPattern.getNodes().stream() //
 				.flatMap(n -> n.getReferences().stream()) //
 				.filter(r -> operatorsList.contains(r.getOperator()))
-				.sorted((a, b) -> a.getType().getName().compareTo(b.getType().getName())) //
+				.sorted((a, b) -> getTypeName(a).compareTo(getTypeName(b))) //
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Returns the name of the type of the reference.
+	 * 
+	 * @param editorReference
+	 *            the editor reference
+	 * @return the name of the type (or the empty string if the type is
+	 *         <code>null</code>)
+	 */
+	private static String getTypeName(final EditorReference editorReference) {
+		if (editorReference.getType() == null || editorReference.getType().getName() == null) {
+			return "";
+		}
+		return editorReference.getType().getName();
 	}
 
 	/**

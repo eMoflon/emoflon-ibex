@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.emoflon.ibex.common.utils.EcoreUtils;
+import org.emoflon.ibex.common.utils.IBeXPatternFactory;
 import org.emoflon.ibex.common.utils.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
@@ -24,6 +25,20 @@ import IBeXLanguage.IBeXPatternInvocation;
  * Utility methods to transform editor patterns to IBeX Patterns.
  */
 public class EditorToIBeXPatternHelper {
+	/**
+	 * The transformation.
+	 */
+	private final EditorToIBeXPatternTransformation transformation;
+
+	/**
+	 * Creates a new EditorToIBeXPatternHelper.
+	 * 
+	 * @param transformation
+	 *            the transformation
+	 */
+	public EditorToIBeXPatternHelper(final EditorToIBeXPatternTransformation transformation) {
+		this.transformation = transformation;
+	}
 
 	/**
 	 * Transforms the given editor reference into an {@link IBeXEdge}. If a source
@@ -38,25 +53,29 @@ public class EditorToIBeXPatternHelper {
 	 *            the list of nodes where
 	 * @return the transformed edge
 	 */
-	public static IBeXEdge transformEdge(final EditorReference editorReference, final List<IBeXNode> changedNodes,
+	public Optional<IBeXEdge> transformEdge(final EditorReference editorReference, final List<IBeXNode> changedNodes,
 			final List<IBeXNode> contextNodes) {
 		EditorNode editorSourceNode = EditorModelUtils.getSourceNode(editorReference);
 		EditorNode editorTargetNode = editorReference.getTarget();
 
 		Objects.requireNonNull(editorReference, "Edge must not be null!");
-		Objects.requireNonNull(editorSourceNode, "Edge must have a source node!");
-		Objects.requireNonNull(editorTargetNode, "Edge must have a target node!");
 		Objects.requireNonNull(changedNodes, "Changed node must not be null!");
 		Objects.requireNonNull(contextNodes, "Context node must not be null!");
 
+		if (editorSourceNode == null || editorSourceNode.getName() == null) {
+			transformation.logError("Cannot resolve reference to source node.");
+			return Optional.empty();
+		}
+
+		if (editorTargetNode == null || editorTargetNode.getName() == null) {
+			transformation.logError("Cannot resolve reference to target node.");
+			return Optional.empty();
+		}
+
 		IBeXNode ibexSourceNode = addIBeXNodeToContextNodes(editorSourceNode, changedNodes, contextNodes);
 		IBeXNode ibexTargetNode = addIBeXNodeToContextNodes(editorTargetNode, changedNodes, contextNodes);
-
-		IBeXEdge ibexEdge = IBeXLanguageFactory.eINSTANCE.createIBeXEdge();
-		ibexEdge.setType(editorReference.getType());
-		ibexEdge.setSourceNode(ibexSourceNode);
-		ibexEdge.setTargetNode(ibexTargetNode);
-		return ibexEdge;
+		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSourceNode, ibexTargetNode, editorReference.getType());
+		return Optional.of(ibexEdge);
 	}
 
 	/**
@@ -95,10 +114,7 @@ public class EditorToIBeXPatternHelper {
 	public static IBeXNode transformNode(final EditorNode editorNode) {
 		Objects.requireNonNull(editorNode, "Node must not be null!");
 
-		IBeXNode ibexNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-		ibexNode.setName(editorNode.getName());
-		ibexNode.setType(editorNode.getType());
-		return ibexNode;
+		return IBeXPatternFactory.createNode(editorNode.getName(), editorNode.getType());
 	}
 
 	/**
@@ -116,16 +132,16 @@ public class EditorToIBeXPatternHelper {
 	 * @param changedEdges
 	 *            the changed edges
 	 */
-	public static void transformNodesAndEdgesOfOperator(final EditorPattern editorPattern,
-			final EditorOperator editorOperator, final List<IBeXNode> changedNodes, final List<IBeXNode> contextNodes,
-			final List<IBeXEdge> changedEdges) {
+	public void transformNodesAndEdgesOfOperator(final EditorPattern editorPattern, final EditorOperator editorOperator,
+			final List<IBeXNode> changedNodes, final List<IBeXNode> contextNodes, final List<IBeXEdge> changedEdges) {
 		EditorModelUtils.getNodesByOperator(editorPattern, editorOperator).forEach(editorNode -> {
 			changedNodes.add(transformNode(editorNode));
 		});
 
 		List<IBeXNode> context = new ArrayList<IBeXNode>();
 		EditorModelUtils.getReferencesByOperator(editorPattern, editorOperator).forEach(editorReference -> {
-			changedEdges.add(transformEdge(editorReference, changedNodes, context));
+			transformEdge(editorReference, changedNodes, context) //
+					.ifPresent(ibexEdge -> changedEdges.add(ibexEdge));
 		});
 		context.sort(IBeXPatternUtils.sortByName);
 		contextNodes.addAll(context);
