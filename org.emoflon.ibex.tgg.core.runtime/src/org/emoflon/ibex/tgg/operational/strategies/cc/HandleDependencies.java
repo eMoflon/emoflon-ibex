@@ -48,7 +48,7 @@ public class HandleDependencies {
 		appliedBundles
 			.forEach(b -> 
 				b.getAllMatches().stream().forEach(m -> 
-					matchToBundle.put(m,  b)
+					matchToBundle.put((int) m, b)
 					)
 				);
 		this.nodeToMarkingMatches = nodeToMarkingMatches;
