@@ -1,10 +1,13 @@
 package org.emoflon.ibex.common.utils;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 /**
  * Utility methods for manipulating EMF models.
@@ -77,6 +80,38 @@ public class EMFManipulationUtils {
 			if (source.eGet(reference) != null) {
 				source.eUnset(reference);
 			}
+		}
+	}
+
+	/**
+	 * Removes the given nodes and edges in the following order:
+	 * <ol>
+	 * <li>the regular edges</li>
+	 * <li>the nodes</li>
+	 * <li>the containment edges</li>
+	 * </ol>
+	 * 
+	 * @param nodesToDelete
+	 *            the nodes marked for deletion
+	 * @param edgesToDelete
+	 *            the edges marked for deletion
+	 * @param trashResource
+	 *            the resource resource whether dangling nodes are moved to
+	 */
+	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
+			final Resource trashResource) {
+		// Delete nodes.
+		for (EObject node : nodesToDelete) {
+			if (EMFManipulationUtils.isDanglingNode(node)) {
+				// Move to trash resource.
+				trashResource.getContents().add(EcoreUtil.getRootContainer(node));
+			}
+			EcoreUtil.delete(node);
+		}
+
+		// Delete edges.
+		for (EMFEdge edge : edgesToDelete) {
+			EMFManipulationUtils.deleteEdge(edge.getSource(), edge.getTarget(), edge.getType());
 		}
 	}
 }
