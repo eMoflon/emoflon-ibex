@@ -84,7 +84,7 @@ public class EMFManipulationUtils {
 	}
 
 	/**
-	 * Removes the given nodes and edges in the following order:
+	 * Deletes the given nodes and edges in the following order:
 	 * <ol>
 	 * <li>the regular edges</li>
 	 * <li>the nodes</li>
@@ -100,18 +100,42 @@ public class EMFManipulationUtils {
 	 */
 	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
 			final Resource trashResource) {
-		// Delete nodes.
+		deleteEdges(edgesToDelete, false);
+		deleteNodes(nodesToDelete, trashResource);
+		deleteEdges(edgesToDelete, true);
+	}
+
+	/**
+	 * Deletes the given nodes.
+	 * 
+	 * @param nodesToDelete
+	 *            the nodes marked for deletion
+	 * @param trashResource
+	 *            the resource resource whether dangling nodes are moved to
+	 */
+	private static void deleteNodes(final Set<EObject> nodesToDelete, final Resource trashResource) {
 		for (EObject node : nodesToDelete) {
-			if (EMFManipulationUtils.isDanglingNode(node)) {
-				// Move to trash resource.
+			if (isDanglingNode(node)) {
+				// Move node to trash resource.
 				trashResource.getContents().add(EcoreUtil.getRootContainer(node));
 			}
 			EcoreUtil.delete(node);
 		}
+	}
 
-		// Delete edges.
+	/**
+	 * Deletes the edges whose type has the containment set to the given value.
+	 * 
+	 * @param edgesToDelete
+	 *            the edges marked for deletion
+	 * @param containment
+	 *            the containment setting
+	 */
+	private static void deleteEdges(final Set<EMFEdge> edgesToDelete, boolean containment) {
 		for (EMFEdge edge : edgesToDelete) {
-			EMFManipulationUtils.deleteEdge(edge.getSource(), edge.getTarget(), edge.getType());
+			if (edge.getType().isContainment() == containment) {
+				deleteEdge(edge.getSource(), edge.getTarget(), edge.getType());
+			}
 		}
 	}
 }
