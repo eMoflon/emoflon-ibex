@@ -1,7 +1,9 @@
 package org.emoflon.ibex.gt.engine;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -12,6 +14,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
+import org.emoflon.ibex.common.utils.EMFEdge;
 import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 
 import IBeXLanguage.IBeXDeletePattern;
@@ -22,6 +25,9 @@ import IBeXLanguage.IBeXNode;
  * Interpreter applying deletion of elements for graph transformation.
  */
 public class GraphTransformationDeleteInterpreter implements IDeletePatternInterpreter {
+	/**
+	 * The trash resource.
+	 */
 	private Resource trashResource;
 
 	/**
@@ -35,27 +41,36 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 	}
 
 	@Override
-	public Optional<IMatch> apply(final IBeXDeletePattern deletePattern, final IMatch match,
-			final PushoutApproach po) {
+	public Optional<IMatch> apply(final IBeXDeletePattern deletePattern, final IMatch match, final PushoutApproach po) {
 		// Check applicability with DPO semantics.
-		if (po == PushoutApproach.DPO && !this.isApplicableDPO(deletePattern, match)) {
+		if (po == PushoutApproach.DPO && !isApplicableDPO(deletePattern, match)) {
 			return Optional.empty();
 		}
 
+		delete(deletePattern, match);
+		return Optional.of(match);
+	}
+
+	/**
+	 * Executes the deletion.
+	 * 
+	 * @param deletePattern
+	 *            the pattern defining which elements are deleted
+	 * @param match
+	 *            the match
+	 */
+	private void delete(final IBeXDeletePattern deletePattern, final IMatch match) {
+		Set<EObject> nodesToDelete = new HashSet<EObject>();
+		Set<EMFEdge> edgesToDelete = new HashSet<EMFEdge>();
 		deletePattern.getDeletedNodes().forEach(node -> {
-			EObject eObject = (EObject) match.get(node.getName());
-			if (EMFManipulationUtils.isDanglingNode(eObject)) {
-				// Move to trash resource.
-				trashResource.getContents().add(EcoreUtil.getRootContainer(eObject));
-			}
-			EcoreUtil.delete(eObject);
+			nodesToDelete.add((EObject) match.get(node.getName()));
 		});
 		deletePattern.getDeletedEdges().forEach(edge -> {
 			EObject src = (EObject) match.get(edge.getSourceNode().getName());
 			EObject trg = (EObject) match.get(edge.getTargetNode().getName());
-			EMFManipulationUtils.deleteEdge(src, trg, edge.getType());
+			edgesToDelete.add(new EMFEdge(src, trg, edge.getType()));
 		});
-		return Optional.of(match);
+		EMFManipulationUtils.delete(nodesToDelete, edgesToDelete, trashResource);
 	}
 
 	/**
