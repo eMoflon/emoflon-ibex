@@ -13,9 +13,9 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OPT;
 
-import gnu.trove.set.hash.TCustomHashSet;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.set.hash.TIntHashSet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGRuleCorr;
 import language.TGGRuleNode;
 
@@ -74,34 +74,34 @@ public abstract class BWD_OPT extends OPT {
 
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
-				nodeToMarkingMatches.put(e, new TIntHashSet());
+				nodeToMarkingMatches.put(e, new IntOpenHashSet());
 			nodeToMarkingMatches.get(e).add(idCounter);
 		});
 
 		getGreenEdges(comatch, ruleName).forEach(e -> {
 			if (!edgeToMarkingMatches.containsKey(e)) {
-				edgeToMarkingMatches.put(e, new TIntHashSet());
+				edgeToMarkingMatches.put(e, new IntOpenHashSet());
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
 		
 		getBlackNodes(comatch, ruleName).forEach(e -> {
 			if (!contextNodeToNeedingMatches.containsKey(e))
-				contextNodeToNeedingMatches.put(e, new TIntHashSet());
+				contextNodeToNeedingMatches.put(e, new IntOpenHashSet());
 			contextNodeToNeedingMatches.get(e).add(idCounter);
 		});
 		
 		getBlackEdges(comatch, ruleName).forEach(e -> {
 			if (!contextEdgeToNeedingMatches.containsKey(e)) {
-				contextEdgeToNeedingMatches.put(e, new TIntHashSet());
+				contextEdgeToNeedingMatches.put(e, new IntOpenHashSet());
 			}
 			contextEdgeToNeedingMatches.get(e).add(idCounter);
 		});
 
-		matchToContextNodes.put(idCounter, new THashSet<>());
+		matchToContextNodes.put(idCounter, new ObjectOpenHashSet<>());
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
 
-		matchToContextEdges.put(idCounter, new TCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
+		matchToContextEdges.put(idCounter, new ObjectOpenCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 
 		handleBundles(comatch, ruleName);

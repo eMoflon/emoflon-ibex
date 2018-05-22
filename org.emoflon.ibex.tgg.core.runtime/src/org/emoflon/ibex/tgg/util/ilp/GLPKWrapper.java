@@ -18,7 +18,7 @@ import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
 
-import gnu.trove.map.hash.TIntIntHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 /**
  * This class is a wrapper around GLPK allowing the usage of this ILPSolver with the unified API of the {@link ILPSolver} class.
@@ -248,7 +248,7 @@ final class GLPKWrapper extends ILPSolver {
 			System.err.println("No optimal or feasible solution found.");
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
-		TIntIntHashMap variableSolutions = new TIntIntHashMap();
+		Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
 		double optimum = GLPK.glp_mip_obj_val(problem);
 		System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
 		for(int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {
@@ -275,7 +275,7 @@ final class GLPKWrapper extends ILPSolver {
 		}
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
 		if(this.ilpProblem.getVariableIdsOfUnfixedVariables().length <= 0) {
-			return this.ilpProblem.createILPSolution(new TIntIntHashMap(), true, 0);
+			return this.ilpProblem.createILPSolution(new Int2IntOpenHashMap(), true, 0);
 		}
 		try {
 			this.prepareModel();

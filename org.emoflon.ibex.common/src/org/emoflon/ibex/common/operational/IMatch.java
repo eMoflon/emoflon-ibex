@@ -76,21 +76,21 @@ public interface IMatch {
 		if (!getPatternName().equals(match.getPatternName())) {
 			return false;
 		}
+		
+		if(getParameterNames().size() != match.getParameterNames().size()) {
+			return false;
+		}
 
 		// Parameters of given match must exist in this match as well.
 		for (final String parameterName : match.getParameterNames()) {
-			if (!getParameterNames().contains(parameterName)) {
+			try {
+				if (!get(parameterName).equals(match.get(parameterName))) {
+					return false;
+				}
+			} catch(Exception e) {
 				return false;
 			}
 		}
-
-		// Parameter values must be equal.
-		for (final String parameterName : getParameterNames()) {
-			if (!get(parameterName).equals(match.get(parameterName))) {
-				return false;
-			}
-		}
-
 		return true;
 	}
 }

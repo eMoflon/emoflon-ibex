@@ -18,7 +18,7 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
-import gnu.trove.map.hash.TIntIntHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 /**
  * This class is a wrapper around SAT4J allowing the usage of this ILPSolver with the unified API of the {@link ILPSolver} class.
@@ -43,7 +43,7 @@ final class Sat4JWrapper extends ILPSolver {
 	/**
 	 * Contains the mapping of the problem's variable IDs to SAT4J's variable IDs
 	 */
-	private TIntIntHashMap variableIdToSat4JVarId = new TIntIntHashMap();
+	private Int2IntOpenHashMap variableIdToSat4JVarId = new Int2IntOpenHashMap();
 
 	/**
 	 * Creates a new SAT4JWrapper
@@ -99,7 +99,7 @@ final class Sat4JWrapper extends ILPSolver {
 		optimizer.setVerbose(true);
 		if(optimizer.isSatisfiable()) {
 			int[] model = solver.model();
-			TIntIntHashMap variableSolutions = new TIntIntHashMap();
+			Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
 			for(int i : model) {
 				int solution = i>0? 1 : 0;
 				for(int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
@@ -127,7 +127,7 @@ final class Sat4JWrapper extends ILPSolver {
 	private IVecInt getLiterals(ILPLinearExpression linearExpression) {
 		IVecInt vec = new VecInt();
 		for (int variableId : linearExpression.getVariables()) {
-			if(!variableIdToSat4JVarId.contains(variableId)) {
+			if(!variableIdToSat4JVarId.containsKey(variableId)) {
 				//first usage of variable -> reserve internal SAT4J variable and save it
 				 variableIdToSat4JVarId.put(variableId, solver.nextFreeVarId(true));
 			}
