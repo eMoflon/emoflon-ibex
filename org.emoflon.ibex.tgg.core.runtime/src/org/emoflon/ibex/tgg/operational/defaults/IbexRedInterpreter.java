@@ -103,30 +103,32 @@ public class IbexRedInterpreter implements IRedInterpreter {
 				.map(TGGRuleNode::getName) //
 				.map(match::get) //
 				.map(EObject.class::cast) //
-				.forEach(corr -> {
-					EReference srcFeature = (EReference) corr.eClass().getEStructuralFeature("source");
-					EReference trgFeature = (EReference) corr.eClass().getEStructuralFeature("target");
-
-					EObject sourceObject = (EObject) corr.eGet(srcFeature);
-					if (sourceObject != null) {
-						edgesToRevoke.add(new EMFEdge(corr, sourceObject, srcFeature));
-						if (EMFManipulationUtils.isDanglingNode(Optional.of(sourceObject))) {
-							strategy.addToTrash(sourceObject);
-						}
-					}
-
-					EObject targetObject = (EObject) corr.eGet(trgFeature);
-					if (targetObject != null) {
-						edgesToRevoke.add(new EMFEdge(corr, targetObject, trgFeature));
-						if (EMFManipulationUtils.isDanglingNode(Optional.of(targetObject))) {
-							strategy.addToTrash(targetObject);
-						}
-					}
-
-					nodesToRevoke.add(corr);
-				});
+				.forEach(corr -> revokeCorr(corr, nodesToRevoke, edgesToRevoke));
 
 		revoke(nodesToRevoke, edgesToRevoke);
+	}
+
+	private void revokeCorr(EObject corr, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
+		EReference srcFeature = (EReference) corr.eClass().getEStructuralFeature("source");
+		EReference trgFeature = (EReference) corr.eClass().getEStructuralFeature("target");
+
+		EObject sourceObject = (EObject) corr.eGet(srcFeature);
+		if (sourceObject != null) {
+			edgesToRevoke.add(new EMFEdge(corr, sourceObject, srcFeature));
+			if (EMFManipulationUtils.isDanglingNode(Optional.of(sourceObject))) {
+				strategy.addToTrash(sourceObject);
+			}
+		}
+
+		EObject targetObject = (EObject) corr.eGet(trgFeature);
+		if (targetObject != null) {
+			edgesToRevoke.add(new EMFEdge(corr, targetObject, trgFeature));
+			if (EMFManipulationUtils.isDanglingNode(Optional.of(targetObject))) {
+				strategy.addToTrash(targetObject);
+			}
+		}
+
+		nodesToRevoke.add(corr);
 	}
 
 	/**
