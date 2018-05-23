@@ -11,36 +11,35 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class Bundle {
-	
 	/**
-	 * Collection of all matches belonging to the bundle (kernel and its complement matches)
+	 * Collection of all matches belonging to the bundle (kernel and its complement
+	 * matches)
 	 */
 	private IntLinkedOpenHashSet allMatches;
 	private int kernelMatch;
-	
+
 	private ObjectOpenHashSet<EObject> bundleContextNodes;
 	private ObjectOpenCustomHashSet<EMFEdge> bundleContextEdges;
 
-	
 	public Bundle(int kernelMatch) {
 		this.kernelMatch = kernelMatch;
 		allMatches = new IntLinkedOpenHashSet();
 		bundleContextNodes = new ObjectOpenHashSet<EObject>();
 		bundleContextEdges = new ObjectOpenCustomHashSet<EMFEdge>(new EMFEdgeHashingStrategy());
 	}
-	
+
 	public void addMatch(int match) {
 		allMatches.add(match);
 	}
-	
+
 	public void addBundleContextNodes(ObjectOpenHashSet<EObject> blackNodes) {
 		bundleContextNodes.addAll(blackNodes);
 	}
-	
+
 	public void addBundleContextEdges(ObjectOpenHashSet<EMFEdge> blackEdges) {
 		bundleContextEdges.addAll(blackEdges);
 	}
-	
+
 	public ObjectOpenHashSet<EObject> getBundleContextNodes() {
 		return bundleContextNodes;
 	}
@@ -48,11 +47,11 @@ public class Bundle {
 	public ObjectOpenCustomHashSet<EMFEdge> getBundleContextEdges() {
 		return bundleContextEdges;
 	}
-	
-	public IntLinkedOpenHashSet getAllMatches(){
+
+	public IntLinkedOpenHashSet getAllMatches() {
 		return allMatches;
 	}
-	
+
 	public int getKernelMatch() {
 		return kernelMatch;
 	}
@@ -60,9 +59,9 @@ public class Bundle {
 	public IntOpenHashSet getAllComplementMatches() {
 		IntOpenHashSet complementMatches = new IntOpenHashSet();
 		IntIterator it = this.allMatches.iterator();
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 			int value = it.nextInt();
-			if(value != kernelMatch) {
+			if (value != kernelMatch) {
 				complementMatches.add(value);
 			}
 		}

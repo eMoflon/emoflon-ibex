@@ -34,7 +34,7 @@ public abstract class CC extends OPT {
 	public CC(IbexOptions options) throws IOException {
 		super(options);
 	}
-	
+
 	public CC(IbexOptions options, IUpdatePolicy policy) {
 		super(options, policy);
 	}
@@ -54,56 +54,50 @@ public abstract class CC extends OPT {
 		c.save(null);
 		p.save(null);
 	}
-	
-	
 
-	/* (non-Javadoc)
-	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
-	 */
 	@Override
 	protected int getWeightForMatch(IMatch comatch, String ruleName) {
-		return
-				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
+		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
+				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size()
+				+ getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
+				+ getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
 	}
 
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
 		return patternName.endsWith(PatternSuffixes.CC);
 	}
-	
+
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
 		if (operationalMatchContainer.isEmpty())
 			return false;
-		
-		if(operationalMatchContainer.getMatches().stream()
+
+		if (operationalMatchContainer.getMatches().stream()
 				.allMatch(m -> m.getPatternName().contains(PatternSuffixes.GENForCC))) {
-			//FIXME[Anjorin]:  Find an elegant way of properly discarding GENForCC matches!
+			// FIXME[Anjorin]: Find an elegant way of properly discarding GENForCC matches!
 			return false;
 		}
 
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
-		
-		if(ruleName == null) {
+
+		if (ruleName == null) {
 			removeOperationalRuleMatch(match);
-			return true;  //FIXME[Anjorin]:  This should be avoided (all matches that do not correspond to rules should be filtered)
+			return true; // FIXME[Anjorin]: This should be avoided (all matches that do not correspond to
+							// rules should be filtered)
 		}
-			
-		
+
 		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
 		comatch.ifPresent(cm -> {
 			if (isKernelMatch(ruleName))
 				processComplementRuleMatches(cm);
 		});
-		
+
 		removeOperationalRuleMatch(match);
 		return true;
 	}
-	
+
 	private void processComplementRuleMatches(IMatch comatch) {
 		blackInterpreter.updateMatches();
 		// last applied match was kernel
@@ -113,17 +107,17 @@ public abstract class CC extends OPT {
 		Set<IMatch> complementRuleContextMatches = findAllComplementRuleContextMatches();
 
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
-		
+
 		// collection needed to handle uniqueness
 		Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes = new Int2ObjectOpenHashMap<>();
-		
+
 		while (complementRuleMatches.iterator().hasNext()) {
 			IMatch match = complementRuleMatches.iterator().next();
 			applyMatchAndHandleUniqueness(match, complementMatchToContextNodes);
 			complementRuleMatches.remove(match);
 			removeOperationalRuleMatch(match);
 		}
-		
+
 		// check if all found CR matches are really applied
 		while (complementRuleContextMatches.iterator().hasNext()) {
 			IMatch match = complementRuleContextMatches.iterator().next();
@@ -135,7 +129,7 @@ public abstract class CC extends OPT {
 				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		application.setAmalgamated(true);
 	}
-	
+
 	/**
 	 * Maximality check that assures complement rule is applied, is only done for
 	 * nodes. It might be in the future that some tests show that this is also
@@ -144,8 +138,8 @@ public abstract class CC extends OPT {
 	private void handleMaximality(IMatch match, int kernelMatchID) {
 		String ruleName = removeAllSuffixes(match.getPatternName());
 		TGGComplementRule rule = getComplementRule(ruleName).get();
-		if(rule.isBounded()) {
-		//check if the complement rule was applied. If not, mark its kernel as invalid.
+		if (rule.isBounded()) {
+			// check if the complement rule was applied. If not, mark its kernel as invalid.
 			ObjectOpenHashSet<EObject> contextNodes = getGenContextNodes(match);
 			if (!matchToContextNodes.containsValue(contextNodes))
 				invalidKernels.add(kernelMatchID);
@@ -157,7 +151,7 @@ public abstract class CC extends OPT {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		if (processOperationalRuleMatch(ruleName, match) != null) {
 			TGGComplementRule rule = getComplementRule(ruleName).get();
-			if(rule.isBounded())
+			if (rule.isBounded())
 				findDuplicatedMatches(idToMatch.size(), complementMatchToContextNodes);
 		}
 	}
@@ -170,17 +164,17 @@ public abstract class CC extends OPT {
 	private void findDuplicatedMatches(int currentComplementMatch,
 			Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes) {
 
-		ObjectOpenHashSet<EObject> contextNodesForCurrentComplementMatch = matchToContextNodes.get(currentComplementMatch);
+		ObjectOpenHashSet<EObject> contextNodesForCurrentComplementMatch = matchToContextNodes
+				.get(currentComplementMatch);
 		for (int previousComplementMatch : complementMatchToContextNodes.keySet()) {
-		//check if matches belong to the same complement rule
+			// check if matches belong to the same complement rule
 			if (matchIdToRuleName.get(currentComplementMatch).equals(matchIdToRuleName.get(previousComplementMatch))) {
-				if(matchToContextNodes.get(previousComplementMatch).equals(contextNodesForCurrentComplementMatch)) {
+				if (matchToContextNodes.get(previousComplementMatch).equals(contextNodesForCurrentComplementMatch)) {
 					if (!sameComplementMatches.containsKey(currentComplementMatch)) {
 						sameComplementMatches.put(currentComplementMatch, new IntOpenHashSet());
 						sameComplementMatches.get(currentComplementMatch).add(currentComplementMatch);
 						sameComplementMatches.get(currentComplementMatch).add(previousComplementMatch);
-					}
-					else {
+					} else {
 						sameComplementMatches.get(currentComplementMatch).add(previousComplementMatch);
 					}
 				}
@@ -188,28 +182,27 @@ public abstract class CC extends OPT {
 		}
 		complementMatchToContextNodes.put(currentComplementMatch, contextNodesForCurrentComplementMatch);
 	}
-	
+
 	private String removeAllSuffixes(String name) {
-		if(name.indexOf(PatternSuffixes.GENForCC) == -1)
+		if (name.indexOf(PatternSuffixes.GENForCC) == -1)
 			return name;
 		return name.substring(0, name.indexOf(PatternSuffixes.GENForCC));
 	}
 
-	private ObjectOpenHashSet<EObject> getGenContextNodes(IMatch match){
-		ObjectOpenHashSet<EObject> contextNodes = match.getParameterNames().stream()
-				.map(n -> match.get(n)).collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
+	private ObjectOpenHashSet<EObject> getGenContextNodes(IMatch match) {
+		ObjectOpenHashSet<EObject> contextNodes = match.getParameterNames().stream().map(n -> match.get(n))
+				.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
 		return contextNodes;
 	}
-	
+
 	/**
 	 * @return Collection of all complement matches that has to be applied.
 	 */
 	private Set<IMatch> findAllComplementRuleContextMatches() {
 		return operationalMatchContainer.getMatches().stream()
-				.filter(m -> m.getPatternName().contains(PatternSuffixes.GENForCC))
-				.collect(Collectors.toSet());
+				.filter(m -> m.getPatternName().contains(PatternSuffixes.GENForCC)).collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * @return Collection of all complement matches existing in the match container
 	 */
@@ -222,18 +215,18 @@ public abstract class CC extends OPT {
 	@Override
 	protected void wrapUp() {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
-		
+
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			IMatch comatch = idToMatch.get(id);
 			if (v < 0) {
 				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
-				
+
 				objectsToDelete.add(getRuleApplicationNode(comatch));
 			}
 		}
-		
+
 		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.init(this);
 	}
@@ -261,13 +254,13 @@ public abstract class CC extends OPT {
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
-		
+
 		getBlackNodes(comatch, ruleName).forEach(e -> {
 			if (!contextNodeToNeedingMatches.containsKey(e))
 				contextNodeToNeedingMatches.put(e, new IntOpenHashSet());
 			contextNodeToNeedingMatches.get(e).add(idCounter);
 		});
-		
+
 		getBlackEdges(comatch, ruleName).forEach(e -> {
 			if (!contextEdgeToNeedingMatches.containsKey(e)) {
 				contextEdgeToNeedingMatches.put(e, new IntOpenHashSet());
@@ -277,11 +270,10 @@ public abstract class CC extends OPT {
 
 		matchToContextNodes.put(idCounter, new ObjectOpenHashSet<>());
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
-		
 
 		matchToContextEdges.put(idCounter, new ObjectOpenCustomHashSet<EMFEdge>(new EMFEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
-		
+
 		handleBundles(comatch, ruleName);
 
 		idCounter++;

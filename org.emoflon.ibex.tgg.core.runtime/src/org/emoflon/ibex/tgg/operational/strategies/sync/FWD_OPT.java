@@ -84,13 +84,13 @@ public abstract class FWD_OPT extends OPT {
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
-		
+
 		getBlackNodes(comatch, ruleName).forEach(e -> {
 			if (!contextNodeToNeedingMatches.containsKey(e))
 				contextNodeToNeedingMatches.put(e, new IntOpenHashSet());
 			contextNodeToNeedingMatches.get(e).add(idCounter);
 		});
-		
+
 		getBlackEdges(comatch, ruleName).forEach(e -> {
 			if (!contextEdgeToNeedingMatches.containsKey(e)) {
 				contextEdgeToNeedingMatches.put(e, new IntOpenHashSet());
@@ -128,14 +128,10 @@ public abstract class FWD_OPT extends OPT {
 		c.save(null);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
-	 */
 	@Override
 	protected int getWeightForMatch(IMatch comatch, String ruleName) {
-		return
-				getGreenFactory(ruleName).getGreenSrcEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
+		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
+				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
 	}
 
 	public void forward() throws IOException {
@@ -143,8 +139,7 @@ public abstract class FWD_OPT extends OPT {
 	}
 
 	@Override
-	public void run() throws IOException {	
-
+	public void run() throws IOException {
 		do {
 			blackInterpreter.updateMatches();
 		} while (processOneOperationalRuleMatch());
@@ -158,4 +153,3 @@ public abstract class FWD_OPT extends OPT {
 		relaxReferences(options.tgg().getTrg());
 	}
 }
-
