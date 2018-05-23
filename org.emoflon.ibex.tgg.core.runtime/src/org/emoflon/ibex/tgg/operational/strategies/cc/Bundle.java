@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.cc;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
+import org.emoflon.ibex.common.utils.EMFEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -19,14 +19,14 @@ public class Bundle {
 	private int kernelMatch;
 	
 	private ObjectOpenHashSet<EObject> bundleContextNodes;
-	private ObjectOpenCustomHashSet<RuntimeEdge> bundleContextEdges;
+	private ObjectOpenCustomHashSet<EMFEdge> bundleContextEdges;
 
 	
 	public Bundle(int kernelMatch) {
 		this.kernelMatch = kernelMatch;
 		allMatches = new IntLinkedOpenHashSet();
 		bundleContextNodes = new ObjectOpenHashSet<EObject>();
-		bundleContextEdges = new ObjectOpenCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy());
+		bundleContextEdges = new ObjectOpenCustomHashSet<EMFEdge>(new RuntimeEdgeHashingStrategy());
 	}
 	
 	public void addMatch(int match) {
@@ -37,7 +37,7 @@ public class Bundle {
 		bundleContextNodes.addAll(blackNodes);
 	}
 	
-	public void addBundleContextEdges(ObjectOpenHashSet<RuntimeEdge> blackEdges) {
+	public void addBundleContextEdges(ObjectOpenHashSet<EMFEdge> blackEdges) {
 		bundleContextEdges.addAll(blackEdges);
 	}
 	
@@ -45,7 +45,7 @@ public class Bundle {
 		return bundleContextNodes;
 	}
 
-	public ObjectOpenCustomHashSet<RuntimeEdge> getBundleContextEdges() {
+	public ObjectOpenCustomHashSet<EMFEdge> getBundleContextEdges() {
 		return bundleContextEdges;
 	}
 	

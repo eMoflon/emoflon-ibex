@@ -3,10 +3,10 @@ package org.emoflon.ibex.tgg.operational.matches;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
+import org.emoflon.ibex.common.utils.EMFEdge;
 
 public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements IMatch{
-	private final Collection<RuntimeEdge> edges;
+	private final Collection<EMFEdge> edges;
 	
 	public SimpleMatch(String patternName) {
 		super(patternName);
@@ -25,7 +25,7 @@ public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch
 	}
 
 	@Override
-	public Collection<RuntimeEdge> getCreatedEdges() {
+	public Collection<EMFEdge> getCreatedEdges() {
 		return edges;
 	}
 }

@@ -5,9 +5,9 @@ import java.util.Optional;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.utils.EMFEdge;
 import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -37,13 +37,13 @@ public class IbexRedInterpreter implements IRedInterpreter {
 
 	private void revokeEdges(IMatch match, IGreenPattern pattern) {
 		pattern.getSrcTrgEdgesCreatedByPattern().forEach(e -> {
-			RuntimeEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
+			EMFEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
 			strategy.removeCreatedEdge(runtimeEdge);
-			EMFManipulationUtils.deleteEdge(runtimeEdge.getSrc(), runtimeEdge.getTrg(), runtimeEdge.getRef());
+			EMFManipulationUtils.deleteEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType());
 		});
 
 		pattern.getEdgesMarkedByPattern().forEach(e -> {
-			RuntimeEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
+			EMFEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
 			strategy.removeMarkedEdge(runtimeEdge);
 		});
 	}

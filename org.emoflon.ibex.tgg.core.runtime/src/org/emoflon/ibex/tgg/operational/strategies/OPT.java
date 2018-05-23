@@ -14,10 +14,10 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.common.utils.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.cc.Bundle;
@@ -49,15 +49,16 @@ import language.TGGRuleNode;
 public abstract class OPT extends OperationalStrategy {
 
 	protected Int2ObjectOpenHashMap<IMatch> idToMatch = new Int2ObjectOpenHashMap<>();
-	protected Object2ObjectOpenCustomHashMap<RuntimeEdge, IntOpenHashSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
+	protected Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
 			new RuntimeEdgeHashingStrategy());
 	protected Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 	protected int nameCounter = 0;
 	protected Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> matchToContextNodes = new Int2ObjectOpenHashMap<>();
 	protected Object2ObjectOpenHashMap<EObject, IntOpenHashSet> contextNodeToNeedingMatches = new Object2ObjectOpenHashMap<>();
-	protected Object2ObjectOpenCustomHashMap<RuntimeEdge, IntOpenHashSet> contextEdgeToNeedingMatches = new Object2ObjectOpenCustomHashMap<>(new RuntimeEdgeHashingStrategy());
-	protected Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<RuntimeEdge>> matchToContextEdges = new Int2ObjectOpenHashMap<>();
+	protected Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> contextEdgeToNeedingMatches = new Object2ObjectOpenCustomHashMap<>(
+			new RuntimeEdgeHashingStrategy());
+	protected Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<EMFEdge>> matchToContextEdges = new Int2ObjectOpenHashMap<>();
 	protected Int2IntOpenHashMap matchToWeight = new Int2IntOpenHashMap();
 
 	/**
@@ -182,7 +183,7 @@ public abstract class OPT extends OperationalStrategy {
 			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL_nodeOnce_"+node.toString() + nameCounter++);
 		}
 
-		for (RuntimeEdge edge : edgeToMarkingMatches.keySet()) {
+		for (EMFEdge edge : edgeToMarkingMatches.keySet()) {
 			IntOpenHashSet variables = edgeToMarkingMatches.get(edge);
 			if(variables.size() <= 1) {
 				//there is only one match creating this edge, no exclusion needed

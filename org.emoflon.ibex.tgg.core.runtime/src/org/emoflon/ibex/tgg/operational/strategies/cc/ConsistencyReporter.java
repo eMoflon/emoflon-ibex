@@ -7,7 +7,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
+import org.emoflon.ibex.common.utils.EMFEdge;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
@@ -24,8 +24,8 @@ public class ConsistencyReporter {
 	private Collection<EObject> inconsistentTrgNodes;
 	private Collection<EObject> inconsistentCorrNodes;
 	
-	private Collection<RuntimeEdge> inconsistentSrcEdges;
-	private Collection<RuntimeEdge> inconsistentTrgEdges;
+	private Collection<EMFEdge> inconsistentSrcEdges;
+	private Collection<EMFEdge> inconsistentTrgEdges;
 
 	public void init(OperationalStrategy strategy) {
 		this.strategy = strategy;
@@ -61,11 +61,11 @@ public class ConsistencyReporter {
 		return inconsistentTrgNodes;
 	}
 
-	public Collection<RuntimeEdge> getInconsistentSrcEdges() {
+	public Collection<EMFEdge> getInconsistentSrcEdges() {
 		return inconsistentSrcEdges;
 	}
 
-	public Collection<RuntimeEdge> getInconsistentTrgEdges() {
+	public Collection<EMFEdge> getInconsistentTrgEdges() {
 		return inconsistentTrgEdges;
 	}
 	
@@ -100,9 +100,9 @@ public class ConsistencyReporter {
 		return nodes;
 	}
 
-	private Collection<RuntimeEdge> extractInconsistentEdges(Resource resource, Resource protocol, Domain domain) {
+	private Collection<EMFEdge> extractInconsistentEdges(Resource resource, Resource protocol, Domain domain) {
 		Iterator<EObject> it = resource.getAllContents();
-		Collection<RuntimeEdge> edges = new ObjectOpenCustomHashSet<>(new RuntimeEdgeHashingStrategy());
+		Collection<EMFEdge> edges = new ObjectOpenCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 
 		while (it.hasNext()) {
 			EObject node = it.next();
@@ -113,10 +113,10 @@ public class ConsistencyReporter {
 						@SuppressWarnings("unchecked")
 						EList<EObject> getResultCollection = (EList<EObject>) getterResult;
 						for (EObject edgeTrg : getResultCollection) {
-							edges.add(new RuntimeEdge(node, edgeTrg, ref));
+							edges.add(new EMFEdge(node, edgeTrg, ref));
 						}
 					} else if (getterResult instanceof EObject) {
-						edges.add(new RuntimeEdge(node, (EObject) getterResult, ref));
+						edges.add(new EMFEdge(node, (EObject) getterResult, ref));
 					}
 				}
 
@@ -133,7 +133,7 @@ public class ConsistencyReporter {
 					EObject srcOfEdge = ra.getNodeMappings().get(specificationEdge.getSrcNode().getName());
 					EObject trgOfEdge = ra.getNodeMappings().get(specificationEdge.getTrgNode().getName());
 					EReference refOfEdge = specificationEdge.getType();
-					RuntimeEdge edge = new RuntimeEdge(srcOfEdge, trgOfEdge, refOfEdge);
+					EMFEdge edge = new EMFEdge(srcOfEdge, trgOfEdge, refOfEdge);
 					edges.remove(edge);
 				}
 			}

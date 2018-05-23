@@ -10,11 +10,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.utils.EMFEdge;
 import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -45,15 +45,15 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			comatch.put(n.getName(), createNode(comatch, n, nodeResource));
 	}
 
-	public Collection<RuntimeEdge> createEdges(IMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
-		Collection<RuntimeEdge> result = new ArrayList<>();
+	public Collection<EMFEdge> createEdges(IMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
+		Collection<EMFEdge> result = new ArrayList<>();
 		for (TGGRuleEdge e : greenEdges) {
 			EObject src = (EObject) comatch.get(e.getSrcNode().getName());
 			EObject trg = (EObject) comatch.get(e.getTrgNode().getName());
 			if (createEMFEdge) {
 				EMFManipulationUtils.createEdge(src, trg, e.getType());
 			}
-			result.add(new RuntimeEdge(src, trg, e.getType()));
+			result.add(new EMFEdge(src, trg, e.getType()));
 		}
 		
 		comatch.getCreatedEdges().addAll(result);
