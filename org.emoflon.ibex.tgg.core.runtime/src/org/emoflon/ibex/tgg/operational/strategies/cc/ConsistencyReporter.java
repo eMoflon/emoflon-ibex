@@ -8,7 +8,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.utils.EMFEdge;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
+import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
@@ -102,7 +102,7 @@ public class ConsistencyReporter {
 
 	private Collection<EMFEdge> extractInconsistentEdges(Resource resource, Resource protocol, Domain domain) {
 		Iterator<EObject> it = resource.getAllContents();
-		Collection<EMFEdge> edges = new ObjectOpenCustomHashSet<>(new RuntimeEdgeHashingStrategy());
+		Collection<EMFEdge> edges = new ObjectOpenCustomHashSet<>(new EMFEdgeHashingStrategy());
 
 		while (it.hasNext()) {
 			EObject node = it.next();

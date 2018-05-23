@@ -15,10 +15,10 @@ import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.utils.EMFEdge;
+import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.cc.Bundle;
 import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
@@ -50,14 +50,14 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Int2ObjectOpenHashMap<IMatch> idToMatch = new Int2ObjectOpenHashMap<>();
 	protected Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
-			new RuntimeEdgeHashingStrategy());
+			new EMFEdgeHashingStrategy());
 	protected Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 	protected int nameCounter = 0;
 	protected Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> matchToContextNodes = new Int2ObjectOpenHashMap<>();
 	protected Object2ObjectOpenHashMap<EObject, IntOpenHashSet> contextNodeToNeedingMatches = new Object2ObjectOpenHashMap<>();
 	protected Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> contextEdgeToNeedingMatches = new Object2ObjectOpenCustomHashMap<>(
-			new RuntimeEdgeHashingStrategy());
+			new EMFEdgeHashingStrategy());
 	protected Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<EMFEdge>> matchToContextEdges = new Int2ObjectOpenHashMap<>();
 	protected Int2IntOpenHashMap matchToWeight = new Int2IntOpenHashMap();
 
@@ -258,7 +258,7 @@ public abstract class OPT extends OperationalStrategy {
 			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "IMPL" + nameCounter++);
 		}
 		
-		for(RuntimeEdge edge : contextEdgeToNeedingMatches.keySet()) {
+		for(EMFEdge edge : contextEdgeToNeedingMatches.keySet()) {
 			IntOpenHashSet needingMatchIDs = contextEdgeToNeedingMatches.get(edge);
 			int needingMatches = needingMatchIDs.size();
 			IntOpenHashSet creatingMatchIDs = edgeToMarkingMatches.get(edge);
@@ -377,15 +377,15 @@ public abstract class OPT extends OperationalStrategy {
 		return result;
 	}
 
-	protected ObjectOpenHashSet<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
-		ObjectOpenHashSet<RuntimeEdge> result = new ObjectOpenHashSet<>();
+	protected ObjectOpenHashSet<EMFEdge> getGreenEdges(IMatch comatch, String ruleName) {
+		ObjectOpenHashSet<EMFEdge> result = new ObjectOpenHashSet<>();
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
 		return result;
 	}
 
-	protected ObjectOpenHashSet<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
-		ObjectOpenHashSet<RuntimeEdge> result = new ObjectOpenHashSet<>();
+	protected ObjectOpenHashSet<EMFEdge> getBlackEdges(IMatch comatch, String ruleName) {
+		ObjectOpenHashSet<EMFEdge> result = new ObjectOpenHashSet<>();
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
 		return result;

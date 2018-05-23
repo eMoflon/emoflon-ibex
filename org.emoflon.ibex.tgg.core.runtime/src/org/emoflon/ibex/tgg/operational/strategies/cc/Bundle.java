@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.cc;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.utils.EMFEdge;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
+import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
@@ -26,7 +26,7 @@ public class Bundle {
 		this.kernelMatch = kernelMatch;
 		allMatches = new IntLinkedOpenHashSet();
 		bundleContextNodes = new ObjectOpenHashSet<EObject>();
-		bundleContextEdges = new ObjectOpenCustomHashSet<EMFEdge>(new RuntimeEdgeHashingStrategy());
+		bundleContextEdges = new ObjectOpenCustomHashSet<EMFEdge>(new EMFEdgeHashingStrategy());
 	}
 	
 	public void addMatch(int match) {

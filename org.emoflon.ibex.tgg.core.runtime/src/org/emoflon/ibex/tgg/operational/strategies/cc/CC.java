@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.utils.EMFEdge;
+import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OPT;
@@ -279,7 +279,7 @@ public abstract class CC extends OPT {
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
 		
 
-		matchToContextEdges.put(idCounter, new ObjectOpenCustomHashSet<EMFEdge>(new RuntimeEdgeHashingStrategy()));
+		matchToContextEdges.put(idCounter, new ObjectOpenCustomHashSet<EMFEdge>(new EMFEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 		
 		handleBundles(comatch, ruleName);

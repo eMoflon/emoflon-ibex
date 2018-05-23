@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.utils.EMFEdge;
+import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
@@ -30,7 +31,6 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttr
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
@@ -74,7 +74,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 
 	protected ObjectOpenCustomHashSet<EMFEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(
-			new RuntimeEdgeHashingStrategy());
+			new EMFEdgeHashingStrategy());
 	protected Object2ObjectOpenHashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
 
 	protected IbexOptions options;

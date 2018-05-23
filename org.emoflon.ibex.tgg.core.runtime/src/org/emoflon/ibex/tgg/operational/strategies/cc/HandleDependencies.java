@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.utils.EMFEdge;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
+import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -33,7 +33,7 @@ public class HandleDependencies {
 	private int cyclicDependencyId = 1;
 
 	Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
-			new RuntimeEdgeHashingStrategy());
+			new EMFEdgeHashingStrategy());
 	Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();
 	ObjectLinkedOpenHashSet<Bundle> appliedBundles;
 	Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> matchToContextNodes = new Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>>();
