@@ -2,51 +2,54 @@ package org.emoflon.ibex.tgg.operational.strategies.cc;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
+import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.set.hash.TIntHashSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class Bundle {
 	
 	/**
 	 * Collection of all matches belonging to the bundle (kernel and its complement matches)
 	 */
-	private TIntHashSet allMatches;
+	private IntLinkedOpenHashSet allMatches;
 	private int kernelMatch;
 	
-	private THashSet<EObject> bundleContextNodes;
-	private THashSet<RuntimeEdge> bundleContextEdges;
+	private ObjectOpenHashSet<EObject> bundleContextNodes;
+	private ObjectOpenCustomHashSet<RuntimeEdge> bundleContextEdges;
 
 	
 	public Bundle(int kernelMatch) {
 		this.kernelMatch = kernelMatch;
-		allMatches = new TIntHashSet();
-		bundleContextNodes = new THashSet<EObject>();
-		bundleContextEdges = new THashSet<RuntimeEdge>();
+		allMatches = new IntLinkedOpenHashSet();
+		bundleContextNodes = new ObjectOpenHashSet<EObject>();
+		bundleContextEdges = new ObjectOpenCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy());
 	}
 	
-	public void addMatch(Integer match) {
+	public void addMatch(int match) {
 		allMatches.add(match);
 	}
 	
-	public void addBundleContextNodes(THashSet<EObject> blackNodes) {
+	public void addBundleContextNodes(ObjectOpenHashSet<EObject> blackNodes) {
 		bundleContextNodes.addAll(blackNodes);
 	}
 	
-	public void addBundleContextEdges(THashSet<RuntimeEdge> blackEdges) {
+	public void addBundleContextEdges(ObjectOpenHashSet<RuntimeEdge> blackEdges) {
 		bundleContextEdges.addAll(blackEdges);
 	}
 	
-	public THashSet<EObject> getBundleContextNodes() {
+	public ObjectOpenHashSet<EObject> getBundleContextNodes() {
 		return bundleContextNodes;
 	}
 
-	public THashSet<RuntimeEdge> getBundleContextEdges() {
+	public ObjectOpenCustomHashSet<RuntimeEdge> getBundleContextEdges() {
 		return bundleContextEdges;
 	}
 	
-	public TIntHashSet getAllMatches(){
+	public IntLinkedOpenHashSet getAllMatches(){
 		return allMatches;
 	}
 	
@@ -54,11 +57,11 @@ public class Bundle {
 		return kernelMatch;
 	}
 
-	public TIntHashSet getAllComplementMatches() {
-		TIntHashSet complementMatches = new TIntHashSet();
-		TIntIterator it = this.allMatches.iterator();
+	public IntOpenHashSet getAllComplementMatches() {
+		IntOpenHashSet complementMatches = new IntOpenHashSet();
+		IntIterator it = this.allMatches.iterator();
 		while(it.hasNext()) {
-			int value = it.next();
+			int value = it.nextInt();
 			if(value != kernelMatch) {
 				complementMatches.add(value);
 			}

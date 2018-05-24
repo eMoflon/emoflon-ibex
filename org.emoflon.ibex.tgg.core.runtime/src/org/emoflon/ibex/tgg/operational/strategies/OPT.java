@@ -36,60 +36,62 @@ import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
 import com.google.common.collect.Sets;
 
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TCustomHashMap;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.set.hash.TCustomHashSet;
-import gnu.trove.set.hash.THashSet;
-import gnu.trove.set.hash.TIntHashSet;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntConsumer;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGRuleNode;
 
 public abstract class OPT extends OperationalStrategy {
 
-	protected TIntObjectHashMap<IMatch> idToMatch = new TIntObjectHashMap<>();
-	protected TCustomHashMap<RuntimeEdge, TIntHashSet> edgeToMarkingMatches = new TCustomHashMap<>(
+	protected Int2ObjectOpenHashMap<IMatch> idToMatch = new Int2ObjectOpenHashMap<>();
+	protected Object2ObjectOpenCustomHashMap<RuntimeEdge, IntOpenHashSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
 			new RuntimeEdgeHashingStrategy());
-	protected THashMap<EObject, TIntHashSet> nodeToMarkingMatches = new THashMap<>();
+	protected Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 	protected int nameCounter = 0;
-	protected TIntObjectMap<THashSet<EObject>> matchToContextNodes = new TIntObjectHashMap<>();
-	protected THashMap<EObject, TIntHashSet> contextNodeToNeedingMatches = new THashMap<EObject, TIntHashSet>();
-	protected TCustomHashMap<RuntimeEdge, TIntHashSet> contextEdgeToNeedingMatches = new TCustomHashMap<RuntimeEdge, TIntHashSet>(
-			new RuntimeEdgeHashingStrategy());
-	protected TIntObjectMap<TCustomHashSet<RuntimeEdge>> matchToContextEdges = new TIntObjectHashMap<>();
-	protected TIntIntHashMap matchToWeight = new TIntIntHashMap();
+	protected Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> matchToContextNodes = new Int2ObjectOpenHashMap<>();
+	protected Object2ObjectOpenHashMap<EObject, IntOpenHashSet> contextNodeToNeedingMatches = new Object2ObjectOpenHashMap<>();
+	protected Object2ObjectOpenCustomHashMap<RuntimeEdge, IntOpenHashSet> contextEdgeToNeedingMatches = new Object2ObjectOpenCustomHashMap<>(new RuntimeEdgeHashingStrategy());
+	protected Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<RuntimeEdge>> matchToContextEdges = new Int2ObjectOpenHashMap<>();
+	protected Int2IntOpenHashMap matchToWeight = new Int2IntOpenHashMap();
 
 	/**
 	 * Collection of constraints to guarantee uniqueness property; key: Complement
 	 * rule (CR) match ID; value: other CR matches of the same CR using the same
 	 * context as CR match
 	 */
-	protected THashMap<Integer, TIntHashSet> sameComplementMatches = new THashMap<>();
+	protected Int2ObjectOpenHashMap<IntOpenHashSet> sameComplementMatches = new Int2ObjectOpenHashMap<>();
 
 	/**
 	 * Collection of constraints to guarantee maximality property; value: kernels
 	 * whose complement rules did not fulfill maximality property
 	 */
-	protected TIntHashSet invalidKernels = new TIntHashSet();
+	protected IntOpenHashSet invalidKernels = new IntOpenHashSet();
 
 	/**
 	 * Collection of constraints to guarantee cyclic dependences are avoided; value:
 	 * correctly applied bundles (kernel match + its CRs matches)
 	 */
-	protected HashSet<Bundle> appliedBundles = new HashSet<Bundle>();
+	protected ObjectLinkedOpenHashSet<Bundle> appliedBundles = new ObjectLinkedOpenHashSet<Bundle>();
 	protected Bundle lastAppliedBundle;
 
-	protected TIntObjectHashMap<String> matchIdToRuleName = new TIntObjectHashMap<>();
+	protected Int2ObjectOpenHashMap<String> matchIdToRuleName = new Int2ObjectOpenHashMap<>();
 	protected int idCounter = 1;
 
-	// Hash maps to save the old metamodel state
-	THashMap<EReference, Integer> referenceToUpperBound = new THashMap<EReference, Integer>();
-	THashMap<EReference, Integer> referenceToLowerBound = new THashMap<EReference, Integer>();
-	THashMap<EReference, EReference> referenceToEOpposite = new THashMap<EReference, EReference>();
-	THashMap<EReference, Boolean> referenceToContainment = new THashMap<EReference, Boolean>();
+	//Hash maps to save the old metamodel state
+	Object2IntOpenHashMap<EReference> referenceToUpperBound = new Object2IntOpenHashMap<>();
+	Object2IntOpenHashMap<EReference> referenceToLowerBound = new Object2IntOpenHashMap<>();
+	Object2ObjectOpenHashMap<EReference, EReference> referenceToEOpposite = new Object2ObjectOpenHashMap<EReference, EReference>();
+	Object2ObjectOpenHashMap<EReference, Boolean> referenceToContainment = new Object2ObjectOpenHashMap<EReference, Boolean>();
 
 	public OPT(IbexOptions options) throws IOException {
 		super(options);
@@ -150,8 +152,8 @@ public abstract class OPT extends OperationalStrategy {
 
 					for (EReference reference : nextEClassImpl.getEAllReferences()) {
 						// Get old metamodel values
-						int upperBound = referenceToUpperBound.get(reference);
-						int lowerBound = referenceToLowerBound.get(reference);
+						int upperBound = referenceToUpperBound.getInt(reference);
+						int lowerBound = referenceToLowerBound.getInt(reference);
 						boolean containment = referenceToContainment.get(reference);
 						EReference eOpposite = referenceToEOpposite.get(reference);
 
@@ -171,52 +173,48 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected void defineILPExclusions(ILPProblem ilpProblem) {
 		for (EObject node : nodeToMarkingMatches.keySet()) {
-			TIntHashSet variables = nodeToMarkingMatches.get(node);
-			if (variables.size() <= 1) {
-				// there is only one match creating this node, no exclusion needed
+			IntOpenHashSet variables = nodeToMarkingMatches.get(node);
+			if(variables.size() <= 1) {
+				//there is only one match creating this node, no exclusion needed
 				continue;
 			}
 			ILPLinearExpression expr = ilpProblem.createLinearExpression();
-			variables.forEach(v -> {
+			variables.stream().forEach(v -> {
 				expr.addTerm("x" + v, 1.0);
-				return true;
 			});
 
-			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
+			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL_nodeOnce_"+node.toString() + nameCounter++);
 		}
 
 		for (RuntimeEdge edge : edgeToMarkingMatches.keySet()) {
-			TIntHashSet variables = edgeToMarkingMatches.get(edge);
-			if (variables.size() <= 1) {
-				// there is only one match creating this edge, no exclusion needed
+			IntOpenHashSet variables = edgeToMarkingMatches.get(edge);
+			if(variables.size() <= 1) {
+				//there is only one match creating this edge, no exclusion needed
 				continue;
 			}
 			ILPLinearExpression expr = ilpProblem.createLinearExpression();
-			variables.forEach(v -> {
+			variables.stream().forEach(v -> {
 				expr.addTerm("x" + v, 1.0);
-				return true;
 			});
-			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
+			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL_edgeOnce" + nameCounter++);
 		}
 
-		for (Integer match : sameComplementMatches.keySet()) {
-			TIntHashSet variables = sameComplementMatches.get(match);
+		for (int match : sameComplementMatches.keySet()) {
+			IntOpenHashSet variables = sameComplementMatches.get(match);
 			ILPLinearExpression expr = ilpProblem.createLinearExpression();
-			variables.forEach(v -> {
+			variables.stream().forEach(v -> {
 				expr.addTerm("x" + v, 1.0);
-				return true;
 			});
-			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL" + nameCounter++);
+			ilpProblem.addConstraint(expr, Comparator.le, 1.0, "EXCL_sameCompl" + nameCounter++);
 		}
 
 		if (!invalidKernels.isEmpty()) {
-			TIntHashSet variables = invalidKernels;
+			IntOpenHashSet variables = invalidKernels;
 			ILPLinearExpression expr = ilpProblem.createLinearExpression();
-			variables.forEach(v -> {
+			variables.stream().forEach(v -> {
 				expr.addTerm("x" + v, 1.0);
-				return true;
 			});
-			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "EXCL" + nameCounter++);
+			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "EXCL_invKern" + nameCounter++);
 		}
 
 		HandleDependencies handleCycles = new HandleDependencies(appliedBundles, edgeToMarkingMatches,
@@ -236,67 +234,59 @@ public abstract class OPT extends OperationalStrategy {
 		}
 	}
 
-	private Set<List<Integer>> getCyclicConstraints(List<TIntHashSet> dependentRuleApplications) {
+	private Set<List<Integer>> getCyclicConstraints(List<IntLinkedOpenHashSet> dependentRuleApplications) {
 		// TODO:  Perhaps implement cartesian product directly if this is a performance bottle neck
-		List<THashSet<Integer>> sets = new ArrayList<>();
-		for (TIntHashSet tHashSet : dependentRuleApplications) {
-			THashSet<Integer> set = new THashSet<>();
-			TIntIterator it = tHashSet.iterator();
+		List<HashSet<Integer>> sets = new ArrayList<>();
+		for (IntLinkedOpenHashSet tHashSet : dependentRuleApplications) {
+			HashSet<Integer> set = new HashSet<>();
+			IntIterator it = tHashSet.iterator();
 			while(it.hasNext())
-				set.add(it.next());
+				set.add(it.nextInt());
 			sets.add(set);
 		}
 		return Sets.cartesianProduct(sets);
 	}
 
 	protected void defineILPImplications(ILPProblem ilpProblem) {
-		for (EObject node : contextNodeToNeedingMatches.keySet()) {
-			TIntHashSet needingMatchIDs = contextNodeToNeedingMatches.get(node);
+		for(EObject node : contextNodeToNeedingMatches.keySet()) {
+			IntOpenHashSet needingMatchIDs = contextNodeToNeedingMatches.get(node);
 			int needingMatches = needingMatchIDs.size();
-			TIntHashSet creatingMatchIDs = nodeToMarkingMatches.get(node);
+			IntOpenHashSet creatingMatchIDs = nodeToMarkingMatches.get(node);
 			ILPLinearExpression expr = ilpProblem.createLinearExpression();
-			needingMatchIDs.forEach(m -> {
+			needingMatchIDs.stream().forEach(m -> {
 				expr.addTerm("x" + m, 1);
-				return true;
 			});
-			// only one or none of the creating matches can be chosen (defined by
-			// exclusions)
-			if (creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
-				creatingMatchIDs.forEach(m -> {
-					expr.addTerm("x" + m, -needingMatches);
-					return true;
+			//only one or none of the creating matches can be chosen (defined by exclusions)
+			if(creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
+				creatingMatchIDs.stream().forEach(m -> {
+					expr.addTerm("x" + m, - needingMatches);
 				});
 			} else {
-				// there is no match creating this node -> forbid all matches needing it
-				needingMatchIDs.forEach(m -> {
-					ilpProblem.fixVariable("x" + m, 0);
-					return true;
+				//there is no match creating this node -> forbid all matches needing it
+				needingMatchIDs.stream().forEach(m -> {
+					ilpProblem.fixVariable("x"+m, 0);
 				});
 			}
 			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "IMPL" + nameCounter++);
 		}
-
-		for (RuntimeEdge edge : contextEdgeToNeedingMatches.keySet()) {
-			TIntHashSet needingMatchIDs = contextEdgeToNeedingMatches.get(edge);
+		
+		for(RuntimeEdge edge : contextEdgeToNeedingMatches.keySet()) {
+			IntOpenHashSet needingMatchIDs = contextEdgeToNeedingMatches.get(edge);
 			int needingMatches = needingMatchIDs.size();
-			TIntHashSet creatingMatchIDs = edgeToMarkingMatches.get(edge);
+			IntOpenHashSet creatingMatchIDs = edgeToMarkingMatches.get(edge);
 			ILPLinearExpression expr = ilpProblem.createLinearExpression();
-			needingMatchIDs.forEach(m -> {
+			needingMatchIDs.stream().forEach(m -> {
 				expr.addTerm("x" + m, 1);
-				return true;
 			});
-			// only one or none of the creating matches can be chosen (defined by
-			// exclusions)
-			if (creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
-				creatingMatchIDs.forEach(m -> {
-					expr.addTerm("x" + m, -needingMatches);
-					return true;
+			//only one or none of the creating matches can be chosen (defined by exclusions)
+			if(creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
+				creatingMatchIDs.stream().forEach(m -> {
+					expr.addTerm("x" + m, - needingMatches);
 				});
-			} else {
-				// there is no match creating this node -> forbid all matches needing it
-				needingMatchIDs.forEach(m -> {
-					ilpProblem.fixVariable("x" + m, 0);
-					return true;
+			}  else {
+				//there is no match creating this node -> forbid all matches needing it
+				needingMatchIDs.stream().forEach(m -> {
+					ilpProblem.fixVariable("x"+m, 0);
 				});
 			}
 			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "IMPL" + nameCounter++);
@@ -305,11 +295,10 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected void defineILPObjective(ILPProblem ilpProblem) {
 		ILPLinearExpression expr = ilpProblem.createLinearExpression();
-		matchToWeight.keySet().forEach(v -> {
+		matchToWeight.keySet().stream().forEach((IntConsumer) (v -> {
 			int weight = matchToWeight.get(v);
 			expr.addTerm("x" + v, weight);
-			return true;
-		});
+		}));
 		ilpProblem.setObjective(expr, Objective.maximize);
 	}
 
@@ -338,14 +327,16 @@ public abstract class OPT extends OperationalStrategy {
 
 		try {
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, this.options.getIlpSolver());
+			if(!ilpProblem.checkValidity(ilpSolution)) {
+				throw new AssertionError("Invalid solution");
+			};
 
 			int[] result = new int[idToMatch.size()];
-			idToMatch.keySet().forEach(v -> {
-				if (ilpSolution.getVariable("x" + v) > 0)
+			idToMatch.keySet().stream().forEach(v -> {
+				if (ilpSolution.getVariable("x"+ v) > 0)
 					result[v - 1] = v;
 				else
 					result[v - 1] = -v;
-				return true;
 			});
 
 			return result;
@@ -373,45 +364,42 @@ public abstract class OPT extends OperationalStrategy {
 		lastAppliedBundle.addBundleContextEdges(getBlackEdges(comatch, ruleName));
 	}
 
-	protected THashSet<EObject> getGreenNodes(IMatch comatch, String ruleName) {
-		THashSet<EObject> result = new THashSet<>();
+	protected ObjectOpenHashSet<EObject> getGreenNodes(IMatch comatch, String ruleName) {
+		ObjectOpenHashSet<EObject> result = new ObjectOpenHashSet<>();
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenSrcNodesInRule()));
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenTrgNodesInRule()));
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenCorrNodesInRule()));
 		return result;
 	}
 
-	protected THashSet<EObject> getBlackNodes(IMatch comatch, String ruleName) {
-		THashSet<EObject> result = new THashSet<>();
+	protected ObjectOpenHashSet<EObject> getBlackNodes(IMatch comatch, String ruleName) {
+		ObjectOpenHashSet<EObject> result = new ObjectOpenHashSet<>();
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackSrcNodesInRule()));
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackTrgNodesInRule()));
 		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackCorrNodesInRule()));
 		return result;
 	}
 
-	protected THashSet<EObject> getNodes(IMatch comatch, Collection<? extends TGGRuleNode> specNodes) {
-		THashSet<EObject> result = new THashSet<>();
+	protected ObjectOpenHashSet<EObject> getNodes(IMatch comatch,
+			Collection<? extends TGGRuleNode> specNodes) {
+		ObjectOpenHashSet<EObject> result = new ObjectOpenHashSet<>();
 		specNodes.forEach(n -> {
 			result.add((EObject) comatch.get(n.getName()));
 		});
 		return result;
 	}
 
-	protected THashSet<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
-		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch,
-				getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch,
-				getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
+	protected ObjectOpenHashSet<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
+		ObjectOpenHashSet<RuntimeEdge> result = new ObjectOpenHashSet<>();
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
 		return result;
 	}
 
-	protected THashSet<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
-		THashSet<RuntimeEdge> result = new THashSet<>();
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch,
-				getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch,
-				getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
+	protected ObjectOpenHashSet<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
+		ObjectOpenHashSet<RuntimeEdge> result = new ObjectOpenHashSet<>();
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
 		return result;
 	}
 
@@ -430,8 +418,8 @@ public abstract class OPT extends OperationalStrategy {
 	@Override
 	protected void removeBlackInterpreter() {
 		super.removeBlackInterpreter();
-		for (IMatch m : this.idToMatch.valueCollection()) {
-			for (String parameter : m.getParameterNames()) {
+		for(IMatch m : this.idToMatch.values()) {
+			for(String parameter : m.getParameterNames()) {
 				EObject object = (EObject) m.get(parameter);
 				object.eAdapters().clear();
 				object.eAllContents().forEachRemaining(c -> c.eAdapters().clear());

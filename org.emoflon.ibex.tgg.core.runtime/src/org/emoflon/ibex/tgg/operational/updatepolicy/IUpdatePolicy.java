@@ -16,5 +16,12 @@ public interface IUpdatePolicy {
 				       .forEach( name -> upperBounds.put(name, 0));
 		return upperBounds;
 	}
-
+	
+	default boolean matchShouldBeApplied(IMatch match, String ruleName) {
+		return true;
+	}
+	
+	default void notifyMatchHasBeenApplied(IMatch complementMatch, String ruleName) {
+		
+	}
 }
