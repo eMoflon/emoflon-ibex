@@ -54,8 +54,8 @@ public class Bundle {
 		return kernelMatch;
 	}
 
-	public THashSet<Integer> getAllComplementMatches() {
-		THashSet<Integer> complementMatches = new THashSet<Integer>();
+	public TIntHashSet getAllComplementMatches() {
+		TIntHashSet complementMatches = new TIntHashSet();
 		TIntIterator it = this.allMatches.iterator();
 		while(it.hasNext()) {
 			int value = it.next();

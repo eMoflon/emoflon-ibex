@@ -144,16 +144,16 @@ public class HandleDependencies {
 	}
 	
 	/**
-	 * Find all complement rule applications for each bundle
+	 * Find all rule applications for each bundle
 	 * 
 	 * @param detectedCycle
 	 *            - specific cycle between bundles
-	 * @return Collection of complement rule applications inside the bundle
+	 * @return Collection of rule applications inside the bundle
 	 */
-	public List<THashSet<Integer>> getComplementRuleApplications(int detectedCycle) {
-		List<THashSet<Integer>> bundleToComplementRuleApplication = new ArrayList<>();
+	public List<TIntHashSet> getComplementRuleApplications(int detectedCycle) {
+		List<TIntHashSet> bundleToComplementRuleApplication = new ArrayList<>();
 		for (Integer bundleID : cyclicDependencies.get(detectedCycle)) {
-			bundleToComplementRuleApplication.add(getBundle(bundleID).getAllComplementMatches());
+			bundleToComplementRuleApplication.add(getBundle(bundleID).getAllMatches());
 		}
 		return bundleToComplementRuleApplication;
 	}

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
 import com.google.common.collect.Sets;
 
+import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TCustomHashMap;
 import gnu.trove.map.hash.THashMap;
@@ -234,8 +236,17 @@ public abstract class OPT extends OperationalStrategy {
 		}
 	}
 
-	private Set<List<Integer>> getCyclicConstraints(List<THashSet<Integer>> dependedRuleApplications) {
-		return Sets.cartesianProduct(dependedRuleApplications);
+	private Set<List<Integer>> getCyclicConstraints(List<TIntHashSet> dependentRuleApplications) {
+		// TODO:  Perhaps implement cartesian product directly if this is a performance bottle neck
+		List<THashSet<Integer>> sets = new ArrayList<>();
+		for (TIntHashSet tHashSet : dependentRuleApplications) {
+			THashSet<Integer> set = new THashSet<>();
+			TIntIterator it = tHashSet.iterator();
+			while(it.hasNext())
+				set.add(it.next());
+			sets.add(set);
+		}
+		return Sets.cartesianProduct(sets);
 	}
 
 	protected void defineILPImplications(ILPProblem ilpProblem) {
