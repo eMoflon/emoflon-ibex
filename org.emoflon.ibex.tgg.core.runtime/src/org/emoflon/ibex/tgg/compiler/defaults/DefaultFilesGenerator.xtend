@@ -94,6 +94,7 @@ class DefaultFilesGenerator {
 				}
 			
 				public static void main(String[] args) throws IOException {
+					BasicConfigurator.configure();
 					Logger.getRootLogger().setLevel(Level.INFO);
 			
 					«setUpRoutine»
