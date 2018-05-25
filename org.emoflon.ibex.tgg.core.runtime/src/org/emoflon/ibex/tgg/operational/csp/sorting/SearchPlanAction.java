@@ -108,6 +108,17 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 		return inputAdornment;
 	}
 
+	/**
+	 * A variable is bound in a pattern if its value will be fixed when solving
+	 * attribute conditions. This is the case for attribute expressions referencing
+	 * black nodes (nodes in the pattern), never the case for local variables
+	 * (attribute variables), and always the case for constants (literals and
+	 * enums).
+	 * 
+	 * @param variable
+	 * @param patternContainsNode
+	 * @return
+	 */
 	public static boolean isBoundInPattern(TGGParamValue variable, Predicate<String> patternContainsNode) {
 		if (variable instanceof TGGAttributeExpression) {
 			TGGAttributeExpression attrExp = (TGGAttributeExpression) variable;
@@ -124,8 +135,16 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 		throw new IllegalStateException("Unable to handle " + variable);
 	}
 
+	/**
+	 * Currently, our definition of connectivity coincides with boundness. This
+	 * could be relaxed in the future.
+	 * 
+	 * @param variable
+	 * @param patternContainsNode
+	 * @return
+	 */
 	public static boolean isConnectedToPattern(TGGParamValue variable, Predicate<String> patternContainsNode) {
-		return (variable instanceof TGGAttributeVariable) || isBoundInPattern(variable, patternContainsNode);
+		return isBoundInPattern(variable, patternContainsNode);
 	}
 	
 	/**
