@@ -145,7 +145,9 @@ public class HandleDependencies {
 	public List<IntLinkedOpenHashSet> getRuleApplications(int detectedCycle) {
 		List<IntLinkedOpenHashSet> bundleToComplementRuleApplication = new ArrayList<>();
 		for (int bundleID : cyclicDependencies.get(detectedCycle)) {
-			IntLinkedOpenHashSet set = getBundle(bundleID).getAllMatches();
+			IntLinkedOpenHashSet set = getBundle(bundleID).getAllComplementMatches();
+			if(set.isEmpty())
+				set.add(getBundle(bundleID).getKernelMatch());
 			bundleToComplementRuleApplication.add(set);
 		}
 		return bundleToComplementRuleApplication;
