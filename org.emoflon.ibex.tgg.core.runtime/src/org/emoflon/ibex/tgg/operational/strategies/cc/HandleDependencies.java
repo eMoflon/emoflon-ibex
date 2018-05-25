@@ -146,7 +146,14 @@ public class HandleDependencies {
 		List<IntLinkedOpenHashSet> bundleToComplementRuleApplication = new ArrayList<>();
 		for (int bundleID : cyclicDependencies.get(detectedCycle)) {
 			IntLinkedOpenHashSet set = getBundle(bundleID).getAllComplementMatches();
-			if(set.isEmpty())
+			// Note: if the set is empty then it means the cyclic dependency must involve
+			// the kernel directly. In this case, we add the kernel match and use it to
+			// generate exclusions constraints for the cycle. If the set is not empty,
+			// however, it is enough to generate cyclic constraints only between complement
+			// matches because maximality enforces that all complement matches must be
+			// applied with their kernel match, i.e., as one "bundle". In fact it would be
+			// wrong to include the kernel as there might not be any need to exclude them.
+			if (set.isEmpty())
 				set.add(getBundle(bundleID).getKernelMatch());
 			bundleToComplementRuleApplication.add(set);
 		}
