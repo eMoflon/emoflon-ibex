@@ -24,22 +24,20 @@ public class HandleDependencies {
 	 * Collection of bundles with their context bundles (on which they depend); key:
 	 * bundle; value: bundles that provide context for this bundle
 	 */
-	Int2ObjectOpenHashMap<ArrayList<Integer>> directDependencies = new Int2ObjectOpenHashMap<ArrayList<Integer>>();
+	private Int2ObjectOpenHashMap<ArrayList<Integer>> directDependencies = new Int2ObjectOpenHashMap<ArrayList<Integer>>();
 
 	/**
 	 * Collection of all cycles detected in dependencies between the bundles; key:
 	 * cycle id; value: list of bundles that cause cycle
 	 */
-	Int2ObjectOpenHashMap<ArrayList<Integer>> cyclicDependencies = new Int2ObjectOpenHashMap<ArrayList<Integer>>();
+	private Int2ObjectOpenHashMap<ArrayList<Integer>> cyclicDependencies = new Int2ObjectOpenHashMap<ArrayList<Integer>>();
 	private int cyclicDependencyId = 1;
 
-	Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
+	private Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
 			new EMFEdgeHashingStrategy());
-	Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();
-	ObjectLinkedOpenHashSet<Bundle> appliedBundles;
-	Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> matchToContextNodes = new Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>>();
-	Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<EMFEdge>> matchToContextEdges = new Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<EMFEdge>>();
-	Int2ObjectOpenHashMap<Bundle> matchToBundle = new Int2ObjectOpenHashMap<Bundle>();
+	private Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();
+	private ObjectLinkedOpenHashSet<Bundle> appliedBundles;
+	private Int2ObjectOpenHashMap<Bundle> matchToBundle = new Int2ObjectOpenHashMap<Bundle>();
 
 	public HandleDependencies(ObjectLinkedOpenHashSet<Bundle> appliedBundles,
 			Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> edgeToMarkingMatches,
@@ -50,8 +48,6 @@ public class HandleDependencies {
 		appliedBundles.forEach(b -> b.getAllMatches().stream().forEach(m -> matchToBundle.put((int) m, b)));
 		this.nodeToMarkingMatches = nodeToMarkingMatches;
 		this.edgeToMarkingMatches = edgeToMarkingMatches;
-		this.matchToContextNodes = matchToContextNodes;
-		this.matchToContextEdges = matchToContextEdges;
 	}
 
 	private Int2ObjectOpenHashMap<ArrayList<Integer>> getBundlesDirectDependences() {
@@ -146,12 +142,10 @@ public class HandleDependencies {
 	 *            - specific cycle between bundles
 	 * @return Collection of rule applications inside the bundle
 	 */
-	public List<IntLinkedOpenHashSet> getComplementRuleApplications(int detectedCycle) {
+	public List<IntLinkedOpenHashSet> getRuleApplications(int detectedCycle) {
 		List<IntLinkedOpenHashSet> bundleToComplementRuleApplication = new ArrayList<>();
 		for (int bundleID : cyclicDependencies.get(detectedCycle)) {
-			IntLinkedOpenHashSet set = getBundle(bundleID).getAllComplementMatches();
-			if(set.isEmpty())
-				set.add(getBundle(bundleID).getKernelMatch());
+			IntLinkedOpenHashSet set = getBundle(bundleID).getAllMatches();
 			bundleToComplementRuleApplication.add(set);
 		}
 		return bundleToComplementRuleApplication;

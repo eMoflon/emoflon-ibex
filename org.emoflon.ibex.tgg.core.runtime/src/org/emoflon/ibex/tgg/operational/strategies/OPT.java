@@ -103,7 +103,6 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	public void relaxReferences(EList<EPackage> model) {
-
 		EPackage[] packages = (EPackage[]) model.toArray();
 
 		for (EPackage p : packages) {
@@ -223,8 +222,7 @@ public abstract class OPT extends OperationalStrategy {
 		Set<Integer> allCyclicBundles = handleCycles.getCyclicDependenciesBetweenBundles().keySet();
 
 		for (int cycle : allCyclicBundles) {
-			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(
-					handleCycles.getComplementRuleApplications(cycle));
+			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getRuleApplications(cycle));
 			for (List<Integer> variables : cyclicConstraints) {
 				ILPLinearExpression expr = ilpProblem.createLinearExpression();
 				variables.forEach(v -> {
@@ -236,12 +234,11 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	private Set<List<Integer>> getCyclicConstraints(List<IntLinkedOpenHashSet> dependentRuleApplications) {
-		// TODO:  Perhaps implement cartesian product directly if this is a performance bottle neck
 		List<HashSet<Integer>> sets = new ArrayList<>();
 		for (IntLinkedOpenHashSet tHashSet : dependentRuleApplications) {
 			HashSet<Integer> set = new HashSet<>();
 			IntIterator it = tHashSet.iterator();
-			while(it.hasNext())
+			while (it.hasNext())
 				set.add(it.nextInt());
 			sets.add(set);
 		}

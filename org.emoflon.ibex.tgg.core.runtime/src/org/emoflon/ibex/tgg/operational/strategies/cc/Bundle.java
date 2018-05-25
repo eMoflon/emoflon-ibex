@@ -4,7 +4,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.utils.EMFEdge;
 import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -53,17 +52,5 @@ public class Bundle {
 
 	public int getKernelMatch() {
 		return kernelMatch;
-	}
-
-	public IntLinkedOpenHashSet getAllComplementMatches() {
-		IntLinkedOpenHashSet complementMatches = new IntLinkedOpenHashSet();
-		IntIterator it = this.allMatches.iterator();
-		while (it.hasNext()) {
-			int value = it.nextInt();
-			if (value != kernelMatch) {
-				complementMatches.add(value);
-			}
-		}
-		return complementMatches;
 	}
 }

@@ -75,7 +75,6 @@ public abstract class CC extends OPT {
 
 		if (operationalMatchContainer.getMatches().stream()
 				.allMatch(m -> m.getPatternName().contains(PatternSuffixes.GENForCC))) {
-			// FIXME[Anjorin]: Find an elegant way of properly discarding GENForCC matches!
 			return false;
 		}
 
@@ -84,8 +83,7 @@ public abstract class CC extends OPT {
 
 		if (ruleName == null) {
 			removeOperationalRuleMatch(match);
-			return true; // FIXME[Anjorin]: This should be avoided (all matches that do not correspond to
-							// rules should be filtered)
+			return true;
 		}
 
 		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
