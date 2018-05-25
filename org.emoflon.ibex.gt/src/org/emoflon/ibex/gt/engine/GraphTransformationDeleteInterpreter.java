@@ -70,7 +70,8 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 			EObject trg = (EObject) match.get(edge.getTargetNode().getName());
 			edgesToDelete.add(new EMFEdge(src, trg, edge.getType()));
 		});
-		EMFManipulationUtils.delete(nodesToDelete, edgesToDelete, trashResource);
+		EMFManipulationUtils.delete(nodesToDelete, edgesToDelete,
+				node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)));
 	}
 
 	/**

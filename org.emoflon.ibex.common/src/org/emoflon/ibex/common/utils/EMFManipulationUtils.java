@@ -2,11 +2,11 @@ package org.emoflon.ibex.common.utils;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
 /**
@@ -95,13 +95,13 @@ public class EMFManipulationUtils {
 	 *            the nodes marked for deletion
 	 * @param edgesToDelete
 	 *            the edges marked for deletion
-	 * @param trashResource
-	 *            the resource resource whether dangling nodes are moved to
+	 * @param danglingNodeAction
+	 *            the action to execute for dangling nodes
 	 */
 	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
-			final Resource trashResource) {
+			final Consumer<EObject> danglingNodeAction) {
 		deleteEdges(edgesToDelete, false);
-		deleteNodes(nodesToDelete, trashResource);
+		deleteNodes(nodesToDelete, danglingNodeAction);
 		deleteEdges(edgesToDelete, true);
 	}
 
@@ -110,14 +110,13 @@ public class EMFManipulationUtils {
 	 * 
 	 * @param nodesToDelete
 	 *            the nodes marked for deletion
-	 * @param trashResource
-	 *            the resource resource whether dangling nodes are moved to
+	 * @param danglingNodeAction
+	 *            the action to execute for dangling nodes
 	 */
-	private static void deleteNodes(final Set<EObject> nodesToDelete, final Resource trashResource) {
+	private static void deleteNodes(final Set<EObject> nodesToDelete, final Consumer<EObject> danglingNodeAction) {
 		for (EObject node : nodesToDelete) {
 			if (isDanglingNode(node)) {
-				// Move node to trash resource.
-				trashResource.getContents().add(EcoreUtil.getRootContainer(node));
+				danglingNodeAction.accept(node);
 			}
 			EcoreUtil.delete(node);
 		}

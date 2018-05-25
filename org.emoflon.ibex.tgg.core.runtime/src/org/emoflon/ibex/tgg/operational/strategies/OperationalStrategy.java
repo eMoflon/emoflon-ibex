@@ -20,6 +20,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.operational.IMatchObserver;
+import org.emoflon.ibex.common.utils.EMFEdge;
+import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
@@ -29,8 +31,6 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttr
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
@@ -73,8 +73,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 
-	protected ObjectOpenCustomHashSet<RuntimeEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(
-			new RuntimeEdgeHashingStrategy());
+	protected ObjectOpenCustomHashSet<EMFEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(
+			new EMFEdgeHashingStrategy());
 	protected Object2ObjectOpenHashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
 
 	protected IbexOptions options;
@@ -162,8 +162,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	public void addOperationalRuleMatch(String ruleName, IMatch match) {
-		if (this.isPatternRelevantForInterpreter(match.getPatternName())
-				&& matchIsDomainConform(ruleName, match) 
+		if (this.isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(ruleName, match)
 				&& matchIsValidIsomorphism(ruleName, match)) {
 			operationalMatchContainer.addMatch(ruleName, match);
 			logger.debug("Received and added " + match.getPatternName());
@@ -266,7 +265,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	 */
 	protected void reinitializeBlackInterpreter(IBlackInterpreter newBlackInterpreter) {
 		this.removeBlackInterpreter();
-//		Runtime.getRuntime().gc();
 		this.blackInterpreter = newBlackInterpreter;
 		this.blackInterpreter.initialise(rs.getPackageRegistry(), this);
 		this.blackInterpreter.setOptions(options);
@@ -409,7 +407,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			EObject src = (EObject) match.get(edge.getSrcNode().getName());
 			EObject trg = (EObject) match.get(edge.getTrgNode().getName());
 			EReference ref = edge.getType();
-			if (!markedAndCreatedEdges.contains(new RuntimeEdge(src, trg, ref)))
+			if (!markedAndCreatedEdges.contains(new EMFEdge(src, trg, ref)))
 				return false;
 		}
 
@@ -428,7 +426,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 								+ ref.getName() + "-> appears to be expected but is missing)!  "
 								+ "Are you sure you have implemented isPatternRelevant correctly?");
 
-			if (markedAndCreatedEdges.contains(new RuntimeEdge(src, trg, ref)))
+			if (markedAndCreatedEdges.contains(new EMFEdge(src, trg, ref)))
 				return true;
 		}
 
@@ -468,12 +466,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		}
 	}
 
-	public RuntimeEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
+	public EMFEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
 		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
 		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
 		EReference ref = specificationEdge.getType();
-		RuntimeEdge edge = new RuntimeEdge(src, trg, ref);
-		return edge;
+		return new EMFEdge(src, trg, ref);
 	}
 
 	public ResourceSet getResourceSet() {
@@ -562,11 +559,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return factories.get(ruleName);
 	}
 
-	public void removeCreatedEdge(RuntimeEdge runtimeEdge) {
+	public void removeCreatedEdge(EMFEdge runtimeEdge) {
 		markedAndCreatedEdges.remove(runtimeEdge);
 	}
 
-	public void removeMarkedEdge(RuntimeEdge runtimeEdge) {
+	public void removeMarkedEdge(EMFEdge runtimeEdge) {
 		markedAndCreatedEdges.remove(runtimeEdge);
 	}
 

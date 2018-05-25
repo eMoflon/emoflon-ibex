@@ -58,15 +58,14 @@ public class EMFEdge {
 	public boolean equals(final Object o) {
 		if (o instanceof EMFEdge) {
 			EMFEdge e = (EMFEdge) o;
-			return getSource().equals(e.getSource()) && getTarget().equals(e.getTarget())
-					&& getType().equals(e.getType());
+			return getSource() == e.getSource() && getTarget() == e.getTarget() && getType() == e.getType();
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return 17 * source.hashCode() + 31 * target.hashCode() + type.hashCode();
+		return 31 * source.hashCode() + 17 * target.hashCode() + type.hashCode();
 	}
 
 	@Override
