@@ -6,7 +6,6 @@ import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -56,8 +55,8 @@ public class Bundle {
 		return kernelMatch;
 	}
 
-	public IntOpenHashSet getAllComplementMatches() {
-		IntOpenHashSet complementMatches = new IntOpenHashSet();
+	public IntLinkedOpenHashSet getAllComplementMatches() {
+		IntLinkedOpenHashSet complementMatches = new IntLinkedOpenHashSet();
 		IntIterator it = this.allMatches.iterator();
 		while (it.hasNext()) {
 			int value = it.nextInt();
