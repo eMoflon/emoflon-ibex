@@ -77,7 +77,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			new RuntimeEdgeHashingStrategy());
 	protected Object2ObjectOpenHashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
 
-	protected IbexOptions options;
+	protected final IbexOptions options;
 
 	protected IBlackInterpreter blackInterpreter;
 	protected IGreenInterpreter greenInterpreter;
@@ -166,9 +166,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 				&& matchIsDomainConform(ruleName, match) 
 				&& matchIsValidIsomorphism(ruleName, match)) {
 			operationalMatchContainer.addMatch(ruleName, match);
-			logger.debug("Received and added " + match.getPatternName());
+			if(options.debug())
+				logger.debug("Received and added " + match.getPatternName());
 		} else
-			logger.debug("Received but rejected " + match.getPatternName());
+			if(options.debug())
+				logger.debug("Received but rejected " + match.getPatternName());
 	}
 
 	private boolean matchIsValidIsomorphism(String ruleName, IMatch match) {
@@ -254,8 +256,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Object[] matches = operationalMatchContainer.getMatches().toArray();
 		for (Object m : matches)
 			this.operationalMatchContainer.removeMatch((IMatch) m);
-
-		logger.debug("Removed black interpreter");
+		if(options.debug())
+			logger.debug("Removed black interpreter");
 	}
 
 	/**

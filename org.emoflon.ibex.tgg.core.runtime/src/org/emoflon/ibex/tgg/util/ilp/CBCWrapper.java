@@ -93,7 +93,8 @@ public class CBCWrapper extends ILPSolver{
 
 	@Override
 	public ILPSolution solveILP() throws Exception {
-		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables");
+		int fixed = this.ilpProblem.getVariables().size() - this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
+		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables ("+fixed+" prefixed)");
 		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
 		currentTimeout = MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		if(currentTimeout < 0) {

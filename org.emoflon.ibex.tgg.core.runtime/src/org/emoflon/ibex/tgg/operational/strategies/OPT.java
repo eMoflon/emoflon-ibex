@@ -376,15 +376,15 @@ public abstract class OPT extends OperationalStrategy {
 		return result;
 	}
 
-	protected ObjectOpenHashSet<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
-		ObjectOpenHashSet<RuntimeEdge> result = new ObjectOpenHashSet<>();
+	protected Set<RuntimeEdge> getGreenEdges(IMatch comatch, String ruleName) {
+		ObjectOpenCustomHashSet<RuntimeEdge> result = new ObjectOpenCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
 		return result;
 	}
 
-	protected ObjectOpenHashSet<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
-		ObjectOpenHashSet<RuntimeEdge> result = new ObjectOpenHashSet<>();
+	protected Set<RuntimeEdge> getBlackEdges(IMatch comatch, String ruleName) {
+		ObjectOpenCustomHashSet<RuntimeEdge> result = new ObjectOpenCustomHashSet<>(new RuntimeEdgeHashingStrategy());
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
 		result.addAll(((IbexGreenInterpreter)greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
 		return result;
