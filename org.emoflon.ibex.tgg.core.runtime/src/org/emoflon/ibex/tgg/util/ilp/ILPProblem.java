@@ -9,8 +9,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
@@ -61,7 +63,7 @@ public final class ILPProblem {
 	/**
 	 * Contains the IDs of the variables that have been fixed but have not yet been removed from the constraints and objective
 	 */
-	private final IntOpenHashSet lazyFixedVariables = new IntOpenHashSet();
+	private final IntLinkedOpenHashSet lazyFixedVariables = new IntLinkedOpenHashSet();
 
 	/**
 	 * Creates a new ILPProblem. Instances can be obtained using the {@link ILPFactory}
@@ -97,11 +99,19 @@ public final class ILPProblem {
 		LinkedList<ILPConstraint> modifiedConstraints = new LinkedList<ILPProblem.ILPConstraint>();
 		while(it.hasNext()) {
 			ILPConstraint constraint = it.next();
-			if(lazyFixedVariables.stream().anyMatch((variableId) -> constraint.getLinearExpression().getCoefficient(variableId) != 0)) {
-				it.remove();
-				modifiedConstraints.add(constraint);
-				lazyFixedVariables.stream().forEach((variableId) -> constraint.fixVariable(variableId, fixedVariableValues.get((int) variableId)));
+			boolean changed = false;;
+			for(Entry fixedVariable : fixedVariableValues.int2IntEntrySet()) {
+				if(constraint.getLinearExpression().getCoefficient(fixedVariable.getIntKey()) != 0) {
+					//constraint will be changed
+					if(!changed) {
+						it.remove();
+						changed = true;
+					}
+					constraint.fixVariable(fixedVariable.getIntKey(), fixedVariable.getIntValue());
+				}
 			}
+			if(changed)
+				modifiedConstraints.add(constraint);
 		}
 		modifiedConstraints.stream().forEach(c -> this.addConstraint(c));
 		if(objective != null) {
