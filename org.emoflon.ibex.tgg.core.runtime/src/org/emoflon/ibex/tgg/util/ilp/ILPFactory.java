@@ -42,6 +42,9 @@ public final class ILPFactory {
 	 * @return	The created solver.
 	 */
 	public static ILPSolver createILPSolver(ILPProblem ilpProblem, SupportedILPSolver solver) {
+		if(ilpProblem instanceof BinaryILPProblem)
+			return createBinaryILPSolver(ilpProblem, solver);
+		
 		switch(solver) {
 			case Gurobi:
 				return new GurobiWrapper(ilpProblem, false);
@@ -64,6 +67,10 @@ public final class ILPFactory {
 	 */
 	public static ILPProblem createILPProblem() {
 		return new ILPProblem();
+	}
+	
+	public static BinaryILPProblem createBinaryILPProblem() {
+		return new BinaryILPProblem();
 	}
 	
 	/**
