@@ -5,10 +5,10 @@ import java.util.ArrayList;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.utils.EMFEdge;
+import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdge;
-import org.emoflon.ibex.tgg.operational.edge.RuntimeEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OPT;
@@ -84,13 +84,13 @@ public abstract class BWD_OPT extends OPT {
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
-		
+
 		getBlackNodes(comatch, ruleName).forEach(e -> {
 			if (!contextNodeToNeedingMatches.containsKey(e))
 				contextNodeToNeedingMatches.put(e, new IntOpenHashSet());
 			contextNodeToNeedingMatches.get(e).add(idCounter);
 		});
-		
+
 		getBlackEdges(comatch, ruleName).forEach(e -> {
 			if (!contextEdgeToNeedingMatches.containsKey(e)) {
 				contextEdgeToNeedingMatches.put(e, new IntOpenHashSet());
@@ -101,7 +101,7 @@ public abstract class BWD_OPT extends OPT {
 		matchToContextNodes.put(idCounter, new ObjectOpenHashSet<>());
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
 
-		matchToContextEdges.put(idCounter, new ObjectOpenCustomHashSet<RuntimeEdge>(new RuntimeEdgeHashingStrategy()));
+		matchToContextEdges.put(idCounter, new ObjectOpenCustomHashSet<EMFEdge>(new EMFEdgeHashingStrategy()));
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 
 		handleBundles(comatch, ruleName);
@@ -128,14 +128,10 @@ public abstract class BWD_OPT extends OPT {
 		c.save(null);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
-	 */
 	@Override
 	protected int getWeightForMatch(IMatch comatch, String ruleName) {
-		return
-				getGreenFactory(ruleName).getGreenTrgEdgesInRule().size() + 
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
+		return getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
+				+ getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
 	}
 
 	public void backward() throws IOException {
