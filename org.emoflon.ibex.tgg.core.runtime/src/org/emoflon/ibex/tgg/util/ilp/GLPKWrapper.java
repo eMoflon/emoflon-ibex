@@ -199,7 +199,7 @@ final class GLPKWrapper extends ILPSolver {
 	 * @return the GLPK exit code, 0 for success
 	 */
 	private int solveModel(int timeout) {
-		System.out.println("Setting time-limit for each step to "+timeout+ " seconds.");
+		logger.debug("Setting time-limit for each step to "+timeout+ " seconds.");
 		timeout *= 1000;
 		GLPK.glp_scale_prob(problem, GLPK.GLP_SF_AUTO);
 		glp_iocp mipParameters = new glp_iocp();
@@ -244,13 +244,13 @@ final class GLPKWrapper extends ILPSolver {
 
 		boolean optimal = status == GLPKConstants.GLP_OPT;
 		boolean feasible = optimal || status == GLPKConstants.GLP_FEAS;
-		if (!feasible) { 
-			System.err.println("No optimal or feasible solution found.");
+		if (!feasible) {
+			logger.error("No optimal or feasible solution found.");
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
 		Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
 		double optimum = GLPK.glp_mip_obj_val(problem);
-		System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
+		logger.debug("GLPK found solution: "+optimum + " - Optimal: "+optimal);
 		for(int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			double value = GLPK.glp_mip_col_val(problem, variable);
 			if(value != 0 && value != 1) {
@@ -259,7 +259,9 @@ final class GLPKWrapper extends ILPSolver {
 			variableSolutions.put(variable, (int) value);
 		}
 		GLPK.glp_delete_prob(problem);
-		return this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
+		ILPSolution solution = this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
+		logger.info(solution.getSolutionInformation());
+		return solution;
 	}
 
 	/* (non-Javadoc)
@@ -267,7 +269,7 @@ final class GLPKWrapper extends ILPSolver {
 	 */
 	@Override
 	public ILPSolution solveILP() throws Exception {
-		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables");
+		logger.info(this.ilpProblem.getProblemInformation());
 		int currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
 		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		if(currentTimeout < 0) {
@@ -284,12 +286,12 @@ final class GLPKWrapper extends ILPSolver {
 			if (exitCode == 0) {
 				return this.retrieveSolution();
 			} else {
-				System.err.println("The problem could not be solved");
+				logger.error("The problem could not be solved");
 				GLPK.glp_delete_prob(problem);
 				throw new RuntimeException("The problem could not be solved.");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("The problem could not be solved", e);
 			throw new RuntimeException("The problem could not be solved.", e);
 		}
 	}

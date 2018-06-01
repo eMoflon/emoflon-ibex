@@ -54,7 +54,7 @@ final class Sat4JWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() throws ContradictionException {
-		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables");
+		logger.info(ilpProblem.getProblemInformation());
 		int currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
 		currentTimeout = MIN_TIMEOUT + (int) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		if(currentTimeout < 0) {
@@ -63,11 +63,11 @@ final class Sat4JWrapper extends ILPSolver {
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
 		ILPSolution solution = null;
 		while(solution == null) {
-			System.out.println("Attempting to solve ILP. Timeout="+currentTimeout+" seconds.");
+			logger.debug("Attempting to solve ILP. Timeout="+currentTimeout+" seconds.");
 			try {
 				solution = solveILP(currentTimeout);
 			} catch(TimeoutException e) {
-				System.err.println("Could not solve ILP within "+currentTimeout+" seconds");
+				logger.warn("Could not solve ILP within "+currentTimeout+" seconds");
 				currentTimeout*=2;
 				if(currentTimeout > MAX_TIMEOUT) {
 					throw new RuntimeException("Could not solve ILP within "+currentTimeout+" seconds", e);
@@ -113,8 +113,10 @@ final class Sat4JWrapper extends ILPSolver {
 			boolean optimal = optimizer.isOptimal();
 			ILPSolution solution = this.ilpProblem.createILPSolution(variableSolutions, optimal, -1);
 			double optimum = this.ilpProblem.getObjective().getSolutionValue(solution);
-			System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
-			return this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
+			logger.debug("SAT4J found solution: "+optimum + " - Optimal: "+optimal);
+			solution = this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
+			logger.info(solution.getSolutionInformation());
+			return solution;
 		}
 		return null;
 	}

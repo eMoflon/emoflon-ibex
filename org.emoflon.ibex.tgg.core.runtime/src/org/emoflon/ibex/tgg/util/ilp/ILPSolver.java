@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
+import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 
@@ -12,6 +13,8 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 public abstract class ILPSolver {
 	
 	protected final ILPProblem ilpProblem;
+	
+	protected final static Logger logger = Logger.getLogger(ILPSolver.class);
 	
 	/**
 	 * 

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,13 +12,13 @@ import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 
-public class BinaryILPProblem extends ILPProblem {
-	private Int2ObjectOpenHashMap<ObjectLinkedOpenHashSet<Implication>> implications = new Int2ObjectOpenHashMap<>();
-	private ObjectLinkedOpenHashSet<NegativeImplication> negativeImplications = new ObjectLinkedOpenHashSet<>();
-	private ObjectLinkedOpenHashSet<Exclusion> exclusions = new ObjectLinkedOpenHashSet<>();
+public final class BinaryILPProblem extends ILPProblem {
+	private Int2ObjectOpenHashMap<LinkedList<Implication>> implications = new Int2ObjectOpenHashMap<>();
+	private LinkedList<NegativeImplication> negativeImplications = new LinkedList<>();
+	private LinkedList<Exclusion> exclusions = new LinkedList<>();
 	private ObjectLinkedOpenHashSet<ILPConstraint> generatedConstraints = new ObjectLinkedOpenHashSet<>();
+	private IntLinkedOpenHashSet resultingFixedVariables = null;
 
 	/**
 	 * 
@@ -28,10 +29,9 @@ public class BinaryILPProblem extends ILPProblem {
 	/**
 	 * A constraint of the form x -> a v b
 	 */
-	private class Implication {
+	private final class Implication {
 		private int leftVariable;
 		private IntOpenHashSet rightVariables;
-		private boolean isRelevant = true;
 		private String name = "";
 
 		private void generateILPConstraint(ILPLinearExpression expr) {
@@ -41,17 +41,17 @@ public class BinaryILPProblem extends ILPProblem {
 			});
 		}
 
-		private void fixImplVariable(int id, boolean choice) {
+		private boolean fixImplVariable(int id, boolean choice) {
 			if (leftVariable == id) {
 				if (!choice) { // left side is false
-					isRelevant = false;
+					return false;
 				}
 			}
 			if (rightVariables.remove(id)) {
 				// remove yielded true, so it was contained
 				if (choice) {
 					// implication is fulfilled -> remove
-					isRelevant = false;
+					return false;
 				} else {
 					if (rightVariables.isEmpty()) {
 						// Implication cannot be fulfilled
@@ -59,6 +59,7 @@ public class BinaryILPProblem extends ILPProblem {
 					}
 				}
 			}
+			return true;
 		}
 
 		@Override
@@ -69,15 +70,70 @@ public class BinaryILPProblem extends ILPProblem {
 			});
 			return "Implication(" + name + ")" + getVariable(leftVariable) + " -> " + String.join(" V ", termStrings);
 		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + leftVariable;
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + ((rightVariables == null) ? 0 : rightVariables.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			Implication other = (Implication) obj;
+			if (!getOuterType().equals(other.getOuterType())) {
+				return false;
+			}
+			if (leftVariable != other.leftVariable) {
+				return false;
+			}
+			if (name == null) {
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
+			if (rightVariables == null) {
+				if (other.rightVariables != null) {
+					return false;
+				}
+			} else if (!rightVariables.equals(other.rightVariables)) {
+				return false;
+			}
+			return true;
+		}
+
+		private BinaryILPProblem getOuterType() {
+			return BinaryILPProblem.this;
+		}
 	}
 
 	/**
 	 * A constraint of the form not(x V y) -> not(a) ^ not(b)
 	 */
-	private class NegativeImplication {
+	private final class NegativeImplication {
 		private IntOpenHashSet leftVariables;
 		private IntOpenHashSet rightVariables;
-		private boolean isRelevant = true;
 		private String name = "";
 
 		private void generateILPConstraint() {
@@ -88,16 +144,17 @@ public class BinaryILPProblem extends ILPProblem {
 			rightVariables.stream().forEach(v -> {
 				expr.addTerm(v, 1);
 			});
-			ILPConstraint constr = addConstraint(expr, Comparator.le, 0.0, name);
+			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 0.0, name);
+			addConstraint(constr);
 			generatedConstraints.add(constr);
 		}
 
-		private void fixImplVariable(int id, boolean choice) {
+		private boolean fixImplVariable(int id, boolean choice) {
 			if (leftVariables.remove(id)) {
 				// remove yielded true, so it was contained
 				if (choice) {
 					// irrelevant impl
-					isRelevant = false;
+					return false;
 				} else {
 					if (leftVariables.isEmpty()) {
 						for (int id2 : rightVariables) {
@@ -115,10 +172,11 @@ public class BinaryILPProblem extends ILPProblem {
 				} else {
 					if (rightVariables.isEmpty()) {
 						// Implication is fulfilled -> remove
-						isRelevant = false;
+						return false;
 					}
 				}
 			}
+			return true;
 		}
 
 		@Override
@@ -134,11 +192,70 @@ public class BinaryILPProblem extends ILPProblem {
 			return "NegativeImplication(" + name + ")" + "-(" + String.join(" V ", termStringsLeft) + ") -> "
 					+ String.join(" ^ ", termStringsRight);
 		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((leftVariables == null) ? 0 : leftVariables.hashCode());
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + ((rightVariables == null) ? 0 : rightVariables.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			NegativeImplication other = (NegativeImplication) obj;
+			if (!getOuterType().equals(other.getOuterType())) {
+				return false;
+			}
+			if (leftVariables == null) {
+				if (other.leftVariables != null) {
+					return false;
+				}
+			} else if (!leftVariables.equals(other.leftVariables)) {
+				return false;
+			}
+			if (name == null) {
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
+			if (rightVariables == null) {
+				if (other.rightVariables != null) {
+					return false;
+				}
+			} else if (!rightVariables.equals(other.rightVariables)) {
+				return false;
+			}
+			return true;
+		}
+
+		private BinaryILPProblem getOuterType() {
+			return BinaryILPProblem.this;
+		}
 	}
 
-	private class Exclusion {
-		private IntLinkedOpenHashSet variableGroup;
-		private boolean isRelevant = true;
+	private final class Exclusion {
+		private IntOpenHashSet variableGroup;
 		private String name = "";
 
 		private void generateILPConstraint() {
@@ -146,11 +263,12 @@ public class BinaryILPProblem extends ILPProblem {
 			variableGroup.stream().forEach(v -> {
 				expr.addTerm(v, 1);
 			});
-			ILPConstraint constr = addConstraint(expr, Comparator.le, 1.0, name);
+			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 1.0, name);
+			addConstraint(constr);
 			generatedConstraints.add(constr);
 		}
 
-		private void fixExclVariable(int id, boolean choice) {
+		private boolean fixExclVariable(int id, boolean choice) {
 			if (variableGroup.remove(id)) {
 				// remove yielded true, so it was contained
 				if (choice) {
@@ -158,13 +276,14 @@ public class BinaryILPProblem extends ILPProblem {
 						// all other vars cannot be chosen
 						fixVariable(id2, false);
 					}
-					isRelevant = false;
+					return false;
 				} else {
 					if (variableGroup.isEmpty()) {
-						isRelevant = false;
+						return false;
 					}
 				}
 			}
+			return true;
 		}
 
 		@Override
@@ -175,6 +294,60 @@ public class BinaryILPProblem extends ILPProblem {
 			});
 			return "Exclusion(" + name + ") " + String.join(" XOR ", termStrings);
 		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + ((variableGroup == null) ? 0 : variableGroup.hashCode());
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			Exclusion other = (Exclusion) obj;
+			if (!getOuterType().equals(other.getOuterType())) {
+				return false;
+			}
+			if (name == null) {
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
+			if (variableGroup == null) {
+				if (other.variableGroup != null) {
+					return false;
+				}
+			} else if (!variableGroup.equals(other.variableGroup)) {
+				return false;
+			}
+			return true;
+		}
+
+		private BinaryILPProblem getOuterType() {
+			return BinaryILPProblem.this;
+		}
+		
+		
 	}
 
 	private void generateContraints() {
@@ -182,44 +355,42 @@ public class BinaryILPProblem extends ILPProblem {
 		this.removeConstraints(generatedConstraints);
 		generatedConstraints.clear();
 
-		for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<ObjectLinkedOpenHashSet<Implication>> implOfSameVar : implications
+		for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<LinkedList<Implication>> implOfSameVar : implications
 				.int2ObjectEntrySet()) {
 			ILPLinearExpression expr = createLinearExpression();
 			String name = "IMPL" + this.getVariable(implOfSameVar.getIntKey());
 			for (Implication impl : implOfSameVar.getValue()) {
-				if (impl.isRelevant) {
-					impl.generateILPConstraint(expr);
-					name = impl.name;
-				}
+				impl.generateILPConstraint(expr);
+				name = impl.name;
 			}
-			ILPConstraint constr = addConstraint(expr, Comparator.le, 0.0, name);
+			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 0.0, name);
+			addConstraint(constr);
 			generatedConstraints.add(constr);
 		}
 		for (NegativeImplication negImpl : negativeImplications) {
-			if (negImpl.isRelevant)
-				negImpl.generateILPConstraint();
+			negImpl.generateILPConstraint();
 		}
 		for (Exclusion excl : exclusions) {
-			if (excl.isRelevant)
-				excl.generateILPConstraint();
+			excl.generateILPConstraint();
 		}
 	}
 
 	private void applyFixedVariablesToImplications(int[] fixedVariables) {
-		ObjectIterator<it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<ObjectLinkedOpenHashSet<Implication>>> implMapIt = implications
+		ObjectIterator<it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<LinkedList<Implication>>> implMapIt = implications
 				.int2ObjectEntrySet().iterator();
 		while (implMapIt.hasNext()) {
-			it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<ObjectLinkedOpenHashSet<Implication>> entry = implMapIt
+			it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<LinkedList<Implication>> entry = implMapIt
 					.next();
-			ObjectListIterator<Implication> implIt = entry.getValue().iterator();
+			Iterator<Implication> implIt = entry.getValue().iterator();
 			while (implIt.hasNext()) {
 				Implication impl = implIt.next();
 				for (int id : fixedVariables) {
 					boolean choice = getFixedVariableValues().get(id) == 1;
-					impl.fixImplVariable(id, choice);
+					if(!impl.fixImplVariable(id, choice)) {
+						implIt.remove();
+						break;
+					}
 				}
-				if (!impl.isRelevant)
-					implIt.remove();
 			}
 			if (entry.getValue().isEmpty())
 				implMapIt.remove();
@@ -227,28 +398,30 @@ public class BinaryILPProblem extends ILPProblem {
 	}
 
 	private void applyFixedVariablesToNegativeImplications(int[] fixedVariables) {
-		ObjectListIterator<NegativeImplication> negImplIt = negativeImplications.iterator();
+		Iterator<NegativeImplication> negImplIt = negativeImplications.iterator();
 		while (negImplIt.hasNext()) {
 			NegativeImplication impl = negImplIt.next();
 			for (int id : fixedVariables) {
 				boolean choice = getFixedVariableValues().get(id) == 1;
-				impl.fixImplVariable(id, choice);
+				if(!impl.fixImplVariable(id, choice)) {
+					negImplIt.remove();
+					break;
+				}
 			}
-			if (!impl.isRelevant)
-				negImplIt.remove();
 		}
 	}
 
 	private void applyFixedVariablesToExclusions(int[] fixedVariables) {
-		ObjectListIterator<Exclusion> exclIt = exclusions.iterator();
+		Iterator<Exclusion> exclIt = exclusions.iterator();
 		while (exclIt.hasNext()) {
 			Exclusion excl = exclIt.next();
 			for (int id : fixedVariables) {
 				boolean choice = getFixedVariableValues().get(id) == 1;
-				excl.fixExclVariable(id, choice);
+				if(!excl.fixExclVariable(id, choice)) {
+					exclIt.remove();
+					break;
+				}
 			}
-			if (!excl.isRelevant)
-				exclIt.remove();
 		}
 	}
 
@@ -258,21 +431,26 @@ public class BinaryILPProblem extends ILPProblem {
 			return;
 		this.removeConstraints(generatedConstraints);
 		generatedConstraints.clear();
-		while (!getLazyFixedVariables().isEmpty()) {
-			int[] ids = getLazyFixedVariables().toIntArray();
-			super.applyLazyFixedVariables();
+		resultingFixedVariables = getLazyFixedVariables();
+		while (!resultingFixedVariables.isEmpty()) {
+			int[] ids = resultingFixedVariables.toIntArray();
+			resultingFixedVariables = new IntLinkedOpenHashSet(resultingFixedVariables.size());
 			applyFixedVariablesToExclusions(ids);
 			applyFixedVariablesToImplications(ids);
 			applyFixedVariablesToNegativeImplications(ids);
 		}
-		this.generateContraints();
+		super.applyLazyFixedVariables();
 	}
 
 	public void fixVariable(String variableName, boolean choice) {
 		this.fixVariable(this.getVariableId(variableName), choice);
+		// this.applyLazyFixedVariables();
 	}
 
 	protected void fixVariable(int variableId, boolean choice) {
+		if(resultingFixedVariables != null) {
+			resultingFixedVariables.add(variableId);
+		}
 		super.fixVariable(variableId, choice ? 1 : 0);
 	}
 
@@ -294,7 +472,7 @@ public class BinaryILPProblem extends ILPProblem {
 		Implication impl = new Implication();
 		impl.name = name;
 		impl.leftVariable = getVariableId(leftSide);
-		implications.putIfAbsent(impl.leftVariable, new ObjectLinkedOpenHashSet<>());
+		implications.putIfAbsent(impl.leftVariable, new LinkedList<>());
 		implications.get(impl.leftVariable).add(impl);
 		impl.rightVariables = new IntOpenHashSet(
 				rightSide.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
@@ -307,7 +485,7 @@ public class BinaryILPProblem extends ILPProblem {
 		Exclusion excl = new Exclusion();
 		excl.name = name;
 		exclusions.add(excl);
-		excl.variableGroup = new IntLinkedOpenHashSet(
+		excl.variableGroup = new IntOpenHashSet(
 				variables.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
 		for (Entry id : this.getFixedVariableValues().int2IntEntrySet()) {
 			excl.fixExclVariable(id.getIntKey(), id.getIntValue() == 1);
@@ -329,7 +507,8 @@ public class BinaryILPProblem extends ILPProblem {
 
 	@Override
 	public Collection<ILPConstraint> getConstraints() {
-		if (generatedConstraints.isEmpty() && getLazyFixedVariables().isEmpty())
+		this.applyLazyFixedVariables();
+		if (generatedConstraints.isEmpty())
 			this.generateContraints();
 		return super.getConstraints();
 	}
@@ -340,12 +519,10 @@ public class BinaryILPProblem extends ILPProblem {
 		for (Exclusion excl : exclusions) {
 			b.append("\n" + excl);
 		}
-		for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<ObjectLinkedOpenHashSet<Implication>> implOfSameVar : implications
+		for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<LinkedList<Implication>> implOfSameVar : implications
 				.int2ObjectEntrySet()) {
 			for (Implication impl : implOfSameVar.getValue()) {
-				if (impl.isRelevant) {
 					b.append("\n" + impl);
-				}
 			}
 		}
 		for (NegativeImplication impl : negativeImplications) {

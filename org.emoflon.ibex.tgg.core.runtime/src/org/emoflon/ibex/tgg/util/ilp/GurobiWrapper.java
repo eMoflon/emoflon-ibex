@@ -69,7 +69,7 @@ final class GurobiWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() throws GRBException {
-		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables");
+		logger.info(this.ilpProblem.getProblemInformation());
 		
 		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
 		currentTimeout = MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
@@ -106,7 +106,7 @@ final class GurobiWrapper extends ILPSolver {
 	 * @throws GRBException
 	 */
 	private void solveModel(long timeout) throws GRBException {
-		System.out.println("Setting time-limit to "+timeout+ " seconds.");
+		logger.debug("Setting time-limit to "+timeout+ " seconds.");
 		this.model.set(GRB.DoubleParam.TimeLimit, timeout);
 		this.model.optimize();
 	}
@@ -122,7 +122,7 @@ final class GurobiWrapper extends ILPSolver {
 		boolean optimal = status == GRB.Status.OPTIMAL;
 		boolean feasible = solutionCount > 0;
 		if (!feasible) {
-			System.err.println("No optimal or feasible solution found.");
+			logger.error("No optimal or feasible solution found.");
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
 		
@@ -134,11 +134,13 @@ final class GurobiWrapper extends ILPSolver {
 			solutionVariables.put(variableId, (int) gurobiVar.get(DoubleAttr.X));
 		}
 		
-		System.out.println("Solution found: "+optimum);
+		logger.debug("Gurobi found solution: "+optimum + " - Optimal: "+optimal);
 		
 		env.dispose();
 		model.dispose();
-		return ilpProblem.createILPSolution(solutionVariables, optimal, optimum);
+		ILPSolution solution = this.ilpProblem.createILPSolution(solutionVariables, optimal, optimum);
+		logger.info(solution.getSolutionInformation());
+		return solution;
 	}
 	
 	/**

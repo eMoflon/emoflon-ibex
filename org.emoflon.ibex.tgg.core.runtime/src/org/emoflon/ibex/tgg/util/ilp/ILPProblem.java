@@ -143,7 +143,7 @@ public class ILPProblem {
 				//unchanged
 				return;
 			} else {
-				throw new RuntimeException("The variable has already been fixed to a different value");
+				throw new RuntimeException("The variable " + getVariable(variableId) + " has already been fixed to a different value");
 			}
 		}
 		this.unfixedVariables.remove(variableId);
@@ -220,7 +220,7 @@ public class ILPProblem {
 	 * @param constraint the constraint to add
 	 */
 	void addConstraint(ILPConstraint constraint) {
-		if(!constraint.isEmpty() && !this.constraints.contains(constraint)) {
+		if(!constraint.isEmpty()) {
 			this.constraints.add(constraint);
 		}
 	}
@@ -298,6 +298,15 @@ public class ILPProblem {
 			b.append("\n" + getVariable(entry.getIntKey()) + " = "+entry.getIntValue());
 		}
 		return b.toString();
+	}
+	
+	public String getProblemInformation() {
+		int fixed = this.getVariables().size() - this.getVariableIdsOfUnfixedVariables().length;
+		return ("The ILP to solve has "
+				+ this.getConstraints().size()
+				+ " constraints and "
+				+ this.getVariables().size()
+				+ " variables ("+fixed+" prefixed variables, "+ this.getVariableIdsOfUnfixedVariables().length +" to find)");
 	}
 
 	/**
@@ -923,7 +932,12 @@ public class ILPProblem {
 			}
 			return s.toString();
 		}
-
+		
+		public String getSolutionInformation() {
+			int fixed = getVariables().size() - getVariableIdsOfUnfixedVariables().length;
+			return "Found solution for "+ getVariables().size() + " variables ("+fixed+" prefixed). Solution value = "+solutionValue;
+		}
+		
 		/* (non-Javadoc)
 		 * @see java.lang.Object#hashCode()
 		 */

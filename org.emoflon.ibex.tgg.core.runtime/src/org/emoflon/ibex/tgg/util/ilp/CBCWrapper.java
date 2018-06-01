@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  * @author RobinO
  *
  */
-public class CBCWrapper extends ILPSolver{
+final class CBCWrapper extends ILPSolver{
 
 	/**
 	 * The solver model
@@ -75,7 +75,7 @@ public class CBCWrapper extends ILPSolver{
 			try {
 				System.loadLibrary("jniortools");
 			} catch (Exception e) {
-				System.err.println("Could not load library: jniortools \n The library can be obtained following the instructions at https://developers.google.com/optimization/introduction/installing/binary");
+				logger.error("Could not load library: jniortools \n The library can be obtained following the instructions at https://developers.google.com/optimization/introduction/installing/binary", e);
 				throw e;
 			}
 		}
@@ -93,8 +93,7 @@ public class CBCWrapper extends ILPSolver{
 
 	@Override
 	public ILPSolution solveILP() throws Exception {
-		int fixed = this.ilpProblem.getVariables().size() - this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
-		System.out.println("The ILP to solve has "+this.ilpProblem.getConstraints().size()+" constraints and "+this.ilpProblem.getVariableIdsOfUnfixedVariables().length+ " variables ("+fixed+" prefixed)");
+		logger.info(this.ilpProblem.getProblemInformation());
 		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
 		currentTimeout = MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		if(currentTimeout < 0) {
@@ -132,7 +131,7 @@ public class CBCWrapper extends ILPSolver{
 		this.solver.enableOutput();
 		int numberOfThreads = Runtime.getRuntime().availableProcessors();
 		this.solver.setSolverSpecificParametersAsString("-threads " + numberOfThreads + " -ratio 0.07");
-		System.out.println("Setting time-limit for each step to "+timeout+ " seconds.");
+		logger.debug("Setting time-limit for each step to "+timeout+ " seconds.");
 		timeout *= 1000;
 		this.solver.setTimeLimit(timeout);
 		return this.solver.solve();
@@ -148,13 +147,13 @@ public class CBCWrapper extends ILPSolver{
 		boolean optimal = result == ResultStatus.OPTIMAL;
 		boolean feasible = optimal || result == ResultStatus.FEASIBLE;
 		if (!feasible) { 
-			System.err.println("No optimal or feasible solution found.");
+			logger.error("No optimal or feasible solution found.");
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
 
 		Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
 		double optimum = solver.objective().value();
-		System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
+		logger.debug("CBC found solution: "+optimum + " - Optimal: "+optimal);
 		for(int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			double value = this.variableIdToCBCVar.get(variable).solutionValue();
 			if(value != 0 && value != 1) {
@@ -162,7 +161,9 @@ public class CBCWrapper extends ILPSolver{
 			}
 			variableSolutions.put(variable, (int) value);
 		}
-		return this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
+		ILPSolution solution = this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
+		logger.info(solution.getSolutionInformation());
+		return solution;
 	}
 
 	/**
