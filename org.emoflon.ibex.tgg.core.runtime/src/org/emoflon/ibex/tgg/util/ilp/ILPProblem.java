@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -53,7 +55,7 @@ public class ILPProblem {
 	/**
 	 * Contains pre-fixed variables the solver does not need to care about
 	 */
-	private final Int2IntOpenHashMap fixedVariableValues = new Int2IntOpenHashMap();
+	private final Int2IntLinkedOpenHashMap fixedVariableValues = new Int2IntLinkedOpenHashMap();
 	
 	/**
 	 * Contains the IDs of the unassigned variables
@@ -79,7 +81,7 @@ public class ILPProblem {
 		return Collections.unmodifiableCollection(variables.keySet());
 	}
 	
-	protected Int2IntOpenHashMap getFixedVariableValues() {
+	protected Int2IntLinkedOpenHashMap getFixedVariableValues() {
 		return fixedVariableValues;
 	}
 	
@@ -103,12 +105,18 @@ public class ILPProblem {
 		if(lazyFixedVariables.isEmpty()) {
 			return;
 		}
+		
+		Int2IntArrayMap variablesToApply = new Int2IntArrayMap(lazyFixedVariables.size());
+		for(int id : this.lazyFixedVariables) {
+			variablesToApply.put(id, getFixedVariableValues().get(id));
+		}
+		
 		ObjectIterator<ILPConstraint> it = this.constraints.iterator();
 		LinkedList<ILPConstraint> modifiedConstraints = new LinkedList<ILPProblem.ILPConstraint>();
 		while(it.hasNext()) {
 			ILPConstraint constraint = it.next();
-			boolean changed = false;;
-			for(Entry fixedVariable : fixedVariableValues.int2IntEntrySet()) {
+			boolean changed = false;
+			for(Entry fixedVariable : variablesToApply.int2IntEntrySet()) {
 				if(constraint.getLinearExpression().getCoefficient(fixedVariable.getIntKey()) != 0) {
 					//constraint will be changed
 					if(!changed) {
@@ -123,7 +131,9 @@ public class ILPProblem {
 		}
 		modifiedConstraints.stream().forEach(c -> this.addConstraint(c));
 		if(objective != null) {
-			lazyFixedVariables.stream().forEach((variableId) -> objective.fixVariable(variableId, fixedVariableValues.get((int) variableId)));
+			for(Entry fixedVariable : variablesToApply.int2IntEntrySet()) {
+				objective.fixVariable(fixedVariable.getIntKey(), fixedVariable.getIntValue());
+			}
 		}
 		lazyFixedVariables.clear();
 	}

@@ -286,22 +286,25 @@ public abstract class OPT extends OperationalStrategy {
 		logger.debug("Creating ILP problem for " + idToMatch.size() + " matches");
 
 		BinaryILPProblem ilpProblem = ILPFactory.createBinaryILPProblem();
-
+		
 		logger.debug("Adding exclusions...");
 		defineILPExclusions(ilpProblem);
+		
 		logger.debug("Adding implications...");
 		defineILPImplications(ilpProblem);
-		logger.debug("Adding user defined constraints...");
-		addUserDefinedConstraints(ilpProblem);
+
 		logger.debug("Defining objective...");
 		defineILPObjective(ilpProblem);
+		
+		logger.debug("Adding user defined constraints...");
+		addUserDefinedConstraints(ilpProblem);
 
 		try {
+			logger.debug("Attempting to solve ILP");
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, this.options.getIlpSolver());
 			if (!ilpProblem.checkValidity(ilpSolution)) {
 				throw new AssertionError("Invalid solution");
 			}
-			;
 
 			int[] result = new int[idToMatch.size()];
 			idToMatch.keySet().stream().forEach(v -> {
