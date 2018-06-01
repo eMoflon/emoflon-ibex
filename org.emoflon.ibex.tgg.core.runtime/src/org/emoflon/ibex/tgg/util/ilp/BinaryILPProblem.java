@@ -24,6 +24,8 @@ public final class BinaryILPProblem extends ILPProblem {
 	private IntLinkedOpenHashSet negativeChoices = new IntLinkedOpenHashSet();
 	private IntLinkedOpenHashSet lazyPositiveChoices = new IntLinkedOpenHashSet();
 	private IntLinkedOpenHashSet lazyNegativeChoices = new IntLinkedOpenHashSet();
+	
+	private Int2ObjectOpenHashMap<LinkedList<BinaryConstraint>> variableIdsToContainingConstraints = new Int2ObjectOpenHashMap<>();
 
 	/**
 	 * 
@@ -32,6 +34,8 @@ public final class BinaryILPProblem extends ILPProblem {
 	}
 
 	private abstract class BinaryConstraint {
+		boolean isRelevant = true;
+		
 		abstract boolean fixVariable(int variableId, boolean choice);
 
 		abstract boolean fixVariables(IntCollection positiveChoices, IntCollection negativeChoices);
@@ -463,18 +467,22 @@ public final class BinaryILPProblem extends ILPProblem {
 			ILPLinearExpression expr = createLinearExpression();
 			String name = "IMPL" + this.getVariable(implOfSameVar.getIntKey());
 			for (Implication impl : implOfSameVar.getValue()) {
-				impl.generateILPConstraint(expr);
-				name = impl.name;
+				if(impl.isRelevant) {
+					impl.generateILPConstraint(expr);
+					name = impl.name;
+				}
 			}
 			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 0.0, name);
 			addConstraint(constr);
 			generatedConstraints.add(constr);
 		}
 		for (NegativeImplication negImpl : negativeImplications) {
-			negImpl.generateILPConstraint();
+			if(negImpl.isRelevant)
+				negImpl.generateILPConstraint();
 		}
 		for (Exclusion excl : exclusions) {
-			excl.generateILPConstraint();
+			if(excl.isRelevant)
+				excl.generateILPConstraint();
 		}
 	}
 
@@ -493,7 +501,7 @@ public final class BinaryILPProblem extends ILPProblem {
 			Iterator<Implication> implIt = entry.getValue().iterator();
 			while (implIt.hasNext()) {
 				Implication impl = implIt.next();
-				if(!impl.fixImplVariables(positiveChoices, negativeChoices)) {
+				if(!impl.fixVariables(positiveChoices, negativeChoices)) {
 					implIt.remove();
 				}
 			}
@@ -506,7 +514,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		Iterator<NegativeImplication> negImplIt = negativeImplications.iterator();
 		while (negImplIt.hasNext()) {
 			NegativeImplication impl = negImplIt.next();
-			if(!impl.fixImplVariables(positiveChoices, negativeChoices)) {
+			if(!impl.fixVariables(positiveChoices, negativeChoices)) {
 				negImplIt.remove();
 			}
 		}
@@ -516,7 +524,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		Iterator<Exclusion> exclIt = exclusions.iterator();
 		while (exclIt.hasNext()) {
 			Exclusion excl = exclIt.next();
-			if(!excl.fixExclVariables(positiveChoices, negativeChoices)) {
+			if(!excl.fixVariables(positiveChoices, negativeChoices)) {
 				exclIt.remove();
 			}
 		}
@@ -533,9 +541,24 @@ public final class BinaryILPProblem extends ILPProblem {
 			IntArrayList negativeChoices = new IntArrayList(lazyNegativeChoices);
 			lazyPositiveChoices.clear();
 			lazyNegativeChoices.clear();
-			applyFixedVariablesToExclusions(positiveChoices, negativeChoices);
-			applyFixedVariablesToImplications(positiveChoices, negativeChoices);
-			applyFixedVariablesToNegativeImplications(positiveChoices, negativeChoices);
+			for(int id : positiveChoices) {
+				for(BinaryConstraint constraint : this.variableIdsToContainingConstraints.remove(id)) {
+					if(constraint.isRelevant) {
+						constraint.isRelevant = constraint.fixVariable(id, true);
+					}
+				}
+			}
+			for(int id : negativeChoices) {
+				this.implications.remove(id);
+				for(BinaryConstraint constraint : this.variableIdsToContainingConstraints.remove(id)) {
+					if(constraint.isRelevant) {
+						constraint.isRelevant = constraint.fixVariable(id, false);
+					}
+				}
+			}
+//			applyFixedVariablesToExclusions(positiveChoices, negativeChoices);
+//			applyFixedVariablesToImplications(positiveChoices, negativeChoices);
+//			applyFixedVariablesToNegativeImplications(positiveChoices, negativeChoices);
 		}
 		super.applyLazyFixedVariables();
 	}
@@ -581,9 +604,15 @@ public final class BinaryILPProblem extends ILPProblem {
 		
 		impl.rightVariables = new IntOpenHashSet(
 				rightSide.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
-		if(impl.fixImplVariables(positiveChoices, negativeChoices)) {
+		if(impl.fixVariables(positiveChoices, negativeChoices)) {
 			implications.putIfAbsent(impl.leftVariable, new LinkedList<>());
 			implications.get(impl.leftVariable).add(impl);
+			this.variableIdsToContainingConstraints.putIfAbsent(impl.leftVariable, new LinkedList<>());
+			this.variableIdsToContainingConstraints.get(impl.leftVariable).add(impl);
+			for(int id : impl.rightVariables) {
+				this.variableIdsToContainingConstraints.putIfAbsent(id, new LinkedList<>());
+				this.variableIdsToContainingConstraints.get(id).add(impl);
+			}
 		}
 	}
 
@@ -592,8 +621,12 @@ public final class BinaryILPProblem extends ILPProblem {
 		excl.name = name;
 		excl.variableGroup = new IntOpenHashSet(
 				variables.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
-		if(excl.fixExclVariables(positiveChoices, negativeChoices)) {
+		if(excl.fixVariables(positiveChoices, negativeChoices)) {
 			exclusions.add(excl);
+			for(int id : excl.variableGroup) {
+				this.variableIdsToContainingConstraints.putIfAbsent(id, new LinkedList<>());
+				this.variableIdsToContainingConstraints.get(id).add(excl);
+			}
 		}
 	}
 
@@ -604,8 +637,16 @@ public final class BinaryILPProblem extends ILPProblem {
 				leftSide.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
 		impl.rightVariables = new IntOpenHashSet(
 				rightSide.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
-		if(impl.fixImplVariables(positiveChoices, negativeChoices)) {
+		if(impl.fixVariables(positiveChoices, negativeChoices)) {
 			negativeImplications.add(impl);
+			for(int id : impl.leftVariables) {
+				this.variableIdsToContainingConstraints.putIfAbsent(id, new LinkedList<>());
+				this.variableIdsToContainingConstraints.get(id).add(impl);
+			}
+			for(int id : impl.rightVariables) {
+				this.variableIdsToContainingConstraints.putIfAbsent(id, new LinkedList<>());
+				this.variableIdsToContainingConstraints.get(id).add(impl);
+			}
 		}
 	}
 
