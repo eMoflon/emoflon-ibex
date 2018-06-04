@@ -212,7 +212,7 @@ public abstract class OPT extends OperationalStrategy {
 			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getRuleApplications(cycle));
 			for (List<Integer> variables : cyclicConstraints) {
 				ilpProblem.addExclusion(variables.stream().map(v -> "x" + v).collect(Collectors.toList()), 
-						"EXCL_cycle", variables.size() - 1);
+						"EXCL_cycle" + nameCounter++, variables.size() - 1);
 			}
 		}
 	}
@@ -243,7 +243,7 @@ public abstract class OPT extends OperationalStrategy {
 			} else {
 				// there is no match creating this node -> forbid all matches needing it
 				needingMatchIDs.stream().forEach(m -> {
-					ilpProblem.fixVariable("x" + m, 0);
+					ilpProblem.fixVariable("x" + m, false);
 				});
 			}
 		}
@@ -261,7 +261,7 @@ public abstract class OPT extends OperationalStrategy {
 			} else {
 				// there is no match creating this node -> forbid all matches needing it
 				needingMatchIDs.stream().forEach(m -> {
-					ilpProblem.fixVariable("x" + m, 0);
+					ilpProblem.fixVariable("x" + m, false);
 				});
 			}
 		}
