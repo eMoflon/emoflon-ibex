@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -17,7 +16,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
 /**
@@ -66,6 +64,8 @@ public class ILPProblem {
 	 * Contains the IDs of the variables that have been fixed but have not yet been removed from the constraints and objective
 	 */
 	private final IntLinkedOpenHashSet lazyFixedVariables = new IntLinkedOpenHashSet();
+	
+	private Int2ObjectOpenHashMap<LinkedList<ILPConstraint>> variableIdsToContainingConstraints = new Int2ObjectOpenHashMap<>();
 
 	/**
 	 * Creates a new ILPProblem. Instances can be obtained using the {@link ILPFactory}
@@ -106,35 +106,23 @@ public class ILPProblem {
 			return;
 		}
 		
-		Int2IntArrayMap variablesToApply = new Int2IntArrayMap(lazyFixedVariables.size());
+		LinkedList<ILPConstraint> modifiedConstraints = new LinkedList<ILPProblem.ILPConstraint>();
 		for(int id : this.lazyFixedVariables) {
-			variablesToApply.put(id, getFixedVariableValues().get(id));
+			LinkedList<ILPConstraint> constraintsToModify = variableIdsToContainingConstraints.remove(id);
+			int value = this.fixedVariableValues.get(id);
+			for(ILPConstraint constraint : constraintsToModify) {
+				if(!this.constraints.remove(constraint)) {
+					continue;
+				}
+				constraint.fixVariable(id, value);
+				modifiedConstraints.add(constraint);
+			}
+			if(objective != null) {
+				objective.fixVariable(id, value);
+			}
 		}
 		
-		ObjectIterator<ILPConstraint> it = this.constraints.iterator();
-		LinkedList<ILPConstraint> modifiedConstraints = new LinkedList<ILPProblem.ILPConstraint>();
-		while(it.hasNext()) {
-			ILPConstraint constraint = it.next();
-			boolean changed = false;
-			for(Entry fixedVariable : variablesToApply.int2IntEntrySet()) {
-				if(constraint.getLinearExpression().getCoefficient(fixedVariable.getIntKey()) != 0) {
-					//constraint will be changed
-					if(!changed) {
-						it.remove();
-						changed = true;
-					}
-					constraint.fixVariable(fixedVariable.getIntKey(), fixedVariable.getIntValue());
-				}
-			}
-			if(changed)
-				modifiedConstraints.add(constraint);
-		}
 		modifiedConstraints.stream().forEach(c -> this.addConstraint(c));
-		if(objective != null) {
-			for(Entry fixedVariable : variablesToApply.int2IntEntrySet()) {
-				objective.fixVariable(fixedVariable.getIntKey(), fixedVariable.getIntValue());
-			}
-		}
 		lazyFixedVariables.clear();
 	}
 	
@@ -170,12 +158,17 @@ public class ILPProblem {
 	 */
 	int getVariableId(String variable) {
 		if(!variables.containsKey(variable)) {
-			variables.put(variable, variableCounter);
-			variableIDsToVariables.put(variableCounter, variable);
-			unfixedVariables.add(variableCounter);
-			return variableCounter++;
+			return createNewVariable(variable);
 		}
 		return variables.getInt(variable);
+	}
+	
+	int createNewVariable(String variableName) {
+		variables.put(variableName, variableCounter);
+		variableIDsToVariables.put(variableCounter, variableName);
+		unfixedVariables.add(variableCounter);
+		variableIdsToContainingConstraints.put(variableCounter, new LinkedList<>());
+		return variableCounter++;
 	}
 	
 	/**
@@ -221,6 +214,9 @@ public class ILPProblem {
 	public ILPConstraint addConstraint(ILPLinearExpression linearExpression, Comparator comparator, double value, String name) {
 		ILPConstraint constr = new ILPConstraint(linearExpression, comparator, value, name);
 		constr.removeFixedVariables();
+		for(int id : constr.linearExpression.terms.keySet()) {
+			this.variableIdsToContainingConstraints.get(id).add(constr);
+		}
 		this.addConstraint(constr);
 		return constr;
 	}
@@ -311,12 +307,12 @@ public class ILPProblem {
 	}
 	
 	public String getProblemInformation() {
-		int fixed = this.getVariables().size() - this.getVariableIdsOfUnfixedVariables().length;
+		int fixed = this.getVariables().size() - this.unfixedVariables.size();
 		return ("The ILP to solve has "
 				+ this.getConstraints().size()
 				+ " constraints and "
 				+ this.getVariables().size()
-				+ " variables ("+fixed+" prefixed variables, "+ this.getVariableIdsOfUnfixedVariables().length +" to find)");
+				+ " variables ("+fixed+" prefixed variables, "+ this.unfixedVariables.size() +" to find)");
 	}
 
 	/**

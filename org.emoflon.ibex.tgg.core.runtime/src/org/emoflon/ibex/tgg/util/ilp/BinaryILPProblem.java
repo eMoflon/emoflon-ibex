@@ -342,13 +342,14 @@ public final class BinaryILPProblem extends ILPProblem {
 	private final class Exclusion extends BinaryConstraint {
 		private IntOpenHashSet variableGroup;
 		private String name = "";
+		private int allowed;
 
 		void generateILPConstraint() {
 			ILPLinearExpression expr = createLinearExpression();
 			variableGroup.stream().forEach(v -> {
 				expr.addTerm(v, 1);
 			});
-			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 1.0, name);
+			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, allowed, name);
 			addConstraint(constr);
 			generatedConstraints.add(constr);
 		}
@@ -357,11 +358,13 @@ public final class BinaryILPProblem extends ILPProblem {
 			if (variableGroup.remove(id)) {
 				// remove yielded true, so it was contained
 				if (choice) {
-					for (int id2 : variableGroup) {
-						// all other vars cannot be chosen
-						BinaryILPProblem.this.fixVariable(id2, false);
+					if(--allowed == 0) {
+						for (int id2 : variableGroup) {
+							// all other vars cannot be chosen
+							BinaryILPProblem.this.fixVariable(id2, false);
+						}
+						return false;
 					}
-					return false;
 				} else {
 					if (variableGroup.isEmpty()) {
 						return false;
@@ -380,11 +383,13 @@ public final class BinaryILPProblem extends ILPProblem {
 
 			for (int id : positiveChoices) {
 				if (variableGroup.remove(id)) {
-					for (int id2 : variableGroup) {
-						// all other vars cannot be chosen
-						BinaryILPProblem.this.fixVariable(id2, false);
+					if(--allowed == 0) {
+						for (int id2 : variableGroup) {
+							// all other vars cannot be chosen
+							BinaryILPProblem.this.fixVariable(id2, false);
+						}
+						return false;
 					}
-					return false;
 				}
 			}
 			return true;
@@ -607,27 +612,29 @@ public final class BinaryILPProblem extends ILPProblem {
 		if(impl.fixVariables(positiveChoices, negativeChoices)) {
 			implications.putIfAbsent(impl.leftVariable, new LinkedList<>());
 			implications.get(impl.leftVariable).add(impl);
-			this.variableIdsToContainingConstraints.putIfAbsent(impl.leftVariable, new LinkedList<>());
 			this.variableIdsToContainingConstraints.get(impl.leftVariable).add(impl);
 			for(int id : impl.rightVariables) {
-				this.variableIdsToContainingConstraints.putIfAbsent(id, new LinkedList<>());
 				this.variableIdsToContainingConstraints.get(id).add(impl);
 			}
 		}
 	}
 
-	public void addExclusion(Collection<String> variables, String name) {
+	public void addExclusion(Collection<String> variables, String name, int allowed) {
 		Exclusion excl = new Exclusion();
 		excl.name = name;
+		excl.allowed = allowed;
 		excl.variableGroup = new IntOpenHashSet(
 				variables.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
 		if(excl.fixVariables(positiveChoices, negativeChoices)) {
 			exclusions.add(excl);
 			for(int id : excl.variableGroup) {
-				this.variableIdsToContainingConstraints.putIfAbsent(id, new LinkedList<>());
 				this.variableIdsToContainingConstraints.get(id).add(excl);
 			}
 		}
+	}
+	
+	public void addExclusion(Collection<String> variables, String name) {
+		addExclusion(variables, name, 1);
 	}
 
 	public void addNegativeImplication(Collection<String> leftSide, Collection<String> rightSide, String name) {
@@ -640,11 +647,9 @@ public final class BinaryILPProblem extends ILPProblem {
 		if(impl.fixVariables(positiveChoices, negativeChoices)) {
 			negativeImplications.add(impl);
 			for(int id : impl.leftVariables) {
-				this.variableIdsToContainingConstraints.putIfAbsent(id, new LinkedList<>());
 				this.variableIdsToContainingConstraints.get(id).add(impl);
 			}
 			for(int id : impl.rightVariables) {
-				this.variableIdsToContainingConstraints.putIfAbsent(id, new LinkedList<>());
 				this.variableIdsToContainingConstraints.get(id).add(impl);
 			}
 		}
@@ -677,4 +682,13 @@ public final class BinaryILPProblem extends ILPProblem {
 		return super.toString() + b.toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.emoflon.ibex.tgg.util.ilp.ILPProblem#createNewVariable(java.lang.String)
+	 */
+	@Override
+	int createNewVariable(String variableName) {
+		int variableId = super.createNewVariable(variableName);
+		this.variableIdsToContainingConstraints.put(variableId, new LinkedList<>());
+		return variableId;
+	}
 }

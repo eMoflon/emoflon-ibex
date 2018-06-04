@@ -28,7 +28,6 @@ import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
-import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Comparator;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
@@ -200,11 +199,9 @@ public abstract class OPT extends OperationalStrategy {
 
 		if (!invalidKernels.isEmpty()) {
 			IntOpenHashSet variables = invalidKernels;
-			ILPLinearExpression expr = ilpProblem.createLinearExpression();
 			variables.stream().forEach(v -> {
-				expr.addTerm("x" + v, 1.0);
+				ilpProblem.fixVariable("x" + v, false);
 			});
-			ilpProblem.addConstraint(expr, Comparator.le, 0.0, "EXCL_invKern" + nameCounter++);
 		}
 
 		HandleDependencies handleCycles = new HandleDependencies(appliedBundles, edgeToMarkingMatches,
@@ -214,11 +211,8 @@ public abstract class OPT extends OperationalStrategy {
 		for (int cycle : allCyclicBundles) {
 			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getRuleApplications(cycle));
 			for (List<Integer> variables : cyclicConstraints) {
-				ILPLinearExpression expr = ilpProblem.createLinearExpression();
-				variables.forEach(v -> {
-					expr.addTerm("x" + v, 1.0);
-				});
-				ilpProblem.addConstraint(expr, Comparator.le, variables.size() - 1, "EXCL_cycle" + nameCounter++);
+				ilpProblem.addExclusion(variables.stream().map(v -> "x" + v).collect(Collectors.toList()), 
+						"EXCL_cycle", variables.size() - 1);
 			}
 		}
 	}
