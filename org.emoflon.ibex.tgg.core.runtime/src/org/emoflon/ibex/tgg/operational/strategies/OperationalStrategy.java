@@ -165,11 +165,9 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		if (this.isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(ruleName, match)
 				&& matchIsValidIsomorphism(ruleName, match)) {
 			operationalMatchContainer.addMatch(ruleName, match);
-			if(options.debug())
-				logger.debug("Received and added " + match.getPatternName());
+			logger.debug("Received and added " + match.getPatternName());
 		} else
-			if(options.debug())
-				logger.debug("Received but rejected " + match.getPatternName());
+			logger.debug("Received but rejected " + match.getPatternName());
 	}
 
 	private boolean matchIsValidIsomorphism(String ruleName, IMatch match) {
@@ -255,8 +253,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Object[] matches = operationalMatchContainer.getMatches().toArray();
 		for (Object m : matches)
 			this.operationalMatchContainer.removeMatch((IMatch) m);
-		if(options.debug())
-			logger.debug("Removed black interpreter");
+
+		logger.debug("Removed black interpreter");
 	}
 
 	/**

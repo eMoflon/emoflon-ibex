@@ -21,13 +21,17 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 /**
- * This class is a wrapper that allows usage of the CBC solver (<href a="https://projects.coin-or.org/Cbc">https://projects.coin-or.org/Cbc</href>)<br>
+ * This class is a wrapper that allows usage of the CBC solver (<href a=
+ * "https://projects.coin-or.org/Cbc">https://projects.coin-or.org/Cbc</href>)<br>
  * 
- * The access is done using the Google Operations Research library which can be found at <href a="https://developers.google.com/optimization/">https://developers.google.com/optimization/</href>
+ * The access is done using the Google Operations Research library which can be
+ * found at <href a=
+ * "https://developers.google.com/optimization/">https://developers.google.com/optimization/</href>
+ * 
  * @author RobinO
  *
  */
-final class CBCWrapper extends ILPSolver{
+final class CBCWrapper extends ILPSolver {
 
 	/**
 	 * The solver model
@@ -40,18 +44,19 @@ final class CBCWrapper extends ILPSolver{
 	private final boolean onlyBinaryVariables;
 
 	/**
-	 * Mapping of the internally registered variables to the variable Ids of the problem
+	 * Mapping of the internally registered variables to the variable Ids of the
+	 * problem
 	 */
 	private final Int2ObjectOpenHashMap<MPVariable> variableIdToCBCVar = new Int2ObjectOpenHashMap<MPVariable>();
 
 	private static final int MIN_TIMEOUT = 30;
-	private static final int MAX_TIMEOUT = 60*60; //1 hour
+	private static final int MAX_TIMEOUT = 60 * 60; // 1 hour
 
 	/**
 	 * static loading of required library when loading class
 	 */
-	static { 
-		if(System.getProperty("os.name").startsWith("Windows")) {
+	static {
+		if (System.getProperty("os.name").startsWith("Windows")) {
 			final URL classResource = MPSolver.class.getResource(MPSolver.class.getSimpleName() + ".class");
 
 			final String url = classResource.toString();
@@ -63,7 +68,8 @@ final class CBCWrapper extends ILPSolver{
 			String path = base;
 
 			// remove the "jar:" prefix and "!/" suffix, if present
-			if (path.startsWith("jar:")) path = path.substring(4, path.length() - 2);
+			if (path.startsWith("jar:"))
+				path = path.substring(4, path.length() - 2);
 			try {
 				File jar = new File(new URI(path));
 				System.load(jar.getParent() + "/pthreadVC2.dll");
@@ -75,7 +81,9 @@ final class CBCWrapper extends ILPSolver{
 			try {
 				System.loadLibrary("jniortools");
 			} catch (Exception e) {
-				logger.error("Could not load library: jniortools \n The library can be obtained following the instructions at https://developers.google.com/optimization/introduction/installing/binary", e);
+				logger.error(
+						"Could not load library: jniortools \n The library can be obtained following the instructions at https://developers.google.com/optimization/introduction/installing/binary",
+						e);
 				throw e;
 			}
 		}
@@ -83,8 +91,11 @@ final class CBCWrapper extends ILPSolver{
 
 	/**
 	 * Creates a new CBCWrapper to solve the problem
-	 * @param ilpProblem The ILP to solve
-	 * @param onlyBinaryVariables Whether the problem contains only binary variables
+	 * 
+	 * @param ilpProblem
+	 *            The ILP to solve
+	 * @param onlyBinaryVariables
+	 *            Whether the problem contains only binary variables
 	 */
 	CBCWrapper(ILPProblem ilpProblem, boolean onlyBinaryVariables) {
 		super(ilpProblem);
@@ -94,9 +105,9 @@ final class CBCWrapper extends ILPSolver{
 	@Override
 	public ILPSolution solveILP() throws Exception {
 		logger.info(this.ilpProblem.getProblemInformation());
-		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
+		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().size();
 		currentTimeout = MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
-		if(currentTimeout < 0) {
+		if (currentTimeout < 0) {
 			currentTimeout = MAX_TIMEOUT;
 		}
 		currentTimeout = Math.min(currentTimeout, MAX_TIMEOUT);
@@ -113,25 +124,27 @@ final class CBCWrapper extends ILPSolver{
 	private void prepareModel() {
 		this.solver = new MPSolver("ILPSolver", MPSolver.OptimizationProblemType.CBC_MIXED_INTEGER_PROGRAMMING);
 
-		for(int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
+		for (int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			this.registerVariable(this.ilpProblem.getVariable(variableId), variableId);
 		}
-		for(ILPConstraint constraint : this.ilpProblem.getConstraints()) {
+		for (ILPConstraint constraint : this.ilpProblem.getConstraints()) {
 			registerConstraint(constraint);
 		}
 		registerObjective(this.ilpProblem.getObjective());
 	}
 
 	/**
-	 * Sloves the model using the CBC wrapper 
-	 * @param timeout Maximum time to take for solving the problem
+	 * Sloves the model using the CBC wrapper
+	 * 
+	 * @param timeout
+	 *            Maximum time to take for solving the problem
 	 * @return the result
 	 */
 	private ResultStatus solveModel(long timeout) {
 		this.solver.enableOutput();
 		int numberOfThreads = Runtime.getRuntime().availableProcessors();
 		this.solver.setSolverSpecificParametersAsString("-threads " + numberOfThreads + " -ratio 0.07");
-		logger.debug("Setting time-limit for each step to "+timeout+ " seconds.");
+		logger.debug("Setting time-limit for each step to " + timeout + " seconds.");
 		timeout *= 1000;
 		this.solver.setTimeLimit(timeout);
 		return this.solver.solve();
@@ -139,24 +152,26 @@ final class CBCWrapper extends ILPSolver{
 
 	/**
 	 * Retrieves the solution from the solver
-	 * @param result Result of the solving operation
+	 * 
+	 * @param result
+	 *            Result of the solving operation
 	 * @return the variable mapping and objective value
 	 * @throws InvalidAttributeValueException
 	 */
 	private ILPSolution retrieveSolution(ResultStatus result) throws InvalidAttributeValueException {
 		boolean optimal = result == ResultStatus.OPTIMAL;
 		boolean feasible = optimal || result == ResultStatus.FEASIBLE;
-		if (!feasible) { 
+		if (!feasible) {
 			logger.error("No optimal or feasible solution found.");
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
 
 		Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
 		double optimum = solver.objective().value();
-		logger.debug("CBC found solution: "+optimum + " - Optimal: "+optimal);
-		for(int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {
+		logger.debug("CBC found solution: " + optimum + " - Optimal: " + optimal);
+		for (int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			double value = this.variableIdToCBCVar.get(variable).solutionValue();
-			if(value != 0 && value != 1) {
+			if (value != 0 && value != 1) {
 				throw new InvalidAttributeValueException("Solution may only be 0 or 1");
 			}
 			variableSolutions.put(variable, (int) value);
@@ -168,12 +183,15 @@ final class CBCWrapper extends ILPSolver{
 
 	/**
 	 * Registers a variable at the solver
-	 * @param variable name of the variable
-	 * @param variableID ID of the variable
+	 * 
+	 * @param variable
+	 *            name of the variable
+	 * @param variableID
+	 *            ID of the variable
 	 */
 	private void registerVariable(String variable, int variableID) {
 		MPVariable var;
-		if(this.onlyBinaryVariables) {
+		if (this.onlyBinaryVariables) {
 			var = solver.makeBoolVar(variable);
 		} else {
 			var = solver.makeIntVar(-MPSolver.infinity(), MPSolver.infinity(), variable);
@@ -183,17 +201,19 @@ final class CBCWrapper extends ILPSolver{
 
 	/**
 	 * Registers a constraint at the solver
-	 * @param constraint the constrint to register
+	 * 
+	 * @param constraint
+	 *            the constrint to register
 	 */
-	private void registerConstraint(ILPConstraint constraint){
+	private void registerConstraint(ILPConstraint constraint) {
 		MPConstraint constr = solver.makeConstraint(constraint.getName());
 
-		for(int variableId : constraint.getLinearExpression().getVariables()) {
+		for (int variableId : constraint.getLinearExpression().getVariables()) {
 			double coefficient = constraint.getLinearExpression().getCoefficient(variableId);
 			constr.setCoefficient(variableIdToCBCVar.get(variableId), coefficient);
 		}
 
-		switch(constraint.getComparator()) {
+		switch (constraint.getComparator()) {
 		case ge:
 			constr.setBounds(constraint.getValue(), MPSolver.infinity());
 			break;
@@ -204,17 +224,19 @@ final class CBCWrapper extends ILPSolver{
 			constr.setBounds(constraint.getValue(), constraint.getValue());
 			break;
 		default:
-			throw new IllegalArgumentException("Unsupported comparator: "+constraint.getComparator().toString());
+			throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
 		}
 	}
 
 	/**
 	 * Registers the objective at the solver
-	 * @param objective the objective to register
+	 * 
+	 * @param objective
+	 *            the objective to register
 	 */
 	private void registerObjective(ILPObjective objective) {
 		MPObjective obj = solver.objective();
-		switch(objective.getObjectiveOperation()) {
+		switch (objective.getObjectiveOperation()) {
 		case maximize:
 			obj.setMaximization();
 			break;
@@ -222,10 +244,11 @@ final class CBCWrapper extends ILPSolver{
 			obj.setMinimization();
 			break;
 		default:
-			throw new IllegalArgumentException("Unsupported operation: "+objective.getObjectiveOperation().toString());
+			throw new IllegalArgumentException(
+					"Unsupported operation: " + objective.getObjectiveOperation().toString());
 		}
 
-		//define terms
+		// define terms
 		for (int variableId : objective.getLinearExpression().getVariables()) {
 			double coefficient = objective.getLinearExpression().getCoefficient(variableId);
 			obj.setCoefficient(variableIdToCBCVar.get(variableId), coefficient);

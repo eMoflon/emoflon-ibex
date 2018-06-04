@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
@@ -116,8 +117,8 @@ public class ILPProblem {
 	 * 
 	 * @return the variable IDs
 	 */
-	int[] getVariableIdsOfUnfixedVariables() {
-		return unfixedVariables.toIntArray();
+	Set<Integer> getVariableIdsOfUnfixedVariables() {
+		return Collections.unmodifiableSet(unfixedVariables);
 	}
 
 	/**
@@ -920,8 +921,8 @@ public class ILPProblem {
 		 * 
 		 * @return
 		 */
-		int[] getVariables() {
-			return this.terms.keySet().toIntArray();
+		Set<Integer> getVariables() {
+			return Collections.unmodifiableSet(this.terms.keySet());
 		}
 
 		/**
@@ -1095,7 +1096,7 @@ public class ILPProblem {
 		 * @return A string containing information about the solution size and value.
 		 */
 		String getSolutionInformation() {
-			int fixed = getVariables().size() - getVariableIdsOfUnfixedVariables().length;
+			int fixed = getVariables().size() - getVariableIdsOfUnfixedVariables().size();
 			return "Found solution for " + getVariables().size() + " variables (" + fixed
 					+ " prefixed). Solution value = " + solutionValue;
 		}
