@@ -40,7 +40,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
 	 * The folder for debugging output.
 	 */
-	protected Optional<String> debugPath = Optional.ofNullable(null);
+	protected Optional<String> debugPath = Optional.empty();
 
 	/**
 	 * The pattern set containing the patterns.
