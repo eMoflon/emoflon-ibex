@@ -138,9 +138,9 @@ public abstract class SYNC extends OperationalStrategy {
 		for (IMatch match : complementMatches) {
 			if (!isComplementMatchRelevant(match, comatch))
 				continue;
-			ObjectOpenHashSet<EObject> fusedNodes = comatch.getParameterNames().stream().map(n -> comatch.get(n))
+			ObjectOpenHashSet<EObject> fusedNodes = comatch.getParameterNames().stream().map(n -> (EObject) comatch.get(n))
 					.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
-			ObjectOpenHashSet<EObject> complementNodes = match.getParameterNames().stream().map(n -> match.get(n))
+			ObjectOpenHashSet<EObject> complementNodes = match.getParameterNames().stream().map(n -> (EObject) match.get(n))
 					.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
 
 			if (fusedNodes.containsAll(complementNodes))
@@ -223,7 +223,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 	private ObjectOpenHashSet<EObject> getContextNodesWithoutProtocolNode(IMatch match) {
 		ObjectOpenHashSet<EObject> contextNodes = match.getParameterNames().stream()
-				.filter(n -> !(match.get(n) instanceof TGGRuleApplication)).map(n -> match.get(n))
+				.filter(n -> !(match.get(n) instanceof TGGRuleApplication)).map(n -> (EObject) match.get(n))
 				.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
 		return contextNodes;
 	}

@@ -188,7 +188,7 @@ public abstract class CC extends OPT {
 	}
 
 	private ObjectOpenHashSet<EObject> getGenContextNodes(IMatch match) {
-		ObjectOpenHashSet<EObject> contextNodes = match.getParameterNames().stream().map(n -> match.get(n))
+		ObjectOpenHashSet<EObject> contextNodes = match.getParameterNames().stream().map(n -> (EObject) match.get(n))
 				.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
 		return contextNodes;
 	}

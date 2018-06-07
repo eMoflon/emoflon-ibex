@@ -77,7 +77,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			new EMFEdgeHashingStrategy());
 	protected Object2ObjectOpenHashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
 
-	protected IbexOptions options;
+	protected final IbexOptions options;
 
 	protected IBlackInterpreter blackInterpreter;
 	protected IGreenInterpreter greenInterpreter;

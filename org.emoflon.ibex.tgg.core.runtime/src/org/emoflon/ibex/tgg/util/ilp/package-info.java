@@ -1,6 +1,7 @@
 
 /**
- * This package contains classes used for solving ILP problems by different ILPSolvers 
+ * This package contains classes used for solving ILP problems by different
+ * ILPSolvers
  * 
  * @author Robin Oppermann
  *
