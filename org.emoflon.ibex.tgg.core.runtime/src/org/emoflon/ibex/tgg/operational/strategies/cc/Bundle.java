@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.cc;
 
+import java.util.Set;
+
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.utils.EMFEdge;
 import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
@@ -30,12 +32,12 @@ public class Bundle {
 	public void addMatch(int match) {
 		allMatches.add(match);
 	}
-
-	public void addBundleContextNodes(ObjectOpenHashSet<EObject> blackNodes) {
+	
+	public void addBundleContextNodes(Set<EObject> blackNodes) {
 		bundleContextNodes.addAll(blackNodes);
 	}
-
-	public void addBundleContextEdges(ObjectOpenHashSet<EMFEdge> blackEdges) {
+	
+	public void addBundleContextEdges(Set<EMFEdge> blackEdges) {
 		bundleContextEdges.addAll(blackEdges);
 	}
 

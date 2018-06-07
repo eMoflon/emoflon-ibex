@@ -16,7 +16,7 @@ import by.bsu.JVmipshell.Var;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-public class MIPCLWrapper extends ILPSolver {
+final class MIPCLWrapper extends ILPSolver {
 
 	static {
 		try {
@@ -59,7 +59,7 @@ public class MIPCLWrapper extends ILPSolver {
 	private static final int MAX_TIMEOUT = 60 * 60; // 1 hour
 
 	private MIPshell solver;
-	
+
 	private Int2ObjectOpenHashMap<Var> variableIdToMIPCLVar = new Int2ObjectOpenHashMap<Var>();
 
 	/**
@@ -82,12 +82,11 @@ public class MIPCLWrapper extends ILPSolver {
 
 	@Override
 	public ILPSolution solveILP() throws Exception {
-		System.out.println("The ILP to solve has " + this.ilpProblem.getConstraints().size() + " constraints and "
-				+ this.ilpProblem.getVariableIdsOfUnfixedVariables().length + " variables");
-		if(this.ilpProblem.getVariableIdsOfUnfixedVariables().length < 1) {
-			return this.ilpProblem.createILPSolution(new Int2IntOpenHashMap() , true, 0);
+		logger.info(ilpProblem.getProblemInformation());
+		if (this.ilpProblem.getVariableIdsOfUnfixedVariables().size() < 1) {
+			return this.ilpProblem.createILPSolution(new Int2IntOpenHashMap(), true, 0);
 		}
-		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().length;
+		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().size();
 		currentTimeout = MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		if (currentTimeout < 0) {
 			currentTimeout = MAX_TIMEOUT;
@@ -112,7 +111,7 @@ public class MIPCLWrapper extends ILPSolver {
 			registerConstraint(constraint);
 		}
 		registerObjective(this.ilpProblem.getObjective());
-//		solver._print();
+		// solver._print();
 	}
 
 	/**
@@ -123,10 +122,8 @@ public class MIPCLWrapper extends ILPSolver {
 	 * @return the result
 	 */
 	private void solveModel(long timeout) {
-		System.out.println("Solving problem with time limit " + timeout + " seconds");
+		logger.debug("Solving problem with time limit " + timeout + " seconds");
 		solver.optimize(false, timeout);
-//		solver.mipclModel();
-//		solver.optimize();
 	}
 
 	/**
@@ -140,22 +137,24 @@ public class MIPCLWrapper extends ILPSolver {
 	private ILPSolution retrieveSolution() throws InvalidAttributeValueException {
 		boolean optimal = solver.isSolutionOptimal();
 		boolean feasible = optimal || solver.isSolution();
-		if (!feasible) { 
-			System.err.println("No optimal or feasible solution found.");
+		if (!feasible) {
+			logger.error("No optimal or feasible solution found.");
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
-		
+
 		Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
 		double optimum = solver.getobjVal();
-		System.out.println("Solution found: "+optimum + " - Optimal: "+optimal);
-		for(int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {
+		logger.debug("MIPCL found solution: " + optimum + " - Optimal: " + optimal);
+		for (int variable : ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			double value = this.variableIdToMIPCLVar.get(variable).getval();
-			if(value != 0 && value != 1) {
+			if (value != 0 && value != 1) {
 				throw new InvalidAttributeValueException("Solution may only be 0 or 1");
 			}
 			variableSolutions.put(variable, (int) value);
 		}
-		return this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
+		ILPSolution solution = this.ilpProblem.createILPSolution(variableSolutions, optimal, optimum);
+		logger.info(solution.getSolutionInformation());
+		return solution;
 	}
 
 	/**
@@ -168,7 +167,7 @@ public class MIPCLWrapper extends ILPSolver {
 	 */
 	private void registerVariable(String variable, int variableID) {
 		Var var;
-		if(onlyBinaryVariables) {
+		if (onlyBinaryVariables) {
 			var = new Var(solver, variable, MIPshell.VAR_BIN, 0, 1);
 		} else {
 			var = new Var(solver, variable, MIPshell.VAR_INT, -MIPshell.VAR_INF, MIPshell.VAR_INF);
@@ -208,7 +207,7 @@ public class MIPCLWrapper extends ILPSolver {
 	 */
 	private void registerObjective(ILPObjective objective) {
 		LinSum linSum = createLinSum(objective.getLinearExpression());
-		
+
 		switch (objective.getObjectiveOperation()) {
 		case maximize:
 			solver.maximize(linSum);
@@ -221,7 +220,7 @@ public class MIPCLWrapper extends ILPSolver {
 					"Unsupported operation: " + objective.getObjectiveOperation().toString());
 		}
 	}
-	
+
 	private LinSum createLinSum(ILPLinearExpression linearExpression) {
 		LinSum linSum = new LinSum();
 		// define terms
