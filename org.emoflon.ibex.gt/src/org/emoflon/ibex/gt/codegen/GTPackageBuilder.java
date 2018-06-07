@@ -77,7 +77,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	public void run(final IProject project) {
 		this.project = project;
 		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
-			this.log("The build for GT projects only works for plugin projects.");
+			this.logError("The build for GT projects only works for plugin projects.");
 			return;
 		}
 
@@ -398,7 +398,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		dependencies.addAll(Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt"));
 		this.collectEngineExtensions().forEach(engine -> dependencies.addAll(engine.getDependencies()));
 
-		boolean changedBasics = ExtendedManifestFileUpdater.setBasics(manifest, this.project.getName());
+		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, this.project.getName());
 		if (changedBasics) {
 			this.log("Initialized MANIFEST.MF.");
 		}
@@ -420,7 +420,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private boolean processManifestForPackage(final Manifest manifest) {
 		String apiPackageName = (this.packageName.equals("") ? "" : this.packageName + ".") + "api";
-		boolean updateExports = ExtendedManifestFileUpdater.updateExports(manifest,
+		boolean updateExports = ManifestFileUpdater.updateExports(manifest,
 				Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules"));
 		if (updateExports) {
 			this.log("Updated exports");
