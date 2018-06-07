@@ -1,4 +1,4 @@
-package org.emoflon.ibex.common.utils;
+package org.emoflon.ibex.common.emf;
 
 import it.unimi.dsi.fastutil.Hash.Strategy;
 
