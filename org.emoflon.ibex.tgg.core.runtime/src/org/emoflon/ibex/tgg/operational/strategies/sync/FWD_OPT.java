@@ -129,7 +129,7 @@ public abstract class FWD_OPT extends OPT {
 	}
 
 	@Override
-	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
 	}

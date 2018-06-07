@@ -74,7 +74,7 @@ public abstract class CO extends CC {
 	 * @see org.emoflon.ibex.tgg.operational.strategies.OPT#getWeightForMatch(org.emoflon.ibex.tgg.operational.matches.IMatch, java.lang.String)
 	 */
 	@Override
-	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return super.getWeightForMatch(comatch, ruleName)
 				+ getGreenFactory(ruleName).getGreenCorrNodesInRule().size();
 	}

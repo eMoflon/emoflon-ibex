@@ -35,7 +35,7 @@ import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
 import com.google.common.collect.Sets;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntConsumer;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -62,7 +62,9 @@ public abstract class OPT extends OperationalStrategy {
 	protected Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> contextEdgeToNeedingMatches = new Object2ObjectOpenCustomHashMap<>(
 			new EMFEdgeHashingStrategy());
 	protected Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<EMFEdge>> matchToContextEdges = new Int2ObjectOpenHashMap<>();
-	protected Int2IntOpenHashMap matchToWeight = new Int2IntOpenHashMap();
+	protected Int2DoubleOpenHashMap matchToWeight = new Int2DoubleOpenHashMap();
+
+	private IWeightCalculationStrategy userDefinedWeightCalculationStrategy = null;
 
 	/**
 	 * Collection of constraints to guarantee uniqueness property; key: Complement
@@ -99,6 +101,17 @@ public abstract class OPT extends OperationalStrategy {
 
 	public OPT(IbexOptions options, IUpdatePolicy policy) {
 		super(options, policy);
+	}
+
+	/**
+	 * Sets a custom weight calculation strategy to be used when calculating weights
+	 * for matches. These weights are used for the optimization in the ILP problem
+	 * to choose matches.
+	 * 
+	 * @param strategy the user defined strategy to use
+	 */
+	public void setUserDefinedWeightCalculationStrategy(IWeightCalculationStrategy strategy) {
+		this.userDefinedWeightCalculationStrategy = strategy;
 	}
 
 	public void relaxReferences(EList<EPackage> model) {
@@ -211,7 +224,7 @@ public abstract class OPT extends OperationalStrategy {
 		for (int cycle : allCyclicBundles) {
 			Set<List<Integer>> cyclicConstraints = getCyclicConstraints(handleCycles.getRuleApplications(cycle));
 			for (List<Integer> variables : cyclicConstraints) {
-				ilpProblem.addExclusion(variables.stream().map(v -> "x" + v).collect(Collectors.toList()), 
+				ilpProblem.addExclusion(variables.stream().map(v -> "x" + v).collect(Collectors.toList()),
 						"EXCL_cycle" + nameCounter++, variables.size() - 1);
 			}
 		}
@@ -270,7 +283,7 @@ public abstract class OPT extends OperationalStrategy {
 	protected void defineILPObjective(BinaryILPProblem ilpProblem) {
 		ILPLinearExpression expr = ilpProblem.createLinearExpression();
 		matchToWeight.keySet().stream().forEach((IntConsumer) (v -> {
-			int weight = matchToWeight.get(v);
+			double weight = matchToWeight.get(v);
 			expr.addTerm("x" + v, weight);
 		}));
 		ilpProblem.setObjective(expr, Objective.maximize);
@@ -280,16 +293,16 @@ public abstract class OPT extends OperationalStrategy {
 		logger.debug("Creating ILP problem for " + idToMatch.size() + " matches");
 
 		BinaryILPProblem ilpProblem = ILPFactory.createBinaryILPProblem();
-		
+
 		logger.debug("Adding exclusions...");
 		defineILPExclusions(ilpProblem);
-		
+
 		logger.debug("Adding implications...");
 		defineILPImplications(ilpProblem);
 
 		logger.debug("Defining objective...");
 		defineILPObjective(ilpProblem);
-		
+
 		logger.debug("Adding user defined constraints...");
 		addUserDefinedConstraints(ilpProblem);
 
@@ -380,7 +393,31 @@ public abstract class OPT extends OperationalStrategy {
 				.map(comatch::get).map(EObject.class::cast).collect(Collectors.toList());
 	}
 
-	protected abstract int getWeightForMatch(IMatch comatch, String ruleName);
+	/**
+	 * Calculates the weight of the match to be used in the objective function of
+	 * the ILP. If a user defined weighting strategy is defined, it is used,
+	 * otherwise the strategie's default weighting is used
+	 * 
+	 * @param comatch  The match to calculate the weight for
+	 * @param ruleName The name of the rule
+	 * @return The calculated weight
+	 */
+	public final double getWeightForMatch(IMatch comatch, String ruleName) {
+		if (userDefinedWeightCalculationStrategy != null)
+			return userDefinedWeightCalculationStrategy.calculateWeight(ruleName, comatch);
+		return getDefaultWeightForMatch(comatch, ruleName);
+	}
+
+	/**
+	 * Calculates the weight of the match according to the strategie's default
+	 * strategy. This is only used if the user has not defined an own
+	 * WeightCalculationStrategy
+	 * 
+	 * @param comatch  The match to calculate the weight for
+	 * @param ruleName The name of the rule
+	 * @return The calculated weight
+	 */
+	public abstract double getDefaultWeightForMatch(IMatch comatch, String ruleName);
 
 	@Override
 	public Resource loadResource(String workspaceRelativePath) throws IOException {

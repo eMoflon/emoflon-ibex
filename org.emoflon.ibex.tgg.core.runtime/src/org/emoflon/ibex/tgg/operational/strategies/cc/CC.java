@@ -56,7 +56,7 @@ public abstract class CC extends OPT {
 	}
 
 	@Override
-	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size()
 				+ getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
