@@ -378,6 +378,7 @@ class DefaultFilesGenerator {
 
 	def static generateMetamodelRegistration() {
 		'''
+			@Override
 			protected void registerUserMetamodels() throws IOException {
 				_RegistrationHelper.registerMetamodels(rs, this);
 					
