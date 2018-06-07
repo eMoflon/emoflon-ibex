@@ -76,8 +76,8 @@ public interface IMatch {
 		if (!getPatternName().equals(match.getPatternName())) {
 			return false;
 		}
-		
-		if(getParameterNames().size() != match.getParameterNames().size()) {
+
+		if (getParameterNames().size() != match.getParameterNames().size()) {
 			return false;
 		}
 
@@ -87,7 +87,7 @@ public interface IMatch {
 				if (!get(parameterName).equals(match.get(parameterName))) {
 					return false;
 				}
-			} catch(Exception e) {
+			} catch (Exception e) {
 				return false;
 			}
 		}

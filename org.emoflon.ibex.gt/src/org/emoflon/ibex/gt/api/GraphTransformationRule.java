@@ -195,8 +195,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @return the match after rule application
 	 */
 	public final Optional<M> bindAndApply(final GraphTransformationMatch<?, ?> match) {
-		this.bind(match);
-		return this.apply();
+		return bindAndApply(match.toIMatch());
 	}
 
 	/**

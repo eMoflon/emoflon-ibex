@@ -286,8 +286,35 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 */
 	private void transformEdgeToPatternInvocation(final EditorReference editorReference,
 			final IBeXContextPattern ibexPattern) {
-		Optional<IBeXContextPattern> edgePatternOptional = createEdgePattern(editorReference.getType());
+		EditorNode sourceNode = EditorModelUtils.getSourceNode(editorReference);
+		EditorNode targetNode = editorReference.getTarget();
+		if (sourceNode == null || sourceNode.getName() == null) {
+			logError("Cannot resolve reference to source node.");
+			return;
+		}
+		if (targetNode == null || targetNode.getName() == null) {
+			logError("Cannot resolve reference to target node.");
+			return;
+		}
 
+		Optional<IBeXNode> ibexSourceNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, sourceNode.getName());
+		Optional<IBeXNode> ibexTargetNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, targetNode.getName());
+
+		if (!ibexSourceNode.isPresent()) {
+			logError("Could not find node %s!", sourceNode.getName());
+			return;
+		}
+		if (!ibexTargetNode.isPresent()) {
+			logError("Could not find node %s!", targetNode.getName());
+			return;
+		}
+
+		if (ibexSourceNode.get() == ibexTargetNode.get()) {
+			ibexPattern.getLocalEdges().add(transformEdge(editorReference, ibexPattern));
+			return;
+		}
+
+		Optional<IBeXContextPattern> edgePatternOptional = createEdgePattern(editorReference.getType());
 		if (!edgePatternOptional.isPresent()) {
 			logError("Cannot create edge pattern for type " + editorReference.getType().getName());
 			return;
@@ -303,35 +330,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			return;
 		}
 
-		EditorNode sourceNode = EditorModelUtils.getSourceNode(editorReference);
-		EditorNode targetNode = editorReference.getTarget();
-		if (sourceNode == null || sourceNode.getName() == null) {
-			logError("Cannot resolve reference to source node.");
-			return;
-		}
-		if (targetNode == null || targetNode.getName() == null) {
-			logError("Cannot resolve reference to target node.");
-			return;
-		}
-
-		Optional<IBeXNode> ibexLocalSourceNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern,
-				sourceNode.getName());
-		Optional<IBeXNode> ibexLocalTargetNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern,
-				targetNode.getName());
-
-		if (!ibexLocalSourceNode.isPresent()) {
-			logError("Could not find node %s!", sourceNode.getName());
-			return;
-		}
-		if (!ibexLocalTargetNode.isPresent()) {
-			logError("Could not find node %s!", targetNode.getName());
-			return;
-		}
-
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(true);
-		invocation.getMapping().put(ibexLocalSourceNode.get(), ibexSignatureSourceNode.get());
-		invocation.getMapping().put(ibexLocalTargetNode.get(), ibexSignatureTargetNode.get());
+		invocation.getMapping().put(ibexSourceNode.get(), ibexSignatureSourceNode.get());
+		invocation.getMapping().put(ibexTargetNode.get(), ibexSignatureTargetNode.get());
 		invocation.setInvokedPattern(edgePattern);
 		ibexPattern.getInvocations().add(invocation);
 	}
