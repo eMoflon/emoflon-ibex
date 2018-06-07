@@ -8,7 +8,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.moflon.core.utilities.MoflonUtil;
+import org.moflon.core.utilities.EcoreUtils;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -71,8 +71,8 @@ public class EdgePattern extends IbexBasePattern {
 					+ IbexPatternOptimiser.convertToString(trg.getAttrExpr()) + "_";
 		}
 
-		String name = MoflonUtil.getFQN(src.getType()) + "_" + MoflonUtil.getFQN(edge.getType()) + "_"
-				+ MoflonUtil.getFQN(trg.getType()) + "_" + attrExtension + PatternSuffixes.EDGE;
+		String name = EcoreUtils.getFQN(src.getType()) + "_" + EcoreUtils.getFQN(edge.getType()) + "_"
+				+ EcoreUtils.getFQN(trg.getType()) + "_" + attrExtension + PatternSuffixes.EDGE;
 
 		Collection<TGGRuleNode> signatureNodes = new ArrayList<TGGRuleNode>();
 		signatureNodes.add(src);
