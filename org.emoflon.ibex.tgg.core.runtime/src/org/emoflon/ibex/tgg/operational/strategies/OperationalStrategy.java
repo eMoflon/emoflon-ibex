@@ -579,4 +579,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	public IbexOptions getOptions() {
 		return options;
 	}
+	
+	public Logger getLogger() {
+		return logger;
+	}
 }
