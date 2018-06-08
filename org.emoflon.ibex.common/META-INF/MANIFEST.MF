@@ -35,7 +35,7 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
- org.moflon.core.utilities
+ org.moflon.core.utilities;visibility:=reexport
 Bundle-ClassPath: .,
  lib/fastutil-8.1.1.jar
 Automatic-Module-Name: org.emoflon.ibex.common
