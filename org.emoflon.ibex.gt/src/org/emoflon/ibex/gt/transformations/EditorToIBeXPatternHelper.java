@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.emoflon.ibex.common.utils.EcoreUtils;
-import org.emoflon.ibex.common.utils.IBeXPatternFactory;
-import org.emoflon.ibex.common.utils.IBeXPatternUtils;
+import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
+import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
+import org.moflon.core.utilities.EcoreUtils;
 
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXEdge;

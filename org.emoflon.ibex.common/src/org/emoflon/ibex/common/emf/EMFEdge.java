@@ -1,4 +1,4 @@
-package org.emoflon.ibex.common.utils;
+package org.emoflon.ibex.common.emf;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;

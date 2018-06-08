@@ -5,7 +5,7 @@
     <diagramTextProvider priority="3" providerClass="org.emoflon.ibex.common.visualization.IBeXPatternVisualizer"/>
   </extension>
   <extension point="org.moflon.emf.codegen.URIPreferenceExtension">
-    <uri_preference_extension class="org.emoflon.ibex.common.utils.URIPreferenceExtension"/>
+    <uri_preference_extension class="org.emoflon.ibex.common.ide.URIPreferenceExtension"/>
   </extension>
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="IBeXLanguage.IBeXLanguagePackage" genModel="model/Common.genmodel" uri="platform:/resource/org.emoflon.ibex.common/model/Common.ecore"/>

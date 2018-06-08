@@ -1,4 +1,4 @@
-package org.emoflon.ibex.common.utils;
+package org.emoflon.ibex.common.patterns;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;

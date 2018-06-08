@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.common.utils.EMFEdge;
-import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
+import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -74,7 +74,7 @@ public abstract class CC extends OPT {
 			return false;
 
 		if (operationalMatchContainer.getMatches().stream()
-				.allMatch(m -> m.getPatternName().contains(PatternSuffixes.GENForCC))) {
+				.allMatch(m -> m.getPatternName().contains(getGENPatternForMaximality()))) {
 			return false;
 		}
 
@@ -182,9 +182,9 @@ public abstract class CC extends OPT {
 	}
 
 	private String removeAllSuffixes(String name) {
-		if (name.indexOf(PatternSuffixes.GENForCC) == -1)
+		if (name.indexOf(getGENPatternForMaximality()) == -1)
 			return name;
-		return name.substring(0, name.indexOf(PatternSuffixes.GENForCC));
+		return name.substring(0, name.indexOf(getGENPatternForMaximality()));
 	}
 
 	private ObjectOpenHashSet<EObject> getGenContextNodes(IMatch match) {
@@ -198,7 +198,7 @@ public abstract class CC extends OPT {
 	 */
 	private Set<IMatch> findAllComplementRuleContextMatches() {
 		return operationalMatchContainer.getMatches().stream()
-				.filter(m -> m.getPatternName().contains(PatternSuffixes.GENForCC)).collect(Collectors.toSet());
+				.filter(m -> m.getPatternName().contains(getGENPatternForMaximality())).collect(Collectors.toSet());
 	}
 
 	/**
@@ -320,4 +320,13 @@ public abstract class CC extends OPT {
 		return result;
 	}
 
+	/**
+	 * Specifies, which GEN pattern is relevant to handle maximality with respect to
+	 * multi-amalgamation
+	 * 
+	 * @return name of the GEN pattern
+	 */
+	public String getGENPatternForMaximality() {
+		return PatternSuffixes.GENForCC;
+	}
 }

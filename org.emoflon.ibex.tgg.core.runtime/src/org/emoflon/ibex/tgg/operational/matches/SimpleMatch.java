@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational.matches;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.emoflon.ibex.common.utils.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFEdge;
 
 public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements IMatch {
 	private final Collection<EMFEdge> edges;

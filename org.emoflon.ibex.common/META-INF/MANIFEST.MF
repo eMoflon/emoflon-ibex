@@ -20,8 +20,9 @@ Export-Package: IBeXLanguage,
  it.unimi.dsi.fastutil.longs,
  it.unimi.dsi.fastutil.objects,
  it.unimi.dsi.fastutil.shorts,
+ org.emoflon.ibex.common.emf,
  org.emoflon.ibex.common.operational,
- org.emoflon.ibex.common.utils
+ org.emoflon.ibex.common.patterns
 Bundle-Localization: plugin
 Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.eclipse.jface,
@@ -34,7 +35,7 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
- org.moflon.core.utilities
+ org.moflon.core.utilities;visibility:=reexport
 Bundle-ClassPath: .,
  lib/fastutil-8.1.1.jar
 Automatic-Module-Name: org.emoflon.ibex.common
