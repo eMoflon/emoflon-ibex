@@ -8,10 +8,12 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCBlackPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.co.COBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCCPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.gen.GENForCOPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDFusedPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDOptBlackPattern;
@@ -59,7 +61,12 @@ public class BlackPatternCompiler {
 			factory.createBlackPattern(CCBlackPattern.class);
 			if (rule instanceof TGGComplementRule)
 				factory.createBlackPattern(GENForCCPattern.class);
-
+			
+			// Check only
+			factory.createBlackPattern(COBlackPattern.class);
+			if (rule instanceof TGGComplementRule)
+				factory.createBlackPattern(GENForCOPattern.class);
+			
 			// Synchronisation
 			factory.createBlackPattern(FWDBlackPattern.class);
 			factory.createBlackPattern(BWDBlackPattern.class);
