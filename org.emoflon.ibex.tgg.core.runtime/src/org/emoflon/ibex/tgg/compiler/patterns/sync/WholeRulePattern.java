@@ -20,11 +20,11 @@ public class WholeRulePattern extends IbexBasePattern {
 	public WholeRulePattern(BlackPatternFactory factory) {
 		super(factory);
 		initialise(factory.getFlattenedVersionOfRule());
-		createPatternNetwork();	
+		createPatternNetwork(factory);
 	}
 	
 	protected void initialise(TGGRule rule) {
-		String name = getName(rule.getName());
+		String name = name(rule.getName());
 
 		Collection<TGGRuleNode> signatureNodes = new ArrayList<>(rule.getNodes());
 		
@@ -34,11 +34,15 @@ public class WholeRulePattern extends IbexBasePattern {
 		super.initialise(name, signatureNodes, localNodes, localEdges);
 	}
 
+	public String name(String ruleName) {
+		return getName(ruleName);
+	}
+	
 	public static String getName(String ruleName) {
 		return ruleName + PatternSuffixes.WHOLE;
 	}
-
-	protected void createPatternNetwork() {
+	
+	protected void createPatternNetwork(BlackPatternFactory factory) {
 		addPositiveInvocation(factory.createBlackPattern(SrcPattern.class));
 		addPositiveInvocation(factory.createBlackPattern(TrgPattern.class));
 		addPositiveInvocation(factory.createBlackPattern(CorrPattern.class));

@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.cc.CCBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.co.COBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
@@ -36,6 +36,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	protected IbexOptions options;
 	protected List<TGGParamValue> variables = new ArrayList<>();
 	protected List<TGGAttributeConstraint> constraints = new ArrayList<>();
+	protected final static Logger logger = Logger.getLogger(GreenPatternFactory.class);
 
 	private Map<String, IGreenPattern> patterns;
 	private OperationalStrategy strategy;
@@ -127,8 +128,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		if (isBWDOptBlackPattern(patternName))
 			return createGreenPattern(BWDOptGreenPattern.class);
 
-		strategy.getLogger()
-				.debug("Did not find a black pattern for " + patternName + ". An empty green pattern is created!");
+		logger.debug("Did not find a black pattern for " + patternName + ". An empty green pattern is created!");
 		return createGreenPattern(EmptyGreenPattern.class);
 	}
 

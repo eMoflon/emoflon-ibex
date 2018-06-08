@@ -1,62 +1,53 @@
 package org.emoflon.ibex.tgg.compiler.patterns.co;
 
-import static org.emoflon.ibex.tgg.util.RuleRefinementUtil.checkInjectivityInSubRule;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
-
+import static org.emoflon.ibex.tgg.util.MAUtil.embedKernelRuleAppAndConsistencyPatternNodes;
+import static org.emoflon.ibex.tgg.util.MAUtil.isComplementRule;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.sync.WholeRulePattern;
 
 import language.DomainType;
+import language.TGGComplementRule;
 import language.TGGRule;
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
 
-public class COBlackPattern extends IbexBasePattern {
+public class COBlackPattern extends WholeRulePattern {
 	
 	public COBlackPattern(BlackPatternFactory factory) {
 		super(factory);
-		initialise(factory.getFlattenedVersionOfRule());
-		createPatternNetwork(factory);
 	}
 	
+	@Override
 	protected void initialise(TGGRule rule) {
-		String name = getName(rule.getName());
+		super.initialise(rule);
 		
-		Collection<TGGRuleNode> signatureNodes = rule.getNodes().stream()
-					   .filter(this::isSignatureNode)
-					   .collect(Collectors.toList());
-		
-		Collection<TGGRuleEdge> localEdges = Collections.emptyList();
-		
-		Collection<TGGRuleNode> localNodes = Collections.emptyList();
-		
-		super.initialise(name, signatureNodes, localNodes, localEdges);
+		if (isComplementRule(rule)) {
+			embedKernelRuleAppAndConsistencyPatternNodes((TGGComplementRule)rule, this);
+		}
 	}
-
-	public static String getName(String ruleName) {
-		return ruleName + PatternSuffixes.CO;
-	}
-
+	
+	@Override
 	protected void createPatternNetwork(BlackPatternFactory factory) {
-		addPositiveInvocation(factory.createBlackPattern(CORefinementPattern.class));
+		super.createPatternNetwork(factory);
+		
+		if (isComplementRule(factory.getRule())) {
+			TGGComplementRule compRule = (TGGComplementRule) factory.getRule();
+			addPositiveInvocation(factory.getFactory(compRule.getKernel()).createBlackPattern(ConsistencyPattern.class));
+		}
 		
 		if (factory.getOptions().getFilterNACStrategy() != FilterNACStrategy.NONE) {
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.SRC));
 			addPositiveInvocation(factory.createFilterACPatterns(DomainType.TRG));
 		}
 	}
-
-	private boolean isSignatureNode(TGGRuleNode n) {
-		return true;
-	}
 	
 	@Override
-	protected boolean injectivityIsAlreadyChecked(TGGRuleNode node1, TGGRuleNode node2) {
-		return checkInjectivityInSubRule(factory.getRule(), node1, node2);
+	public String name(String ruleName) {
+		return getName(ruleName);
+	}
+	
+	public static String getName(String ruleName) {
+		return ruleName + PatternSuffixes.CO;
 	}
 }
