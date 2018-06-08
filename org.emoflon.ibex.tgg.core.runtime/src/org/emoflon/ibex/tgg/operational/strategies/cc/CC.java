@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.common.utils.EMFEdge;
-import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
+import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;

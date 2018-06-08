@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.operational.matches;
 
 import java.util.Collection;
 
-import org.emoflon.ibex.common.utils.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFEdge;
 
 public interface IMatch extends org.emoflon.ibex.common.operational.IMatch {
 

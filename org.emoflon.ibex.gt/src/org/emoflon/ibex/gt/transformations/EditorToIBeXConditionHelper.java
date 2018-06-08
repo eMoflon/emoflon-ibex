@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.common.utils.IBeXPatternUtils;
+import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorApplicationCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorApplicationConditionType;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;

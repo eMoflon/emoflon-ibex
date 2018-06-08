@@ -3,8 +3,8 @@ package org.emoflon.ibex.tgg.operational.strategies.cc;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.common.utils.EMFEdge;
-import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
+import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;

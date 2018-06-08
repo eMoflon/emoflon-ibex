@@ -1,4 +1,4 @@
-package org.emoflon.ibex.common.utils;
+package org.emoflon.ibex.common.patterns;
 
 import java.util.ArrayList;
 import java.util.Comparator;

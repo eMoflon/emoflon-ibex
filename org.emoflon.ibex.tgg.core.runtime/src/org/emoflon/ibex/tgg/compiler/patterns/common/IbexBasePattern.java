@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EAttribute;
-import org.emoflon.ibex.common.utils.EcoreUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
+import org.moflon.core.utilities.EcoreUtils;
 
 import language.TGGRule;
 import language.TGGRuleCorr;
