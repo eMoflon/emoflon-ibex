@@ -1,4 +1,4 @@
-package org.emoflon.ibex.common.utils;
+package org.emoflon.ibex.common.ide;
 
 import org.moflon.core.preferences.PlatformUriType;
 

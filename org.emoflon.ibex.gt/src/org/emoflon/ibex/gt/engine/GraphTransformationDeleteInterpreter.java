@@ -11,11 +11,11 @@ import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentsEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
-import org.emoflon.ibex.common.utils.EMFEdge;
-import org.emoflon.ibex.common.utils.EMFManipulationUtils;
 
 import IBeXLanguage.IBeXDeletePattern;
 import IBeXLanguage.IBeXEdge;

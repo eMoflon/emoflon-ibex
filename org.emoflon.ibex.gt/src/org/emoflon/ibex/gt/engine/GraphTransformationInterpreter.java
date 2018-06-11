@@ -24,7 +24,7 @@ import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.operational.SimpleMatch;
-import org.emoflon.ibex.common.utils.IBeXPatternUtils;
+import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 
 import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXCreatePattern;

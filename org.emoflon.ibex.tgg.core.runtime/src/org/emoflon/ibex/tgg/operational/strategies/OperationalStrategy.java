@@ -19,9 +19,9 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.common.operational.IMatchObserver;
-import org.emoflon.ibex.common.utils.EMFEdge;
-import org.emoflon.ibex.common.utils.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
@@ -317,11 +317,13 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		RuntimePackageImpl.init();
 	}
 
-	public void loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
+	public EPackage loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
 		Resource res = loadResource(workspaceRelativePath);
 		EPackage pack = (EPackage) res.getContents().get(0);
 		rs.getPackageRegistry().put(res.getURI().toString(), pack);
+		rs.getPackageRegistry().put(pack.getNsURI(), pack);
 		rs.getResources().remove(res);
+		return pack;
 	}
 
 	public Resource loadResource(String workspaceRelativePath) throws IOException {

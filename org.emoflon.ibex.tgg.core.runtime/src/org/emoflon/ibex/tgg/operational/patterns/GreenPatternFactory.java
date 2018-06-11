@@ -17,7 +17,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDFusedPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDOptBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptBlackPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.WholeRulePattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 

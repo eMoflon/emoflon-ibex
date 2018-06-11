@@ -125,7 +125,10 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 			EObject entry = (EObject) comatch.get(cspVal.getLeft().getObjectVar().getName());
 			EAttribute attr = cspVal.getLeft().getAttribute();
 			EDataType type = attr.getEAttributeType();
-			entry.eSet(attr, coerceToType(type, cspVal.getRight()));
+			Object value = cspVal.getRight();
+			
+			if(value != null && type != null && attr != null)
+				entry.eSet(attr, coerceToType(type, value));
 		}
 	}
 
