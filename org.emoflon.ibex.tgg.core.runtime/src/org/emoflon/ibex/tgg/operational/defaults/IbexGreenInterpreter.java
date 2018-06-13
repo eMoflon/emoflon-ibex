@@ -103,7 +103,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
 					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
 					newObj.eSet(attrExpr.getAttribute(),
-							String2EPrimitive.convertString(attrExpr.getAttribute().getEType(), tle.getValue()));
+							String2EPrimitive.convertLiteral(tle.getValue(), attrExpr.getAttribute().getEAttributeType()));
 					continue;
 				}
 				if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
