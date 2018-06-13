@@ -6,15 +6,17 @@ import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
 
 class DefaultFilesGenerator {
 
-	static def String generateUserRuntimeAttrCondFactory(Collection<String> userDefConstraints) {
+	static def String generateUserRuntimeAttrCondFactory(Collection<String> userDefConstraints, String projectName) {
 		'''
-			package org.emoflon.ibex.tgg.operational.csp.constraints.factories;
+			package org.emoflon.ibex.tgg.operational.csp.constraints.factories.«projectName.toLowerCase»;
 			
 			import java.util.HashMap;
 			import java.util.HashSet;			
 			
+			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;			
+			
 			«FOR constraint : userDefConstraints»
-				import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«UserAttrCondHelper.getFileName(constraint)»;
+				import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«projectName.toLowerCase».«UserAttrCondHelper.getFileName(constraint)»;
 			«ENDFOR»
 			
 			public class UserDefinedRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
@@ -37,10 +39,11 @@ class DefaultFilesGenerator {
 		'''
 	}
 
-	static def generateUserAttrCondDefStub(TGGAttributeConstraintDefinition tacd) {
+	static def generateUserAttrCondDefStub(TGGAttributeConstraintDefinition tacd, String projectName) {
 		return '''
-			package org.emoflon.ibex.tgg.operational.csp.constraints.custom;
+			package org.emoflon.ibex.tgg.operational.csp.constraints.custom.«projectName.toLowerCase»;
 			
+			import org.emoflon.ibex.tgg.operational.csp.constraints.custom.
 			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
 			
@@ -396,7 +399,7 @@ class DefaultFilesGenerator {
 			import java.io.IOException;
 			
 			import org.eclipse.emf.ecore.resource.ResourceSet;
-			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
+			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.«projectName.toLowerCase».UserDefinedRuntimeTGGAttrConstraintFactory;
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 			

@@ -19,20 +19,23 @@ import language.csp.definition.TGGAttributeConstraintDefinition;
 
 public class AttrCondDefLibraryProvider {
 	private static final Logger logger = Logger.getLogger(AttrCondDefLibraryProvider.class);
-	private static final String USER_ATTR_COND_DEF_FACTORY_PATH = "src/org/emoflon/ibex/tgg/operational/csp/constraints/factories/UserDefinedRuntimeTGGAttrConstraintFactory.java";
-	private static final String USER_ATTR_CONDS_PATH = "src/org/emoflon/ibex/tgg/operational/csp/constraints/custom/";
-
+	private static final String USER_ATTR_PATH = "src/org/emoflon/ibex/tgg/operational/csp/constraints/";
+	private static final String USER_ATTR_COND_DEF_FACTORY_PATH = USER_ATTR_PATH + "factories/";
+	private static final String USER_ATTR_COND_DEF_FACTORY_NAME = "/UserDefinedRuntimeTGGAttrConstraintFactory.java";
+	private static final String USER_ATTR_CONDS_PATH = USER_ATTR_PATH + "custom/";
+	
+	
 	public static void userAttrCondDefFactory(IProject project, Collection<String> userDefConstraints) throws CoreException, IOException {
-		String path = USER_ATTR_COND_DEF_FACTORY_PATH;
-		String userLib = DefaultFilesGenerator.generateUserRuntimeAttrCondFactory(userDefConstraints);
+		String path = USER_ATTR_COND_DEF_FACTORY_PATH + project.getName().toLowerCase() + USER_ATTR_COND_DEF_FACTORY_NAME ;
+		String userLib = DefaultFilesGenerator.generateUserRuntimeAttrCondFactory(userDefConstraints, project.getName());
 		IPath pathToLib = new Path(path);
 		WorkspaceHelper.addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
 	}
 
 	public static void userAttrCondDefStubs(IProject project, Collection<TGGAttributeConstraintDefinition> userDefConstraints) throws CoreException, IOException {
 		for(TGGAttributeConstraintDefinition tacd : userDefConstraints) {
-			String path = USER_ATTR_CONDS_PATH + UserAttrCondHelper.getFileName(tacd.getName()) + ".java";
-			String userLib = DefaultFilesGenerator.generateUserAttrCondDefStub(tacd);
+			String path = USER_ATTR_CONDS_PATH + project.getName().toLowerCase() + "/" + UserAttrCondHelper.getFileName(tacd.getName()) + ".java";
+			String userLib = DefaultFilesGenerator.generateUserAttrCondDefStub(tacd, project.getName());
 			IPath pathToLib = new Path(path);
 			IFile userAttrLibFile = project.getFile(pathToLib);
 			if (!userAttrLibFile.exists()) {
