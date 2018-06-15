@@ -43,7 +43,6 @@ class DefaultFilesGenerator {
 		return '''
 			package org.emoflon.ibex.tgg.operational.csp.constraints.custom.«projectName.toLowerCase»;
 			
-			import org.emoflon.ibex.tgg.operational.csp.constraints.custom.
 			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
 			
