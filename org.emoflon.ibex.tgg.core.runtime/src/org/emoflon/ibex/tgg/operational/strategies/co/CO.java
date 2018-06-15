@@ -28,13 +28,6 @@ public abstract class CO extends CC {
 	}
 
 	@Override
-	public void run() throws IOException {
-		blackInterpreter.updateMatches();
-		while (processOneOperationalRuleMatch());
-		wrapUp();
-	}
-
-	@Override
 	protected void wrapUp() {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
 
