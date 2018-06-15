@@ -235,5 +235,9 @@ public abstract class SYNC extends OperationalStrategy {
 
 		return allComplementRuleMatches;
 	}
+	
+	public SYNC_Strategy getStrategy() {
+		return strategy;
+	}
 
 }

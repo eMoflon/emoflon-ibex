@@ -38,6 +38,8 @@ import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.repair.RepairStrategyController;
+import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 
@@ -73,9 +75,13 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 
-	protected ObjectOpenCustomHashSet<EMFEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(
+	private RepairStrategyController repairController;
+	
+	protected Set<EMFEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(
 			new EMFEdgeHashingStrategy());
-	protected Object2ObjectOpenHashMap<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
+	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
+	protected Map<TGGRuleApplication, IMatch> repairCandidates = new Object2ObjectOpenHashMap<>();
+	protected Map<TGGRuleApplication, IMatch> recentConsistencyMatches = new Object2ObjectOpenHashMap<>();
 
 	protected final IbexOptions options;
 
@@ -104,6 +110,14 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		greenInterpreter = new IbexGreenInterpreter(this);
 		redInterpreter = new IbexRedInterpreter(this);
+	}
+	
+	private void initializeRepairStrategies(IbexOptions options) {
+		repairController = new RepairStrategyController(this);
+
+		if(options.repairAttributes()) {
+			repairController.registerStrategy(new AttributeRepairStrategy(this, factories));
+		}
 	}
 
 	@Override
@@ -142,6 +156,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		loadTGG();
 		initialiseBlackInterpreter();
 		loadModels();
+		initializeRepairStrategies(options);
 
 		this.trash = createResource("instances/trash.xmi");
 		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
@@ -162,12 +177,21 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	public void addOperationalRuleMatch(String ruleName, IMatch match) {
+		addMatchToRecentConsistencyMatches(match);
 		if (this.isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(ruleName, match)
 				&& matchIsValidIsomorphism(ruleName, match)) {
 			operationalMatchContainer.addMatch(ruleName, match);
 			logger.debug("Received and added " + match.getPatternName());
 		} else
 			logger.debug("Received but rejected " + match.getPatternName());
+	}
+	
+	private void addMatchToRecentConsistencyMatches(IMatch match) {
+		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
+			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match
+					.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
+			recentConsistencyMatches.put(ruleAppNode, match);
+		}
 	}
 
 	private boolean matchIsValidIsomorphism(String ruleName, IMatch match) {
@@ -341,14 +365,31 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	public void run() throws IOException {
 		do {
-			blackInterpreter.updateMatches();
+			attemptBrokenMatchRepair();
 		} while (processBrokenMatches());
-
+		
 		do {
 			blackInterpreter.updateMatches();
 		} while (processOneOperationalRuleMatch());
 
 		wrapUp();
+	}
+	
+	private boolean attemptBrokenMatchRepair() {
+		recentConsistencyMatches.clear();
+
+		// attempt to repair matches 
+		blackInterpreter.updateMatches();
+		repairController.repairMatches(repairCandidates);
+		
+		// check if new matches show succession of former repair steps
+		if(repairController.repairCandidatesPending()) {
+			blackInterpreter.updateMatches();
+			repairController.repairsSuccessful(recentConsistencyMatches);
+		}
+		// transfer still broken matches to collection of broken applications that will be removed
+		brokenRuleApplications = repairController.getBrokenRuleApplications();
+		return true;
 	}
 
 	protected boolean processOneOperationalRuleMatch() {
@@ -444,7 +485,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	public void addBrokenMatch(IMatch match) {
 		TGGRuleApplication ra = getRuleApplicationNode(match);
-		brokenRuleApplications.put(ra, match);
+		repairCandidates.put(ra, match);
 	}
 
 	protected boolean processBrokenMatches() {
