@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
 import org.moflon.core.utilities.LogUtils;
+import org.moflon.core.utilities.MoflonUtil;
 import org.moflon.tgg.mosl.tgg.Adornment;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
@@ -82,7 +83,7 @@ public class EditorTGGtoInternalTGG {
 	private HashMap<EObject, EObject> xtextToTGG = new HashMap<>();
 	private HashMap<EObject, EObject> tggToXtext = new HashMap<>();
 	private HashMap<String, EObject> xTextCorrToCorrClass = new HashMap<>();
-	
+
 	private static final Logger logger = Logger.getLogger(EditorTGGtoInternalTGG.class);
 	public static final String INTERNAL_TGG_MODEL = EditorTGGtoInternalTGG.class.getName();
 
@@ -94,31 +95,40 @@ public class EditorTGGtoInternalTGG {
 		flattenedTgg.setCorr(corrPackage);
 		return new TGGProject(corrPackage, tgg, flattenedTgg);
 	}
-	
-	public Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG, TripleGraphGrammarFile flattenedXtextParsedTGG, IProject project) {
+
+	public Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG,
+			TripleGraphGrammarFile flattenedXtextParsedTGG, IProject project) {
 		Optional<TGGProject> tggProject = Optional.of(convertXtextTGG(xtextParsedTGG, flattenedXtextParsedTGG));
 
 		tggProject.ifPresent(p -> {
 			try {
 				ResourceSet rs = xtextParsedTGG.eResource().getResourceSet();
-				IFile corrFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.ECORE_FILE_EXTENSION);
+				IFile corrFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER)//
+						.getFile(getNameOfGeneratedFile(project) + IbexTGGBuilder.ECORE_FILE_EXTENSION);
 				IbexTGGBuilder.saveModelInProject(corrFile, rs, p.getCorrPackage());
-				IFile tggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.INTERNAL_TGG_MODEL_EXTENSION);
+				IFile tggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER)//
+						.getFile(getNameOfGeneratedFile(project) + IbexTGGBuilder.INTERNAL_TGG_MODEL_EXTENSION);
 				IbexTGGBuilder.saveModelInProject(tggFile, rs, p.getTggModel());
-				IFile flattenedTggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(project.getName() + IbexTGGBuilder.INTERNAL_TGG_FLATTENED_MODEL_EXTENSION);
+				IFile flattenedTggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER)//
+						.getFile(getNameOfGeneratedFile(project)
+								+ IbexTGGBuilder.INTERNAL_TGG_FLATTENED_MODEL_EXTENSION);
 				IbexTGGBuilder.saveModelInProject(flattenedTggFile, rs, p.getFlattenedTggModel());
 			} catch (IOException e) {
 				LogUtils.error(logger, e);
 			}
 		});
-		
+
 		return tggProject;
+	}
+
+	private String getNameOfGeneratedFile(IProject project) {
+		return MoflonUtil.lastCapitalizedSegmentOf(project.getName());
 	}
 
 	private TGG createTGG(TripleGraphGrammarFile xtextTGG) {
 		xtextToTGG = new HashMap<>();
 		tggToXtext = new HashMap<>();
-		
+
 		TGG tgg = tggFactory.createTGG();
 		tgg.setName(xtextTGG.getSchema().getName());
 		tgg.getSrc().addAll(xtextTGG.getSchema().getSourceTypes());
@@ -127,7 +137,7 @@ public class EditorTGGtoInternalTGG {
 				createAttributeConditionDefinitionLibrary(xtextTGG.getSchema().getAttributeCondDefs()));
 
 		map(xtextTGG, tgg);
-		
+
 		translateXTextRulesToTGGRules(xtextTGG, tgg);
 		translateXTextRuleRefinementsToTGGRuleRefinements(xtextTGG, tgg);
 		translateXTextComplementRulesToTGGComplementRules(xtextTGG, tgg);
@@ -137,8 +147,8 @@ public class EditorTGGtoInternalTGG {
 
 		return tgg;
 	}
-	
-	private void translateXTextRulesToTGGRules(TripleGraphGrammarFile xtextTGG, TGG tgg) {	
+
+	private void translateXTextRulesToTGGRules(TripleGraphGrammarFile xtextTGG, TGG tgg) {
 		for (Rule xtextRule : xtextTGG.getRules()) {
 			TGGRule tggRule = tggFactory.createTGGRule();
 			tggRule.setName(xtextRule.getName());
@@ -155,34 +165,33 @@ public class EditorTGGtoInternalTGG {
 			tggRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextRule.getAttrConditions()));
 		}
 	}
-	
+
 	private void translateXTextRuleRefinementsToTGGRuleRefinements(TripleGraphGrammarFile xtextTGG, TGG tgg) {
-        for (TGGRule tggRule : tgg.getRules()) {
-            tggRule.getRefines().addAll(((Rule)tggToXtext.get(tggRule)).getSupertypes().stream()
-                                                                 .map(r -> (TGGRule)xtextToTGG.get(r))
-                                                                 .collect(Collectors.toList()));
-        }
+		for (TGGRule tggRule : tgg.getRules()) {
+			tggRule.getRefines().addAll(((Rule) tggToXtext.get(tggRule)).getSupertypes().stream()
+					.map(r -> (TGGRule) xtextToTGG.get(r)).collect(Collectors.toList()));
+		}
 	}
 
 	private void translateXTextNacsToTGGNacs(TripleGraphGrammarFile xtextTGG, TGG tgg) {
-        for (Nac xtextNac : xtextTGG.getNacs()) {
+		for (Nac xtextNac : xtextTGG.getNacs()) {
 			NAC tggNac = LanguageFactory.eINSTANCE.createNAC();
 			tggNac.setName(xtextNac.getName());
 			TGGRule rule = (TGGRule) xtextToTGG.get(xtextNac.getRule());
 			rule.getNacs().add(tggNac);
 			map(xtextNac, tggNac);
-			
+
 			tggNac.getNodes().addAll(createTGGRuleNodes(toOVPatterns(xtextNac.getSourcePatterns()), DomainType.SRC));
 			tggNac.getNodes().addAll(createTGGRuleNodes(toOVPatterns(xtextNac.getTargetPatterns()), DomainType.TRG));
-			
+
 			tggNac.getEdges().addAll(createTGGRuleEdges(tggNac.getNodes()));
-			
+
 			tggNac.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextNac.getAttrConditions()));
-		}	
+		}
 	}
 
 	private void translateXTextComplementRulesToTGGComplementRules(TripleGraphGrammarFile xtextTGG, TGG tgg) {
-        for (ComplementRule xtextCompRule : xtextTGG.getComplementRules()) {
+		for (ComplementRule xtextCompRule : xtextTGG.getComplementRules()) {
 			TGGComplementRule tggComplementRule = tggFactory.createTGGComplementRule();
 			tggComplementRule.setName(xtextCompRule.getName());
 			TGGRule kernel = (TGGRule) xtextToTGG.get(xtextCompRule.getKernel());
@@ -192,35 +201,35 @@ public class EditorTGGtoInternalTGG {
 
 			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getSourcePatterns(), DomainType.SRC));
 			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getTargetPatterns(), DomainType.TRG));
-			tggComplementRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextCompRule.getCorrespondencePatterns()));
+			tggComplementRule.getNodes()
+					.addAll(createTGGRuleNodesFromCorrOVs(xtextCompRule.getCorrespondencePatterns()));
 
 			tggComplementRule.getEdges().addAll(createTGGRuleEdges(tggComplementRule.getNodes()));
 
-			tggComplementRule.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
-		
-			tggComplementRule.setBounded(hasAdditionalContext(tggComplementRule));	
-        }
+			tggComplementRule
+					.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
+
+			tggComplementRule.setBounded(hasAdditionalContext(tggComplementRule));
+		}
 	}
 
 	private boolean hasAdditionalContext(TGGComplementRule tggComplementRule) {
 		Collection<TGGRuleNode> contextComplementRuleNodes = tggComplementRule.getNodes().stream()
-				.filter(n -> n.getBindingType().equals(BindingType.CONTEXT))
-				.collect(Collectors.toSet());
+				.filter(n -> n.getBindingType().equals(BindingType.CONTEXT)).collect(Collectors.toSet());
 		Collection<TGGRuleNode> kernelNodes = tggComplementRule.getKernel().getNodes();
 		for (TGGRuleNode node : contextComplementRuleNodes) {
-			if(kernelNodes.stream().noneMatch(cn -> cn.getName().equals(node.getName())))
+			if (kernelNodes.stream().noneMatch(cn -> cn.getName().equals(node.getName())))
 				return true;
 		}
 		return false;
 	}
 
 	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {
-		return patterns.stream()
-				.map(p -> toOVPattern(p))
-				.collect(Collectors.toList());
+		return patterns.stream().map(p -> toOVPattern(p)).collect(Collectors.toList());
 	}
 
 	private HashMap<ContextObjectVariablePattern, ObjectVariablePattern> cOVtoOV = new HashMap<>();
+
 	private ObjectVariablePattern toOVPattern(ContextObjectVariablePattern cp) {
 		if (!cOVtoOV.containsKey(cp)) {
 			ObjectVariablePattern ovP = TggFactory.eINSTANCE.createObjectVariablePattern();
@@ -230,14 +239,13 @@ public class EditorTGGtoInternalTGG {
 			ovP.getAttributeConstraints().addAll(cp.getAttributeConstraints());
 			ovP.getLinkVariablePatterns().addAll(toLPPatterns(cp.getLinkVariablePatterns()));
 		}
-		
+
 		return cOVtoOV.get(cp);
 	}
 
-	private Collection<? extends LinkVariablePattern> toLPPatterns(Collection<ContextLinkVariablePattern> linkVariablePatterns) {
-		return linkVariablePatterns.stream()
-				.map(p -> toLVPattern(p))
-				.collect(Collectors.toList());
+	private Collection<? extends LinkVariablePattern> toLPPatterns(
+			Collection<ContextLinkVariablePattern> linkVariablePatterns) {
+		return linkVariablePatterns.stream().map(p -> toLVPattern(p)).collect(Collectors.toList());
 	}
 
 	private LinkVariablePattern toLVPattern(ContextLinkVariablePattern p) {
@@ -480,7 +488,6 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private EPackage createCorrModel(TripleGraphGrammarFile xtextTGG) {
-
 		EPackage corrModel = ecoreFactory.createEPackage();
 
 		corrModel.setName(xtextTGG.getSchema().getName());
@@ -494,7 +501,8 @@ public class EditorTGGtoInternalTGG {
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
 
 			if (ct.getSuper() != null) {
-				((EClass) xTextCorrToCorrClass.get(ct.getName())).getESuperTypes().add((EClass) xTextCorrToCorrClass.get(ct.getSuper().getName()));
+				((EClass) xTextCorrToCorrClass.get(ct.getName())).getESuperTypes()
+						.add((EClass) xTextCorrToCorrClass.get(ct.getSuper().getName()));
 			}
 		}
 
@@ -522,7 +530,7 @@ public class EditorTGGtoInternalTGG {
 			trgRef.setEType(ct.getTarget());
 			corrClass.getEStructuralFeatures().add(trgRef);
 		}
-		
+
 		xTextCorrToCorrClass.put(ct.getName(), corrClass);
 
 		return corrClass;

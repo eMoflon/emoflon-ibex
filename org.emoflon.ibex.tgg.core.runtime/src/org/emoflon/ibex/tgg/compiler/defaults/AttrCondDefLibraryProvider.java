@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.emoflon.ibex.tgg.core.transformation.TGGProject;
 import org.moflon.core.utilities.LogUtils;
+import org.moflon.core.utilities.MoflonUtil;
 import org.moflon.core.utilities.WorkspaceHelper;
 
 import language.csp.definition.TGGAttributeConstraintDefinition;
@@ -26,16 +27,16 @@ public class AttrCondDefLibraryProvider {
 	
 	
 	public static void userAttrCondDefFactory(IProject project, Collection<String> userDefConstraints) throws CoreException, IOException {
-		String path = USER_ATTR_COND_DEF_FACTORY_PATH + project.getName().toLowerCase() + USER_ATTR_COND_DEF_FACTORY_NAME ;
-		String userLib = DefaultFilesGenerator.generateUserRuntimeAttrCondFactory(userDefConstraints, project.getName());
+		String path = USER_ATTR_COND_DEF_FACTORY_PATH + MoflonUtil.lastCapitalizedSegmentOf(project.getName()).toLowerCase() + USER_ATTR_COND_DEF_FACTORY_NAME ;
+		String userLib = DefaultFilesGenerator.generateUserRuntimeAttrCondFactory(userDefConstraints, MoflonUtil.lastCapitalizedSegmentOf(project.getName()));
 		IPath pathToLib = new Path(path);
 		WorkspaceHelper.addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
 	}
 
 	public static void userAttrCondDefStubs(IProject project, Collection<TGGAttributeConstraintDefinition> userDefConstraints) throws CoreException, IOException {
 		for(TGGAttributeConstraintDefinition tacd : userDefConstraints) {
-			String path = USER_ATTR_CONDS_PATH + project.getName().toLowerCase() + "/" + UserAttrCondHelper.getFileName(tacd.getName()) + ".java";
-			String userLib = DefaultFilesGenerator.generateUserAttrCondDefStub(tacd, project.getName());
+			String path = USER_ATTR_CONDS_PATH + MoflonUtil.lastCapitalizedSegmentOf(project.getName()).toLowerCase() + "/" + UserAttrCondHelper.getFileName(tacd.getName()) + ".java";
+			String userLib = DefaultFilesGenerator.generateUserAttrCondDefStub(tacd, MoflonUtil.lastCapitalizedSegmentOf(project.getName()));
 			IPath pathToLib = new Path(path);
 			IFile userAttrLibFile = project.getFile(pathToLib);
 			if (!userAttrLibFile.exists()) {
