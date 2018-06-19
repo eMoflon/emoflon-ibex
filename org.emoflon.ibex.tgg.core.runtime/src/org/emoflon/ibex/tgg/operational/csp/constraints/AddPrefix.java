@@ -23,42 +23,42 @@ public class AddPrefix extends RuntimeTGGAttributeConstraint {
 
 		// BBB - check prefix
 		if (bindingStates.equals("BBB")) {
-			setSatisfied(((String) prefix.getValue() + word.getValue()).equals(result.getValue()));
+			setSatisfied(("" + prefix.getValue() + word.getValue()).equals(result.getValue()));
 		}
 		// BBF - add prefix
 		else if (bindingStates.equals("BBF")) {
-			result.bindToValue((String) prefix.getValue() + word.getValue());
+			result.bindToValue("" + prefix.getValue() + word.getValue());
 			setSatisfied(true);
 		}
 		// BFB - remove prefix
 		else if (bindingStates.equals("BFB")) {
-			if (((String) result.getValue()).startsWith((String) prefix.getValue())) {
-				word.bindToValue(((String) result.getValue()).substring(((String) prefix.getValue()).length()));
+			if (("" + result.getValue()).startsWith("" + prefix.getValue())) {
+				word.bindToValue(("" + result.getValue()).substring(("" + prefix.getValue()).length()));
 				setSatisfied(true);
 			}
 		}
 		// FBB - determine prefix
 		else if (bindingStates.equals("FBB")) {
-			if (((String) result.getValue()).endsWith((String) word.getValue())) {
-				prefix.bindToValue(((String) result.getValue()).substring(0,
-						((String) result.getValue()).length() - ((String) word.getValue()).length()));
+			if (("" + result.getValue()).endsWith("" + word.getValue())) {
+				prefix.bindToValue(("" + result.getValue()).substring(0,
+						("" + result.getValue()).length() - ("" + word.getValue()).length()));
 				setSatisfied(true);
 			}
 		}
 		// modelgen implementations
 		else if (bindingStates.equals("BFF")) {
-			String randomWord = (String) generateValue(word.getType());
+			String randomWord = "" + generateValue(word.getType());
 			word.bindToValue(randomWord);
 			result.bindToValue(prefix.getValue() + randomWord);
 			setSatisfied(true);
 		} else if (bindingStates.equals("FFF")) {
-			String randomWord = (String) generateValue(word.getType());
+			String randomWord = "" + generateValue(word.getType());
 			prefix.bindToValue("prefix");
 			word.bindToValue(randomWord);
 			result.bindToValue(prefix.getValue() + randomWord);
 			setSatisfied(true);
 		} else if (bindingStates.equals("FBF")) {
-			String randomWord = (String) generateValue(prefix.getType());
+			String randomWord = "" + generateValue(prefix.getType());
 			prefix.bindToValue(randomWord);
 			result.bindToValue(prefix.getValue().toString() + word.getValue());
 			setSatisfied(true);
