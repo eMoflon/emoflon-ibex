@@ -87,8 +87,8 @@ public class EditorTGGtoInternalTGG {
 	private static final Logger logger = Logger.getLogger(EditorTGGtoInternalTGG.class);
 	public static final String INTERNAL_TGG_MODEL = EditorTGGtoInternalTGG.class.getName();
 
-	private TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG, TripleGraphGrammarFile flattenedXtextTGG) {
-		EPackage corrPackage = createCorrModel(xtextTGG);
+	private TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG, TripleGraphGrammarFile flattenedXtextTGG, IProject project) {
+		EPackage corrPackage = createCorrModel(xtextTGG, project);
 		TGG tgg = createTGG(xtextTGG);
 		TGG flattenedTgg = createTGG(flattenedXtextTGG);
 		tgg.setCorr(corrPackage);
@@ -98,7 +98,7 @@ public class EditorTGGtoInternalTGG {
 
 	public Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG,
 			TripleGraphGrammarFile flattenedXtextParsedTGG, IProject project) {
-		Optional<TGGProject> tggProject = Optional.of(convertXtextTGG(xtextParsedTGG, flattenedXtextParsedTGG));
+		Optional<TGGProject> tggProject = Optional.of(convertXtextTGG(xtextParsedTGG, flattenedXtextParsedTGG, project));
 
 		tggProject.ifPresent(p -> {
 			try {
@@ -487,12 +487,12 @@ public class EditorTGGtoInternalTGG {
 		return null;
 	}
 
-	private EPackage createCorrModel(TripleGraphGrammarFile xtextTGG) {
+	private EPackage createCorrModel(TripleGraphGrammarFile xtextTGG, IProject project) {
 		EPackage corrModel = ecoreFactory.createEPackage();
 
 		corrModel.setName(xtextTGG.getSchema().getName());
 		corrModel.setNsPrefix(xtextTGG.getSchema().getName());
-		corrModel.setNsURI("platform:/resource/" + corrModel.getName() + "/model/" + corrModel.getName() + ".ecore");
+		corrModel.setNsURI("platform:/resource/" + project.getName() + "/model/" + corrModel.getName() + ".ecore");
 
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
 			corrModel.getEClassifiers().add(createEClass(ct));

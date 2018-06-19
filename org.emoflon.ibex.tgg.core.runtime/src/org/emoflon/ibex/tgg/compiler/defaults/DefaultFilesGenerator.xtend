@@ -44,7 +44,6 @@ class DefaultFilesGenerator {
 		return '''
 			package org.emoflon.ibex.tgg.operational.csp.constraints.custom.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
 			
-			import org.emoflon.ibex.tgg.operational.csp.constraints.custom.
 			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
 			
@@ -415,7 +414,7 @@ class DefaultFilesGenerator {
 				/** Create default options **/
 				public static IbexOptions createIbexOptions() {
 					IbexOptions options = new IbexOptions();
-					options.projectName("«projectName»");
+					options.projectName("«MoflonUtil.lastCapitalizedSegmentOf(projectName)»");
 					options.projectPath("«projectName»");
 					options.debug(false);
 					options.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
