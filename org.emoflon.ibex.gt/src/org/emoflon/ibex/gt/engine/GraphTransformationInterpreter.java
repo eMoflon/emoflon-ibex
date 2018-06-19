@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -299,65 +300,23 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
-	 * Finds a match for the pattern.
-	 * 
-	 * @param patternName
-	 *            the name of the pattern
-	 * @return an {@link Optional} for the match
-	 */
-	public Optional<IMatch> findAnyMatch(final String patternName) {
-		return this.findAnyMatch(patternName, new HashMap<String, Object>());
-	}
-
-	/**
-	 * Finds a match for the pattern.
-	 * 
-	 * @param patternName
-	 *            the name of the pattern
-	 * @param parameters
-	 *            the parameters
-	 * @return an {@link Optional} for the match
-	 */
-	public Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters) {
-		this.updateMatches();
-
-		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
-		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
-			return Optional.of(this.createEmptyMatchForCreatePattern(patternName));
-		}
-
-		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches).findAny();
-	}
-
-	/**
-	 * Finds all matches for the pattern.
-	 * 
-	 * @param patternName
-	 *            the name of the pattern
-	 * @return a {@link Collection} of matches
-	 */
-	public Collection<IMatch> findMatches(final String patternName) {
-		return this.findMatches(patternName, new HashMap<String, Object>());
-	}
-
-	/**
 	 * Finds all matches for the pattern.
 	 * 
 	 * @param patternName
 	 *            the name of the pattern
 	 * @param parameters
 	 *            the parameters
-	 * @return a {@link Collection} of matches
+	 * @return a {@link Stream} of matches
 	 */
-	public Collection<IMatch> findMatches(final String patternName, final Map<String, Object> parameters) {
+	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
 		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
-			return Arrays.asList(this.createEmptyMatchForCreatePattern(patternName));
+			return Stream.of(this.createEmptyMatchForCreatePattern(patternName));
 		}
 
-		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches).collect(Collectors.toList());
+		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches);
 	}
 
 	/**
