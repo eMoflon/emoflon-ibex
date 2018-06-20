@@ -37,11 +37,6 @@ import IBeXLanguage.IBeXPatternSet;
  */
 public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
-	 * The folder for debugging output.
-	 */
-	protected Optional<String> debugPath = Optional.empty();
-
-	/**
 	 * The pattern set containing the patterns.
 	 */
 	private IBeXPatternSet patternSet;
@@ -160,18 +155,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public ResourceSet getModel() {
 		return model;
-	}
-
-	/**
-	 * Sets the debug path.
-	 * 
-	 * @param debugPath
-	 *            the path for the debugging output. If it is <code>null</null>,
-	 *            debugging is disabled.
-	 */
-	public void setDebugPath(final String debugPath) {
-		this.debugPath = Optional.ofNullable(debugPath);
-		this.contextPatternInterpreter.setDebugPath(debugPath);
 	}
 
 	/**

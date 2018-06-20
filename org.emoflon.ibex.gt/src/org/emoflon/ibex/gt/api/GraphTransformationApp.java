@@ -99,16 +99,6 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	}
 
 	/**
-	 * Sets the resource set.
-	 * 
-	 * @param resourceSet
-	 *            the resource set
-	 */
-	public void setResourceSet(final ResourceSet resourceSet) {
-		this.resourceSet = resourceSet;
-	}
-
-	/**
 	 * Add the meta-models to the package registry.
 	 */
 	public abstract void registerMetaModels();
