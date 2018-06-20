@@ -127,7 +127,7 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 	 */
 	private void transformParameters(final EditorPattern editorPattern, final GTRule gtRule) {
 		for (EditorParameter editorParameter : editorPattern.getParameters()) {
-			gtRule.getParameters().add(this.transformParameter(editorParameter));
+			gtRule.getParameters().add(transformParameter(editorParameter));
 		}
 	}
 

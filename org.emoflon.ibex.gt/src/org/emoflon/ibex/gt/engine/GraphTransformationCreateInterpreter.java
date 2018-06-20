@@ -61,7 +61,7 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 	private void createNodes(final IBeXCreatePattern createPattern, final IMatch match) {
 		createPattern.getCreatedNodes().forEach(node -> {
 			EObject newNode = EcoreUtil.create(node.getType());
-			this.defaultResource.getContents().add(newNode);
+			defaultResource.getContents().add(newNode);
 			match.put(node.getName(), newNode);
 		});
 	}
