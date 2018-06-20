@@ -118,8 +118,8 @@ public class EMFManipulationUtils {
 			if (isDanglingNode(node)) {
 				danglingNodeAction.accept(node);
 			}
-			EcoreUtil.delete(node);
 		}
+		EcoreUtil.deleteAll(nodesToDelete, false);
 	}
 
 	/**

@@ -1,21 +1,20 @@
 package org.emoflon.ibex.gt.engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
@@ -209,6 +208,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		rs.getPackageRegistry().putAll(model.getPackageRegistry());
 		rs.getPackageRegistry().put(IBeXLanguagePackage.eNS_URI, IBeXLanguagePackage.eINSTANCE);
 		Resource ibexPatternResource = rs.getResource(uri, true);
+		EcoreUtil.resolveAll(rs);
 		this.loadPatternSet(ibexPatternResource);
 	}
 
@@ -299,65 +299,23 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
-	 * Finds a match for the pattern.
-	 * 
-	 * @param patternName
-	 *            the name of the pattern
-	 * @return an {@link Optional} for the match
-	 */
-	public Optional<IMatch> findAnyMatch(final String patternName) {
-		return this.findAnyMatch(patternName, new HashMap<String, Object>());
-	}
-
-	/**
-	 * Finds a match for the pattern.
-	 * 
-	 * @param patternName
-	 *            the name of the pattern
-	 * @param parameters
-	 *            the parameters
-	 * @return an {@link Optional} for the match
-	 */
-	public Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters) {
-		this.updateMatches();
-
-		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
-		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
-			return Optional.of(this.createEmptyMatchForCreatePattern(patternName));
-		}
-
-		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches).findAny();
-	}
-
-	/**
-	 * Finds all matches for the pattern.
-	 * 
-	 * @param patternName
-	 *            the name of the pattern
-	 * @return a {@link Collection} of matches
-	 */
-	public Collection<IMatch> findMatches(final String patternName) {
-		return this.findMatches(patternName, new HashMap<String, Object>());
-	}
-
-	/**
 	 * Finds all matches for the pattern.
 	 * 
 	 * @param patternName
 	 *            the name of the pattern
 	 * @param parameters
 	 *            the parameters
-	 * @return a {@link Collection} of matches
+	 * @return a {@link Stream} of matches
 	 */
-	public Collection<IMatch> findMatches(final String patternName, final Map<String, Object> parameters) {
+	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
 		this.updateMatches();
 
 		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
-			return Arrays.asList(this.createEmptyMatchForCreatePattern(patternName));
+			return Stream.of(this.createEmptyMatchForCreatePattern(patternName));
 		}
 
-		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches).collect(Collectors.toList());
+		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches);
 	}
 
 	/**

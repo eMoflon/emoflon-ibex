@@ -134,7 +134,7 @@ class JavaFileGenerator {
 			/**
 			 * An application using the «this.APIClassName».
 			 */
-			public abstract class «appClassName» extends GraphTransformationApp<«this.APIClassName»> {
+			public class «appClassName» extends GraphTransformationApp<«this.APIClassName»> {
 			
 				@Override
 				public void registerMetaModels() {

@@ -119,7 +119,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return an {@link Optional} for the match
 	 */
 	public final Optional<M> findAnyMatch() {
-		return this.interpreter.findAnyMatch(this.patternName, this.parameters) //
+		return this.interpreter.matchStream(this.patternName, this.parameters) //
+				.findAny() //
 				.map(m -> this.convertMatch(m));
 	}
 
@@ -129,7 +130,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the list of matches (can be empty if no matches exist)
 	 */
 	public final Collection<M> findMatches() {
-		return this.interpreter.findMatches(this.patternName, this.parameters).stream() //
+		return this.interpreter.matchStream(this.patternName, this.parameters) //
 				.map(m -> this.convertMatch(m)) //
 				.collect(Collectors.toList());
 	}
@@ -159,8 +160,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return the number of matches
 	 */
-	public final int countMatches() {
-		return this.findMatches().size();
+	public final long countMatches() {
+		return this.interpreter.matchStream(patternName, parameters).count();
 	}
 
 	/**

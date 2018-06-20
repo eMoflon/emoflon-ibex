@@ -71,8 +71,14 @@ public class EdgePattern extends IbexBasePattern {
 					+ IbexPatternOptimiser.convertToString(trg.getAttrExpr()) + "_";
 		}
 
-		String name = EcoreUtils.getFQN(src.getType()) + "_" + EcoreUtils.getFQN(edge.getType()) + "_"
-				+ EcoreUtils.getFQN(trg.getType()) + "_" + attrExtension + PatternSuffixes.EDGE;
+		String st = EcoreUtils.getFQNIfPossible(src.getType())
+				.orElseThrow(() -> new IllegalStateException("Unable to derive the FQN of: " + src.getType()));
+		String et = EcoreUtils.getFQNIfPossible(edge.getType())
+				.orElseThrow(() -> new IllegalStateException("Unable to derive the FQN of: " + edge.getType()));
+		String tt = EcoreUtils.getFQNIfPossible(trg.getType())
+				.orElseThrow(() -> new IllegalStateException("Unable to derive the FQN of: " + trg.getType()));
+
+		String name = st + "_" + et + "_" + tt + "_" + attrExtension + PatternSuffixes.EDGE;
 
 		Collection<TGGRuleNode> signatureNodes = new ArrayList<TGGRuleNode>();
 		signatureNodes.add(src);
