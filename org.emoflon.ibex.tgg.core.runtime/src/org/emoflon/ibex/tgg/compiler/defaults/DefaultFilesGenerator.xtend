@@ -3,18 +3,21 @@ package org.emoflon.ibex.tgg.compiler.defaults
 import java.util.Collection
 import language.csp.definition.TGGAttributeConstraintDefinition
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
+import org.moflon.core.utilities.MoflonUtil
 
 class DefaultFilesGenerator {
 
-	static def String generateUserRuntimeAttrCondFactory(Collection<String> userDefConstraints) {
+	static def String generateUserRuntimeAttrCondFactory(Collection<String> userDefConstraints, String projectName) {
 		'''
-			package org.emoflon.ibex.tgg.operational.csp.constraints.factories;
+			package org.emoflon.ibex.tgg.operational.csp.constraints.factories.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
 			
 			import java.util.HashMap;
 			import java.util.HashSet;			
 			
+			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;			
+			
 			«FOR constraint : userDefConstraints»
-				import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«UserAttrCondHelper.getFileName(constraint)»;
+				import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».«UserAttrCondHelper.getFileName(constraint)»;
 			«ENDFOR»
 			
 			public class UserDefinedRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
@@ -37,9 +40,9 @@ class DefaultFilesGenerator {
 		'''
 	}
 
-	static def generateUserAttrCondDefStub(TGGAttributeConstraintDefinition tacd) {
+	static def generateUserAttrCondDefStub(TGGAttributeConstraintDefinition tacd, String projectName) {
 		return '''
-			package org.emoflon.ibex.tgg.operational.csp.constraints.custom;
+			package org.emoflon.ibex.tgg.operational.csp.constraints.custom.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
 			
 			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
@@ -77,7 +80,7 @@ class DefaultFilesGenerator {
 	static def String generateBasicStructure(String additionalImports, String fileName, String strategy, String engine,
 		String projectName, String setUpRoutine, String body) {
 		'''
-			package org.emoflon.ibex.tgg.run.«projectName.toLowerCase»;
+			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
 			
 			import java.io.IOException;
 			
@@ -391,12 +394,12 @@ class DefaultFilesGenerator {
 
 	def static String generateRegHelperFile(String projectName) {
 		'''
-			package org.emoflon.ibex.tgg.run.«projectName.toLowerCase»;
+			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
 			
 			import java.io.IOException;
 			
 			import org.eclipse.emf.ecore.resource.ResourceSet;
-			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.UserDefinedRuntimeTGGAttrConstraintFactory;
+			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».UserDefinedRuntimeTGGAttrConstraintFactory;
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 			
@@ -411,7 +414,7 @@ class DefaultFilesGenerator {
 				/** Create default options **/
 				public static IbexOptions createIbexOptions() {
 					IbexOptions options = new IbexOptions();
-					options.projectName("«projectName»");
+					options.projectName("«MoflonUtil.lastCapitalizedSegmentOf(projectName)»");
 					options.projectPath("«projectName»");
 					options.debug(false);
 					options.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
@@ -423,7 +426,7 @@ class DefaultFilesGenerator {
 	
 	def static String generateSchemaAutoRegFile(String projectName, TripleGraphGrammarFile tgg) {
 		'''
-			package org.emoflon.ibex.tgg.run.«projectName.toLowerCase»;
+			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
 			
 			import java.io.IOException;
 			

@@ -123,7 +123,7 @@ public class IBeXPatternUtils {
 	}
 
 	/**
-	 * Returns the context pattern alternative with the given name.
+	 * Returns the context pattern with the given name.
 	 * 
 	 * @param patternSet
 	 *            the pattern set

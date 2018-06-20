@@ -94,7 +94,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	}
 
 	private Object extractLiteralValue(TGGLiteralExpression lExp) {
-		return String2EPrimitive.convertString(lExp.getParameterDefinition().getType(), lExp.getValue());
+		return String2EPrimitive.convertLiteral(lExp.getValue(), lExp.getParameterDefinition().getType());
 	}
 
 	public void addConstraint(RuntimeTGGAttributeConstraint constraint) {

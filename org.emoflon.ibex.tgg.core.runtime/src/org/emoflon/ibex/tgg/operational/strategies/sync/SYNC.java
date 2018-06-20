@@ -23,7 +23,7 @@ import runtime.TGGRuleApplication;
 
 public abstract class SYNC extends OperationalStrategy {
 
-	protected HashMap<TGGRuleApplication, Integer> protocolNodeToID;
+	protected HashMap<TGGRuleApplication, Integer> protocolNodeToID = new HashMap<TGGRuleApplication, Integer>();
 	protected HashMap<EObject, Integer> nodeToProtocolID = new HashMap<>();
 	private int idCounter = 0;
 	private boolean multiamalgamatedTgg;
@@ -37,15 +37,12 @@ public abstract class SYNC extends OperationalStrategy {
 	@Override
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
 		super.registerBlackInterpreter(blackInterpreter);
-		/**
-		 * Consider filling protocol from protocol.xmi.
-		 */
 		fillInProtocolReport();
 		multiamalgamatedTgg = tggContainsComplementRules();
 	}
 
 	private void fillInProtocolReport() {
-		protocolNodeToID = new HashMap<TGGRuleApplication, Integer>();
+		//FIXME:  Consider filling protocol from protocol.xmi
 	}
 
 	@Override
@@ -215,7 +212,8 @@ public abstract class SYNC extends OperationalStrategy {
 		// If any node from bounded CR context was created after
 		// its kernel was applied, CR is not applicable!
 		for (EObject contextNode : contextNodes) {
-			if (nodeToProtocolID.get(contextNode) > protocolNodeToID.get(kernelProtocol))
+			if (nodeToProtocolID.get(contextNode) != null // The context might not even have been created yet???
+					&& nodeToProtocolID.get(contextNode) > protocolNodeToID.get(kernelProtocol))
 				return false;
 		}
 		return true;
