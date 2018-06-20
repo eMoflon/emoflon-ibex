@@ -75,13 +75,7 @@ public class SimpleMatch implements IMatch {
 
 	@Override
 	public boolean equals(final Object object) {
-		if (object == null) {
-			return false;
-		}
-		if (object instanceof IMatch) {
-			return isEqual((IMatch) object);
-		}
-		return false;
+		return object instanceof IMatch && isEqual((IMatch) object);
 	}
 
 	@Override
@@ -99,7 +93,6 @@ public class SimpleMatch implements IMatch {
 	}
 	
 	public IMatch copy() {
-		SimpleMatch copy = new SimpleMatch(this);
-		return copy;
+		return new SimpleMatch(this);
 	}
 }

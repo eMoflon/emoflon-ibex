@@ -1,12 +1,10 @@
 package org.emoflon.ibex.gt.api;
 
 import java.io.IOException;
-import java.util.Objects;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.gt.api.GraphTransformationAPI;
@@ -18,12 +16,42 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	/**
 	 * The resource set.
 	 */
-	protected ResourceSet resourceSet = new ResourceSetImpl();
+	protected ResourceSet resourceSet;
+
+	/**
+	 * The pattern matching engine.
+	 */
+	protected final IContextPatternInterpreter engine;
 
 	/**
 	 * The workspace path.
 	 */
 	protected String workspacePath = "../";
+
+	/**
+	 * Creates the application with the given engine.
+	 * 
+	 * @param engine
+	 *            the pattern matching engine
+	 */
+	public GraphTransformationApp(final IContextPatternInterpreter engine) {
+		this.engine = engine;
+		this.resourceSet = engine.createAndPrepareResourceSet(workspacePath);
+	}
+
+	/**
+	 * Creates the application with the given engine.
+	 * 
+	 * @param engine
+	 *            the pattern matching engine
+	 * @param workspacePath
+	 *            the workspace path
+	 */
+	public GraphTransformationApp(final IContextPatternInterpreter engine, final String workspacePath) {
+		this.engine = engine;
+		this.resourceSet = engine.createAndPrepareResourceSet(workspacePath);
+		this.workspacePath = workspacePath;
+	}
 
 	/**
 	 * Creates the model file with the given URI.
@@ -96,20 +124,9 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	}
 
 	/**
-	 * Sets the workspace path to the given path.
-	 * 
-	 * @param workspacePath
-	 *            the workspace path to set
-	 */
-	public void setWorkspacePath(final String workspacePath) {
-		Objects.requireNonNull(workspacePath, "The workspace path must not be null!");
-		this.workspacePath = workspacePath;
-	}
-
-	/**
 	 * Creates a new API.
 	 * 
 	 * @return the created API
 	 */
-	public abstract API initAPI(IContextPatternInterpreter engine);
+	public abstract API initAPI();
 }

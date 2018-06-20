@@ -135,6 +135,28 @@ class JavaFileGenerator {
 			 * An application using the «this.APIClassName».
 			 */
 			public class «appClassName» extends GraphTransformationApp<«this.APIClassName»> {
+
+				/**
+				 * Creates the application with the given engine.
+				 * 
+				 * @param engine
+				 *            the pattern matching engine
+				 */
+				public «appClassName»(final IContextPatternInterpreter engine) {
+					super(engine);
+				}
+
+				/**
+				 * Creates the application with the given engine.
+				 * 
+				 * @param engine
+				 *            the pattern matching engine
+				 * @param workspacePath
+				 *            the workspace path
+				 */
+				public «appClassName»(final IContextPatternInterpreter engine, final String workspacePath) {
+					super(engine, workspacePath);
+				}
 			
 				@Override
 				public void registerMetaModels() {
@@ -144,7 +166,7 @@ class JavaFileGenerator {
 				}
 			
 				@Override
-				public «this.APIClassName» initAPI(final IContextPatternInterpreter engine) {
+				public «this.APIClassName» initAPI() {
 					return new «this.APIClassName»(engine, resourceSet, workspacePath);
 				}
 			}
@@ -162,15 +184,25 @@ class JavaFileGenerator {
 			«printHeader(this.getSubPackageName('api'), engine.imports)»
 			
 			/**
-			 * An application using the «this.APIClassName» using «engine.engineName».
+			 * An application using the «this.APIClassName» with «engine.engineName».
 			 */
 			public class «engineAppClassName» extends «appClassName» {
 			
 				/**
-				 * Initializes an API using «engine.engineName».
+				 * Creates the application with «engine.engineName».
 				 */
-				public «this.APIClassName» initAPI() {
-					return this.initAPI(new «engine.engineClassName»());
+				public «engineAppClassName»() {
+					super(new «engine.engineClassName»());
+				}
+			
+				/**
+				 * Creates the application with «engine.engineName».
+				 * 
+				 * @param workspacePath
+				 *            the workspace path
+				 */
+				public «engineAppClassName»(final String workspacePath) {
+					super(new «engine.engineClassName»(), workspacePath);
 				}
 			}
 		'''
