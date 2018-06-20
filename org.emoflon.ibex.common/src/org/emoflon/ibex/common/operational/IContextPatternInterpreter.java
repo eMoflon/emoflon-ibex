@@ -23,7 +23,7 @@ public interface IContextPatternInterpreter {
 	 * Initializes the pattern interpreter.
 	 * 
 	 * @param registry
-	 *            ??
+	 *            the package registry of the observed model
 	 * @param matchObserver
 	 *            the observer to notify of matches
 	 */
@@ -42,7 +42,7 @@ public interface IContextPatternInterpreter {
 	 * Monitors the given resource set.
 	 * 
 	 * @param resourceSet
-	 *            the resource set
+	 *            the resource set to observe
 	 */
 	public void monitor(ResourceSet resourceSet);
 
