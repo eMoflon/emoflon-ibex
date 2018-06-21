@@ -48,6 +48,7 @@ class JavaFileGenerator {
 	public def generateAPIClass(IFolder apiPackage, GTRuleSet gtRuleSet, String patternPath) {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
+			'org.eclipse.emf.ecore.resource.Resource',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
 			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI'
@@ -69,35 +70,36 @@ class JavaFileGenerator {
 				/**
 				 * Creates a new «APIClassName».
 				 *
-				 * The are loaded from the default pattern path.
-				 *
 				 * @param engine
 				 *            the engine to use for queries and transformations
 				 * @param model
 				 *            the resource set containing the model file
+				 * @param workspacePath
+				 *            the path to the workspace which is concatenated with the project
+				 *            relative path to the patterns
 				 */
-				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model) {
+				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model, final String workspacePath) {
 					super(engine, model);
-					URI uri = URI.createFileURI("../" + patternPath);
+					URI uri = URI.createFileURI(workspacePath + patternPath);
 					interpreter.loadPatternSet(uri);
 				}
 			
 				/**
 				 * Creates a new «APIClassName».
 				 *
-				 * The are loaded from the pattern path (the given workspace path concatenated
-				 * with the project relative path to the pattern file).
-				 *
 				 * @param engine
 				 *            the engine to use for queries and transformations
 				 * @param model
 				 *            the resource set containing the model file
+				 * @param defaultResource
+				 *            the default resource
 				 * @param workspacePath
-				 *            the path to the workspace
+				 *            the path to the workspace which is concatenated with the project
+				 *            relative path to the patterns
 				 */
-				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model,
+				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model, final Resource defaultResource,
 						final String workspacePath) {
-					super(engine, model);
+					super(engine, model, defaultResource);
 					URI uri = URI.createFileURI(workspacePath + patternPath);
 					interpreter.loadPatternSet(uri);
 				}
@@ -167,6 +169,9 @@ class JavaFileGenerator {
 			
 				@Override
 				public «APIClassName» initAPI() {
+					if (defaultResource.isPresent()) {
+						return new «APIClassName»(engine, resourceSet, defaultResource.get(), workspacePath);
+					}
 					return new «APIClassName»(engine, resourceSet, workspacePath);
 				}
 			}

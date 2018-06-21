@@ -1,6 +1,8 @@
 package org.emoflon.ibex.gt.api;
 
 import java.io.IOException;
+import java.util.Optional;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -27,6 +29,11 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 * The workspace path.
 	 */
 	protected String workspacePath = "../";
+
+	/**
+	 * The default resource if set explicitly.
+	 */
+	protected Optional<Resource> defaultResource = Optional.empty();
 
 	/**
 	 * Creates the application with the given engine.
@@ -78,6 +85,15 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	}
 
 	/**
+	 * Returns the model.
+	 * 
+	 * @return the model
+	 */
+	public ResourceSet getModel() {
+		return resourceSet;
+	}
+
+	/**
 	 * Saves all resources in the resource set.
 	 * 
 	 * @throws IOException
@@ -101,7 +117,7 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	/**
 	 * Add the meta-models to the package registry.
 	 */
-	public abstract void registerMetaModels();
+	protected abstract void registerMetaModels();
 
 	/**
 	 * Registers the given EPackage as a meta-model.
@@ -111,6 +127,19 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 */
 	protected void registerMetaModel(final EPackage ePackage) {
 		resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
+	}
+
+	/**
+	 * Sets the default resource.
+	 * 
+	 * @param defaultResource
+	 *            the default resource
+	 */
+	public void setDefaultResource(final Resource defaultResource) {
+		if (!resourceSet.getResources().contains(defaultResource)) {
+			throw new IllegalArgumentException(defaultResource.getURI() + " is not part of the model");
+		}
+		this.defaultResource = Optional.of(defaultResource);
 	}
 
 	/**
