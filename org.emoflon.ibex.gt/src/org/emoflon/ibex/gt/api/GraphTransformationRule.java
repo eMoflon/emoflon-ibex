@@ -231,17 +231,21 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 
 	/**
 	 * Stops automatic rule application whenever a match is found.
-	 * 
-	 * @throws IllegalArgumentException
-	 *             if <code>applyWheneverApplicable</code> has not been called
-	 *             before
 	 */
 	public final void disableAutoApply() {
-		if (!autoApply.isPresent()) {
-			throw new IllegalArgumentException("Cannot stop applyWheneverApplicable before start.");
-		}
-		unsubscribeAppearing(autoApply.get());
-		autoApply = Optional.empty();
+		autoApply.ifPresent(c -> {
+			unsubscribeAppearing(c);
+			autoApply = Optional.empty();
+		});
+	}
+
+	/**
+	 * Checks whether automatic rule application is enabled for this rule.
+	 * 
+	 * @return true if and only if automatic rule application is enabled.
+	 */
+	public final boolean isAutoApplyEnabled() {
+		return autoApply.isPresent();
 	}
 
 	/**
