@@ -302,6 +302,7 @@ public abstract class OPT extends OperationalStrategy {
 
 		logger.debug("Defining objective...");
 		defineILPObjective(ilpProblem);
+		
 
 		logger.debug("Adding user defined constraints...");
 		addUserDefinedConstraints(ilpProblem);

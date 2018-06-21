@@ -7,17 +7,22 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap.Entry;
+import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 /**
  * This class is used to define ILPProblems that can be given to
@@ -89,16 +94,17 @@ public class ILPProblem {
 	 * @return the variables that have been defined
 	 */
 	public Collection<String> getVariables() {
-		return Collections.unmodifiableCollection(variables.keySet());
+		return ObjectSets.unmodifiable(variables.keySet());
 	}
 
 	/**
 	 * Returns the mapping of variable IDs of fixed variables to their assigned
 	 * values
+	 * @return 
 	 * 
 	 * @return a HashMap containing the variable mapping of fixed variables.
 	 */
-	protected Int2IntLinkedOpenHashMap getFixedVariableValues() {
+	protected Int2IntMap getInternalFixedVariableValues() {
 		return fixedVariableValues;
 	}
 
@@ -162,6 +168,15 @@ public class ILPProblem {
 	public void fixVariable(String variableName, int value) {
 		this.fixVariable(this.getVariableId(variableName), value);
 	}
+	
+	public Integer getFixedVariable(String variableName) {
+		return this.getFixedVariable(this.getVariableId(variableName));
+	}
+	
+	protected Integer getFixedVariable(int variable) {
+		applyLazyFixedVariables();
+		return this.fixedVariableValues.containsKey(variable)? this.fixedVariableValues.get(variable) : null;
+	}
 
 	/**
 	 * Fixes the variable with the given variable ID to the given value
@@ -178,7 +193,7 @@ public class ILPProblem {
 				return;
 			} else {
 				throw new RuntimeException(
-						"The variable " + getVariable(variableId) + " has already been fixed to a different value");
+						"The variable " + getVariable(variableId) + "cannot be fixed to value "+value+" as it already been fixed to a different value: " + this.fixedVariableValues.get(variableId));
 			}
 		}
 		this.unfixedVariables.remove(variableId);
@@ -412,11 +427,11 @@ public class ILPProblem {
 		/**
 		 * &gt; (constraint)
 		 */
-		gt(">="),
+		gt(">"),
 		/**
 		 * &gt;= (constraint)
 		 */
-		ge(">"),
+		ge(">="),
 		/**
 		 * = (constraint)
 		 */
