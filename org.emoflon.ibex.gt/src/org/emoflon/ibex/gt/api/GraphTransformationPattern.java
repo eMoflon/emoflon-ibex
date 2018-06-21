@@ -240,7 +240,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 */
 	public final void unsubscribeMatchDisappears(final M match, final Consumer<M> action) {
 		if (consumers.containsKey(action)) {
-			interpreter.unsubscribeMatchDisappears(match.toIMatch(), convertConsumer(action));
+			interpreter.unsubscribeMatchDisappears(match.toIMatch(), consumers.get(action));
 		} else {
 			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
 		}
