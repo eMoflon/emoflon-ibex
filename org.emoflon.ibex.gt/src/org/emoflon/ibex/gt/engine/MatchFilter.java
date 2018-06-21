@@ -54,7 +54,7 @@ public class MatchFilter {
 			}
 			return matchStream.distinct();
 		}
-		return Stream.empty();
+		throw new IllegalArgumentException("Invalid pattern " + pattern);
 	}
 
 	/**
@@ -185,9 +185,7 @@ public class MatchFilter {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static boolean compareTo(final Object a, final Object b, final Predicate<Integer> condition) {
-		if ((a instanceof Comparable) && (b instanceof Comparable)) {
-			return condition.test(((Comparable) a).compareTo(b));
-		}
-		return false;
+		return a instanceof Comparable && b instanceof Comparable //
+				&& condition.test(((Comparable) a).compareTo(b));
 	}
 }
