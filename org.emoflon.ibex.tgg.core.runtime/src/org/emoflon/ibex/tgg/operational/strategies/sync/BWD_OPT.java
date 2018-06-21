@@ -119,6 +119,8 @@ public abstract class BWD_OPT extends OPT {
 		// Remove adapters to avoid problems with notifications
 		s.eAdapters().clear();
 		s.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+		c.eAdapters().clear();
+		c.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
 
 		// Copy and fix the model in the process
 		FixingCopier.fixAll(s, c, "source");
