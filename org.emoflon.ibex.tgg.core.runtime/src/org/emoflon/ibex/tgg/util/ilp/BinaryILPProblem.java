@@ -208,6 +208,7 @@ public final class BinaryILPProblem extends ILPProblem {
 			this.fixVariables(new IntArraySet(positiveChoices), new IntArraySet(negativeChoices));
 
 			if (this.isRelevant()) {
+				implications.computeIfAbsent(leftVariable, k -> new LinkedList<>());
 				implications.get(this.leftVariable).add(this);
 				variableIdsToContainingConstraints.get(this.leftVariable).add(this);
 				for (int id : this.rightVariables) {
