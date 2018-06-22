@@ -29,43 +29,43 @@ public final class BinaryILPProblem extends ILPProblem {
 	/**
 	 * This map contains all defined implications, sorted by the left side variable.
 	 */
-	private Int2ObjectOpenHashMap<LinkedList<Implication>> implications = new Int2ObjectOpenHashMap<>();
+	private final Int2ObjectOpenHashMap<LinkedList<Implication>> implications = new Int2ObjectOpenHashMap<>();
 	/**
 	 * A list containing all negative implications
 	 */
-	private LinkedList<NegativeImplication> negativeImplications = new LinkedList<>();
+	private final LinkedList<NegativeImplication> negativeImplications = new LinkedList<>();
 	/**
 	 * A list containing all exclusions
 	 */
-	private LinkedList<Exclusion> exclusions = new LinkedList<>();
+	private final LinkedList<Exclusion> exclusions = new LinkedList<>();
 	/**
 	 * A set of all constraints that were generated to express the boolean
 	 * constructs.
 	 */
-	private ObjectLinkedOpenHashSet<ILPConstraint> generatedConstraints = new ObjectLinkedOpenHashSet<>();
+	private final ObjectLinkedOpenHashSet<ILPConstraint> generatedConstraints = new ObjectLinkedOpenHashSet<>();
 
 	/**
 	 * All fixed variables that have been set to 1
 	 */
-	private IntLinkedOpenHashSet positiveChoices = new IntLinkedOpenHashSet();
+	private final IntLinkedOpenHashSet positiveChoices = new IntLinkedOpenHashSet();
 	/**
 	 * All fixed variables that have been set to 0
 	 */
-	private IntLinkedOpenHashSet negativeChoices = new IntLinkedOpenHashSet();
+	private final IntLinkedOpenHashSet negativeChoices = new IntLinkedOpenHashSet();
 	/**
 	 * Fixed but not yet applied variables set to 1
 	 */
-	private IntLinkedOpenHashSet lazyPositiveChoices = new IntLinkedOpenHashSet();
+	private final IntLinkedOpenHashSet lazyPositiveChoices = new IntLinkedOpenHashSet();
 	/**
 	 * Fixed but not yet applied variables set to 0
 	 */
-	private IntLinkedOpenHashSet lazyNegativeChoices = new IntLinkedOpenHashSet();
+	private final IntLinkedOpenHashSet lazyNegativeChoices = new IntLinkedOpenHashSet();
 
 	/**
 	 * Contains for each variable the list of constraints the variable is contained
 	 * in. This makes fixing variables very efficient, but costs memory
 	 */
-	private Int2ObjectOpenHashMap<LinkedList<BinaryConstraint>> variableIdsToContainingConstraints = new Int2ObjectOpenHashMap<>();
+	private final Int2ObjectOpenHashMap<LinkedList<BinaryConstraint>> variableIdsToContainingConstraints = new Int2ObjectOpenHashMap<>();
 
 	/**
 	 * Creates a new binary ILP problem
@@ -92,7 +92,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		 *
 		 * @param name The name of the constraint
 		 */
-		private BinaryConstraint(String name) {
+		private BinaryConstraint(final String name) {
 			this.name = name;
 		}
 
@@ -106,7 +106,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		/**
 		 * @param Sets the relevance status
 		 */
-		final void setRelevant(boolean isRelevant) {
+		final void setRelevant(final boolean isRelevant) {
 			this.isRelevant = isRelevant;
 		}
 
@@ -152,7 +152,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
@@ -199,7 +199,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		 * @param rightVariables variables on the right side of the implication
 		 * @param name           the name of the implication
 		 */
-		private Implication(int leftVariable, IntOpenHashSet rightVariables, String name) {
+		private Implication(final int leftVariable, final IntOpenHashSet rightVariables, final String name) {
 			super(name);
 			this.leftVariable = leftVariable;
 			this.rightVariables = rightVariables;
@@ -222,7 +222,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		 *
 		 * @param expr The expression to add the constraint to
 		 */
-		private void generateILPConstraint(ILPLinearExpression expr) {
+		private void generateILPConstraint(final ILPLinearExpression expr) {
 			expr.addTerm(this.leftVariable, 1);
 			this.rightVariables.stream().forEach(v -> {
 				expr.addTerm(v, -1);
@@ -230,7 +230,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		boolean fixVariable(int id, boolean choice) {
+		boolean fixVariable(final int id, final boolean choice) {
 			if (this.leftVariable == id) {
 				if (!choice) { // left side is false
 					this.setRelevant(false);
@@ -262,7 +262,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		boolean fixVariables(IntCollection positiveChoices, IntCollection negativeChoices) {
+		boolean fixVariables(final IntCollection positiveChoices, final IntCollection negativeChoices) {
 			if (negativeChoices.contains(this.leftVariable)) {
 				this.setRelevant(false);
 				return false;
@@ -315,7 +315,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
@@ -382,7 +382,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		 * @param rightVariables Variables on the right side of the implication
 		 * @param name           Name of the implication
 		 */
-		private NegativeImplication(IntOpenHashSet leftVariables, IntOpenHashSet rightVariables, String name) {
+		private NegativeImplication(final IntOpenHashSet leftVariables, final IntOpenHashSet rightVariables, final String name) {
 			super(name);
 
 			this.leftVariables = leftVariables;
@@ -416,7 +416,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		boolean fixVariable(int id, boolean choice) {
+		boolean fixVariable(final int id, final boolean choice) {
 			if (this.leftVariables.remove(id)) {
 				// remove yielded true, so it was contained
 				if (choice) {
@@ -451,7 +451,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		boolean fixVariables(IntCollection positiveChoices, IntCollection negativeChoices) {
+		boolean fixVariables(final IntCollection positiveChoices, final IntCollection negativeChoices) {
 			if (this.leftVariables.removeAll(negativeChoices)) {
 				if (this.leftVariables.isEmpty()) {
 					for (int id2 : this.rightVariables) {
@@ -507,7 +507,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
@@ -570,7 +570,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		 * @param required      Required number of variables to choose
 		 * @param name          Name of the exclusion
 		 */
-		private Exclusion(IntOpenHashSet variableGroup, int allowed, int required, String name) {
+		private Exclusion(final IntOpenHashSet variableGroup, final int allowed, final int required, final String name) {
 			super(name);
 			if (required > allowed || required > variableGroup.size()) {
 				throw new RuntimeException("Cannot fulfill number of required choices for this exclusion");
@@ -613,7 +613,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		boolean fixVariable(int id, boolean choice) {
+		boolean fixVariable(final int id, final boolean choice) {
 			if (this.variableGroup.remove(id)) {
 				// remove yielded true, so it was contained
 				if (choice) {
@@ -641,7 +641,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		boolean fixVariables(IntCollection positiveChoices, IntCollection negativeChoices) {
+		boolean fixVariables(final IntCollection positiveChoices, final IntCollection negativeChoices) {
 			if (this.variableGroup.removeAll(negativeChoices)) {
 				if (this.variableGroup.size() < this.required) {
 					throw new RuntimeException("Cannot fulfill number of required choices for this exclusion");
@@ -691,7 +691,7 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
@@ -787,7 +787,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	}
 
 	@Override
-	int createNewVariable(String variableName) {
+	int createNewVariable(final String variableName) {
 		int variableId = super.createNewVariable(variableName);
 		this.variableIdsToContainingConstraints.put(variableId, new LinkedList<>());
 		return variableId;
@@ -799,7 +799,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param variableName Name of the variable to fix
 	 * @param choice       Value of the variable
 	 */
-	public void fixVariable(String variableName, boolean choice) {
+	public void fixVariable(final String variableName, final boolean choice) {
 		this.fixVariable(this.getVariableId(variableName), choice);
 	}
 
@@ -809,7 +809,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param variableId ID of the variable to fix
 	 * @param choice     Value of the variable
 	 */
-	protected void fixVariable(int variableId, boolean choice) {
+	protected void fixVariable(final int variableId, final boolean choice) {
 		super.fixVariable(variableId, choice ? 1 : 0);
 		if (choice) {
 			if (!this.positiveChoices.contains(variableId)) {
@@ -825,7 +825,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	}
 
 	@Override
-	public void fixVariable(String variableName, int value) {
+	public void fixVariable(final String variableName, final int value) {
 		switch (value) {
 		case 1:
 			this.fixVariable(variableName, true);
@@ -838,11 +838,11 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 	}
 
-	public Boolean getFixedBooleanVariable(String variableName) {
+	public Boolean getFixedBooleanVariable(final String variableName) {
 		return this.getFixedBooleanVariable(this.getVariableId(variableName));
 	}
 
-	protected Boolean getFixedBooleanVariable(int variable) {
+	protected Boolean getFixedBooleanVariable(final int variable) {
 		Integer value = this.getFixedVariable(variable);
 		if (value == null)
 			return null;
@@ -867,7 +867,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param name      The name of the implication
 	 * @return The implication that has been created
 	 */
-	public Implication addImplication(String leftSide, Collection<String> rightSide, String name) {
+	public Implication addImplication(final String leftSide, final Collection<String> rightSide, final String name) {
 		return new Implication(this.getVariableId(leftSide),
 				new IntOpenHashSet(rightSide.stream().map(s -> this.getVariableId(s)).collect(Collectors.toList())),
 				name);
@@ -882,7 +882,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param allowed   The number of variables that can be chosen
 	 * @return The created exclusion
 	 */
-	public Exclusion addExclusion(Collection<String> variables, String name, int allowed) {
+	public Exclusion addExclusion(final Collection<String> variables, final String name, final int allowed) {
 		return this.addExclusion(variables, name, allowed, 0);
 	}
 
@@ -896,7 +896,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param required  The minimum number of variables that have to be chosen
 	 * @return The created exclusion
 	 */
-	public Exclusion addExclusion(Collection<String> variables, String name, int allowed, int required) {
+	public Exclusion addExclusion(final Collection<String> variables, final String name, final int allowed, final int required) {
 		return new Exclusion(
 				new IntOpenHashSet(variables.stream().map(s -> this.getVariableId(s)).collect(Collectors.toList())),
 				allowed, required, name);
@@ -909,7 +909,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param name      The name of the exclusion
 	 * @return The created exclusion
 	 */
-	public Exclusion addExclusion(Collection<String> variables, String name) {
+	public Exclusion addExclusion(final Collection<String> variables, final String name) {
 		return this.addExclusion(variables, name, 1);
 	}
 
@@ -924,8 +924,8 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param name      The name of the implication
 	 * @return the created implication
 	 */
-	public NegativeImplication addNegativeImplication(Collection<String> leftSide, Collection<String> rightSide,
-			String name) {
+	public NegativeImplication addNegativeImplication(final Collection<String> leftSide, final Collection<String> rightSide,
+			final String name) {
 		return new NegativeImplication(
 				new IntOpenHashSet(leftSide.stream().map(s -> this.getVariableId(s)).collect(Collectors.toList())),
 				new IntOpenHashSet(rightSide.stream().map(s -> this.getVariableId(s)).collect(Collectors.toList())),

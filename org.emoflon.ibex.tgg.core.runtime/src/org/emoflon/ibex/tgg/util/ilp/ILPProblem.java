@@ -75,7 +75,7 @@ public class ILPProblem {
 	 * Contains for each variable the list of constraints the variable is contained
 	 * in. This makes fixing variables very efficient, but costs memory
 	 */
-	private Int2ObjectOpenHashMap<LinkedList<ILPConstraint>> variableIdsToContainingConstraints = new Int2ObjectOpenHashMap<>();
+	private final Int2ObjectOpenHashMap<LinkedList<ILPConstraint>> variableIdsToContainingConstraints = new Int2ObjectOpenHashMap<>();
 
 	/**
 	 * Creates a new ILPProblem. Instances can be obtained using the
@@ -161,15 +161,15 @@ public class ILPProblem {
 	 * @param variableName The name of the variable
 	 * @param value        Value to set the variable to
 	 */
-	public void fixVariable(String variableName, int value) {
+	public void fixVariable(final String variableName, final int value) {
 		this.fixVariable(this.getVariableId(variableName), value);
 	}
 
-	public Integer getFixedVariable(String variableName) {
+	public Integer getFixedVariable(final String variableName) {
 		return this.getFixedVariable(this.getVariableId(variableName));
 	}
 
-	protected Integer getFixedVariable(int variable) {
+	protected Integer getFixedVariable(final int variable) {
 		this.applyLazyFixedVariables();
 		return this.fixedVariableValues.containsKey(variable) ? this.fixedVariableValues.get(variable) : null;
 	}
@@ -180,7 +180,7 @@ public class ILPProblem {
 	 * @param variableId The ID of the variable
 	 * @param value      The value of the variable
 	 */
-	protected void fixVariable(int variableId, int value) {
+	protected void fixVariable(final int variableId, final int value) {
 		if (this.fixedVariableValues.containsKey(variableId)) {
 			if (this.fixedVariableValues.get(variableId) == value) {
 				// unchanged
@@ -206,7 +206,7 @@ public class ILPProblem {
 	 * @return The ID of the variable. If the variable is not yet contained, it will
 	 *         be registered with a new ID
 	 */
-	int getVariableId(String variable) {
+	int getVariableId(final String variable) {
 		if (!this.variables.containsKey(variable)) {
 			return this.createNewVariable(variable);
 		}
@@ -219,7 +219,7 @@ public class ILPProblem {
 	 * @param variableName The Name of the variable
 	 * @return The id of the created variable
 	 */
-	int createNewVariable(String variableName) {
+	int createNewVariable(final String variableName) {
 		this.variables.put(variableName, this.variableCounter);
 		this.variableIDsToVariables.put(this.variableCounter, variableName);
 		this.unfixedVariables.add(this.variableCounter);
@@ -233,7 +233,7 @@ public class ILPProblem {
 	 * @param variableId The variable ID to look for
 	 * @return
 	 */
-	String getVariable(int variableId) {
+	String getVariable(final int variableId) {
 		return this.variableIDsToVariables.get(variableId);
 	}
 
@@ -260,7 +260,7 @@ public class ILPProblem {
 	 *                            solution
 	 * @return the created solution
 	 */
-	ILPSolution createILPSolution(Int2IntOpenHashMap variableAllocations, boolean optimal, double solutionValue) {
+	ILPSolution createILPSolution(final Int2IntOpenHashMap variableAllocations, final boolean optimal, final double solutionValue) {
 		return new ILPSolution(variableAllocations, optimal, solutionValue);
 	}
 
@@ -275,8 +275,8 @@ public class ILPProblem {
 	 * @param name             The name of the constraint. Naming constraints is not
 	 *                         supported by all solvers.
 	 */
-	public ILPConstraint addConstraint(ILPLinearExpression linearExpression, Comparator comparator, double value,
-			String name) {
+	public ILPConstraint addConstraint(final ILPLinearExpression linearExpression, final Comparator comparator, final double value,
+			final String name) {
 		ILPConstraint constr = new ILPConstraint(linearExpression, comparator, value, name);
 		constr.removeFixedVariables();
 		for (int id : constr.linearExpression.terms.keySet()) {
@@ -291,7 +291,7 @@ public class ILPProblem {
 	 *
 	 * @param constraint the constraint to add
 	 */
-	void addConstraint(ILPConstraint constraint) {
+	void addConstraint(final ILPConstraint constraint) {
 		if (!constraint.isEmpty()) {
 			this.constraints.add(constraint);
 		}
@@ -302,7 +302,7 @@ public class ILPProblem {
 	 *
 	 * @param constraints The constraints to remove
 	 */
-	void removeConstraints(Collection<ILPConstraint> constraints) {
+	void removeConstraints(final Collection<ILPConstraint> constraints) {
 		this.constraints.removeAll(constraints);
 	}
 
@@ -333,7 +333,7 @@ public class ILPProblem {
 	 * @param operation        Whether the operation should be maximized or
 	 *                         minimized.
 	 */
-	public ILPObjective setObjective(ILPLinearExpression linearExpression, Objective operation) {
+	public ILPObjective setObjective(final ILPLinearExpression linearExpression, final Objective operation) {
 		ILPObjective objective = new ILPObjective(linearExpression, operation);
 		this.setObjective(objective);
 		return objective;
@@ -344,7 +344,7 @@ public class ILPProblem {
 	 *
 	 * @param objective the objective
 	 */
-	void setObjective(ILPObjective objective) {
+	void setObjective(final ILPObjective objective) {
 		objective.removeFixedVariables();
 		this.objective = objective;
 	}
@@ -356,7 +356,7 @@ public class ILPProblem {
 	 * @param solution The solution to check
 	 * @return true iff all constraints are fulfilled
 	 */
-	public boolean checkValidity(ILPSolution solution) {
+	public boolean checkValidity(final ILPSolution solution) {
 		return this.constraints.stream().allMatch(c -> c.checkConstraint(solution));
 	}
 
@@ -366,7 +366,7 @@ public class ILPProblem {
 	 * @param solution The solution to check
 	 * @return the value of the objective function for the given solution
 	 */
-	public double getSolutionValue(ILPSolution solution) {
+	public double getSolutionValue(final ILPSolution solution) {
 		this.applyLazyFixedVariables();
 		return this.objective.getSolutionValue(solution);
 	}
@@ -427,7 +427,7 @@ public class ILPProblem {
 
 		private final String stringRepresentation;
 
-		private Comparator(String stringRepresentation) {
+		private Comparator(final String stringRepresentation) {
 			this.stringRepresentation = stringRepresentation;
 		}
 
@@ -455,7 +455,7 @@ public class ILPProblem {
 
 		private final String stringRepresentation;
 
-		private Objective(String stringRepresentation) {
+		private Objective(final String stringRepresentation) {
 			this.stringRepresentation = stringRepresentation;
 		}
 
@@ -498,7 +498,7 @@ public class ILPProblem {
 		 * @param comparator       Comparator (e.g. <=)
 		 * @param value            The value on the right side of the inequation
 		 */
-		ILPConstraint(ILPLinearExpression linearExpression, Comparator comparator, double value, String name) {
+		ILPConstraint(final ILPLinearExpression linearExpression, final Comparator comparator, final double value, final String name) {
 			this.linearExpression = linearExpression;
 			this.comparator = comparator;
 			this.value = value;
@@ -516,7 +516,7 @@ public class ILPProblem {
 		 *
 		 * @param factor
 		 */
-		void multiplyBy(double factor) {
+		void multiplyBy(final double factor) {
 			this.linearExpression.multiplyBy(factor);
 			this.value *= factor;
 		}
@@ -565,7 +565,7 @@ public class ILPProblem {
 		 * @param value      fixed value of the variable
 		 * @return true if the constraint has been changed by this action
 		 */
-		private boolean fixVariable(int variableID, int value) {
+		private boolean fixVariable(final int variableID, final int value) {
 			double termValue = this.linearExpression.removeTerm(variableID) * value;
 			this.value -= termValue;
 
@@ -579,7 +579,7 @@ public class ILPProblem {
 		 * @param ilpSolution The solution to test
 		 * @return
 		 */
-		public boolean checkConstraint(ILPSolution ilpSolution) {
+		public boolean checkConstraint(final ILPSolution ilpSolution) {
 			double solution = this.linearExpression.getSolutionValue(ilpSolution);
 			switch (this.comparator) {
 			case ge:
@@ -645,7 +645,7 @@ public class ILPProblem {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj)
 				return true;
 			if (obj == null)
@@ -701,7 +701,7 @@ public class ILPProblem {
 		 * @param objectiveOperation The objective: Either minimize or maximize the
 		 *                           objective
 		 */
-		ILPObjective(ILPLinearExpression linearExpression, Objective objectiveOperation) {
+		ILPObjective(final ILPLinearExpression linearExpression, final Objective objectiveOperation) {
 			switch (objectiveOperation) {
 			case maximize:
 			case minimize:
@@ -719,7 +719,7 @@ public class ILPProblem {
 		 * @param ilpSolution The solution to use
 		 * @return The value of the solution
 		 */
-		double getSolutionValue(ILPSolution ilpSolution) {
+		double getSolutionValue(final ILPSolution ilpSolution) {
 			return this.linearExpression.getSolutionValue(ilpSolution) + this.fixedVariablesValue;
 		}
 
@@ -758,7 +758,7 @@ public class ILPProblem {
 		 * @param value      fixed value of the variable
 		 * @return true if the objective has been changed by this action
 		 */
-		private boolean fixVariable(int variableID, int value) {
+		private boolean fixVariable(final int variableID, final int value) {
 			double termValue = this.linearExpression.removeTerm(variableID) * value;
 			this.fixedVariablesValue += termValue;
 			return termValue != 0;
@@ -784,7 +784,7 @@ public class ILPProblem {
 		 * @see java.lang.Object#equals(java.lang.Object)
 		 */
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
@@ -826,7 +826,7 @@ public class ILPProblem {
 		 * @param variable    The name of the variable
 		 * @param coefficient The coefficient of the variable
 		 */
-		public void addTerm(String variable, double coefficient) {
+		public void addTerm(final String variable, final double coefficient) {
 			this.addTerm(ILPProblem.this.getVariableId(variable), coefficient);
 		}
 
@@ -836,7 +836,7 @@ public class ILPProblem {
 		 * @param variableID  The id of the variable
 		 * @param coefficient The coefficient of the variable
 		 */
-		void addTerm(int variableID, double coefficient) {
+		void addTerm(final int variableID, final double coefficient) {
 			double result = this.terms.addTo(variableID, coefficient);
 			if (Double.doubleToLongBits(result) == Double.doubleToLongBits(-coefficient)) {
 				this.terms.remove(variableID);
@@ -848,7 +848,7 @@ public class ILPProblem {
 		 *
 		 * @param factor The factor to multiply by
 		 */
-		void multiplyBy(double factor) {
+		void multiplyBy(final double factor) {
 			this.terms.replaceAll((variableID, coefficient) -> coefficient * factor);
 		}
 
@@ -859,7 +859,7 @@ public class ILPProblem {
 		 * @param ilpSolution The solution to use
 		 * @return The value of the linear expression
 		 */
-		double getSolutionValue(ILPSolution ilpSolution) {
+		double getSolutionValue(final ILPSolution ilpSolution) {
 			double solution = 0;
 			for (int variableId : this.terms.keySet()) {
 				double coefficient = this.terms.get(variableId);
@@ -874,7 +874,7 @@ public class ILPProblem {
 		 * @param variableId The variable ID of the term's variable
 		 * @return
 		 */
-		private String getTermString(int variableId) {
+		private String getTermString(final int variableId) {
 			double coefficient = this.terms.get(variableId);
 			if (Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(1.0)) {
 				return ILPProblem.this.getVariable(variableId);
@@ -909,7 +909,7 @@ public class ILPProblem {
 		 * @param variableId the id of the variable
 		 * @return the coefficient, or 0 if no term for this variable has been defined
 		 */
-		double getCoefficient(int variableId) {
+		double getCoefficient(final int variableId) {
 			if (this.terms.containsKey(variableId)) {
 				return this.terms.get(variableId);
 			}
@@ -920,7 +920,7 @@ public class ILPProblem {
 		 * @param variableId
 		 * @return the coefficient of the variable that was removed
 		 */
-		double removeTerm(int variableId) {
+		double removeTerm(final int variableId) {
 			double coefficient = this.getCoefficient(variableId);
 			this.terms.remove(variableId);
 			return coefficient;
@@ -945,7 +945,7 @@ public class ILPProblem {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj)
 				return true;
 			if (obj == null)
@@ -1006,7 +1006,7 @@ public class ILPProblem {
 		 * @param variableAllocations Mapping of variables to the found solutions
 		 * @param optimal             Whether the found solution is optimal
 		 */
-		private ILPSolution(Int2IntOpenHashMap variableAllocations, boolean optimal, double solutionValue) {
+		private ILPSolution(final Int2IntOpenHashMap variableAllocations, final boolean optimal, final double solutionValue) {
 			super();
 			this.variableAllocations = variableAllocations;
 			this.optimal = optimal;
@@ -1019,7 +1019,7 @@ public class ILPProblem {
 		 * @param variable The variable identifier
 		 * @return The value of the variable in the solution
 		 */
-		public int getVariable(String variable) {
+		public int getVariable(final String variable) {
 			return this.getVariable(ILPProblem.this.getVariableId(variable));
 		}
 
@@ -1029,7 +1029,7 @@ public class ILPProblem {
 		 * @param variableId the id of the variable
 		 * @return
 		 */
-		int getVariable(int variableId) {
+		int getVariable(final int variableId) {
 			if (ILPProblem.this.fixedVariableValues.containsKey(variableId)) {
 				return ILPProblem.this.fixedVariableValues.get(variableId);
 			}
@@ -1097,7 +1097,7 @@ public class ILPProblem {
 		 * @see java.lang.Object#equals(java.lang.Object)
 		 */
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
