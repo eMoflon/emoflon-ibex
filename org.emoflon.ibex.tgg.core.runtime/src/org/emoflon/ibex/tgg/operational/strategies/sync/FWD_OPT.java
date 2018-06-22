@@ -119,6 +119,8 @@ public abstract class FWD_OPT extends OPT {
 		// Remove adapters to avoid problems with notifications
 		t.eAdapters().clear();
 		t.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+		c.eAdapters().clear();
+		c.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
 
 		// Copy and fix the model in the process
 		FixingCopier.fixAll(t, c, "target");

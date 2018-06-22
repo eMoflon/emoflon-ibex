@@ -138,6 +138,10 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 		else if(type.getInstanceClass().equals(int.class) && o.getClass().equals(Double.class))
 			// Approximate result and squeeze into an int
 			return ((Double)o).intValue();
+		else if(o instanceof String && type.getInstanceClass().equals(int.class))
+			return Integer.parseInt((String) o);
+		else if(o instanceof String && type.getInstanceClass().equals(double.class))
+			return Double.parseDouble((String) o);
 		else
 			throw new IllegalStateException("Cannot coerce " + o.getClass() + " to " + type.getInstanceClassName());
 	}

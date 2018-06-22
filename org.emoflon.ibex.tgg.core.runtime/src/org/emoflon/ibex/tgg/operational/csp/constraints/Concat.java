@@ -32,13 +32,13 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 		}
 
 		case "BBBF": {
-			c.bindToValue((String) a.getValue() + separator.getValue() + b.getValue());
+			c.bindToValue("" + a.getValue() + separator.getValue() + b.getValue());
 			setSatisfied(checkAllValues(separator, a, b, c));
 			return;
 		}
 
 		case "BBFB": {
-			String[] split = ((String) c.getValue()).split(Pattern.quote((String) separator.getValue()));
+			String[] split = ("" + c.getValue()).split(Pattern.quote("" + separator.getValue()));
 			if (split.length != 2) {
 				setSatisfied(false);
 			} else {
@@ -49,14 +49,14 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 		}
 
 		case "BFBB": {
-			String[] split = c.getValue().toString().split(Pattern.quote((String) separator.getValue()));
+			String[] split = c.getValue().toString().split(Pattern.quote("" + separator.getValue()));
 			a.bindToValue(split[0]);
 			setSatisfied(checkAllValues(separator, a, b, c));
 			return;
 		}
 
 		case "BFFB": {
-			String[] split = c.getValue().toString().split(Pattern.quote((String) separator.getValue()));
+			String[] split = c.getValue().toString().split(Pattern.quote("" + separator.getValue()));
 			if (split.length == 2) {
 				a.bindToValue(split[0]);
 				b.bindToValue(split[1]);
@@ -68,8 +68,8 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 		// modelgen implementations
 		case "BFFF": {
 			setSatisfied(true);
-			String value1 = (String) generateValue(a.getType());
-			String value2 = (String) generateValue(b.getType());
+			String value1 = "" + generateValue(a.getType());
+			String value2 = "" + generateValue(b.getType());
 			a.bindToValue(value1);
 			b.bindToValue(value2);
 			c.bindToValue(value1 + separator.getValue() + value2);
@@ -78,15 +78,15 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 
 		case "BBFF": {
 			setSatisfied(true);
-			String value = (String) generateValue(b.getType());
+			String value = "" + generateValue(b.getType());
 			b.bindToValue(value);
-			c.bindToValue((String) a.getValue() + separator.getValue() + value);
+			c.bindToValue("" + a.getValue() + separator.getValue() + value);
 			return;
 		}
 
 		case "BFBF": {
 			setSatisfied(true);
-			String value1 = (String) generateValue(a.getType());
+			String value1 = "" + generateValue(a.getType());
 			a.bindToValue(value1);
 			c.bindToValue(value1 + separator.getValue() + b.getValue());
 			return;
@@ -101,6 +101,6 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 	private boolean checkAllValues(RuntimeTGGAttributeConstraintVariable separator,
 			RuntimeTGGAttributeConstraintVariable a, RuntimeTGGAttributeConstraintVariable b,
 			RuntimeTGGAttributeConstraintVariable c) {
-		return ((String) a.getValue() + separator.getValue() + b.getValue()).equals(c.getValue());
+		return ("" + a.getValue() + separator.getValue() + b.getValue()).equals(c.getValue());
 	}
 }
