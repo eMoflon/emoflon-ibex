@@ -8,6 +8,7 @@ import IBeXLanguage.IBeXDeletePattern;
  * The interface for the interpreter which applies an {@link IBeXDeletePattern}.
  */
 public interface IDeletePatternInterpreter {
+
 	/**
 	 * Applies the deletions of the pattern on the given match.
 	 * 

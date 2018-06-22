@@ -37,7 +37,8 @@ public class SimpleMatch implements IMatch {
 	 */
 	public SimpleMatch(final IMatch match) {
 		this.patternName = match.getPatternName();
-		this.parameters = new Object2ObjectLinkedOpenHashMap<String, Object>((int) (match.getParameterNames().size() * Object2ObjectLinkedOpenHashMap.DEFAULT_LOAD_FACTOR)); 
+		this.parameters = new Object2ObjectLinkedOpenHashMap<String, Object>(
+				(int) (match.getParameterNames().size() * Object2ObjectLinkedOpenHashMap.DEFAULT_LOAD_FACTOR));
 		match.getParameterNames().forEach(parameterName -> {
 			this.parameters.put(parameterName, match.get(parameterName));
 		});
@@ -55,17 +56,17 @@ public class SimpleMatch implements IMatch {
 
 	@Override
 	public Object get(final String name) {
-		return this.parameters.get(name);
+		return parameters.get(name);
 	}
 
 	@Override
 	public void put(final String name, final Object object) {
-		this.parameters.put(name, object);
+		parameters.put(name, object);
 	}
 
 	@Override
 	public Collection<String> getParameterNames() {
-		return this.parameters.keySet();
+		return parameters.keySet();
 	}
 
 	@Override
@@ -75,13 +76,7 @@ public class SimpleMatch implements IMatch {
 
 	@Override
 	public boolean equals(final Object object) {
-		if (object == null) {
-			return false;
-		}
-		if (object instanceof IMatch) {
-			return isEqual((IMatch) object);
-		}
-		return false;
+		return object instanceof IMatch && isEqual((IMatch) object);
 	}
 
 	@Override
@@ -97,9 +92,8 @@ public class SimpleMatch implements IMatch {
 
 		return s.toString();
 	}
-	
+
 	public IMatch copy() {
-		SimpleMatch copy = new SimpleMatch(this);
-		return copy;
+		return new SimpleMatch(this);
 	}
 }

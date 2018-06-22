@@ -48,17 +48,18 @@ class JavaFileGenerator {
 	public def generateAPIClass(IFolder apiPackage, GTRuleSet gtRuleSet, String patternPath) {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
+			'org.eclipse.emf.ecore.resource.Resource',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
 			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI'
 		)
 		gtRuleSet.rules.forEach [
-			imports.add('''«this.getSubPackageName('api.rules')».«getRuleClassName(it)»''')
-			imports.addAll(this.eClassifiersManager.getImportsForDataTypes(it.parameters))
+			imports.add('''«getSubPackageName('api.rules')».«getRuleClassName(it)»''')
+			imports.addAll(eClassifiersManager.getImportsForDataTypes(it.parameters))
 		]
 
 		val apiSourceCode = '''			
-			«printHeader(this.getSubPackageName('api'), imports)»
+			«printHeader(getSubPackageName('api'), imports)»
 			
 			/**
 			 * The «APIClassName» with «gtRuleSet.rules.size» rules.
@@ -69,37 +70,38 @@ class JavaFileGenerator {
 				/**
 				 * Creates a new «APIClassName».
 				 *
-				 * The are loaded from the default pattern path.
-				 *
-				 * @param engine
-				 *            the engine to use for queries and transformations
-				 * @param model
-				 *            the resource set containing the model file
-				 */
-				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model) {
-					super(engine, model);
-					URI uri = URI.createFileURI("../" + patternPath);
-					this.interpreter.loadPatternSet(uri);
-				}
-			
-				/**
-				 * Creates a new «APIClassName».
-				 *
-				 * The are loaded from the pattern path (the given workspace path concatenated
-				 * with the project relative path to the pattern file).
-				 *
 				 * @param engine
 				 *            the engine to use for queries and transformations
 				 * @param model
 				 *            the resource set containing the model file
 				 * @param workspacePath
-				 *            the path to the workspace
+				 *            the path to the workspace which is concatenated with the project
+				 *            relative path to the patterns
 				 */
-				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model,
-						final String workspacePath) {
+				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model, final String workspacePath) {
 					super(engine, model);
 					URI uri = URI.createFileURI(workspacePath + patternPath);
-					this.interpreter.loadPatternSet(uri);
+					interpreter.loadPatternSet(uri);
+				}
+			
+				/**
+				 * Creates a new «APIClassName».
+				 *
+				 * @param engine
+				 *            the engine to use for queries and transformations
+				 * @param model
+				 *            the resource set containing the model file
+				 * @param defaultResource
+				 *            the default resource
+				 * @param workspacePath
+				 *            the path to the workspace which is concatenated with the project
+				 *            relative path to the patterns
+				 */
+				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model, final Resource defaultResource,
+						final String workspacePath) {
+					super(engine, model, defaultResource);
+					URI uri = URI.createFileURI(workspacePath + patternPath);
+					interpreter.loadPatternSet(uri);
 				}
 			«FOR rule : gtRuleSet.rules»
 				
@@ -110,7 +112,7 @@ class JavaFileGenerator {
 					 * @return the new instance of the «getRuleType(rule)»
 					 */
 					public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
-						return new «getRuleClassName(rule)»(this, this.interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
+						return new «getRuleClassName(rule)»(this, interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
 					}
 			«ENDFOR»
 			}
@@ -122,30 +124,55 @@ class JavaFileGenerator {
 	 * Generates the Java App class.
 	 */
 	public def generateAppClass(IFolder apiPackage) {
-		val imports = this.eClassifiersManager.importsForPackages
+		val imports = eClassifiersManager.importsForPackages
 		imports.addAll(
 			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationApp'
 		)
-		val appClassName = this.classNamePrefix + 'App'
+		val appClassName = classNamePrefix + 'App'
 		val appSourceCode = '''
-			«printHeader(this.getSubPackageName('api'), imports)»
+			«printHeader(getSubPackageName('api'), imports)»
 			
 			/**
-			 * An application using the «this.APIClassName».
+			 * An application using the «APIClassName».
 			 */
-			public abstract class «appClassName» extends GraphTransformationApp<«this.APIClassName»> {
+			public class «appClassName» extends GraphTransformationApp<«APIClassName»> {
+			
+				/**
+				 * Creates the application with the given engine.
+				 * 
+				 * @param engine
+				 *            the pattern matching engine
+				 */
+				public «appClassName»(final IContextPatternInterpreter engine) {
+					super(engine);
+				}
+			
+				/**
+				 * Creates the application with the given engine.
+				 * 
+				 * @param engine
+				 *            the pattern matching engine
+				 * @param workspacePath
+				 *            the workspace path
+				 */
+				public «appClassName»(final IContextPatternInterpreter engine, final String workspacePath) {
+					super(engine, workspacePath);
+				}
 			
 				@Override
 				public void registerMetaModels() {
-					«FOR p : this.eClassifiersManager.packages»
+					«FOR p : eClassifiersManager.packages»
 						registerMetaModel(«p».eINSTANCE);
 					«ENDFOR»
 				}
 			
 				@Override
-				public «this.APIClassName» initAPI(final IContextPatternInterpreter engine) {
-					return new «this.APIClassName»(engine, resourceSet, workspacePath);
+				public «APIClassName» initAPI() {
+					if (defaultResource.isPresent()) {
+						return new «APIClassName»(engine, resourceSet, defaultResource.get(), workspacePath);
+					}
+					return new «APIClassName»(engine, resourceSet, workspacePath);
 				}
 			}
 		'''
@@ -156,21 +183,31 @@ class JavaFileGenerator {
 	 * Generates the App class for the concrete engine. 
 	 */
 	public def generateAppClassForEngine(IFolder apiPackage, GTEngineExtension engine) {
-		val appClassName = this.classNamePrefix + 'App'
-		val engineAppClassName = this.classNamePrefix + engine.engineName + 'App'
+		val appClassName = classNamePrefix + 'App'
+		val engineAppClassName = classNamePrefix + engine.engineName + 'App'
 		val concreteAppSourceCode = '''
-			«printHeader(this.getSubPackageName('api'), engine.imports)»
+			«printHeader(getSubPackageName('api'), engine.imports)»
 			
 			/**
-			 * An application using the «this.APIClassName» using «engine.engineName».
+			 * An application using the «APIClassName» with «engine.engineName».
 			 */
 			public class «engineAppClassName» extends «appClassName» {
 			
 				/**
-				 * Initializes an API using «engine.engineName».
+				 * Creates the application with «engine.engineName».
 				 */
-				public «this.APIClassName» initAPI() {
-					return this.initAPI(new «engine.engineClassName»());
+				public «engineAppClassName»() {
+					super(new «engine.engineClassName»());
+				}
+			
+				/**
+				 * Creates the application with «engine.engineName».
+				 * 
+				 * @param workspacePath
+				 *            the workspace path
+				 */
+				public «engineAppClassName»(final String workspacePath) {
+					super(new «engine.engineClassName»(), workspacePath);
 				}
 			}
 		'''
@@ -181,15 +218,15 @@ class JavaFileGenerator {
 	 * Generates the Java Match class for the given rule.
 	 */
 	public def generateMatchClass(IFolder apiMatchesPackage, GTRule rule) {
-		val imports = this.eClassifiersManager.getImportsForNodeTypes(rule.nodes.toList)
+		val imports = eClassifiersManager.getImportsForNodeTypes(rule.nodes.toList)
 		imports.addAll(
 			'org.emoflon.ibex.common.operational.IMatch',
 			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
-			'''«this.getSubPackageName('api.rules')».«getRuleClassName(rule)»'''
+			'''«getSubPackageName('api.rules')».«getRuleClassName(rule)»'''
 		)
 
 		val matchSourceCode = '''
-			«printHeader(this.getSubPackageName('api.matches'), imports)»
+			«printHeader(getSubPackageName('api.matches'), imports)»
 			
 			/**
 			 * A match for the «getRuleType(rule)» «getRuleSignature(rule)».
@@ -210,7 +247,7 @@ class JavaFileGenerator {
 				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» pattern, final IMatch match) {
 					super(pattern, match);
 					«FOR node : rule.nodes»
-						this.«getVariableName(node)» = («getVariableType(node)») match.get("«node.name»");
+						«getVariableName(node)» = («getVariableType(node)») match.get("«node.name»");
 					«ENDFOR»
 				}
 			«FOR node : rule.nodes»
@@ -221,7 +258,7 @@ class JavaFileGenerator {
 					 * @return the «node.name»
 					 */
 					public «getVariableType(node)» «getMethodName('get', node.name)»() {
-						return this.«getVariableName(node)»;
+						return «getVariableName(node)»;
 					}
 			«ENDFOR»
 			
@@ -229,9 +266,9 @@ class JavaFileGenerator {
 				public String toString() {
 					String s = "match {" + System.lineSeparator();
 					«FOR node : rule.nodes»
-						s += "	«node.name» --> " + this.«getVariableName(node)» + System.lineSeparator();
+						s += "	«node.name» --> " + «getVariableName(node)» + System.lineSeparator();
 					«ENDFOR»
-					s += "} for " + this.getPattern();
+					s += "} for " + getPattern();
 					return s;
 				}
 			}
@@ -245,23 +282,23 @@ class JavaFileGenerator {
 	public def generateRuleClass(IFolder rulesPackage, GTRule rule) {
 		val ruleType = if(rule.executable) 'rule' else 'pattern'
 		val ruleClassType = if(rule.executable) 'GraphTransformationRule' else 'GraphTransformationPattern'
-		val imports = this.eClassifiersManager.getImportsForNodeTypes(rule.ruleNodes)
-		imports.addAll(this.eClassifiersManager.getImportsForDataTypes(rule.parameters))
+		val imports = eClassifiersManager.getImportsForNodeTypes(rule.ruleNodes)
+		imports.addAll(eClassifiersManager.getImportsForDataTypes(rule.parameters))
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
 			'org.emoflon.ibex.common.operational.IMatch',
 			'''org.emoflon.ibex.gt.api.«ruleClassType»''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
-			'''«this.getSubPackageName('api')».«APIClassName»''',
-			'''«this.getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
+			'''«getSubPackageName('api')».«APIClassName»''',
+			'''«getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
 		)
 		if (rule.parameters.size > 0 || rule.ruleNodes.size > 0) {
 			imports.add('java.util.Objects');
 		}
 
 		val ruleSourceCode = '''
-			«printHeader(this.getSubPackageName('api.rules'), imports)»
+			«printHeader(getSubPackageName('api.rules'), imports)»
 			
 			/**
 			 * The «ruleType» «getRuleSignature(rule)» which does the following:
@@ -286,7 +323,7 @@ class JavaFileGenerator {
 						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR»
 					super(api, interpreter, patternName);
 					«FOR parameter : rule.parameters»
-						this.«getMethodName('set', parameter.name)»(«parameter.name»Value);
+						«getMethodName('set', parameter.name)»(«parameter.name»Value);
 					«ENDFOR»
 				}
 			
@@ -312,7 +349,7 @@ class JavaFileGenerator {
 					 *            the object to set
 					 */
 					public «getRuleClassName(rule)» «getMethodName('bind', node.name)»(final «getVariableType(node)» object) {
-						this.parameters.put("«node.name»", Objects.requireNonNull(object, "«node.name» must not be null!"));
+						parameters.put("«node.name»", Objects.requireNonNull(object, "«node.name» must not be null!"));
 						return this;
 					}
 			«ENDFOR»
@@ -325,7 +362,7 @@ class JavaFileGenerator {
 					 *            the value to set
 					 */
 					public «getRuleClassName(rule)» «getMethodName('set', parameter.name)»(final «getJavaType(parameter.type)» value) {
-						this.parameters.put("«parameter.name»", Objects.requireNonNull(value, "«parameter.name» must not be null!"));
+						parameters.put("«parameter.name»", Objects.requireNonNull(value, "«parameter.name» must not be null!"));
 						return this;
 					}
 			«ENDFOR»
@@ -334,10 +371,10 @@ class JavaFileGenerator {
 				public String toString() {
 					String s = "«ruleType» " + patternName + " {" + System.lineSeparator();
 					«FOR node : rule.ruleNodes»
-						s += "	«node.name» --> " + this.parameters.get("«node.name»") + System.lineSeparator();
+						s += "	«node.name» --> " + parameters.get("«node.name»") + System.lineSeparator();
 					«ENDFOR»
 					«FOR parameter : rule.parameters»
-						s += "	«parameter.name» --> " + this.parameters.get("«parameter.name»") + System.lineSeparator();
+						s += "	«parameter.name» --> " + parameters.get("«parameter.name»") + System.lineSeparator();
 					«ENDFOR»
 					s += "}";
 					return s;
@@ -364,15 +401,15 @@ class JavaFileGenerator {
 	 * Returns the name of the API class.
 	 */
 	private def getAPIClassName() {
-		return this.classNamePrefix + "API"
+		return classNamePrefix + "API"
 	}
 
 	/**
 	 * Returns the name of the package.
 	 */
 	private def getSubPackageName(String subPackage) {
-		val dot = if(this.packageName.equals("")) "" else "."
-		return '''«this.packageName»«dot»«subPackage»'''
+		val dot = if(packageName.equals("")) "" else "."
+		return '''«packageName»«dot»«subPackage»'''
 	}
 
 	/**
