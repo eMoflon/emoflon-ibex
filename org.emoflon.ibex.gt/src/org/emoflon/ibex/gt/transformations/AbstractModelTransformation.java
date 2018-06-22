@@ -40,7 +40,7 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	 *            the error to log
 	 */
 	protected final void logError(final String error) {
-		this.errors.add(error);
+		errors.add(error);
 	}
 
 	/**
@@ -52,7 +52,7 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	 *            arguments for String.format
 	 */
 	protected final void logError(final String error, final Object... args) {
-		this.errors.add(String.format(error, args));
+		errors.add(String.format(error, args));
 	}
 
 	/**
@@ -61,7 +61,7 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	 * @return the error messages
 	 */
 	public final List<String> getErrors() {
-		return this.errors;
+		return errors;
 	}
 
 	/**
@@ -70,7 +70,7 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	 * @return the number of errors
 	 */
 	public final int countErrors() {
-		return this.errors.size();
+		return errors.size();
 	}
 
 	/**
@@ -79,6 +79,6 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	 * @return <code>false</code> if no errors occurred during the transformation
 	 */
 	public final boolean hasErrors() {
-		return !this.errors.isEmpty();
+		return !errors.isEmpty();
 	}
 }

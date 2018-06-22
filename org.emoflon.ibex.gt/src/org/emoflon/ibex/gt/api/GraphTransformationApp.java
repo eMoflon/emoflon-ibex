@@ -1,12 +1,12 @@
 package org.emoflon.ibex.gt.api;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.Optional;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.gt.api.GraphTransformationAPI;
@@ -18,12 +18,47 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	/**
 	 * The resource set.
 	 */
-	protected ResourceSet resourceSet = new ResourceSetImpl();
+	protected ResourceSet resourceSet;
+
+	/**
+	 * The pattern matching engine.
+	 */
+	protected final IContextPatternInterpreter engine;
 
 	/**
 	 * The workspace path.
 	 */
 	protected String workspacePath = "../";
+
+	/**
+	 * The default resource if set explicitly.
+	 */
+	protected Optional<Resource> defaultResource = Optional.empty();
+
+	/**
+	 * Creates the application with the given engine.
+	 * 
+	 * @param engine
+	 *            the pattern matching engine
+	 */
+	public GraphTransformationApp(final IContextPatternInterpreter engine) {
+		this.engine = engine;
+		this.resourceSet = engine.createAndPrepareResourceSet(workspacePath);
+	}
+
+	/**
+	 * Creates the application with the given engine.
+	 * 
+	 * @param engine
+	 *            the pattern matching engine
+	 * @param workspacePath
+	 *            the workspace path
+	 */
+	public GraphTransformationApp(final IContextPatternInterpreter engine, final String workspacePath) {
+		this.engine = engine;
+		this.resourceSet = engine.createAndPrepareResourceSet(workspacePath);
+		this.workspacePath = workspacePath;
+	}
 
 	/**
 	 * Creates the model file with the given URI.
@@ -50,6 +85,15 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	}
 
 	/**
+	 * Returns the model.
+	 * 
+	 * @return the model
+	 */
+	public ResourceSet getModel() {
+		return resourceSet;
+	}
+
+	/**
 	 * Saves all resources in the resource set.
 	 * 
 	 * @throws IOException
@@ -71,19 +115,9 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	}
 
 	/**
-	 * Sets the resource set.
-	 * 
-	 * @param resourceSet
-	 *            the resource set
-	 */
-	public void setResourceSet(final ResourceSet resourceSet) {
-		this.resourceSet = resourceSet;
-	}
-
-	/**
 	 * Add the meta-models to the package registry.
 	 */
-	public abstract void registerMetaModels();
+	protected abstract void registerMetaModels();
 
 	/**
 	 * Registers the given EPackage as a meta-model.
@@ -96,14 +130,16 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	}
 
 	/**
-	 * Sets the workspace path to the given path.
+	 * Sets the default resource.
 	 * 
-	 * @param workspacePath
-	 *            the workspace path to set
+	 * @param defaultResource
+	 *            the default resource
 	 */
-	public void setWorkspacePath(final String workspacePath) {
-		Objects.requireNonNull(workspacePath, "The workspace path must not be null!");
-		this.workspacePath = workspacePath;
+	public void setDefaultResource(final Resource defaultResource) {
+		if (!resourceSet.getResources().contains(defaultResource)) {
+			throw new IllegalArgumentException(defaultResource.getURI() + " is not part of the model");
+		}
+		this.defaultResource = Optional.of(defaultResource);
 	}
 
 	/**
@@ -111,5 +147,5 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 * 
 	 * @return the created API
 	 */
-	public abstract API initAPI(IContextPatternInterpreter engine);
+	public abstract API initAPI();
 }

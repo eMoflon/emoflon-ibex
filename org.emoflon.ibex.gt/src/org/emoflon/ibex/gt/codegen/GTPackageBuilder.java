@@ -77,16 +77,16 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	public void run(final IProject project) {
 		this.project = project;
 		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
-			this.logError("The build for GT projects only works for plugin projects.");
+			logError("The build for GT projects only works for plugin projects.");
 			return;
 		}
 
-		this.updateManifest(manifest -> this.processManifestForProject(manifest));
+		updateManifest(manifest -> processManifestForProject(manifest));
 		try {
-			IFolder folder = this.ensureFolderExists(this.project.getFolder(GTPackageBuilder.SOURCE_GEN_FOLDER));
+			IFolder folder = ensureFolderExists(project.getFolder(SOURCE_GEN_FOLDER));
 			ClasspathUtil.makeSourceFolderIfNecessary(folder);
 		} catch (CoreException e) {
-			this.logError("Could not add src-gen as a source folder.");
+			logError("Could not add src-gen as a source folder.");
 		}
 	}
 
@@ -98,19 +98,19 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		this.project = project;
 		this.path = packagePath;
 		this.packageName = this.path.toString().replace("/", ".");
-		IFolder apiPackage = this.ensureSourceGenPackageExists();
+		IFolder apiPackage = ensureSourceGenPackageExists();
 
 		// Load files into editor models.
 		XtextResourceSet resourceSet = new XtextResourceSet();
 		Map<IFile, EditorGTFile> editorModels = new HashMap<IFile, EditorGTFile>();
 		Set<String> metaModels = new HashSet<String>();
-		this.getFiles().forEach(gtFile -> {
+		getFiles().forEach(gtFile -> {
 			URI uri = URI.createPlatformResourceURI(gtFile.getFullPath().toString(), true);
 			Resource file = resourceSet.getResource(uri, true);
 			try {
 				EcoreUtil2.resolveLazyCrossReferences(file, () -> false);
 			} catch (WrappedException e) {
-				this.log(String.format("Error resolving cross references in file %s.", gtFile.getName()));
+				log(String.format("Error resolving cross references in file %s.", gtFile.getName()));
 			}
 
 			EditorGTFile editorModel = (EditorGTFile) file.getContents().get(0);
@@ -119,22 +119,22 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		});
 		EcoreUtil.resolveAll(resourceSet);
 
-		this.checkEditorModelsForDuplicatePatternNames(editorModels);
+		checkEditorModelsForDuplicatePatternNames(editorModels);
 
 		// Transform editor models to rules of the GT API model.
-		GTRuleSet gtRuleSet = this.transformEditorModels(editorModels, new EditorToGTModelTransformation(),
+		GTRuleSet gtRuleSet = transformEditorModels(editorModels, new EditorToGTModelTransformation(),
 				"%s errors during editor to GT API model transformation");
-		this.saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
+		saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
 
 		// Transform editor models to IBeXPatterns.
-		IBeXPatternSet ibexPatternSet = this.transformEditorModels(editorModels,
-				new EditorToIBeXPatternTransformation(), "%s errors during editor model to pattern transformation");
-		this.saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
+		IBeXPatternSet ibexPatternSet = transformEditorModels(editorModels, new EditorToIBeXPatternTransformation(),
+				"%s errors during editor model to pattern transformation");
+		saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
 
 		// Generate the Java code.
-		this.generateAPI(apiPackage, gtRuleSet, this.loadMetaModels(metaModels, resourceSet));
-		this.updateManifest(manifest -> this.processManifestForPackage(manifest));
-		this.log("Finished build.");
+		generateAPI(apiPackage, gtRuleSet, loadMetaModels(metaModels, resourceSet));
+		updateManifest(manifest -> processManifestForPackage(manifest));
+		log("Finished build.");
 	}
 
 	/**
@@ -143,19 +143,19 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @return the folder
 	 */
 	private IFolder ensureSourceGenPackageExists() {
-		IFolder folder = this.ensureFolderExists(this.project.getFolder(GTPackageBuilder.SOURCE_GEN_FOLDER));
-		for (int i = 0; (i < this.path.segmentCount()); i++) {
-			folder = this.ensureFolderExists(folder.getFolder(this.path.segment(i)));
+		IFolder folder = ensureFolderExists(project.getFolder(GTPackageBuilder.SOURCE_GEN_FOLDER));
+		for (int i = 0; (i < path.segmentCount()); i++) {
+			folder = ensureFolderExists(folder.getFolder(path.segment(i)));
 		}
 		folder = folder.getFolder("api");
 		if (folder.exists()) {
 			try {
 				folder.delete(true, null);
 			} catch (CoreException e) {
-				this.log("Could not delete old package.");
+				log("Could not delete old package.");
 			}
 		}
-		return this.ensureFolderExists(folder);
+		return ensureFolderExists(folder);
 	}
 
 	/**
@@ -166,9 +166,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private List<IFile> getFiles() {
 		IResource[] allFiles = null;
 		try {
-			allFiles = this.project.getFolder(GTBuilder.SOURCE_FOLDER).getFolder(this.path).members();
+			allFiles = project.getFolder(GTBuilder.SOURCE_FOLDER).getFolder(path).members();
 		} catch (CoreException e) {
-			this.logError("Could not read files.");
+			logError("Could not read files.");
 		}
 		return Arrays.stream(allFiles) //
 				.filter(f -> f instanceof IFile).map(f -> (IFile) f) //
@@ -187,7 +187,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 *            the model to save
 	 */
 	private void saveModelFile(final IFile file, final ResourceSet resourceSet, final EObject model) {
-		String uriString = this.project.getName() + "/" + file.getProjectRelativePath().toString();
+		String uriString = project.getName() + "/" + file.getProjectRelativePath().toString();
 		URI uri = URI.createPlatformResourceURI(uriString, true);
 		Resource resource = resourceSet.createResource(uri);
 		resource.getContents().add(model);
@@ -202,7 +202,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		try {
 			resource.save(options);
 		} catch (IOException e) {
-			this.log("Could not save " + file.getName());
+			log("Could not save " + file.getName());
 		}
 	}
 
@@ -228,7 +228,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 				ecoreFile.load(null);
 				eClassifiersManager.loadMetaModelClasses(ecoreFile);
 			} catch (Exception e) {
-				this.log("Could not load meta-model " + uri + ".");
+				log("Could not load meta-model " + uri + ".");
 			}
 		});
 		return eClassifiersManager;
@@ -249,7 +249,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			editorModel.getPatterns().forEach(rule -> {
 				String ruleName = rule.getName();
 				if (ruleNameToFile.containsKey(ruleName)) {
-					this.logError(String.format("Rule %s already defined in %s. Ignoring definition in %s.", ruleName,
+					logError(String.format("Rule %s already defined in %s. Ignoring definition in %s.", ruleName,
 							ruleNameToFile.get(ruleName).getName(), gtFile.getName())
 							+ " Please rename one of the rule definitions.");
 					duplicates.add(rule);
@@ -295,8 +295,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private void generateAPI(final IFolder apiPackage, final GTRuleSet gtRuleSet,
 			final EClassifiersManager eClassifiersManager) {
 		JavaFileGenerator generator = new JavaFileGenerator(getClassNamePrefix(), packageName, eClassifiersManager);
-		IFolder matchesPackage = this.ensureFolderExists(apiPackage.getFolder("matches"));
-		IFolder rulesPackage = this.ensureFolderExists(apiPackage.getFolder("rules"));
+		IFolder matchesPackage = ensureFolderExists(apiPackage.getFolder("matches"));
+		IFolder rulesPackage = ensureFolderExists(apiPackage.getFolder("rules"));
 		gtRuleSet.getRules().forEach(gtRule -> {
 			generator.generateMatchClass(matchesPackage, gtRule);
 			generator.generateRuleClass(rulesPackage, gtRule);
@@ -305,7 +305,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		generator.generateAPIClass(apiPackage, gtRuleSet,
 				String.format("%s/%s/%s/api/ibex-patterns.xmi", project.getName(), SOURCE_GEN_FOLDER, path.toString()));
 		generator.generateAppClass(apiPackage);
-		this.collectEngineExtensions().forEach(e -> generator.generateAppClassForEngine(apiPackage, e));
+		collectEngineExtensions().forEach(e -> generator.generateAppClassForEngine(apiPackage, e));
 	}
 
 	/**
@@ -325,14 +325,14 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * Logs the message on the console.
 	 */
 	private void log(final String message) {
-		Logger.getRootLogger().info(this.getProjectAndPackageName() + ": " + message);
+		Logger.getRootLogger().info(getProjectAndPackageName() + ": " + message);
 	}
 
 	/**
 	 * Logs the error message on the console.
 	 */
 	private void logError(final String message) {
-		Logger.getRootLogger().error(this.getProjectAndPackageName() + ": " + message);
+		Logger.getRootLogger().error(getProjectAndPackageName() + ": " + message);
 	}
 
 	/**
@@ -341,13 +341,13 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @return the name string
 	 */
 	private String getProjectAndPackageName() {
-		if (this.packageName == null) {
-			return this.project.getName();
+		if (packageName == null) {
+			return project.getName();
 		}
-		if (this.packageName.equals("")) {
-			return this.project.getName() + ", default package";
+		if (packageName.equals("")) {
+			return project.getName() + ", default package";
 		}
-		return this.project.getName() + ", package " + this.packageName;
+		return project.getName() + ", package " + packageName;
 	}
 
 	/**
@@ -358,7 +358,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			try {
 				folder.create(true, true, null);
 			} catch (CoreException e) {
-				this.log("Could not create folder " + folder.getName() + ".");
+				log("Could not create folder " + folder.getName() + ".");
 			}
 		}
 		return folder;
@@ -379,9 +379,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private void updateManifest(final Function<Manifest, Boolean> updateFunction) {
 		try {
-			new ManifestFileUpdater().processManifest(this.project, manifest -> updateFunction.apply(manifest));
+			new ManifestFileUpdater().processManifest(project, manifest -> updateFunction.apply(manifest));
 		} catch (CoreException e) {
-			this.logError("Failed to update MANIFEST.MF.");
+			logError("Failed to update MANIFEST.MF.");
 		}
 	}
 
@@ -396,16 +396,16 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private boolean processManifestForProject(final Manifest manifest) {
 		List<String> dependencies = new ArrayList<String>();
 		dependencies.addAll(Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt"));
-		this.collectEngineExtensions().forEach(engine -> dependencies.addAll(engine.getDependencies()));
+		collectEngineExtensions().forEach(engine -> dependencies.addAll(engine.getDependencies()));
 
-		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, this.project.getName());
+		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, project.getName());
 		if (changedBasics) {
-			this.log("Initialized MANIFEST.MF.");
+			log("Initialized MANIFEST.MF.");
 		}
 
 		boolean updatedDependencies = ManifestFileUpdater.updateDependencies(manifest, dependencies);
 		if (updatedDependencies) {
-			this.log("Updated dependencies");
+			log("Updated dependencies");
 		}
 
 		return changedBasics || updatedDependencies;
@@ -419,11 +419,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @return whether the manifest was changed
 	 */
 	private boolean processManifestForPackage(final Manifest manifest) {
-		String apiPackageName = (this.packageName.equals("") ? "" : this.packageName + ".") + "api";
+		String apiPackageName = (packageName.equals("") ? "" : packageName + ".") + "api";
 		boolean updateExports = ManifestFileUpdater.updateExports(manifest,
 				Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules"));
 		if (updateExports) {
-			this.log("Updated exports");
+			log("Updated exports");
 		}
 		return updateExports;
 	}
