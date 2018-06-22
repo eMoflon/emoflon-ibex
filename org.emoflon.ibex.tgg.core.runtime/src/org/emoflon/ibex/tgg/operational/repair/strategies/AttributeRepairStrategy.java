@@ -6,8 +6,6 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
-import org.emoflon.ibex.tgg.operational.patterns.EmptyGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
