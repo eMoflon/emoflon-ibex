@@ -212,43 +212,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 
 	/**
-	 * Applies the pattern on the given match with SPO semantics.
-	 * 
-	 * @param match
-	 *            the match to execute the pattern on
-	 * @return the match after rule application
-	 */
-	public Optional<IMatch> apply(final IMatch match) {
-		return apply(match, PushoutApproach.SPO, new HashMap<String, Object>());
-	}
-
-	/**
-	 * Applies the pattern on the given match with SPO semantics.
-	 * 
-	 * @param match
-	 *            the match to execute the pattern on
-	 * @param parameters
-	 *            the parameters to pass
-	 * @return the match after rule application
-	 */
-	public Optional<IMatch> apply(final IMatch match, final Map<String, Object> parameters) {
-		return apply(match, PushoutApproach.SPO, parameters);
-	}
-
-	/**
-	 * Executes the pattern.
-	 * 
-	 * @param match
-	 *            the match to execute the pattern on
-	 * @param po
-	 *            the pushout approach to use
-	 * @return the match after rule application
-	 */
-	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po) {
-		return apply(match, po, new HashMap<String, Object>());
-	}
-
-	/**
 	 * Executes the pattern.
 	 * 
 	 * @param match
