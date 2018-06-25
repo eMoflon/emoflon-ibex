@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
@@ -130,9 +131,17 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the list of matches (can be empty if no matches exist)
 	 */
 	public final Collection<M> findMatches() {
+		return matchStream().collect(Collectors.toList());
+	}
+
+	/**
+	 * Finds and returns all matches for the pattern as a Stream.
+	 * 
+	 * @return the Stream of matches
+	 */
+	public final Stream<M> matchStream() {
 		return interpreter.matchStream(patternName, getParameters()) //
-				.map(m -> convertMatch(m)) //
-				.collect(Collectors.toList());
+				.map(m -> convertMatch(m));
 	}
 
 	/**
@@ -143,7 +152,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            a Consumer for the matches found
 	 */
 	public final void forEachMatch(final Consumer<M> action) {
-		findMatches().forEach(action);
+		matchStream().forEach(action);
 	}
 
 	/**
