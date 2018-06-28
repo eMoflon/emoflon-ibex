@@ -78,8 +78,7 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 	 */
 	public EList<TGGAttributeConstraint> getTggAttributeConstraints() {
 		if (tggAttributeConstraints == null) {
-			tggAttributeConstraints = new EObjectContainmentEList<TGGAttributeConstraint>(TGGAttributeConstraint.class,
-					this, CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
+			tggAttributeConstraints = new EObjectContainmentEList<TGGAttributeConstraint>(TGGAttributeConstraint.class, this, CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
 		}
 		return tggAttributeConstraints;
 	}
@@ -91,8 +90,7 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 	 */
 	public EList<TGGParamValue> getParameterValues() {
 		if (parameterValues == null) {
-			parameterValues = new EObjectContainmentEList<TGGParamValue>(TGGParamValue.class, this,
-					CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES);
+			parameterValues = new EObjectContainmentEList<TGGParamValue>(TGGParamValue.class, this, CspPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES);
 		}
 		return parameterValues;
 	}

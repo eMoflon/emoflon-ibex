@@ -89,9 +89,8 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 			return (InplaceAttributesPackage) EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI);
 
 		// Obtain or create and register package
-		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE
-				.get(eNS_URI) instanceof InplaceAttributesPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI)
-						: new InplaceAttributesPackageImpl());
+		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE.get(eNS_URI) instanceof InplaceAttributesPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI)
+				: new InplaceAttributesPackageImpl());
 
 		isInited = true;
 
@@ -99,26 +98,19 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 		EcorePackage.eINSTANCE.eClass();
 
 		// Obtain or create and register interdependencies
-		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
-						: LanguagePackage.eINSTANCE);
-		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(CspPackage.eNS_URI) instanceof CspPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI)
-						: CspPackage.eINSTANCE);
-		DefinitionPackageImpl theDefinitionPackage = (DefinitionPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(DefinitionPackage.eNS_URI) instanceof DefinitionPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI)
-						: DefinitionPackage.eINSTANCE);
-		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(BasicPackage.eNS_URI) instanceof BasicPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI)
-						: BasicPackage.eINSTANCE);
-		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
-						: ExpressionsPackage.eINSTANCE);
+		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
+				: LanguagePackage.eINSTANCE);
+		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI) instanceof CspPackageImpl ? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI)
+				: CspPackage.eINSTANCE);
+		DefinitionPackageImpl theDefinitionPackage = (DefinitionPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI) instanceof DefinitionPackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI)
+				: DefinitionPackage.eINSTANCE);
+		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI) instanceof BasicPackageImpl ? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI)
+				: BasicPackage.eINSTANCE);
+		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
+				: ExpressionsPackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theInplaceAttributesPackage.createPackageContents();
@@ -253,8 +245,7 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 
 		// Obtain other dependent packages
 		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
-		ExpressionsPackage theExpressionsPackage = (ExpressionsPackage) EPackage.Registry.INSTANCE
-				.getEPackage(ExpressionsPackage.eNS_URI);
+		ExpressionsPackage theExpressionsPackage = (ExpressionsPackage) EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI);
 
 		// Create type parameters
 
@@ -263,21 +254,16 @@ public class InplaceAttributesPackageImpl extends EPackageImpl implements Inplac
 		// Add supertypes to classes
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(tggInplaceAttributeExpressionEClass, TGGInplaceAttributeExpression.class,
-				"TGGInplaceAttributeExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGInplaceAttributeExpression_Attribute(), theEcorePackage.getEAttribute(), null, "attribute",
-				null, 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEClass(tggInplaceAttributeExpressionEClass, TGGInplaceAttributeExpression.class, "TGGInplaceAttributeExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGInplaceAttributeExpression_Attribute(), theEcorePackage.getEAttribute(), null, "attribute", null, 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGInplaceAttributeExpression_ValueExpr(), theExpressionsPackage.getTGGExpression(), null,
-				"valueExpr", null, 0, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE,
+		initEReference(getTGGInplaceAttributeExpression_ValueExpr(), theExpressionsPackage.getTGGExpression(), null, "valueExpr", null, 0, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGInplaceAttributeExpression_Operator(), this.getTGGAttributeConstraintOperators(),
-				"operator", "EQUAL", 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGInplaceAttributeExpression_Operator(), this.getTGGAttributeConstraintOperators(), "operator", "EQUAL", 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
-		initEEnum(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.class,
-				"TGGAttributeConstraintOperators");
+		initEEnum(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.class, "TGGAttributeConstraintOperators");
 		addEEnumLiteral(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.EQUAL);
 		addEEnumLiteral(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.UNEQUAL);
 		addEEnumLiteral(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.GR_EQUAL);

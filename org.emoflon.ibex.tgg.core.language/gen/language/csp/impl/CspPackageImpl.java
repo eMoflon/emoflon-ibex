@@ -96,9 +96,7 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 			return (CspPackage) EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI);
 
 		// Obtain or create and register package
-		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE
-				.get(eNS_URI) instanceof CspPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI)
-						: new CspPackageImpl());
+		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE.get(eNS_URI) instanceof CspPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new CspPackageImpl());
 
 		isInited = true;
 
@@ -106,26 +104,20 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		EcorePackage.eINSTANCE.eClass();
 
 		// Obtain or create and register interdependencies
-		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
-						: LanguagePackage.eINSTANCE);
-		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(InplaceAttributesPackage.eNS_URI) instanceof InplaceAttributesPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI)
-						: InplaceAttributesPackage.eINSTANCE);
-		DefinitionPackageImpl theDefinitionPackage = (DefinitionPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(DefinitionPackage.eNS_URI) instanceof DefinitionPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI)
-						: DefinitionPackage.eINSTANCE);
-		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(BasicPackage.eNS_URI) instanceof BasicPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI)
-						: BasicPackage.eINSTANCE);
-		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
-						: ExpressionsPackage.eINSTANCE);
+		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
+				: LanguagePackage.eINSTANCE);
+		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI) instanceof InplaceAttributesPackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI)
+				: InplaceAttributesPackage.eINSTANCE);
+		DefinitionPackageImpl theDefinitionPackage = (DefinitionPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI) instanceof DefinitionPackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI)
+				: DefinitionPackage.eINSTANCE);
+		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI) instanceof BasicPackageImpl ? EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI)
+				: BasicPackage.eINSTANCE);
+		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
+				: ExpressionsPackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theCspPackage.createPackageContents();
@@ -253,8 +245,7 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 
 		// Create classes and their features
 		tggAttributeConstraintLibraryEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_LIBRARY);
-		createEReference(tggAttributeConstraintLibraryEClass,
-				TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
+		createEReference(tggAttributeConstraintLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
 		createEReference(tggAttributeConstraintLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES);
 
 		tggAttributeConstraintEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT);
@@ -290,10 +281,8 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		setNsURI(eNS_URI);
 
 		// Obtain other dependent packages
-		DefinitionPackage theDefinitionPackage = (DefinitionPackage) EPackage.Registry.INSTANCE
-				.getEPackage(DefinitionPackage.eNS_URI);
-		ExpressionsPackage theExpressionsPackage = (ExpressionsPackage) EPackage.Registry.INSTANCE
-				.getEPackage(ExpressionsPackage.eNS_URI);
+		DefinitionPackage theDefinitionPackage = (DefinitionPackage) EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI);
+		ExpressionsPackage theExpressionsPackage = (ExpressionsPackage) EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI);
 		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 
 		// Add subpackages
@@ -307,31 +296,21 @@ public class CspPackageImpl extends EPackageImpl implements CspPackage {
 		tggAttributeVariableEClass.getESuperTypes().add(theExpressionsPackage.getTGGParamValue());
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(tggAttributeConstraintLibraryEClass, TGGAttributeConstraintLibrary.class,
-				"TGGAttributeConstraintLibrary", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeConstraintLibrary_TggAttributeConstraints(), this.getTGGAttributeConstraint(),
-				null, "tggAttributeConstraints", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getTGGAttributeConstraintLibrary_ParameterValues(), theExpressionsPackage.getTGGParamValue(),
-				null, "parameterValues", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT, !IS_VOLATILE,
+		initEClass(tggAttributeConstraintLibraryEClass, TGGAttributeConstraintLibrary.class, "TGGAttributeConstraintLibrary", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGAttributeConstraintLibrary_TggAttributeConstraints(), this.getTGGAttributeConstraint(), null, "tggAttributeConstraints", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGAttributeConstraintLibrary_ParameterValues(), theExpressionsPackage.getTGGParamValue(), null, "parameterValues", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeConstraintEClass, TGGAttributeConstraint.class, "TGGAttributeConstraint", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeConstraint_Definition(),
-				theDefinitionPackage.getTGGAttributeConstraintDefinition(), null, "definition", null, 0, 1,
-				TGGAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraint_Parameters(), theExpressionsPackage.getTGGParamValue(), null,
-				"parameters", null, 0, -1, TGGAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEClass(tggAttributeConstraintEClass, TGGAttributeConstraint.class, "TGGAttributeConstraint", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGAttributeConstraint_Definition(), theDefinitionPackage.getTGGAttributeConstraintDefinition(), null, "definition", null, 0, 1, TGGAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGAttributeConstraint_Parameters(), theExpressionsPackage.getTGGParamValue(), null, "parameters", null, 0, -1, TGGAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeVariableEClass, TGGAttributeVariable.class, "TGGAttributeVariable", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGAttributeVariable_Name(), theEcorePackage.getEString(), "name", null, 0, 1,
-				TGGAttributeVariable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(tggAttributeVariableEClass, TGGAttributeVariable.class, "TGGAttributeVariable", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGAttributeVariable_Name(), theEcorePackage.getEString(), "name", null, 0, 1, TGGAttributeVariable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 	}
 
 } //CspPackageImpl

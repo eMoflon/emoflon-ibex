@@ -48,12 +48,14 @@ public class IbexOptions {
 	private SupportedILPSolver ilpSolver;
 	
 	private boolean repairAttributes;
+	private boolean useShortcutRules;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
 		projectPath = "/";
 		workspacePath = "./../";
 		repairAttributes = true;
+		useShortcutRules = false;
 		setIlpSolver(SupportedILPSolver.Sat4J);
 	}
 
@@ -73,6 +75,15 @@ public class IbexOptions {
 
 	public boolean debug() {
 		return debug;
+	}
+	
+	public boolean repairUsingShortcutRules() {
+		return useShortcutRules;
+	}
+	
+	public IbexOptions repairUsingShortcutRules(boolean useShortcutRules) {
+		this.useShortcutRules = useShortcutRules;
+		return this;
 	}
 	
 	public boolean repairAttributes() {

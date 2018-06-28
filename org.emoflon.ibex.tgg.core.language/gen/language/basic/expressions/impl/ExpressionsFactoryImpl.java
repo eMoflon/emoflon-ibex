@@ -27,8 +27,7 @@ public class ExpressionsFactoryImpl extends EFactoryImpl implements ExpressionsF
 	 */
 	public static ExpressionsFactory init() {
 		try {
-			ExpressionsFactory theExpressionsFactory = (ExpressionsFactory) EPackage.Registry.INSTANCE
-					.getEFactory(ExpressionsPackage.eNS_URI);
+			ExpressionsFactory theExpressionsFactory = (ExpressionsFactory) EPackage.Registry.INSTANCE.getEFactory(ExpressionsPackage.eNS_URI);
 			if (theExpressionsFactory != null) {
 				return theExpressionsFactory;
 			}

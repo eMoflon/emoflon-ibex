@@ -222,8 +222,7 @@ public interface InplaceAttributesPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR = eINSTANCE
-				.getTGGInplaceAttributeExpression_ValueExpr();
+		EReference TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR = eINSTANCE.getTGGInplaceAttributeExpression_ValueExpr();
 
 		/**
 		 * The meta object literal for the '<em><b>Operator</b></em>' attribute feature.

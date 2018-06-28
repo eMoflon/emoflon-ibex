@@ -174,8 +174,7 @@ public enum TGGAttributeConstraintOperators implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final TGGAttributeConstraintOperators[] VALUES_ARRAY = new TGGAttributeConstraintOperators[] { EQUAL,
-			UNEQUAL, GR_EQUAL, LE_EQUAL, GREATER, LESSER, };
+	private static final TGGAttributeConstraintOperators[] VALUES_ARRAY = new TGGAttributeConstraintOperators[] { EQUAL, UNEQUAL, GR_EQUAL, LE_EQUAL, GREATER, LESSER, };
 
 	/**
 	 * A public read-only list of all the '<em><b>TGG Attribute Constraint Operators</b></em>' enumerators.
@@ -183,8 +182,7 @@ public enum TGGAttributeConstraintOperators implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public static final List<TGGAttributeConstraintOperators> VALUES = Collections
-			.unmodifiableList(Arrays.asList(VALUES_ARRAY));
+	public static final List<TGGAttributeConstraintOperators> VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
 	/**
 	 * Returns the '<em><b>TGG Attribute Constraint Operators</b></em>' literal with the specified literal value.

@@ -95,8 +95,7 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 		boolean oldBounded = bounded;
 		bounded = newBounded;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED,
-					oldBounded, bounded));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_COMPLEMENT_RULE__BOUNDED, oldBounded, bounded));
 	}
 
 	/**
@@ -110,8 +109,7 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 			kernel = (TGGRule) eResolveProxy(oldKernel);
 			if (kernel != oldKernel) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL, oldKernel, kernel));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL, oldKernel, kernel));
 			}
 		}
 		return kernel;
@@ -135,8 +133,7 @@ public class TGGComplementRuleImpl extends TGGRuleImpl implements TGGComplementR
 		TGGRule oldKernel = kernel;
 		kernel = newKernel;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL,
-					oldKernel, kernel));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_COMPLEMENT_RULE__KERNEL, oldKernel, kernel));
 	}
 
 	/**

@@ -198,14 +198,11 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetAttributeConditionLibrary(
-			TGGAttributeConstraintLibrary newAttributeConditionLibrary, NotificationChain msgs) {
+	public NotificationChain basicSetAttributeConditionLibrary(TGGAttributeConstraintLibrary newAttributeConditionLibrary, NotificationChain msgs) {
 		TGGAttributeConstraintLibrary oldAttributeConditionLibrary = attributeConditionLibrary;
 		attributeConditionLibrary = newAttributeConditionLibrary;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, oldAttributeConditionLibrary,
-					newAttributeConditionLibrary);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, oldAttributeConditionLibrary, newAttributeConditionLibrary);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -223,17 +220,14 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		if (newAttributeConditionLibrary != attributeConditionLibrary) {
 			NotificationChain msgs = null;
 			if (attributeConditionLibrary != null)
-				msgs = ((InternalEObject) attributeConditionLibrary).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
+				msgs = ((InternalEObject) attributeConditionLibrary).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
 			if (newAttributeConditionLibrary != null)
-				msgs = ((InternalEObject) newAttributeConditionLibrary).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
+				msgs = ((InternalEObject) newAttributeConditionLibrary).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
 			msgs = basicSetAttributeConditionLibrary(newAttributeConditionLibrary, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY,
-					newAttributeConditionLibrary, newAttributeConditionLibrary));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, newAttributeConditionLibrary, newAttributeConditionLibrary));
 	}
 
 	/**
@@ -254,8 +248,7 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		boolean oldAbstract = abstract_;
 		abstract_ = newAbstract;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ABSTRACT, oldAbstract,
-					abstract_));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ABSTRACT, oldAbstract, abstract_));
 	}
 
 	/**

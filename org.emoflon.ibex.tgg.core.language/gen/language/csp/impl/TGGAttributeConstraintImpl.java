@@ -88,8 +88,7 @@ public class TGGAttributeConstraintImpl extends EObjectImpl implements TGGAttrib
 			definition = (TGGAttributeConstraintDefinition) eResolveProxy(oldDefinition);
 			if (definition != oldDefinition) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CspPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition, definition));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CspPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition, definition));
 			}
 		}
 		return definition;
@@ -113,8 +112,7 @@ public class TGGAttributeConstraintImpl extends EObjectImpl implements TGGAttrib
 		TGGAttributeConstraintDefinition oldDefinition = definition;
 		definition = newDefinition;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CspPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION,
-					oldDefinition, definition));
+			eNotify(new ENotificationImpl(this, Notification.SET, CspPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition, definition));
 	}
 
 	/**
@@ -124,8 +122,7 @@ public class TGGAttributeConstraintImpl extends EObjectImpl implements TGGAttrib
 	 */
 	public EList<TGGParamValue> getParameters() {
 		if (parameters == null) {
-			parameters = new EObjectResolvingEList<TGGParamValue>(TGGParamValue.class, this,
-					CspPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS);
+			parameters = new EObjectResolvingEList<TGGParamValue>(TGGParamValue.class, this, CspPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS);
 		}
 		return parameters;
 	}

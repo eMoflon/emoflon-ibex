@@ -418,8 +418,7 @@ public interface DefinitionPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS = eINSTANCE
-				.getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS = eINSTANCE.getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions();
 
 		/**
 		 * The meta object literal for the '{@link language.csp.definition.impl.TGGAttributeConstraintDefinitionImpl <em>TGG Attribute Constraint Definition</em>}' class.
@@ -437,8 +436,7 @@ public interface DefinitionPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED = eINSTANCE
-				.getTGGAttributeConstraintDefinition_UserDefined();
+		EAttribute TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED = eINSTANCE.getTGGAttributeConstraintDefinition_UserDefined();
 
 		/**
 		 * The meta object literal for the '<em><b>Parameter Definitions</b></em>' containment reference list feature.
@@ -446,8 +444,7 @@ public interface DefinitionPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = eINSTANCE
-				.getTGGAttributeConstraintDefinition_ParameterDefinitions();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = eINSTANCE.getTGGAttributeConstraintDefinition_ParameterDefinitions();
 
 		/**
 		 * The meta object literal for the '<em><b>Sync Adornments</b></em>' containment reference list feature.
@@ -455,8 +452,7 @@ public interface DefinitionPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS = eINSTANCE
-				.getTGGAttributeConstraintDefinition_SyncAdornments();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS = eINSTANCE.getTGGAttributeConstraintDefinition_SyncAdornments();
 
 		/**
 		 * The meta object literal for the '<em><b>Gen Adornments</b></em>' containment reference list feature.
@@ -464,8 +460,7 @@ public interface DefinitionPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS = eINSTANCE
-				.getTGGAttributeConstraintDefinition_GenAdornments();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS = eINSTANCE.getTGGAttributeConstraintDefinition_GenAdornments();
 
 		/**
 		 * The meta object literal for the '{@link language.csp.definition.impl.TGGAttributeConstraintParameterDefinitionImpl <em>TGG Attribute Constraint Parameter Definition</em>}' class.
@@ -483,8 +478,7 @@ public interface DefinitionPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE = eINSTANCE
-				.getTGGAttributeConstraintParameterDefinition_Type();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE = eINSTANCE.getTGGAttributeConstraintParameterDefinition_Type();
 
 		/**
 		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -492,8 +486,7 @@ public interface DefinitionPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME = eINSTANCE
-				.getTGGAttributeConstraintParameterDefinition_Name();
+		EAttribute TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME = eINSTANCE.getTGGAttributeConstraintParameterDefinition_Name();
 
 		/**
 		 * The meta object literal for the '{@link language.csp.definition.impl.TGGAttributeConstraintAdornmentImpl <em>TGG Attribute Constraint Adornment</em>}' class.

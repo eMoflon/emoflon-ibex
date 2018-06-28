@@ -28,8 +28,7 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	 */
 	public static LanguageFactory init() {
 		try {
-			LanguageFactory theLanguageFactory = (LanguageFactory) EPackage.Registry.INSTANCE
-					.getEFactory(LanguagePackage.eNS_URI);
+			LanguageFactory theLanguageFactory = (LanguageFactory) EPackage.Registry.INSTANCE.getEFactory(LanguagePackage.eNS_URI);
 			if (theLanguageFactory != null) {
 				return theLanguageFactory;
 			}
@@ -188,8 +187,7 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	public DomainType createDomainTypeFromString(EDataType eDataType, String initialValue) {
 		DomainType result = DomainType.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException(
-					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
@@ -210,8 +208,7 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	public BindingType createBindingTypeFromString(EDataType eDataType, String initialValue) {
 		BindingType result = BindingType.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException(
-					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 

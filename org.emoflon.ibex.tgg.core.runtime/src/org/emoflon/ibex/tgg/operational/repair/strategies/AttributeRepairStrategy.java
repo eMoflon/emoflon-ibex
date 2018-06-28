@@ -3,11 +3,10 @@ package org.emoflon.ibex.tgg.operational.repair.strategies;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
-import org.emoflon.ibex.tgg.operational.patterns.EmptyGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
@@ -15,12 +14,17 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import language.BindingType;
+import language.DomainType;
+import language.TGGRule;
 import runtime.TGGRuleApplication;
 
 public class AttributeRepairStrategy extends AbstractRepairStrategy {
 
 	private Map<String, IGreenPatternFactory> factories;
 	private OperationalStrategy operationalStrategy;
+	private Map<String, Integer> tggElements;
 	
 	public AttributeRepairStrategy(OperationalStrategy operationalStrategy, Map<String, IGreenPatternFactory> factories) {
 		initialize(operationalStrategy, factories);
@@ -29,6 +33,10 @@ public class AttributeRepairStrategy extends AbstractRepairStrategy {
 	private void initialize(OperationalStrategy operationalStrategy, Map<String, IGreenPatternFactory> factories) {
 		this.factories = factories;
 		this.operationalStrategy = operationalStrategy;
+		this.tggElements = new Object2IntOpenHashMap<>();
+		for(TGGRule rule : operationalStrategy.getTGG().getRules()) {
+			tggElements.put(rule.getName(), rule.getNodes().stream().filter(n -> !(n.getBindingType().equals(BindingType.CONTEXT) && n.getDomainType().equals(DomainType.CORR))).collect(Collectors.toList()).size());
+		}
 	}
 
 	@Override
@@ -52,7 +60,10 @@ public class AttributeRepairStrategy extends AbstractRepairStrategy {
 		if (!cspContainer.solve())
 			return false;
 		
-		cspContainer.applyCSPValues(iMatch);
+		try {
+			cspContainer.applyCSPValues(iMatch);
+		} catch (Exception e) {
+		}
 		return true;
 	}
 
@@ -70,7 +81,7 @@ public class AttributeRepairStrategy extends AbstractRepairStrategy {
 
 	@Override
 	protected boolean isCandidate(TGGRuleApplication ra, IMatch iMatch) {
-		return !ra.getNodeMappings().values().contains(null);
+		return ra.getNodeMappings().keySet().size() == ra.getNodeMappings().values().size();
 	}
 
 }

@@ -27,8 +27,7 @@ public class DefinitionFactoryImpl extends EFactoryImpl implements DefinitionFac
 	 */
 	public static DefinitionFactory init() {
 		try {
-			DefinitionFactory theDefinitionFactory = (DefinitionFactory) EPackage.Registry.INSTANCE
-					.getEFactory(DefinitionPackage.eNS_URI);
+			DefinitionFactory theDefinitionFactory = (DefinitionFactory) EPackage.Registry.INSTANCE.getEFactory(DefinitionPackage.eNS_URI);
 			if (theDefinitionFactory != null) {
 				return theDefinitionFactory;
 			}

@@ -79,9 +79,7 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 			return (BasicPackage) EPackage.Registry.INSTANCE.getEPackage(BasicPackage.eNS_URI);
 
 		// Obtain or create and register package
-		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE
-				.get(eNS_URI) instanceof BasicPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI)
-						: new BasicPackageImpl());
+		BasicPackageImpl theBasicPackage = (BasicPackageImpl) (EPackage.Registry.INSTANCE.get(eNS_URI) instanceof BasicPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new BasicPackageImpl());
 
 		isInited = true;
 
@@ -89,26 +87,20 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		EcorePackage.eINSTANCE.eClass();
 
 		// Obtain or create and register interdependencies
-		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
-						: LanguagePackage.eINSTANCE);
-		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(InplaceAttributesPackage.eNS_URI) instanceof InplaceAttributesPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI)
-						: InplaceAttributesPackage.eINSTANCE);
-		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(CspPackage.eNS_URI) instanceof CspPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI)
-						: CspPackage.eINSTANCE);
-		DefinitionPackageImpl theDefinitionPackage = (DefinitionPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(DefinitionPackage.eNS_URI) instanceof DefinitionPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI)
-						: DefinitionPackage.eINSTANCE);
-		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE
-				.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
-						? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
-						: ExpressionsPackage.eINSTANCE);
+		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI) instanceof LanguagePackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI)
+				: LanguagePackage.eINSTANCE);
+		InplaceAttributesPackageImpl theInplaceAttributesPackage = (InplaceAttributesPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI) instanceof InplaceAttributesPackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(InplaceAttributesPackage.eNS_URI)
+				: InplaceAttributesPackage.eINSTANCE);
+		CspPackageImpl theCspPackage = (CspPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI) instanceof CspPackageImpl ? EPackage.Registry.INSTANCE.getEPackage(CspPackage.eNS_URI)
+				: CspPackage.eINSTANCE);
+		DefinitionPackageImpl theDefinitionPackage = (DefinitionPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI) instanceof DefinitionPackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(DefinitionPackage.eNS_URI)
+				: DefinitionPackage.eINSTANCE);
+		ExpressionsPackageImpl theExpressionsPackage = (ExpressionsPackageImpl) (EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI) instanceof ExpressionsPackageImpl
+				? EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI)
+				: ExpressionsPackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theBasicPackage.createPackageContents();
@@ -210,8 +202,7 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		setNsURI(eNS_URI);
 
 		// Obtain other dependent packages
-		ExpressionsPackage theExpressionsPackage = (ExpressionsPackage) EPackage.Registry.INSTANCE
-				.getEPackage(ExpressionsPackage.eNS_URI);
+		ExpressionsPackage theExpressionsPackage = (ExpressionsPackage) EPackage.Registry.INSTANCE.getEPackage(ExpressionsPackage.eNS_URI);
 		EcorePackage theEcorePackage = (EcorePackage) EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 
 		// Add subpackages
@@ -224,11 +215,9 @@ public class BasicPackageImpl extends EPackageImpl implements BasicPackage {
 		// Add supertypes to classes
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(tggNamedElementEClass, TGGNamedElement.class, "TGGNamedElement", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGNamedElement_Name(), theEcorePackage.getEString(), "name", null, 0, 1,
-				TGGNamedElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		initEClass(tggNamedElementEClass, TGGNamedElement.class, "TGGNamedElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGNamedElement_Name(), theEcorePackage.getEString(), "name", null, 0, 1, TGGNamedElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 	}
 
 } //BasicPackageImpl

@@ -22,6 +22,9 @@ import org.eclipse.emf.ecore.EReference;
  *   <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
+ * <!-- begin-model-doc -->
+ * Interal TGG Model for defining TGG Rules
+ * <!-- end-model-doc -->
  * @see language.LanguageFactory
  * @model kind="package"
  * @generated
@@ -1305,8 +1308,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = eINSTANCE
-				.getTGG_AttributeConstraintDefinitionLibrary();
+		EReference TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = eINSTANCE.getTGG_AttributeConstraintDefinitionLibrary();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGRuleImpl <em>TGG Rule</em>}' class.

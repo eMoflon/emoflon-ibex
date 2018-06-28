@@ -40,6 +40,7 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.RepairStrategyController;
 import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 
@@ -115,6 +116,10 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private void initializeRepairStrategies(IbexOptions options) {
 		repairController = new RepairStrategyController(this);
 
+		if(options.repairUsingShortcutRules()) {
+			repairController.registerStrategy(new ShortcutRepairStrategy(this, factories));
+		}
+		
 		if(options.repairAttributes()) {
 			repairController.registerStrategy(new AttributeRepairStrategy(this, factories));
 		}

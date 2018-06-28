@@ -28,8 +28,7 @@ public class InplaceAttributesFactoryImpl extends EFactoryImpl implements Inplac
 	 */
 	public static InplaceAttributesFactory init() {
 		try {
-			InplaceAttributesFactory theInplaceAttributesFactory = (InplaceAttributesFactory) EPackage.Registry.INSTANCE
-					.getEFactory(InplaceAttributesPackage.eNS_URI);
+			InplaceAttributesFactory theInplaceAttributesFactory = (InplaceAttributesFactory) EPackage.Registry.INSTANCE.getEFactory(InplaceAttributesPackage.eNS_URI);
 			if (theInplaceAttributesFactory != null) {
 				return theInplaceAttributesFactory;
 			}
@@ -109,12 +108,10 @@ public class InplaceAttributesFactoryImpl extends EFactoryImpl implements Inplac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TGGAttributeConstraintOperators createTGGAttributeConstraintOperatorsFromString(EDataType eDataType,
-			String initialValue) {
+	public TGGAttributeConstraintOperators createTGGAttributeConstraintOperatorsFromString(EDataType eDataType, String initialValue) {
 		TGGAttributeConstraintOperators result = TGGAttributeConstraintOperators.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException(
-					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 

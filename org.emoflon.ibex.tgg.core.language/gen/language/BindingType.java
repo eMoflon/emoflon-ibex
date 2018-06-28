@@ -36,7 +36,16 @@ public enum BindingType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	CREATE(1, "CREATE", "CREATE");
+	CREATE(1, "CREATE", "CREATE"),
+	/**
+	* The '<em><b>DELETE</b></em>' literal object.
+	* <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	* @see #DELETE_VALUE
+	* @generated
+	* @ordered
+	*/
+	DELETE(2, "DELETE", "DELETE");
 
 	/**
 	 * The '<em><b>CONTEXT</b></em>' literal value.
@@ -69,12 +78,27 @@ public enum BindingType implements Enumerator {
 	public static final int CREATE_VALUE = 1;
 
 	/**
+	 * The '<em><b>DELETE</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of '<em><b>DELETE</b></em>' literal object isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @see #DELETE
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int DELETE_VALUE = 2;
+
+	/**
 	 * An array of all the '<em><b>Binding Type</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final BindingType[] VALUES_ARRAY = new BindingType[] { CONTEXT, CREATE, };
+	private static final BindingType[] VALUES_ARRAY = new BindingType[] { CONTEXT, CREATE, DELETE, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Binding Type</b></em>' enumerators.
@@ -134,6 +158,8 @@ public enum BindingType implements Enumerator {
 			return CONTEXT;
 		case CREATE_VALUE:
 			return CREATE;
+		case DELETE_VALUE:
+			return DELETE;
 		}
 		return null;
 	}

@@ -320,8 +320,7 @@ public interface CspPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE
-				.getTGGAttributeConstraintLibrary_TggAttributeConstraints();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE.getTGGAttributeConstraintLibrary_TggAttributeConstraints();
 
 		/**
 		 * The meta object literal for the '<em><b>Parameter Values</b></em>' containment reference list feature.
@@ -329,8 +328,7 @@ public interface CspPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES = eINSTANCE
-				.getTGGAttributeConstraintLibrary_ParameterValues();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES = eINSTANCE.getTGGAttributeConstraintLibrary_ParameterValues();
 
 		/**
 		 * The meta object literal for the '{@link language.csp.impl.TGGAttributeConstraintImpl <em>TGG Attribute Constraint</em>}' class.
