@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.util.ilp;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -867,9 +867,9 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param name      The name of the implication
 	 * @return The implication that has been created
 	 */
-	public Implication addImplication(final String leftSide, final Collection<String> rightSide, final String name) {
+	public Implication addImplication(final String leftSide, final Stream<String> rightSide, final String name) {
 		return new Implication(this.getVariableId(leftSide),
-				new IntOpenHashSet(rightSide.stream().map(s -> this.getVariableId(s)).collect(Collectors.toList())),
+				new IntOpenHashSet(rightSide.mapToInt(s -> this.getVariableId(s)).toArray()),
 				name);
 	}
 
@@ -882,7 +882,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param allowed   The number of variables that can be chosen
 	 * @return The created exclusion
 	 */
-	public Exclusion addExclusion(final Collection<String> variables, final String name, final int allowed) {
+	public Exclusion addExclusion(final Stream<String> variables, final String name, final int allowed) {
 		return this.addExclusion(variables, name, allowed, 0);
 	}
 
@@ -896,9 +896,9 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param required  The minimum number of variables that have to be chosen
 	 * @return The created exclusion
 	 */
-	public Exclusion addExclusion(final Collection<String> variables, final String name, final int allowed, final int required) {
+	public Exclusion addExclusion(final Stream<String> variables, final String name, final int allowed, final int required) {
 		return new Exclusion(
-				new IntOpenHashSet(variables.stream().map(s -> this.getVariableId(s)).collect(Collectors.toList())),
+				new IntOpenHashSet(variables.mapToInt(s -> this.getVariableId(s)).toArray()),
 				allowed, required, name);
 	}
 
@@ -909,7 +909,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param name      The name of the exclusion
 	 * @return The created exclusion
 	 */
-	public Exclusion addExclusion(final Collection<String> variables, final String name) {
+	public Exclusion addExclusion(final Stream<String> variables, final String name) {
 		return this.addExclusion(variables, name, 1);
 	}
 
@@ -924,11 +924,11 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * @param name      The name of the implication
 	 * @return the created implication
 	 */
-	public NegativeImplication addNegativeImplication(final Collection<String> leftSide, final Collection<String> rightSide,
+	public NegativeImplication addNegativeImplication(final Stream<String> leftSide, final Stream<String> rightSide,
 			final String name) {
 		return new NegativeImplication(
-				new IntOpenHashSet(leftSide.stream().map(s -> this.getVariableId(s)).collect(Collectors.toList())),
-				new IntOpenHashSet(rightSide.stream().map(s -> this.getVariableId(s)).collect(Collectors.toList())),
+				new IntOpenHashSet(leftSide.mapToInt(s -> this.getVariableId(s)).toArray()),
+				new IntOpenHashSet(rightSide.mapToInt(s -> this.getVariableId(s)).toArray()),
 				name);
 	}
 
