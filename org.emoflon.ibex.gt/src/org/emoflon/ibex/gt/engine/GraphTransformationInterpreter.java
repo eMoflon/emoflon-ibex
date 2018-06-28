@@ -37,11 +37,6 @@ import IBeXLanguage.IBeXPatternSet;
  */
 public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
-	 * The folder for debugging output.
-	 */
-	protected Optional<String> debugPath = Optional.empty();
-
-	/**
 	 * The pattern set containing the patterns.
 	 */
 	private IBeXPatternSet patternSet;
@@ -107,7 +102,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		if (model.getResources().size() == 0) {
 			throw new IllegalArgumentException("Resource set must not be empty!");
 		}
-		this.init(engine, model, model.getResources().get(0));
+		init(engine, model, model.getResources().get(0));
 	}
 
 	/**
@@ -124,7 +119,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public GraphTransformationInterpreter(final IContextPatternInterpreter engine, final ResourceSet model,
 			final Resource defaultResource) {
 		Objects.requireNonNull(defaultResource, "The default resource must not be null!");
-		this.init(engine, model, defaultResource);
+		init(engine, model, defaultResource);
 	}
 
 	/**
@@ -149,8 +144,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 
 		this.contextPatternInterpreter = engine;
 		this.model = model;
-		this.createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource);
-		this.deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource);
+		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource);
+		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource);
 	}
 
 	/**
@@ -159,19 +154,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return the resource set
 	 */
 	public ResourceSet getModel() {
-		return this.model;
-	}
-
-	/**
-	 * Sets the debug path.
-	 * 
-	 * @param debugPath
-	 *            the path for the debugging output. If it is <code>null</null>,
-	 *            debugging is disabled.
-	 */
-	public void setDebugPath(final String debugPath) {
-		this.debugPath = Optional.ofNullable(debugPath);
-		this.contextPatternInterpreter.setDebugPath(debugPath);
+		return model;
 	}
 
 	/**
@@ -185,12 +168,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		EObject resourceContent = ibexPatternResource.getContents().get(0);
 		Objects.requireNonNull("Resource must not be empty!");
 		if (resourceContent instanceof IBeXPatternSet) {
-			this.contextPatternInterpreter.initialise(this.model.getPackageRegistry(), this);
+			contextPatternInterpreter.initialise(model.getPackageRegistry(), this);
 
 			// Transform into patterns of the concrete engine.
-			this.patternSet = (IBeXPatternSet) resourceContent;
-			this.contextPatternInterpreter.initPatterns(this.patternSet);
-			this.contextPatternInterpreter.monitor(this.model);
+			patternSet = (IBeXPatternSet) resourceContent;
+			contextPatternInterpreter.initPatterns(patternSet);
+			contextPatternInterpreter.monitor(model);
 		} else {
 			throw new IllegalArgumentException("Expecting a IBeXPatternSet root element!");
 		}
@@ -209,7 +192,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		rs.getPackageRegistry().put(IBeXLanguagePackage.eNS_URI, IBeXLanguagePackage.eINSTANCE);
 		Resource ibexPatternResource = rs.getResource(uri, true);
 		EcoreUtil.resolveAll(rs);
-		this.loadPatternSet(ibexPatternResource);
+		loadPatternSet(ibexPatternResource);
 	}
 
 	/**
@@ -218,51 +201,14 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return true if <code>loadPatterns</code> has been called successfully.
 	 */
 	public boolean isPatternSetLoaded() {
-		return this.patternSet != null;
+		return patternSet != null;
 	}
 
 	/**
 	 * Terminates the engine.
 	 */
 	public void terminate() {
-		this.contextPatternInterpreter.terminate();
-	}
-
-	/**
-	 * Applies the pattern on the given match with SPO semantics.
-	 * 
-	 * @param match
-	 *            the match to execute the pattern on
-	 * @return the match after rule application
-	 */
-	public Optional<IMatch> apply(final IMatch match) {
-		return this.apply(match, PushoutApproach.SPO, new HashMap<String, Object>());
-	}
-
-	/**
-	 * Applies the pattern on the given match with SPO semantics.
-	 * 
-	 * @param match
-	 *            the match to execute the pattern on
-	 * @param parameters
-	 *            the parameters to pass
-	 * @return the match after rule application
-	 */
-	public Optional<IMatch> apply(final IMatch match, final Map<String, Object> parameters) {
-		return this.apply(match, PushoutApproach.SPO, parameters);
-	}
-
-	/**
-	 * Executes the pattern.
-	 * 
-	 * @param match
-	 *            the match to execute the pattern on
-	 * @param po
-	 *            the pushout approach to use
-	 * @return the match after rule application
-	 */
-	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po) {
-		return this.apply(match, po, new HashMap<String, Object>());
+		contextPatternInterpreter.terminate();
 	}
 
 	/**
@@ -284,15 +230,15 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 
 		// Execute deletion.
 		IMatch originalMatch = new SimpleMatch(match);
-		Optional<IMatch> comatch = this.deletePatternInterpreter.apply(deletePattern, originalMatch, po);
+		Optional<IMatch> comatch = deletePatternInterpreter.apply(deletePattern, originalMatch, po);
 
 		// Execute creation.
 		if (comatch.isPresent()) {
-			comatch = this.createPatternInterpreter.apply(createPattern, comatch.get(), parameters);
+			comatch = createPatternInterpreter.apply(createPattern, comatch.get(), parameters);
 		}
 
 		// Rule application may invalidate existing or lead to new matches.
-		this.updateMatches();
+		updateMatches();
 
 		// Return the co-match.
 		return comatch;
@@ -308,11 +254,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return a {@link Stream} of matches
 	 */
 	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
-		this.updateMatches();
+		updateMatches();
 
 		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
-			return Stream.of(this.createEmptyMatchForCreatePattern(patternName));
+			return Stream.of(createEmptyMatchForCreatePattern(patternName));
 		}
 
 		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches);
@@ -327,7 +273,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return the created match
 	 */
 	private IMatch createEmptyMatchForCreatePattern(final String patternName) {
-		Optional<IBeXCreatePattern> pattern = this.patternSet.getCreatePatterns().stream()
+		Optional<IBeXCreatePattern> pattern = patternSet.getCreatePatterns().stream()
 				.filter(p -> p.getName().equals(patternName)) //
 				.findAny();
 		if (pattern.isPresent()) {
@@ -348,10 +294,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the consumer to add
 	 */
 	public void subscribeAppearing(final String patternName, final Consumer<IMatch> consumer) {
-		if (!this.subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
-			this.subscriptionsForAppearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
+		if (!subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
+			subscriptionsForAppearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
 		}
-		this.subscriptionsForAppearingMatchesOfPattern.get(patternName).add(consumer);
+		subscriptionsForAppearingMatchesOfPattern.get(patternName).add(consumer);
 	}
 
 	/**
@@ -364,8 +310,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the consumer to remove
 	 */
 	public void unsubscibeAppearing(final String patternName, final Consumer<IMatch> consumer) {
-		if (this.subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
-			this.subscriptionsForAppearingMatchesOfPattern.get(patternName).remove(consumer);
+		if (subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
+			subscriptionsForAppearingMatchesOfPattern.get(patternName).remove(consumer);
 		}
 	}
 
@@ -378,10 +324,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the consumer to add
 	 */
 	public void subscribeDisappearing(final String patternName, final Consumer<IMatch> consumer) {
-		if (!this.subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
-			this.subscriptionsForDisappearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
+		if (!subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
+			subscriptionsForDisappearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
 		}
-		this.subscriptionsForDisappearingMatchesOfPattern.get(patternName).add(consumer);
+		subscriptionsForDisappearingMatchesOfPattern.get(patternName).add(consumer);
 	}
 
 	/**
@@ -394,8 +340,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the consumer to remove
 	 */
 	public void unsubscibeDisappearing(final String patternName, final Consumer<IMatch> consumer) {
-		if (this.subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
-			this.subscriptionsForDisappearingMatchesOfPattern.get(patternName).remove(consumer);
+		if (subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
+			subscriptionsForDisappearingMatchesOfPattern.get(patternName).remove(consumer);
 		}
 	}
 
@@ -408,10 +354,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the consumer to add
 	 */
 	public void subscribeMatchDisappears(final IMatch match, final Consumer<IMatch> consumer) {
-		if (!this.subscriptionsForDisappearingMatches.containsKey(match)) {
-			this.subscriptionsForDisappearingMatches.put(match, new ArrayList<Consumer<IMatch>>());
+		if (!subscriptionsForDisappearingMatches.containsKey(match)) {
+			subscriptionsForDisappearingMatches.put(match, new ArrayList<Consumer<IMatch>>());
 		}
-		this.subscriptionsForDisappearingMatches.get(match).add(consumer);
+		subscriptionsForDisappearingMatches.get(match).add(consumer);
 	}
 
 	/**
@@ -423,8 +369,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the consumer to add
 	 */
 	public void unsubscribeMatchDisappears(final IMatch match, final Consumer<IMatch> consumer) {
-		if (this.subscriptionsForDisappearingMatches.containsKey(match)) {
-			this.subscriptionsForDisappearingMatches.get(match).remove(consumer);
+		if (subscriptionsForDisappearingMatches.containsKey(match)) {
+			subscriptionsForDisappearingMatches.get(match).remove(consumer);
 		}
 	}
 
@@ -432,38 +378,38 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * Trigger the engine to update the pattern network.
 	 */
 	public void updateMatches() {
-		this.contextPatternInterpreter.updateMatches();
+		contextPatternInterpreter.updateMatches();
 	}
 
 	@Override
 	public void addMatch(final IMatch match) {
 		String patternName = match.getPatternName();
-		if (!this.matches.containsKey(patternName)) {
-			this.matches.put(patternName, new ArrayList<IMatch>());
+		if (!matches.containsKey(patternName)) {
+			matches.put(patternName, new ArrayList<IMatch>());
 		}
-		this.matches.get(patternName).add(match);
+		matches.get(patternName).add(match);
 
 		// Notify subscribers registered for all new matches of the pattern.
-		if (this.subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
-			this.subscriptionsForAppearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
+		if (subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
+			subscriptionsForAppearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
 		}
 	}
 
 	@Override
 	public void removeMatch(final IMatch match) {
 		String patternName = match.getPatternName();
-		if (this.matches.containsKey(patternName)) {
-			this.matches.get(patternName).remove(match);
+		if (matches.containsKey(patternName)) {
+			matches.get(patternName).remove(match);
 
 			// Notify subscribers registered for all disappearing matches of the pattern.
-			if (this.subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
-				this.subscriptionsForDisappearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
+			if (subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
+				subscriptionsForDisappearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
 			}
 
 			// Notify subscribers registered for the disappearing match.
-			if (this.subscriptionsForDisappearingMatches.containsKey(match)) {
-				this.subscriptionsForDisappearingMatches.get(match).forEach(c -> c.accept(match));
-				this.subscriptionsForDisappearingMatches.remove(match);
+			if (subscriptionsForDisappearingMatches.containsKey(match)) {
+				subscriptionsForDisappearingMatches.get(match).forEach(c -> c.accept(match));
+				subscriptionsForDisappearingMatches.remove(match);
 			}
 		} else {
 			throw new IllegalArgumentException("Cannot remove a match which was never added!");

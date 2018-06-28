@@ -132,9 +132,22 @@ public class EMFManipulationUtils {
 	 */
 	private static void deleteEdges(final Set<EMFEdge> edgesToDelete, boolean containment) {
 		for (EMFEdge edge : edgesToDelete) {
-			if (edge.getType().isContainment() == containment) {
+			if (isContainment(edge.getType()) == containment) {
 				deleteEdge(edge.getSource(), edge.getTarget(), edge.getType());
 			}
 		}
+	}
+
+	/**
+	 * Checks whether the reference is a reference is not containment edge or its
+	 * opposite.
+	 * 
+	 * @param reference
+	 *            the reference
+	 * @return true if and only if the reference is a containment or container
+	 *         reference
+	 */
+	private static boolean isContainment(final EReference reference) {
+		return reference.isContainment() || reference.isContainer();
 	}
 }

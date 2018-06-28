@@ -64,21 +64,21 @@ public abstract class GraphTransformationAPI {
 	 * @return the resource set containing the model file
 	 */
 	public final ResourceSet getModel() {
-		return this.interpreter.getModel();
+		return interpreter.getModel();
 	}
 
 	/**
 	 * Triggers an incremental update of the matches.
 	 */
 	public final void updateMatches() {
-		this.interpreter.updateMatches();
+		interpreter.updateMatches();
 	}
 
 	/**
 	 * Terminates the interpreter.
 	 */
 	public final void terminate() {
-		this.interpreter.terminate();
+		interpreter.terminate();
 	}
 
 	/**
@@ -95,14 +95,14 @@ public abstract class GraphTransformationAPI {
 	 * Sets the pushout approach to double pushout (see {@link PushoutApproach}).
 	 */
 	public final void setDPO() {
-		this.setDefaultPushoutApproach(PushoutApproach.DPO);
+		setDefaultPushoutApproach(PushoutApproach.DPO);
 	}
 
 	/**
 	 * Sets the pushout approach to single pushout (see {@link PushoutApproach}).
 	 */
 	public final void setSPO() {
-		this.setDefaultPushoutApproach(PushoutApproach.SPO);
+		setDefaultPushoutApproach(PushoutApproach.SPO);
 	}
 
 	/**
@@ -111,6 +111,6 @@ public abstract class GraphTransformationAPI {
 	 * @return the default pushout approach
 	 */
 	public final PushoutApproach getDefaultPushoutApproach() {
-		return this.defaultPushoutApproach;
+		return defaultPushoutApproach;
 	}
 }

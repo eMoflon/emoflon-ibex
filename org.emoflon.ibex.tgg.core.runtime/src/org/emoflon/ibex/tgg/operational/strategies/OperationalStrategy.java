@@ -121,7 +121,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		}
 		
 		if(options.repairAttributes()) {
-			repairController.registerStrategy(new AttributeRepairStrategy(this, factories));
+			repairController.registerStrategy(new AttributeRepairStrategy(this));
 		}
 	}
 

@@ -41,7 +41,7 @@ public abstract class GraphTransformationMatch<M extends GraphTransformationMatc
 	 * @return the pattern the match is for
 	 */
 	public final P getPattern() {
-		return this.pattern;
+		return pattern;
 	}
 
 	/**
@@ -50,6 +50,6 @@ public abstract class GraphTransformationMatch<M extends GraphTransformationMatc
 	 * @return the untyped match
 	 */
 	public final IMatch toIMatch() {
-		return this.match;
+		return match;
 	}
 }

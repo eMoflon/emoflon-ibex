@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies;
 
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
@@ -22,16 +21,14 @@ import runtime.TGGRuleApplication;
 
 public class AttributeRepairStrategy extends AbstractRepairStrategy {
 
-	private Map<String, IGreenPatternFactory> factories;
 	private OperationalStrategy operationalStrategy;
 	private Map<String, Integer> tggElements;
 	
-	public AttributeRepairStrategy(OperationalStrategy operationalStrategy, Map<String, IGreenPatternFactory> factories) {
-		initialize(operationalStrategy, factories);
+	public AttributeRepairStrategy(OperationalStrategy operationalStrategy) {
+		initialize(operationalStrategy);
 	}
 
-	private void initialize(OperationalStrategy operationalStrategy, Map<String, IGreenPatternFactory> factories) {
-		this.factories = factories;
+	private void initialize(OperationalStrategy operationalStrategy) {
 		this.operationalStrategy = operationalStrategy;
 		this.tggElements = new Object2IntOpenHashMap<>();
 		for(TGGRule rule : operationalStrategy.getTGG().getRules()) {
@@ -43,7 +40,7 @@ public class AttributeRepairStrategy extends AbstractRepairStrategy {
 	protected boolean repair(TGGRuleApplication ra, IMatch iMatch) {
 		IMatch copy = iMatch.copy();
 		
-		IGreenPatternFactory factory = factories.get(PatternSuffixes.removeSuffix(iMatch.getPatternName()));
+		IGreenPatternFactory factory = operationalStrategy.getGreenFactory(PatternSuffixes.removeSuffix(iMatch.getPatternName()));
 		IGreenPattern greenPattern;
 		boolean isForwardSync = ((SYNC) operationalStrategy).getStrategy() instanceof FWD_Strategy ? true : false;
 
