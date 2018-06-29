@@ -12,8 +12,6 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomKernelMatchUpdatePolicy;
 
-import language.TGGRuleCorr;
-
 public abstract class CO extends CC {
 
 	public CO(IbexOptions options) throws IOException {
@@ -34,12 +32,8 @@ public abstract class CO extends CC {
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			IMatch comatch = idToMatch.get(id);
-			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
-					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
-
+			if (v < 0)
 				objectsToDelete.add(getRuleApplicationNode(comatch));
-			}
 		}
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
