@@ -42,8 +42,8 @@ public class ConsistencyReporter {
 	public void initWithCorr(OperationalStrategy strategy) {
 		this.strategy = strategy;
 		init(strategy);
-		inconsistentCorrNodes = extractInconsistentNodes(strategy.getCorrResource(), strategy.getProtocolResource(),
-				Domain.CORR);
+		inconsistentCorrNodes = //
+				extractInconsistentNodes(strategy.getCorrResource(), strategy.getProtocolResource(), Domain.CORR);
 	}
 
 	public void initSrc(OperationalStrategy strategy) {
