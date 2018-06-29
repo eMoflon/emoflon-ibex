@@ -14,6 +14,8 @@ import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.repair.RepairStrategyController;
+import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
@@ -27,6 +29,7 @@ public abstract class SYNC extends OperationalStrategy {
 	protected HashMap<EObject, Integer> nodeToProtocolID = new HashMap<>();
 	private int idCounter = 0;
 	private boolean multiamalgamatedTgg;
+	private RepairStrategyController repairController;
 
 	private SYNC_Strategy strategy;
 
@@ -35,8 +38,45 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	@Override
+	public void run() throws IOException {
+		do
+			attemptBrokenMatchRepair();
+		while (processBrokenMatches());
+
+		do
+			blackInterpreter.updateMatches();
+		while (processOneOperationalRuleMatch());
+	}
+	
+	private void initializeRepairStrategies(IbexOptions options) {
+		repairController = new RepairStrategyController(this);
+
+		if(options.repairAttributes()) {
+			repairController.registerStrategy(new AttributeRepairStrategy(this));
+		}
+	}
+	
+	private boolean attemptBrokenMatchRepair() {
+		recentConsistencyMatches.clear();
+
+		// attempt to repair matches 
+		blackInterpreter.updateMatches();
+		repairController.repairMatches(repairCandidates);
+		
+		// check if new matches show succession of former repair steps
+		if(repairController.repairCandidatesPending()) {
+			blackInterpreter.updateMatches();
+			repairController.repairsSuccessful(recentConsistencyMatches);
+		}
+		// transfer still broken matches to collection of broken applications that will be removed
+		brokenRuleApplications = repairController.getBrokenRuleApplications();
+		return true;
+	}
+	
+	@Override
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
 		super.registerBlackInterpreter(blackInterpreter);
+		initializeRepairStrategies(options);
 		fillInProtocolReport();
 		multiamalgamatedTgg = tggContainsComplementRules();
 	}
@@ -54,11 +94,6 @@ public abstract class SYNC extends OperationalStrategy {
 	@Override
 	public boolean isPatternRelevantForInterpreter(String patternName) {
 		return strategy.isPatternRelevantForInterpreter(patternName);
-	}
-
-	@Override
-	protected void wrapUp() {
-
 	}
 
 	@Override

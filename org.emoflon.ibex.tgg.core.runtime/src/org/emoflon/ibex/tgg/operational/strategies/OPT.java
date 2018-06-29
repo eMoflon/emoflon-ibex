@@ -100,7 +100,18 @@ public abstract class OPT extends OperationalStrategy {
 	public OPT(IbexOptions options, IUpdatePolicy policy) {
 		super(options, policy);
 	}
+	
+	@Override
+	public void run() throws IOException {
+		do
+			blackInterpreter.updateMatches();
+		while (processOneOperationalRuleMatch());
 
+		wrapUp();
+	}
+
+	protected abstract void wrapUp();
+	
 	public void relaxReferences(EList<EPackage> model) {
 		EPackage[] packages = (EPackage[]) model.toArray();
 

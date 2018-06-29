@@ -141,15 +141,6 @@ public abstract class BWD_OPT extends OPT {
 	}
 
 	@Override
-	public void run() throws IOException {
-		do {
-			blackInterpreter.updateMatches();
-		} while (processOneOperationalRuleMatch());
-
-		wrapUp();
-	}
-
-	@Override
 	public void loadTGG() throws IOException {
 		super.loadTGG();
 		relaxReferences(options.tgg().getSrc());

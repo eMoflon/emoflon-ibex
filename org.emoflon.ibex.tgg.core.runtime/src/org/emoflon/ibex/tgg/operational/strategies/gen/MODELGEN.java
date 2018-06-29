@@ -193,14 +193,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	@Override
-	protected void wrapUp() {
-
-	}
-
-	@Override
 	public void run() throws IOException {
 		collectMatchesForAxioms();
-		super.run();
+		do
+			blackInterpreter.updateMatches();
+		while (processOneOperationalRuleMatch());
 	}
 
 	/**

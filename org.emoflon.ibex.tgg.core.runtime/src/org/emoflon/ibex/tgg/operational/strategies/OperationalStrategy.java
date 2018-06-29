@@ -38,8 +38,6 @@ import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.RepairStrategyController;
-import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 
@@ -74,8 +72,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected IUpdatePolicy updatePolicy;
 
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
-
-	private RepairStrategyController repairController;
 	
 	protected Set<EMFEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(
 			new EMFEdgeHashingStrategy());
@@ -97,7 +93,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		this(options, new RandomMatchUpdatePolicy());
 	}
 
-	public OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
+	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
 		base = URI.createPlatformResourceURI("/", true);
 
 		this.options = options;
@@ -110,14 +106,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		greenInterpreter = new IbexGreenInterpreter(this);
 		redInterpreter = new IbexRedInterpreter(this);
-	}
-	
-	private void initializeRepairStrategies(IbexOptions options) {
-		repairController = new RepairStrategyController(this);
-
-		if(options.repairAttributes()) {
-			repairController.registerStrategy(new AttributeRepairStrategy(this));
-		}
 	}
 
 	@Override
@@ -156,7 +144,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		loadTGG();
 		initialiseBlackInterpreter();
 		loadModels();
-		initializeRepairStrategies(options);
 
 		this.trash = createResource("instances/trash.xmi");
 		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
@@ -362,35 +349,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
 	}
-
-	public void run() throws IOException {
-		do {
-			attemptBrokenMatchRepair();
-		} while (processBrokenMatches());
-		
-		do {
-			blackInterpreter.updateMatches();
-		} while (processOneOperationalRuleMatch());
-
-		wrapUp();
-	}
 	
-	private boolean attemptBrokenMatchRepair() {
-		recentConsistencyMatches.clear();
-
-		// attempt to repair matches 
-		blackInterpreter.updateMatches();
-		repairController.repairMatches(repairCandidates);
-		
-		// check if new matches show succession of former repair steps
-		if(repairController.repairCandidatesPending()) {
-			blackInterpreter.updateMatches();
-			repairController.repairsSuccessful(recentConsistencyMatches);
-		}
-		// transfer still broken matches to collection of broken applications that will be removed
-		brokenRuleApplications = repairController.getBrokenRuleApplications();
-		return true;
-	}
+	public abstract void run() throws IOException;
 
 	protected boolean processOneOperationalRuleMatch() {
 		if (operationalMatchContainer.isEmpty())
@@ -539,8 +499,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
 		return runtimeConstraintProvider;
 	}
-
-	abstract protected void wrapUp();
 
 	public TGG getTGG() {
 		return options.tgg();
