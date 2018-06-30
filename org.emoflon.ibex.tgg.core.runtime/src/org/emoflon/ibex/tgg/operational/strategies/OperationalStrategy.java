@@ -69,7 +69,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	// Match and pattern management
 	protected MatchContainer operationalMatchContainer;
-	protected Map<TGGRuleApplication, IMatch> consistencyMatches;	
+	protected Map<TGGRuleApplication, IMatch> consistencyMatches;
 	protected Set<EMFEdge> markedAndCreatedEdges;
 	private boolean domainsHaveNoSharedTypes;
 	private Map<String, IGreenPatternFactory> factories;
@@ -77,16 +77,15 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	// Configuration
 	protected IUpdatePolicy updatePolicy;
 	protected final IbexOptions options;
-	
+
 	// Model manipulation
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 	protected IBlackInterpreter blackInterpreter;
 	protected IGreenInterpreter greenInterpreter;
 	protected IRedInterpreter redInterpreter;
 
-
 	/***** Constructors *****/
-	
+
 	public OperationalStrategy(IbexOptions options) {
 		this(options, new RandomMatchUpdatePolicy());
 	}
@@ -94,19 +93,19 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
 		this.options = options;
 		this.updatePolicy = policy;
-		
+
 		base = URI.createPlatformResourceURI("/", true);
 		factories = new HashMap<>();
 
 		greenInterpreter = new IbexGreenInterpreter(this);
 		redInterpreter = new IbexRedInterpreter(this);
-		
+
 		consistencyMatches = new Object2ObjectOpenHashMap<>();
 		markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(new EMFEdgeHashingStrategy());
 	}
 
 	/***** Resource management *****/
-	
+
 	public ResourceSet getResourceSet() {
 		return rs;
 	}
@@ -126,15 +125,15 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	public Resource getProtocolResource() {
 		return p;
 	}
-	
+
 	public TGG getTGG() {
 		return options.tgg();
 	}
-	
+
 	abstract public void saveModels() throws IOException;
 
 	abstract public void loadModels() throws IOException;
-	
+
 	protected void createAndPrepareResourceSet() {
 		rs = blackInterpreter.createAndPrepareResourceSet(options.workspacePath());
 	}
@@ -166,7 +165,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
 	}
-	
+
 	protected void loadTGG() throws IOException {
 		Resource res = loadTGGResource();
 		Resource flattenedRes = loadFlattenedTGGResource();
@@ -174,8 +173,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
 
-		// Instantiate runtime constraint provider with loaded constraint definition
-		// library
 		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
 				options.tgg().getAttributeConstraintDefinitionLibrary());
 		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
@@ -201,25 +198,25 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		TempContainer c = (TempContainer) trash.getContents().get(0);
 		c.getObjects().add(EcoreUtil.getRootContainer(o));
 	}
-	
+
 	/***** Match and pattern management *****/
-	
+
 	@Override
 	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
 		addOperationalRuleMatch((IMatch) match);
 	}
-	
+
 	protected void addOperationalRuleMatch(IMatch match) {
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY))
 			addConsistencyMatch(match);
-		
+
 		if (isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(match)) {
 			operationalMatchContainer.addMatch(match);
 			logger.debug("Received and added " + match.getPatternName());
 		} else
 			logger.debug("Received but rejected " + match.getPatternName());
 	}
-	
+
 	protected boolean addConsistencyMatch(IMatch match) {
 		if (matchIsValidIsomorphism(match)) {
 			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
@@ -227,7 +224,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			logger.debug("Received and added: " + match.getPatternName());
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -239,7 +236,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected void removeOperationalRuleMatch(IMatch match) {
 		operationalMatchContainer.removeMatch(match);
 	}
-		
+
 	public boolean isPatternRelevantForInterpreter(String patternName) {
 		return isPatternRelevantForCompiler(patternName);
 	}
@@ -247,8 +244,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private boolean matchIsValidIsomorphism(IMatch match) {
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
 			// Make sure that node mappings comply to bindings in match
-			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match
-					.get(ConsistencyPattern.getProtocolNodeName(match.getRuleName()));
+			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 			return ruleAppNode.getNodeMappings().keySet().stream()
 					.noneMatch(n -> ruleAppNode.getNodeMappings().get(n) != match.get(n));
 		}
@@ -259,11 +255,15 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private boolean matchIsDomainConform(IMatch match) {
 		if (domainsHaveNoSharedTypes)
 			return true;
-		
-		return matchedNodesAreInCorrectResource(s, getGreenFactory(match.getRuleName()).getBlackSrcNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(s, getGreenFactory(match.getRuleName()).getGreenSrcNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(t, getGreenFactory(match.getRuleName()).getBlackTrgNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(t, getGreenFactory(match.getRuleName()).getGreenTrgNodesInRule(), match);
+
+		return matchedNodesAreInCorrectResource(s, //
+				getGreenFactory(match.getRuleName()).getBlackSrcNodesInRule(), match)
+				&& matchedNodesAreInCorrectResource(s, //
+						getGreenFactory(match.getRuleName()).getGreenSrcNodesInRule(), match)
+				&& matchedNodesAreInCorrectResource(t, //
+						getGreenFactory(match.getRuleName()).getBlackTrgNodesInRule(), match)
+				&& matchedNodesAreInCorrectResource(t, //
+						getGreenFactory(match.getRuleName()).getGreenTrgNodesInRule(), match);
 	}
 
 	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, IMatch match) {
@@ -273,11 +273,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private boolean nodeIsInResource(IMatch match, String name, Resource r) {
 		return ((EObject) match.get(name)).eResource().equals(r);
 	}
-	
+
 	public IGreenPattern revokes(IMatch match) {
 		throw new IllegalStateException("Not clear how to revoke a match of " + match.getPatternName());
 	}
-	
+
 	public abstract void run() throws IOException;
 
 	protected boolean processOneOperationalRuleMatch() {
@@ -289,7 +289,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
-		
+
 		return true;
 	}
 
@@ -340,10 +340,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Optional<TGGRule> getRule(String ruleName) {
-		return options.tgg().getRules().stream().filter(r -> r.getName().equals(ruleName)).findFirst();
+		return options.tgg().getRules().stream()//
+				.filter(r -> r.getName().equals(ruleName))//
+				.findFirst();
 	}
 
-	
 	/****** Initialisation, termination *****/
 
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
@@ -371,7 +372,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected abstract void registerUserMetamodels() throws IOException;
 
 	protected void initialiseBlackInterpreter() throws IOException {
-		// Attempt initialisation
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
 			blackInterpreter.initialise(rs.getPackageRegistry(), this);
@@ -380,9 +380,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			initExcep = Optional.of(e);
 		}
 
-		// Even if init failed still attempt to monitor before failing
 		try {
-			// Ensure that the resource set is empty
 			rs.getResources().clear();
 			blackInterpreter.monitor(rs);
 		} finally {
@@ -427,15 +425,17 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		this.blackInterpreter.setOptions(options);
 		this.blackInterpreter.monitor(rs);
 	}
-	
+
 	/***** Multi-Amalgamation *****/
-	
+
 	public void setIsRuleApplicationFinal(TGGRuleApplication ra) {
 		ra.setFinal(true);
 	}
-	
+
 	protected Optional<TGGComplementRule> getComplementRule(String ruleName) {
-		return getRule(ruleName).filter(TGGComplementRule.class::isInstance).map(TGGComplementRule.class::cast);
+		return getRule(ruleName)//
+				.filter(TGGComplementRule.class::isInstance)//
+				.map(TGGComplementRule.class::cast);
 	}
 
 	protected boolean isKernelMatch(String kernelName) {
@@ -447,14 +447,21 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Set<String> getComplementRulesNames() {
-		Set<String> complementRulesNames = options.tgg().getRules().stream().filter(r -> r instanceof TGGComplementRule)
-				.map(n -> n.getName()).collect(Collectors.toSet());
+		Set<String> complementRulesNames = options.tgg().getRules().stream()//
+				.filter(TGGComplementRule.class::isInstance)//
+				.map(TGGRule::getName)//
+				.collect(Collectors.toSet());
 		return complementRulesNames;
 	}
 
 	protected Set<String> getKernelRulesNames() {
-		Set<String> kernelRulesNames = options.tgg().getRules().stream().filter(r -> r instanceof TGGComplementRule)
-				.map(n -> ((TGGComplementRule) n).getKernel().getName()).distinct().collect(Collectors.toSet());
+		Set<String> kernelRulesNames = options.tgg().getRules().stream()//
+				.filter(TGGComplementRule.class::isInstance)//
+				.map(TGGComplementRule.class::cast)//
+				.map(TGGComplementRule::getKernel)//
+				.map(TGGRule::getName)//
+				.distinct()//
+				.collect(Collectors.toSet());
 		return kernelRulesNames;
 	}
 
@@ -474,7 +481,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		return factories.get(ruleName);
 	}
-	
+
 	/***** Edge bookkeeping *****/
 
 	public EMFEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
@@ -483,7 +490,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		EReference ref = specificationEdge.getType();
 		return new EMFEdge(src, trg, ref);
 	}
-	
+
 	public void removeCreatedEdge(EMFEdge runtimeEdge) {
 		markedAndCreatedEdges.remove(runtimeEdge);
 	}
@@ -491,7 +498,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	public void removeMarkedEdge(EMFEdge runtimeEdge) {
 		markedAndCreatedEdges.remove(runtimeEdge);
 	}
-	
+
 	public boolean allEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IMatch match) {
 		for (TGGRuleEdge edge : specificationEdges) {
 			EObject src = (EObject) match.get(edge.getSrcNode().getName());
@@ -524,7 +531,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	/***** Configuration *****/
-	
+
 	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
 		if (updatePolicy == null)
 			throw new NullPointerException("UpdatePolicy must not be set to null.");
@@ -535,7 +542,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	public IUpdatePolicy getUpdatePolicy() {
 		return updatePolicy;
 	}
-	
+
 	public IbexOptions getOptions() {
 		return options;
 	}

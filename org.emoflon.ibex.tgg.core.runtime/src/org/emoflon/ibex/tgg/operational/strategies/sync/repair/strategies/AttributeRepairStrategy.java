@@ -28,7 +28,7 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 	@Override
 	public boolean repair(IMatch m) {
 		IGreenPatternFactory factory = sync.getGreenFactory(PatternSuffixes.removeSuffix(m.getPatternName()));		
-		IRuntimeTGGAttrConstrContainer csp = sync.getStrategy().determineCSP(factory, m);
+		IRuntimeTGGAttrConstrContainer csp = sync.determineCSP(factory, m);
 		if (csp.solve()) {
 			csp.applyCSPValues(m);
 			return true;
