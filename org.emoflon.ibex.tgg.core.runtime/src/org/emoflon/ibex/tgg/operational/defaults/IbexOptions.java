@@ -44,7 +44,6 @@ public class IbexOptions {
 	private TGG flattenedTGG;
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
-	private boolean isModelGen;
 	private SupportedILPSolver ilpSolver;
 	
 	private boolean repairAttributes;
@@ -55,15 +54,6 @@ public class IbexOptions {
 		workspacePath = "./../";
 		repairAttributes = true;
 		setIlpSolver(SupportedILPSolver.Sat4J);
-	}
-
-	public boolean isModelGen() {
-		return isModelGen;
-	}
-
-	public IbexOptions setModelGen(boolean isModelGen) {
-		this.isModelGen = isModelGen;
-		return this;
 	}
 
 	public IbexOptions debug(boolean debug) {

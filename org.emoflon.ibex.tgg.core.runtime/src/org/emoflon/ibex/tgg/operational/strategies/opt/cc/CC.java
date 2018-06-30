@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.cc;
+package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.strategies.OPT;
+import org.emoflon.ibex.tgg.operational.strategies.opt.OPT;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

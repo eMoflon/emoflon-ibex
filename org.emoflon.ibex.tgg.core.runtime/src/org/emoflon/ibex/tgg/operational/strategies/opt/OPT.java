@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies;
+package org.emoflon.ibex.tgg.operational.strategies.opt;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,9 +22,10 @@ import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.strategies.cc.Bundle;
-import org.emoflon.ibex.tgg.operational.strategies.cc.ConsistencyReporter;
-import org.emoflon.ibex.tgg.operational.strategies.cc.HandleDependencies;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.opt.cc.Bundle;
+import org.emoflon.ibex.tgg.operational.strategies.opt.cc.ConsistencyReporter;
+import org.emoflon.ibex.tgg.operational.strategies.opt.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;

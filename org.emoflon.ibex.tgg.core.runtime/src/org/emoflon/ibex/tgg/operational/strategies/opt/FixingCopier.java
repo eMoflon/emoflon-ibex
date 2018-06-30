@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.sync;
+package org.emoflon.ibex.tgg.operational.strategies.opt;
 
 import java.util.ArrayList;
 import java.util.Collection;

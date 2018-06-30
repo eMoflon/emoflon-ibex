@@ -57,7 +57,7 @@ public interface IMatch {
 	 * Returns whether there is a parameter with the given name in the match.
 	 * 
 	 * @param name
-	 *            the name of the paramete to search for
+	 *            the name of the parameter to search for
 	 * @return <code>true</code> if and only if such a parameter exists
 	 */
 	default boolean isInMatch(String name) {

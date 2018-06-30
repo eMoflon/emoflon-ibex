@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,11 +15,12 @@ import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.repair.RepairStrategyController;
-import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGComplementRule;
 import runtime.TGGRuleApplication;
@@ -29,7 +31,9 @@ public abstract class SYNC extends OperationalStrategy {
 	protected HashMap<EObject, Integer> nodeToProtocolID = new HashMap<>();
 	private int idCounter = 0;
 	private boolean multiamalgamatedTgg;
-	private RepairStrategyController repairController;
+	private AbstractRepairStrategy repairStrategy;
+
+	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
 
 	private SYNC_Strategy strategy;
 
@@ -39,50 +43,101 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
-		do
-			attemptBrokenMatchRepair();
-		while (processBrokenMatches());
+		repair();
+		rollBack();
+		translate();
+	}
 
+	private void translate() {
 		do
 			blackInterpreter.updateMatches();
 		while (processOneOperationalRuleMatch());
 	}
-	
-	private void initializeRepairStrategies(IbexOptions options) {
-		repairController = new RepairStrategyController(this);
 
-		if(options.repairAttributes()) {
-			repairController.registerStrategy(new AttributeRepairStrategy(this));
+	private void rollBack() {
+		do
+			blackInterpreter.updateMatches();
+		while (revokeBrokenMatches());
+	}
+
+	private void repair() {
+		initializeRepairStrategy(options);
+
+		do
+			blackInterpreter.updateMatches();
+		while (repairOneBrokenMatch());
+	}
+
+	private boolean repairOneBrokenMatch() {
+		return repairStrategy//
+				.chooseOneMatch(brokenRuleApplications)//
+				.map(repairStrategy::repair)//
+				.orElse(false);
+	}
+
+	private void initializeRepairStrategy(IbexOptions options) {
+		if (options.repairAttributes()) {
+			repairStrategy = new AttributeRepairStrategy(this);
+		}
+	}
+
+	@Override
+	protected boolean addConsistencyMatch(IMatch match) {
+		if (super.addConsistencyMatch(match)) {
+			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
+			if (brokenRuleApplications.containsKey(ruleAppNode)) {
+				logger.debug(match.getPatternName() + " appears to be fixed.");
+				brokenRuleApplications.remove(ruleAppNode);
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/***** Methods for reacting to broken matches of consistency patterns ******/
+
+	@Override
+	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
+		super.removeMatch(match);
+		
+		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
+			this.addBrokenMatch((IMatch) match);
 		}
 	}
 	
-	private boolean attemptBrokenMatchRepair() {
-		recentConsistencyMatches.clear();
+	public void addBrokenMatch(IMatch match) {
+		TGGRuleApplication ra = getRuleApplicationNode(match);
+		brokenRuleApplications.put(ra, match);
+	}
 
-		// attempt to repair matches 
-		blackInterpreter.updateMatches();
-		repairController.repairMatches(repairCandidates);
-		
-		// check if new matches show succession of former repair steps
-		if(repairController.repairCandidatesPending()) {
-			blackInterpreter.updateMatches();
-			repairController.repairsSuccessful(recentConsistencyMatches);
-		}
-		// transfer still broken matches to collection of broken applications that will be removed
-		brokenRuleApplications = repairController.getBrokenRuleApplications();
+	protected boolean revokeBrokenMatches() {
+		if (brokenRuleApplications.isEmpty())
+			return false;
+
+		revokeAllMatches();
+
 		return true;
 	}
-	
+
+	private void revokeAllMatches() {
+		while (!brokenRuleApplications.isEmpty()) {
+			ObjectOpenHashSet<TGGRuleApplication> revoked = new ObjectOpenHashSet<>();
+			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
+				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
+				revoked.add(ra);
+			}
+			for (TGGRuleApplication revokedRA : revoked)
+				brokenRuleApplications.remove(revokedRA);
+		}
+	}
+
+
 	@Override
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
 		super.registerBlackInterpreter(blackInterpreter);
-		initializeRepairStrategies(options);
-		fillInProtocolReport();
 		multiamalgamatedTgg = tggContainsComplementRules();
-	}
-
-	private void fillInProtocolReport() {
-		//FIXME:  Consider filling protocol from protocol.xmi
 	}
 
 	@Override
@@ -170,10 +225,11 @@ public abstract class SYNC extends OperationalStrategy {
 		for (IMatch match : complementMatches) {
 			if (!isComplementMatchRelevant(match, comatch))
 				continue;
-			ObjectOpenHashSet<EObject> fusedNodes = comatch.getParameterNames().stream().map(n -> (EObject) comatch.get(n))
+			ObjectOpenHashSet<EObject> fusedNodes = comatch.getParameterNames().stream()
+					.map(n -> (EObject) comatch.get(n))
 					.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
-			ObjectOpenHashSet<EObject> complementNodes = match.getParameterNames().stream().map(n -> (EObject) match.get(n))
-					.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
+			ObjectOpenHashSet<EObject> complementNodes = match.getParameterNames().stream()
+					.map(n -> (EObject) match.get(n)).collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
 
 			if (fusedNodes.containsAll(complementNodes))
 				removeOperationalRuleMatch(match);
@@ -201,14 +257,14 @@ public abstract class SYNC extends OperationalStrategy {
 					.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getKernelName(ruleName)));
 		} else {
 			// if it is a kernel or a complement rule
-			protocolNode = (TGGRuleApplication) comatch
-					.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
+			protocolNode = (TGGRuleApplication) comatch.get(
+					ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		}
 
 		if (isComplementMatch(ruleName)) {
 			// complement protocol has to have same ID as its kernel protocol
-			TGGRuleApplication kernelProtocolNode = (TGGRuleApplication) comatch.get(ConsistencyPattern
-					.getProtocolNodeName(getComplementRule(ruleName).get().getKernel().getName()));
+			TGGRuleApplication kernelProtocolNode = (TGGRuleApplication) comatch.get(
+					ConsistencyPattern.getProtocolNodeName(getComplementRule(ruleName).get().getKernel().getName()));
 			localCounter = protocolNodeToID.get(kernelProtocolNode);
 		} else {
 			idCounter++;
@@ -268,7 +324,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 		return allComplementRuleMatches;
 	}
-	
+
 	public SYNC_Strategy getStrategy() {
 		return strategy;
 	}

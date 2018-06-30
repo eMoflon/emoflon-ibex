@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.co;
+package org.emoflon.ibex.tgg.operational.strategies.opt;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
+import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomKernelMatchUpdatePolicy;
 
 public abstract class CO extends CC {
