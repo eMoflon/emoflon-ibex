@@ -47,8 +47,8 @@ public class MatchContainer {
 		}
 	}
 
-	public void addMatch(String ruleName, IMatch match) {
-		matchToRuleNameID.put(match, ruleNameToId.getInt(ruleName));
+	public void addMatch(IMatch match) {
+		matchToRuleNameID.put(match, ruleNameToId.getInt(match.getRuleName()));
 	}
 
 	public void removeMatch(IMatch match) {

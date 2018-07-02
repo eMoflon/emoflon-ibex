@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.co;
+package org.emoflon.ibex.tgg.operational.strategies.opt;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,10 +9,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
+import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomKernelMatchUpdatePolicy;
-
-import language.TGGRuleCorr;
 
 public abstract class CO extends CC {
 
@@ -34,12 +32,8 @@ public abstract class CO extends CC {
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			IMatch comatch = idToMatch.get(id);
-			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
-					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
-
+			if (v < 0)
 				objectsToDelete.add(getRuleApplicationNode(comatch));
-			}
 		}
 
 		EcoreUtil.deleteAll(objectsToDelete, true);

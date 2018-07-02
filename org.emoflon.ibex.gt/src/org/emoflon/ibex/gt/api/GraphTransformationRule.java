@@ -74,7 +74,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @return the pushout approach
 	 */
 	public final PushoutApproach getPushoutApproach() {
-		return this.pushoutApproach.orElse(this.api.getDefaultPushoutApproach());
+		return pushoutApproach.orElse(api.getDefaultPushoutApproach());
 	}
 
 	/**
@@ -95,7 +95,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * {@link PushoutApproach}).
 	 */
 	public final P setDPO() {
-		return this.setPushoutApproach(PushoutApproach.DPO);
+		return setPushoutApproach(PushoutApproach.DPO);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * {@link PushoutApproach}).
 	 */
 	public final P setSPO() {
-		return this.setPushoutApproach(PushoutApproach.SPO);
+		return setPushoutApproach(PushoutApproach.SPO);
 	}
 
 	/**
@@ -112,7 +112,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @return <code>true</code> if there is at least one match
 	 */
 	public final boolean isApplicable() {
-		return this.hasMatches();
+		return hasMatches();
 	}
 
 	/**
@@ -121,11 +121,11 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @return an {@link Optional} for the the match after rule application
 	 */
 	public final Optional<M> apply() {
-		Optional<M> match = this.findAnyMatch();
+		Optional<M> match = findAnyMatch();
 		if (!match.isPresent()) {
 			return Optional.empty();
 		}
-		return this.apply(match.get());
+		return apply(match.get());
 	}
 
 	/**
@@ -137,11 +137,11 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 */
 	public final Optional<M> apply(final M match) {
 		Objects.requireNonNull(match, "The match must not be null!");
-		Optional<M> comatch = this.interpreter.apply(match.toIMatch(), this.getPushoutApproach(), this.parameters)
-				.map(m -> this.convertMatch(m));
+		Optional<M> comatch = interpreter.apply(match.toIMatch(), getPushoutApproach(), getParameters())
+				.map(m -> convertMatch(m));
 		comatch.ifPresent(cm -> {
-			this.ruleApplicationConsumers.forEach(action -> action.accept(cm));
-			this.ruleApplicationCount++;
+			ruleApplicationConsumers.forEach(action -> action.accept(cm));
+			ruleApplicationCount++;
 		});
 		return comatch;
 	}
@@ -154,7 +154,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @return the matches after rule application
 	 */
 	public final Collection<M> apply(final int max) {
-		return this.apply(matches -> matches.size() < max && this.hasMatches());
+		return apply(matches -> matches.size() < max && hasMatches());
 	}
 
 	/**
@@ -168,7 +168,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	public final Collection<M> apply(final Predicate<Collection<M>> condition) {
 		Collection<M> matches = new ArrayList<M>();
 		while (condition.test(matches)) {
-			this.apply().ifPresent(m -> matches.add(m));
+			apply().ifPresent(m -> matches.add(m));
 		}
 		return matches;
 	}
@@ -182,8 +182,8 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @return the match after rule application
 	 */
 	public final Optional<M> bindAndApply(final IMatch match) {
-		this.bind(match);
-		return this.apply();
+		bind(match);
+		return apply();
 	}
 
 	/**
@@ -210,8 +210,8 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 		Collection<M> matches = new ArrayList<M>();
 		GraphTransformationMatch<?, ?> match = matchSupplier.get();
 		while (match != null) {
-			this.bind(match);
-			this.apply().ifPresent(m -> matches.add(m));
+			bind(match);
+			apply().ifPresent(m -> matches.add(m));
 			match = matchSupplier.get();
 		}
 		return matches;
@@ -224,24 +224,28 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * the rule is always applicable in this case.
 	 */
 	public final void enableAutoApply() {
-		this.autoApply.ifPresent(c -> this.unsubscribeAppearing(c));
-		this.autoApply = Optional.of(m -> this.apply(m));
-		this.subscribeAppearing(autoApply.get());
+		autoApply.ifPresent(c -> unsubscribeAppearing(c));
+		autoApply = Optional.of(m -> apply(m));
+		subscribeAppearing(autoApply.get());
 	}
 
 	/**
 	 * Stops automatic rule application whenever a match is found.
-	 * 
-	 * @throws IllegalArgumentException
-	 *             if <code>applyWheneverApplicable</code> has not been called
-	 *             before
 	 */
 	public final void disableAutoApply() {
-		if (!this.autoApply.isPresent()) {
-			throw new IllegalArgumentException("Cannot stop applyWheneverApplicable before start.");
-		}
-		this.unsubscribeAppearing(autoApply.get());
-		this.autoApply = Optional.empty();
+		autoApply.ifPresent(c -> {
+			unsubscribeAppearing(c);
+			autoApply = Optional.empty();
+		});
+	}
+
+	/**
+	 * Checks whether automatic rule application is enabled for this rule.
+	 * 
+	 * @return true if and only if automatic rule application is enabled.
+	 */
+	public final boolean isAutoApplyEnabled() {
+		return autoApply.isPresent();
 	}
 
 	/**
@@ -251,7 +255,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @return the number of successful rule applications
 	 */
 	public final int countRuleApplications() {
-		return this.ruleApplicationCount;
+		return ruleApplicationCount;
 	}
 
 	/**
@@ -263,7 +267,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 *            the {@link Consumer} to notify of rule applications
 	 */
 	public final void subscribeRuleApplications(final Consumer<M> action) {
-		this.ruleApplicationConsumers.add(action);
+		ruleApplicationConsumers.add(action);
 	}
 
 	/**
@@ -274,8 +278,8 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 *            the {@link Consumer} to remove
 	 */
 	public final void unsubscribeRuleApplications(final Consumer<M> action) {
-		if (this.ruleApplicationConsumers.contains(action)) {
-			this.ruleApplicationConsumers.remove(action);
+		if (ruleApplicationConsumers.contains(action)) {
+			ruleApplicationConsumers.remove(action);
 		} else {
 			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
 		}
@@ -286,6 +290,6 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * registered {@link Consumer}s will be removed.
 	 */
 	public final void unsubscribeRuleApplications() {
-		this.ruleApplicationConsumers.clear();
+		ruleApplicationConsumers.clear();
 	}
 }

@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.csp;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -84,6 +85,8 @@ public abstract class RuntimeTGGAttributeConstraint {
 			return (char) ((new Random()).nextInt(26) + 'a');
 		if (type.equals("java.lang.Boolean"))
 			return Math.random() > 0.5;
+		if(type.equals("java.util.Date"))
+			return new Date((long)(Math.random() * Long.MAX_VALUE));
 
 		throw new RuntimeException("The type " + type + " is not supported for random value generation");
 

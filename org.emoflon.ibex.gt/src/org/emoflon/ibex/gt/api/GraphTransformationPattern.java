@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
@@ -73,7 +74,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the parameters
 	 */
 	public final Map<String, Object> getParameters() {
-		return this.parameters;
+		return parameters;
 	}
 
 	/**
@@ -92,9 +93,9 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 */
 	@SuppressWarnings("unchecked")
 	public final P bind(final IMatch match) {
-		this.getParameterNames().forEach(parameterName -> {
+		getParameterNames().forEach(parameterName -> {
 			if (match.isInMatch(parameterName)) {
-				this.parameters.put(parameterName, (EObject) match.get(parameterName));
+				getParameters().put(parameterName, (EObject) match.get(parameterName));
 			}
 		});
 		return (P) this;
@@ -109,7 +110,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 */
 	@SuppressWarnings("unchecked")
 	public final P bind(final GraphTransformationMatch<?, ?> match) {
-		this.bind(match.toIMatch());
+		bind(match.toIMatch());
 		return (P) this;
 	}
 
@@ -119,9 +120,9 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return an {@link Optional} for the match
 	 */
 	public final Optional<M> findAnyMatch() {
-		return this.interpreter.matchStream(this.patternName, this.parameters) //
+		return interpreter.matchStream(patternName, getParameters()) //
 				.findAny() //
-				.map(m -> this.convertMatch(m));
+				.map(m -> convertMatch(m));
 	}
 
 	/**
@@ -130,9 +131,17 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the list of matches (can be empty if no matches exist)
 	 */
 	public final Collection<M> findMatches() {
-		return this.interpreter.matchStream(this.patternName, this.parameters) //
-				.map(m -> this.convertMatch(m)) //
-				.collect(Collectors.toList());
+		return matchStream().collect(Collectors.toList());
+	}
+
+	/**
+	 * Finds and returns all matches for the pattern as a Stream.
+	 * 
+	 * @return the Stream of matches
+	 */
+	public final Stream<M> matchStream() {
+		return interpreter.matchStream(patternName, getParameters()) //
+				.map(m -> convertMatch(m));
 	}
 
 	/**
@@ -143,7 +152,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            a Consumer for the matches found
 	 */
 	public final void forEachMatch(final Consumer<M> action) {
-		this.findMatches().forEach(action);
+		matchStream().forEach(action);
 	}
 
 	/**
@@ -152,7 +161,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return <code>true</code> if and only if there is at least one match
 	 */
 	public final boolean hasMatches() {
-		return this.findAnyMatch().isPresent();
+		return findAnyMatch().isPresent();
 	}
 
 	/**
@@ -161,7 +170,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the number of matches
 	 */
 	public final long countMatches() {
-		return this.interpreter.matchStream(patternName, parameters).count();
+		return interpreter.matchStream(patternName, getParameters()).count();
 	}
 
 	/**
@@ -173,7 +182,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the {@link Consumer} to notify
 	 */
 	public final void subscribeAppearing(final Consumer<M> action) {
-		this.interpreter.subscribeAppearing(this.patternName, this.convertConsumer(action));
+		interpreter.subscribeAppearing(patternName, convertConsumer(action));
 	}
 
 	/**
@@ -184,8 +193,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the {@link Consumer} to remove
 	 */
 	public final void unsubscribeAppearing(final Consumer<M> action) {
-		if (this.consumers.containsKey(action)) {
-			this.interpreter.unsubscibeAppearing(this.patternName, this.consumers.get(action));
+		if (consumers.containsKey(action)) {
+			interpreter.unsubscibeAppearing(patternName, consumers.get(action));
 		} else {
 			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
 		}
@@ -200,7 +209,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the {@link Consumer} to notify
 	 */
 	public final void subscribeDisappearing(final Consumer<M> action) {
-		this.interpreter.subscribeDisappearing(this.patternName, this.convertConsumer(action));
+		interpreter.subscribeDisappearing(patternName, convertConsumer(action));
 	}
 
 	/**
@@ -211,8 +220,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the {@link Consumer} to remove
 	 */
 	public final void unsubscribeDisappearing(final Consumer<M> action) {
-		if (this.consumers.containsKey(action)) {
-			this.interpreter.unsubscibeDisappearing(this.patternName, this.consumers.get(action));
+		if (consumers.containsKey(action)) {
+			interpreter.unsubscibeDisappearing(patternName, consumers.get(action));
 		} else {
 			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
 		}
@@ -227,7 +236,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the {@link Consumer} to notify
 	 */
 	public final void subscribeMatchDisappears(final M match, final Consumer<M> action) {
-		this.interpreter.subscribeMatchDisappears(match.toIMatch(), this.convertConsumer(action));
+		interpreter.subscribeMatchDisappears(match.toIMatch(), convertConsumer(action));
 	}
 
 	/**
@@ -239,8 +248,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the {@link Consumer} to remove
 	 */
 	public final void unsubscribeMatchDisappears(final M match, final Consumer<M> action) {
-		if (this.consumers.containsKey(action)) {
-			this.interpreter.unsubscribeMatchDisappears(match.toIMatch(), this.convertConsumer(action));
+		if (consumers.containsKey(action)) {
+			interpreter.unsubscribeMatchDisappears(match.toIMatch(), consumers.get(action));
 		} else {
 			throw new IllegalArgumentException("Cannot remove a consumer which was not registered before!");
 		}
@@ -257,7 +266,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 */
 	private Consumer<IMatch> convertConsumer(final Consumer<M> action) {
 		Consumer<IMatch> consumer = m -> action.accept(convertMatch(m));
-		this.consumers.put(action, consumer);
+		consumers.put(action, consumer);
 		return consumer;
 	}
 

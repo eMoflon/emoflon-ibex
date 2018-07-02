@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.sync;
+package org.emoflon.ibex.tgg.operational.strategies.opt;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +11,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.strategies.OPT;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
@@ -119,6 +118,8 @@ public abstract class BWD_OPT extends OPT {
 		// Remove adapters to avoid problems with notifications
 		s.eAdapters().clear();
 		s.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+		c.eAdapters().clear();
+		c.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
 
 		// Copy and fix the model in the process
 		FixingCopier.fixAll(s, c, "source");
@@ -136,15 +137,6 @@ public abstract class BWD_OPT extends OPT {
 
 	public void backward() throws IOException {
 		run();
-	}
-
-	@Override
-	public void run() throws IOException {
-		do {
-			blackInterpreter.updateMatches();
-		} while (processOneOperationalRuleMatch());
-
-		wrapUp();
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import IBeXLanguage.IBeXCreatePattern;
  * The interface for the interpreter which applies an {@link IBeXCreatePattern}.
  */
 public interface ICreatePatternInterpreter {
+
 	/**
 	 * Applies the given creations of the pattern on the given match.
 	 * 
