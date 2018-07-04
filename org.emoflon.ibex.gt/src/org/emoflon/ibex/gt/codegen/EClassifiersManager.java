@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.moflon.core.utilities.EcoreUtils;
 
 import GTLanguage.GTNode;
 import GTLanguage.GTParameter;
@@ -50,21 +51,35 @@ public class EClassifiersManager {
 	}
 
 	/**
-	 * Loads the EClasses from the given meta-model URI.
+	 * Loads the EClasses from the given meta-model resource.
+	 * 
+	 * @param ecoreFile
+	 *            the resource
 	 */
 	public void loadMetaModelClasses(final Resource ecoreFile) {
 		EObject rootElement = ecoreFile.getContents().get(0);
 		if (rootElement instanceof EPackage) {
-			EPackage ePackage = (EPackage) rootElement;
-			boolean isEcore = "ecore".equals(ePackage.getName());
-			String name = isEcore ? "org.eclipse.emf.ecore" : getPackagePath(ePackage);
-			ePackage.getEClassifiers().stream() //
-					.filter(c -> !isEcore || c instanceof EClass) //
-					.forEach(c -> eClassifierNameToPath.put(c.getName(), name));
-			if (!isEcore) {
-				addPackage(ePackage);
-			}
+			loadMetaModelClasses((EPackage) rootElement);
 		}
+	}
+
+	/**
+	 * Loads the EClasses from the given package.
+	 * 
+	 * @param ePackage
+	 *            the package
+	 */
+	private void loadMetaModelClasses(final EPackage ePackage) {
+		boolean isEcore = "ecore".equals(ePackage.getName());
+		String name = isEcore ? "org.eclipse.emf.ecore" : getPackagePath(ePackage);
+		ePackage.getEClassifiers().stream() //
+				.filter(c -> !isEcore || c instanceof EClass) //
+				.forEach(c -> eClassifierNameToPath.put(c.getName(), name));
+		if (!isEcore) {
+			addPackage(ePackage);
+		}
+
+		ePackage.getESubpackages().forEach(p -> loadMetaModelClasses(p));
 	}
 
 	/**
@@ -80,7 +95,7 @@ public class EClassifiersManager {
 		if (mappings.containsKey(uriString)) {
 			return mappings.get(uriString);
 		} else {
-			return ePackage.getName();
+			return EcoreUtils.getFQNIfPossible(ePackage).orElse(ePackage.getName());
 		}
 	}
 
