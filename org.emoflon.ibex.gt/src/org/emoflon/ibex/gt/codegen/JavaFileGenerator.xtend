@@ -45,7 +45,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java API class.
 	 */
-	public def generateAPIClass(IFolder apiPackage, GTRuleSet gtRuleSet, String patternPath) {
+	def generateAPIClass(IFolder apiPackage, GTRuleSet gtRuleSet, String patternPath) {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.Resource',
@@ -123,7 +123,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java App class.
 	 */
-	public def generateAppClass(IFolder apiPackage) {
+	def generateAppClass(IFolder apiPackage) {
 		val imports = eClassifiersManager.importsForPackages
 		imports.addAll(
 			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
@@ -182,7 +182,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the App class for the concrete engine. 
 	 */
-	public def generateAppClassForEngine(IFolder apiPackage, GTEngineExtension engine) {
+	def generateAppClassForEngine(IFolder apiPackage, GTEngineExtension engine) {
 		val appClassName = classNamePrefix + 'App'
 		val engineAppClassName = classNamePrefix + engine.engineName + 'App'
 		val concreteAppSourceCode = '''
@@ -217,7 +217,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java Match class for the given rule.
 	 */
-	public def generateMatchClass(IFolder apiMatchesPackage, GTRule rule) {
+	def generateMatchClass(IFolder apiMatchesPackage, GTRule rule) {
 		val imports = eClassifiersManager.getImportsForNodeTypes(rule.nodes.toList)
 		imports.addAll(
 			'org.emoflon.ibex.common.operational.IMatch',
@@ -279,7 +279,7 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java Pattern/Rule class for the given rule.
 	 */
-	public def generateRuleClass(IFolder rulesPackage, GTRule rule) {
+	def generateRuleClass(IFolder rulesPackage, GTRule rule) {
 		val ruleType = if(rule.executable) 'rule' else 'pattern'
 		val ruleClassType = if(rule.executable) 'GraphTransformationRule' else 'GraphTransformationPattern'
 		val imports = eClassifiersManager.getImportsForNodeTypes(rule.ruleNodes)
