@@ -130,7 +130,7 @@ public abstract class BWD_OPT extends OPT {
 	}
 
 	@Override
-	protected int getWeightForMatch(IMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
 	}

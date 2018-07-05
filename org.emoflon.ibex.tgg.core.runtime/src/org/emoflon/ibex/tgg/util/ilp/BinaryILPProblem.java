@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.util.ilp;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -15,7 +15,7 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 /**
  * This class is an extension of the generic {@link ILPProblem} for the more
  * specific binary ILP problems in which variables are either 1 or 0. <br>
- * 
+ *
  * The class contains basic constructs that are often used in boolean
  * expression. Therefore when defining the ILP it is not necessary to think
  * about how to transform the boolean expressions into constraints, as these are
@@ -29,43 +29,43 @@ public final class BinaryILPProblem extends ILPProblem {
 	/**
 	 * This map contains all defined implications, sorted by the left side variable.
 	 */
-	private Int2ObjectOpenHashMap<LinkedList<Implication>> implications = new Int2ObjectOpenHashMap<>();
+	private final Int2ObjectOpenHashMap<LinkedList<Implication>> implications = new Int2ObjectOpenHashMap<>();
 	/**
 	 * A list containing all negative implications
 	 */
-	private LinkedList<NegativeImplication> negativeImplications = new LinkedList<>();
+	private final LinkedList<NegativeImplication> negativeImplications = new LinkedList<>();
 	/**
 	 * A list containing all exclusions
 	 */
-	private LinkedList<Exclusion> exclusions = new LinkedList<>();
+	private final LinkedList<Exclusion> exclusions = new LinkedList<>();
 	/**
 	 * A set of all constraints that were generated to express the boolean
 	 * constructs.
 	 */
-	private ObjectLinkedOpenHashSet<ILPConstraint> generatedConstraints = new ObjectLinkedOpenHashSet<>();
+	private final ObjectLinkedOpenHashSet<ILPConstraint> generatedConstraints = new ObjectLinkedOpenHashSet<>();
 
 	/**
 	 * All fixed variables that have been set to 1
 	 */
-	private IntLinkedOpenHashSet positiveChoices = new IntLinkedOpenHashSet();
+	private final IntLinkedOpenHashSet positiveChoices = new IntLinkedOpenHashSet();
 	/**
 	 * All fixed variables that have been set to 0
 	 */
-	private IntLinkedOpenHashSet negativeChoices = new IntLinkedOpenHashSet();
+	private final IntLinkedOpenHashSet negativeChoices = new IntLinkedOpenHashSet();
 	/**
 	 * Fixed but not yet applied variables set to 1
 	 */
-	private IntLinkedOpenHashSet lazyPositiveChoices = new IntLinkedOpenHashSet();
+	private final IntLinkedOpenHashSet lazyPositiveChoices = new IntLinkedOpenHashSet();
 	/**
 	 * Fixed but not yet applied variables set to 0
 	 */
-	private IntLinkedOpenHashSet lazyNegativeChoices = new IntLinkedOpenHashSet();
+	private final IntLinkedOpenHashSet lazyNegativeChoices = new IntLinkedOpenHashSet();
 
 	/**
 	 * Contains for each variable the list of constraints the variable is contained
 	 * in. This makes fixing variables very efficient, but costs memory
 	 */
-	private Int2ObjectOpenHashMap<LinkedList<BinaryConstraint>> variableIdsToContainingConstraints = new Int2ObjectOpenHashMap<>();
+	private final Int2ObjectOpenHashMap<LinkedList<BinaryConstraint>> variableIdsToContainingConstraints = new Int2ObjectOpenHashMap<>();
 
 	/**
 	 * Creates a new binary ILP problem
@@ -85,20 +85,28 @@ public final class BinaryILPProblem extends ILPProblem {
 		/**
 		 * The name of the constraint
 		 */
-		private String name = "";
+		private final String name;
+
+		/**
+		 * Creates a new binary constraint
+		 *
+		 * @param name The name of the constraint
+		 */
+		private BinaryConstraint(final String name) {
+			this.name = name;
+		}
 
 		/**
 		 * @return whether the expression is still relevant, or superfluous
 		 */
 		final boolean isRelevant() {
-			return isRelevant;
+			return this.isRelevant;
 		}
 
 		/**
-		 * @param Sets
-		 *            the relevance status
+		 * @param Sets the relevance status
 		 */
-		final void setRelevant(boolean isRelevant) {
+		final void setRelevant(final boolean isRelevant) {
 			this.isRelevant = isRelevant;
 		}
 
@@ -106,25 +114,15 @@ public final class BinaryILPProblem extends ILPProblem {
 		 * @return the name
 		 */
 		final String getName() {
-			return name;
-		}
-
-		/**
-		 * @param name
-		 *            the name to set
-		 */
-		final void setName(String name) {
-			this.name = name;
+			return this.name;
 		}
 
 		/**
 		 * Fixes the given variable. If the value of other variables is obvious due to
 		 * the fixes, they are fixed as well.
-		 * 
-		 * @param variableId
-		 *            ID of the variable
-		 * @param choice
-		 *            value of the variable
+		 *
+		 * @param variableId ID of the variable
+		 * @param choice     value of the variable
 		 * @return whether the constraint is still relevant
 		 */
 		abstract boolean fixVariable(int variableId, boolean choice);
@@ -132,11 +130,9 @@ public final class BinaryILPProblem extends ILPProblem {
 		/**
 		 * Fixes all given variables. If the value of other variables is obvious due to
 		 * the fixes, they are fixed as well.
-		 * 
-		 * @param positiveChoices
-		 *            Variables that have been set to 1
-		 * @param negativeChoices
-		 *            Variables that have been set to 0
+		 *
+		 * @param positiveChoices Variables that have been set to 1
+		 * @param negativeChoices Variables that have been set to 0
 		 * @return whether the constraint is still relevant
 		 */
 		abstract boolean fixVariables(IntCollection positiveChoices, IntCollection negativeChoices);
@@ -150,27 +146,27 @@ public final class BinaryILPProblem extends ILPProblem {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + (isRelevant ? 1231 : 1237);
+			result = prime * result + this.getOuterType().hashCode();
+			result = prime * result + (this.isRelevant ? 1231 : 1237);
 			return result;
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
 			if (obj == null) {
 				return false;
 			}
-			if (getClass() != obj.getClass()) {
+			if (this.getClass() != obj.getClass()) {
 				return false;
 			}
 			BinaryConstraint other = (BinaryConstraint) obj;
-			if (!getOuterType().equals(other.getOuterType())) {
+			if (!this.getOuterType().equals(other.getOuterType())) {
 				return false;
 			}
-			if (isRelevant != other.isRelevant) {
+			if (this.isRelevant != other.isRelevant) {
 				return false;
 			}
 			return true;
@@ -190,42 +186,75 @@ public final class BinaryILPProblem extends ILPProblem {
 		/**
 		 * Variable on the left side of the implication
 		 */
-		private int leftVariable;
+		private final int leftVariable;
 		/**
 		 * OR-connected variables on the right side of the implication
 		 */
-		private IntOpenHashSet rightVariables;
+		private final IntOpenHashSet rightVariables;
+
+		/**
+		 * Creates a new implication from the given variables
+		 *
+		 * @param leftVariable   variable on the left side of the implication
+		 * @param rightVariables variables on the right side of the implication
+		 * @param name           the name of the implication
+		 */
+		private Implication(final int leftVariable, final IntOpenHashSet rightVariables, final String name) {
+			super(name);
+			this.leftVariable = leftVariable;
+			this.rightVariables = rightVariables;
+
+			this.fixVariables(BinaryILPProblem.this.positiveChoices, BinaryILPProblem.this.negativeChoices);
+
+			if (this.isRelevant()) {
+				BinaryILPProblem.this.implications.computeIfAbsent(leftVariable, k -> new LinkedList<>());
+				BinaryILPProblem.this.implications.get(this.leftVariable).add(this);
+				BinaryILPProblem.this.variableIdsToContainingConstraints.get(this.leftVariable).add(this);
+				for (int id : this.rightVariables) {
+					BinaryILPProblem.this.variableIdsToContainingConstraints.get(id).add(this);
+				}
+			}
+		}
 
 		/**
 		 * Adds the constraint to the already existing expression. This is used to fuse
 		 * all implications over the same variable into one expression.
-		 * 
-		 * @param expr
-		 *            The expression to add the constraint to
+		 *
+		 * @param expr The expression to add the constraint to
 		 */
-		private void generateILPConstraint(ILPLinearExpression expr) {
-			expr.addTerm(leftVariable, 1);
-			rightVariables.stream().forEach(v -> {
+		private void generateILPConstraint(final ILPLinearExpression expr) {
+			expr.addTerm(this.leftVariable, 1);
+			this.rightVariables.stream().forEach(v -> {
 				expr.addTerm(v, -1);
 			});
 		}
 
 		@Override
-		boolean fixVariable(int id, boolean choice) {
-			if (leftVariable == id) {
+		boolean fixVariable(final int id, final boolean choice) {
+			if (this.leftVariable == id) {
 				if (!choice) { // left side is false
+					this.setRelevant(false);
+					return false;
+				} else {
+					// left side of the implication is true -> one of the right variables has to be
+					// true
+					new Exclusion(this.rightVariables, Integer.MAX_VALUE, 1, this.getName());
+					this.setRelevant(false);
 					return false;
 				}
 			}
-			if (rightVariables.remove(id)) {
+			if (this.rightVariables.remove(id)) {
 				// remove yielded true, so it was contained
 				if (choice) {
 					// implication is fulfilled -> remove
+					this.setRelevant(false);
 					return false;
 				} else {
-					if (rightVariables.isEmpty()) {
+					if (this.rightVariables.isEmpty()) {
 						// Implication cannot be fulfilled
-						BinaryILPProblem.this.fixVariable(leftVariable, false);
+						BinaryILPProblem.this.fixVariable(this.leftVariable, false);
+						this.setRelevant(false);
+						return false;
 					}
 				}
 			}
@@ -233,67 +262,81 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		boolean fixVariables(IntCollection positiveChoices, IntCollection negativeChoices) {
-			if (negativeChoices.contains(leftVariable))
+		boolean fixVariables(final IntCollection positiveChoices, final IntCollection negativeChoices) {
+			if (negativeChoices.contains(this.leftVariable)) {
+				this.setRelevant(false);
 				return false;
-
-			for (int id : positiveChoices) {
-				if (rightVariables.contains(id))
-					return false;
 			}
 
-			if (rightVariables.removeAll(negativeChoices)) {
-				if (rightVariables.isEmpty()) {
-					// Implication cannot be fulfilled
-					BinaryILPProblem.this.fixVariable(leftVariable, false);
+			for (int id : positiveChoices) {
+				if (this.rightVariables.contains(id)) {
+					this.setRelevant(false);
+					return false;
 				}
+			}
+
+			if (this.rightVariables.removeAll(negativeChoices)) {
+				if (this.rightVariables.isEmpty()) {
+					// Implication cannot be fulfilled
+					BinaryILPProblem.this.fixVariable(this.leftVariable, false);
+					this.setRelevant(false);
+					return false;
+				}
+			}
+
+			if (positiveChoices.contains(this.leftVariable)) {
+				// left side of the implication is true -> one of the right variables has to be
+				// true
+				new Exclusion(this.rightVariables, Integer.MAX_VALUE, 1, this.getName());
+				this.setRelevant(false);
+				return false;
 			}
 			return true;
 		}
 
 		@Override
 		public String toString() {
-			List<String> termStrings = new LinkedList<String>();
+			List<String> termStrings = new LinkedList<>();
 			this.rightVariables.stream().forEach((variableId) -> {
-				termStrings.add(getVariable(variableId));
+				termStrings.add(BinaryILPProblem.this.getVariable(variableId));
 			});
-			return "Implication(" + getName() + ")" + getVariable(leftVariable) + " -> "
-					+ String.join(" V ", termStrings);
+			return "Implication(" + this.getName() + ")" + BinaryILPProblem.this.getVariable(this.leftVariable) + " -> "
+			+ String.join(" V ", termStrings);
 		}
 
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + leftVariable;
-			result = prime * result + ((rightVariables == null) ? 0 : rightVariables.hashCode());
+			result = prime * result + this.getOuterType().hashCode();
+			result = prime * result + this.leftVariable;
+			result = prime * result + ((this.rightVariables == null) ? 0 : this.rightVariables.hashCode());
 			return result;
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
 			if (obj == null) {
 				return false;
 			}
-			if (getClass() != obj.getClass()) {
+			if (this.getClass() != obj.getClass()) {
 				return false;
 			}
 			Implication other = (Implication) obj;
-			if (!getOuterType().equals(other.getOuterType())) {
+			if (!this.getOuterType().equals(other.getOuterType())) {
 				return false;
 			}
-			if (leftVariable != other.leftVariable) {
+			if (this.leftVariable != other.leftVariable) {
 				return false;
 			}
-			if (rightVariables == null) {
+			if (this.rightVariables == null) {
 				if (other.rightVariables != null) {
 					return false;
 				}
-			} else if (!rightVariables.equals(other.rightVariables)) {
+			} else if (!this.rightVariables.equals(other.rightVariables)) {
 				return false;
 			}
 			return true;
@@ -305,14 +348,14 @@ public final class BinaryILPProblem extends ILPProblem {
 
 		@Override
 		void generateILPConstraint() {
-			ILPLinearExpression expr = createLinearExpression();
-			expr.addTerm(leftVariable, 1);
-			rightVariables.stream().forEach(v -> {
+			ILPLinearExpression expr = BinaryILPProblem.this.createLinearExpression();
+			expr.addTerm(this.leftVariable, 1);
+			this.rightVariables.stream().forEach(v -> {
 				expr.addTerm(v, -1);
 			});
-			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 0.0, getName());
-			addConstraint(constr);
-			generatedConstraints.add(constr);
+			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 0.0, this.getName());
+			BinaryILPProblem.this.addConstraint(constr);
+			BinaryILPProblem.this.generatedConstraints.add(constr);
 
 		}
 	}
@@ -326,51 +369,80 @@ public final class BinaryILPProblem extends ILPProblem {
 		/**
 		 * Variables on the left side of the implication
 		 */
-		private IntOpenHashSet leftVariables;
+		private final IntOpenHashSet leftVariables;
 		/**
 		 * Variables on the right side of the implication
 		 */
-		private IntOpenHashSet rightVariables;
+		private final IntOpenHashSet rightVariables;
 
-		@Override
-		void generateILPConstraint() {
-			ILPLinearExpression expr = createLinearExpression();
-			leftVariables.stream().forEach(v -> {
-				expr.addTerm(v, -rightVariables.size());
-			});
-			rightVariables.stream().forEach(v -> {
-				expr.addTerm(v, 1);
-			});
-			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 0.0, getName());
-			addConstraint(constr);
-			generatedConstraints.add(constr);
+		/**
+		 * Adds a negative implication
+		 *
+		 * @param leftVariables  Variables on the left side of the implication
+		 * @param rightVariables Variables on the right side of the implication
+		 * @param name           Name of the implication
+		 */
+		private NegativeImplication(final IntOpenHashSet leftVariables, final IntOpenHashSet rightVariables, final String name) {
+			super(name);
+
+			this.leftVariables = leftVariables;
+			this.rightVariables = rightVariables;
+
+			this.fixVariables(BinaryILPProblem.this.positiveChoices, BinaryILPProblem.this.negativeChoices);
+
+			if (this.isRelevant()) {
+				BinaryILPProblem.this.negativeImplications.add(this);
+				for (int id : this.leftVariables) {
+					BinaryILPProblem.this.variableIdsToContainingConstraints.get(id).add(this);
+				}
+				for (int id : this.rightVariables) {
+					BinaryILPProblem.this.variableIdsToContainingConstraints.get(id).add(this);
+				}
+			}
 		}
 
 		@Override
-		boolean fixVariable(int id, boolean choice) {
-			if (leftVariables.remove(id)) {
+		void generateILPConstraint() {
+			ILPLinearExpression expr = BinaryILPProblem.this.createLinearExpression();
+			this.leftVariables.stream().forEach(v -> {
+				expr.addTerm(v, -this.rightVariables.size());
+			});
+			this.rightVariables.stream().forEach(v -> {
+				expr.addTerm(v, 1);
+			});
+			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 0.0, this.getName());
+			BinaryILPProblem.this.addConstraint(constr);
+			BinaryILPProblem.this.generatedConstraints.add(constr);
+		}
+
+		@Override
+		boolean fixVariable(final int id, final boolean choice) {
+			if (this.leftVariables.remove(id)) {
 				// remove yielded true, so it was contained
 				if (choice) {
 					// irrelevant impl
+					this.setRelevant(false);
 					return false;
 				} else {
-					if (leftVariables.isEmpty()) {
-						for (int id2 : rightVariables) {
+					if (this.leftVariables.isEmpty()) {
+						for (int id2 : this.rightVariables) {
 							BinaryILPProblem.this.fixVariable(id2, false);
 						}
+						this.setRelevant(false);
 						return false;
 					}
 				}
 			}
-			if (rightVariables.remove(id)) {
+			if (this.rightVariables.remove(id)) {
 				// was contained
 				if (choice) {
 					// other vars are irrelevant -> remove
-					rightVariables.clear();
-					rightVariables.add(id);
+					this.rightVariables.clear();
+					this.rightVariables.add(id);
 				} else {
-					if (rightVariables.isEmpty()) {
+					if (this.rightVariables.isEmpty()) {
 						// Implication is fulfilled -> remove
+						this.setRelevant(false);
 						return false;
 					}
 				}
@@ -379,28 +451,31 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		@Override
-		boolean fixVariables(IntCollection positiveChoices, IntCollection negativeChoices) {
-			if (leftVariables.removeAll(negativeChoices)) {
-				if (leftVariables.isEmpty()) {
-					for (int id2 : rightVariables) {
+		boolean fixVariables(final IntCollection positiveChoices, final IntCollection negativeChoices) {
+			if (this.leftVariables.removeAll(negativeChoices)) {
+				if (this.leftVariables.isEmpty()) {
+					for (int id2 : this.rightVariables) {
 						BinaryILPProblem.this.fixVariable(id2, false);
 					}
+					this.setRelevant(false);
 					return false;
 				}
 			}
-			if (rightVariables.removeAll(negativeChoices)) {
-				if (rightVariables.isEmpty()) {
+			if (this.rightVariables.removeAll(negativeChoices)) {
+				if (this.rightVariables.isEmpty()) {
 					// Implication is fulfilled -> remove
+					this.setRelevant(false);
 					return false;
 				}
 			}
 			for (int id : positiveChoices) {
-				if (leftVariables.contains(id)) {
+				if (this.leftVariables.contains(id)) {
+					this.setRelevant(false);
 					return false;
 				}
-				if (rightVariables.contains(id)) {
-					rightVariables.clear();
-					rightVariables.add(id);
+				if (this.rightVariables.contains(id)) {
+					this.rightVariables.clear();
+					this.rightVariables.add(id);
 					break;
 				}
 			}
@@ -409,55 +484,55 @@ public final class BinaryILPProblem extends ILPProblem {
 
 		@Override
 		public String toString() {
-			List<String> termStringsLeft = new LinkedList<String>();
+			List<String> termStringsLeft = new LinkedList<>();
 			this.leftVariables.stream().forEach((variableId) -> {
-				termStringsLeft.add(getVariable(variableId));
+				termStringsLeft.add(BinaryILPProblem.this.getVariable(variableId));
 			});
-			List<String> termStringsRight = new LinkedList<String>();
+			List<String> termStringsRight = new LinkedList<>();
 			this.rightVariables.stream().forEach((variableId) -> {
-				termStringsRight.add("-" + getVariable(variableId));
+				termStringsRight.add("-" + BinaryILPProblem.this.getVariable(variableId));
 			});
-			return "NegativeImplication(" + getName() + ")" + "-(" + String.join(" V ", termStringsLeft) + ") -> "
-					+ String.join(" ^ ", termStringsRight);
+			return "NegativeImplication(" + this.getName() + ")" + "-(" + String.join(" V ", termStringsLeft) + ") -> "
+			+ String.join(" ^ ", termStringsRight);
 		}
 
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = super.hashCode();
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + ((leftVariables == null) ? 0 : leftVariables.hashCode());
-			result = prime * result + ((rightVariables == null) ? 0 : rightVariables.hashCode());
+			result = prime * result + this.getOuterType().hashCode();
+			result = prime * result + ((this.leftVariables == null) ? 0 : this.leftVariables.hashCode());
+			result = prime * result + ((this.rightVariables == null) ? 0 : this.rightVariables.hashCode());
 			return result;
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
 			if (!super.equals(obj)) {
 				return false;
 			}
-			if (getClass() != obj.getClass()) {
+			if (this.getClass() != obj.getClass()) {
 				return false;
 			}
 			NegativeImplication other = (NegativeImplication) obj;
-			if (!getOuterType().equals(other.getOuterType())) {
+			if (!this.getOuterType().equals(other.getOuterType())) {
 				return false;
 			}
-			if (leftVariables == null) {
+			if (this.leftVariables == null) {
 				if (other.leftVariables != null) {
 					return false;
 				}
-			} else if (!leftVariables.equals(other.leftVariables)) {
+			} else if (!this.leftVariables.equals(other.leftVariables)) {
 				return false;
 			}
-			if (rightVariables == null) {
+			if (this.rightVariables == null) {
 				if (other.rightVariables != null) {
 					return false;
 				}
-			} else if (!rightVariables.equals(other.rightVariables)) {
+			} else if (!this.rightVariables.equals(other.rightVariables)) {
 				return false;
 			}
 			return true;
@@ -475,108 +550,169 @@ public final class BinaryILPProblem extends ILPProblem {
 		/**
 		 * Set of variables
 		 */
-		private IntOpenHashSet variableGroup;
+		private final IntOpenHashSet variableGroup;
 		/**
 		 * Number of variables that can be chosen
 		 */
 		private int allowed;
 
-		@Override
-		void generateILPConstraint() {
-			ILPLinearExpression expr = createLinearExpression();
-			variableGroup.stream().forEach(v -> {
-				expr.addTerm(v, 1);
-			});
-			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, allowed, getName());
-			addConstraint(constr);
-			generatedConstraints.add(constr);
+		/**
+		 * Number of variables that have to be chosen
+		 */
+		private int required = 0;
+
+		/**
+		 * Creates a new Exclusion from the given variables. Applies already fixed
+		 * variables and adds the exclusion to the collections
+		 *
+		 * @param variableGroup Variables in this exclusion
+		 * @param allowed       Maximum number of variables to choose
+		 * @param required      Required number of variables to choose
+		 * @param name          Name of the exclusion
+		 */
+		private Exclusion(final IntOpenHashSet variableGroup, final int allowed, final int required, final String name) {
+			super(name);
+			if (required > allowed || required > variableGroup.size()) {
+				throw new RuntimeException("Cannot fulfill number of required choices for this exclusion");
+			}
+			this.variableGroup = variableGroup;
+			this.allowed = allowed;
+			this.required = required;
+			this.fixVariables(BinaryILPProblem.this.positiveChoices, BinaryILPProblem.this.negativeChoices);
+			if (this.isRelevant()) {
+				BinaryILPProblem.this.exclusions.add(this);
+				for (int id : this.variableGroup) {
+					BinaryILPProblem.this.variableIdsToContainingConstraints.get(id).add(this);
+				}
+			}
 		}
 
 		@Override
-		boolean fixVariable(int id, boolean choice) {
-			if (variableGroup.remove(id)) {
+		void generateILPConstraint() {
+			if (this.variableGroup.size() > this.allowed) {
+				// generate constraint for choosing at most allowed vars
+				ILPLinearExpression expr = BinaryILPProblem.this.createLinearExpression();
+				this.variableGroup.stream().forEach(v -> {
+					expr.addTerm(v, 1);
+				});
+				ILPConstraint constr = new ILPConstraint(expr, Comparator.le, this.allowed, this.getName());
+				BinaryILPProblem.this.addConstraint(constr);
+				BinaryILPProblem.this.generatedConstraints.add(constr);
+			}
+
+			if (this.required > 0) {
+				// generate constraint for choosing at least required vars
+				ILPLinearExpression expr2 = BinaryILPProblem.this.createLinearExpression();
+				this.variableGroup.stream().forEach(v -> {
+					expr2.addTerm(v, -1);
+				});
+				ILPConstraint constr2 = new ILPConstraint(expr2, Comparator.le, -this.required, this.getName());
+				BinaryILPProblem.this.addConstraint(constr2);
+				BinaryILPProblem.this.generatedConstraints.add(constr2);
+			}
+		}
+
+		@Override
+		boolean fixVariable(final int id, final boolean choice) {
+			if (this.variableGroup.remove(id)) {
 				// remove yielded true, so it was contained
 				if (choice) {
-					if (--allowed == 0) {
-						for (int id2 : variableGroup) {
+					--this.required;
+					if (--this.allowed == 0) {
+						for (int id2 : this.variableGroup) {
 							// all other vars cannot be chosen
 							BinaryILPProblem.this.fixVariable(id2, false);
 						}
+						this.setRelevant(false);
 						return false;
 					}
-				} else {
-					if (variableGroup.isEmpty()) {
-						return false;
-					}
+				} else if (this.variableGroup.size() < this.required) {
+					throw new RuntimeException("Cannot fulfill number of required choices for this exclusion");
 				}
 			}
+
+			if (this.variableGroup.isEmpty() || (this.required <= 0 && this.variableGroup.size() <= this.allowed)) {
+				// no further variable choices required and all other vars can be chosen
+				this.setRelevant(false);
+				return false;
+			}
+
 			return true;
 		}
 
 		@Override
-		boolean fixVariables(IntCollection positiveChoices, IntCollection negativeChoices) {
-			if (variableGroup.removeAll(negativeChoices)) {
-				if (variableGroup.isEmpty()) {
-					return false;
+		boolean fixVariables(final IntCollection positiveChoices, final IntCollection negativeChoices) {
+			if (this.variableGroup.removeAll(negativeChoices)) {
+				if (this.variableGroup.size() < this.required) {
+					throw new RuntimeException("Cannot fulfill number of required choices for this exclusion");
 				}
 			}
 
 			for (int id : positiveChoices) {
-				if (variableGroup.remove(id)) {
-					if (--allowed == 0) {
-						for (int id2 : variableGroup) {
+				if (this.variableGroup.remove(id)) {
+					this.required--;
+					if (--this.allowed == 0) {
+						for (int id2 : this.variableGroup) {
 							// all other vars cannot be chosen
 							BinaryILPProblem.this.fixVariable(id2, false);
 						}
+						this.setRelevant(false);
 						return false;
 					}
 				}
+			}
+
+			if (this.variableGroup.isEmpty() || (this.required <= 0 && this.variableGroup.size() <= this.allowed)) {
+				// no further variable choices required and all other vars can be chosen
+				this.setRelevant(false);
+				return false;
 			}
 			return true;
 		}
 
 		@Override
 		public String toString() {
-			List<String> termStrings = new LinkedList<String>();
+			List<String> termStrings = new LinkedList<>();
 			this.variableGroup.stream().forEach((variableId) -> {
-				termStrings.add(getVariable(variableId));
+				termStrings.add(BinaryILPProblem.this.getVariable(variableId));
 			});
-			return "Exclusion(" + getName() + ") " + String.join(" XOR ", termStrings);
+			return "Exclusion(" + this.getName() + ", [" + this.required + ", " + this.allowed + "]" + ") {"
+			+ String.join(", ", termStrings) + "}";
 		}
 
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = super.hashCode();
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + allowed;
-			result = prime * result + ((variableGroup == null) ? 0 : variableGroup.hashCode());
+			result = prime * result + this.getOuterType().hashCode();
+			result = prime * result + this.allowed;
+			result = prime * result + ((this.variableGroup == null) ? 0 : this.variableGroup.hashCode());
 			return result;
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj) {
 				return true;
 			}
 			if (!super.equals(obj)) {
 				return false;
 			}
-			if (getClass() != obj.getClass()) {
+			if (this.getClass() != obj.getClass()) {
 				return false;
 			}
 			Exclusion other = (Exclusion) obj;
-			if (!getOuterType().equals(other.getOuterType())) {
+			if (!this.getOuterType().equals(other.getOuterType())) {
 				return false;
 			}
-			if (allowed != other.allowed) {
+			if (this.allowed != other.allowed) {
 				return false;
 			}
-			if (variableGroup == null) {
+			if (this.variableGroup == null) {
 				if (other.variableGroup != null) {
 					return false;
 				}
-			} else if (!variableGroup.equals(other.variableGroup)) {
+			} else if (!this.variableGroup.equals(other.variableGroup)) {
 				return false;
 			}
 			return true;
@@ -593,12 +729,12 @@ public final class BinaryILPProblem extends ILPProblem {
 	 */
 	private void generateContraints() {
 		ILPSolver.logger.debug("Generating ILP constraints");
-		this.removeConstraints(generatedConstraints);
-		generatedConstraints.clear();
+		this.removeConstraints(this.generatedConstraints);
+		this.generatedConstraints.clear();
 
-		for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<LinkedList<Implication>> implOfSameVar : implications
+		for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<LinkedList<Implication>> implOfSameVar : this.implications
 				.int2ObjectEntrySet()) {
-			ILPLinearExpression expr = createLinearExpression();
+			ILPLinearExpression expr = this.createLinearExpression();
 			String name = "IMPL" + this.getVariable(implOfSameVar.getIntKey());
 			for (Implication impl : implOfSameVar.getValue()) {
 				if (impl.isRelevant()) {
@@ -607,14 +743,14 @@ public final class BinaryILPProblem extends ILPProblem {
 				}
 			}
 			ILPConstraint constr = new ILPConstraint(expr, Comparator.le, 0.0, name);
-			addConstraint(constr);
-			generatedConstraints.add(constr);
+			this.addConstraint(constr);
+			this.generatedConstraints.add(constr);
 		}
-		for (NegativeImplication negImpl : negativeImplications) {
+		for (NegativeImplication negImpl : this.negativeImplications) {
 			if (negImpl.isRelevant())
 				negImpl.generateILPConstraint();
 		}
-		for (Exclusion excl : exclusions) {
+		for (Exclusion excl : this.exclusions) {
 			if (excl.isRelevant())
 				excl.generateILPConstraint();
 		}
@@ -622,15 +758,15 @@ public final class BinaryILPProblem extends ILPProblem {
 
 	@Override
 	protected void applyLazyFixedVariables() {
-		if (getLazyFixedVariables().isEmpty())
+		if (this.getLazyFixedVariables().isEmpty())
 			return;
-		this.removeConstraints(generatedConstraints);
-		generatedConstraints.clear();
-		while (!(lazyPositiveChoices.isEmpty() && lazyNegativeChoices.isEmpty())) {
-			IntArrayList positiveChoices = new IntArrayList(lazyPositiveChoices);
-			IntArrayList negativeChoices = new IntArrayList(lazyNegativeChoices);
-			lazyPositiveChoices.clear();
-			lazyNegativeChoices.clear();
+		this.removeConstraints(this.generatedConstraints);
+		this.generatedConstraints.clear();
+		while (!(this.lazyPositiveChoices.isEmpty() && this.lazyNegativeChoices.isEmpty())) {
+			IntArrayList positiveChoices = new IntArrayList(this.lazyPositiveChoices);
+			IntArrayList negativeChoices = new IntArrayList(this.lazyNegativeChoices);
+			this.lazyPositiveChoices.clear();
+			this.lazyNegativeChoices.clear();
 			for (int id : positiveChoices) {
 				for (BinaryConstraint constraint : this.variableIdsToContainingConstraints.remove(id)) {
 					if (constraint.isRelevant) {
@@ -651,7 +787,7 @@ public final class BinaryILPProblem extends ILPProblem {
 	}
 
 	@Override
-	int createNewVariable(String variableName) {
+	int createNewVariable(final String variableName) {
 		int variableId = super.createNewVariable(variableName);
 		this.variableIdsToContainingConstraints.put(variableId, new LinkedList<>());
 		return variableId;
@@ -659,48 +795,62 @@ public final class BinaryILPProblem extends ILPProblem {
 
 	/**
 	 * Sets the variable to the given value
-	 * 
-	 * @param variableName
-	 *            Name of the variable to fix
-	 * @param choice
-	 *            Value of the variable
+	 *
+	 * @param variableName Name of the variable to fix
+	 * @param choice       Value of the variable
 	 */
-	public void fixVariable(String variableName, boolean choice) {
+	public void fixVariable(final String variableName, final boolean choice) {
 		this.fixVariable(this.getVariableId(variableName), choice);
 	}
 
 	/**
 	 * Sets the variable to the given value
-	 * 
-	 * @param variableId
-	 *            ID of the variable to fix
-	 * @param choice
-	 *            Value of the variable
+	 *
+	 * @param variableId ID of the variable to fix
+	 * @param choice     Value of the variable
 	 */
-	protected void fixVariable(int variableId, boolean choice) {
+	protected void fixVariable(final int variableId, final boolean choice) {
 		super.fixVariable(variableId, choice ? 1 : 0);
 		if (choice) {
-			if (!positiveChoices.contains(variableId)) {
-				positiveChoices.add(variableId);
-				lazyPositiveChoices.add(variableId);
+			if (!this.positiveChoices.contains(variableId)) {
+				this.positiveChoices.add(variableId);
+				this.lazyPositiveChoices.add(variableId);
 			}
 		} else {
-			if (!negativeChoices.contains(variableId)) {
-				negativeChoices.add(variableId);
-				lazyNegativeChoices.add(variableId);
+			if (!this.negativeChoices.contains(variableId)) {
+				this.negativeChoices.add(variableId);
+				this.lazyNegativeChoices.add(variableId);
 			}
 		}
 	}
 
 	@Override
-	public void fixVariable(String variableName, int value) {
+	public void fixVariable(final String variableName, final int value) {
 		switch (value) {
 		case 1:
-			fixVariable(variableName, true);
+			this.fixVariable(variableName, true);
 			break;
 		case 0:
-			fixVariable(variableName, false);
+			this.fixVariable(variableName, false);
 			break;
+		default:
+			throw new IllegalArgumentException("Only 0 or 1 are supported in binary ILP problems");
+		}
+	}
+
+	public Boolean getFixedBooleanVariable(final String variableName) {
+		return this.getFixedBooleanVariable(this.getVariableId(variableName));
+	}
+
+	protected Boolean getFixedBooleanVariable(final int variable) {
+		Integer value = this.getFixedVariable(variable);
+		if (value == null)
+			return null;
+		switch (value) {
+		case 1:
+			return true;
+		case 0:
+			return false;
 		default:
 			throw new IllegalArgumentException("Only 0 or 1 are supported in binary ILP problems");
 		}
@@ -710,71 +860,57 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * Adds a constraint of the form x -> a v b <br>
 	 * If the variable on the left side is chosen, one of the variables on the right
 	 * side has to be chosen as well.
-	 * 
-	 * @param leftSide
-	 *            The name of the variable on the left side of the implication
-	 * @param rightSide
-	 *            The names of the variables on the right side of the implication
-	 * @param name
-	 *            The name of the implication
+	 *
+	 * @param leftSide  The name of the variable on the left side of the implication
+	 * @param rightSide The names of the variables on the right side of the
+	 *                  implication
+	 * @param name      The name of the implication
 	 * @return The implication that has been created
 	 */
-	public Implication addImplication(String leftSide, Collection<String> rightSide, String name) {
-		Implication impl = new Implication();
-		impl.setName(name);
-		impl.leftVariable = getVariableId(leftSide);
-
-		impl.rightVariables = new IntOpenHashSet(
-				rightSide.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
-		if (impl.fixVariables(positiveChoices, negativeChoices)) {
-			implications.putIfAbsent(impl.leftVariable, new LinkedList<>());
-			implications.get(impl.leftVariable).add(impl);
-			this.variableIdsToContainingConstraints.get(impl.leftVariable).add(impl);
-			for (int id : impl.rightVariables) {
-				this.variableIdsToContainingConstraints.get(id).add(impl);
-			}
-		}
-		return impl;
+	public Implication addImplication(final String leftSide, final Stream<String> rightSide, final String name) {
+		return new Implication(this.getVariableId(leftSide),
+				new IntOpenHashSet(rightSide.mapToInt(s -> this.getVariableId(s)).toArray()),
+				name);
 	}
 
 	/**
 	 * Adds a constraint for a set of variables of which only a certain number can
 	 * be chosen.
-	 * 
-	 * @param variables
-	 *            The variables contained in the exclusion
-	 * @param name
-	 *            The name of the exclusion
-	 * @param allowed
-	 *            The number of variables that can be chosen
+	 *
+	 * @param variables The variables contained in the exclusion
+	 * @param name      The name of the exclusion
+	 * @param allowed   The number of variables that can be chosen
 	 * @return The created exclusion
 	 */
-	public Exclusion addExclusion(Collection<String> variables, String name, int allowed) {
-		Exclusion excl = new Exclusion();
-		excl.setName(name);
-		excl.allowed = allowed;
-		excl.variableGroup = new IntOpenHashSet(
-				variables.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
-		if (excl.fixVariables(positiveChoices, negativeChoices)) {
-			exclusions.add(excl);
-			for (int id : excl.variableGroup) {
-				this.variableIdsToContainingConstraints.get(id).add(excl);
-			}
-		}
-		return excl;
+	public Exclusion addExclusion(final Stream<String> variables, final String name, final int allowed) {
+		return this.addExclusion(variables, name, allowed, 0);
+	}
+
+	/**
+	 * Adds a constraint for a set of variables of which only a certain number can
+	 * be chosen.
+	 *
+	 * @param variables The variables contained in the exclusion
+	 * @param name      The name of the exclusion
+	 * @param allowed   The number of variables that can be chosen
+	 * @param required  The minimum number of variables that have to be chosen
+	 * @return The created exclusion
+	 */
+	public Exclusion addExclusion(final Stream<String> variables, final String name, final int allowed, final int required) {
+		return new Exclusion(
+				new IntOpenHashSet(variables.mapToInt(s -> this.getVariableId(s)).toArray()),
+				allowed, required, name);
 	}
 
 	/**
 	 * Adds a constraint for a set of variables of which only one can be chosen
-	 * 
-	 * @param variables
-	 *            The variables contained in the exclusion
-	 * @param name
-	 *            The name of the exclusion
+	 *
+	 * @param variables The variables contained in the exclusion
+	 * @param name      The name of the exclusion
 	 * @return The created exclusion
 	 */
-	public Exclusion addExclusion(Collection<String> variables, String name) {
-		return addExclusion(variables, name, 1);
+	public Exclusion addExclusion(final Stream<String> variables, final String name) {
+		return this.addExclusion(variables, name, 1);
 	}
 
 	/**
@@ -782,39 +918,24 @@ public final class BinaryILPProblem extends ILPProblem {
 	 * not(b) <br>
 	 * If none of the variables on the left side is chosen, none of the variables on
 	 * the right side can be chosen
-	 * 
-	 * @param leftSide
-	 *            Variables on the left side of the implication
-	 * @param rightSide
-	 *            Variables on the right side of the implication
-	 * @param name
-	 *            The name of the implication
+	 *
+	 * @param leftSide  Variables on the left side of the implication
+	 * @param rightSide Variables on the right side of the implication
+	 * @param name      The name of the implication
 	 * @return the created implication
 	 */
-	public NegativeImplication addNegativeImplication(Collection<String> leftSide, Collection<String> rightSide,
-			String name) {
-		NegativeImplication impl = new NegativeImplication();
-		impl.setName(name);
-		impl.leftVariables = new IntOpenHashSet(
-				leftSide.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
-		impl.rightVariables = new IntOpenHashSet(
-				rightSide.stream().map(s -> getVariableId(s)).collect(Collectors.toList()));
-		if (impl.fixVariables(positiveChoices, negativeChoices)) {
-			negativeImplications.add(impl);
-			for (int id : impl.leftVariables) {
-				this.variableIdsToContainingConstraints.get(id).add(impl);
-			}
-			for (int id : impl.rightVariables) {
-				this.variableIdsToContainingConstraints.get(id).add(impl);
-			}
-		}
-		return impl;
+	public NegativeImplication addNegativeImplication(final Stream<String> leftSide, final Stream<String> rightSide,
+			final String name) {
+		return new NegativeImplication(
+				new IntOpenHashSet(leftSide.mapToInt(s -> this.getVariableId(s)).toArray()),
+				new IntOpenHashSet(rightSide.mapToInt(s -> this.getVariableId(s)).toArray()),
+				name);
 	}
 
 	@Override
 	public Collection<ILPConstraint> getConstraints() {
 		this.applyLazyFixedVariables();
-		if (generatedConstraints.isEmpty())
+		if (this.generatedConstraints.isEmpty())
 			this.generateContraints();
 		return super.getConstraints();
 	}
@@ -822,17 +943,20 @@ public final class BinaryILPProblem extends ILPProblem {
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		for (Exclusion excl : exclusions) {
-			b.append("\n" + excl);
+		for (Exclusion excl : this.exclusions) {
+			if (excl.isRelevant())
+				b.append("\n" + excl);
 		}
-		for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<LinkedList<Implication>> implOfSameVar : implications
+		for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<LinkedList<Implication>> implOfSameVar : this.implications
 				.int2ObjectEntrySet()) {
 			for (Implication impl : implOfSameVar.getValue()) {
-				b.append("\n" + impl);
+				if (impl.isRelevant())
+					b.append("\n" + impl);
 			}
 		}
-		for (NegativeImplication impl : negativeImplications) {
-			b.append("\n" + impl);
+		for (NegativeImplication impl : this.negativeImplications) {
+			if (impl.isRelevant())
+				b.append("\n" + impl);
 		}
 
 		return super.toString() + b.toString();

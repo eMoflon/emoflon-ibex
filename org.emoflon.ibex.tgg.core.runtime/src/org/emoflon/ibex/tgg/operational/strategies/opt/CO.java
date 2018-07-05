@@ -63,8 +63,9 @@ public abstract class CO extends CC {
 	 * .ibex.tgg.operational.matches.IMatch, java.lang.String)
 	 */
 	@Override
-	protected int getWeightForMatch(IMatch comatch, String ruleName) {
-		return super.getWeightForMatch(comatch, ruleName) + getGreenFactory(ruleName).getGreenCorrNodesInRule().size();
+	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
+		return super.getDefaultWeightForMatch(comatch, ruleName)
+				+ getGreenFactory(ruleName).getGreenCorrNodesInRule().size();
 	}
 
 	@Override
