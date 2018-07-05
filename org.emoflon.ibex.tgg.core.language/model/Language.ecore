@@ -6,9 +6,9 @@
     <details key="documentation" value="Interal TGG Model for defining TGG Rules"/>
   </eAnnotations>
   <eClassifiers xsi:type="ecore:EClass" name="TGG" eSuperTypes="#//basic/TGGNamedElement">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="src" upperBound="-1" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="trg" upperBound="-1" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="corr" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="src" upperBound="-1" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EPackage"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trg" upperBound="-1" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EPackage"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="corr" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EPackage"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"
         eType="#//TGGRule" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraintDefinitionLibrary"
@@ -37,7 +37,7 @@
         eType="#//TGGRuleEdge" eOpposite="#//TGGRuleEdge/trgNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
         eType="#//TGGRuleEdge" eOpposite="#//TGGRuleEdge/srcNode"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClass"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EClass"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingCorrsSource" upperBound="-1"
         eType="#//TGGRuleCorr" eOpposite="#//TGGRuleCorr/source"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingCorrsTarget" upperBound="-1"
@@ -56,7 +56,7 @@
         eOpposite="#//TGGRuleNode/outgoingEdges"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="trgNode" eType="#//TGGRuleNode"
         eOpposite="#//TGGRuleNode/incomingEdges"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EReference"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EReference"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="DomainType">
     <eLiterals name="SRC" literal="SRC"/>
@@ -83,7 +83,7 @@
       nsPrefix="org.emoflon.ibex.tgg.core.language.inplaceAttributes">
     <eClassifiers xsi:type="ecore:EClass" name="TGGInplaceAttributeExpression">
       <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" lowerBound="1"
-          eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EAttribute"/>
+          eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="valueExpr" eType="#//basic/expressions/TGGExpression"
           containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="operator" lowerBound="1"
@@ -112,7 +112,7 @@
           eType="#//basic/expressions/TGGParamValue"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeVariable" eSuperTypes="#//basic/expressions/TGGParamValue">
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eClassifiers>
     <eSubpackages name="definition" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp//definition"
         nsPrefix="org.emoflon.ibex.tgg.core.language.csp.definition">
@@ -123,7 +123,7 @@
       </eClassifiers>
       <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinition"
           eSuperTypes="#//basic/TGGNamedElement">
-        <eStructuralFeatures xsi:type="ecore:EAttribute" name="userDefined" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EBoolean"
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="userDefined" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
             defaultValueLiteral="true"/>
         <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinitions"
             upperBound="-1" eType="#//csp/definition/TGGAttributeConstraintParameterDefinition"
@@ -134,19 +134,19 @@
             eType="#//csp/definition/TGGAttributeConstraintAdornment" containment="true"/>
       </eClassifiers>
       <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintParameterDefinition">
-        <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EDataType"/>
-        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EDataType"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
       </eClassifiers>
       <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintAdornment">
         <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" unique="false"
-            upperBound="-1" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+            upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
       </eClassifiers>
     </eSubpackages>
   </eSubpackages>
   <eSubpackages name="basic" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//basic"
       nsPrefix="org.emoflon.ibex.tgg.core.language.basic">
     <eClassifiers xsi:type="ecore:EClass" name="TGGNamedElement">
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eClassifiers>
     <eSubpackages name="expressions" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions"
         nsPrefix="org.emoflon.ibex.tgg.core.language.misc.expressions">
@@ -160,11 +160,11 @@
       </eClassifiers>
       <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeExpression" eSuperTypes="#//basic/expressions/TGGExpression">
         <eStructuralFeatures xsi:type="ecore:EReference" name="objectVar" eType="#//TGGRuleNode"/>
-        <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EAttribute"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
       </eClassifiers>
       <eClassifiers xsi:type="ecore:EClass" name="TGGEnumExpression" eSuperTypes="#//basic/expressions/TGGExpression">
-        <eStructuralFeatures xsi:type="ecore:EReference" name="eenum" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EEnum"/>
-        <eStructuralFeatures xsi:type="ecore:EReference" name="literal" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EEnumLiteral"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="eenum" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EEnum"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="literal" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EEnumLiteral"/>
       </eClassifiers>
     </eSubpackages>
   </eSubpackages>
