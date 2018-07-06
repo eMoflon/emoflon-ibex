@@ -3,7 +3,7 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="language" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore"
     nsPrefix="org.emoflon.ibex.tgg.core.language">
   <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-    <details key="documentation" value="Interal TGG Model for defining TGG Rules"/>
+    <details key="documentation" value="Internal, IBeX-specific, TGG Model for defining TGG Rules"/>
   </eAnnotations>
   <eClassifiers xsi:type="ecore:EClass" name="TGG" eSuperTypes="#//basic/TGGNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="src" upperBound="-1" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EPackage"/>
@@ -114,7 +114,7 @@
     <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeVariable" eSuperTypes="#//basic/expressions/TGGParamValue">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eClassifiers>
-    <eSubpackages name="definition" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp//definition"
+    <eSubpackages name="definition" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//csp/definition"
         nsPrefix="org.emoflon.ibex.tgg.core.language.csp.definition">
       <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinitionLibrary">
         <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraintDefinitions"
@@ -148,7 +148,7 @@
     <eClassifiers xsi:type="ecore:EClass" name="TGGNamedElement">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eClassifiers>
-    <eSubpackages name="expressions" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/misc/expressions"
+    <eSubpackages name="expressions" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/basic/expressions"
         nsPrefix="org.emoflon.ibex.tgg.core.language.misc.expressions">
       <eClassifiers xsi:type="ecore:EClass" name="TGGParamValue">
         <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinition"
