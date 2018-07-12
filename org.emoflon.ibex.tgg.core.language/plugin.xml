@@ -16,6 +16,6 @@
     <package class="language.basic.BasicPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//basic"/>
   </extension>
   <extension point="org.eclipse.emf.ecore.generated_package">
-    <package class="language.basic.expressions.ExpressionsPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/basic/expressions"/>
+    <package class="language.basic.expressions.ExpressionsPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//basic/expressions"/>
   </extension>
 </plugin>

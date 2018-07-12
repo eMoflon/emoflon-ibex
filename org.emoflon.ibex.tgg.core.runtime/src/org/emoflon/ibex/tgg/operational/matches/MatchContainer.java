@@ -22,7 +22,6 @@ import language.TGGRule;
  * maintains matches that are reported by the pattern matcher
  */
 public class MatchContainer {
-
 	private Object2IntOpenHashMap<String> ruleNameToId;
 	private Int2ObjectOpenHashMap<String> idToRuleName;
 
@@ -51,9 +50,13 @@ public class MatchContainer {
 		matchToRuleNameID.put(match, ruleNameToId.getInt(match.getRuleName()));
 	}
 
-	public void removeMatch(IMatch match) {
-		if (matchToRuleNameID.containsKey(match))
+	public boolean removeMatch(IMatch match) {
+		if (matchToRuleNameID.containsKey(match)) {
 			matchToRuleNameID.removeInt(match);
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public void removeMatches(Collection<IMatch> matches) {

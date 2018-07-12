@@ -212,16 +212,16 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		if (isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(match)) {
 			operationalMatchContainer.addMatch(match);
-			logger.debug("Received and added " + match.getPatternName());
+			logger.debug("Received and added " + match);
 		} else
-			logger.debug("Received but rejected " + match.getPatternName());
+			logger.debug("Received but rejected " + match);
 	}
 
 	protected boolean addConsistencyMatch(IMatch match) {
 		if (matchIsValidIsomorphism(match)) {
 			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 			consistencyMatches.put(ruleAppNode, match);
-			logger.debug("Received and added: " + match.getPatternName());
+			logger.debug("Received and added consistency match: " + match);
 			return true;
 		}
 
@@ -230,11 +230,14 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	@Override
 	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		removeOperationalRuleMatch((IMatch) match);
+		if (removeOperationalRuleMatch((IMatch) match)) {
+			logger.debug("Removed due to delete event from pattern matcher: ");
+			logger.debug(match);
+		}
 	}
 
-	protected void removeOperationalRuleMatch(IMatch match) {
-		operationalMatchContainer.removeMatch(match);
+	protected boolean removeOperationalRuleMatch(IMatch match) {
+		return operationalMatchContainer.removeMatch(match);
 	}
 
 	public boolean isPatternRelevantForInterpreter(String patternName) {
@@ -287,9 +290,16 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 
-		processOperationalRuleMatch(ruleName, match);
+		Optional<IMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
+		if (result.isPresent())
+			logger.debug("Removed as it has just been applied: ");
+		else
+			logger.debug("Removed as application failed: ");
+		
+		logger.debug(match);
+		
 		return true;
 	}
 
@@ -303,15 +313,20 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
 		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
+			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
 
+		
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.getPatternName());
+		
+		logger.debug("Attempting to apply: " + match.getPatternName() + " with " + greenPattern);
+
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
-			logger.debug("Successfully applied: " + match.getPatternName());
+			logger.info("Successfully applied: " + match);
 			markedAndCreatedEdges.addAll(cm.getCreatedEdges());
 			greenPattern.getEdgesMarkedByPattern().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
 			createMarkers(greenPattern, cm, ruleName);
