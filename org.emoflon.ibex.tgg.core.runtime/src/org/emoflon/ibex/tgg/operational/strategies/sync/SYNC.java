@@ -138,7 +138,7 @@ public abstract class SYNC extends OperationalStrategy {
 		strategy = new BWD_Strategy();
 		run();
 	}
-	
+
 	/***** Match and pattern management *****/
 
 	@Override
@@ -194,8 +194,10 @@ public abstract class SYNC extends OperationalStrategy {
 			return super.processOperationalRuleMatch(ruleName, match);
 
 		if (isComplementMatch(ruleName))
-			if (!isComplementRuleApplicable(match, ruleName))
+			if (!isComplementRuleApplicable(match, ruleName)) {
+				logger.debug("Complement rule is not applicable: " + match.getPatternName());
 				return Optional.empty();
+			}
 
 		Optional<IMatch> comatch = super.processOperationalRuleMatch(ruleName, match);
 
@@ -207,7 +209,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 		return comatch;
 	}
-	
+
 	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, IMatch m) {
 		return strategy.determineCSP(factory, m);
 	}
@@ -232,8 +234,12 @@ public abstract class SYNC extends OperationalStrategy {
 						.map(n -> (EObject) match.get(n))//
 						.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
 
-				if (fusedNodes.containsAll(complementNodes))
+				if (fusedNodes.containsAll(complementNodes)) {
 					removeOperationalRuleMatch(match);
+					logger.debug(
+							"Removed complement rule as it has already been applied as a fused rule application with its kernel:");
+					logger.debug(match);
+				}
 			}
 		}
 	}
@@ -288,12 +294,14 @@ public abstract class SYNC extends OperationalStrategy {
 
 	protected boolean isComplementRuleApplicable(IMatch match, String ruleName) {
 		if (!isPatternRelevantForInterpreter(match.getPatternName())) {
+			logger.debug("Not relevant for interpreter: " + match.getPatternName());
 			return false;
 		}
 
 		TGGComplementRule cr = getComplementRule(ruleName).get();
-		if (!cr.isBounded())
+		if (!cr.isBounded()) {
 			return true;
+		}
 
 		EObject kernelProtocol = (EObject) match.get(ConsistencyPattern.getProtocolNodeName(cr.getKernel().getName()));
 		ObjectOpenHashSet<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
@@ -302,9 +310,13 @@ public abstract class SYNC extends OperationalStrategy {
 		// its kernel was applied, CR is not applicable!
 		for (EObject contextNode : contextNodes) {
 			if (nodeToProtocolID.get(contextNode) != null // The context might not even have been created yet???
-					&& nodeToProtocolID.get(contextNode) > protocolNodeToID.get(kernelProtocol))
+					&& nodeToProtocolID.get(contextNode) > protocolNodeToID.get(kernelProtocol)) {
+				logger.debug("Complement match " + match.getPatternName() + " is not applicable as " + contextNode
+						+ " was created after " + kernelProtocol);
 				return false;
+			}
 		}
+
 		return true;
 	}
 

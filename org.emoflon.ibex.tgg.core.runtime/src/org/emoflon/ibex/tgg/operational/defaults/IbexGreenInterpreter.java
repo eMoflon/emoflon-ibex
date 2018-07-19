@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -34,6 +35,8 @@ import language.inplaceAttributes.TGGInplaceAttributeExpression;
  *         Correspondences for a given set of green TGGRuleElement
  */
 public class IbexGreenInterpreter implements IGreenInterpreter {
+	private static final Logger logger = Logger.getLogger(IbexGreenInterpreter.class);
+	
 	private OperationalStrategy operationalStrategy;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
@@ -136,17 +139,23 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	@Override
 	public Optional<IMatch> apply(IGreenPattern greenPattern, String ruleName, IMatch match) {
 		// Check if match is valid
-		if (matchIsInvalid(ruleName, greenPattern, match))
+		if (matchIsInvalid(ruleName, greenPattern, match)) {
+			logger.debug("Blocking application as match is invalid.");
 			return Optional.empty();
+		}
 
 		// Check if pattern should be ignored
-		if (greenPattern.isToBeIgnored(match))
+		if (greenPattern.isToBeIgnored(match)) {
+			logger.debug("Blocking application as match is to be ignored.");
 			return Optional.empty();
+		}
 
 		// Check if all attribute values provided match are as expected
 		IRuntimeTGGAttrConstrContainer cspContainer = greenPattern.getAttributeConstraintContainer(match);
-		if (!cspContainer.solve())
+		if (!cspContainer.solve()) {
+			logger.debug("Blocking application as attribute conditions don't hold.");
 			return Optional.empty();
+		}
 
 		IMatch comatch = match.copy();
 

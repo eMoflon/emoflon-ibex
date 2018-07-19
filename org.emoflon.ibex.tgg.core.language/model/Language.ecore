@@ -148,7 +148,7 @@
     <eClassifiers xsi:type="ecore:EClass" name="TGGNamedElement">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eClassifiers>
-    <eSubpackages name="expressions" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/basic/expressions"
+    <eSubpackages name="expressions" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//basic/expressions"
         nsPrefix="org.emoflon.ibex.tgg.core.language.misc.expressions">
       <eClassifiers xsi:type="ecore:EClass" name="TGGParamValue">
         <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinition"
