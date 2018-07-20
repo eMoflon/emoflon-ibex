@@ -5,7 +5,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-10
 Export-Package: GTLanguage,
  GTLanguage.impl,
  GTLanguage.util,
