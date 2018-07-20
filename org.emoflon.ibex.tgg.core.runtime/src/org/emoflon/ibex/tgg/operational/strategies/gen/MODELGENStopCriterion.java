@@ -76,7 +76,7 @@ public class MODELGENStopCriterion {
 			return true;
 
 		// prevent rule from being applied if max number of applications is reached
-		if (maxRuleCount.containsKey(ruleName) && ((maxRuleCount.get(ruleName).equals(new Integer(0))
+		if (maxRuleCount.containsKey(ruleName) && ((maxRuleCount.get(ruleName).equals(Integer.valueOf(0))
 				|| maxRuleCount.get(ruleName).equals(currentRuleCount.get(ruleName)))))
 			return true;
 

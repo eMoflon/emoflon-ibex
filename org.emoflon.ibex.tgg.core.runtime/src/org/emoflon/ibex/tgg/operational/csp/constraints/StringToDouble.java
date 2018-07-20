@@ -20,7 +20,7 @@ public class StringToDouble extends RuntimeTGGAttributeConstraint {
 
 		try {
 			if (bindingStates.equals("BB")) {
-				if (new Double((String) string.getValue()).equals(((Number) number.getValue()).doubleValue()))
+				if (Double.valueOf((String) string.getValue()).equals(((Number) number.getValue()).doubleValue()))
 					setSatisfied(true);
 				else
 					setSatisfied(false);
@@ -28,7 +28,7 @@ public class StringToDouble extends RuntimeTGGAttributeConstraint {
 				string.bindToValue(number.getValue().toString());
 				setSatisfied(true);
 			} else if (bindingStates.equals("BF")) {
-				number.bindToValue(new Double((String) string.getValue()));
+				number.bindToValue(Double.valueOf((String) string.getValue()));
 				setSatisfied(true);
 			}
 			// modelgen implementations

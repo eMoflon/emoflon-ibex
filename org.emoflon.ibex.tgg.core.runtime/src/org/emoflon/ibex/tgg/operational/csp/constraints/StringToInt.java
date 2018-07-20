@@ -20,7 +20,7 @@ public class StringToInt extends RuntimeTGGAttributeConstraint {
 
 		try {
 			if (bindingStates.equals("BB")) {
-				if (new Integer((String) string.getValue()).equals(((Integer) number.getValue()).intValue()))
+				if (Integer.valueOf((String) string.getValue()).equals(((Integer) number.getValue()).intValue()))
 					setSatisfied(true);
 				else
 					setSatisfied(false);
@@ -28,7 +28,7 @@ public class StringToInt extends RuntimeTGGAttributeConstraint {
 				string.bindToValue(number.getValue().toString());
 				setSatisfied(true);
 			} else if (bindingStates.equals("BF")) {
-				number.bindToValue(new Integer((String) string.getValue()));
+				number.bindToValue(Integer.valueOf((String) string.getValue()));
 				setSatisfied(true);
 			}
 			// modelgen implementations
