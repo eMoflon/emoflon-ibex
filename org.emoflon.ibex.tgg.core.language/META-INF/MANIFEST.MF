@@ -1,11 +1,9 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.emoflon.ibex.tgg.core.language;singleton:=tru
- e
+Bundle-SymbolicName: org.emoflon.ibex.tgg.core.language;singleton:=true
 Bundle-Name: eMoflon::IBeX Bidirectional Model Transformation via Triple Graph Grammars - Language
 Bundle-Version: 1.0.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-10
 Bundle-Vendor: eMoflon::IBeX Developers
 Require-Bundle: com.google.guava,
  org.apache.log4j,

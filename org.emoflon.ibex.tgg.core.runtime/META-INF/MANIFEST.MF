@@ -23,7 +23,6 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.sat4j.pb;visibility:=reexport
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-10
 Bundle-ClassPath: lib/commons-io-2.5.jar,
  lib/commons-lang3-3.5.jar,
  lib/gurobi.jar,
