@@ -220,12 +220,12 @@ public abstract class SYNC extends OperationalStrategy {
 	 * Removes complement match that was already applied together in kernel in the
 	 * fused match
 	 */
-	protected void removeDuplicatedComplementMatches(String ruleName, IMatch comatch) {
+	protected void removeDuplicatedComplementMatches(String fusedRuleName, IMatch comatch) {
 		blackInterpreter.updateMatches();
 		Set<IMatch> complementMatches = findAllComplementRuleMatches();
 
 		for (IMatch match : complementMatches) {
-			if (isComplementMatchRelevant(match)) {
+			if (isComplementMatchRelevant(fusedRuleName, match)) {
 
 				ObjectOpenHashSet<EObject> fusedNodes = comatch.getParameterNames().stream()
 						.map(n -> (EObject) comatch.get(n))//
@@ -238,7 +238,8 @@ public abstract class SYNC extends OperationalStrategy {
 					removeOperationalRuleMatch(match);
 					logger.debug(
 							"Removed complement rule as it has already been applied as a fused rule application with its kernel:");
-					logger.debug(match);
+					logger.debug("Complement rule:" + match);
+					logger.debug("fused rule: " + comatch);
 				}
 			}
 		}
@@ -248,8 +249,10 @@ public abstract class SYNC extends OperationalStrategy {
 	 * Removes complement matches that were not part of the fused match, and also
 	 * irrelevant complement matches
 	 */
-	protected boolean isComplementMatchRelevant(IMatch match) {
-		return match.getPatternName().contains(PatternSuffixes.removeSuffix(match.getPatternName()))
+	protected boolean isComplementMatchRelevant(String fusedRuleName, IMatch match) {
+		String complementName = MAUtil.getComplementName(fusedRuleName);
+
+		return complementName.equals(PatternSuffixes.removeSuffix(match.getPatternName()))
 				&& isPatternRelevantForInterpreter(match.getPatternName());
 	}
 
@@ -282,6 +285,7 @@ public abstract class SYNC extends OperationalStrategy {
 		if (MAUtil.isFusedPatternMatch(ruleName)) {
 			TGGRuleApplication complProtocolNode = ((TGGRuleApplication) comatch
 					.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getComplementName(ruleName))));
+			protocolNodeToID.put(complProtocolNode, localCounter);
 			fillInProtocolData(complProtocolNode, localCounter);
 		}
 	}
@@ -312,7 +316,8 @@ public abstract class SYNC extends OperationalStrategy {
 			if (nodeToProtocolID.get(contextNode) != null // The context might not even have been created yet???
 					&& nodeToProtocolID.get(contextNode) > protocolNodeToID.get(kernelProtocol)) {
 				logger.debug("Complement match " + match.getPatternName() + " is not applicable as " + contextNode
-						+ " was created after " + kernelProtocol);
+						+ " (id = " + nodeToProtocolID.get(contextNode) + ")" + " was created after " + kernelProtocol
+						+ " (id = " + protocolNodeToID.get(kernelProtocol) + ")");
 				return false;
 			}
 		}
