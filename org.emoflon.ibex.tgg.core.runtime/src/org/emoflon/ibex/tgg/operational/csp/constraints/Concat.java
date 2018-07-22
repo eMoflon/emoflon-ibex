@@ -2,11 +2,14 @@ package org.emoflon.ibex.tgg.operational.csp.constraints;
 
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
 
 public class Concat extends RuntimeTGGAttributeConstraint {
 
+	private static final Logger logger = Logger.getLogger(Concat.class);
+	
 	/**
 	 * concat(":", a, b, c)
 	 * 
@@ -40,6 +43,7 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 		case "BBFB": {
 			String[] split = ("" + c.getValue()).split(Pattern.quote("" + separator.getValue()));
 			if (split.length != 2) {
+				logger.warn(warningMessageForNonUniqueSeparator(c.getValue().toString()));
 				setSatisfied(false);
 			} else {
 				b.bindToValue(split[1]);
@@ -61,6 +65,8 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 				a.bindToValue(split[0]);
 				b.bindToValue(split[1]);
 				setSatisfied(checkAllValues(separator, a, b, c));
+			} else {
+				logger.warn(warningMessageForNonUniqueSeparator(c.getValue().toString()));
 			}
 			return;
 		}
@@ -98,7 +104,12 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 		}
 	}
 
-	private boolean checkAllValues(RuntimeTGGAttributeConstraintVariable separator,
+	private String warningMessageForNonUniqueSeparator(String s) {
+		return "The separator used for splitting [" + s + "] is not unique!"
+				+ " As I don't know what to do, this means the constraint 'concat' does not hold.";
+	}
+
+	protected boolean checkAllValues(RuntimeTGGAttributeConstraintVariable separator,
 			RuntimeTGGAttributeConstraintVariable a, RuntimeTGGAttributeConstraintVariable b,
 			RuntimeTGGAttributeConstraintVariable c) {
 		return ("" + a.getValue() + separator.getValue() + b.getValue()).equals(c.getValue());
