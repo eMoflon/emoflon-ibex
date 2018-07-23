@@ -170,6 +170,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Resource res = loadTGGResource();
 		Resource flattenedRes = loadFlattenedTGGResource();
 
+		EcoreUtil.resolveAll(rs);
+		EcoreUtil.UnresolvedProxyCrossReferencer//
+				.find(rs)//
+				.forEach((eob, settings) -> logger.error("Problems resolving: " + eob));
+		
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
 
