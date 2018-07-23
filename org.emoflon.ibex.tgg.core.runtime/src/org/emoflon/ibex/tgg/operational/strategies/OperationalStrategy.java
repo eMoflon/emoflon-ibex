@@ -374,8 +374,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		registerInternalMetamodels();
 		registerUserMetamodels();
 		loadTGG();
-		initialiseBlackInterpreter();
 		loadModels();
+		initialiseBlackInterpreter();
 
 		this.trash = createResource("instances/trash.xmi");
 		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
@@ -401,7 +401,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		}
 
 		try {
-			rs.getResources().clear();
 			blackInterpreter.monitor(rs);
 		} finally {
 			if (initExcep.isPresent())
