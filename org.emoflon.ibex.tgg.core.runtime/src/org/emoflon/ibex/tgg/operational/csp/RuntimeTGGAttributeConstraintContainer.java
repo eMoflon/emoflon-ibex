@@ -140,7 +140,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	}
 
 	private boolean valueAlreadySet(EObject entry, EAttribute attr, Object toSet) {
-		return entry.eIsSet(attr) && toSet.equals(entry.eGet(attr));
+		return toSet.equals(entry.eGet(attr));
 	}
 
 	private Object coerceToType(EDataType type, Object o) {
