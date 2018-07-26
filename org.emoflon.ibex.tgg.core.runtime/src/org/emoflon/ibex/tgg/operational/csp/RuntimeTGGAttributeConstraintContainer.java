@@ -112,12 +112,16 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 		return true;
 	}
 	
+	//FIXME:  Code is hard to read, avoid pairs
 	private Collection<Pair<TGGAttributeExpression, Object>> getBoundAttributeExpValues() {
-		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream().map(constraint -> constraint.getBoundAttrExprValues()).reduce(new ArrayList<Pair<TGGAttributeExpression, Object>>(), (a, b) -> a.addAll(b) ? a : a);
+		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream()
+				.map(constraint -> constraint.getBoundAttrExprValues())
+				.reduce(new ArrayList<Pair<TGGAttributeExpression, Object>>(), (a, b) -> a.addAll(b) ? a : a);
 		return col == null ? new ArrayList<Pair<TGGAttributeExpression,Object>>() : col;
 	}
 	
 	@Override
+	//FIXME:  Code is hard to read, avoid pairs
 	public void applyCSPValues(IMatch comatch) {
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = getBoundAttributeExpValues();
 
@@ -127,9 +131,16 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 			EDataType type = attr.getEAttributeType();
 			Object value = cspVal.getRight();
 			
-			if(value != null && type != null && attr != null)
-				entry.eSet(attr, coerceToType(type, value));
+			if(value != null && type != null && attr != null) {
+				Object toSet = coerceToType(type, value);
+				if(!valueAlreadySet(entry, attr, toSet))
+					entry.eSet(attr, toSet);
+			}
 		}
+	}
+
+	private boolean valueAlreadySet(EObject entry, EAttribute attr, Object toSet) {
+		return entry.eIsSet(attr) && toSet.equals(entry.eGet(attr));
 	}
 
 	private Object coerceToType(EDataType type, Object o) {
