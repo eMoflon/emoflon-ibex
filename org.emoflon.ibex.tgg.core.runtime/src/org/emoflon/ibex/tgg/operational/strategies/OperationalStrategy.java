@@ -170,6 +170,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Resource res = loadTGGResource();
 		Resource flattenedRes = loadFlattenedTGGResource();
 
+		EcoreUtil.resolveAll(rs);
+		EcoreUtil.UnresolvedProxyCrossReferencer//
+				.find(rs)//
+				.forEach((eob, settings) -> logger.error("Problems resolving: " + eob));
+		
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
 
@@ -326,7 +331,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
-			logger.info("Successfully applied: " + match);
+			logger.debug("Successfully applied: " + match);
 			markedAndCreatedEdges.addAll(cm.getCreatedEdges());
 			greenPattern.getEdgesMarkedByPattern().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
 			createMarkers(greenPattern, cm, ruleName);
@@ -369,8 +374,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		registerInternalMetamodels();
 		registerUserMetamodels();
 		loadTGG();
-		initialiseBlackInterpreter();
 		loadModels();
+		initialiseBlackInterpreter();
 
 		this.trash = createResource("instances/trash.xmi");
 		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
@@ -396,7 +401,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		}
 
 		try {
-			rs.getResources().clear();
 			blackInterpreter.monitor(rs);
 		} finally {
 			if (initExcep.isPresent())
