@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
@@ -26,8 +27,11 @@ import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptFusedPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import language.BindingType;
+import language.LanguageFactory;
 import language.TGGComplementRule;
 import language.TGGRule;
+import language.TGGRuleEdge;
+import language.TGGRuleNode;
 
 public class BlackPatternCompiler {
 	private Map<String, Collection<IBlackPattern>> ruleToPatterns;
@@ -48,25 +52,29 @@ public class BlackPatternCompiler {
 		for (TGGRule rule : options.getConcreteTGGRules()) {
 			BlackPatternFactory factory = getFactory(rule);
 
+			// Perform some preprocessing
+			addMissingNodesFromSuperRules(rule);
+
 			// Model generation
-			if(ruleIsAxiom(rule) && !rule.getNacs().isEmpty()) {
-				//Axioms are always applicable but the PatternMatcher does not return empty matches required for axiom rule
-				//Therefore matches for NACs of Axioms are created that will disable the axioms
+			if (ruleIsAxiom(rule) && !rule.getNacs().isEmpty()) {
+				// Axioms are always applicable but the PatternMatcher does not return empty
+				// matches required for axiom rule
+				// Therefore matches for NACs of Axioms are created that will disable the axioms
 				factory.createPatternsForUserDefinedAxiomNACs();
 			} else {
 				factory.createBlackPattern(GENBlackPattern.class);
-			}			
-			
+			}
+
 			// Consistency checking
 			factory.createBlackPattern(CCBlackPattern.class);
 			if (rule instanceof TGGComplementRule)
 				factory.createBlackPattern(GENForCCPattern.class);
-			
+
 			// Check only
 			factory.createBlackPattern(COBlackPattern.class);
 			if (rule instanceof TGGComplementRule)
 				factory.createBlackPattern(GENForCOPattern.class);
-			
+
 			// Synchronisation
 			factory.createBlackPattern(FWDBlackPattern.class);
 			factory.createBlackPattern(BWDBlackPattern.class);
@@ -101,6 +109,35 @@ public class BlackPatternCompiler {
 		checkForDuplicates();
 	}
 
+	// This method allows for compact refinements where nodes from super rules do
+	// not have to repeated in the sub rule
+	private void addMissingNodesFromSuperRules(TGGRule rule) {
+		for (TGGRuleEdge edge : rule.getEdges()) {
+			if (!rule.getNodes().contains(edge.getSrcNode()))
+				edge.setSrcNode(getOrCreateNode(edge.getSrcNode(), rule));
+			if (!rule.getNodes().contains(edge.getTrgNode()))
+				edge.setTrgNode(getOrCreateNode(edge.getTrgNode(), rule));
+		}
+	}
+
+	private TGGRuleNode getOrCreateNode(TGGRuleNode node, TGGRule rule) {
+		Optional<TGGRuleNode> found = rule.getNodes().stream()//
+				.filter(n -> n.getName().equals(node.getName()))//
+				.findAny();
+				
+		return found.orElseGet(() -> createNode(node, rule));
+	}
+
+	private TGGRuleNode createNode(TGGRuleNode node, TGGRule rule) {
+		TGGRuleNode n = LanguageFactory.eINSTANCE.createTGGRuleNode();
+		n.setName(node.getName());
+		n.setType(node.getType());
+		n.setBindingType(node.getBindingType());
+		n.setDomainType(node.getDomainType());
+		rule.getNodes().add(n);
+		return n;
+	}
+
 	private void checkForDuplicates() {
 		Collection<String> allNames = ruleToPatterns.values().stream().flatMap(ps -> ps.stream()).map(p -> p.getName())
 				.sorted().collect(Collectors.toList());
@@ -123,9 +160,10 @@ public class BlackPatternCompiler {
 		return options.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(rule.getName())).findAny()
 				.orElseThrow(IllegalStateException::new);
 	}
-	
+
 	/**
 	 * Checks whether the rule is an axiom
+	 * 
 	 * @param rule The rule to check
 	 * @return true if the rule only contains green nodes
 	 */
