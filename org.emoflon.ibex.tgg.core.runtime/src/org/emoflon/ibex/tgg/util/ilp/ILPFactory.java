@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.util.ilp;
 
 /**
  * This static class offers methods to create ILP solvers and ILP problems
- * 
+ *
  * @author Robin Oppermann
  */
 public final class ILPFactory {
@@ -18,13 +18,13 @@ public final class ILPFactory {
 	/**
 	 * Creates an ILP Solver for a pseudo-boolean problem. Variable solutions are
 	 * restricted to (0,1).
-	 * 
+	 *
 	 * @param solver
 	 *            Specifies the solver to use Currently Gurobi and SAT4J are
 	 *            supported.
 	 * @return The created solver
 	 */
-	public static ILPSolver createBinaryILPSolver(ILPProblem ilpProblem, SupportedILPSolver solver) {
+	public static ILPSolver createBinaryILPSolver(final ILPProblem ilpProblem, final SupportedILPSolver solver) {
 		switch (solver) {
 		case Gurobi:
 			return new GurobiWrapper(ilpProblem, true);
@@ -35,7 +35,7 @@ public final class ILPFactory {
 		case CBC:
 			return new CBCWrapper(ilpProblem, true);
 		case MIPCL:
-			return new MIPCLWrapper(ilpProblem, true);
+			return new MIPCLWrapper2(ilpProblem, true);
 		default:
 			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
 		}
@@ -43,14 +43,14 @@ public final class ILPFactory {
 
 	/**
 	 * Creates an ILP Solver.
-	 * 
+	 *
 	 * @param solver
 	 *            Specifies the solver to use. Currently only Gurobi is supported.
 	 * @return The created solver.
 	 */
-	public static ILPSolver createILPSolver(ILPProblem ilpProblem, SupportedILPSolver solver) {
+	public static ILPSolver createILPSolver(final ILPProblem ilpProblem, final SupportedILPSolver solver) {
 		if (ilpProblem instanceof BinaryILPProblem)
-			return createBinaryILPSolver(ilpProblem, solver);
+			return ILPFactory.createBinaryILPSolver(ilpProblem, solver);
 
 		switch (solver) {
 		case Gurobi:
@@ -62,7 +62,7 @@ public final class ILPFactory {
 		case CBC:
 			return new CBCWrapper(ilpProblem, false);
 		case MIPCL:
-			return new MIPCLWrapper(ilpProblem, false);
+			return new MIPCLWrapper2(ilpProblem, false);
 		default:
 			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
 		}
@@ -70,7 +70,7 @@ public final class ILPFactory {
 
 	/**
 	 * Creates a new empty ILPProblem
-	 * 
+	 *
 	 * @return the created ILPProblem which can be filled with constraints and
 	 *         objecitves afterwards
 	 */
@@ -80,7 +80,7 @@ public final class ILPFactory {
 
 	/**
 	 * Creates a {@link BinaryILPProblem}, in which variables can only be 0 or 1
-	 * 
+	 *
 	 * @return The created problem
 	 */
 	public static BinaryILPProblem createBinaryILPProblem() {
@@ -89,7 +89,7 @@ public final class ILPFactory {
 
 	/**
 	 * This enum contains identifiers of the supported ILP Solvers.
-	 * 
+	 *
 	 * @author Robin Oppermann
 	 *
 	 */
