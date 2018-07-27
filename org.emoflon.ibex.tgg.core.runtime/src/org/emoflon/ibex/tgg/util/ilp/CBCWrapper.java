@@ -143,7 +143,11 @@ final class CBCWrapper extends ILPSolver {
 	private ResultStatus solveModel(long timeout) {
 		this.solver.enableOutput();
 		int numberOfThreads = Runtime.getRuntime().availableProcessors();
-		this.solver.setSolverSpecificParametersAsString("-threads " + numberOfThreads + " -ratio 0.07");
+		String parameters = "-threads " + numberOfThreads;
+		if(this.getSolutionTolerance() != 0) {
+			parameters += " -ratio "+this.getSolutionTolerance();
+		}
+		this.solver.setSolverSpecificParametersAsString(parameters);
 		logger.debug("Setting time-limit for each step to " + timeout + " seconds.");
 		timeout *= 1000;
 		this.solver.setTimeLimit(timeout);

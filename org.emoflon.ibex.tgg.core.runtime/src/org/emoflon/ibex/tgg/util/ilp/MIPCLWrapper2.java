@@ -144,7 +144,7 @@ final class MIPCLWrapper2 extends ILPSolver {
 		ILPSolver.logger.debug("Solving problem with time limit " + timeout + " seconds");
 		File tempFile = File.createTempFile("ilpSol_", ".mipcl");
 		tempFile.deleteOnExit();
-		this.solver.optimize(timeout, 5, tempFile.getAbsolutePath());
+		this.solver.optimize(timeout, this.getSolutionTolerance() * 100, tempFile.getAbsolutePath());
 		//		this.solver.printSolution("sol.mipcl");
 	}
 

@@ -22,6 +22,11 @@ public abstract class ILPSolver {
 	 * Logger for all ILPSolvers
 	 */
 	protected final static Logger logger = Logger.getLogger(ILPSolver.class);
+	
+	/**
+	 * The tolerance between found solution and theoretical optimum at which the solver is allowed to stop
+	 */
+	private double solutionTolerance = 0;
 
 	/**
 	 * Creates an ILPSolver
@@ -68,5 +73,19 @@ public abstract class ILPSolver {
 	 */
 	public static ILPSolution solveBinaryILPProblem(ILPProblem ilpProblem, SupportedILPSolver solver) throws Exception {
 		return ILPFactory.createBinaryILPSolver(ilpProblem, solver).solveILP();
+	}
+
+	/**
+	 * @return The tolerance between found solution and theoretical optimum at which the solver is allowed to stop
+	 */
+	public final double getSolutionTolerance() {
+		return solutionTolerance;
+	}
+
+	/**
+	 * @param solutionTolerance The tolerance between found solution and theoretical optimum at which the solver is allowed to stop
+	 */
+	public final void setSolutionTolerance(double solutionTolerance) {
+		this.solutionTolerance = solutionTolerance;
 	}
 }

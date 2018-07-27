@@ -232,6 +232,10 @@ final class GLPKWrapper extends ILPSolver {
 		mipParameters.setClq_cuts(GLPK.GLP_ON);
 		// time limit
 		mipParameters.setTm_lim(timeout);
+		// gap
+		if(this.getSolutionTolerance() != 0) {
+			mipParameters.setMip_gap(this.getSolutionTolerance());
+		}
 
 		// proximty heuristic
 		// mipParameters.setPs_heur(GLPK.GLP_ON);
