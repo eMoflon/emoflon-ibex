@@ -144,6 +144,9 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	}
 
 	private Object coerceToType(EDataType type, Object o) {
+		assert (o != null);
+		assert (type != null);
+		
 		if (EcoreUtil.wrapperClassFor(type.getInstanceClass()).isInstance(o))
 			return o;
 		else if(type.getInstanceClass().equals(int.class) && o.getClass().equals(Double.class))
@@ -153,6 +156,9 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 			return Integer.parseInt((String) o);
 		else if(o instanceof String && type.getInstanceClass().equals(double.class))
 			return Double.parseDouble((String) o);
+		else if(o instanceof Collection)
+			// Currently no handling for collections
+			return o;
 		else
 			throw new IllegalStateException("Cannot coerce " + o.getClass() + " to " + type.getInstanceClassName());
 	}
