@@ -3,6 +3,8 @@
  */
 package org.emoflon.ibex.tgg.util.ilp;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
@@ -61,8 +63,7 @@ final class GLPKWrapper extends ILPSolver {
 	/**
 	 * Adds the specified path to the java library path
 	 *
-	 * @param pathToAdd
-	 *            the path to add
+	 * @param pathToAdd the path to add
 	 * @throws Exception
 	 */
 	private static void addLibraryPath(final String pathToAdd) throws Exception {
@@ -75,9 +76,8 @@ final class GLPKWrapper extends ILPSolver {
 
 		// check if the path to add is already present
 		for (String path : paths) {
-			if (path.equals(pathToAdd)) {
+			if (path.equals(pathToAdd))
 				return;
-			}
 		}
 
 		// add the new path
@@ -97,11 +97,10 @@ final class GLPKWrapper extends ILPSolver {
 	/**
 	 * Creates a new variable entry for the given variable
 	 *
-	 * @param variable
-	 *            the variable to create an entry for
-	 * @param variableCounter
-	 *            The variable identifier (column counter). Each identifier must be
-	 *            unique and should be used incremental
+	 * @param variable        the variable to create an entry for
+	 * @param variableCounter The variable identifier (column counter). Each
+	 *                        identifier must be unique and should be used
+	 *                        incremental
 	 */
 	private void registerVariable(final String variable, final int variableID) {
 		GLPK.glp_set_col_name(this.problem, variableID, variable);
@@ -119,10 +118,8 @@ final class GLPKWrapper extends ILPSolver {
 	 * containing the information about the used variables and coefficients as well
 	 * as the bounds.
 	 *
-	 * @param constraint
-	 *            The constraint to register
-	 * @param constraintCounter
-	 *            Incremental counter (used for the index of the row)
+	 * @param constraint        The constraint to register
+	 * @param constraintCounter Incremental counter (used for the index of the row)
 	 */
 	private void registerConstraint(final ILPConstraint constraint, final int constraintCounter) {
 		GLPK.glp_set_row_name(this.problem, constraintCounter, constraint.getName());
@@ -162,8 +159,7 @@ final class GLPKWrapper extends ILPSolver {
 	/**
 	 * Registers the objective in GLPK
 	 *
-	 * @param objective
-	 *            The objective function
+	 * @param objective The objective function
 	 */
 	private void registerObjective(final ILPObjective objective) {
 		GLPK.glp_set_obj_name(this.problem, "obj");
@@ -207,7 +203,13 @@ final class GLPKWrapper extends ILPSolver {
 			GLPK.glp_add_rows(this.problem, 1);
 			this.registerConstraint(constraint, counter++);
 		}
-		GLPK.glp_write_lp(this.problem, null, "lp.lp");
+		try {
+			File temp = File.createTempFile("lp_", ".lp");
+			GLPK.glp_write_lp(this.problem, null, temp.getAbsolutePath());
+			temp.deleteOnExit();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -233,7 +235,7 @@ final class GLPKWrapper extends ILPSolver {
 		// time limit
 		mipParameters.setTm_lim(timeout);
 		// gap
-		if(this.getSolutionTolerance() != 0) {
+		if (this.getSolutionTolerance() != 0) {
 			mipParameters.setMip_gap(this.getSolutionTolerance());
 		}
 
@@ -249,8 +251,15 @@ final class GLPKWrapper extends ILPSolver {
 		mipParameters.setPp_tech(GLPKConstants.GLP_PP_ALL);
 
 		int exitCode = GLPK.glp_intopt(this.problem, mipParameters);
-		// For debugging: Write model to file
-		GLPK.glp_print_mip(this.problem, "lp_sol_mip.lp");
+
+		try {
+			// For debugging: Write model to file
+			File temp = File.createTempFile("sol_mip_", ".lp");
+			GLPK.glp_print_mip(this.problem, temp.getAbsolutePath());
+			temp.deleteOnExit();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		return exitCode == GLPKConstants.GLP_ETMLIM || exitCode == GLPKConstants.GLP_EMIPGAP ? 0 : exitCode;
 	}
@@ -275,9 +284,8 @@ final class GLPKWrapper extends ILPSolver {
 		ILPSolver.logger.debug("GLPK found solution: " + optimum + " - Optimal: " + optimal);
 		for (int variable : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			double value = GLPK.glp_mip_col_val(this.problem, variable);
-			if (value != 0 && value != 1) {
+			if (value != 0 && value != 1)
 				throw new InvalidAttributeValueException("Solution may only be 0 or 1");
-			}
 			variableSolutions.put(variable, (int) value);
 		}
 		GLPK.glp_delete_prob(this.problem);
@@ -300,16 +308,15 @@ final class GLPKWrapper extends ILPSolver {
 			currentTimeout = GLPKWrapper.MAX_TIMEOUT;
 		}
 		currentTimeout = Math.min(currentTimeout, GLPKWrapper.MAX_TIMEOUT);
-		if (this.ilpProblem.getVariableIdsOfUnfixedVariables().size() <= 0) {
+		if (this.ilpProblem.getVariableIdsOfUnfixedVariables().size() <= 0)
 			return this.ilpProblem.createILPSolution(new Int2IntOpenHashMap(), true, 0);
-		}
 		try {
 			this.prepareModel();
 			int exitCode = this.solveModel(currentTimeout);
 			// Retrieve solution
-			if (exitCode == 0) {
+			if (exitCode == 0)
 				return this.retrieveSolution();
-			} else {
+			else {
 				ILPSolver.logger.error("The problem could not be solved");
 				GLPK.glp_delete_prob(this.problem);
 				throw new RuntimeException("The problem could not be solved.");
