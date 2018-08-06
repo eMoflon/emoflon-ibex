@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -13,6 +14,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  * Utility methods for manipulating EMF models.
  */
 public class EMFManipulationUtils {
+	
+	private static Logger logger = Logger.getLogger(EMFManipulationUtils.class);
 
 	/**
 	 * Checks whether the given object is a dangling node.
@@ -49,6 +52,11 @@ public class EMFManipulationUtils {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void createEdge(final EObject source, final EObject target, final EReference reference) {
+		if(!reference.isChangeable()) {
+			logger.debug(reference.getName() + " is not changeable, skipping...");
+			return;
+		}
+		
 		if (reference.isMany()) {
 			((EList) source.eGet(reference)).add(target);
 		} else {
