@@ -30,6 +30,7 @@ import org.emoflon.ibex.tgg.operational.strategies.opt.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
+import org.emoflon.ibex.tgg.util.ilp.ILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
@@ -300,8 +301,13 @@ public abstract class OPT extends OperationalStrategy {
 		}));
 		ilpProblem.setObjective(expr, Objective.maximize);
 	}
-
-	protected int[] chooseTGGRuleApplications() {
+	
+	/**
+	 * Creates the ILP Problem. Matches become binary variables to choose. Dependencies between matches are
+	 * encoded as constraints 
+	 * @return the ILP Problem
+	 */
+	protected BinaryILPProblem createILPProblem() {
 		OperationalStrategy.logger.debug("Creating ILP problem for " + this.idToMatch.size() + " matches");
 
 		BinaryILPProblem ilpProblem = ILPFactory.createBinaryILPProblem();
@@ -317,6 +323,13 @@ public abstract class OPT extends OperationalStrategy {
 
 		OperationalStrategy.logger.debug("Adding user defined constraints...");
 		this.addUserDefinedConstraints(ilpProblem);
+		
+		return ilpProblem;
+	}
+
+	protected int[] chooseTGGRuleApplications() {
+		
+		BinaryILPProblem ilpProblem = this.createILPProblem();
 
 		try {
 			OperationalStrategy.logger.debug("Attempting to solve ILP");

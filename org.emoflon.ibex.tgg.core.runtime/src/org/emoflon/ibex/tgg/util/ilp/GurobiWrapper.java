@@ -119,6 +119,9 @@ final class GurobiWrapper extends ILPSolver {
 	private void solveModel(long timeout) throws GRBException {
 		logger.debug("Setting time-limit to " + timeout + " seconds.");
 		this.model.set(GRB.DoubleParam.TimeLimit, timeout);
+		if(this.getSolutionTolerance() != 0) {
+			this.model.set(GRB.DoubleParam.MIPGap, this.getSolutionTolerance());
+		}
 		this.model.optimize();
 	}
 
