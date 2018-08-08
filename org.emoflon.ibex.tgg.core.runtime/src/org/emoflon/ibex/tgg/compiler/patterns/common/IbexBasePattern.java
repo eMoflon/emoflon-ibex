@@ -16,11 +16,11 @@ import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 import org.moflon.core.utilities.EcoreUtils;
 
+import language.TGGAttributeConstraint;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.csp.TGGAttributeConstraint;
 
 public abstract class IbexBasePattern implements IBlackPattern {
 	protected String name;

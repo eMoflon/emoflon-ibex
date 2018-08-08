@@ -1,9 +1,9 @@
 package org.emoflon.ibex.tgg.compiler.defaults
 
 import java.util.Collection
-import language.csp.definition.TGGAttributeConstraintDefinition
-import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
+import language.TGGAttributeConstraintDefinition
 import org.moflon.core.utilities.MoflonUtil
+import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
 
 class DefaultFilesGenerator {
 

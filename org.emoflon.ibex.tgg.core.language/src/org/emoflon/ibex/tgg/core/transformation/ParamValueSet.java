@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import language.basic.expressions.TGGAttributeExpression;
-import language.basic.expressions.TGGEnumExpression;
-import language.basic.expressions.TGGLiteralExpression;
-import language.basic.expressions.TGGParamValue;
-import language.csp.TGGAttributeVariable;
+import language.TGGAttributeExpression;
+import language.TGGAttributeVariable;
+import language.TGGEnumExpression;
+import language.TGGLiteralExpression;
+import language.TGGParamValue;
 
 public class ParamValueSet {
 	List<TGGParamValue> collection = new ArrayList<TGGParamValue>();

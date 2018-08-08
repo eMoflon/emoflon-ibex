@@ -13,10 +13,10 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
+import language.TGGAttributeConstraint;
+import language.TGGParamValue;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.basic.expressions.TGGParamValue;
-import language.csp.TGGAttributeConstraint;
 
 public class GreenFusedPatternFactory extends GreenPatternFactory {
 	private IGreenPatternFactory kernelFactory;

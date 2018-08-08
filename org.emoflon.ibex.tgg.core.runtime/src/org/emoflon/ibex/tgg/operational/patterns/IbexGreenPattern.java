@@ -14,10 +14,10 @@ import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
+import language.TGGAttributeConstraint;
+import language.TGGParamValue;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.basic.expressions.TGGParamValue;
-import language.csp.TGGAttributeConstraint;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 

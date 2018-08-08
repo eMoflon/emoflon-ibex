@@ -14,22 +14,20 @@ import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintOperators;
+import language.TGGAttributeExpression;
+import language.TGGAttributeVariable;
 import language.TGGComplementRule;
+import language.TGGEnumExpression;
+import language.TGGInplaceAttributeExpression;
+import language.TGGLiteralExpression;
+import language.TGGParamValue;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
-import language.basic.expressions.ExpressionsFactory;
-import language.basic.expressions.TGGAttributeExpression;
-import language.basic.expressions.TGGEnumExpression;
-import language.basic.expressions.TGGLiteralExpression;
-import language.basic.expressions.TGGParamValue;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeVariable;
-import language.inplaceAttributes.InplaceAttributesFactory;
-import language.inplaceAttributes.TGGAttributeConstraintOperators;
-import language.inplaceAttributes.TGGInplaceAttributeExpression;
 import runtime.RuntimePackage;
 
 public class MAUtil {
@@ -57,11 +55,11 @@ public class MAUtil {
 	public static TGGRuleNode createProtocolNodeForAmalgamation(TGGComplementRule rule) {
 		TGGRuleNode node = ConsistencyPattern.createProtocolNode(rule.getKernel());
 
-		TGGInplaceAttributeExpression tae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
+		TGGInplaceAttributeExpression tae = LanguageFactory.eINSTANCE.createTGGInplaceAttributeExpression();
 		tae.setAttribute(RuntimePackage.Literals.TGG_RULE_APPLICATION__AMALGAMATED);
 		tae.setOperator(TGGAttributeConstraintOperators.EQUAL);
 
-		TGGLiteralExpression le = ExpressionsFactory.eINSTANCE.createTGGLiteralExpression();
+		TGGLiteralExpression le = LanguageFactory.eINSTANCE.createTGGLiteralExpression();
 		le.setValue("false");
 
 		tae.setValueExpr(le);

@@ -21,14 +21,14 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
+import language.TGGAttributeConstraintOperators;
+import language.TGGAttributeExpression;
+import language.TGGEnumExpression;
+import language.TGGInplaceAttributeExpression;
+import language.TGGLiteralExpression;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.basic.expressions.TGGAttributeExpression;
-import language.basic.expressions.TGGEnumExpression;
-import language.basic.expressions.TGGLiteralExpression;
-import language.inplaceAttributes.TGGAttributeConstraintOperators;
-import language.inplaceAttributes.TGGInplaceAttributeExpression;
 
 /**
  * @author leblebici Util class for creating EObjects, Edges, and

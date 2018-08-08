@@ -16,12 +16,12 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttr
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
-import language.basic.expressions.TGGAttributeExpression;
-import language.basic.expressions.TGGEnumExpression;
-import language.basic.expressions.TGGLiteralExpression;
-import language.basic.expressions.TGGParamValue;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeVariable;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeExpression;
+import language.TGGAttributeVariable;
+import language.TGGEnumExpression;
+import language.TGGLiteralExpression;
+import language.TGGParamValue;
 
 public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrConstrContainer {
 

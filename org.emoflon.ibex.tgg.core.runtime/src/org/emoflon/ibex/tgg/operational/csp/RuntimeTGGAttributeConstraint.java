@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.util.LoremIpsum;
 
-import language.basic.expressions.TGGAttributeExpression;
-import language.csp.TGGAttributeConstraint;
-import language.csp.definition.TGGAttributeConstraintAdornment;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintAdornment;
+import language.TGGAttributeExpression;
 
 public abstract class RuntimeTGGAttributeConstraint {
 	private static final char B = 'B';

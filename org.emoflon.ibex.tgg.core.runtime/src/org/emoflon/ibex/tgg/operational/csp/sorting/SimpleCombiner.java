@@ -22,7 +22,7 @@ package org.emoflon.ibex.tgg.operational.csp.sorting;
 
 import org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.common.Combiner;
 
-import language.csp.TGGAttributeConstraint;
+import language.TGGAttributeConstraint;
 
 public class SimpleCombiner implements Combiner<SimpleCombiner, TGGAttributeConstraint> {
 	private final Chain<TGGAttributeConstraint> last;

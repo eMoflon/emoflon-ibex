@@ -16,14 +16,14 @@ import org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.plan.Weighte
 
 import com.google.common.collect.Lists;
 
+import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintAdornment;
+import language.TGGAttributeExpression;
+import language.TGGAttributeVariable;
+import language.TGGEnumExpression;
+import language.TGGLiteralExpression;
+import language.TGGParamValue;
 import language.TGGRuleNode;
-import language.basic.expressions.TGGAttributeExpression;
-import language.basic.expressions.TGGEnumExpression;
-import language.basic.expressions.TGGLiteralExpression;
-import language.basic.expressions.TGGParamValue;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeVariable;
-import language.csp.definition.TGGAttributeConstraintAdornment;
 
 public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeConstraint> {
 
