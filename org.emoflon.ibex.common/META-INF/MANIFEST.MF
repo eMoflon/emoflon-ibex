@@ -38,4 +38,5 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
 Bundle-ClassPath: .,
  lib/fastutil-8.1.1.jar
 Automatic-Module-Name: org.emoflon.ibex.common
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
