@@ -3,20 +3,21 @@ package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.common.collections.CollectionFactory;
+import org.emoflon.ibex.common.collections.IntSet;
+import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class HandleDependencies {
 
@@ -33,17 +34,15 @@ public class HandleDependencies {
 	private Int2ObjectOpenHashMap<ArrayList<Integer>> cyclicDependencies = new Int2ObjectOpenHashMap<ArrayList<Integer>>();
 	private int cyclicDependencyId = 1;
 
-	private Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
+	private Map<EMFEdge, IntSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
 			new EMFEdgeHashingStrategy());
-	private Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();
-	private ObjectLinkedOpenHashSet<Bundle> appliedBundles;
-	private Int2ObjectOpenHashMap<Bundle> matchToBundle = new Int2ObjectOpenHashMap<Bundle>();
+	private Map<EObject, IntSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();
+	private Set<Bundle> appliedBundles;
+	private IntToObjectMap<Bundle> matchToBundle = CollectionFactory.INSTANCE.createIntToObjectHashMap();
 
-	public HandleDependencies(ObjectLinkedOpenHashSet<Bundle> appliedBundles,
-			Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> edgeToMarkingMatches,
-			Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches,
-			Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> matchToContextNodes,
-			Int2ObjectOpenHashMap<ObjectOpenCustomHashSet<EMFEdge>> matchToContextEdges) {
+	public HandleDependencies(Set<Bundle> appliedBundles, Map<EMFEdge, IntSet> edgeToMarkingMatches,
+			Map<EObject, IntSet> nodeToMarkingMatches, IntToObjectMap<Set<EObject>> matchToContextNodes,
+			IntToObjectMap<Set<EMFEdge>> matchToContextEdges) {
 		this.appliedBundles = appliedBundles;
 		appliedBundles.forEach(b -> b.getAllMatches().stream().forEach(m -> matchToBundle.put((int) m, b)));
 		this.nodeToMarkingMatches = nodeToMarkingMatches;
@@ -62,25 +61,25 @@ public class HandleDependencies {
 
 	private ArrayList<Integer> findDirectDependences(Bundle bundle) {
 		ArrayList<Integer> dependecies = new ArrayList<Integer>();
-		IntOpenHashSet matches = new IntOpenHashSet();
+		IntSet matches = CollectionFactory.INSTANCE.createIntSet();
 		for (EObject node : bundle.getBundleContextNodes()) {
 			if (nodeToMarkingMatches.containsKey(node))
 				matches = nodeToMarkingMatches.get(node);
-			putDependedContext(dependecies, matches);
+			putDependentContext(dependecies, matches);
 		}
 
 		for (EMFEdge edge : bundle.getBundleContextEdges()) {
 			if (edgeToMarkingMatches.containsKey(edge))
 				matches = edgeToMarkingMatches.get(edge);
-			putDependedContext(dependecies, matches);
+			putDependentContext(dependecies, matches);
 		}
 		return dependecies;
 	}
 
-	private void putDependedContext(ArrayList<Integer> dependecies, IntOpenHashSet matches) {
+	private void putDependentContext(ArrayList<Integer> dependencies, IntSet matches) {
 		matches.stream().forEach(match -> {
-			if (!dependecies.contains(matchToBundle(match)))
-				dependecies.add(matchToBundle(match));
+			if (!dependencies.contains(matchToBundle(match)))
+				dependencies.add(matchToBundle(match));
 		});
 	}
 
@@ -138,8 +137,7 @@ public class HandleDependencies {
 	/**
 	 * Find all rule applications for each bundle
 	 * 
-	 * @param detectedCycle
-	 *            - specific cycle between bundles
+	 * @param detectedCycle - specific cycle between bundles
 	 * @return Collection of rule applications inside the bundle
 	 */
 	public List<IntLinkedOpenHashSet> getRuleApplications(int detectedCycle) {

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -20,7 +21,6 @@ import org.emoflon.ibex.tgg.operational.strategies.opt.OPT;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGComplementRule;
@@ -107,7 +107,7 @@ public abstract class CC extends OPT {
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 
 		// collection needed to handle uniqueness
-		Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes = new Int2ObjectOpenHashMap<>();
+		Int2ObjectOpenHashMap<Set<EObject>> complementMatchToContextNodes = new Int2ObjectOpenHashMap<>();
 
 		while (complementRuleMatches.iterator().hasNext()) {
 			IMatch match = complementRuleMatches.iterator().next();
@@ -145,7 +145,7 @@ public abstract class CC extends OPT {
 	}
 
 	private void applyMatchAndHandleUniqueness(IMatch match,
-			Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes) {
+			Int2ObjectOpenHashMap<Set<EObject>> complementMatchToContextNodes) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		if (processOperationalRuleMatch(ruleName, match) != null) {
 			TGGComplementRule rule = getComplementRule(ruleName).get();
@@ -160,16 +160,15 @@ public abstract class CC extends OPT {
 	 * edges.
 	 */
 	private void findDuplicatedMatches(int currentComplementMatch,
-			Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes) {
+			Int2ObjectOpenHashMap<Set<EObject>> complementMatchToContextNodes) {
 
-		ObjectOpenHashSet<EObject> contextNodesForCurrentComplementMatch = matchToContextNodes
-				.get(currentComplementMatch);
+		Set<EObject> contextNodesForCurrentComplementMatch = matchToContextNodes.get(currentComplementMatch);
 		for (int previousComplementMatch : complementMatchToContextNodes.keySet()) {
 			// check if matches belong to the same complement rule
 			if (matchIdToRuleName.get(currentComplementMatch).equals(matchIdToRuleName.get(previousComplementMatch))) {
 				if (matchToContextNodes.get(previousComplementMatch).equals(contextNodesForCurrentComplementMatch)) {
 					if (!sameComplementMatches.containsKey(currentComplementMatch)) {
-						sameComplementMatches.put(currentComplementMatch, new IntOpenHashSet());
+						sameComplementMatches.put(currentComplementMatch, CollectionFactory.INSTANCE.createIntSet());
 						sameComplementMatches.get(currentComplementMatch).add(currentComplementMatch);
 						sameComplementMatches.get(currentComplementMatch).add(previousComplementMatch);
 					} else {
@@ -242,26 +241,26 @@ public abstract class CC extends OPT {
 
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
-				nodeToMarkingMatches.put(e, new IntOpenHashSet());
+				nodeToMarkingMatches.put(e, CollectionFactory.INSTANCE.createIntSet());
 			nodeToMarkingMatches.get(e).add(idCounter);
 		});
 
 		getGreenEdges(comatch, ruleName).forEach(e -> {
 			if (!edgeToMarkingMatches.containsKey(e)) {
-				edgeToMarkingMatches.put(e, new IntOpenHashSet());
+				edgeToMarkingMatches.put(e, CollectionFactory.INSTANCE.createIntSet());
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
 
 		getBlackNodes(comatch, ruleName).forEach(e -> {
 			if (!contextNodeToNeedingMatches.containsKey(e))
-				contextNodeToNeedingMatches.put(e, new IntOpenHashSet());
+				contextNodeToNeedingMatches.put(e, CollectionFactory.INSTANCE.createIntSet());
 			contextNodeToNeedingMatches.get(e).add(idCounter);
 		});
 
 		getBlackEdges(comatch, ruleName).forEach(e -> {
 			if (!contextEdgeToNeedingMatches.containsKey(e)) {
-				contextEdgeToNeedingMatches.put(e, new IntOpenHashSet());
+				contextEdgeToNeedingMatches.put(e, CollectionFactory.INSTANCE.createIntSet());
 			}
 			contextEdgeToNeedingMatches.get(e).add(idCounter);
 		});

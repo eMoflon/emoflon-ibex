@@ -32,4 +32,14 @@ public class JDKIntToObjectMap<T> extends IntToObjectMap<T> {
 	public Collection<T> values() {
 		return internal.values();
 	}
+
+	@Override
+	public boolean containsKey(int i) {
+		return internal.containsKey(i);
+	}
+
+	@Override
+	public boolean containsValue(T o) {
+		return internal.containsValue(o);
+	}
 }

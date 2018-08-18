@@ -12,7 +12,9 @@ public abstract class CollectionFactory {
 	public abstract  <K,V> Map<K, V> createObjectToObjectLinkedHashMap();
 	public abstract <K,V> Map<K, V> createObjectToObjectHashMap();
 	public abstract Set<EMFEdge> createEMFEdgeHashSet();
+	public abstract <T> Map<EMFEdge, T> createEMFEdgeHashMap();
 	public abstract <T> Set<T> createObjectSet();
 	public abstract <T> IntToObjectMap<T> createIntToObjectHashMap();
+	public abstract IntSet createIntSet();
 }
 

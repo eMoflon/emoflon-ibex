@@ -4,10 +4,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.emoflon.ibex.common.collections.CollectionFactory;
+import org.emoflon.ibex.common.collections.IntSet;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -36,5 +38,15 @@ public class FastUtilCollectionFactory extends CollectionFactory {
 	@Override
 	public <T> IntToObjectMap<T> createIntToObjectHashMap() {
 		return new FastUtilIntToObjectMap<>();
+	}
+
+	@Override
+	public <T> Map<EMFEdge, T> createEMFEdgeHashMap() {
+		return new Object2ObjectOpenCustomHashMap<>(new EMFEdgeHashingStrategy());
+	}
+
+	@Override
+	public IntSet createIntSet() {
+		return new FastUtilIntSet();
 	}
 }
