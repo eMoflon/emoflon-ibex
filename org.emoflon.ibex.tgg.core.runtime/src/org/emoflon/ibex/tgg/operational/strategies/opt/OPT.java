@@ -16,6 +16,8 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.common.collections.CollectionFactory;
+import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
@@ -53,7 +55,7 @@ import language.TGGRuleNode;
 
 public abstract class OPT extends OperationalStrategy {
 
-	protected Int2ObjectOpenHashMap<IMatch> idToMatch = new Int2ObjectOpenHashMap<>();
+	protected IntToObjectMap<IMatch> idToMatch = CollectionFactory.INSTANCE.createIntToObjectHashMap();
 	protected Object2ObjectOpenCustomHashMap<EMFEdge, IntOpenHashSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
 			new EMFEdgeHashingStrategy());
 	protected Object2ObjectOpenHashMap<EObject, IntOpenHashSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();

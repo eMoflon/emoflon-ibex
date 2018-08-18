@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
@@ -21,8 +22,6 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStr
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGComplementRule;
 import runtime.TGGRuleApplication;
 
@@ -35,7 +34,8 @@ public abstract class SYNC extends OperationalStrategy {
 
 	// Repair
 	protected AbstractRepairStrategy repairStrategy;
-	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
+	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = CollectionFactory.INSTANCE
+			.createObjectToObjectHashMap();
 
 	// Forward or backward sync
 	protected SYNC_Strategy strategy;
@@ -119,7 +119,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 	protected void revokeAllMatches() {
 		while (!brokenRuleApplications.isEmpty()) {
-			ObjectOpenHashSet<TGGRuleApplication> revoked = new ObjectOpenHashSet<>();
+			Set<TGGRuleApplication> revoked = CollectionFactory.INSTANCE.createObjectSet();
 			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
 				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
 				revoked.add(ra);
@@ -227,12 +227,12 @@ public abstract class SYNC extends OperationalStrategy {
 		for (IMatch match : complementMatches) {
 			if (isComplementMatchRelevant(fusedRuleName, match)) {
 
-				ObjectOpenHashSet<EObject> fusedNodes = comatch.getParameterNames().stream()
+				Set<EObject> fusedNodes = comatch.getParameterNames().stream()//
 						.map(n -> (EObject) comatch.get(n))//
-						.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
-				ObjectOpenHashSet<EObject> complementNodes = match.getParameterNames().stream()
+						.collect(Collectors.toSet());
+				Set<EObject> complementNodes = match.getParameterNames().stream()//
 						.map(n -> (EObject) match.get(n))//
-						.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
+						.collect(Collectors.toSet());
 
 				if (fusedNodes.containsAll(complementNodes)) {
 					removeOperationalRuleMatch(match);
@@ -308,7 +308,7 @@ public abstract class SYNC extends OperationalStrategy {
 		}
 
 		EObject kernelProtocol = (EObject) match.get(ConsistencyPattern.getProtocolNodeName(cr.getKernel().getName()));
-		ObjectOpenHashSet<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
+		Set<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
 
 		// If any node from bounded CR context was created after
 		// its kernel was applied, CR is not applicable!
@@ -325,10 +325,10 @@ public abstract class SYNC extends OperationalStrategy {
 		return true;
 	}
 
-	protected ObjectOpenHashSet<EObject> getContextNodesWithoutProtocolNode(IMatch match) {
-		ObjectOpenHashSet<EObject> contextNodes = match.getParameterNames().stream()
+	protected Set<EObject> getContextNodesWithoutProtocolNode(IMatch match) {
+		Set<EObject> contextNodes = match.getParameterNames().stream()
 				.filter(n -> !(match.get(n) instanceof TGGRuleApplication)).map(n -> (EObject) match.get(n))
-				.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
+				.collect(Collectors.toSet());
 		return contextNodes;
 	}
 

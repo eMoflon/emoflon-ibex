@@ -19,8 +19,8 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
@@ -41,8 +41,6 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import language.TGG;
 import language.TGGComplementRule;
 import language.TGGRule;
@@ -100,8 +98,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		greenInterpreter = new IbexGreenInterpreter(this);
 		redInterpreter = new IbexRedInterpreter(this);
 
-		consistencyMatches = new Object2ObjectOpenHashMap<>();
-		markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(new EMFEdgeHashingStrategy());
+		consistencyMatches = CollectionFactory.INSTANCE.createObjectToObjectHashMap();
+		markedAndCreatedEdges = CollectionFactory.INSTANCE.createEMFEdgeHashSet();
 	}
 
 	/***** Resource management *****/
