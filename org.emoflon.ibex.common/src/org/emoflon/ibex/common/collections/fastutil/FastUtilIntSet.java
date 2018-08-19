@@ -1,5 +1,6 @@
 package org.emoflon.ibex.common.collections.fastutil;
 
+import java.util.PrimitiveIterator.OfInt;
 import java.util.stream.Stream;
 
 import org.emoflon.ibex.common.collections.IntSet;
@@ -27,5 +28,10 @@ public class FastUtilIntSet extends IntSet {
 	@Override
 	public void add(int i) {
 		internal.add(i);
+	}
+
+	@Override
+	public OfInt iterator() {
+		return internal.iterator();
 	}
 }

@@ -5,7 +5,9 @@ import java.util.Set;
 
 import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.collections.IntSet;
+import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
+import org.emoflon.ibex.common.collections.ObjectToIntMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 
@@ -48,5 +50,15 @@ public class FastUtilCollectionFactory extends CollectionFactory {
 	@Override
 	public IntSet createIntSet() {
 		return new FastUtilIntSet();
+	}
+
+	@Override
+	public <T> ObjectToIntMap<T> createObjectToIntHashMap() {
+		return new FastUtilObjectToIntMap<T>();
+	}
+
+	@Override
+	public IntToDoubleMap createIntToDoubleMap() {
+		return new FastUtilIntToDoubleMap();
 	}
 }

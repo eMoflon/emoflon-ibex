@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +36,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 	// Repair
 	protected AbstractRepairStrategy repairStrategy;
-	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = CollectionFactory.INSTANCE
+	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = CollectionFactory.cfactory
 			.createObjectToObjectHashMap();
 
 	// Forward or backward sync
@@ -119,7 +121,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 	protected void revokeAllMatches() {
 		while (!brokenRuleApplications.isEmpty()) {
-			Set<TGGRuleApplication> revoked = CollectionFactory.INSTANCE.createObjectSet();
+			Set<TGGRuleApplication> revoked = cfactory.createObjectSet();
 			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
 				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
 				revoked.add(ra);

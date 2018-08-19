@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.matches;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.util.Collection;
@@ -9,7 +10,6 @@ import java.util.Random;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
-import org.emoflon.ibex.common.collections.CollectionFactory;
 
 import language.TGG;
 import language.TGGComplementRule;
@@ -25,7 +25,7 @@ public class MatchContainer {
 	private Random random;
 
 	public MatchContainer(TGG tgg) {
-		this.matchToRuleName = CollectionFactory.INSTANCE.createObjectToObjectLinkedHashMap();
+		this.matchToRuleName = cfactory.createObjectToObjectLinkedHashMap();
 		this.random = new Random();
 	}
 

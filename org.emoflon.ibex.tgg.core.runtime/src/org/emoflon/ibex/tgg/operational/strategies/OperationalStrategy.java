@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.io.IOException;
@@ -19,7 +20,6 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
@@ -98,8 +98,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		greenInterpreter = new IbexGreenInterpreter(this);
 		redInterpreter = new IbexRedInterpreter(this);
 
-		consistencyMatches = CollectionFactory.INSTANCE.createObjectToObjectHashMap();
-		markedAndCreatedEdges = CollectionFactory.INSTANCE.createEMFEdgeHashSet();
+		consistencyMatches = cfactory.createObjectToObjectHashMap();
+		markedAndCreatedEdges = cfactory.createEMFEdgeHashSet();
 	}
 
 	/***** Resource management *****/

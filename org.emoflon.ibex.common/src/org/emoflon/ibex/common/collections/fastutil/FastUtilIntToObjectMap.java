@@ -1,6 +1,7 @@
 package org.emoflon.ibex.common.collections.fastutil;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 
@@ -20,7 +21,7 @@ public class FastUtilIntToObjectMap<T> extends IntToObjectMap<T> {
 	}
 
 	@Override
-	public Collection<Integer> keySet() {
+	public Set<Integer> keySet() {
 		return internal.keySet();
 	}
 

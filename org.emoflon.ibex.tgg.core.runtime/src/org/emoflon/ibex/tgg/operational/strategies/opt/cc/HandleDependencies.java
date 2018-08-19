@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,16 +10,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.collections.IntSet;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
-
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class HandleDependencies {
 
@@ -25,20 +20,19 @@ public class HandleDependencies {
 	 * Collection of bundles with their context bundles (on which they depend); key:
 	 * bundle; value: bundles that provide context for this bundle
 	 */
-	private Int2ObjectOpenHashMap<ArrayList<Integer>> directDependencies = new Int2ObjectOpenHashMap<ArrayList<Integer>>();
+	private IntToObjectMap<ArrayList<Integer>> directDependencies = cfactory.createIntToObjectHashMap();
 
 	/**
 	 * Collection of all cycles detected in dependencies between the bundles; key:
 	 * cycle id; value: list of bundles that cause cycle
 	 */
-	private Int2ObjectOpenHashMap<ArrayList<Integer>> cyclicDependencies = new Int2ObjectOpenHashMap<ArrayList<Integer>>();
+	private IntToObjectMap<ArrayList<Integer>> cyclicDependencies = cfactory.createIntToObjectHashMap();
 	private int cyclicDependencyId = 1;
 
-	private Map<EMFEdge, IntSet> edgeToMarkingMatches = new Object2ObjectOpenCustomHashMap<>(
-			new EMFEdgeHashingStrategy());
-	private Map<EObject, IntSet> nodeToMarkingMatches = new Object2ObjectOpenHashMap<>();
+	private Map<EMFEdge, IntSet> edgeToMarkingMatches = cfactory.createEMFEdgeHashMap();
+	private Map<EObject, IntSet> nodeToMarkingMatches = cfactory.createObjectToObjectHashMap();
 	private Set<Bundle> appliedBundles;
-	private IntToObjectMap<Bundle> matchToBundle = CollectionFactory.INSTANCE.createIntToObjectHashMap();
+	private IntToObjectMap<Bundle> matchToBundle = cfactory.createIntToObjectHashMap();
 
 	public HandleDependencies(Set<Bundle> appliedBundles, Map<EMFEdge, IntSet> edgeToMarkingMatches,
 			Map<EObject, IntSet> nodeToMarkingMatches, IntToObjectMap<Set<EObject>> matchToContextNodes,
@@ -49,8 +43,8 @@ public class HandleDependencies {
 		this.edgeToMarkingMatches = edgeToMarkingMatches;
 	}
 
-	private Int2ObjectOpenHashMap<ArrayList<Integer>> getBundlesDirectDependences() {
-		Int2ObjectOpenHashMap<ArrayList<Integer>> bundleToDependences = new Int2ObjectOpenHashMap<ArrayList<Integer>>();
+	private IntToObjectMap<ArrayList<Integer>> getBundlesDirectDependences() {
+		IntToObjectMap<ArrayList<Integer>> bundleToDependences = cfactory.createIntToObjectHashMap();
 		for (Bundle bundle : appliedBundles) {
 			ArrayList<Integer> directDependences = findDirectDependences(bundle).stream()
 					.filter(n -> n != bundle.getKernelMatch()).collect(Collectors.toCollection(ArrayList::new));
@@ -61,7 +55,7 @@ public class HandleDependencies {
 
 	private ArrayList<Integer> findDirectDependences(Bundle bundle) {
 		ArrayList<Integer> dependecies = new ArrayList<Integer>();
-		IntSet matches = CollectionFactory.INSTANCE.createIntSet();
+		IntSet matches = cfactory.createIntSet();
 		for (EObject node : bundle.getBundleContextNodes()) {
 			if (nodeToMarkingMatches.containsKey(node))
 				matches = nodeToMarkingMatches.get(node);
@@ -91,7 +85,7 @@ public class HandleDependencies {
 	 * 
 	 * @return Collection of all cycles found in dependencies between bundles
 	 */
-	public Int2ObjectOpenHashMap<ArrayList<Integer>> getCyclicDependenciesBetweenBundles() {
+	public IntToObjectMap<ArrayList<Integer>> getCyclicDependenciesBetweenBundles() {
 		detectAllBundleCycles();
 		return cyclicDependencies;
 	}
@@ -140,10 +134,10 @@ public class HandleDependencies {
 	 * @param detectedCycle - specific cycle between bundles
 	 * @return Collection of rule applications inside the bundle
 	 */
-	public List<IntLinkedOpenHashSet> getRuleApplications(int detectedCycle) {
-		List<IntLinkedOpenHashSet> bundleToComplementRuleApplication = new ArrayList<>();
+	public List<IntSet> getRuleApplications(int detectedCycle) {
+		List<IntSet> bundleToComplementRuleApplication = new ArrayList<>();
 		for (int bundleID : cyclicDependencies.get(detectedCycle)) {
-			IntLinkedOpenHashSet set = getBundle(bundleID).getAllComplementMatches();
+			IntSet set = getBundle(bundleID).getAllComplementMatches();
 			// Note: if the set is empty then it means the cyclic dependency must involve
 			// the kernel directly. In this case, we add the kernel match and use it to
 			// generate exclusions constraints for the cycle. If the set is not empty,

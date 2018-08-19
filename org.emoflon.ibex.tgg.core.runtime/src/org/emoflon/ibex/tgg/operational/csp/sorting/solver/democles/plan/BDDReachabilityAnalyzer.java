@@ -66,7 +66,6 @@ public class BDDReachabilityAnalyzer<T extends Combiner<T,U>, U> implements Reac
 		for (WeightedOperation<U> operation: operations){
 			if (operation != null && (operation.freeMask.cardinality() != 0)){
 				BDD cube = bddFactory.one();
-				//TODO assign
 				for (int i = 0; i < operation.freeMask.size(); i++) {
 					if (operation.freeMask.get(i)) {
 						cube.andWith(bdd[0][i].id());

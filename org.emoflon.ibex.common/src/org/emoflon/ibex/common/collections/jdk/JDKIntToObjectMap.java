@@ -2,6 +2,7 @@ package org.emoflon.ibex.common.collections.jdk;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 
@@ -19,7 +20,7 @@ public class JDKIntToObjectMap<T> extends IntToObjectMap<T> {
 	}
 
 	@Override
-	public Collection<Integer> keySet() {
+	public Set<Integer> keySet() {
 		return internal.keySet();
 	}
 
