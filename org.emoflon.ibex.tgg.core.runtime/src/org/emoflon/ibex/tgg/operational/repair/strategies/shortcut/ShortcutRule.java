@@ -4,12 +4,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGOverlap;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.BindingType;
+import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -22,22 +24,33 @@ public class ShortcutRule {
 	private Map<String, TGGRuleNode> name2node;
 	private Collection<TGGRuleNode> nodes;
 	private Collection<TGGRuleEdge> edges;
-	
+	private Collection<TGGRuleNode> entryNodes;
+	private TGGOverlap overlap;
+
 	private Collection<String> nodeNames;
 	private Map<TGGRuleNode, TGGRuleNode> old2newNodes;
+	private Map<String, TGGRuleNode> name2oldNodes;
 	
 	public ShortcutRule(TGGOverlap overlap) {
+		this.overlap = overlap;
+		
 		old2newNodes = new Object2ObjectOpenHashMap<>();
+		name2oldNodes = new Object2ObjectOpenHashMap<>();
 		nodeNames = new ObjectOpenHashSet<>();
 		
 		name2node = new Object2ObjectOpenHashMap<>();
 		nodes = new ObjectArrayList<>();
 		edges = new ObjectArrayList<>();
+		entryNodes = new ObjectArrayList<>();
 		
 		sourceRule = overlap.sourceRule;
 		targetRule = overlap.targetRule;
 		
 		initialize(overlap);
+	}
+	
+	public ShortcutRule copy() {
+		return new ShortcutRule(overlap);
 	}
 
 	private void initialize(TGGOverlap overlap) {
@@ -66,13 +79,13 @@ public class ShortcutRule {
 	}
 	
 	private void initializeContext(TGGOverlap overlap) {
-		for(TGGRuleNode node : extractNodes(overlap.targetContext)) {
+		for(TGGRuleNode node : extractNodes(overlap.unboundContext)) {
 			createNewNode(node, BindingType.CONTEXT);
 		}
 		for(TGGRuleNode node : extractNodes(overlap.mappings.keySet())) {
-			old2newNodes.put((TGGRuleNode) overlap.mappings.get(node), createNewNode(node, BindingType.CONTEXT));
+			entryNodes.add(createNewNode(node, BindingType.CONTEXT));
 		}
-		for(TGGRuleEdge edge : extractEdges(overlap.targetContext)) {
+		for(TGGRuleEdge edge : extractEdges(overlap.unboundContext)) {
 			createNewEdge(edge, BindingType.CONTEXT);
 		}
 		for(TGGRuleEdge edge : extractEdges(overlap.mappings.keySet())) {
@@ -83,7 +96,11 @@ public class ShortcutRule {
 	private TGGRuleNode createNewNode(TGGRuleNode node, BindingType binding) {
 		TGGRuleNode newNode = LanguageFactoryImpl.eINSTANCE.createTGGRuleNode();
 		old2newNodes.put(node, newNode);
-		
+		if(overlap.mappings.containsKey(node)) {
+			old2newNodes.put((TGGRuleNode) overlap.mappings.get(node), newNode);
+			name2oldNodes.put(overlap.mappings.get(node).getName(), (TGGRuleNode) overlap.mappings.get(node));
+		}
+
 		String name = node.getName();
 		if(nodeNames.contains(name)) {
 			int i = 2;
@@ -101,6 +118,11 @@ public class ShortcutRule {
 		name2node.put(newNode.getName(), newNode);
 		nodeNames.add(name);
 		return newNode;
+	}
+	
+	public Collection<TGGRuleNode> getTargetRuleMappings(DomainType dType, BindingType bType) {
+		Collection<TGGRuleNode> nodes = targetRule.getNodes().stream().filter(n -> old2newNodes.containsKey(n)).map(n -> old2newNodes.get(n)).collect(Collectors.toList());
+		return TGGCollectionUtil.filterNodes(nodes, dType, bType);
 	}
 	
 	private TGGRuleEdge createNewEdge(TGGRuleEdge edge, BindingType binding) {
@@ -123,28 +145,40 @@ public class ShortcutRule {
 		return elements.stream().filter(e -> e instanceof TGGRuleEdge).map(e -> (TGGRuleEdge) e).collect(Collectors.toList());
 	}
 	
-	private TGGRuleNode getNode(String name) {
+	public TGGRuleNode getNode(String name) {
 		return name2node.getOrDefault(name, null);
 	}
 	
-	private Collection<TGGRuleNode> getNodes() {
+	public Collection<TGGRuleNode> getNodes() {
 		return nodes;
 	}
 	
-	private Collection<TGGRuleEdge> getEdges() {
+	public Collection<TGGRuleEdge> getEdges() {
 		return edges;
 	}
 	
-	private TGGRule getSourceRule() {
+	public Collection<TGGRuleNode> getEntryNodes() {
+		return entryNodes;
+	}
+	
+	public TGGRule getSourceRule() {
 		return sourceRule;
 	}
 	
-	private TGGRule getTargetRule() {
+	public TGGRule getTargetRule() {
 		return targetRule;
 	}
 	
-	private boolean isApplicable(String ruleName) {
+	public boolean isApplicable(String ruleName) {
 		return ruleName.equals(sourceRule.getName());
+	}
+	
+	protected TGGRuleNode mapRuleNodeToSCRuleNode(TGGRuleNode node) {
+		return old2newNodes.getOrDefault(node, null);
+	}
+	
+	public TGGRuleNode getMappedSCRuleNode(String name) {
+		return mapRuleNodeToSCRuleNode(name2oldNodes.getOrDefault(name, null));
 	}
 	
 	@Override
@@ -159,5 +193,9 @@ public class ShortcutRule {
 			name += "    " + edge.getName() + " : " + edge.getType().getName() + "\n";
 		}
 		return name;
+	}
+
+	public String getName() {
+		return sourceRule.getName() + "_SC_" + targetRule.getName();
 	}
 }

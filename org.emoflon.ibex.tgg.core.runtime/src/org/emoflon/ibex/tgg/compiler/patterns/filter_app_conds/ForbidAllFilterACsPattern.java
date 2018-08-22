@@ -3,13 +3,15 @@ package org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
@@ -100,6 +102,34 @@ public class ForbidAllFilterACsPattern extends IbexBasePattern {
 		
 		// Add all remaining filter NACs now as negative invocations
 		addNegativeInvocations(optimisedFilterNACs);
+	}
+	
+	public Collection<DECCandidate> getDECCandidates(TGGRule rule, DomainType domain) {
+		Collection<DECCandidate> decCandidates = new ArrayList<>();
+		
+		for (TGGRuleNode n : rule.getNodes()) {
+			EClass nodeClass = n.getType();
+
+			if (nodeIsNotTranslatedByThisRule(n)) continue;
+			if (nodeIsNotRelevant(domain, n)) continue;
+
+			// Create DECPatterns as negative children in the network
+			for (EReference eType : FilterACHelper.extractEReferences(nodeClass)) {
+				for (EdgeDirection eDirection : EdgeDirection.values()) {
+					TGG tgg = (TGG) rule.eContainer();
+
+					if (typeDoesNotFitToDirection(n, eType, eDirection)) continue;
+					if (onlyPossibleEdgeIsAlreadyTranslatedInRule(n, eType, eDirection)) continue;
+					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg)) continue;
+		
+					// Collect all Filter NACs, but do not add them yet as negative invocations
+					if(thereIsNoSavingRule(domain, eType, eDirection, tgg)) {
+						decCandidates.add(new DECCandidate(n, eType, eDirection));
+					}
+				}
+			}
+		}
+		return decCandidates;
 	}
 
 	private boolean thereIsNoSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {

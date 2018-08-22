@@ -103,7 +103,7 @@ public class FilterACHelper {
 	 * this method returns the opposite type of the currently viewed object which is
 	 * implicit
 	 */
-	protected static EClass getOppositeType(EReference eType, EdgeDirection eDirection) {
+	public static EClass getOppositeType(EReference eType, EdgeDirection eDirection) {
 		return eDirection == EdgeDirection.OUTGOING ? (EClass) eType.getEType() : (EClass) eType.eContainer();
 	}
 

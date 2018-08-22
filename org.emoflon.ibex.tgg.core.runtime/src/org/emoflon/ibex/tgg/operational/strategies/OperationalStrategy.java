@@ -77,9 +77,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 
 	private RepairStrategyController repairController;
-	
-	protected Set<EMFEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(
-			new EMFEdgeHashingStrategy());
+
+	protected Set<EMFEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(new EMFEdgeHashingStrategy());
 	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
 	protected Map<TGGRuleApplication, IMatch> repairCandidates = new Object2ObjectOpenHashMap<>();
 	protected Map<TGGRuleApplication, IMatch> recentConsistencyMatches = new Object2ObjectOpenHashMap<>();
@@ -112,15 +111,15 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		greenInterpreter = new IbexGreenInterpreter(this);
 		redInterpreter = new IbexRedInterpreter(this);
 	}
-	
-	private void initializeRepairStrategies(IbexOptions options) {
-		repairController = new RepairStrategyController(this);
 
-		if(options.repairUsingShortcutRules()) {
+	private void initializeRepairStrategies(IbexOptions options) {
+		repairController = new RepairStrategyController(this, repairCandidates, recentConsistencyMatches, brokenRuleApplications);
+
+		if (options.repairUsingShortcutRules()) {
 			repairController.registerStrategy(new ShortcutRepairStrategy(this, factories));
 		}
-		
-		if(options.repairAttributes()) {
+
+		if (options.repairAttributes()) {
 			repairController.registerStrategy(new AttributeRepairStrategy(this));
 		}
 	}
@@ -183,18 +182,16 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	public void addOperationalRuleMatch(String ruleName, IMatch match) {
 		addMatchToRecentConsistencyMatches(match);
-		if (this.isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(ruleName, match)
-				&& matchIsValidIsomorphism(ruleName, match)) {
+		if (this.isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(ruleName, match) && matchIsValidIsomorphism(ruleName, match)) {
 			operationalMatchContainer.addMatch(ruleName, match);
 			logger.debug("Received and added " + match.getPatternName());
 		} else
 			logger.debug("Received but rejected " + match.getPatternName());
 	}
-	
+
 	private void addMatchToRecentConsistencyMatches(IMatch match) {
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
-			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match
-					.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
+			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
 			recentConsistencyMatches.put(ruleAppNode, match);
 		}
 	}
@@ -202,10 +199,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private boolean matchIsValidIsomorphism(String ruleName, IMatch match) {
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
 			// Make sure that node mappings comply to bindings in match
-			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match
-					.get(ConsistencyPattern.getProtocolNodeName(ruleName));
-			return ruleAppNode.getNodeMappings().keySet().stream()
-					.noneMatch(n -> ruleAppNode.getNodeMappings().get(n) != match.get(n));
+			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(ruleName));
+			return ruleAppNode.getNodeMappings().keySet().stream().noneMatch(n -> ruleAppNode.getNodeMappings().get(n) != match.get(n));
 		}
 
 		return true;
@@ -215,10 +210,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		if (domainsHaveNoSharedTypes)
 			return true;
 
-		return matchedNodesAreInCorrectResource(s, getGreenFactory(ruleName).getBlackSrcNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(s, getGreenFactory(ruleName).getGreenSrcNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getBlackTrgNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getGreenTrgNodesInRule(), match);
+		return matchedNodesAreInCorrectResource(s, getGreenFactory(ruleName).getBlackSrcNodesInRule(), match) && matchedNodesAreInCorrectResource(s, getGreenFactory(ruleName).getGreenSrcNodesInRule(), match)
+				&& matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getBlackTrgNodesInRule(), match) && matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getGreenTrgNodesInRule(), match);
 	}
 
 	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, IMatch match) {
@@ -309,8 +302,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		// Instantiate runtime constraint provider with loaded constraint definition
 		// library
-		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
-				options.tgg().getAttributeConstraintDefinitionLibrary());
+		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(options.tgg().getAttributeConstraintDefinitionLibrary());
 		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
 		options.setConstraintProvider(runtimeConstraintProvider);
 
@@ -372,28 +364,28 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		do {
 			attemptBrokenMatchRepair();
 		} while (processBrokenMatches());
-		
+
 		do {
 			blackInterpreter.updateMatches();
 		} while (processOneOperationalRuleMatch());
 
 		wrapUp();
 	}
-	
-	private boolean attemptBrokenMatchRepair() {
-		recentConsistencyMatches.clear();
 
-		// attempt to repair matches 
-		blackInterpreter.updateMatches();
-		repairController.repairMatches(repairCandidates);
-		
-		// check if new matches show succession of former repair steps
-		if(repairController.repairCandidatesPending()) {
+	private boolean attemptBrokenMatchRepair() {
+		do {
+			recentConsistencyMatches.clear();
+			
+			// attempt to repair matches
 			blackInterpreter.updateMatches();
-			repairController.repairsSuccessful(recentConsistencyMatches);
-		}
-		// transfer still broken matches to collection of broken applications that will be removed
-		brokenRuleApplications = repairController.getBrokenRuleApplications();
+			repairController.repairMatches();
+			
+			// check if new matches show succession of former repair steps
+			if (repairController.repairCandidatesPending()) {
+				blackInterpreter.updateMatches();
+				repairController.repairsSuccessful();
+			}
+		} while(!repairCandidates.isEmpty());
 		return true;
 	}
 
@@ -469,10 +461,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			EReference ref = edge.getType();
 
 			if (src == null | trg == null | ref == null)
-				throw new IllegalStateException(
-						"The match " + match.getPatternName() + " is invalid for this operational strategy (the edge -"
-								+ ref.getName() + "-> appears to be expected but is missing)!  "
-								+ "Are you sure you have implemented isPatternRelevant correctly?");
+				throw new IllegalStateException("The match " + match.getPatternName() + " is invalid for this operational strategy (the edge -" + ref.getName() + "-> appears to be expected but is missing)!  "
+						+ "Are you sure you have implemented isPatternRelevant correctly?");
 
 			if (markedAndCreatedEdges.contains(new EMFEdge(src, trg, ref)))
 				return true;
@@ -484,8 +474,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	/***** Methods for reacting to broken matches of consistency patterns ******/
 
 	public TGGRuleApplication getRuleApplicationNode(IMatch match) {
-		return (TGGRuleApplication) match
-				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
+		return (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
 	}
 
 	public void addBrokenMatch(IMatch match) {
@@ -568,14 +557,12 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Set<String> getComplementRulesNames() {
-		Set<String> complementRulesNames = getTGG().getRules().stream().filter(r -> r instanceof TGGComplementRule)
-				.map(n -> n.getName()).collect(Collectors.toSet());
+		Set<String> complementRulesNames = getTGG().getRules().stream().filter(r -> r instanceof TGGComplementRule).map(n -> n.getName()).collect(Collectors.toSet());
 		return complementRulesNames;
 	}
 
 	protected Set<String> getKernelRulesNames() {
-		Set<String> kernelRulesNames = getTGG().getRules().stream().filter(r -> r instanceof TGGComplementRule)
-				.map(n -> ((TGGComplementRule) n).getKernel().getName()).distinct().collect(Collectors.toSet());
+		Set<String> kernelRulesNames = getTGG().getRules().stream().filter(r -> r instanceof TGGComplementRule).map(n -> ((TGGComplementRule) n).getKernel().getName()).distinct().collect(Collectors.toSet());
 		return kernelRulesNames;
 	}
 

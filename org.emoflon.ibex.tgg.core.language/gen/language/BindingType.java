@@ -38,14 +38,23 @@ public enum BindingType implements Enumerator {
 	 */
 	CREATE(1, "CREATE", "CREATE"),
 	/**
-	* The '<em><b>DELETE</b></em>' literal object.
+	 * The '<em><b>DELETE</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	 * @see #DELETE_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	DELETE(2, "DELETE", "DELETE"),
+	/**
+	* The '<em><b>NEGATIVE</b></em>' literal object.
 	* <!-- begin-user-doc -->
 	* <!-- end-user-doc -->
-	* @see #DELETE_VALUE
+	* @see #NEGATIVE_VALUE
 	* @generated
 	* @ordered
 	*/
-	DELETE(2, "DELETE", "DELETE");
+	NEGATIVE(3, "NEGATIVE", "NEGATIVE");
 
 	/**
 	 * The '<em><b>CONTEXT</b></em>' literal value.
@@ -93,12 +102,27 @@ public enum BindingType implements Enumerator {
 	public static final int DELETE_VALUE = 2;
 
 	/**
+	 * The '<em><b>NEGATIVE</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of '<em><b>NEGATIVE</b></em>' literal object isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @see #NEGATIVE
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int NEGATIVE_VALUE = 3;
+
+	/**
 	 * An array of all the '<em><b>Binding Type</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final BindingType[] VALUES_ARRAY = new BindingType[] { CONTEXT, CREATE, DELETE, };
+	private static final BindingType[] VALUES_ARRAY = new BindingType[] { CONTEXT, CREATE, DELETE, NEGATIVE, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Binding Type</b></em>' enumerators.
@@ -160,6 +184,8 @@ public enum BindingType implements Enumerator {
 			return CREATE;
 		case DELETE_VALUE:
 			return DELETE;
+		case NEGATIVE_VALUE:
+			return NEGATIVE;
 		}
 		return null;
 	}

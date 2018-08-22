@@ -67,6 +67,7 @@
     <eLiterals name="CONTEXT" literal="CONTEXT"/>
     <eLiterals name="CREATE" value="1" literal="CREATE"/>
     <eLiterals name="DELETE" value="2"/>
+    <eLiterals name="NEGATIVE" value="3"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="NAC" eSuperTypes="#//basic/TGGNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"

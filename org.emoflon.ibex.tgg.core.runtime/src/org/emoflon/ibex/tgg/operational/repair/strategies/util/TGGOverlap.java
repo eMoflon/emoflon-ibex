@@ -12,15 +12,16 @@ public class TGGOverlap {
 	public TGGRule sourceRule;
 	public TGGRule targetRule;
 	public Map<TGGRuleElement, TGGRuleElement> mappings;
-	public Collection<TGGRuleElement> targetContext;
+	public Map<String, String> nameMappings;
+	public Collection<TGGRuleElement> unboundContext; 
 	public Collection<TGGRuleElement> deletions;
 	public Collection<TGGRuleElement> creations;
 
 	public TGGOverlap(TGGRule sourceRule, TGGRule targetRule, Map<TGGRuleElement, TGGRuleElement> mappings, Collection<TGGRuleElement> context, Collection<TGGRuleElement> deletions, Collection<TGGRuleElement> creations) {
-		this.sourceRule = sourceRule;
-		this.targetRule = targetRule;
+		this(sourceRule, targetRule);
 		this.mappings = mappings;
-		this.targetContext = context;
+		mappings.keySet().stream().forEach(k -> nameMappings.put(k.getName(), mappings.get(k).getName()));
+		this.unboundContext = context;
 		this.deletions = deletions;
 		this.creations = creations;
 	}
@@ -29,7 +30,8 @@ public class TGGOverlap {
 		this.sourceRule = sourceRule;
 		this.targetRule = targetRule;
 		this.mappings = new Object2ObjectOpenHashMap<>();
-		this.targetContext = new ObjectOpenHashSet<>();
+		this.nameMappings = new Object2ObjectOpenHashMap<>();
+		this.unboundContext = new ObjectOpenHashSet<>();
 		this.deletions = new ObjectOpenHashSet<>();
 		this.creations = new ObjectOpenHashSet<>();
 	}

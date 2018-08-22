@@ -761,6 +761,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		addEEnumLiteral(bindingTypeEEnum, BindingType.CONTEXT);
 		addEEnumLiteral(bindingTypeEEnum, BindingType.CREATE);
 		addEEnumLiteral(bindingTypeEEnum, BindingType.DELETE);
+		addEEnumLiteral(bindingTypeEEnum, BindingType.NEGATIVE);
 
 		// Create resource
 		createResource(eNS_URI);

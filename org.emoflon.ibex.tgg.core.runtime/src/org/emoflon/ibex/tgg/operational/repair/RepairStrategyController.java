@@ -22,16 +22,24 @@ public class RepairStrategyController {
 	private Map<TGGRuleApplication, IMatch> pendingRepairs;
 	
 	// a collection of matches that may have been repaired
-	private Map<TGGRuleApplication, IMatch> brokenRuleApplications;
 	private Map<TGGRuleApplication, AbstractRepairStrategy> repairCandidateToStrategy;
 	
 	// a collection of repair strategies to repair broken matches into valid ones
 	private Collection<AbstractRepairStrategy> strategies;
+
+	private Map<TGGRuleApplication, IMatch> repairCandidates;
+	private Map<TGGRuleApplication, IMatch> recentConsistencyMatches;
+	private Map<TGGRuleApplication, IMatch> brokenRuleApplications;
 	
-	public RepairStrategyController(OperationalStrategy operationalStrategy) {
+	public RepairStrategyController(OperationalStrategy operationalStrategy, 
+			Map<TGGRuleApplication, IMatch> repairCandidates, 
+			Map<TGGRuleApplication, IMatch> recentConsistencyMatches, 
+			Map<TGGRuleApplication, IMatch> brokenRuleApplications) {
+		this.repairCandidates = repairCandidates;
+		this.recentConsistencyMatches = recentConsistencyMatches;
+		this.brokenRuleApplications = brokenRuleApplications;
 		oStrategy = operationalStrategy;
 		pendingRepairs = new Object2ObjectOpenHashMap<TGGRuleApplication, IMatch>();
-		brokenRuleApplications = new Object2ObjectOpenHashMap<TGGRuleApplication, IMatch>();
 		repairCandidateToStrategy = new Object2ObjectOpenHashMap<TGGRuleApplication, AbstractRepairStrategy>();
 		strategies = new ArrayList<>();
 	}
@@ -44,9 +52,9 @@ public class RepairStrategyController {
 		strategies.clear();
 	}
 	
-	public Map<TGGRuleApplication, IMatch> getBrokenRuleApplications() {
-		return brokenRuleApplications;
-	}
+//	public Map<TGGRuleApplication, IMatch> getBrokenRuleApplications() {
+//		return repairCandidates;
+//	}
 	
 	/**
 	 * This methods registers brokenRuleApplications which are processed by the registered repair strategies.
@@ -54,9 +62,7 @@ public class RepairStrategyController {
 	 * to check whether the repairings were successful or not
 	 * @param brokenRuleApplications
 	 */
-	public void repairMatches(Map<TGGRuleApplication, IMatch> brokenRuleApplications) {
-		this.brokenRuleApplications = brokenRuleApplications;
-		
+	public void repairMatches() {
 		if(isSyncRunning())
 			invokeStrategies();
 	}
@@ -65,26 +71,24 @@ public class RepairStrategyController {
 	 *  check if the repair was successful by searching for a new match for a TGGRuleApplication which was repaired by a strategy.
 	 *  if no match can be found for a pending TGGRuleApplication, the previous repair step is assumed invalid and thus has to be revoked.
 	 *  These elements can be accessed via getBrokenRuleApplications()
-	 * @param operationalMatches
+	 * @param recentConsistencyMatches
 	 */
-	public void repairsSuccessful(Map<TGGRuleApplication, IMatch> operationalMatches) {
+	public void repairsSuccessful() {
 		Iterator<TGGRuleApplication> it = pendingRepairs.keySet().iterator();
 		while(it.hasNext()) {
 			TGGRuleApplication ra = it.next();
 			IMatch match = pendingRepairs.get(ra);
 			// check if a new match can be found and if it is considered a valid one. if so revoke the repair and add it back to broken matches
-			if(!operationalMatches.containsKey(ra) ||
-					!repairCandidateToStrategy.get(ra).checkIfRepairWasSucessful(ra, match, operationalMatches.get(ra))) {
+			if(!recentConsistencyMatches.containsKey(ra) ||
+					!repairCandidateToStrategy.get(ra).checkIfRepairWasSucessful(ra, match, recentConsistencyMatches.get(ra))) {
 				repairCandidateToStrategy.get(ra).revokeRepair(ra);
 				brokenRuleApplications.put(ra, match);
 			}
 			else {
 				oStrategy.addOperationalRuleMatch(PatternSuffixes.removeSuffix(match.getPatternName()), match);
 			}
-			
 			// remove the candidate from both repair maps. Whether the repair was successful or not, no further repairs will take place here.
-//			repairCandidates.remove(ra);
-//			repairCandidateToStrategy.remove(ra);
+			repairCandidates.remove(ra);
 		}
 		repairCandidateToStrategy.clear();
 		pendingRepairs.clear();
@@ -95,16 +99,19 @@ public class RepairStrategyController {
 	}
 	
 	private void invokeStrategies() {
-		for(TGGRuleApplication ra : brokenRuleApplications.keySet()) {
+		for(TGGRuleApplication ra : repairCandidates.keySet()) {
 			Iterator<AbstractRepairStrategy> it = strategies.iterator();
 			while(it.hasNext()) {
-				IMatch repairCandidate = brokenRuleApplications.get(ra);
+				IMatch repairCandidate = repairCandidates.get(ra);
 				AbstractRepairStrategy strategy = it.next();
 				if(strategy.isCandidate(ra, repairCandidate) && strategy.repair(ra, repairCandidate)) {
 					pendingRepairs.put(ra, repairCandidate);
 					repairCandidateToStrategy.put(ra, strategy);
-					brokenRuleApplications.remove(ra);
 					break;
+				}
+				if(!it.hasNext()) {
+					brokenRuleApplications.put(ra, repairCandidate);
+					repairCandidates.remove(ra);
 				}
 			}
 		}
