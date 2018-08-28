@@ -5,22 +5,37 @@ import java.util.Set;
 
 import org.emoflon.ibex.common.collections.IntToDoubleMap;
 
-public class JDKIntToDoubleMap extends IntToDoubleMap {
-	private HashMap<Integer, Double> internal = new HashMap<>();
-	
+class JDKIntToDoubleMap extends IntToDoubleMap {
+
+	JDKIntToDoubleMap() {
+		this.setInternalMap(new HashMap<Integer, Double>());
+	}
+
+	@Override
+	protected HashMap<Integer, Double> getInternalMap() {
+		return (HashMap<Integer, Double>) super.getInternalMap();
+	}
+
 	@Override
 	public Set<Integer> keySet() {
-		return internal.keySet();
+		return this.getInternalMap().keySet();
 	}
 
 	@Override
-	public double get(int k) {
-		return internal.get(k);
+	public double get(final int k) {
+		return this.getInternalMap().get(k);
 	}
 
 	@Override
-	public void put(int k, double v) {
-		internal.put(k, v);
+	public void put(final int k, final double v) {
+		this.getInternalMap().put(k, v);
+	}
+
+	@Override
+	public double addTo(final int k, final double v) {
+		double oldValue = this.get(k);
+		this.put(k, oldValue + v);
+		return oldValue;
 	}
 
 }

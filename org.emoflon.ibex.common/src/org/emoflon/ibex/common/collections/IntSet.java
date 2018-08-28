@@ -1,12 +1,16 @@
 package org.emoflon.ibex.common.collections;
 
 import java.util.PrimitiveIterator.OfInt;
-import java.util.stream.Stream;
 
-public abstract class IntSet {
-	public abstract int size();
-	public abstract Stream<Integer> stream();
-	public abstract boolean isEmpty();
-	public abstract void add(int i);
+public abstract class IntSet extends SetWrapper<Integer> implements IntCollection {
+
+	public abstract boolean add(int i);
+
+	public abstract boolean contains(int i);
+
+	public abstract boolean remove(int i);
+
+	@Override
 	public abstract OfInt iterator();
+
 }

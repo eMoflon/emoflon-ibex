@@ -1,46 +1,37 @@
 package org.emoflon.ibex.common.collections.jdk;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 
-public class JDKIntToObjectMap<T> extends IntToObjectMap<T> {
-	private HashMap<Integer, T> internal = new HashMap<>();
+class JDKIntToObjectMap<T> extends IntToObjectMap<T> {
 
-	@Override
-	public T get(int i) {
-		return internal.get(i);
+	JDKIntToObjectMap() {
+		this.setInternalMap(new HashMap<Integer, T>());
 	}
 
 	@Override
-	public void put(int i, T o) {
-		internal.put(i, o);
+	protected HashMap<Integer, T> getInternalMap() {
+		return (HashMap<Integer, T>) super.getInternalMap();
 	}
 
 	@Override
-	public Set<Integer> keySet() {
-		return internal.keySet();
+	public T get(final int i) {
+		return this.getInternalMap().get(i);
 	}
 
 	@Override
-	public int size() {
-		return internal.size();
+	public T put(final int i, final T o) {
+		return this.getInternalMap().put(i, o);
 	}
 
 	@Override
-	public Collection<T> values() {
-		return internal.values();
+	public boolean containsKey(final int i) {
+		return this.getInternalMap().containsKey(i);
 	}
 
 	@Override
-	public boolean containsKey(int i) {
-		return internal.containsKey(i);
-	}
-
-	@Override
-	public boolean containsValue(T o) {
-		return internal.containsValue(o);
+	public T remove(final int k) {
+		return this.getInternalMap().remove(k);
 	}
 }

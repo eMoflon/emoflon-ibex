@@ -1,27 +1,33 @@
 package org.emoflon.ibex.common.collections.fastutil;
 
-import java.util.Set;
-
 import org.emoflon.ibex.common.collections.IntToDoubleMap;
 
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 
-public class FastUtilIntToDoubleMap extends IntToDoubleMap {
-	private Int2DoubleOpenHashMap internal = new Int2DoubleOpenHashMap();
-	
-	@Override
-	public Set<Integer> keySet() {
-		return internal.keySet();
+class FastUtilIntToDoubleMap extends IntToDoubleMap {
+
+	FastUtilIntToDoubleMap() {
+		this.setInternalMap(new Int2DoubleOpenHashMap());
 	}
 
 	@Override
-	public double get(int k) {
-		return internal.get(k);
+	protected Int2DoubleOpenHashMap getInternalMap() {
+		return (Int2DoubleOpenHashMap) super.getInternalMap();
 	}
 
 	@Override
-	public void put(int k, double v) {
-		internal.put(k, v);
+	public double get(final int k) {
+		return this.getInternalMap().get(k);
+	}
+
+	@Override
+	public void put(final int k, final double v) {
+		this.getInternalMap().put(k, v);
+	}
+
+	@Override
+	public double addTo(final int k, final double v) {
+		return this.getInternalMap().addTo(k, v);
 	}
 
 }

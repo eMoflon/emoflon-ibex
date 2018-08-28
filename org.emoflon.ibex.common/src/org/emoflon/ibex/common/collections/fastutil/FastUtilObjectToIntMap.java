@@ -4,22 +4,30 @@ import org.emoflon.ibex.common.collections.ObjectToIntMap;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
-public class FastUtilObjectToIntMap<T> extends ObjectToIntMap<T> {
-	private Object2IntOpenHashMap<T> internal = new Object2IntOpenHashMap<T>();
+class FastUtilObjectToIntMap<T> extends ObjectToIntMap<T> {
 
-	@Override
-	public boolean containsKey(T k) {
-		return internal.containsKey(k);
+	FastUtilObjectToIntMap() {
+		this.setInternalMap(new Object2IntOpenHashMap<T>());
 	}
 
 	@Override
-	public void put(T k, int v) {
-		internal.put(k,v);
+	protected Object2IntOpenHashMap<T> getInternalMap() {
+		return (Object2IntOpenHashMap<T>) super.getInternalMap();
 	}
 
 	@Override
-	public int getInt(T k) {
-		return internal.getInt(k);
+	public int put(final T k, final int v) {
+		return this.getInternalMap().put(k, v);
+	}
+
+	@Override
+	public int getInt(final T k) {
+		return this.getInternalMap().getInt(k);
+	}
+
+	@Override
+	public boolean containsValue(final int v) {
+		return this.getInternalMap().containsValue(v);
 	}
 
 }

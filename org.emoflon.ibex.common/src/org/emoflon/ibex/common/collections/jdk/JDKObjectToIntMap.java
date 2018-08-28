@@ -4,22 +4,30 @@ import java.util.HashMap;
 
 import org.emoflon.ibex.common.collections.ObjectToIntMap;
 
-public class JDKObjectToIntMap<T> extends ObjectToIntMap<T> {
-	private HashMap<T, Integer> internal = new HashMap<>();
-	
-	@Override
-	public boolean containsKey(T key) {
-		return internal.containsKey(key);
+class JDKObjectToIntMap<T> extends ObjectToIntMap<T> {
+
+	JDKObjectToIntMap() {
+		this.setInternalMap(new HashMap<T, Integer>());
 	}
 
 	@Override
-	public void put(T key, int value) {
-		internal.put(key, value);
+	protected HashMap<T, Integer> getInternalMap() {
+		return (HashMap<T, Integer>) super.getInternalMap();
 	}
 
 	@Override
-	public int getInt(T key) {
-		return internal.get(key);
+	public int put(final T key, final int value) {
+		return this.getInternalMap().put(key, value);
+	}
+
+	@Override
+	public int getInt(final T key) {
+		return this.getInternalMap().get(key);
+	}
+
+	@Override
+	public boolean containsValue(final int v) {
+		return this.getInternalMap().containsValue(v);
 	}
 
 }
