@@ -8,13 +8,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
+import org.moflon.core.utilities.EcoreUtils;
+import org.moflon.core.utilities.MoflonUtil;
 
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
@@ -28,15 +33,17 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	private List<RuntimeTGGAttributeConstraint> constraints;
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	protected Map<TGGParamValue, RuntimeTGGAttributeConstraintVariable> params2runtimeVariable = new HashMap<>();
-	
+
 	private IMatch match;
 	private Collection<String> boundObjectNames;
-		
-	public RuntimeTGGAttributeConstraintContainer(List<TGGParamValue> variables, List<TGGAttributeConstraint> sortedConstraints, IMatch match, RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
+
+	public RuntimeTGGAttributeConstraintContainer(List<TGGParamValue> variables,
+			List<TGGAttributeConstraint> sortedConstraints, IMatch match,
+			RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.getParameterNames();
 		this.constraintProvider = runtimeConstraintProvider;
-		
+
 		extractRuntimeParameters(variables);
 		extractRuntimeConstraints(sortedConstraints);
 	}
@@ -44,51 +51,54 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	private void extractRuntimeConstraints(List<TGGAttributeConstraint> sortedConstraints) {
 		constraints = sortedConstraints.stream().map(c -> extractRuntimeConstraint(c)).collect(Collectors.toList());
 	}
-	
+
 	private RuntimeTGGAttributeConstraint extractRuntimeConstraint(TGGAttributeConstraint c) {
-		RuntimeTGGAttributeConstraint runtimeConstraint = constraintProvider.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
+		RuntimeTGGAttributeConstraint runtimeConstraint = constraintProvider
+				.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
 		runtimeConstraint.initialize(this, c);
 		return runtimeConstraint;
 	}
 
 	private void extractRuntimeParameters(List<TGGParamValue> variables) {
-		variables.forEach(p -> params2runtimeVariable.put(p, new RuntimeTGGAttributeConstraintVariable(calculateBoundState(p), calculateValue(p), calculateType(p))));
+		variables.forEach(
+				p -> params2runtimeVariable.put(p, new RuntimeTGGAttributeConstraintVariable(calculateBoundState(p),
+						calculateValue(p), calculateType(p))));
 	}
-	
+
 	private boolean calculateBoundState(TGGParamValue value) {
-		if(value instanceof TGGAttributeExpression) {
+		if (value instanceof TGGAttributeExpression) {
 			TGGAttributeExpression tae = (TGGAttributeExpression) value;
 			return boundObjectNames.contains(tae.getObjectVar().getName());
 		}
-		if(value instanceof TGGAttributeVariable) {
+		if (value instanceof TGGAttributeVariable) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	private Object calculateValue(TGGParamValue value) {
-		if(value instanceof TGGAttributeExpression) {
+		if (value instanceof TGGAttributeExpression) {
 			TGGAttributeExpression tae = (TGGAttributeExpression) value;
 			String varName = tae.getObjectVar().getName();
-			if(match.isInMatch(varName)) {
+			if (match.isInMatch(varName)) {
 				EObject obj = (EObject) match.get(varName);
 				return obj.eGet(tae.getAttribute());
 			}
-			
+
 			return null;
 		}
-		if(value instanceof TGGLiteralExpression) {
+		if (value instanceof TGGLiteralExpression) {
 			return extractLiteralValue((TGGLiteralExpression) value);
 		}
-		if(value instanceof TGGAttributeVariable) {
+		if (value instanceof TGGAttributeVariable) {
 			return null;
 		}
-		if(value instanceof TGGEnumExpression) {
+		if (value instanceof TGGEnumExpression) {
 			return ((TGGEnumExpression) value).getLiteral();
 		}
 		throw new RuntimeException("TGGAttributeConstraintVariable value could not be recognized.");
 	}
-	
+
 	private String calculateType(TGGParamValue value) {
 		return value.getParameterDefinition().getType().getInstanceTypeName();
 	}
@@ -100,28 +110,27 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	public void addConstraint(RuntimeTGGAttributeConstraint constraint) {
 		constraints.add(constraint);
 	}
-	
-	
-	public boolean solve(){
-		for(RuntimeTGGAttributeConstraint constraint : constraints){
+
+	public boolean solve() {
+		for (RuntimeTGGAttributeConstraint constraint : constraints) {
 			constraint.solve();
-			if(!constraint.isSatisfied())
+			if (!constraint.isSatisfied())
 				return false;
 		}
-		
+
 		return true;
 	}
-	
-	//FIXME:  Code is hard to read, avoid pairs
+
+	// FIXME: Code is hard to read, avoid pairs
 	private Collection<Pair<TGGAttributeExpression, Object>> getBoundAttributeExpValues() {
 		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream()
 				.map(constraint -> constraint.getBoundAttrExprValues())
 				.reduce(new ArrayList<Pair<TGGAttributeExpression, Object>>(), (a, b) -> a.addAll(b) ? a : a);
-		return col == null ? new ArrayList<Pair<TGGAttributeExpression,Object>>() : col;
+		return col == null ? new ArrayList<Pair<TGGAttributeExpression, Object>>() : col;
 	}
-	
+
 	@Override
-	//FIXME:  Code is hard to read, avoid pairs
+	// FIXME: Code is hard to read, avoid pairs
 	public void applyCSPValues(IMatch comatch) {
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = getBoundAttributeExpValues();
 
@@ -130,10 +139,10 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 			EAttribute attr = cspVal.getLeft().getAttribute();
 			EDataType type = attr.getEAttributeType();
 			Object value = cspVal.getRight();
-			
-			if(value != null && type != null && attr != null) {
+
+			if (value != null && type != null && attr != null) {
 				Object toSet = coerceToType(type, value);
-				if(!valueAlreadySet(entry, attr, toSet))
+				if (!valueAlreadySet(entry, attr, toSet))
 					entry.eSet(attr, toSet);
 			}
 		}
@@ -146,20 +155,43 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	private Object coerceToType(EDataType type, Object o) {
 		assert (o != null);
 		assert (type != null);
+
+		// Try to handle dynamic EENums
+		if (type.getInstanceClass() == null) {
+			if (type instanceof EEnum) {
+				EEnum en = (EEnum) type;
+				if (o instanceof EEnumLiteral) {
+					EEnumLiteral enumLiteral = (EEnumLiteral) o;
+					if (en.getEEnumLiteralByLiteral(enumLiteral.getLiteral()) != null) {
+						return en.getEEnumLiteralByLiteral(enumLiteral.getLiteral());
+					}
+				} else if (o instanceof Enumerator) {
+					Enumerator e = (Enumerator) o;
+					if (e.getClass().getName().equals(EcoreUtils.getFQN(en))
+							&& en.getEEnumLiteralByLiteral(e.getLiteral()) != null)
+						return en.getEEnumLiteralByLiteral(e.getLiteral());
+				}
+			}
+		} else {
+			// Handle generated EEnums
+			if (EcoreUtil.wrapperClassFor(type.getInstanceClass()).isInstance(o))
+				return o;
+
+			// Try type conversion as final attempt
+			if (type.getInstanceClass().equals(int.class) && o.getClass().equals(Double.class))
+				// Approximate result and squeeze into an int
+				return ((Double) o).intValue();
+			else if (o instanceof String && type.getInstanceClass().equals(int.class))
+				return Integer.parseInt((String) o);
+			else if (o instanceof String && type.getInstanceClass().equals(double.class))
+				return Double.parseDouble((String) o);
+			else if (o instanceof Collection)
+				// Currently no handling for collections
+				return o;
+			else
+				throw new IllegalStateException("Cannot coerce " + o.getClass() + " to " + type.getInstanceClassName());
+		}
 		
-		if (EcoreUtil.wrapperClassFor(type.getInstanceClass()).isInstance(o))
-			return o;
-		else if(type.getInstanceClass().equals(int.class) && o.getClass().equals(Double.class))
-			// Approximate result and squeeze into an int
-			return ((Double)o).intValue();
-		else if(o instanceof String && type.getInstanceClass().equals(int.class))
-			return Integer.parseInt((String) o);
-		else if(o instanceof String && type.getInstanceClass().equals(double.class))
-			return Double.parseDouble((String) o);
-		else if(o instanceof Collection)
-			// Currently no handling for collections
-			return o;
-		else
-			throw new IllegalStateException("Cannot coerce " + o.getClass() + " to " + type.getInstanceClassName());
+		throw new IllegalStateException("Cannot coerce " + o + " to " + type);
 	}
 }

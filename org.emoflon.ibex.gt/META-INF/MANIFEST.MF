@@ -28,3 +28,4 @@ Require-Bundle: org.apache.log4j,
  org.moflon.core.utilities
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
