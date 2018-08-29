@@ -2,15 +2,22 @@ package org.emoflon.ibex.common.patterns;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EReference;
 
 import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
+import IBeXLanguage.IBeXEdge;
+import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNamedElement;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPattern;
@@ -198,5 +205,44 @@ public class IBeXPatternUtils {
 		allNodes.addAll(ibexPattern.getSignatureNodes());
 		allNodes.sort(sortByName);
 		return allNodes;
+	}
+	
+	/**
+	 * Create an {@link IBeXPattern} for the given edge. If an {@link IBeXPattern}
+	 * for the given {@link EReference} exists already, the existing pattern is
+	 * returned.
+	 * 
+	 * @param edgeType
+	 *            the EReference to create a pattern for
+	 * @return the created IBeXPattern
+	 */
+	public static  Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType, 
+			HashMap<String,IBeXContext> nameToPattern, Consumer<String> logError) {
+		Objects.requireNonNull(edgeType, "Edge type must not be null!");
+
+		EClass sourceType = edgeType.getEContainingClass();
+		EClass targetType = edgeType.getEReferenceType();
+
+		if (sourceType == null || targetType == null) {
+			logError.accept("Cannot resolve reference source or target type.");
+			return Optional.empty();
+		}
+		String name = String.format("edge-%s-%s-%s", sourceType.getName(), edgeType.getName(), targetType.getName());
+		if (nameToPattern.containsKey(name)) {
+			return Optional.of((IBeXContextPattern) nameToPattern.get(name));
+		}
+
+		IBeXContextPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
+		edgePattern.setName(name);
+
+		IBeXNode ibexSignatureSourceNode = IBeXPatternFactory.createNode("src", sourceType);
+		edgePattern.getSignatureNodes().add(ibexSignatureSourceNode);
+
+		IBeXNode ibexSignatureTargetNode = IBeXPatternFactory.createNode("trg", targetType);
+		edgePattern.getSignatureNodes().add(ibexSignatureTargetNode);
+
+		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSignatureSourceNode, ibexSignatureTargetNode, edgeType);
+		edgePattern.getLocalEdges().add(ibexEdge);
+		return Optional.of(edgePattern);
 	}
 }

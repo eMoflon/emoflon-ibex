@@ -95,4 +95,5 @@ Export-Package: .,
  runtime.util
 Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: org.emoflon.ibex.gt.transformations
 

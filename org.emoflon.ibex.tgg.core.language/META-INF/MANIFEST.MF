@@ -17,6 +17,7 @@ Bundle-ClassPath: .
 Export-Package: language,
  language.impl,
  language.util,
- org.emoflon.ibex.tgg.core.transformation
+ org.emoflon.ibex.tgg.core.transformation,
+ org.emoflon.ibex.tgg.core.util
 Automatic-Module-Name: org.emoflon.ibex.tgg.core.language
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

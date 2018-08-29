@@ -33,6 +33,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
+@Deprecated
 public class BlackPatternCompiler {
 	private Map<String, Collection<IBlackPattern>> ruleToPatterns;
 	private IbexOptions options;
@@ -42,6 +43,7 @@ public class BlackPatternCompiler {
 		this.options = options;
 		factories = new LinkedHashMap<>();
 		ruleToPatterns = new LinkedHashMap<>();
+		preparePatterns();
 	}
 
 	public Map<String, Collection<IBlackPattern>> getRuleToPatternMap() {

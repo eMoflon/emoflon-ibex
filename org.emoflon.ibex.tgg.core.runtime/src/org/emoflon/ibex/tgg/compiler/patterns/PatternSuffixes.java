@@ -57,8 +57,11 @@ public class PatternSuffixes {
 	public static final String CORR_CONTEXT = SEP + "CONTEXT_CORR";
 
 	/** Used for constraints, currently only multiplicity NACs */
-	public static final String CONSTRAINT = SEP + "CONSTRAINT";
+	public static final String CONSTRAINT = SEP + "CONSTRAINT_NAC";
 
+	/** Used for user-defined NACs */
+	public static final String NAC = SEP + "USER_NAC";
+	
 	/** Used for edge patterns */
 	public static final String EDGE = SEP + "EDGE";
 
