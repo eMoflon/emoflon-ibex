@@ -22,12 +22,12 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
+import language.TGGInplaceAttributeExpression;
+import language.TGGLiteralExpression;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.basic.expressions.TGGLiteralExpression;
-import language.inplaceAttributes.TGGInplaceAttributeExpression;
 
 public class IbexPatternOptimiser {
 

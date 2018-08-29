@@ -46,7 +46,6 @@ abstract public class DataFrame {
 	abstract public void internalSet(int index, Object value);
 	abstract public int internalSize();
 	
-	// TODO rendesen megcsinalni
 	public final boolean equals(Object other) {
 		throw new UnsupportedOperationException();
 	}

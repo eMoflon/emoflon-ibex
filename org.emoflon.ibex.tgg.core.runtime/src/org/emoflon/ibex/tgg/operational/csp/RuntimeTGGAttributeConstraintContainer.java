@@ -16,12 +16,12 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttr
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
-import language.basic.expressions.TGGAttributeExpression;
-import language.basic.expressions.TGGEnumExpression;
-import language.basic.expressions.TGGLiteralExpression;
-import language.basic.expressions.TGGParamValue;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeVariable;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeExpression;
+import language.TGGAttributeVariable;
+import language.TGGEnumExpression;
+import language.TGGLiteralExpression;
+import language.TGGParamValue;
 
 public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrConstrContainer {
 
@@ -112,12 +112,16 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 		return true;
 	}
 	
+	//FIXME:  Code is hard to read, avoid pairs
 	private Collection<Pair<TGGAttributeExpression, Object>> getBoundAttributeExpValues() {
-		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream().map(constraint -> constraint.getBoundAttrExprValues()).reduce(new ArrayList<Pair<TGGAttributeExpression, Object>>(), (a, b) -> a.addAll(b) ? a : a);
+		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream()
+				.map(constraint -> constraint.getBoundAttrExprValues())
+				.reduce(new ArrayList<Pair<TGGAttributeExpression, Object>>(), (a, b) -> a.addAll(b) ? a : a);
 		return col == null ? new ArrayList<Pair<TGGAttributeExpression,Object>>() : col;
 	}
 	
 	@Override
+	//FIXME:  Code is hard to read, avoid pairs
 	public void applyCSPValues(IMatch comatch) {
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = getBoundAttributeExpValues();
 
@@ -127,12 +131,22 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 			EDataType type = attr.getEAttributeType();
 			Object value = cspVal.getRight();
 			
-			if(value != null && type != null && attr != null)
-				entry.eSet(attr, coerceToType(type, value));
+			if(value != null && type != null && attr != null) {
+				Object toSet = coerceToType(type, value);
+				if(!valueAlreadySet(entry, attr, toSet))
+					entry.eSet(attr, toSet);
+			}
 		}
 	}
 
+	private boolean valueAlreadySet(EObject entry, EAttribute attr, Object toSet) {
+		return toSet.equals(entry.eGet(attr));
+	}
+
 	private Object coerceToType(EDataType type, Object o) {
+		assert (o != null);
+		assert (type != null);
+		
 		if (EcoreUtil.wrapperClassFor(type.getInstanceClass()).isInstance(o))
 			return o;
 		else if(type.getInstanceClass().equals(int.class) && o.getClass().equals(Double.class))
@@ -142,6 +156,9 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 			return Integer.parseInt((String) o);
 		else if(o instanceof String && type.getInstanceClass().equals(double.class))
 			return Double.parseDouble((String) o);
+		else if(o instanceof Collection)
+			// Currently no handling for collections
+			return o;
 		else
 			throw new IllegalStateException("Cannot coerce " + o.getClass() + " to " + type.getInstanceClassName());
 	}

@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
 
-import language.csp.definition.TGGAttributeConstraintDefinition;
-import language.csp.definition.TGGAttributeConstraintDefinitionLibrary;
+import language.TGGAttributeConstraintDefinition;
+import language.TGGAttributeConstraintDefinitionLibrary;
 
 public class RuntimeTGGAttrConstraintProvider {
 

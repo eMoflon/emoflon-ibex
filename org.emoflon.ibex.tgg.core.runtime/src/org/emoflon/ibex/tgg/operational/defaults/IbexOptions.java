@@ -28,13 +28,13 @@ public class IbexOptions {
 	 * EdgePatterns are only created if the number of edges in this pattern is at
 	 * least this constant
 	 */
-	private int minimumNumberOfEdgesToCreateEdgePatterns = Integer.MAX_VALUE;
+	private int minimumNumberOfEdgesToCreateEdgePatterns = 3;
 
 	/**
 	 * Indicates if the edge patterns should be typed including attribute conditions
 	 * and sub types
 	 */
-	private boolean stronglyTypedEdgedPatterns = false;
+	private boolean stronglyTypedEdgedPatterns = true;
 
 	private boolean debug;
 	private String workspacePath;

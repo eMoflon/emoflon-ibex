@@ -1,23 +1,22 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
-public class ConsistencyReporter {
-
+public class ConsistencyReporter {	
 	private OperationalStrategy strategy;
 
 	private Collection<EObject> inconsistentSrcNodes;
@@ -85,7 +84,7 @@ public class ConsistencyReporter {
 	private Collection<EObject> extractInconsistentNodes(Resource resource, Resource protocol, Domain domain) {
 		Iterator<EObject> it = resource.getAllContents();
 
-		Collection<EObject> nodes = new ObjectOpenHashSet<>();
+		Set<EObject> nodes = cfactory.createObjectSet();
 
 		while (it.hasNext()) {
 			nodes.add(it.next());
@@ -119,7 +118,7 @@ public class ConsistencyReporter {
 
 	private Collection<EMFEdge> extractInconsistentEdges(Resource resource, Resource protocol, Domain domain) {
 		Iterator<EObject> it = resource.getAllContents();
-		Collection<EMFEdge> edges = new ObjectOpenCustomHashSet<>(new EMFEdgeHashingStrategy());
+		Collection<EMFEdge> edges = cfactory.createEMFEdgeHashSet();
 
 		while (it.hasNext()) {
 			EObject node = it.next();

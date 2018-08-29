@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +11,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -19,10 +21,6 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.opt.OPT;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGComplementRule;
 import language.TGGRuleCorr;
 import runtime.TGGRuleApplication;
@@ -107,7 +105,7 @@ public abstract class CC extends OPT {
 		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
 
 		// collection needed to handle uniqueness
-		Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes = new Int2ObjectOpenHashMap<>();
+		IntToObjectMap<Set<EObject>> complementMatchToContextNodes = cfactory.createIntToObjectHashMap();
 
 		while (complementRuleMatches.iterator().hasNext()) {
 			IMatch match = complementRuleMatches.iterator().next();
@@ -138,14 +136,14 @@ public abstract class CC extends OPT {
 		TGGComplementRule rule = getComplementRule(ruleName).get();
 		if (rule.isBounded()) {
 			// check if the complement rule was applied. If not, mark its kernel as invalid.
-			ObjectOpenHashSet<EObject> contextNodes = getGenContextNodes(match);
+			Set<EObject> contextNodes = getGenContextNodes(match);
 			if (!matchToContextNodes.containsValue(contextNodes))
 				invalidKernels.add(kernelMatchID);
 		}
 	}
 
 	private void applyMatchAndHandleUniqueness(IMatch match,
-			Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes) {
+			IntToObjectMap<Set<EObject>> complementMatchToContextNodes) {
 		String ruleName = operationalMatchContainer.getRuleName(match);
 		if (processOperationalRuleMatch(ruleName, match) != null) {
 			TGGComplementRule rule = getComplementRule(ruleName).get();
@@ -160,16 +158,15 @@ public abstract class CC extends OPT {
 	 * edges.
 	 */
 	private void findDuplicatedMatches(int currentComplementMatch,
-			Int2ObjectOpenHashMap<ObjectOpenHashSet<EObject>> complementMatchToContextNodes) {
+			IntToObjectMap<Set<EObject>> complementMatchToContextNodes) {
 
-		ObjectOpenHashSet<EObject> contextNodesForCurrentComplementMatch = matchToContextNodes
-				.get(currentComplementMatch);
+		Set<EObject> contextNodesForCurrentComplementMatch = matchToContextNodes.get(currentComplementMatch);
 		for (int previousComplementMatch : complementMatchToContextNodes.keySet()) {
 			// check if matches belong to the same complement rule
 			if (matchIdToRuleName.get(currentComplementMatch).equals(matchIdToRuleName.get(previousComplementMatch))) {
 				if (matchToContextNodes.get(previousComplementMatch).equals(contextNodesForCurrentComplementMatch)) {
 					if (!sameComplementMatches.containsKey(currentComplementMatch)) {
-						sameComplementMatches.put(currentComplementMatch, new IntOpenHashSet());
+						sameComplementMatches.put(currentComplementMatch, cfactory.createIntSet());
 						sameComplementMatches.get(currentComplementMatch).add(currentComplementMatch);
 						sameComplementMatches.get(currentComplementMatch).add(previousComplementMatch);
 					} else {
@@ -187,9 +184,10 @@ public abstract class CC extends OPT {
 		return name.substring(0, name.indexOf(getGENPatternForMaximality()));
 	}
 
-	private ObjectOpenHashSet<EObject> getGenContextNodes(IMatch match) {
-		ObjectOpenHashSet<EObject> contextNodes = match.getParameterNames().stream().map(n -> (EObject) match.get(n))
-				.collect(Collectors.toCollection(ObjectOpenHashSet<EObject>::new));
+	private Set<EObject> getGenContextNodes(IMatch match) {
+		Set<EObject> contextNodes = match.getParameterNames().stream()//
+				.map(n -> (EObject) match.get(n))//
+				.collect(Collectors.toSet());
 		return contextNodes;
 	}
 
@@ -242,34 +240,34 @@ public abstract class CC extends OPT {
 
 		getGreenNodes(comatch, ruleName).forEach(e -> {
 			if (!nodeToMarkingMatches.containsKey(e))
-				nodeToMarkingMatches.put(e, new IntOpenHashSet());
+				nodeToMarkingMatches.put(e, cfactory.createIntSet());
 			nodeToMarkingMatches.get(e).add(idCounter);
 		});
 
 		getGreenEdges(comatch, ruleName).forEach(e -> {
 			if (!edgeToMarkingMatches.containsKey(e)) {
-				edgeToMarkingMatches.put(e, new IntOpenHashSet());
+				edgeToMarkingMatches.put(e, cfactory.createIntSet());
 			}
 			edgeToMarkingMatches.get(e).add(idCounter);
 		});
 
 		getBlackNodes(comatch, ruleName).forEach(e -> {
 			if (!contextNodeToNeedingMatches.containsKey(e))
-				contextNodeToNeedingMatches.put(e, new IntOpenHashSet());
+				contextNodeToNeedingMatches.put(e, cfactory.createIntSet());
 			contextNodeToNeedingMatches.get(e).add(idCounter);
 		});
 
 		getBlackEdges(comatch, ruleName).forEach(e -> {
 			if (!contextEdgeToNeedingMatches.containsKey(e)) {
-				contextEdgeToNeedingMatches.put(e, new IntOpenHashSet());
+				contextEdgeToNeedingMatches.put(e, cfactory.createIntSet());
 			}
 			contextEdgeToNeedingMatches.get(e).add(idCounter);
 		});
 
-		matchToContextNodes.put(idCounter, new ObjectOpenHashSet<>());
+		matchToContextNodes.put(idCounter, cfactory.createObjectSet());
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
 
-		matchToContextEdges.put(idCounter, new ObjectOpenCustomHashSet<EMFEdge>(new EMFEdgeHashingStrategy()));
+		matchToContextEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 
 		handleBundles(comatch, ruleName);
@@ -278,8 +276,10 @@ public abstract class CC extends OPT {
 	}
 
 	public boolean modelsAreConsistent() {
-		return getInconsistentSrcNodes().size() + getInconsistentTrgNodes().size() + getInconsistentSrcEdges().size()
-				+ getInconsistentTrgEdges().size() == 0;
+		return getInconsistentSrcNodes().size() + //
+				getInconsistentTrgNodes().size() + //
+				getInconsistentSrcEdges().size() + //
+				getInconsistentTrgEdges().size() == 0;
 	}
 
 	public Collection<EObject> getInconsistentSrcNodes() {

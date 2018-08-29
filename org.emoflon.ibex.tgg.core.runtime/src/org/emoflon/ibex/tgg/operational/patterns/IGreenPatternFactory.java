@@ -6,11 +6,11 @@ import java.util.List;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
+import language.TGGAttributeConstraint;
+import language.TGGParamValue;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.basic.expressions.TGGParamValue;
-import language.csp.TGGAttributeConstraint;
 
 public interface IGreenPatternFactory {
 

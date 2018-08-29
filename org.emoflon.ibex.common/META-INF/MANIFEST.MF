@@ -5,23 +5,6 @@ Bundle-SymbolicName: org.emoflon.ibex.common;singleton:=true
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
-Export-Package: IBeXLanguage,
- IBeXLanguage.impl,
- IBeXLanguage.util,
- it.unimi.dsi.fastutil,
- it.unimi.dsi.fastutil.booleans,
- it.unimi.dsi.fastutil.bytes,
- it.unimi.dsi.fastutil.chars,
- it.unimi.dsi.fastutil.doubles,
- it.unimi.dsi.fastutil.floats,
- it.unimi.dsi.fastutil.ints,
- it.unimi.dsi.fastutil.io,
- it.unimi.dsi.fastutil.longs,
- it.unimi.dsi.fastutil.objects,
- it.unimi.dsi.fastutil.shorts,
- org.emoflon.ibex.common.emf,
- org.emoflon.ibex.common.operational,
- org.emoflon.ibex.common.patterns
 Bundle-Localization: plugin
 Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.eclipse.jface,
@@ -38,4 +21,16 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
 Bundle-ClassPath: .,
  lib/fastutil-8.1.1.jar
 Automatic-Module-Name: org.emoflon.ibex.common
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: IBeXLanguage,
+ IBeXLanguage.impl,
+ IBeXLanguage.util,
+ it.unimi.dsi.fastutil.ints,
+ it.unimi.dsi.fastutil.objects,
+ org.emoflon.ibex.common.collections,
+ org.emoflon.ibex.common.emf,
+ org.emoflon.ibex.common.ide,
+ org.emoflon.ibex.common.operational,
+ org.emoflon.ibex.common.patterns,
+ org.emoflon.ibex.common.visualization
 

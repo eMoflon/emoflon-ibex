@@ -52,29 +52,25 @@ import language.DomainType;
 import language.LanguageFactory;
 import language.NAC;
 import language.TGG;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintAdornment;
+import language.TGGAttributeConstraintDefinition;
+import language.TGGAttributeConstraintDefinitionLibrary;
+import language.TGGAttributeConstraintLibrary;
+import language.TGGAttributeConstraintOperators;
+import language.TGGAttributeConstraintParameterDefinition;
+import language.TGGAttributeExpression;
+import language.TGGAttributeVariable;
 import language.TGGComplementRule;
+import language.TGGEnumExpression;
+import language.TGGExpression;
+import language.TGGInplaceAttributeExpression;
+import language.TGGLiteralExpression;
+import language.TGGParamValue;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.basic.expressions.ExpressionsFactory;
-import language.basic.expressions.TGGAttributeExpression;
-import language.basic.expressions.TGGEnumExpression;
-import language.basic.expressions.TGGExpression;
-import language.basic.expressions.TGGLiteralExpression;
-import language.basic.expressions.TGGParamValue;
-import language.csp.CspFactory;
-import language.csp.TGGAttributeConstraint;
-import language.csp.TGGAttributeConstraintLibrary;
-import language.csp.TGGAttributeVariable;
-import language.csp.definition.DefinitionFactory;
-import language.csp.definition.TGGAttributeConstraintAdornment;
-import language.csp.definition.TGGAttributeConstraintDefinition;
-import language.csp.definition.TGGAttributeConstraintDefinitionLibrary;
-import language.csp.definition.TGGAttributeConstraintParameterDefinition;
-import language.inplaceAttributes.InplaceAttributesFactory;
-import language.inplaceAttributes.TGGAttributeConstraintOperators;
-import language.inplaceAttributes.TGGInplaceAttributeExpression;
 
 public class EditorTGGtoInternalTGG {
 
@@ -257,11 +253,11 @@ public class EditorTGGtoInternalTGG {
 
 	private TGGAttributeConstraintDefinitionLibrary createAttributeConditionDefinitionLibrary(
 			EList<AttrCondDef> attrCondDefs) {
-		TGGAttributeConstraintDefinitionLibrary library = DefinitionFactory.eINSTANCE
+		TGGAttributeConstraintDefinitionLibrary library = LanguageFactory.eINSTANCE
 				.createTGGAttributeConstraintDefinitionLibrary();
 
 		for (AttrCondDef attrCondDef : attrCondDefs) {
-			TGGAttributeConstraintDefinition definition = DefinitionFactory.eINSTANCE
+			TGGAttributeConstraintDefinition definition = LanguageFactory.eINSTANCE
 					.createTGGAttributeConstraintDefinition();
 			definition.setName(attrCondDef.getName());
 			definition.setUserDefined(attrCondDef.isUserDefined());
@@ -281,7 +277,7 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private TGGAttributeConstraintLibrary createAttributeConditionLibrary(Collection<AttrCond> attrConds) {
-		TGGAttributeConstraintLibrary library = CspFactory.eINSTANCE.createTGGAttributeConstraintLibrary();
+		TGGAttributeConstraintLibrary library = LanguageFactory.eINSTANCE.createTGGAttributeConstraintLibrary();
 		ParamValueSet paramValues = new ParamValueSet();
 
 		library.getTggAttributeConstraints().addAll(attrConds.stream()
@@ -292,7 +288,7 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private TGGAttributeConstraint createAttributeConstraint(AttrCond attrCond, ParamValueSet foundValues) {
-		TGGAttributeConstraint attributeConstraint = CspFactory.eINSTANCE.createTGGAttributeConstraint();
+		TGGAttributeConstraint attributeConstraint = LanguageFactory.eINSTANCE.createTGGAttributeConstraint();
 		attributeConstraint.setDefinition((TGGAttributeConstraintDefinition) xtextToTGG.get(attrCond.getName()));
 		for (ParamValue paramValue : attrCond.getValues()) {
 			TGGParamValue newTGGParamValue = createParamValue(
@@ -309,7 +305,7 @@ public class EditorTGGtoInternalTGG {
 		TGGAttributeConstraintParameterDefinition paramDef = definition.getParameterDefinitions().get(index);
 
 		if (paramValue instanceof LocalVariable) {
-			TGGAttributeVariable attrVariable = CspFactory.eINSTANCE.createTGGAttributeVariable();
+			TGGAttributeVariable attrVariable = LanguageFactory.eINSTANCE.createTGGAttributeVariable();
 			attrVariable.setName(((LocalVariable) paramValue).getName());
 			attrVariable.setParameterDefinition(paramDef);
 			return attrVariable;
@@ -323,14 +319,14 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private TGGAttributeConstraintAdornment creatAttributeConditionAdornment(Adornment adornment) {
-		TGGAttributeConstraintAdornment tggAdornment = DefinitionFactory.eINSTANCE
+		TGGAttributeConstraintAdornment tggAdornment = LanguageFactory.eINSTANCE
 				.createTGGAttributeConstraintAdornment();
 		tggAdornment.getValue().addAll(adornment.getValue());
 		return tggAdornment;
 	}
 
 	private TGGAttributeConstraintParameterDefinition createAttributeConstraintParameterDefinition(Param parameter) {
-		TGGAttributeConstraintParameterDefinition parameterDefinition = DefinitionFactory.eINSTANCE
+		TGGAttributeConstraintParameterDefinition parameterDefinition = LanguageFactory.eINSTANCE
 				.createTGGAttributeConstraintParameterDefinition();
 		parameterDefinition.setName(parameter.getParamName());
 		parameterDefinition.setType(parameter.getType());
@@ -407,7 +403,7 @@ public class EditorTGGtoInternalTGG {
 
 	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes,
 			TGGRuleNode node, AttributeConstraint constraint) {
-		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
+		TGGInplaceAttributeExpression tiae = LanguageFactory.eINSTANCE.createTGGInplaceAttributeExpression();
 		tiae.setAttribute(node.getType().getEAllAttributes().stream()
 				.filter(attr -> attr.getName().equals(constraint.getAttribute().getName())).findFirst().get());
 		tiae.setValueExpr(createExpression(constraint.getValueExp()));
@@ -417,7 +413,7 @@ public class EditorTGGtoInternalTGG {
 
 	private TGGInplaceAttributeExpression createTGGInplaceAttributeExpression(Collection<TGGRuleNode> allNodes,
 			TGGRuleNode node, AttributeAssignment assignment) {
-		TGGInplaceAttributeExpression tiae = InplaceAttributesFactory.eINSTANCE.createTGGInplaceAttributeExpression();
+		TGGInplaceAttributeExpression tiae = LanguageFactory.eINSTANCE.createTGGInplaceAttributeExpression();
 		tiae.setAttribute(node.getType().getEAllAttributes().stream()
 				.filter(attr -> attr.getName().equals(assignment.getAttribute().getName())).findFirst().get());
 		tiae.setValueExpr(createExpression(assignment.getValueExp()));
@@ -428,20 +424,20 @@ public class EditorTGGtoInternalTGG {
 	private TGGExpression createExpression(org.moflon.tgg.mosl.tgg.Expression expression) {
 		if (expression instanceof LiteralExpression) {
 			LiteralExpression le = (LiteralExpression) expression;
-			TGGLiteralExpression tle = ExpressionsFactory.eINSTANCE.createTGGLiteralExpression();
+			TGGLiteralExpression tle = LanguageFactory.eINSTANCE.createTGGLiteralExpression();
 			tle.setValue(le.getValue());
 			return tle;
 		}
 		if (expression instanceof EnumExpression) {
 			EnumExpression ee = (EnumExpression) expression;
-			TGGEnumExpression tee = ExpressionsFactory.eINSTANCE.createTGGEnumExpression();
+			TGGEnumExpression tee = LanguageFactory.eINSTANCE.createTGGEnumExpression();
 			tee.setEenum(ee.getEenum());
 			tee.setLiteral(ee.getLiteral());
 			return tee;
 		}
 		if (expression instanceof AttributeExpression) {
 			AttributeExpression ae = (AttributeExpression) expression;
-			TGGAttributeExpression tae = ExpressionsFactory.eINSTANCE.createTGGAttributeExpression();
+			TGGAttributeExpression tae = LanguageFactory.eINSTANCE.createTGGAttributeExpression();
 			tae.setAttribute(ae.getAttribute());
 			tae.setObjectVar((TGGRuleNode) xtextToTGG.get(ae.getObjectVar()));
 			return tae;

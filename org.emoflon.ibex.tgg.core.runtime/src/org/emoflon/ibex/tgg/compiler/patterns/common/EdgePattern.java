@@ -10,10 +10,10 @@ import org.emoflon.ibex.tgg.compiler.patterns.IbexPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.moflon.core.utilities.EcoreUtils;
 
+import language.TGGInplaceAttributeExpression;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import language.impl.LanguageFactoryImpl;
-import language.inplaceAttributes.TGGInplaceAttributeExpression;
 
 public class EdgePattern extends IbexBasePattern {
 

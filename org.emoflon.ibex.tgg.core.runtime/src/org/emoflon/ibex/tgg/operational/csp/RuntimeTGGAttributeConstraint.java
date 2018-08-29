@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.util.LoremIpsum;
 
-import language.basic.expressions.TGGAttributeExpression;
-import language.csp.TGGAttributeConstraint;
-import language.csp.definition.TGGAttributeConstraintAdornment;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintAdornment;
+import language.TGGAttributeExpression;
 
 public abstract class RuntimeTGGAttributeConstraint {
 	private static final char B = 'B';
@@ -59,6 +59,7 @@ public abstract class RuntimeTGGAttributeConstraint {
 
 	public abstract void solve();
 
+	//FIXME:  Code is hard to read, avoid pairs
 	public Collection<Pair<TGGAttributeExpression, Object>> getBoundAttrExprValues() {
 		Collection<Pair<TGGAttributeExpression, Object>> tuples = new ArrayList<Pair<TGGAttributeExpression, Object>>();
 		for (int i = 0; i < constraint.getParameters().size(); i++) {

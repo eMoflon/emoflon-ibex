@@ -7,10 +7,10 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
 
+import language.TGGAttributeConstraint;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.csp.TGGAttributeConstraint;
 
 public interface IBlackPattern {
 	String getName();

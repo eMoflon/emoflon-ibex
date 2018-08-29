@@ -11,9 +11,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
+import language.TGGAttributeConstraint;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.csp.TGGAttributeConstraint;
 import runtime.RuntimePackage;
 
 public class CheckTranslationStatePattern extends IbexBasePattern {
