@@ -19,7 +19,6 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttr
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.EcoreUtils;
-import org.moflon.core.utilities.MoflonUtil;
 
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
