@@ -17,12 +17,14 @@ class JDKObjectToIntMap<T> extends ObjectToIntMap<T> {
 
 	@Override
 	public int put(final T key, final int value) {
-		return this.getInternalMap().put(key, value);
+		Integer oldValue = this.getInternalMap().put(key, value);
+		return oldValue != null ? oldValue : 0;
 	}
 
 	@Override
 	public int getInt(final T key) {
-		return this.getInternalMap().get(key);
+		Integer value = this.getInternalMap().get(key);
+		return value != null ? value : 0;
 	}
 
 	@Override

@@ -36,7 +36,7 @@ class JDKIntSet extends IntSet {
 	public OfInt iterator() {
 		return new OfInt() {
 
-			private final Iterator<Integer> it = JDKIntSet.this.iterator();
+			private final Iterator<Integer> it = JDKIntSet.this.getInternalSet().iterator();
 
 			@Override
 			public boolean hasNext() {

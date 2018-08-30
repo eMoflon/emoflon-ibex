@@ -21,8 +21,8 @@ class FastUtilIntToIntMap extends IntToIntMap {
 	}
 
 	@Override
-	public void put(final int k, final int v) {
-		this.getInternalMap().put(k, v);
+	public int put(final int k, final int v) {
+		return this.getInternalMap().put(k, v);
 	}
 
 	@Override

@@ -22,13 +22,15 @@ class JDKIntToIntLinkedMap extends IntToIntMap {
 	}
 
 	@Override
-	public int get(final int k) {
-		return this.getInternalMap().get(k);
+	public int put(final int k, final int v) {
+		Integer oldValue = this.getInternalMap().put(k, v);
+		return oldValue != null ? oldValue : 0;
 	}
 
 	@Override
-	public void put(final int k, final int v) {
-		this.getInternalMap().put(k, v);
+	public int get(final int k) {
+		Integer value = this.getInternalMap().get(k);
+		return value != null ? value : 0;
 	}
 
 	@Override

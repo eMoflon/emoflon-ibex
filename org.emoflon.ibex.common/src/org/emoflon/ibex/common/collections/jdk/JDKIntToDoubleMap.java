@@ -23,12 +23,14 @@ class JDKIntToDoubleMap extends IntToDoubleMap {
 
 	@Override
 	public double get(final int k) {
-		return this.getInternalMap().get(k);
+		Double value = this.getInternalMap().get(k);
+		return value != null ? value : 0;
 	}
 
 	@Override
-	public void put(final int k, final double v) {
-		this.getInternalMap().put(k, v);
+	public double put(final int k, final double v) {
+		Double oldValue = this.getInternalMap().put(k, v);
+		return oldValue != null ? oldValue : 0;
 	}
 
 	@Override

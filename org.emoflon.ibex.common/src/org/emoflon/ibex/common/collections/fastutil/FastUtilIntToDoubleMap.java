@@ -21,8 +21,8 @@ class FastUtilIntToDoubleMap extends IntToDoubleMap {
 	}
 
 	@Override
-	public void put(final int k, final double v) {
-		this.getInternalMap().put(k, v);
+	public double put(final int k, final double v) {
+		return this.getInternalMap().put(k, v);
 	}
 
 	@Override

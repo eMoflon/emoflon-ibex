@@ -35,7 +35,7 @@ class JDKLinkedIntSet extends IntSet {
 	public OfInt iterator() {
 		return new OfInt() {
 
-			private final Iterator<Integer> it = JDKLinkedIntSet.this.iterator();
+			private final Iterator<Integer> it = JDKLinkedIntSet.this.getInternalSet().iterator();
 
 			@Override
 			public boolean hasNext() {
