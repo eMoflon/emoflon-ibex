@@ -17,7 +17,8 @@ public class IbexOptions {
 
 	private FilterNACStrategy filterNACStrategy = FilterNACStrategy.FILTER_NACS;
 
-	private boolean blackInterpSupportsAttrConstrs = true;
+	//FIXME:  Switch back to true when attribute conditions are supported
+	private boolean blackInterpSupportsAttrConstrs = false;
 
 	/**
 	 * CorrContext nodes are local nodes in the SrcContext and TrgContext pattern

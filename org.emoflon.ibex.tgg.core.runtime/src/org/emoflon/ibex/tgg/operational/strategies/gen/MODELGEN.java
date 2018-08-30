@@ -108,8 +108,13 @@ public abstract class MODELGEN extends OperationalStrategy {
 				if (isKernelMatch(ruleName))
 					processComplementRuleMatches(cm);
 			});
+
+			if (!comatch.isPresent()) {
+				removeOperationalRuleMatch(match);
+				logger.debug("Unable to apply: " + match);
+			}
 		}
-		
+
 		return true;
 	}
 
@@ -117,8 +122,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * We have found a match for a NAC of an axiom. This means this axiom is no
 	 * longer applicable and thus needs to be removed from the set of matches
 	 * 
-	 * @param match
-	 *            the match of a NAC for an Axiom
+	 * @param match the match of a NAC for an Axiom
 	 */
 	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
 		Set<IMatch> matchesToRemove = new HashSet<>();
@@ -203,9 +207,10 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * of the axiom is found.
 	 */
 	private void collectMatchesForAxioms() {
-		options.tgg().getRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom()).forEach(r -> {
-			addOperationalRuleMatch(new SimpleMatch(GENBlackPattern.getName(r.getName())));
-		});
+		options.getFlattenedConcreteTGGRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom())
+				.forEach(r -> {
+					addOperationalRuleMatch(new SimpleMatch(GENBlackPattern.getName(r.getName())));
+				});
 	}
 
 	private void checkComplianceWithSchema(HashMap<String, Integer> complementRulesBounds) {

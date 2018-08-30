@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -36,7 +37,7 @@ import language.TGGRuleNode;
  */
 public class IbexGreenInterpreter implements IGreenInterpreter {
 	private static final Logger logger = Logger.getLogger(IbexGreenInterpreter.class);
-	
+
 	private OperationalStrategy operationalStrategy;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
@@ -105,8 +106,8 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
 					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
-					newObj.eSet(attrExpr.getAttribute(),
-							String2EPrimitive.convertLiteral(tle.getValue(), attrExpr.getAttribute().getEAttributeType()));
+					newObj.eSet(attrExpr.getAttribute(), String2EPrimitive.convertLiteral(tle.getValue(),
+							attrExpr.getAttribute().getEAttributeType()));
 					continue;
 				}
 				if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
@@ -175,7 +176,73 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private boolean matchIsInvalid(String ruleName, IGreenPattern greenPattern, IMatch match) {
 		return someElementsAlreadyProcessed(ruleName, greenPattern, match)
 				|| !conformTypesOfGreenNodes(match, greenPattern, ruleName)
-				|| !allContextElementsAlreadyProcessed(match, greenPattern, ruleName);
+				|| !allContextElementsAlreadyProcessed(match, greenPattern, ruleName)
+				|| violatesUpperBounds(ruleName, greenPattern, match)
+				|| violatesContainerSemantics(ruleName, greenPattern, match)
+				;
+	}
+
+	private boolean violatesContainerSemantics(String ruleName, IGreenPattern greenPattern, IMatch match) {
+		for (TGGRuleEdge greenEdge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
+			if (violationOfContainerSemanticsIsPossible(greenPattern, greenEdge)) {
+				EObject trgObj = (EObject) match.get(greenEdge.getTrgNode().getName());
+				if (trgObj.eContainer() != null)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean violationOfContainerSemanticsIsPossible(IGreenPattern greenPattern, TGGRuleEdge greenEdge) {
+		return greenEdge.getType().isContainment()
+				&& !greenPattern.getSrcTrgNodesCreatedByPattern().contains(greenEdge.getTrgNode());
+	}
+
+	private boolean violatesUpperBounds(String ruleName, IGreenPattern greenPattern, IMatch match) {
+		for (TGGRuleEdge greenEdge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
+			if (violationIsPossible(greenPattern, greenEdge)) {
+				if (violatesUpperBounds(ruleName, greenEdge, match, greenPattern))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * A violation is only possible if the upper bound of the multiplicity is not *,
+	 * and if the source node already exists.
+	 * 
+	 * @param greenPattern
+	 * @param greenEdge
+	 * @return
+	 */
+	private boolean violationIsPossible(IGreenPattern greenPattern, TGGRuleEdge greenEdge) {
+		return greenEdge.getType().getUpperBound() != -1
+				&& !greenPattern.getSrcTrgNodesCreatedByPattern().contains(greenEdge.getSrcNode());
+	}
+
+	private boolean violatesUpperBounds(String ruleName, TGGRuleEdge greenEdge, IMatch match,
+			IGreenPattern greenPattern) {
+		EObject matchedSrcNode = (EObject) match.get(greenEdge.getSrcNode().getName());
+		int upperBound = greenEdge.getType().getUpperBound();
+
+		if (greenEdge.getType().isMany()) {
+			Collection<?> existingObjects = (Collection<?>) matchedSrcNode.eGet(greenEdge.getType());
+			return existingObjects.size() + edgesOfThisTypeCreatedByRule(greenEdge.getSrcNode(), greenEdge.getType(),
+					greenPattern) > upperBound;
+		} else {
+			assert (upperBound == 1);
+			return matchedSrcNode.eGet(greenEdge.getType()) != null;
+		}
+	}
+
+	private long edgesOfThisTypeCreatedByRule(TGGRuleNode srcOfEdge, EReference ref, IGreenPattern greenPattern) {
+		return greenPattern.getSrcTrgEdgesCreatedByPattern().stream()//
+				.filter(e -> e.getSrcNode().equals(srcOfEdge))//
+				.filter(e -> e.getType().equals(ref))//
+				.count();
 	}
 
 	protected boolean someElementsAlreadyProcessed(String ruleName, IGreenPattern greenPattern, IMatch match) {

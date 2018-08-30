@@ -1,12 +1,15 @@
 package org.emoflon.ibex.tgg.compiler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
@@ -14,16 +17,27 @@ import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
+import IBeXLanguage.IBeXAttributeConstraint;
+import IBeXLanguage.IBeXAttributeValue;
+import IBeXLanguage.IBeXConstant;
 import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXEdge;
+import IBeXLanguage.IBeXEnumLiteral;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXPatternSet;
+import IBeXLanguage.IBeXRelation;
 import language.BindingType;
 import language.NAC;
+import language.TGGAttributeConstraintOperators;
+import language.TGGEnumExpression;
+import language.TGGExpression;
+import language.TGGInplaceAttributeExpression;
+import language.TGGLiteralExpression;
 import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -75,14 +89,14 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 		ibexPattern.setName(patternName);
 
 		// Transform nodes.
-		List<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
-		for (final TGGRuleNode node : nodes) {
+		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
+		for (final TGGRuleNode node : contextNodes) {
 			transformNode(ibexPattern, node);
 		}
 
 		// Transform attributes.
 		transformAttributeConditions(ibexPattern);
-		for (final TGGRuleNode node : nodes) {
+		for (final TGGRuleNode node : contextNodes) {
 			transformInNodeAttributeConditions(ibexPattern, node);
 		}
 
@@ -92,7 +106,7 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 		// Transform edges.
 		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
 		for (TGGRuleEdge edge : edges)
-			transformEdge(edge, ibexPattern);
+			transformEdge(edges, edge, ibexPattern);
 
 		addContextPattern(ibexPattern);
 
@@ -123,13 +137,13 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 		// Transform edges
 		List<TGGRuleEdge> edges = nac.getEdges();
 		for (TGGRuleEdge edge : edges)
-			transformEdge(edge, nacPattern);
+			transformEdge(edges, edge, nacPattern);
 
 		if (TGGModelUtils.ruleIsAxiom(rule)) {
 			nacPattern.setName(getAxiomNACPatternName(rule.getName(), nac.getName()));
 		} else {
 			nacPattern.setName(getNACPatternName(nac.getName()));
-			
+
 			// Invoke NAC from parent: nodes with/without pre-image are signature/local
 			IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 			invocation.setPositive(false);
@@ -158,7 +172,74 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 	}
 
 	private void transformInNodeAttributeConditions(IBeXContextPattern ibexPattern, TGGRuleNode node) {
-		// TODO Auto-generated method stub
+		Objects.requireNonNull(ibexPattern, "ibexContextPattern must not be null!");
+
+		Optional<IBeXNode> ibexNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, node.getName());
+		if (!ibexNode.isPresent()) {
+			logger.error("Node " + node.getName() + " is missing!");
+			return;
+		}
+
+		for (TGGInplaceAttributeExpression attrExp : node.getAttrExpr()) {
+			if (node.getBindingType().equals(BindingType.CONTEXT)) {
+				IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE
+						.createIBeXAttributeConstraint();
+				ibexAttrConstraint.setNode(ibexNode.get());
+				ibexAttrConstraint.setType(attrExp.getAttribute());
+
+				IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
+				ibexAttrConstraint.setRelation(ibexRelation);
+				convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
+						.ifPresent(value -> ibexAttrConstraint.setValue(value));
+				ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
+			}
+		}
+	}
+
+	private Optional<IBeXAttributeValue> convertValue(IBeXContextPattern ibexPattern, TGGExpression valueExpr,
+			EAttribute eAttribute) {
+		if (valueExpr instanceof TGGEnumExpression) {
+			return Optional.of(convertAttributeValue((TGGEnumExpression) valueExpr));
+		} else if (valueExpr instanceof TGGLiteralExpression) {
+			return Optional.of(convertAttributeValue((TGGLiteralExpression) valueExpr, eAttribute.getEAttributeType()));
+		} else {
+			logger.error("Invalid attribute value: " + valueExpr);
+			return Optional.empty();
+		}
+	}
+
+	private IBeXEnumLiteral convertAttributeValue(TGGEnumExpression valueExpr) {
+		IBeXEnumLiteral ibexEnumLiteral = IBeXLanguageFactory.eINSTANCE.createIBeXEnumLiteral();
+		ibexEnumLiteral.setLiteral(valueExpr.getLiteral());
+		return ibexEnumLiteral;
+	}
+
+	private static IBeXConstant convertAttributeValue(final TGGLiteralExpression valueExp, final EDataType type) {
+		String s = valueExp.getValue();
+		Object object = String2EPrimitive.convertLiteral(s, type);
+		IBeXConstant ibexConstant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
+		ibexConstant.setValue(object);
+		ibexConstant.setStringValue(object.toString());
+		return ibexConstant;
+	}
+
+	private IBeXRelation convertRelation(TGGAttributeConstraintOperators operator) {
+		switch (operator) {
+		case GREATER:
+			return IBeXRelation.GREATER;
+		case GR_EQUAL:
+			return IBeXRelation.GREATER_OR_EQUAL;
+		case EQUAL:
+			return IBeXRelation.EQUAL;
+		case UNEQUAL:
+			return IBeXRelation.UNEQUAL;
+		case LESSER:
+			return IBeXRelation.SMALLER;
+		case LE_EQUAL:
+			return IBeXRelation.SMALLER_OR_EQUAL;
+		default:
+			throw new IllegalArgumentException("Cannot convert operator: " + operator);
+		}
 	}
 
 	private void transformAttributeConditions(IBeXContextPattern ibexPattern) {
@@ -244,10 +325,25 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 		transformEdge(trgType, corr, trgOfCorr, ibexPattern);
 	}
 
-	private void transformEdge(TGGRuleEdge edge, IBeXContextPattern ibexPattern) {
+	private void transformEdge(Collection<TGGRuleEdge> allEdges, TGGRuleEdge edge, IBeXContextPattern ibexPattern) {
 		Objects.requireNonNull(edge, "The edge must not be null!");
 
+		// Skip if "greater" eOpposite exists
+		if (allEdges.stream().anyMatch(e -> isGreaterEOpposite(e, edge)))
+			return;
+
 		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern);
+	}
+
+	private boolean isGreaterEOpposite(TGGRuleEdge e1, TGGRuleEdge e2) {
+		if (e2.getType().equals(e1.getType().getEOpposite())) {
+			if (e1.getSrcNode().getName().equals(e2.getTrgNode().getName())
+					&& e1.getTrgNode().getName().equals(e2.getSrcNode().getName())) {
+				return e1.getType().getName().compareTo(e2.getType().getName()) >= 0;
+			}
+		}
+
+		return false;
 	}
 
 	private void transformEdge(EReference type, TGGRuleNode srcNode, TGGRuleNode trgNode,
