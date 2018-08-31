@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.defaults;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -179,7 +180,60 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				|| !allContextElementsAlreadyProcessed(match, greenPattern, ruleName)
 				|| violatesUpperBounds(ruleName, greenPattern, match)
 				|| violatesContainerSemantics(ruleName, greenPattern, match)
+				|| createsDoubleEdge(ruleName, greenPattern, match)
+				|| createsCyclicContainment(ruleName, greenPattern, match)
 				;
+	}
+
+	private boolean createsCyclicContainment(String ruleName, IGreenPattern greenPattern, IMatch match) {
+		for (TGGRuleEdge edge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
+			if(canCreateCyclicContainment(greenPattern, edge)) {
+				EObject src = (EObject) match.get(edge.getSrcNode().getName());
+				EObject trg = (EObject) match.get(edge.getTrgNode().getName());
+				
+				Iterator<?> itr = trg.eAllContents();
+				while(itr.hasNext()) {
+					if(itr.next().equals(src))
+						return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	private boolean canCreateCyclicContainment(IGreenPattern greenPattern, TGGRuleEdge edge) {
+		return isBlackNode(edge.getSrcNode(), greenPattern) && isBlackNode(edge.getTrgNode(), greenPattern) && edge.getType().isContainment();
+	}
+
+	private boolean createsDoubleEdge(String ruleName, IGreenPattern greenPattern, IMatch match) {
+		for (TGGRuleEdge edge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
+			if(canCreateDoubleEdge(greenPattern, edge)) {
+				EObject src = (EObject) match.get(edge.getSrcNode().getName());
+				EObject trg = (EObject) match.get(edge.getTrgNode().getName());
+				
+				EReference ref = edge.getType();
+				
+				if(ref.isMany()) {
+					Collection<?> objects = (Collection<?>) src.eGet(ref);
+					if(objects.contains(trg))
+						return true;
+				} else {
+					if(trg.equals(src.eGet(ref)))
+						return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	private boolean canCreateDoubleEdge(IGreenPattern greenPattern, TGGRuleEdge edge) {
+		return isBlackNode(edge.getSrcNode(), greenPattern) && isBlackNode(edge.getTrgNode(), greenPattern);
+	}
+
+	private boolean isBlackNode(TGGRuleNode srcNode, IGreenPattern greenPattern) {
+		return !greenPattern.getSrcTrgNodesCreatedByPattern().contains(srcNode);
 	}
 
 	private boolean violatesContainerSemantics(String ruleName, IGreenPattern greenPattern, IMatch match) {

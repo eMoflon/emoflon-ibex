@@ -1,10 +1,12 @@
 package org.emoflon.ibex.tgg.core.util;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import language.BindingType;
+import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -35,5 +37,12 @@ public class TGGModelUtils {
 	 */
 	public static boolean ruleIsAxiom(TGGRule rule) {
 		return rule.getNodes().stream().allMatch(n -> n.getBindingType() == BindingType.CREATE);
+	}
+
+	public static Collection<TGGRuleNode> getNodesByOperatorAndDomain(TGGRule rule, BindingType type, DomainType domain) {
+		return getNodesByOperator(rule, type)
+				.stream()
+				.filter(n -> n.getDomainType().equals(domain))
+				.collect(Collectors.toList());
 	}
 }

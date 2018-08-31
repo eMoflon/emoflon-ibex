@@ -1,6 +1,7 @@
 package org.emoflon.ibex.common.patterns;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
@@ -231,5 +233,11 @@ public class IBeXPatternUtils {
 		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSignatureSourceNode, ibexSignatureTargetNode, edgeType);
 		edgePattern.getLocalEdges().add(ibexEdge);
 		return Optional.of(edgePattern);
+	}
+
+	public static Collection<Optional<IBeXNode>> findIBexNodes(IBeXPattern ibexPattern, Collection<String> nodes) {
+		return nodes.stream()//
+				.map(name -> findIBeXNodeWithName(ibexPattern, name))
+				.collect(Collectors.toList());
 	}
 }
