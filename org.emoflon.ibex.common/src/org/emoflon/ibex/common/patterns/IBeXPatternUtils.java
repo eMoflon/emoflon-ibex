@@ -202,8 +202,8 @@ public class IBeXPatternUtils {
 	 * @param edgeType the EReference to create a pattern for
 	 * @return the created IBeXPattern
 	 */
-	public static Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType,
-			HashMap<String, IBeXContext> nameToPattern, Consumer<String> logError) {
+	public static <T extends IBeXContext> Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType,
+			HashMap<String, T> nameToPattern, Consumer<String> logError) {
 		Objects.requireNonNull(edgeType, "Edge type must not be null!");
 
 		EClass sourceType = edgeType.getEContainingClass();
@@ -216,7 +216,7 @@ public class IBeXPatternUtils {
 
 		String name = String.format("edge-%s-%s-%s", EcoreUtils.getFQN(sourceType).replace(".", "_"),
 				edgeType.getName(), EcoreUtils.getFQN(targetType).replace(".", "_"));
-		
+
 		if (nameToPattern.containsKey(name)) {
 			return Optional.of((IBeXContextPattern) nameToPattern.get(name));
 		}
@@ -237,7 +237,6 @@ public class IBeXPatternUtils {
 
 	public static Collection<Optional<IBeXNode>> findIBexNodes(IBeXPattern ibexPattern, Collection<String> nodes) {
 		return nodes.stream()//
-				.map(name -> findIBeXNodeWithName(ibexPattern, name))
-				.collect(Collectors.toList());
+				.map(name -> findIBeXNodeWithName(ibexPattern, name)).collect(Collectors.toList());
 	}
 }

@@ -36,6 +36,7 @@ import language.BindingType;
 import language.DomainType;
 import language.NAC;
 import language.TGGAttributeConstraintOperators;
+import language.TGGComplementRule;
 import language.TGGEnumExpression;
 import language.TGGExpression;
 import language.TGGInplaceAttributeExpression;
@@ -55,7 +56,7 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 	/**
 	 * Mapping between pattern names and the context patterns.
 	 */
-	private HashMap<String, IBeXContext> nameToPattern = new HashMap<>();
+	private HashMap<String, IBeXContextPattern> nameToPattern = new HashMap<>();
 
 	public ContextPatternTransformation(IbexOptions options) {
 		this.options = options;
@@ -69,16 +70,10 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 	@Override
 	public IBeXPatternSet transform() {
 		createModelGenPatterns();
-		createConsistencyPatterns();
 
 		// TODO: Handle other operationalisations
 
 		return createSortedPatternSet();
-	}
-
-	private void createConsistencyPatterns() {
-		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
-			createConsistencyPattern(rule);
 	}
 
 	private void createConsistencyPattern(TGGRule rule) {
@@ -142,10 +137,14 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 	}
 
 	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, TGGRule rule) {
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.SRC, RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_SRC);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.TRG, RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_TRG);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.SRC, RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_SRC);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.TRG, RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_TRG);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.SRC,
+				RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_SRC);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.TRG,
+				RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_TRG);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.SRC,
+				RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_SRC);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.TRG,
+				RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_TRG);
 	}
 
 	private void connectProtocolNode(IBeXContextPattern ibexPattern, TGGRule rule, IBeXNode protocolNode,
@@ -202,11 +201,69 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 		// NACs
 		for (NAC nac : rule.getNacs())
 			addContextPattern(transformNac(rule, nac, ibexPattern));
-		
-		// TODO:  If this is a complement rule, add a positive invocation to the consistency pattern of its kernel rule
+
+		// Complement rule
+		if (rule instanceof TGGComplementRule)
+			handleComplementRuleForGEN((TGGComplementRule) rule, ibexPattern);
 	}
 
-	private IBeXContext transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {
+	/**
+	 * Complement rules require a positive invocation to the consistency pattern of
+	 * their kernel rule.
+	 * 
+	 * @param rule
+	 * @param ibexPattern
+	 */
+	private void handleComplementRuleForGEN(TGGComplementRule crule, IBeXContextPattern ibexPattern) {
+		String nameOfKernelRule = crule.getKernel().getName();
+		createConsistencyPattern(crule.getKernel());
+		IBeXContextPattern consistencyPatternOfKernel = nameToPattern.get(getConsistencyPatternName(nameOfKernelRule));
+
+		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
+		invocation.setPositive(true);
+
+		// Creating mapping for invocation: missing signature nodes of the invoked
+		// pattern are added as local nodes to the invoking pattern
+		for (IBeXNode node : consistencyPatternOfKernel.getSignatureNodes()) {
+			Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, node.getName());
+
+			if (src.isPresent())
+				invocation.getMapping().put(src.get(), node);
+			else {
+				IBeXNode newLocalNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
+				newLocalNode.setName(node.getName());
+				newLocalNode.setType(node.getType());
+				ibexPattern.getLocalNodes().add(newLocalNode);
+
+				invocation.getMapping().put(newLocalNode, node);
+			}
+		}
+
+		// Add additional attribute condition for "closing the kernel"
+		Optional<IBeXNode> node = ibexPattern.getLocalNodes()//
+				.stream()//
+				.filter(n -> n.getName().equals(getProtocolNodeName(crule.getKernel().getName())))//
+				.findAny();
+
+		node.ifPresent(protocolNode -> {
+			IBeXAttributeConstraint tae = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
+			tae.setType(RuntimePackage.Literals.TGG_RULE_APPLICATION__AMALGAMATED);
+			tae.setRelation(IBeXRelation.EQUAL);
+
+			IBeXConstant le = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
+			le.setValue(false);
+			le.setStringValue("false");
+
+			tae.setValue(le);
+			tae.setNode(protocolNode);
+			ibexPattern.getAttributeConstraint().add(tae);
+		});
+
+		invocation.setInvokedPattern(consistencyPatternOfKernel);
+		ibexPattern.getInvocations().add(invocation);
+	}
+
+	private IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {
 		// Root pattern
 		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
 
@@ -343,7 +400,7 @@ public class ContextPatternTransformation implements IContextPatternTransformati
 	 * 
 	 * @param ibexPattern the context pattern to add, must not be <code>null</code>
 	 */
-	private void addContextPattern(final IBeXContext ibexPattern) {
+	private void addContextPattern(final IBeXContextPattern ibexPattern) {
 		Objects.requireNonNull(ibexPattern, "The pattern must not be null!");
 
 		ibexContextPatterns.add(ibexPattern);
