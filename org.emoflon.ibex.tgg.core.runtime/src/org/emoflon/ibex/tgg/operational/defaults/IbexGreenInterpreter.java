@@ -15,7 +15,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -83,17 +82,26 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return newObj;
 	}
 
+	private final static Optional<Pair<String, String>> getNodeAndAttrFromVarName(String varName) {
+		String[] node_attr = varName.split("__");
+
+		if (node_attr.length != 3)
+			return Optional.empty();
+
+		return Optional.of(Pair.of(node_attr[1], node_attr[2]));
+	}
+
 	private void applyAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
 		Collection<String> attributeNames = match.getParameterNames().stream() //
 				.filter(pname -> {
-					Optional<Pair<String, String>> o = IbexBasePattern.getNodeAndAttrFromVarName(pname);
+					Optional<Pair<String, String>> o = getNodeAndAttrFromVarName(pname);
 					Optional<Boolean> check = o.map(node_attr -> node_attr.getLeft().equals(node.getName()));
 					return check.orElse(false);
 				}).collect(Collectors.toList());
 
 		for (String node_attr : attributeNames) {
 			Object attributeValue = match.get(node_attr);
-			Pair<String, String> node_attr_pair = IbexBasePattern.getNodeAndAttrFromVarName(node_attr)
+			Pair<String, String> node_attr_pair = getNodeAndAttrFromVarName(node_attr)
 					.orElseThrow(() -> new IllegalStateException("Missing attribute value"));
 			String attributeName = node_attr_pair.getRight();
 
@@ -174,6 +182,12 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return Optional.of(comatch);
 	}
 
+	// FIXME[Anjorin]: In some cases it is uncertain if the match is to be directly
+	// discarded. In particular when a context element has not yet been processed,
+	// it might be that it becomes valid later on in the process. At the moment such
+	// a match is simply discarded by the operation but this is wrong. Better would
+	// be to explicitly create a delete event to inform the operation when a match
+	// is to be discarded.
 	private boolean matchIsInvalid(String ruleName, IGreenPattern greenPattern, IMatch match) {
 		return someElementsAlreadyProcessed(ruleName, greenPattern, match)
 				|| !conformTypesOfGreenNodes(match, greenPattern, ruleName)
@@ -181,50 +195,50 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				|| violatesUpperBounds(ruleName, greenPattern, match)
 				|| violatesContainerSemantics(ruleName, greenPattern, match)
 				|| createsDoubleEdge(ruleName, greenPattern, match)
-				|| createsCyclicContainment(ruleName, greenPattern, match)
-				;
+				|| createsCyclicContainment(ruleName, greenPattern, match);
 	}
 
 	private boolean createsCyclicContainment(String ruleName, IGreenPattern greenPattern, IMatch match) {
 		for (TGGRuleEdge edge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
-			if(canCreateCyclicContainment(greenPattern, edge)) {
+			if (canCreateCyclicContainment(greenPattern, edge)) {
 				EObject src = (EObject) match.get(edge.getSrcNode().getName());
 				EObject trg = (EObject) match.get(edge.getTrgNode().getName());
-				
+
 				Iterator<?> itr = trg.eAllContents();
-				while(itr.hasNext()) {
-					if(itr.next().equals(src))
+				while (itr.hasNext()) {
+					if (itr.next().equals(src))
 						return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
 	private boolean canCreateCyclicContainment(IGreenPattern greenPattern, TGGRuleEdge edge) {
-		return isBlackNode(edge.getSrcNode(), greenPattern) && isBlackNode(edge.getTrgNode(), greenPattern) && edge.getType().isContainment();
+		return isBlackNode(edge.getSrcNode(), greenPattern) && isBlackNode(edge.getTrgNode(), greenPattern)
+				&& edge.getType().isContainment();
 	}
 
 	private boolean createsDoubleEdge(String ruleName, IGreenPattern greenPattern, IMatch match) {
 		for (TGGRuleEdge edge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
-			if(canCreateDoubleEdge(greenPattern, edge)) {
+			if (canCreateDoubleEdge(greenPattern, edge)) {
 				EObject src = (EObject) match.get(edge.getSrcNode().getName());
 				EObject trg = (EObject) match.get(edge.getTrgNode().getName());
-				
+
 				EReference ref = edge.getType();
-				
-				if(ref.isMany()) {
+
+				if (ref.isMany()) {
 					Collection<?> objects = (Collection<?>) src.eGet(ref);
-					if(objects.contains(trg))
+					if (objects.contains(trg))
 						return true;
 				} else {
-					if(trg.equals(src.eGet(ref)))
+					if (trg.equals(src.eGet(ref)))
 						return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
 

@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -17,8 +17,7 @@ public class IbexOptions {
 
 	private FilterNACStrategy filterNACStrategy = FilterNACStrategy.FILTER_NACS;
 
-	//FIXME:  Switch back to true when attribute conditions are supported
-	private boolean blackInterpSupportsAttrConstrs = false;
+	private boolean blackInterpSupportsAttrConstrs = true;
 
 	/**
 	 * CorrContext nodes are local nodes in the SrcContext and TrgContext pattern

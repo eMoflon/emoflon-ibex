@@ -11,9 +11,7 @@ import java.util.stream.IntStream;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.GENAxiomNacPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
@@ -72,7 +70,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 */
 	@Override
 	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if (GENAxiomNacPattern.isGENAxiomNacPattern(match.getPatternName())) {
+		if (TGGPatternUtil.isGENAxiomNacPattern(match.getPatternName())) {
 			this.deleteAxiomMatchesForFoundNACs(match);
 		} else {
 			super.addMatch(match);
@@ -110,6 +108,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 			});
 
 			if (!comatch.isPresent()) {
+				// FIXME[Anjorin]: Dangerous to just discard in case context edges are pending
 				removeOperationalRuleMatch(match);
 				logger.debug("Unable to apply: " + match);
 			}
@@ -126,7 +125,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 */
 	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
 		Set<IMatch> matchesToRemove = new HashSet<>();
-		String axiomName = GENBlackPattern.getName(GENAxiomNacPattern.getAxiomName(match.getPatternName()));
+		String axiomName = TGGPatternUtil.getGENBlackPatternName(TGGPatternUtil.extractGENAxiomNacName(match.getPatternName()));
 		operationalMatchContainer.getMatches().stream().filter(m -> m.getPatternName().equals(axiomName)).forEach(m -> {
 			matchesToRemove.add(m);
 		});
@@ -150,7 +149,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 		// Close the kernel, so other complement rules cannot find this match anymore
 		TGGRuleApplication application = (TGGRuleApplication) comatch
-				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
+				.get(TGGPatternUtil.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		application.setAmalgamated(true);
 	}
 
@@ -209,10 +208,13 @@ public abstract class MODELGEN extends OperationalStrategy {
 	private void collectMatchesForAxioms() {
 		options.getFlattenedConcreteTGGRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom())
 				.forEach(r -> {
-					addOperationalRuleMatch(new SimpleMatch(GENBlackPattern.getName(r.getName())));
+					addOperationalRuleMatch(new SimpleMatch(TGGPatternUtil.getGENBlackPatternName(r.getName())));
 				});
 	}
 
+	// FIXME[Anjorin]: After latest updates to the green interpreter, I believe
+	// these checks can be removed here (they are performed by the interpreter
+	// anyway).
 	private void checkComplianceWithSchema(HashMap<String, Integer> complementRulesBounds) {
 		HashMap<EReference, Integer> edgesToBeCreated = new HashMap<EReference, Integer>();
 

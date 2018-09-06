@@ -10,13 +10,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.emoflon.ibex.tgg.compiler.patterns.cc.CCBlackPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.co.COBlackPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDFusedPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDOptBlackPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDBlackPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.FWDOptBlackPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
@@ -132,31 +126,31 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	}
 
 	private boolean isBWDBlackPattern(String patternName) {
-		return patternName.equals(BWDFusedPattern.getName(ruleName));
+		return patternName.equals(TGGPatternUtil.getBWDBlackPatternName(ruleName));
 	}
 
 	private boolean isFWDBlackPattern(String patternName) {
-		return patternName.equals(FWDBlackPattern.getName(ruleName));
+		return patternName.equals(TGGPatternUtil.getFWDBlackPatternName(ruleName));
 	}
 
 	private boolean isCOBlackPattern(String patternName) {
-		return patternName.equals(COBlackPattern.getName(ruleName));
+		return patternName.equals(TGGPatternUtil.getCOBlackPatternName(ruleName));
 	}
 
 	private boolean isCCBlackPattern(String patternName) {
-		return patternName.equals(CCBlackPattern.getName(ruleName));
+		return patternName.equals(TGGPatternUtil.getCCBlackPatternName(ruleName));
 	}
 
 	private boolean isGENBlackPattern(String patternName) {
-		return patternName.equals(GENBlackPattern.getName(ruleName));
+		return patternName.equals(TGGPatternUtil.getGENBlackPatternName(ruleName));
 	}
 
 	private boolean isFWDOptBlackPattern(String patternName) {
-		return patternName.equals(FWDOptBlackPattern.getName(ruleName));
+		return patternName.equals(TGGPatternUtil.getFWDOptBlackPatternName(ruleName));
 	}
 
 	private boolean isBWDOptBlackPattern(String patternName) {
-		return patternName.equals(BWDOptBlackPattern.getName(ruleName));
+		return patternName.equals(TGGPatternUtil.getBWDOptBlackPatternName(ruleName));
 	}
 
 	public IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {

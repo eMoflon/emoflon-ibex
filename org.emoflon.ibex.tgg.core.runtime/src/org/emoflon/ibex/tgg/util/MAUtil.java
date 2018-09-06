@@ -1,72 +1,62 @@
 package org.emoflon.ibex.tgg.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.common.AbstractCorrPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IBlackPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
 import language.TGGAttributeConstraint;
-import language.TGGAttributeConstraintOperators;
 import language.TGGAttributeExpression;
 import language.TGGAttributeVariable;
 import language.TGGComplementRule;
 import language.TGGEnumExpression;
-import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGParamValue;
 import language.TGGRule;
-import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
 
 public class MAUtil {
 	public static final String FUSED = "FFF";
 
-	public static void embedKernelRuleAppAndConsistencyPatternNodes(TGGComplementRule complementRule,
-			IBlackPattern pattern) {
-		pattern.getLocalNodes().add(createProtocolNodeForAmalgamation(complementRule));
-		embedKernelConsistencyPatternNodes(complementRule, pattern);
-	}
+//	public static void embedKernelRuleAppAndConsistencyPatternNodes(TGGComplementRule complementRule,
+//			IBlackPattern pattern) {
+//		pattern.getLocalNodes().add(createProtocolNodeForAmalgamation(complementRule));
+//		embedKernelConsistencyPatternNodes(complementRule, pattern);
+//	}
 
-	public static void embedKernelConsistencyPatternNodes(TGGComplementRule complementRule, IBlackPattern pattern) {
-		Collection<TGGRuleNode> kernelNodes = complementRule.getKernel().getNodes();
+//	public static void embedKernelConsistencyPatternNodes(TGGComplementRule complementRule, IBlackPattern pattern) {
+//		Collection<TGGRuleNode> kernelNodes = complementRule.getKernel().getNodes();
+//
+//		for (TGGRuleNode kernelNode : kernelNodes) {
+//			if (kernelNodeIsNotInComplement(kernelNode, pattern))
+//				pattern.getLocalNodes().add(createProxyNode(kernelNode));
+//		}
+//	}
 
-		for (TGGRuleNode kernelNode : kernelNodes) {
-			if (kernelNodeIsNotInComplement(kernelNode, pattern))
-				pattern.getLocalNodes().add(createProxyNode(kernelNode));
-		}
-	}
+//	private static boolean kernelNodeIsNotInComplement(TGGRuleElement kernelNode, IBlackPattern pattern) {
+//		return pattern.getSignatureNodes().stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
+//	}
 
-	private static boolean kernelNodeIsNotInComplement(TGGRuleElement kernelNode, IBlackPattern pattern) {
-		return pattern.getSignatureNodes().stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
-	}
-
-	public static TGGRuleNode createProtocolNodeForAmalgamation(TGGComplementRule rule) {
-		TGGRuleNode node = ConsistencyPattern.createProtocolNode(rule.getKernel());
-
-		TGGInplaceAttributeExpression tae = LanguageFactory.eINSTANCE.createTGGInplaceAttributeExpression();
-		tae.setAttribute(RuntimePackage.Literals.TGG_RULE_APPLICATION__AMALGAMATED);
-		tae.setOperator(TGGAttributeConstraintOperators.EQUAL);
-
-		TGGLiteralExpression le = LanguageFactory.eINSTANCE.createTGGLiteralExpression();
-		le.setValue("false");
-
-		tae.setValueExpr(le);
-		node.getAttrExpr().add(tae);
-
-		return node;
-	}
+//	public static TGGRuleNode createProtocolNodeForAmalgamation(TGGComplementRule rule) {
+//		TGGRuleNode node = ConsistencyPattern.createProtocolNode(rule.getKernel());
+//
+//		TGGInplaceAttributeExpression tae = LanguageFactory.eINSTANCE.createTGGInplaceAttributeExpression();
+//		tae.setAttribute(RuntimePackage.Literals.TGG_RULE_APPLICATION__AMALGAMATED);
+//		tae.setOperator(TGGAttributeConstraintOperators.EQUAL);
+//
+//		TGGLiteralExpression le = LanguageFactory.eINSTANCE.createTGGLiteralExpression();
+//		le.setValue("false");
+//
+//		tae.setValueExpr(le);
+//		node.getAttrExpr().add(tae);
+//
+//		return node;
+//	}
 
 	public static boolean isComplementRule(TGGRule rule) {
 		return rule instanceof TGGComplementRule;
@@ -113,16 +103,16 @@ public class MAUtil {
 		return edge;
 	}
 
-	public static Collection<TGGRuleEdge> getComplementCorrContextEdgesNotInKernel(TGGComplementRule rule,
-			Collection<TGGRuleNode> signatureNodes) {
-		ArrayList<TGGRuleEdge> edges = new ArrayList<>();
-
-		rule.getNodes().stream().filter(TGGRuleCorr.class::isInstance)
-				.filter(c -> c.getBindingType() == BindingType.CONTEXT).filter(c -> nodeIsNotInKernel(rule, c))
-				.map(TGGRuleCorr.class::cast).forEach(c -> AbstractCorrPattern.extractSourceAndTargetEdges(c, edges));
-
-		return edges.stream().map(e -> createProxyEdge(signatureNodes, e)).collect(Collectors.toList());
-	}
+//	public static Collection<TGGRuleEdge> getComplementCorrContextEdgesNotInKernel(TGGComplementRule rule,
+//			Collection<TGGRuleNode> signatureNodes) {
+//		ArrayList<TGGRuleEdge> edges = new ArrayList<>();
+//
+//		rule.getNodes().stream().filter(TGGRuleCorr.class::isInstance)
+//				.filter(c -> c.getBindingType() == BindingType.CONTEXT).filter(c -> nodeIsNotInKernel(rule, c))
+//				.map(TGGRuleCorr.class::cast).forEach(c -> AbstractCorrPattern.extractSourceAndTargetEdges(c, edges));
+//
+//		return edges.stream().map(e -> createProxyEdge(signatureNodes, e)).collect(Collectors.toList());
+//	}
 
 	public static void addComplementGivenDomainAndContextNodes(TGGComplementRule rule,
 			Collection<TGGRuleNode> signatureNodes, DomainType domain) {
@@ -137,26 +127,26 @@ public class MAUtil {
 		return rule.getKernel().getNodes().stream().noneMatch(re -> re.getName().equals(node.getName()));
 	}
 
-	public static void createMarkedInvocations(DomainType domain, TGGComplementRule rule, IBlackPattern pattern) {
-		for (TGGRuleElement e : pattern.getSignatureNodes()) {
-			TGGRuleNode node = (TGGRuleNode) e;
-			if (nodeIsNotInKernel(rule, node) && node.getDomainType().equals(domain)) {
-				IBlackPattern markedPattern = pattern.getPatternFactory().getLocalMarkedPattern(node.getDomainType());
-				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findAny().get();
-
-				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
-				mapping.put(node, invokedObject);
-
-				if (node.getBindingType() == BindingType.CREATE)
-					pattern.addNegativeInvocation(markedPattern, mapping);
-
-				else if (node.getBindingType() == BindingType.CONTEXT) {
-					pattern.addPositiveInvocation(markedPattern, mapping);
-				}
-
-			}
-		}
-	}
+//	public static void createMarkedInvocations(DomainType domain, TGGComplementRule rule, IBlackPattern pattern) {
+//		for (TGGRuleElement e : pattern.getSignatureNodes()) {
+//			TGGRuleNode node = (TGGRuleNode) e;
+//			if (nodeIsNotInKernel(rule, node) && node.getDomainType().equals(domain)) {
+//				IBlackPattern markedPattern = pattern.getPatternFactory().getLocalMarkedPattern(node.getDomainType());
+//				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findAny().get();
+//
+//				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
+//				mapping.put(node, invokedObject);
+//
+//				if (node.getBindingType() == BindingType.CREATE)
+//					pattern.addNegativeInvocation(markedPattern, mapping);
+//
+//				else if (node.getBindingType() == BindingType.CONTEXT) {
+//					pattern.addPositiveInvocation(markedPattern, mapping);
+//				}
+//
+//			}
+//		}
+//	}
 
 	public static String setFusedName(String complementName, String kernelName) {
 		return complementName + FUSED + kernelName;

@@ -6,8 +6,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
@@ -87,10 +86,10 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 		factory.getBlackTrgNodesInRule().forEach(n -> ra.getContextTrg().add((EObject) match.get(n.getName())));
 		
 		match.getParameterNames().stream()
-			.filter(n -> !IbexBasePattern.isAttrNode(n))
+			.filter(n -> !TGGPatternUtil.isAttrNode(n))
 			.forEach(n -> ra.getNodeMappings().put(n, (EObject) match.get(n)));
 
 		strategy.setIsRuleApplicationFinal(ra);
-		match.put(ConsistencyPattern.getProtocolNodeName(ruleName), ra);
+		match.put(TGGPatternUtil.getProtocolNodeName(ruleName), ra);
 	}
 }

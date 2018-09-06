@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -122,7 +122,7 @@ public abstract class CC extends OPT {
 		}
 
 		TGGRuleApplication application = (TGGRuleApplication) comatch
-				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
+				.get(TGGPatternUtil.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		application.setAmalgamated(true);
 	}
 

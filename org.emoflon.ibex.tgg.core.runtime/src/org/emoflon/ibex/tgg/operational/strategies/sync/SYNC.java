@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -264,17 +264,17 @@ public abstract class SYNC extends OperationalStrategy {
 
 		if (MAUtil.isFusedPatternMatch(ruleName)) {
 			protocolNode = (TGGRuleApplication) comatch
-					.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getKernelName(ruleName)));
+					.get(TGGPatternUtil.getProtocolNodeName(MAUtil.getKernelName(ruleName)));
 		} else {
 			// if it is a kernel or a complement rule
 			protocolNode = (TGGRuleApplication) comatch.get(
-					ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
+					TGGPatternUtil.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		}
 
 		if (isComplementMatch(ruleName)) {
 			// complement protocol has to have same ID as its kernel protocol
 			TGGRuleApplication kernelProtocolNode = (TGGRuleApplication) comatch.get(
-					ConsistencyPattern.getProtocolNodeName(getComplementRule(ruleName).get().getKernel().getName()));
+					TGGPatternUtil.getProtocolNodeName(getComplementRule(ruleName).get().getKernel().getName()));
 			localCounter = protocolNodeToID.get(kernelProtocolNode);
 		} else {
 			idCounter++;
@@ -286,7 +286,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 		if (MAUtil.isFusedPatternMatch(ruleName)) {
 			TGGRuleApplication complProtocolNode = ((TGGRuleApplication) comatch
-					.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getComplementName(ruleName))));
+					.get(TGGPatternUtil.getProtocolNodeName(MAUtil.getComplementName(ruleName))));
 			protocolNodeToID.put(complProtocolNode, localCounter);
 			fillInProtocolData(complProtocolNode, localCounter);
 		}
@@ -309,7 +309,7 @@ public abstract class SYNC extends OperationalStrategy {
 			return true;
 		}
 
-		EObject kernelProtocol = (EObject) match.get(ConsistencyPattern.getProtocolNodeName(cr.getKernel().getName()));
+		EObject kernelProtocol = (EObject) match.get(TGGPatternUtil.getProtocolNodeName(cr.getKernel().getName()));
 		Set<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
 
 		// If any node from bounded CR context was created after

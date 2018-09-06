@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
@@ -349,7 +349,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	public TGGRuleApplication getRuleApplicationNode(IMatch match) {
-		return (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(//
+		return (TGGRuleApplication) match.get(TGGPatternUtil.getProtocolNodeName(//
 				PatternSuffixes.removeSuffix(match.getPatternName())));
 	}
 
