@@ -28,7 +28,7 @@ abstract class MapWrapper<K, V> implements Map<K, V> {
 
 	@Override
 	public boolean containsValue(final Object arg0) {
-		return this.internalMap.containsValue(this.internalMap);
+		return this.internalMap.containsValue(arg0);
 	}
 
 	@Override
