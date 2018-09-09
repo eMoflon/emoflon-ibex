@@ -19,3 +19,4 @@ Export-Package: language,
  language.util,
  org.emoflon.ibex.tgg.core.transformation
 Automatic-Module-Name: org.emoflon.ibex.tgg.core.language
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
