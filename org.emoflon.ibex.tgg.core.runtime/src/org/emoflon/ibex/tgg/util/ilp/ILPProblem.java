@@ -9,17 +9,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap.Entry;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSets;
+import org.emoflon.ibex.common.collections.CollectionFactory;
+import org.emoflon.ibex.common.collections.IntSet;
+import org.emoflon.ibex.common.collections.IntToDoubleMap;
+import org.emoflon.ibex.common.collections.IntToIntMap;
+import org.emoflon.ibex.common.collections.IntToObjectMap;
+import org.emoflon.ibex.common.collections.ObjectToIntMap;
 
 /**
  * This class is used to define ILPProblems that can be given to
@@ -40,16 +35,16 @@ public class ILPProblem {
 	/**
 	 * Contains all variables that have been defined and the mapping to their names
 	 */
-	private final Object2IntOpenHashMap<String> variables = new Object2IntOpenHashMap<>();
+	private final ObjectToIntMap<String> variables = CollectionFactory.cfactory.createObjectToIntHashMap();
 	/**
 	 * Contains the mapping of variable names to variable IDs The additional map is
 	 * used for efficiency reasons
 	 */
-	private final Int2ObjectOpenHashMap<String> variableIDsToVariables = new Int2ObjectOpenHashMap<>();
+	private final IntToObjectMap<String> variableIDsToVariables = CollectionFactory.cfactory.createIntToObjectHashMap();
 	/**
 	 * Set of constraints that have been defined using addConstraint
 	 */
-	private final ObjectLinkedOpenHashSet<ILPConstraint> constraints = new ObjectLinkedOpenHashSet<>();
+	private final Set<ILPConstraint> constraints = CollectionFactory.cfactory.createLinkedObjectSet();
 	/**
 	 * The objective function that has been defined using setObjective
 	 */
@@ -58,24 +53,25 @@ public class ILPProblem {
 	/**
 	 * Contains pre-fixed variables the solver does not need to care about
 	 */
-	private final Int2IntLinkedOpenHashMap fixedVariableValues = new Int2IntLinkedOpenHashMap();
+	private final IntToIntMap fixedVariableValues = CollectionFactory.cfactory.createIntToIntLinkedMap();
 
 	/**
 	 * Contains the IDs of the unassigned variables
 	 */
-	private final IntOpenHashSet unfixedVariables = new IntOpenHashSet();
+	private final IntSet unfixedVariables = CollectionFactory.cfactory.createIntSet();
 
 	/**
 	 * Contains the IDs of the variables that have been fixed but have not yet been
 	 * removed from the constraints and objective
 	 */
-	private final IntLinkedOpenHashSet lazyFixedVariables = new IntLinkedOpenHashSet();
+	private final IntSet lazyFixedVariables = CollectionFactory.cfactory.createLinkedIntSet();
 
 	/**
 	 * Contains for each variable the list of constraints the variable is contained
 	 * in. This makes fixing variables very efficient, but costs memory
 	 */
-	private final Int2ObjectOpenHashMap<LinkedList<ILPConstraint>> variableIdsToContainingConstraints = new Int2ObjectOpenHashMap<>();
+	private final IntToObjectMap<LinkedList<ILPConstraint>> variableIdsToContainingConstraints = CollectionFactory.cfactory
+			.createIntToObjectHashMap();
 
 	/**
 	 * Creates a new ILPProblem. Instances can be obtained using the
@@ -91,7 +87,7 @@ public class ILPProblem {
 	 * @return the variables that have been defined
 	 */
 	public Collection<String> getVariables() {
-		return ObjectSets.unmodifiable(this.variables.keySet());
+		return Collections.unmodifiableSet(this.variables.keySet());
 	}
 
 	/**
@@ -102,7 +98,7 @@ public class ILPProblem {
 	 *
 	 * @return a HashMap containing the variable mapping of fixed variables.
 	 */
-	protected Int2IntMap getInternalFixedVariableValues() {
+	protected IntToIntMap getInternalFixedVariableValues() {
 		return this.fixedVariableValues;
 	}
 
@@ -112,7 +108,7 @@ public class ILPProblem {
 	 *
 	 * @return the HashSet of fixed bu not yet applied variables
 	 */
-	protected IntLinkedOpenHashSet getLazyFixedVariables() {
+	protected IntSet getLazyFixedVariables() {
 		return this.lazyFixedVariables;
 	}
 
@@ -131,9 +127,8 @@ public class ILPProblem {
 	 * accessing constraints or objective
 	 */
 	protected void applyLazyFixedVariables() {
-		if (this.lazyFixedVariables.isEmpty()) {
+		if (this.lazyFixedVariables.isEmpty())
 			return;
-		}
 
 		LinkedList<ILPConstraint> modifiedConstraints = new LinkedList<>();
 		for (int id : this.lazyFixedVariables) {
@@ -182,14 +177,13 @@ public class ILPProblem {
 	 */
 	protected void fixVariable(final int variableId, final int value) {
 		if (this.fixedVariableValues.containsKey(variableId)) {
-			if (this.fixedVariableValues.get(variableId) == value) {
+			if (this.fixedVariableValues.get(variableId) == value)
 				// unchanged
 				return;
-			} else {
+			else
 				throw new RuntimeException("The variable " + this.getVariable(variableId) + "cannot be fixed to value "
 						+ value + " as it already been fixed to a different value: "
 						+ this.fixedVariableValues.get(variableId));
-			}
 		}
 		this.unfixedVariables.remove(variableId);
 		this.fixedVariableValues.put(variableId, value);
@@ -207,9 +201,8 @@ public class ILPProblem {
 	 *         be registered with a new ID
 	 */
 	int getVariableId(final String variable) {
-		if (!this.variables.containsKey(variable)) {
+		if (!this.variables.containsKey(variable))
 			return this.createNewVariable(variable);
-		}
 		return this.variables.getInt(variable);
 	}
 
@@ -260,7 +253,8 @@ public class ILPProblem {
 	 *                            solution
 	 * @return the created solution
 	 */
-	ILPSolution createILPSolution(final Int2IntOpenHashMap variableAllocations, final boolean optimal, final double solutionValue) {
+	ILPSolution createILPSolution(final IntToIntMap variableAllocations, final boolean optimal,
+			final double solutionValue) {
 		return new ILPSolution(variableAllocations, optimal, solutionValue);
 	}
 
@@ -275,8 +269,8 @@ public class ILPProblem {
 	 * @param name             The name of the constraint. Naming constraints is not
 	 *                         supported by all solvers.
 	 */
-	public ILPConstraint addConstraint(final ILPLinearExpression linearExpression, final Comparator comparator, final double value,
-			final String name) {
+	public ILPConstraint addConstraint(final ILPLinearExpression linearExpression, final Comparator comparator,
+			final double value, final String name) {
 		ILPConstraint constr = new ILPConstraint(linearExpression, comparator, value, name);
 		constr.removeFixedVariables();
 		for (int id : constr.linearExpression.terms.keySet()) {
@@ -379,8 +373,8 @@ public class ILPProblem {
 		for (ILPConstraint constraint : this.constraints) {
 			b.append("\n" + constraint);
 		}
-		for (Entry entry : this.fixedVariableValues.int2IntEntrySet()) {
-			b.append("\n" + this.getVariable(entry.getIntKey()) + " = " + entry.getIntValue());
+		for (java.util.Map.Entry<Integer, Integer> entry : this.fixedVariableValues.entrySet()) {
+			b.append("\n" + this.getVariable(entry.getKey()) + " = " + entry.getValue());
 		}
 		return b.toString();
 	}
@@ -498,7 +492,8 @@ public class ILPProblem {
 		 * @param comparator       Comparator (e.g. <=)
 		 * @param value            The value on the right side of the inequation
 		 */
-		ILPConstraint(final ILPLinearExpression linearExpression, final Comparator comparator, final double value, final String name) {
+		ILPConstraint(final ILPLinearExpression linearExpression, final Comparator comparator, final double value,
+				final String name) {
 			this.linearExpression = linearExpression;
 			this.comparator = comparator;
 			this.value = value;
@@ -552,9 +547,8 @@ public class ILPProblem {
 					feasible = 0 <= this.value;
 					break;
 				}
-				if (!feasible) {
+				if (!feasible)
 					throw new RuntimeException("The problem is infeasible: " + this.toString());
-				}
 			}
 		}
 
@@ -785,26 +779,20 @@ public class ILPProblem {
 		 */
 		@Override
 		public boolean equals(final Object obj) {
-			if (this == obj) {
+			if (this == obj)
 				return true;
-			}
-			if (obj == null) {
+			if (obj == null)
 				return false;
-			}
-			if (this.getClass() != obj.getClass()) {
+			if (this.getClass() != obj.getClass())
 				return false;
-			}
 			ILPObjective other = (ILPObjective) obj;
 			if (this.linearExpression == null) {
-				if (other.linearExpression != null) {
+				if (other.linearExpression != null)
 					return false;
-				}
-			} else if (!this.linearExpression.equals(other.linearExpression)) {
+			} else if (!this.linearExpression.equals(other.linearExpression))
 				return false;
-			}
-			if (this.objectiveOperation != other.objectiveOperation) {
+			if (this.objectiveOperation != other.objectiveOperation)
 				return false;
-			}
 			return true;
 		}
 	}
@@ -818,7 +806,7 @@ public class ILPProblem {
 		/**
 		 * The terms the linear expression uses
 		 */
-		private final Int2DoubleOpenHashMap terms = new Int2DoubleOpenHashMap();
+		private final IntToDoubleMap terms = CollectionFactory.cfactory.createIntToDoubleMap();
 
 		/**
 		 * Adds a term (variable * coefficient) to the linear expression
@@ -876,12 +864,10 @@ public class ILPProblem {
 		 */
 		private String getTermString(final int variableId) {
 			double coefficient = this.terms.get(variableId);
-			if (Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(1.0)) {
+			if (Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(1.0))
 				return ILPProblem.this.getVariable(variableId);
-			}
-			if (Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(-1.0)) {
+			if (Double.doubleToLongBits(coefficient) == Double.doubleToLongBits(-1.0))
 				return "-" + ILPProblem.this.getVariable(variableId);
-			}
 			return "(" + coefficient + " * " + ILPProblem.this.getVariable(variableId) + ")";
 		}
 
@@ -910,9 +896,8 @@ public class ILPProblem {
 		 * @return the coefficient, or 0 if no term for this variable has been defined
 		 */
 		double getCoefficient(final int variableId) {
-			if (this.terms.containsKey(variableId)) {
+			if (this.terms.containsKey(variableId))
 				return this.terms.get(variableId);
-			}
 			return 0;
 		}
 
@@ -964,12 +949,10 @@ public class ILPProblem {
 				if (this.terms.size() != other.terms.size())
 					return false;
 				for (int variableID : this.terms.keySet()) {
-					if (!other.terms.containsKey(variableID)) {
+					if (!other.terms.containsKey(variableID))
 						return false;
-					}
-					if (this.terms.get(variableID) != other.terms.get(variableID)) {
+					if (this.terms.get(variableID) != other.terms.get(variableID))
 						return false;
-					}
 				}
 			}
 			return true;
@@ -989,7 +972,7 @@ public class ILPProblem {
 		/**
 		 * Mapping of variables to the found solutions
 		 */
-		private final Int2IntOpenHashMap variableAllocations;
+		private final IntToIntMap variableAllocations;
 		/**
 		 * Whether the found solution is optimal
 		 */
@@ -1006,7 +989,7 @@ public class ILPProblem {
 		 * @param variableAllocations Mapping of variables to the found solutions
 		 * @param optimal             Whether the found solution is optimal
 		 */
-		private ILPSolution(final Int2IntOpenHashMap variableAllocations, final boolean optimal, final double solutionValue) {
+		private ILPSolution(final IntToIntMap variableAllocations, final boolean optimal, final double solutionValue) {
 			super();
 			this.variableAllocations = variableAllocations;
 			this.optimal = optimal;
@@ -1030,9 +1013,8 @@ public class ILPProblem {
 		 * @return
 		 */
 		int getVariable(final int variableId) {
-			if (ILPProblem.this.fixedVariableValues.containsKey(variableId)) {
+			if (ILPProblem.this.fixedVariableValues.containsKey(variableId))
 				return ILPProblem.this.fixedVariableValues.get(variableId);
-			}
 			return this.variableAllocations.get(variableId);
 		}
 
@@ -1098,26 +1080,20 @@ public class ILPProblem {
 		 */
 		@Override
 		public boolean equals(final Object obj) {
-			if (this == obj) {
+			if (this == obj)
 				return true;
-			}
-			if (obj == null) {
+			if (obj == null)
 				return false;
-			}
-			if (this.getClass() != obj.getClass()) {
+			if (this.getClass() != obj.getClass())
 				return false;
-			}
 			ILPSolution other = (ILPSolution) obj;
-			if (Double.doubleToLongBits(this.solutionValue) != Double.doubleToLongBits(other.solutionValue)) {
+			if (Double.doubleToLongBits(this.solutionValue) != Double.doubleToLongBits(other.solutionValue))
 				return false;
-			}
 			if (this.variableAllocations == null) {
-				if (other.variableAllocations != null) {
+				if (other.variableAllocations != null)
 					return false;
-				}
-			} else if (!this.variableAllocations.equals(other.variableAllocations)) {
+			} else if (!this.variableAllocations.equals(other.variableAllocations))
 				return false;
-			}
 			return true;
 		}
 	}

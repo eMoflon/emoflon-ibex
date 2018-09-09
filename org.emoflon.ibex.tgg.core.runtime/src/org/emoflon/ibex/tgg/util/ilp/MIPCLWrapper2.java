@@ -9,6 +9,8 @@ import java.util.Set;
 
 import javax.naming.directory.InvalidAttributeValueException;
 
+import org.emoflon.ibex.common.collections.CollectionFactory;
+import org.emoflon.ibex.common.collections.IntToIntMap;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
@@ -17,7 +19,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import by.bsu.JVmipcl.LP;
 import by.bsu.JVmipcl.MIP;
 import by.bsu.JVmipshell.LPshell;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 final class MIPCLWrapper2 extends ILPSolver {
 
@@ -33,8 +34,7 @@ final class MIPCLWrapper2 extends ILPSolver {
 	/**
 	 * Adds the specified path to the java library path
 	 *
-	 * @param pathToAdd
-	 *            the path to add
+	 * @param pathToAdd the path to add
 	 * @throws Exception
 	 */
 	private static void addLibraryPath(final String pathToAdd) throws Exception {
@@ -47,9 +47,8 @@ final class MIPCLWrapper2 extends ILPSolver {
 
 		// check if the path to add is already present
 		for (String path : paths) {
-			if (path.equals(pathToAdd)) {
+			if (path.equals(pathToAdd))
 				return;
-			}
 		}
 
 		// add the new path
@@ -63,8 +62,8 @@ final class MIPCLWrapper2 extends ILPSolver {
 
 	private MIP solver;
 
-	private final Int2IntOpenHashMap variableIdToMIPCLVar = new Int2IntOpenHashMap();
-	private final Int2IntOpenHashMap MIPCLVarTovariableId = new Int2IntOpenHashMap();
+	private final IntToIntMap variableIdToMIPCLVar = CollectionFactory.cfactory.createIntToIntMap();
+	private final IntToIntMap MIPCLVarTovariableId = CollectionFactory.cfactory.createIntToIntMap();
 
 	/**
 	 * This setting defines the variable range of variables registered at GLPK
@@ -74,10 +73,8 @@ final class MIPCLWrapper2 extends ILPSolver {
 	/**
 	 * Creates a new CBCWrapper to solve the problem
 	 *
-	 * @param ilpProblem
-	 *            The ILP to solve
-	 * @param onlyBinaryVariables
-	 *            Whether the problem contains only binary variables
+	 * @param ilpProblem          The ILP to solve
+	 * @param onlyBinaryVariables Whether the problem contains only binary variables
 	 */
 	MIPCLWrapper2(final ILPProblem ilpProblem, final boolean onlyBinaryVariables) {
 		super(ilpProblem);
@@ -87,9 +84,8 @@ final class MIPCLWrapper2 extends ILPSolver {
 	@Override
 	public ILPSolution solveILP() throws Exception {
 		ILPSolver.logger.info(this.ilpProblem.getProblemInformation());
-		if (this.ilpProblem.getVariableIdsOfUnfixedVariables().size() < 1) {
-			return this.ilpProblem.createILPSolution(new Int2IntOpenHashMap(), true, 0);
-		}
+		if (this.ilpProblem.getVariableIdsOfUnfixedVariables().size() < 1)
+			return this.ilpProblem.createILPSolution(CollectionFactory.cfactory.createIntToIntMap(), true, 0);
 		long currentTimeout = this.ilpProblem.getVariableIdsOfUnfixedVariables().size();
 		currentTimeout = MIPCLWrapper2.MIN_TIMEOUT + (long) Math.ceil(Math.pow(1.16, Math.sqrt(currentTimeout)));
 		if (currentTimeout < 0) {
@@ -112,7 +108,7 @@ final class MIPCLWrapper2 extends ILPSolver {
 		Set<Integer> variables = this.ilpProblem.getVariableIdsOfUnfixedVariables();
 		Collection<ILPConstraint> constraints = this.ilpProblem.getConstraints();
 
-		this.solver.openMatrix(constraints.size(), variables.size(), constraints.size()*variables.size());
+		this.solver.openMatrix(constraints.size(), variables.size(), constraints.size() * variables.size());
 
 		int varCounter = 0;
 		for (int variableId : variables) {
@@ -135,8 +131,7 @@ final class MIPCLWrapper2 extends ILPSolver {
 	/**
 	 * Solves the model using the CBC wrapper
 	 *
-	 * @param timeout
-	 *            Maximum time to take for solving the problem
+	 * @param timeout Maximum time to take for solving the problem
 	 * @return the result
 	 * @throws IOException
 	 */
@@ -145,14 +140,13 @@ final class MIPCLWrapper2 extends ILPSolver {
 		File tempFile = File.createTempFile("ilpSol_", ".mipcl");
 		tempFile.deleteOnExit();
 		this.solver.optimize(timeout, this.getSolutionTolerance() * 100, tempFile.getAbsolutePath());
-		//		this.solver.printSolution("sol.mipcl");
+		// this.solver.printSolution("sol.mipcl");
 	}
 
 	/**
 	 * Retrieves the solution from the solver
 	 *
-	 * @param result
-	 *            Result of the solving operation
+	 * @param result Result of the solving operation
 	 * @return the variable mapping and objective value
 	 * @throws InvalidAttributeValueException
 	 */
@@ -164,7 +158,7 @@ final class MIPCLWrapper2 extends ILPSolver {
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
 
-		Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
+		IntToIntMap variableSolutions = CollectionFactory.cfactory.createIntToIntMap();
 		double optimum = this.solver.getObjVal();
 		ILPSolver.logger.debug("MIPCL found solution: " + optimum + " - Optimal: " + optimal);
 
@@ -174,12 +168,11 @@ final class MIPCLWrapper2 extends ILPSolver {
 
 		this.solver.dispose();
 
-		for(int index = 0; index < varHandles.length; index++) {
+		for (int index = 0; index < varHandles.length; index++) {
 			int variableID = this.MIPCLVarTovariableId.get(varHandles[index]);
 			double value = values[index];
-			if (value != 0 && value != 1) {
+			if (value != 0 && value != 1)
 				throw new InvalidAttributeValueException("Solution may only be 0 or 1");
-			}
 			variableSolutions.put(variableID, (int) value);
 		}
 
@@ -191,10 +184,8 @@ final class MIPCLWrapper2 extends ILPSolver {
 	/**
 	 * Registers a variable at the solver
 	 *
-	 * @param variable
-	 *            name of the variable
-	 * @param variableID
-	 *            ID of the variable
+	 * @param variable   name of the variable
+	 * @param variableID ID of the variable
 	 */
 	private void registerVariable(final String variable, final int variableID, final int counter) {
 		if (this.onlyBinaryVariables) {
@@ -209,8 +200,7 @@ final class MIPCLWrapper2 extends ILPSolver {
 	/**
 	 * Registers a constraint at the solver
 	 *
-	 * @param constraint
-	 *            the constrint to register
+	 * @param constraint the constrint to register
 	 */
 	private void registerConstraint(final ILPConstraint constraint, final int counter) {
 		Object[] linSum = this.createLinSum(constraint.getLinearExpression());
@@ -235,8 +225,7 @@ final class MIPCLWrapper2 extends ILPSolver {
 	/**
 	 * Registers the objective at the solver
 	 *
-	 * @param objective
-	 *            the objective to register
+	 * @param objective the objective to register
 	 */
 	private void registerObjective(final ILPObjective objective) {
 		for (int variableId : objective.getLinearExpression().getVariables()) {
@@ -268,6 +257,6 @@ final class MIPCLWrapper2 extends ILPSolver {
 			values[counter] = coefficient;
 			counter++;
 		}
-		return new Object[] {columns, values};
+		return new Object[] { columns, values };
 	}
 }

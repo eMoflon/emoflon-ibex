@@ -1,47 +1,37 @@
 package org.emoflon.ibex.common.collections.fastutil;
 
-import java.util.Collection;
-import java.util.Set;
-
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-public class FastUtilIntToObjectMap<T> extends IntToObjectMap<T> {
-	private Int2ObjectOpenHashMap<T> internal = new Int2ObjectOpenHashMap<>();
+class FastUtilIntToObjectMap<T> extends IntToObjectMap<T> {
 
-	@Override
-	public T get(int i) {
-		return internal.get(i);
+	FastUtilIntToObjectMap() {
+		this.setInternalMap(new Int2ObjectOpenHashMap<T>());
 	}
 
 	@Override
-	public void put(int i, T o) {
-		internal.put(i, o);
+	protected Int2ObjectOpenHashMap<T> getInternalMap() {
+		return (Int2ObjectOpenHashMap<T>) super.getInternalMap();
 	}
 
 	@Override
-	public Set<Integer> keySet() {
-		return internal.keySet();
+	public T get(final int i) {
+		return this.getInternalMap().get(i);
 	}
 
 	@Override
-	public int size() {
-		return internal.size();
+	public T put(final int i, final T o) {
+		return this.getInternalMap().put(i, o);
 	}
 
 	@Override
-	public Collection<T> values() {
-		return internal.values();
+	public boolean containsKey(final int i) {
+		return this.getInternalMap().containsKey(i);
 	}
 
 	@Override
-	public boolean containsKey(int i) {
-		return internal.containsKey(i);
-	}
-
-	@Override
-	public boolean containsValue(T o) {
-		return internal.containsValue(o);
+	public T remove(final int k) {
+		return this.getInternalMap().remove(k);
 	}
 }
