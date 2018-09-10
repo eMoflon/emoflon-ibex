@@ -7,13 +7,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
-import org.emoflon.ibex.tgg.util.String2EPrimitive;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXConstant;
@@ -32,10 +32,12 @@ import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
 public class GENPatternTransformation {
-	ContextPatternTransformation parent;
+	private ContextPatternTransformation parent;
+	private IbexOptions options;
 
-	public GENPatternTransformation(ContextPatternTransformation parent) {
+	public GENPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
 		this.parent = parent;
+		this.options = options;
 	}
 
 	public void transform(TGGRule rule) {
@@ -86,9 +88,7 @@ public class GENPatternTransformation {
 	 * @param ibexPattern
 	 */
 	private void handleComplementRuleForGEN(TGGComplementRule crule, IBeXContextPattern ibexPattern) {
-		String nameOfKernelRule = crule.getKernel().getName();
-		createConsistencyPattern(crule.getKernel());
-		IBeXContextPattern consistencyPatternOfKernel = parent.getPattern(getConsistencyPatternName(nameOfKernelRule));
+		IBeXContextPattern consistencyPatternOfKernel = createConsistencyPattern(crule.getKernel(), crule);
 
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(true);
@@ -134,79 +134,61 @@ public class GENPatternTransformation {
 		ibexPattern.getInvocations().add(invocation);
 	}
 
-	private void createConsistencyPattern(TGGRule rule) {
+	private IBeXContextPattern createConsistencyPattern(TGGRule rule, TGGComplementRule crule) {
 		String patternName = getConsistencyPatternName(rule.getName());
 
 		if (parent.isTransformed(patternName))
-			return;
+			return parent.getPattern(patternName);
 
 		// Root pattern
 		IBeXContextPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
 		ibexPattern.setName(patternName);
 
 		// Transform nodes
-		List<TGGRuleNode> contextNodes = rule.getNodes();
-		for (final TGGRuleNode node : contextNodes) {
-			parent.transformNode(ibexPattern, node);
-		}
-
-		// Transform attributes
-		for (final TGGRuleNode node : contextNodes) {
-			parent.transformInNodeAttributeConditions(ibexPattern, node);
-		}
+		rule.getNodes().stream()//
+				.forEach(n -> {
+					parent.transformNode(ibexPattern, n);
+				});
 
 		// Ensure that all nodes must be disjoint even if they have the same type
 		EditorToIBeXPatternHelper.addInjectivityConstraints(ibexPattern);
-
-		// Transform edges
-		List<TGGRuleEdge> edges = rule.getEdges();
-		for (TGGRuleEdge edge : edges)
-			parent.transformEdge(edges, edge, ibexPattern);
 
 		// Create protocol node and connections to nodes in pattern
 		createAndConnectProtocolNode(rule, ibexPattern);
 
 		parent.addContextPattern(ibexPattern, rule);
+
+		return ibexPattern;
 	}
 
-	private void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
+	private void createAndConnectProtocolNode(TGGRule kernel, IBeXContextPattern ibexPattern) {
 		IBeXNode protocolNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-		protocolNode.setName(TGGPatternUtil.getProtocolNodeName(rule.getName()));
-		protocolNode.setType(RuntimePackage.eINSTANCE.getTGGRuleApplication());
+		protocolNode.setName(TGGPatternUtil.getProtocolNodeName(kernel.getName()));
+		EClass type = (EClass) options.getCorrMetamodel()
+				.getEClassifier(TGGModelUtils.getMarkerTypeName(kernel.getName()));
+		protocolNode.setType(type);
 		ibexPattern.getSignatureNodes().add(protocolNode);
 
-		IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
-		ibexAttrConstraint.setNode(protocolNode);
-		ibexAttrConstraint.setType(RuntimePackage.Literals.TGG_RULE_APPLICATION__NAME);
-
-		ibexAttrConstraint.setRelation(IBeXRelation.EQUAL);
-		String s = "\"" + rule.getName() + "\"";
-		Object object = String2EPrimitive.convertLiteral(s, EcorePackage.Literals.ESTRING);
-		IBeXConstant ibexConstant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
-		ibexConstant.setValue(object);
-		ibexConstant.setStringValue(object.toString());
-		ibexAttrConstraint.setValue(ibexConstant);
-
-		ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
-
-		connectProtocolNode(ibexPattern, protocolNode, rule);
+		connectProtocolNode(ibexPattern, protocolNode, kernel);
 	}
 
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, TGGRule rule) {
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.SRC,
-				RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_SRC);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.TRG,
-				RuntimePackage.Literals.TGG_RULE_APPLICATION__CONTEXT_TRG);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.SRC,
-				RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_SRC);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.TRG,
-				RuntimePackage.Literals.TGG_RULE_APPLICATION__CREATED_TRG);
+	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, TGGRule kernel) {
+		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CONTEXT, DomainType.SRC);
+		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CONTEXT, DomainType.TRG);
+		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CREATE, DomainType.SRC);
+		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CREATE, DomainType.TRG);
+		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CONTEXT, DomainType.CORR);
+		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CREATE, DomainType.CORR);
 	}
 
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, TGGRule rule, IBeXNode protocolNode,
-			BindingType type, DomainType domain, EReference connectionType) {
-		Collection<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperatorAndDomain(rule, type, domain);
-		for (TGGRuleNode node : nodes)
-			parent.transformEdge(connectionType, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern);
+	private void connectProtocolNode(IBeXContextPattern ibexPattern, TGGRule kernel, IBeXNode protocolNode,
+			BindingType type, DomainType domain) {
+		Collection<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperatorAndDomain(kernel, type, domain);
+
+		for (TGGRuleNode node : nodes) {
+			EReference ref = (EReference) protocolNode.getType()
+					.getEStructuralFeature(TGGModelUtils.getMarkerRefName(type, domain, node.getName()));
+			parent.transformEdge(ref, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern);
+		}
 	}
 }

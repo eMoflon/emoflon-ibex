@@ -21,16 +21,6 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import language.TGGComplementRule;
 import runtime.TGGRuleApplication;
 
-/**
- * Different than other OperationalStrategy subtypes, MODELGEN (i) additionally
- * has a stop criterion (see MODELGENStopCriterion) (ii) does not remove
- * processed matches from its MatchContainer in processOperationalRuleMatches()
- * (iii) gets matches randomly from MatchContainer (iv) does not create a
- * protocol for scalability
- * 
- * @author leblebici
- *
- */
 public abstract class MODELGEN extends OperationalStrategy {
 
 	protected MODELGENStopCriterion stopCriterion;

@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.eclipse.emf.ecore.EPackage;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -14,28 +14,7 @@ import language.TGG;
 import language.TGGRule;
 
 public class IbexOptions {
-
-	private FilterNACStrategy filterNACStrategy = FilterNACStrategy.FILTER_NACS;
-
 	private boolean blackInterpSupportsAttrConstrs = true;
-
-	/**
-	 * CorrContext nodes are local nodes in the SrcContext and TrgContext pattern
-	 */
-	private boolean setCorrContextNodesAsLocalNodes = false;
-
-	/**
-	 * EdgePatterns are only created if the number of edges in this pattern is at
-	 * least this constant
-	 */
-	private int minimumNumberOfEdgesToCreateEdgePatterns = 3;
-
-	/**
-	 * Indicates if the edge patterns should be typed including attribute conditions
-	 * and sub types
-	 */
-	private boolean stronglyTypedEdgedPatterns = true;
-
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -45,8 +24,8 @@ public class IbexOptions {
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private SupportedILPSolver ilpSolver;
-	
 	private boolean repairAttributes;
+	private EPackage corrMetamodel;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
@@ -133,10 +112,6 @@ public class IbexOptions {
 				.collect(Collectors.toList());
 	}
 
-	public FilterNACStrategy getFilterNACStrategy() {
-		return filterNACStrategy;
-	}
-
 	public IbexOptions setConstraintProvider(RuntimeTGGAttrConstraintProvider constraintProvider) {
 		this.constraintProvider = constraintProvider;
 		return this;
@@ -163,38 +138,6 @@ public class IbexOptions {
 		blackInterpSupportsAttrConstrs = value;
 	}
 
-	public int minimumNumberOfEdgesToCreateEdgePatterns() {
-		return minimumNumberOfEdgesToCreateEdgePatterns;
-	}
-
-	public IbexOptions minimumNumberOfEdgesToCreateEdgePatterns(int n) {
-		minimumNumberOfEdgesToCreateEdgePatterns = n;
-		return this;
-	}
-	
-	public boolean setCorrContextNodesAsLocalNodes() {
-		return setCorrContextNodesAsLocalNodes;
-	}
-	
-	public IbexOptions setCorrContextNodesAsLocalNodes(boolean value) {
-		setCorrContextNodesAsLocalNodes = value;
-		return this;
-	}
-
-	public boolean stronglyTypedEdgedPatterns() {
-		return stronglyTypedEdgedPatterns;
-	}
-
-	public IbexOptions stronglyTypedEdgedPatterns(boolean value) {
-		stronglyTypedEdgedPatterns = value;
-		return this;
-	}	
-	
-	public IbexOptions setFilterNACStrategy(FilterNACStrategy filterNACStrategy) {
-		this.filterNACStrategy = filterNACStrategy;
-		return this;
-	}
-
 	/**
 	 * @return the ilpSolver
 	 */
@@ -209,5 +152,13 @@ public class IbexOptions {
 	public IbexOptions setIlpSolver(SupportedILPSolver ilpSolver) {
 		this.ilpSolver = ilpSolver;
 		return this;
+	}
+
+	public void setCorrMetamodel(EPackage pack) {
+		this.corrMetamodel = pack;
+	}
+	
+	public EPackage getCorrMetamodel() {
+		return this.corrMetamodel;
 	}
 }

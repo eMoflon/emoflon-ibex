@@ -1,10 +1,11 @@
-package org.emoflon.ibex.tgg.core.transformation;
+package org.emoflon.ibex.tgg.compiler.transformations;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,11 +15,15 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.emoflon.ibex.tgg.core.transformation.ParamValueSet;
+import org.emoflon.ibex.tgg.core.transformation.TGGProject;
+import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
@@ -41,6 +46,7 @@ import org.moflon.tgg.mosl.tgg.LocalVariable;
 import org.moflon.tgg.mosl.tgg.Nac;
 import org.moflon.tgg.mosl.tgg.ObjectVariablePattern;
 import org.moflon.tgg.mosl.tgg.Operator;
+import org.moflon.tgg.mosl.tgg.OperatorPattern;
 import org.moflon.tgg.mosl.tgg.Param;
 import org.moflon.tgg.mosl.tgg.ParamValue;
 import org.moflon.tgg.mosl.tgg.Rule;
@@ -71,6 +77,7 @@ import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import runtime.RuntimePackage;
 
 public class EditorTGGtoInternalTGG {
 
@@ -78,13 +85,14 @@ public class EditorTGGtoInternalTGG {
 	private LanguageFactory tggFactory = LanguageFactory.eINSTANCE;
 	private HashMap<EObject, EObject> xtextToTGG = new HashMap<>();
 	private HashMap<EObject, EObject> tggToXtext = new HashMap<>();
-	private HashMap<String, EObject> xTextCorrToCorrClass = new HashMap<>();
+	private HashMap<String, EClass> xTextCorrToCorrClass = new HashMap<>();
 
 	private static final Logger logger = Logger.getLogger(EditorTGGtoInternalTGG.class);
 	public static final String INTERNAL_TGG_MODEL = EditorTGGtoInternalTGG.class.getName();
 
-	private TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG, TripleGraphGrammarFile flattenedXtextTGG, IProject project) {
-		EPackage corrPackage = createCorrModel(xtextTGG, project);
+	private TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG, TripleGraphGrammarFile flattenedXtextTGG,
+			IProject project) {
+		EPackage corrPackage = createCorrModel(flattenedXtextTGG, project);
 		TGG tgg = createTGG(xtextTGG);
 		TGG flattenedTgg = createTGG(flattenedXtextTGG);
 		tgg.setCorr(corrPackage);
@@ -94,7 +102,8 @@ public class EditorTGGtoInternalTGG {
 
 	public Optional<TGGProject> generateInternalModels(TripleGraphGrammarFile xtextParsedTGG,
 			TripleGraphGrammarFile flattenedXtextParsedTGG, IProject project) {
-		Optional<TGGProject> tggProject = Optional.of(convertXtextTGG(xtextParsedTGG, flattenedXtextParsedTGG, project));
+		Optional<TGGProject> tggProject = Optional
+				.of(convertXtextTGG(xtextParsedTGG, flattenedXtextParsedTGG, project));
 
 		tggProject.ifPresent(p -> {
 			try {
@@ -502,7 +511,60 @@ public class EditorTGGtoInternalTGG {
 			}
 		}
 
+		for (Rule rule : xtextTGG.getRules()) {
+			if (!rule.isAbstractRule()) {
+				corrModel.getEClassifiers().add(createMarkerClass(rule));
+			}
+		}
+
+		for (ComplementRule rule : xtextTGG.getComplementRules()) {
+			corrModel.getEClassifiers().add(createMarkerClass(rule));
+		}
+
 		return corrModel;
+	}
+
+	private EClassifier createMarkerClass(ComplementRule rule) {
+		return createMarkerClass(rule.getName(), rule.getSourcePatterns(), rule.getCorrespondencePatterns(),
+				rule.getTargetPatterns());
+	}
+
+	private EClassifier createMarkerClass(Rule rule) {
+		return createMarkerClass(rule.getName(), rule.getSourcePatterns(), rule.getCorrespondencePatterns(),
+				rule.getTargetPatterns());
+	}
+
+	private EClassifier createMarkerClass(String ruleName, List<ObjectVariablePattern> sourcePatterns,
+			List<CorrVariablePattern> corrPatterns, List<ObjectVariablePattern> targetPatterns) {
+		EClass markerClass = ecoreFactory.createEClass();
+		markerClass.setName(TGGModelUtils.getMarkerTypeName(ruleName));
+		markerClass.getESuperTypes().add(RuntimePackage.eINSTANCE.getTGGRuleApplication());
+
+		for (ObjectVariablePattern ovPattern : sourcePatterns)
+			markerClass.getEStructuralFeatures()
+					.add(createMarkerRef(ovPattern, ovPattern.getName(), ovPattern.getType(), DomainType.SRC));
+
+		for (ObjectVariablePattern ovPattern : targetPatterns)
+			markerClass.getEStructuralFeatures()
+					.add(createMarkerRef(ovPattern, ovPattern.getName(), ovPattern.getType(), DomainType.TRG));
+
+		for (CorrVariablePattern ovPattern : corrPatterns)
+			markerClass.getEStructuralFeatures().add(createMarkerRef(ovPattern, ovPattern.getName(),
+					xTextCorrToCorrClass.get(ovPattern.getType().getName()), DomainType.CORR));
+
+		return markerClass;
+	}
+
+	private EReference createMarkerRef(OperatorPattern ovPattern, String name, EClass type, DomainType domain) {
+		EReference ref = ecoreFactory.createEReference();
+		BindingType binding = ovPattern.getOp() != null && "++".equals(ovPattern.getOp().getValue())
+				? BindingType.CREATE
+				: BindingType.CONTEXT;
+		ref.setName(TGGModelUtils.getMarkerRefName(binding, domain, name));
+		ref.setLowerBound(1);
+		ref.setUpperBound(1);
+		ref.setEType(type);
+		return ref;
 	}
 
 	private EClass createEClass(CorrType ct) {

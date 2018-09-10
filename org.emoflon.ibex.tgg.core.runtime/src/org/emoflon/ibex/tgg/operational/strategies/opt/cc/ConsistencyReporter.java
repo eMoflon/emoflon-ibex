@@ -94,22 +94,23 @@ public class ConsistencyReporter {
 				TGGRuleApplication ra = (TGGRuleApplication) c;
 				Collection<EObject> createdNodes;
 
-				switch (domain) {
-				case SRC:
-					createdNodes = ra.getCreatedSrc();
-					break;
-				case TRG:
-					createdNodes = ra.getCreatedTrg();
-					break;
-				case CORR:
-					createdNodes = ra.getCreatedCorr();
-					break;
-				default:
-					createdNodes = null;
-					break;
-				}
-
-				nodes.removeAll(createdNodes);
+				//FIXME:  Protocol is now typed
+//				switch (domain) {
+//				case SRC:
+//					createdNodes = ra.getCreatedSrc();
+//					break;
+//				case TRG:
+//					createdNodes = ra.getCreatedTrg();
+//					break;
+//				case CORR:
+//					createdNodes = ra.getCreatedCorr();
+//					break;
+//				default:
+//					createdNodes = null;
+//					break;
+//				}
+//
+//				nodes.removeAll(createdNodes);
 			}
 
 		});
@@ -139,21 +140,22 @@ public class ConsistencyReporter {
 			}
 		}
 
-		protocol.getContents().forEach(c -> {
-			if (c instanceof TGGRuleApplication) {
-				TGGRuleApplication ra = (TGGRuleApplication) c;
-				Collection<TGGRuleEdge> specificationEdges = domain == Domain.SRC
-						? strategy.getGreenFactory(ra.getName()).getGreenSrcEdgesInRule()
-						: strategy.getGreenFactory(ra.getName()).getGreenTrgEdgesInRule();
-				for (TGGRuleEdge specificationEdge : specificationEdges) {
-					EObject srcOfEdge = ra.getNodeMappings().get(specificationEdge.getSrcNode().getName());
-					EObject trgOfEdge = ra.getNodeMappings().get(specificationEdge.getTrgNode().getName());
-					EReference refOfEdge = specificationEdge.getType();
-					EMFEdge edge = new EMFEdge(srcOfEdge, trgOfEdge, refOfEdge);
-					edges.remove(edge);
-				}
-			}
-		});
+		//FIXME: Protocol is now typed
+//		protocol.getContents().forEach(c -> {
+//			if (c instanceof TGGRuleApplication) {
+//				TGGRuleApplication ra = (TGGRuleApplication) c;
+//				Collection<TGGRuleEdge> specificationEdges = domain == Domain.SRC
+//						? strategy.getGreenFactory(ra.getName()).getGreenSrcEdgesInRule()
+//						: strategy.getGreenFactory(ra.getName()).getGreenTrgEdgesInRule();
+//				for (TGGRuleEdge specificationEdge : specificationEdges) {
+//					EObject srcOfEdge = ra.getNodeMappings().get(specificationEdge.getSrcNode().getName());
+//					EObject trgOfEdge = ra.getNodeMappings().get(specificationEdge.getTrgNode().getName());
+//					EReference refOfEdge = specificationEdge.getType();
+//					EMFEdge edge = new EMFEdge(srcOfEdge, trgOfEdge, refOfEdge);
+//					edges.remove(edge);
+//				}
+//			}
+//		});
 		return edges;
 	}
 

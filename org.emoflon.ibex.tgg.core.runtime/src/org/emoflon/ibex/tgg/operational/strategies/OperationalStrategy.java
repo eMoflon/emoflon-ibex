@@ -48,6 +48,7 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import language.impl.LanguagePackageImpl;
 import runtime.RuntimeFactory;
+import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
@@ -148,6 +149,12 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		rs.getPackageRegistry().put(res.getURI().toString(), pack);
 		rs.getPackageRegistry().put(pack.getNsURI(), pack);
 		rs.getResources().remove(res);
+		return pack;
+	}
+	
+	public EPackage loadAndRegisterCorrMetamodel(String workspaceRelativePath) throws IOException {
+		EPackage pack = loadAndRegisterMetamodel(workspaceRelativePath);
+		options.setCorrMetamodel(pack);
 		return pack;
 	}
 
@@ -391,8 +398,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected void initialiseBlackInterpreter() throws IOException {
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
-			blackInterpreter.initialise(rs.getPackageRegistry(), this);
-			blackInterpreter.setOptions(options);
+			blackInterpreter.initialise(options, rs.getPackageRegistry(), this);
 		} catch (RuntimeException e) {
 			initExcep = Optional.of(e);
 		}
@@ -435,15 +441,14 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected void reinitializeBlackInterpreter(IBlackInterpreter newBlackInterpreter) {
 		this.removeBlackInterpreter();
 		this.blackInterpreter = newBlackInterpreter;
-		this.blackInterpreter.initialise(rs.getPackageRegistry(), this);
-		this.blackInterpreter.setOptions(options);
+		this.blackInterpreter.initialise(options, rs.getPackageRegistry(), this);
 		this.blackInterpreter.monitor(rs);
 	}
 
 	/***** Multi-Amalgamation *****/
 
-	public void setIsRuleApplicationFinal(TGGRuleApplication ra) {
-		ra.setFinal(true);
+	public void setIsRuleApplicationFinal(EObject ruleApplication) {
+		ruleApplication.eSet(RuntimePackage.eINSTANCE.getTGGRuleApplication_Final(), true);
 	}
 
 	protected Optional<TGGComplementRule> getComplementRule(String ruleName) {

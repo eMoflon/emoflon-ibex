@@ -23,39 +23,8 @@ import language.TGGRuleNode;
 public class MAUtil {
 	public static final String FUSED = "FFF";
 
-//	public static void embedKernelRuleAppAndConsistencyPatternNodes(TGGComplementRule complementRule,
-//			IBlackPattern pattern) {
-//		pattern.getLocalNodes().add(createProtocolNodeForAmalgamation(complementRule));
-//		embedKernelConsistencyPatternNodes(complementRule, pattern);
-//	}
-
-//	public static void embedKernelConsistencyPatternNodes(TGGComplementRule complementRule, IBlackPattern pattern) {
-//		Collection<TGGRuleNode> kernelNodes = complementRule.getKernel().getNodes();
-//
-//		for (TGGRuleNode kernelNode : kernelNodes) {
-//			if (kernelNodeIsNotInComplement(kernelNode, pattern))
-//				pattern.getLocalNodes().add(createProxyNode(kernelNode));
-//		}
-//	}
-
 //	private static boolean kernelNodeIsNotInComplement(TGGRuleElement kernelNode, IBlackPattern pattern) {
 //		return pattern.getSignatureNodes().stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
-//	}
-
-//	public static TGGRuleNode createProtocolNodeForAmalgamation(TGGComplementRule rule) {
-//		TGGRuleNode node = ConsistencyPattern.createProtocolNode(rule.getKernel());
-//
-//		TGGInplaceAttributeExpression tae = LanguageFactory.eINSTANCE.createTGGInplaceAttributeExpression();
-//		tae.setAttribute(RuntimePackage.Literals.TGG_RULE_APPLICATION__AMALGAMATED);
-//		tae.setOperator(TGGAttributeConstraintOperators.EQUAL);
-//
-//		TGGLiteralExpression le = LanguageFactory.eINSTANCE.createTGGLiteralExpression();
-//		le.setValue("false");
-//
-//		tae.setValueExpr(le);
-//		node.getAttrExpr().add(tae);
-//
-//		return node;
 //	}
 
 	public static boolean isComplementRule(TGGRule rule) {

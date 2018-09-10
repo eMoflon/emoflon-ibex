@@ -20,6 +20,8 @@ import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import IBeXLanguage.IBeXAttributeConstraint;
@@ -58,13 +60,16 @@ public class ContextPatternTransformation {
 	 */
 	private HashMap<String, IBeXContextPattern> nameToPattern = new HashMap<>();
 	private Map<IBeXContextPattern, TGGNamedElement> patternToRuleMap = new HashMap<>();
+	private OperationalStrategy strategy;
 
-	public ContextPatternTransformation(IbexOptions options) {
+	public ContextPatternTransformation(IbexOptions options, OperationalStrategy strategy) {
 		this.options = options;
+		this.strategy = strategy;
 	}
 
 	public IBeXPatternSet transform() {
-		createModelGenPatterns();
+		if(strategy instanceof MODELGEN)
+			createModelGenPatterns();
 
 		// TODO: Handle other operationalisations
 
@@ -89,7 +94,7 @@ public class ContextPatternTransformation {
 	}
 
 	private void createModelGenPattern(TGGRule rule) {
-		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this);
+		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this, options);
 		genPatternTransformer.transform(rule);
 	}
 

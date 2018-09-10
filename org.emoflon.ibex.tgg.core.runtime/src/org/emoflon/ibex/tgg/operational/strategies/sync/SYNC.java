@@ -293,9 +293,10 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	protected void fillInProtocolData(TGGRuleApplication protocolNode, int protocolNodeID) {
-		protocolNode.getCreatedSrc().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
-		protocolNode.getCreatedTrg().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
-		protocolNode.getCreatedCorr().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
+		//FIXME: Protocol is now typed!
+//		protocolNode.getCreatedSrc().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
+//		protocolNode.getCreatedTrg().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
+//		protocolNode.getCreatedCorr().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
 	}
 
 	protected boolean isComplementRuleApplicable(IMatch match, String ruleName) {
