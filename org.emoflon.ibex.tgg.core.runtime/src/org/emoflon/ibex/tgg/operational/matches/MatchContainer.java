@@ -8,8 +8,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.TGG;
 import language.TGGComplementRule;
@@ -21,12 +23,13 @@ import language.TGGRule;
  */
 public class MatchContainer {
 	private Map<IMatch, String> matchToRuleName;
-
+	private OperationalStrategy op;
 	private Random random;
 
-	public MatchContainer(TGG tgg) {
+	public MatchContainer(TGG tgg, OperationalStrategy op) {
 		this.matchToRuleName = cfactory.createObjectToObjectLinkedHashMap();
 		this.random = new Random();
+		this.op = op;
 	}
 
 	public void addMatch(IMatch match) {
@@ -43,20 +46,29 @@ public class MatchContainer {
 	}
 
 	public void removeMatches(Collection<IMatch> matches) {
-		matches.forEach(this::removeMatch);
+		matches.removeAll(matches);
+	}
+
+	//FIXME:  Make more efficient by using precedence graph?
+	private Set<IMatch> getReadyMatches() {
+		return matchToRuleName.keySet()
+				.stream()
+				.filter(m -> op.matchIsReady(m))
+				.collect(Collectors.toSet());
 	}
 
 	public IMatch getNext() {
-		return matchToRuleName.keySet().iterator().next();
+		return getReadyMatches().iterator().next();
 	}
 
 	public Set<IMatch> getMatches() {
-		return matchToRuleName.keySet();
+		return getReadyMatches();
 	}
 
 	public IMatch getNextRandom() {
-		Iterator<IMatch> it = matchToRuleName.keySet().iterator();
-		int randomIndex = random.nextInt(matchToRuleName.size());
+		Set<IMatch> ready = getReadyMatches();
+		Iterator<IMatch> it = ready.iterator();
+		int randomIndex = random.nextInt(ready.size());
 		for (int count = 0; count < randomIndex; count++) {
 			it.next();
 		}
@@ -64,7 +76,7 @@ public class MatchContainer {
 	}
 
 	public IMatch getNextRandomKernel(EList<TGGRule> rules) {
-		Iterator<IMatch> it = matchToRuleName.keySet().iterator();
+		Iterator<IMatch> it = getReadyMatches().iterator();
 
 		try {
 			while (it.hasNext()) {
@@ -91,5 +103,9 @@ public class MatchContainer {
 		if (isFusedPatternMatch(match.getPatternName()))
 			return match.getPatternName();
 		return matchToRuleName.get(match);
+	}
+
+	public void removeAllMatches() {
+		matchToRuleName.clear();
 	}
 }

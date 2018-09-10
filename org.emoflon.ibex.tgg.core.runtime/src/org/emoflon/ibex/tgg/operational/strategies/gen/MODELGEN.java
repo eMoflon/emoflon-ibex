@@ -8,19 +8,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-import language.BindingType;
 import language.TGGComplementRule;
-import language.TGGRule;
-import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
 /**
@@ -108,13 +106,21 @@ public abstract class MODELGEN extends OperationalStrategy {
 			});
 
 			if (!comatch.isPresent()) {
-				// FIXME[Anjorin]: Dangerous to just discard in case context edges are pending
 				removeOperationalRuleMatch(match);
 				logger.debug("Unable to apply: " + match);
 			}
 		}
 
 		return true;
+	}
+
+	// FIXME: Make more efficient by using precedence graph?
+	@Override
+	public boolean matchIsReady(IMatch m) {
+		String ruleName = operationalMatchContainer.getRuleName(m);
+		IGreenPatternFactory factory = getGreenFactory(ruleName);
+		IGreenPattern greenPattern = factory.create(m.getPatternName());
+		return allContextElementsAlreadyProcessed(m, greenPattern, ruleName);
 	}
 
 	/**
@@ -125,7 +131,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 */
 	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
 		Set<IMatch> matchesToRemove = new HashSet<>();
-		String axiomName = TGGPatternUtil.getGENBlackPatternName(TGGPatternUtil.extractGENAxiomNacName(match.getPatternName()));
+		String axiomName = TGGPatternUtil
+				.getGENBlackPatternName(TGGPatternUtil.extractGENAxiomNacName(match.getPatternName()));
 		operationalMatchContainer.getMatches().stream().filter(m -> m.getPatternName().equals(axiomName)).forEach(m -> {
 			matchesToRemove.add(m);
 		});
@@ -157,8 +164,6 @@ public abstract class MODELGEN extends OperationalStrategy {
 		Set<String> uniqueRulesNames = complementRuleMatches.stream()
 				.map(m -> PatternSuffixes.removeSuffix(m.getPatternName())).distinct().collect(Collectors.toSet());
 		HashMap<String, Integer> complementRulesBounds = updatePolicy.getNumberOfApplications(uniqueRulesNames);
-
-		checkComplianceWithSchema(complementRulesBounds);
 
 		return complementRulesBounds;
 	}
@@ -211,48 +216,4 @@ public abstract class MODELGEN extends OperationalStrategy {
 					addOperationalRuleMatch(new SimpleMatch(TGGPatternUtil.getGENBlackPatternName(r.getName())));
 				});
 	}
-
-	// FIXME[Anjorin]: After latest updates to the green interpreter, I believe
-	// these checks can be removed here (they are performed by the interpreter
-	// anyway).
-	private void checkComplianceWithSchema(HashMap<String, Integer> complementRulesBounds) {
-		HashMap<EReference, Integer> edgesToBeCreated = new HashMap<EReference, Integer>();
-
-		complementRulesBounds.keySet().stream().forEach(name -> {
-			if ((getComplementRule(name).get()).isBounded()) {
-				processBoundedRuleLimits(name, edgesToBeCreated);
-			} else {
-				getRelevantEdges(getComplementRule(name).get()).stream().forEach(e -> {
-					if (!edgesToBeCreated.containsKey(e.getType())) {
-						edgesToBeCreated.put(e.getType(), complementRulesBounds.get(name));
-					} else {
-						edgesToBeCreated.put(e.getType(),
-								edgesToBeCreated.get(e.getType()) + complementRulesBounds.get(name));
-					}
-				});
-			}
-		});
-		edgesToBeCreated.keySet().stream()
-				.filter(e -> e.getUpperBound() != -1 && edgesToBeCreated.get(e) > e.getUpperBound()).findAny()
-				.ifPresent(e -> {
-					throw new IllegalArgumentException("Cardinalities for " + e.getName() + " are violated");
-				});
-	}
-
-	private void processBoundedRuleLimits(String name, HashMap<EReference, Integer> edgesToBeCreated) {
-		// find all matches for bounded rule collected by operational match container
-		int number = (int) findAllComplementRuleMatches().stream().filter(m -> m.getPatternName().contains(name))
-				.count();
-		getRelevantEdges(getComplementRule(name).get()).stream().forEach(e -> {
-			edgesToBeCreated.put(e.getType(), number);
-		});
-	}
-
-	private Set<TGGRuleEdge> getRelevantEdges(TGGRule rule) {
-		Set<TGGRuleEdge> relevantEdges = rule.getEdges().stream().filter(
-				e -> e.getBindingType() == BindingType.CREATE && e.getSrcNode().getBindingType() == BindingType.CONTEXT)
-				.collect(Collectors.toSet());
-		return relevantEdges;
-	}
-
 }

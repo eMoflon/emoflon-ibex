@@ -182,16 +182,9 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return Optional.of(comatch);
 	}
 
-	// FIXME[Anjorin]: In some cases it is uncertain if the match is to be directly
-	// discarded. In particular when a context element has not yet been processed,
-	// it might be that it becomes valid later on in the process. At the moment such
-	// a match is simply discarded by the operation but this is wrong. Better would
-	// be to explicitly create a delete event to inform the operation when a match
-	// is to be discarded.
 	private boolean matchIsInvalid(String ruleName, IGreenPattern greenPattern, IMatch match) {
 		return someElementsAlreadyProcessed(ruleName, greenPattern, match)
-				|| !conformTypesOfGreenNodes(match, greenPattern, ruleName)
-				|| !allContextElementsAlreadyProcessed(match, greenPattern, ruleName)
+				|| violatesConformTypesOfGreenNodes(match, greenPattern, ruleName)
 				|| violatesUpperBounds(ruleName, greenPattern, match)
 				|| violatesContainerSemantics(ruleName, greenPattern, match)
 				|| createsDoubleEdge(ruleName, greenPattern, match)
@@ -317,16 +310,24 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return operationalStrategy.someEdgesAlreadyProcessed(greenPattern.getEdgesMarkedByPattern(), match);
 	}
 
-	protected boolean conformTypesOfGreenNodes(IMatch match, IGreenPattern greenPattern, String ruleName) {
+	/**
+	 * Default pattern matching respects Java inheritance and this is usually
+	 * desirable behaviour. For TGGs, however, operations should only match for
+	 * context elements of the exact same type in the original TGG rule. To avoid
+	 * violating correctness, therefore, we have to ensure with this method that
+	 * this condition holds for every match.
+	 * 
+	 * @param match
+	 * @param greenPattern
+	 * @param ruleName
+	 * @return
+	 */
+	protected boolean violatesConformTypesOfGreenNodes(IMatch match, IGreenPattern greenPattern, String ruleName) {
 		for (TGGRuleNode gsn : greenPattern.getNodesMarkedByPattern()) {
 			if (gsn.getType() != ((EObject) match.get(gsn.getName())).eClass())
-				return false;
+				return true;
 		}
 
-		return true;
-	}
-
-	protected boolean allContextElementsAlreadyProcessed(IMatch match, IGreenPattern greenPattern, String ruleName) {
-		return operationalStrategy.allEdgesAlreadyProcessed(greenPattern.getMarkedContextEdges(), match);
+		return false;
 	}
 }

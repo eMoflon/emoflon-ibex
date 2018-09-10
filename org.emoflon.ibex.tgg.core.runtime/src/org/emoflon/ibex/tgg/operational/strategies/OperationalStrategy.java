@@ -184,7 +184,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		rs.getResources().remove(res);
 		rs.getResources().remove(flattenedRes);
 
-		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG());
+		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG(), this);
 
 		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
 	}
@@ -319,7 +319,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
-
 		
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.getPatternName());
@@ -422,9 +421,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		blackInterpreter = null;
 		rs.getAllContents().forEachRemaining(c -> c.eAdapters().clear());
 		rs.eAdapters().clear();
-		Object[] matches = operationalMatchContainer.getMatches().toArray();
-		for (Object m : matches)
-			this.operationalMatchContainer.removeMatch((IMatch) m);
+		operationalMatchContainer.removeAllMatches();
 
 		logger.debug("Removed black interpreter");
 	}
@@ -499,7 +496,16 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return factories.get(ruleName);
 	}
 
-	/***** Edge bookkeeping *****/
+	/***** bookkeeping *****/
+	
+	protected boolean allContextElementsAlreadyProcessed(IMatch match, IGreenPattern greenPattern, String ruleName) {
+		return allEdgesAlreadyProcessed(greenPattern.getMarkedContextEdges(), match);
+	}
+	
+	//FIXME:  Make abstract to force overriding in subclasses
+	public boolean matchIsReady(IMatch m) {
+		return true;
+	}
 
 	public EMFEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
 		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
