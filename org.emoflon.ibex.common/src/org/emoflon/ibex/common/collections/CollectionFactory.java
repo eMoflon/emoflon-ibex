@@ -8,6 +8,7 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 
 public abstract class CollectionFactory {
 	public static final CollectionFactory cfactory = new FastUtilCollectionFactory();
+	//public static final CollectionFactory cfactory = new JDKCollectionFactory();
 	
 	public abstract  <K,V> Map<K, V> createObjectToObjectLinkedHashMap();
 	public abstract <K,V> Map<K, V> createObjectToObjectHashMap();

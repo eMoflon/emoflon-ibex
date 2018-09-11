@@ -15,14 +15,12 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.TGGComplementRule;
 import runtime.TGGRuleApplication;
 
 public abstract class MODELGEN extends OperationalStrategy {
-
 	protected MODELGENStopCriterion stopCriterion;
 
 	public MODELGEN(IbexOptions options) throws IOException {
@@ -97,20 +95,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 			if (!comatch.isPresent()) {
 				removeOperationalRuleMatch(match);
-				logger.debug("Unable to apply: " + match);
+				logger.debug("Unable to apply: " + ruleName);
 			}
 		}
 
 		return true;
-	}
-
-	// FIXME: Make more efficient by using precedence graph?
-	@Override
-	public boolean matchIsReady(IMatch m) {
-		String ruleName = operationalMatchContainer.getRuleName(m);
-		IGreenPatternFactory factory = getGreenFactory(ruleName);
-		IGreenPattern greenPattern = factory.create(m.getPatternName());
-		return allContextElementsAlreadyProcessed(m, greenPattern, ruleName);
 	}
 
 	/**
@@ -205,5 +194,10 @@ public abstract class MODELGEN extends OperationalStrategy {
 				.forEach(r -> {
 					addOperationalRuleMatch(new SimpleMatch(TGGPatternUtil.getGENBlackPatternName(r.getName())));
 				});
+	}
+
+	@Override
+	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
+		createMarkers(greenPattern, cm, ruleName);
 	}
 }

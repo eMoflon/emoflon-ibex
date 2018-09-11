@@ -183,8 +183,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private boolean matchIsInvalid(String ruleName, IGreenPattern greenPattern, IMatch match) {
-		return someElementsAlreadyProcessed(ruleName, greenPattern, match)
-				|| violatesConformTypesOfGreenNodes(match, greenPattern, ruleName)
+		return violatesConformTypesOfGreenNodes(match, greenPattern, ruleName)
 				|| violatesUpperBounds(ruleName, greenPattern, match)
 				|| violatesContainerSemantics(ruleName, greenPattern, match)
 				|| createsDoubleEdge(ruleName, greenPattern, match)
@@ -304,10 +303,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				.filter(e -> e.getSrcNode().equals(srcOfEdge))//
 				.filter(e -> e.getType().equals(ref))//
 				.count();
-	}
-
-	protected boolean someElementsAlreadyProcessed(String ruleName, IGreenPattern greenPattern, IMatch match) {
-		return operationalStrategy.someEdgesAlreadyProcessed(greenPattern.getEdgesMarkedByPattern(), match);
 	}
 
 	/**

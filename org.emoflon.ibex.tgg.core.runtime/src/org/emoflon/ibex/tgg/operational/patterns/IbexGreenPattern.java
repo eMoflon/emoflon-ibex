@@ -29,17 +29,17 @@ import runtime.RuntimePackage;
 public abstract class IbexGreenPattern implements IGreenPattern {
 	protected IGreenPatternFactory factory;
 	protected OperationalStrategy strategy;
+	protected List<TGGAttributeConstraint> sortedConstraints;
 	
 	public IbexGreenPattern(GreenPatternFactory factory) {
 		this.factory = factory;
 		this.strategy = factory.getStrategy();
+		this.sortedConstraints = sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints());
 	}
 	
 	@Override
 	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
-		try {
-			List<TGGAttributeConstraint> sortedConstraints = sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints());
-			
+		try {			
 			return new RuntimeTGGAttributeConstraintContainer(
 					factory.getAttributeCSPVariables(), 
 					sortedConstraints,

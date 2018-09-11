@@ -3,10 +3,6 @@ package org.emoflon.ibex.tgg.operational.matches;
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.EList;
-
-import language.TGGRule;
-
 public class ImmutableMatchContainer {
 	
 	private MatchContainer matchContainer;
@@ -23,12 +19,8 @@ public class ImmutableMatchContainer {
 		return Collections.unmodifiableSet(matchContainer.getMatches());
 	}
 	
-	public IMatch getNextRandom() {
-		return matchContainer.getNextRandom();
-	}
-	
-	public IMatch getNextRandomKernel(EList<TGGRule> rules) {
-		return matchContainer.getNextRandomKernel(rules);
+	public IMatch getNextKernel() {
+		return matchContainer.getNextKernel();
 	}
 	
 	public boolean isEmpty() {
