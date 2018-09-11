@@ -11,11 +11,11 @@ import language.TGGRuleNode;
 
 public class TGGCollectionUtil {
 	
-	public static Collection<TGGRuleNode> fitlerNodes(Collection<TGGRuleElement> elements) {
+	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleElement> elements) {
 		return elements.stream().filter(e -> e instanceof TGGRuleNode).map(e -> (TGGRuleNode) e).collect(Collectors.toList());
 	}
 	
-	public static Collection<TGGRuleEdge> fitlerEdges(Collection<TGGRuleElement> elements) {
+	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleElement> elements) {
 		return elements.stream().filter(e -> e instanceof TGGRuleEdge).map(e -> (TGGRuleEdge) e).collect(Collectors.toList());
 	}
 	

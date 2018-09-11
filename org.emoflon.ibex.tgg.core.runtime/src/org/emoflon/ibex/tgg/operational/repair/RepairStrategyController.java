@@ -104,8 +104,12 @@ public class RepairStrategyController {
 			while(it.hasNext()) {
 				IMatch repairCandidate = repairCandidates.get(ra);
 				AbstractRepairStrategy strategy = it.next();
-				if(strategy.isCandidate(ra, repairCandidate) && strategy.repair(ra, repairCandidate)) {
-					pendingRepairs.put(ra, repairCandidate);
+				if(strategy.isCandidate(ra, repairCandidate)) {
+					IMatch repairedMatch = strategy.repair(ra, repairCandidate);
+					if(repairedMatch == null)
+						continue;
+					
+					pendingRepairs.put(ra, repairedMatch);
 					repairCandidateToStrategy.put(ra, strategy);
 					break;
 				}

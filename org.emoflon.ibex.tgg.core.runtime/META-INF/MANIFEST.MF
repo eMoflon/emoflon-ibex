@@ -92,4 +92,5 @@ Export-Package: .,
  runtime.impl,
  runtime.util
 Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime
+Import-Package: org.eclipse.pde.core.plugin
 

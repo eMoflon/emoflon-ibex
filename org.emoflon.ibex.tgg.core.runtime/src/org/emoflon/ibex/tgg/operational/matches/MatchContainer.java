@@ -37,6 +37,13 @@ public class MatchContainer {
 		this.random = new Random();
 		assignIDsToRuleNames(tgg);
 	}
+	
+	private MatchContainer(MatchContainer old) {
+		this.ruleNameToId = old.ruleNameToId.clone();
+		this.idToRuleName = old.idToRuleName.clone();
+		this.matchToRuleNameID = old.matchToRuleNameID.clone();
+		this.random = new Random();
+	}
 
 	private void assignIDsToRuleNames(TGG tgg) {
 		int id = 1;
@@ -69,6 +76,9 @@ public class MatchContainer {
 	}
 
 	public IMatch getNextRandom() {
+		if(matchToRuleNameID.isEmpty())
+			return null;
+		
 		Iterator<IMatch> it = matchToRuleNameID.keySet().iterator();
 		int randomIndex = random.nextInt(matchToRuleNameID.size());
 		for(int count = 0; count < randomIndex; count++) {
@@ -107,4 +117,8 @@ public class MatchContainer {
 		return idToRuleName.get(matchToRuleNameID.getInt(match));
 	}
 
+	public MatchContainer copy() {
+		return new MatchContainer(this);
+	}
+	
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.BindingType;
 import language.DomainType;
@@ -15,8 +16,10 @@ import language.TGGRule;
 public class InterfaceSCFactory {
 
 	private Collection<ShortcutRule> scRules;
+	private OperationalStrategy strategy;
 
-	public InterfaceSCFactory(Collection<ShortcutRule> scRules) {
+	public InterfaceSCFactory(OperationalStrategy strategy, Collection<ShortcutRule> scRules) {
+		this.strategy = strategy;
 		this.scRules = scRules;
 	}
 	
@@ -29,14 +32,14 @@ public class InterfaceSCFactory {
 			if(TGGCollectionUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE).size() + TGGCollectionUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
 			
-			if(TGGCollectionUtil.filterNodes(scRule.getEntryNodes(), DomainType.SRC).size() == 0)
+			if(TGGCollectionUtil.filterNodes(scRule.getMergedNodes(), DomainType.SRC).size() == 0)
 				continue;
 			
-			if(TGGCollectionUtil.filterNodes(scRule.getEntryNodes(), DomainType.TRG).size() == 0)
+			if(TGGCollectionUtil.filterNodes(scRule.getMergedNodes(), DomainType.TRG).size() == 0)
 				continue;
 			
-			InterfaceShortcutRule isr = new InterfaceShortcutRule(direction, scRule);
-			Collection<OperationalShortcutRule> osRules = operationalRules.getOrDefault(sourceRule, new ArrayList<>()) ;
+			InterfaceShortcutRule isr = new InterfaceShortcutRule(strategy, direction, scRule);
+			Collection<OperationalShortcutRule> osRules = operationalRules.getOrDefault(sourceRule.getName(), new ArrayList<>()) ;
 			osRules.add(isr);
 			operationalRules.put(sourceRule.getName(), osRules);
 		}

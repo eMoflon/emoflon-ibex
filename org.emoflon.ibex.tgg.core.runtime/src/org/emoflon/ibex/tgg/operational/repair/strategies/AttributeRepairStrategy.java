@@ -37,7 +37,7 @@ public class AttributeRepairStrategy extends AbstractRepairStrategy {
 	}
 
 	@Override
-	protected boolean repair(TGGRuleApplication ra, IMatch iMatch) {
+	protected IMatch repair(TGGRuleApplication ra, IMatch iMatch) {
 		IMatch copy = iMatch.copy();
 		
 		IGreenPatternFactory factory = operationalStrategy.getGreenFactory(PatternSuffixes.removeSuffix(iMatch.getPatternName()));
@@ -55,13 +55,13 @@ public class AttributeRepairStrategy extends AbstractRepairStrategy {
 		
 		IRuntimeTGGAttrConstrContainer cspContainer = greenPattern.getAttributeConstraintContainer(copy);
 		if (!cspContainer.solve())
-			return false;
+			return null;
 		
 		try {
 			cspContainer.applyCSPValues(iMatch);
 		} catch (Exception e) {
 		}
-		return true;
+		return iMatch;
 	}
 
 	@Override

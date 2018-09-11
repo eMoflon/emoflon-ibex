@@ -35,4 +35,12 @@ public class SearchKey {
 	public int hashCode() {
 		return Objects.hash(sourceNode, targetNode, edge, reverse);
 	}
+	
+	@Override
+	public String toString() {
+		if(reverse) 
+			return targetNode.getName() + "__" + edge.getName() + "__" + sourceNode.getName();
+		else 
+			return sourceNode.getName() + "__" + edge.getName() + "__" + targetNode.getName();
+	}
 }

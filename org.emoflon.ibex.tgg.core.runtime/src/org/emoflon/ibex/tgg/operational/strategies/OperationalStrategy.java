@@ -3,6 +3,8 @@ package org.emoflon.ibex.tgg.operational.strategies;
 import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.io.IOException;
+import java.math.MathContext;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,7 +82,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	protected Set<EMFEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(new EMFEdgeHashingStrategy());
 	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
-	protected Map<TGGRuleApplication, IMatch> repairCandidates = new Object2ObjectOpenHashMap<>();
+	public Map<TGGRuleApplication, IMatch> repairCandidates = new Object2ObjectOpenHashMap<>();
 	protected Map<TGGRuleApplication, IMatch> recentConsistencyMatches = new Object2ObjectOpenHashMap<>();
 
 	protected final IbexOptions options;
@@ -116,7 +118,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		repairController = new RepairStrategyController(this, repairCandidates, recentConsistencyMatches, brokenRuleApplications);
 
 		if (options.repairUsingShortcutRules()) {
-			repairController.registerStrategy(new ShortcutRepairStrategy(this, factories));
+			repairController.registerStrategy(new ShortcutRepairStrategy(this));
 		}
 
 		if (options.repairAttributes()) {
@@ -313,6 +315,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
 	}
+	
+	public void setCorr(EPackage pack) {
+		options.tgg().setCorr(pack);
+		options.flattenedTGG().setCorr(pack);
+	}
 
 	protected Resource loadFlattenedTGGResource() throws IOException {
 		return loadResource(options.projectPath() + "/model/" + options.projectName() + "_flattened.tgg.xmi");
@@ -374,6 +381,10 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	private boolean attemptBrokenMatchRepair() {
 		do {
+			blackInterpreter.updateMatches();
+		} while (processOneOperationalRuleMatch());
+		
+		do {
 			recentConsistencyMatches.clear();
 			
 			// attempt to repair matches
@@ -392,8 +403,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected boolean processOneOperationalRuleMatch() {
 		if (operationalMatchContainer.isEmpty())
 			return false;
-
+		
 		IMatch match = chooseOneMatch();
+		if(match == null)
+			return false;
+		
 		String ruleName = operationalMatchContainer.getRuleName(match);
 
 		processOperationalRuleMatch(ruleName, match);
@@ -401,12 +415,44 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return true;
 	}
 
-	protected IMatch chooseOneMatch() {
-		IMatch match = updatePolicy.chooseOneMatch(new ImmutableMatchContainer(operationalMatchContainer));
-		if (match == null)
-			throw new IllegalStateException("Update policies should never return null!");
 
-		return match;
+	protected IMatch chooseOneMatch() {
+		return updatePolicy.chooseOneMatch(createImmutableMatchContainer());
+	}
+
+	private ImmutableMatchContainer createImmutableMatchContainer() {
+		if(repairCandidates.isEmpty())
+			return new ImmutableMatchContainer(operationalMatchContainer);
+
+		Map<String, Collection<String>> rule2greenParam = new HashMap<>();
+
+		for(String ruleName : factories.keySet()) {
+			Collection<String> greenParamNames = new ArrayList<>();
+			greenParamNames.addAll(factories.get(ruleName).getGreenSrcNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
+			greenParamNames.addAll(factories.get(ruleName).getGreenTrgNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
+			rule2greenParam.put(ruleName, greenParamNames);
+		}
+		
+		Set<Object> brokenCandidates = repairCandidates.values()
+				.stream()
+				.flatMap(c -> c.getParameterNames()
+						.stream()
+						.filter(p -> rule2greenParam.get(PatternSuffixes.removeSuffix(c.getPatternName())).contains(p))
+						.map(p -> c.get(p)))
+				.collect(Collectors.toSet());
+		
+		MatchContainer filteredContainer = operationalMatchContainer.copy();
+		
+		Collection<IMatch> unavailableMatches = operationalMatchContainer.getMatches()
+				.stream()
+				.filter(m -> m.getParameterNames()
+						.stream()
+						.map(p -> m.get(p))
+						.anyMatch(e -> brokenCandidates.contains(e)))
+				.collect(Collectors.toList());
+		
+		filteredContainer.removeMatches(unavailableMatches);
+		return new ImmutableMatchContainer(filteredContainer);
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {

@@ -2,6 +2,8 @@ package org.emoflon.ibex.tgg.operational.repair.strategies.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
@@ -24,11 +27,14 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.BindingType;
+import language.DomainType;
+import language.LanguageFactory;
 import language.TGG;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import language.TGGRuleCorr;
 
 public class OverlapUtil {
 	protected final static Logger logger = Logger.getLogger(TGGOverlap.class);
@@ -41,6 +47,9 @@ public class OverlapUtil {
 	private Object2IntOpenHashMap<EdgeCandidate> edgeCandidate2id;
 	private Map<TGGRuleNode, Set<Integer>> node2candidate;
 	private Map<TGGRuleEdge, Set<Integer>> edge2candidate;
+	private Map<String, TGGRuleEdge> sourceEdgeMap = new HashMap<>();
+	private Map<String, TGGRuleEdge> targetEdgeMap = new HashMap<>();
+	
 
 	private int idCounter;
 	private int nameCounter;
@@ -74,16 +83,51 @@ public class OverlapUtil {
 				TGGRule targetRule = tgg.getRules().get(j);
 
 				if (sourceRule.equals(targetRule)) {
-					overlaps.add(createSimpleMapping(sourceRule));
+//					overlaps.add(createReinsertMapping(sourceRule));
+					overlaps.add(createMappings(copy(sourceRule), targetRule, false));
 				} else if (ruleMatches(sourceRule, targetRule)) {
-					overlaps.add(createMappings(sourceRule, targetRule));
-					overlaps.add(createMappings(targetRule, sourceRule));
+					overlaps.add(createMappings(sourceRule, targetRule, true));
+					overlaps.add(createMappings(targetRule, sourceRule, true));
 				}
 			}
 		}
+		overlaps.removeIf(o -> !containsBothDomains(o));
+	}
+	
+	private TGGRule copy(TGGRule rule) {
+		Collection<String> linkNames = new HashSet<>();
+		TGGRule newRule = EcoreUtil.copy(rule);
+		Set<TGGRuleEdge> links = rule.getNodes().stream()
+				.filter(n -> n instanceof TGGRuleCorr)
+				.map(c -> (TGGRuleCorr) c)
+				.flatMap(c -> c.getOutgoingEdges().stream())
+				.collect(Collectors.toSet());
+		
+		for(TGGRuleEdge edge : links) {
+			TGGRuleEdge newEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+			newEdge.setName(edge.getSrcNode().getName() + "_" + edge.getType().getName() + "_" + edge.getTrgNode().getName());
+			if(linkNames.contains(newEdge.getName())) 
+				continue;
+			
+			linkNames.add(newEdge.getName());
+			newEdge.setType(edge.getType());
+			newEdge.setBindingType(edge.getBindingType());
+			newEdge.setDomainType(edge.getDomainType());
+			newEdge.setSrcNode(newRule.getNodes().stream().filter(n -> n.getName().equals(edge.getSrcNode().getName())).findFirst().get());
+			newEdge.setTrgNode(newRule.getNodes().stream().filter(n -> n.getName().equals(edge.getTrgNode().getName())).findFirst().get());
+			newEdge.getSrcNode().getOutgoingEdges().add(newEdge);
+		}
+		
+		return newRule;
+	}
+	
+	private boolean containsBothDomains(TGGOverlap overlap) {
+		boolean containsSrc = overlap.mappings.keySet().stream().anyMatch(k -> k.getDomainType() == DomainType.SRC && k.getBindingType() == BindingType.CREATE);
+		boolean containsTrg = overlap.mappings.keySet().stream().anyMatch(k -> k.getDomainType() == DomainType.TRG && k.getBindingType() == BindingType.CREATE);
+		return containsSrc && containsTrg;
 	}
 
-	private TGGOverlap createSimpleMapping(TGGRule rule) {
+	private TGGOverlap createReinsertMapping(TGGRule rule) {
 		Map<TGGRuleElement, TGGRuleElement> mappings = new Object2ObjectOpenHashMap<>();
 		for (TGGRuleNode node : rule.getNodes()) {
 			mappings.put(node, node);
@@ -93,12 +137,12 @@ public class OverlapUtil {
 		}
 		return new TGGOverlap(rule, rule, mappings, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 	}
-
-	private TGGOverlap createMappings(TGGRule sourceRule, TGGRule targetRule) {
+	
+	private TGGOverlap createMappings(TGGRule sourceRule, TGGRule targetRule, boolean mapContext) {
 		reset();
 
-		List<NodeCandidate> nodeCandidates = calculateNodeCandidates(sourceRule, targetRule);
-		List<EdgeCandidate> edgeCandidates = calculateEdgeCandidates(sourceRule, targetRule);
+		Collection<NodeCandidate> nodeCandidates = calculateNodeCandidates(sourceRule, targetRule, mapContext);
+		Collection<EdgeCandidate> edgeCandidates = calculateEdgeCandidates(sourceRule, targetRule, mapContext);
 
 		registerNodeCandidates(nodeCandidates);
 		registerEdgeCandidates(edgeCandidates);
@@ -110,15 +154,18 @@ public class OverlapUtil {
 
 	private TGGOverlap createMappingFromILPSolution(TGGRule sourceRule, TGGRule targetRule, int[] solution) {
 		TGGOverlap overlap = new TGGOverlap(sourceRule, targetRule);
-
+		
 		overlap.deletions.addAll(TGGCollectionUtil.filterNodes(sourceRule.getNodes(), BindingType.CREATE));
-		overlap.deletions.addAll(TGGCollectionUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE));
+		overlap.deletions.addAll(TGGCollectionUtil.filterEdges(sourceEdgeMap.values(), BindingType.CREATE));
 
 		overlap.creations.addAll(TGGCollectionUtil.filterNodes(targetRule.getNodes(), BindingType.CREATE));
-		overlap.creations.addAll(TGGCollectionUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE));
+		overlap.creations.addAll(TGGCollectionUtil.filterEdges(targetEdgeMap.values(), BindingType.CREATE));
 
+		overlap.unboundContext.addAll(TGGCollectionUtil.filterNodes(sourceRule.getNodes(), BindingType.CONTEXT));
+		overlap.unboundContext.addAll(TGGCollectionUtil.filterEdges(sourceEdgeMap.values(), BindingType.CONTEXT));
+		
 		overlap.unboundContext.addAll(TGGCollectionUtil.filterNodes(targetRule.getNodes(), BindingType.CONTEXT));
-		overlap.unboundContext.addAll(TGGCollectionUtil.filterEdges(targetRule.getEdges(), BindingType.CONTEXT));
+		overlap.unboundContext.addAll(TGGCollectionUtil.filterEdges(targetEdgeMap.values(), BindingType.CONTEXT));
 
 		for (int i = 0; i < solution.length; i++) {
 			boolean useCandidate = solution[i] == 1;
@@ -139,10 +186,12 @@ public class OverlapUtil {
 
 	private void processOverlapCandidate(TGGOverlap overlap, TGGRuleElement sourceElement, TGGRuleElement targetElement) {
 		overlap.mappings.put(sourceElement, targetElement);
+		overlap.revertMappings.put(targetElement, sourceElement);
 
 		switch (sourceElement.getBindingType()) {
 		case CONTEXT:
 			// TODO lfritsche : implement attributes
+			overlap.unboundContext.remove(sourceElement);
 			overlap.unboundContext.remove(targetElement);
 			break;
 		case CREATE:
@@ -154,33 +203,49 @@ public class OverlapUtil {
 		}
 	}
 
-	private List<NodeCandidate> calculateNodeCandidates(TGGRule sourceRule, TGGRule targetRule) {
+	private List<NodeCandidate> calculateNodeCandidates(TGGRule sourceRule, TGGRule targetRule, boolean mapContext) {
 		List<NodeCandidate> candidates = new ArrayList<>();
 		for (TGGRuleNode sourceNode : sourceRule.getNodes()) {
 			for (TGGRuleNode targetNode : targetRule.getNodes()) {
-				if (typeMatches(sourceNode, targetNode)) {
-					NodeCandidate candidate = new NodeCandidate(sourceNode, targetNode);
-					candidates.add(candidate);
-
-					addNode2CandidateMapping(sourceNode, candidate);
-					addNode2CandidateMapping(targetNode, candidate);
-				}
+				if(mapContext || sourceNode.getBindingType() == BindingType.CREATE && targetNode.getBindingType() == BindingType.CREATE)
+					if (typeMatches(sourceNode, targetNode)) {
+						NodeCandidate candidate = new NodeCandidate(sourceNode, targetNode);
+						candidates.add(candidate);
+	
+						addNode2CandidateMapping(sourceNode, candidate);
+						addNode2CandidateMapping(targetNode, candidate);
+					}
 			}
 		}
 		return candidates;
 	}
 
-	private List<EdgeCandidate> calculateEdgeCandidates(TGGRule sourceRule, TGGRule targetRule) {
-		List<EdgeCandidate> candidates = new ArrayList<>();
-		for (TGGRuleEdge sourceEdge : sourceRule.getEdges()) {
-			for (TGGRuleEdge targetEdge : targetRule.getEdges()) {
-				if (typeMatches(sourceEdge, targetEdge)) {
-					EdgeCandidate candidate = new EdgeCandidate(sourceEdge, targetEdge);
-					candidates.add(new EdgeCandidate(sourceEdge, targetEdge));
+	private Collection<EdgeCandidate> calculateEdgeCandidates(TGGRule sourceRule, TGGRule targetRule, boolean mapContext) {
+		Collection<EdgeCandidate> candidates = new ArrayList<>();
 
-					addEdge2CandidateMapping(sourceEdge, candidate);
-					addEdge2CandidateMapping(targetEdge, candidate);
-				}
+		sourceRule.getNodes().stream().flatMap(n -> n.getOutgoingEdges().stream()).forEach(e -> sourceEdgeMap.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__"  + e.getTrgNode().getName(), e));
+		targetRule.getNodes().stream().flatMap(n -> n.getOutgoingEdges().stream()).forEach(e -> targetEdgeMap.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__"  + e.getTrgNode().getName(), e));
+		
+		for (TGGRuleEdge sourceEdge : sourceEdgeMap.values()) {
+			for (TGGRuleEdge targetEdge : targetEdgeMap.values()) {
+				if(mapContext || sourceEdge.getBindingType() == BindingType.CREATE && targetEdge.getBindingType() == BindingType.CREATE)
+					if (typeMatches(sourceEdge, targetEdge)) {
+						if(!node2candidate.containsKey(sourceEdge.getSrcNode()))
+							continue;
+						if(!node2candidate.containsKey(sourceEdge.getTrgNode()))
+							continue;
+						
+						if(!node2candidate.containsKey(targetEdge.getSrcNode()))
+							continue;
+						if(!node2candidate.containsKey(targetEdge.getTrgNode()))
+							continue;
+						
+						EdgeCandidate candidate = new EdgeCandidate(sourceEdge, targetEdge);
+						candidates.add(new EdgeCandidate(sourceEdge, targetEdge));
+	
+						addEdge2CandidateMapping(sourceEdge, candidate);
+						addEdge2CandidateMapping(targetEdge, candidate);
+					}
 			}
 		}
 		return candidates;
@@ -222,9 +287,13 @@ public class OverlapUtil {
 		edgeCandidate2id.clear();
 		node2candidate.clear();
 		edge2candidate.clear();
+		sourceEdgeMap.clear();
+		targetEdgeMap.clear();
+		id2node.clear();
+		id2edge.clear();
 	}
 
-	private void registerNodeCandidates(List<NodeCandidate> candidates) {
+	private void registerNodeCandidates(Collection<NodeCandidate> candidates) {
 		for (NodeCandidate candidate : candidates) {
 			nodeCandidate2id.put(candidate, idCounter);
 			id2node.put(idCounter, candidate);
@@ -232,7 +301,7 @@ public class OverlapUtil {
 		}
 	}
 
-	private void registerEdgeCandidates(List<EdgeCandidate> candidates) {
+	private void registerEdgeCandidates(Collection<EdgeCandidate> candidates) {
 		for (EdgeCandidate candidate : candidates) {
 			edgeCandidate2id.put(candidate, idCounter);
 			id2edge.put(idCounter, candidate);

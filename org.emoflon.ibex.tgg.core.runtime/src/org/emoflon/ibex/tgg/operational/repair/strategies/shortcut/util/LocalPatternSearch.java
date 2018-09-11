@@ -1,12 +1,14 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.EdgeCheck;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.Lookup;
@@ -39,7 +41,7 @@ public class LocalPatternSearch {
 			if(firstComponent == null)
 				firstComponent = lookupComp;
 			else 
-				lookupComp.setNextComponent(lastComponent);
+				lastComponent.setNextComponent(lookupComp);
 			
 			Component nodeCheckComp;
 			if(entry.getLeft().reverse) 
@@ -71,6 +73,8 @@ public class LocalPatternSearch {
 			throw new RuntimeException("No components found for pattern matching!");
 		
 		this.name2candidates = name2entryNodeElem;
+		this.currentCandidates = new HashSet<>();
+		currentCandidates.addAll(name2candidates.values());
 		
 		switch(firstComponent.apply()) {
 			case SUCCESS: 
@@ -120,6 +124,7 @@ public class LocalPatternSearch {
 					if(currentCandidates.contains(candidate))
 						continue;
 					
+					currentCandidates.add(candidate);
 					name2candidates.put(lookupTargetName, candidate);
 					
 					switch(nextComponent.apply()) {
@@ -139,6 +144,11 @@ public class LocalPatternSearch {
 			}
 		
 			name2candidates.put(lookupTargetName, (EObject) lookupTarget);
+			
+			if(currentCandidates.contains((EObject) lookupTarget)) 
+				return ReturnState.FAILURE;
+			
+			currentCandidates.add((EObject) lookupTarget); 
 			return nextComponent.apply();
 		}
 		
@@ -203,7 +213,7 @@ public class LocalPatternSearch {
 
 		@Override
 		public ReturnState apply() {
-			 if(check.checkConstraint(name2candidates.get(sourceName))) {
+			 if(check.checkConstraint(name2candidates.get(sourceName), currentCandidates)) {
 				 if(nextComponent == null)
 					 return ReturnState.SUCCESS;
 				 return nextComponent.apply();

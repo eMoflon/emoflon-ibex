@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,6 +18,8 @@ import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.E
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.NodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.SCEMFUtil;
+import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import language.BindingType;
@@ -38,7 +41,7 @@ public abstract class OperationalShortcutRule {
 		this.scRule = scRule;
 		this.direction = direction;
 
-		this.markedElements = new ArrayList<>();
+		this.markedElements = new HashSet<>();
 		this.key2lookup = new Object2ObjectOpenHashMap<>();
 		this.element2nodeCheck = new Object2ObjectOpenHashMap<>();
 		this.key2edgeCheck = new Object2ObjectOpenHashMap<>();
@@ -48,43 +51,76 @@ public abstract class OperationalShortcutRule {
 	abstract protected void operationalize();
 
 	public SearchPlan createSearchPlan() {
-		Collection<TGGRuleNode> uncheckedNodes = scRule.getNodes().stream().filter(n -> !scRule.getEntryNodes().contains(n)).collect(Collectors.toList());
+		Collection<TGGRuleNode> uncheckedNodes = scRule.getNodes()
+				.stream()
+				.filter(n -> !scRule.getMergedNodes().contains(n) 
+				&& n.getBindingType() != BindingType.NEGATIVE 
+				&& n.getBindingType() != BindingType.CREATE)
+				.collect(Collectors.toList());
 		Collection<TGGRuleEdge> uncheckedEdges = scRule.getEdges().stream().collect(Collectors.toList());
 		
 		Collection<SearchKey> uncheckedSearchKeys = key2lookup.keySet();
 		
 		List<Pair<SearchKey, Lookup>> searchPlan = new ArrayList<>();
 		while(!uncheckedNodes.isEmpty()) {
-			uncheckedSearchKeys = filterAndSortKeys(uncheckedSearchKeys, uncheckedNodes);
-			if(uncheckedSearchKeys.isEmpty()) {
-				throw new RuntimeException("Searchplan could not be generated for OperationalShortcutRule");
+			Collection<SearchKey> checkedSearchKeys = filterAndSortKeys(uncheckedSearchKeys, uncheckedNodes);
+			if(checkedSearchKeys.isEmpty()) {
+				throw new RuntimeException("Searchplan could not be generated for OperationalShortcutRule - " + scRule);
 			}
 			
-			SearchKey key = uncheckedSearchKeys.iterator().next();
+			SearchKey key = checkedSearchKeys.iterator().next();
 			searchPlan.add(Pair.of(key, key2lookup.get(key)));
 			
 			uncheckedNodes.remove(key.reverse ? key.sourceNode : key.targetNode);
 			uncheckedEdges.remove(key.edge);
+			
+			uncheckedSearchKeys.remove(key);
+			checkedSearchKeys.add(key);
 		}
 		
 		Map<SearchKey, EdgeCheck> key2uncheckedEdgeCheck = new HashMap<>();
 		for(TGGRuleEdge edge : uncheckedEdges) {
-			if(edge.getBindingType() == BindingType.NEGATIVE)
+			if(edge.getBindingType() == BindingType.CREATE)
+				continue;
+			
+			if(edge.getSrcNode().getBindingType() == BindingType.NEGATIVE || edge.getTrgNode().getBindingType() == BindingType.NEGATIVE)
 				continue;
 			
 			SearchKey key = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
 			key2uncheckedEdgeCheck.put(key, key2edgeCheck.get(key));
 		}
+		
+		Map<SearchKey, NACNodeCheck> key2nacNodeCheck = new HashMap<>();
+		for(TGGRuleEdge edge : uncheckedEdges) {
+			if(edge.getBindingType() != BindingType.NEGATIVE)
+				continue;
+			
+			if(edge.getSrcNode().getBindingType() != BindingType.NEGATIVE && edge.getTrgNode().getBindingType() != BindingType.NEGATIVE)
+				continue;
+			
+			boolean reverse = edge.getSrcNode().getBindingType() != BindingType.CONTEXT;
+			SearchKey key = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, reverse);
+			key2nacNodeCheck.put(key, this.key2nacNodeCheck.get(key));
+		}
+		
 		return new SearchPlan(searchPlan, element2nodeCheck, key2uncheckedEdgeCheck, key2nacNodeCheck);
 	}
 	
 	private Collection<SearchKey> filterAndSortKeys(Collection<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes) {
-		keys = keys.stream().filter(k -> uncheckedNodes.contains(k.sourceNode) ^ uncheckedNodes.contains(k.targetNode)).collect(Collectors.toList());
-		keys = keys.stream().filter(k -> k.edge.getBindingType() != BindingType.NEGATIVE).collect(Collectors.toList());
-		keys = keys.stream().filter(k -> 
-			uncheckedNodes.contains(k.sourceNode) && !k.reverse || 
-			uncheckedNodes.contains(k.targetNode) && k.reverse).collect(Collectors.toList());
-		return keys;
+		return keys.stream()
+				.filter(k -> validKey(uncheckedNodes, k))
+				.filter(k -> k.edge.getBindingType() != BindingType.NEGATIVE)
+				.filter(k -> k.edge.getBindingType() != BindingType.CREATE)
+//				.filter(k -> 
+//					uncheckedNodes.contains(k.sourceNode) && !k.reverse || 
+//					uncheckedNodes.contains(k.targetNode) && k.reverse)
+				.collect(Collectors.toList());
+	}
+	
+	private boolean validKey(Collection<TGGRuleNode> uncheckedNodes, SearchKey key) {
+		boolean first  =  uncheckedNodes.contains(key.sourceNode) && !uncheckedNodes.contains(key.targetNode) &&  key.reverse;
+		boolean second = !uncheckedNodes.contains(key.sourceNode) &&  uncheckedNodes.contains(key.targetNode) && !key.reverse;
+		return first || second;
 	}
 	
 	protected void createConstraintChecks() {
@@ -93,8 +129,8 @@ public abstract class OperationalShortcutRule {
 		}
 
 		for (TGGRuleEdge edge : scRule.getEdges()) {
-			SearchKey forwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, true);
-			SearchKey backwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
+			SearchKey forwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
+			SearchKey backwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, true);
 			
 			createEdgeCheck(forwardKey);
 			
@@ -105,10 +141,10 @@ public abstract class OperationalShortcutRule {
 				continue;
 			
 			if(edge.getSrcNode().getBindingType() == BindingType.NEGATIVE) {
-				createNACNodeCheck(forwardKey);
+				createNACNodeCheck(backwardKey);
 			}
 			if(edge.getTrgNode().getBindingType() == BindingType.NEGATIVE) {
-				createNACNodeCheck(backwardKey);
+				createNACNodeCheck(forwardKey);
 			}
 		}
 	}
@@ -129,6 +165,12 @@ public abstract class OperationalShortcutRule {
 			});
 		} else {
 			// TODO lfritsche : implement reverse navigation
+			key2lookup.put(key, n -> {
+				Class<?> instanceClass = key.sourceNode.getType().getInstanceClass();
+				if(instanceClass != null) 
+					return eMoflonEMFUtil.getOppositeReference(n, instanceClass, key.edge.getType().getName());
+				return SCEMFUtil.getOppositeReference(n, key.sourceNode.getType(), key.edge.getType().getName());
+			});
 		}
 	}
 
@@ -170,8 +212,9 @@ public abstract class OperationalShortcutRule {
 	
 	private void createNACNodeCheck(SearchKey key) {
 		NodeCheck nodeCheck = key.reverse ? element2nodeCheck.get(key.sourceNode) : element2nodeCheck.get(key.targetNode);
-		key2nacNodeCheck.put(key, s -> {
-			Object refTarget = s.eGet(key.edge.getType());
+		SearchKey lookupKey = new SearchKey(key.sourceNode, key.targetNode, key.edge, key.reverse);
+		key2nacNodeCheck.put(key, (s, candidates) -> {
+			Object refTarget = key2lookup.get(lookupKey).lookup(s);
 			if (refTarget == null) {
 				return true;
 			}
@@ -179,12 +222,12 @@ public abstract class OperationalShortcutRule {
 			if (refTarget instanceof List<?>) {
 				List<EObject> list = (List<EObject>) refTarget;
 				for(EObject obj : list) {
-					if(nodeCheck.checkConstraint(obj))
+					if(!candidates.contains(refTarget) && nodeCheck.checkConstraint(obj))
 						return false;
 				}
 				return true;
 			}
-			return !nodeCheck.checkConstraint((EObject) refTarget);
+			return candidates.contains(refTarget) || !nodeCheck.checkConstraint((EObject) refTarget);
 		});
 	}
 
