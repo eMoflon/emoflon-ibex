@@ -1,37 +1,43 @@
 package org.emoflon.ibex.common.collections.fastutil;
 
 import java.util.PrimitiveIterator.OfInt;
-import java.util.stream.Stream;
 
 import org.emoflon.ibex.common.collections.IntSet;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
-public class FastUtilIntSet extends IntSet {
-	private IntOpenHashSet internal = new IntOpenHashSet();
+class FastUtilIntSet extends IntSet {
 
-	@Override
-	public int size() {
-		return internal.size();
+	FastUtilIntSet() {
+		this.setInternalSet(new IntOpenHashSet());
+	}
+
+	FastUtilIntSet(final int[] is) {
+		this.setInternalSet(new IntOpenHashSet(is));
 	}
 
 	@Override
-	public Stream<Integer> stream() {
-		return internal.stream();
+	protected IntOpenHashSet getInternalSet() {
+		return (IntOpenHashSet) super.getInternalSet();
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return internal.isEmpty();
+	public boolean add(final int i) {
+		return this.getInternalSet().add(i);
 	}
 
 	@Override
-	public void add(int i) {
-		internal.add(i);
+	public boolean contains(final int i) {
+		return this.getInternalSet().contains(i);
 	}
 
 	@Override
 	public OfInt iterator() {
-		return internal.iterator();
+		return this.getInternalSet().iterator();
+	}
+
+	@Override
+	public boolean remove(final int i) {
+		return this.getInternalSet().remove(i);
 	}
 }
