@@ -278,11 +278,12 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	private Map<EObject, Resource> cacheObjectToResource = cfactory.createObjectToObjectHashMap();
+
 	private boolean nodeIsInResource(IMatch match, String name, Resource r) {
 		EObject root = (EObject) match.get(name);
-		if(!cacheObjectToResource.containsKey(root))
+		if (!cacheObjectToResource.containsKey(root))
 			cacheObjectToResource.put(root, root.eResource());
-		
+
 		return cacheObjectToResource.get(root).equals(r);
 	}
 
@@ -334,7 +335,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
-			logger.debug("Successfully applied: " + match);
+			logger.debug("Successfully applied: " + match.getPatternName());
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
 			updatePolicy.notifyMatchHasBeenApplied(cm, ruleName);
 		});
@@ -463,23 +464,34 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return getComplementRulesNames().contains(complementName);
 	}
 
+	private Set<String> cacheComplementRulesNames = null;
+
 	protected Set<String> getComplementRulesNames() {
-		Set<String> complementRulesNames = options.tgg().getRules().stream()//
-				.filter(TGGComplementRule.class::isInstance)//
-				.map(TGGRule::getName)//
-				.collect(Collectors.toSet());
-		return complementRulesNames;
+		if (cacheComplementRulesNames == null) {
+
+			cacheComplementRulesNames = options.tgg().getRules().stream()//
+					.filter(TGGComplementRule.class::isInstance)//
+					.map(TGGRule::getName)//
+					.collect(Collectors.toSet());
+		}
+
+		return cacheComplementRulesNames;
 	}
 
+	private Set<String> cacheKernelRulesNames = null;
+
 	protected Set<String> getKernelRulesNames() {
-		Set<String> kernelRulesNames = options.tgg().getRules().stream()//
-				.filter(TGGComplementRule.class::isInstance)//
-				.map(TGGComplementRule.class::cast)//
-				.map(TGGComplementRule::getKernel)//
-				.map(TGGRule::getName)//
-				.distinct()//
-				.collect(Collectors.toSet());
-		return kernelRulesNames;
+		if (cacheKernelRulesNames == null) {
+			cacheKernelRulesNames = options.tgg().getRules().stream()//
+					.filter(TGGComplementRule.class::isInstance)//
+					.map(TGGComplementRule.class::cast)//
+					.map(TGGComplementRule::getKernel)//
+					.map(TGGRule::getName)//
+					.distinct()//
+					.collect(Collectors.toSet());
+		}
+
+		return cacheKernelRulesNames;
 	}
 
 	protected boolean tggContainsComplementRules() {
