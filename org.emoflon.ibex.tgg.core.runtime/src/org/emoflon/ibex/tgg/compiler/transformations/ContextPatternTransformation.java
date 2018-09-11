@@ -51,7 +51,7 @@ import language.TGGRuleNode;
 
 public class ContextPatternTransformation {
 	private static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
-	private static final boolean USE_INVOCATIONS_FOR_REFERENCES = false;
+	private final boolean USE_INVOCATIONS_FOR_REFERENCES;
 	private IbexOptions options;
 	private List<IBeXContext> ibexContextPatterns = new ArrayList<>();
 
@@ -65,6 +65,7 @@ public class ContextPatternTransformation {
 	public ContextPatternTransformation(IbexOptions options, OperationalStrategy strategy) {
 		this.options = options;
 		this.strategy = strategy;
+		this.USE_INVOCATIONS_FOR_REFERENCES = options.getUseEdgePatterns();
 	}
 
 	public IBeXPatternSet transform() {

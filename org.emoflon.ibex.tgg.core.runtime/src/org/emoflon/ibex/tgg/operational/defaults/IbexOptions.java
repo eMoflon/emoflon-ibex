@@ -26,6 +26,7 @@ public class IbexOptions {
 	private SupportedILPSolver ilpSolver;
 	private boolean repairAttributes;
 	private EPackage corrMetamodel;
+	private boolean useEdgePatterns;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
@@ -33,6 +34,7 @@ public class IbexOptions {
 		workspacePath = "./../";
 		repairAttributes = true;
 		setIlpSolver(SupportedILPSolver.Sat4J);
+		useEdgePatterns = true;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -160,5 +162,14 @@ public class IbexOptions {
 	
 	public EPackage getCorrMetamodel() {
 		return this.corrMetamodel;
+	}
+
+	public boolean getUseEdgePatterns() {
+		return useEdgePatterns;
+	}
+	
+	public IbexOptions setUseEdgePatterns(boolean value) {
+		useEdgePatterns = value;
+		return this;
 	}
 }
