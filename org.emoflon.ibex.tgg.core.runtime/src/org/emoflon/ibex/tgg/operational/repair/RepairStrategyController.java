@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -15,6 +16,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import runtime.TGGRuleApplication;
 
 public class RepairStrategyController {
+
+	protected final static Logger logger = Logger.getLogger(RepairStrategyController.class);
 	
 	private OperationalStrategy oStrategy;
 
@@ -83,9 +86,11 @@ public class RepairStrategyController {
 					!repairCandidateToStrategy.get(ra).checkIfRepairWasSucessful(ra, match, recentConsistencyMatches.get(ra))) {
 				repairCandidateToStrategy.get(ra).revokeRepair(ra);
 				brokenRuleApplications.put(ra, match);
+				logger.info(match.getPatternName() + " is considered broken (" + match.hashCode() + ")");
 			}
 			else {
 				oStrategy.addOperationalRuleMatch(PatternSuffixes.removeSuffix(match.getPatternName()), match);
+				logger.info(match.getPatternName() + " was found (" + match.hashCode() + ")");
 			}
 			// remove the candidate from both repair maps. Whether the repair was successful or not, no further repairs will take place here.
 			repairCandidates.remove(ra);
@@ -111,6 +116,12 @@ public class RepairStrategyController {
 					
 					pendingRepairs.put(ra, repairedMatch);
 					repairCandidateToStrategy.put(ra, strategy);
+					
+					if(repairCandidate.equals(repairedMatch))
+						logger.info("Repaired: " + repairCandidate.getPatternName() + " (" + repairCandidate.hashCode() + ")");
+					else
+						logger.info("Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + " (" + repairCandidate.hashCode() + "->" + repairedMatch.hashCode() + ")");
+
 					break;
 				}
 				if(!it.hasNext()) {

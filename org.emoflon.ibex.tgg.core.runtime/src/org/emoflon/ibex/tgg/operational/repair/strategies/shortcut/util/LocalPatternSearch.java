@@ -143,15 +143,19 @@ public class LocalPatternSearch {
 				return ReturnState.FAILURE;
 			}
 		
-			name2candidates.put(lookupTargetName, (EObject) lookupTarget);
-			
 			if(currentCandidates.contains((EObject) lookupTarget)) 
 				return ReturnState.FAILURE;
 			
+			name2candidates.put(lookupTargetName, (EObject) lookupTarget);
 			currentCandidates.add((EObject) lookupTarget); 
-			return nextComponent.apply();
+			
+			ReturnState state = nextComponent.apply();
+			if(state != ReturnState.SUCCESS)
+				currentCandidates.remove(lookupTarget);
+			
+			return state;
 		}
-		
+	
 	}
 	
 	private class NodeCheckComponent extends Component {

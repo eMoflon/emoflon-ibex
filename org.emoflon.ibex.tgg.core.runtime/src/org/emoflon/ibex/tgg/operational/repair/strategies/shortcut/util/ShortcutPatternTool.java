@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
@@ -16,6 +17,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
+import org.emoflon.ibex.tgg.operational.repair.RepairStrategyController;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.GreenSCPattern;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.InterfaceSCFactory;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
@@ -30,6 +32,8 @@ import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 public class ShortcutPatternTool {
+	
+	protected final static Logger logger = Logger.getLogger(RepairStrategyController.class);
 	
 	private OperationalStrategy strategy;
 	private Collection<ShortcutRule> scRules;
@@ -72,6 +76,8 @@ public class ShortcutPatternTool {
 
 	private IMatch processBrokenMatch(Collection<OperationalShortcutRule> rules, IMatch brokenMatch) {
 		for(OperationalShortcutRule osr : rules) {
+			logger.info("Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");
+			
 			IMatch newMatch = processBrokenMatch(osr, brokenMatch);
 			if(newMatch == null)
 				continue;
