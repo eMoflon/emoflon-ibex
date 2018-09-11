@@ -10,7 +10,7 @@ public interface IMatch extends org.emoflon.ibex.common.operational.IMatch {
 	IMatch copy();
 
 	default Collection<EMFEdge> getCreatedEdges() {
-		throw new UnsupportedOperationException("This match does not support keep track of matched edges!");
+		throw new UnsupportedOperationException("This match does not support keeping track of matched edges!");
 	}
 	
 	default String getRuleName() {
