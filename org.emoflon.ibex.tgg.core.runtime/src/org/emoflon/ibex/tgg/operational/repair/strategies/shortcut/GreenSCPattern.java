@@ -13,7 +13,6 @@ import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
@@ -29,6 +28,14 @@ import language.basic.expressions.TGGParamValue;
 import language.csp.TGGAttributeConstraint;
 import runtime.TGGRuleApplication;
 
+/**
+ * 
+ * This implementation of IGreenPattern handles the information of which nodes and edges are to be created by applying 
+ * the also stored operationalized shortcut rule.
+ * 
+ * @author lfritsche
+ *
+ */
 public class GreenSCPattern implements IGreenPattern {
 
 	private OperationalShortcutRule oscRule;

@@ -5,6 +5,12 @@ import java.util.Objects;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
+/**
+ * A SearchKey represents an edge and consists of a sourceNode, a targetNode, the edge plus the information in which direction we are looking
+ * (source->target or target->source)
+ * @author lfritsche
+ *
+ */
 public class SearchKey {
 
 	public TGGRuleNode sourceNode;

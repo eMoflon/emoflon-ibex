@@ -7,6 +7,12 @@ import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 
+/**
+ * Represents a match for a operationalized shortcut rule application
+ * 
+ * @author lfritsche
+ *
+ */
 public class SCMatch extends SimpleMatch {
 
 	public SCMatch(String patternName, Map<String, EObject> name2candidates) {

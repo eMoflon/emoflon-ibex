@@ -19,6 +19,15 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.impl.LanguageFactoryImpl;
 
+/**
+ * This class contains a shortcut rule which applied transforms a source rule application into a target rule application.
+ * It is created by a TGGOverlap element which contains the information about which elements of the former source rule application
+ * are to be preserved. Elements that are created in the source rule but not in the target rule are deleted by the shortcut rule.
+ * Elements created by the target rule but not by the source rule are created. Elements created by both rules are preserved.
+ * 
+ * @author lfritsche
+ *
+ */
 public class ShortcutRule {
 	private TGGRule sourceRule;
 	private TGGRule targetRule;
@@ -34,7 +43,7 @@ public class ShortcutRule {
 	private Map<TGGRuleNode, TGGRuleNode> old2newNodes;
 	private Map<String, TGGRuleNode> sourceName2oldNodes;
 	private Map<String, TGGRuleNode> targetName2oldNodes;
-	
+
 	public ShortcutRule(TGGOverlap overlap) {
 		this.overlap = overlap;
 		

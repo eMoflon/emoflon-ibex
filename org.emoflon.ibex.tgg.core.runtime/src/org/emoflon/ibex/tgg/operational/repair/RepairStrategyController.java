@@ -81,10 +81,8 @@ public class RepairStrategyController {
 		while(it.hasNext()) {
 			TGGRuleApplication ra = it.next();
 			IMatch match = pendingRepairs.get(ra);
-			// check if a new match can be found and if it is considered a valid one. if so revoke the repair and add it back to broken matches
-			if(!recentConsistencyMatches.containsKey(ra) ||
-					!repairCandidateToStrategy.get(ra).checkIfRepairWasSucessful(ra, match, recentConsistencyMatches.get(ra))) {
-				repairCandidateToStrategy.get(ra).revokeRepair(ra);
+			// check if a new match can be found. if so add it back to broken matches
+			if(!recentConsistencyMatches.containsKey(ra)) {
 				brokenRuleApplications.put(ra, match);
 				logger.info(match.getPatternName() + " is considered broken (" + match.hashCode() + ")");
 			}

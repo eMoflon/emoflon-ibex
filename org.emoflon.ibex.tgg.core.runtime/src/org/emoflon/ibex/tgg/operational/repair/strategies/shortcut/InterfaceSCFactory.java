@@ -29,6 +29,7 @@ public class InterfaceSCFactory {
 			TGGRule sourceRule = scRule.getSourceRule();
 			TGGRule targetRule = scRule.getTargetRule();
 			
+			// we do not want rules that do not preserve elements or contain no interface edges
 			if(TGGCollectionUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE).size() + TGGCollectionUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
 			

@@ -27,6 +27,19 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
+/**
+ * 
+ * This class represents an operationalized shortcut rule.
+ * The pattern information are stored in the shortcut rule (copied instance).
+ * Operationalizion means that these rules are applicable in a certain translation direction (FORWARD, BACKWARD).
+ * However, the operationalize() method has to be implemented by sub classes.
+ * This class also creates a SearchPlan for the operationalized pattern and created Lookup und *Check Operations which 
+ * are used by LocalPatternSearch to execute the SearchPlan.
+ * The interfaces used to implement these operations are EdgeCheck, Lookup, NACNodeCheck and NodeCheck.
+ * 
+ * @author lfritsche
+ *
+ */
 public abstract class OperationalShortcutRule {
 	protected SyncDirection direction;
 	protected ShortcutRule scRule;
@@ -61,6 +74,8 @@ public abstract class OperationalShortcutRule {
 		
 		Collection<SearchKey> uncheckedSearchKeys = key2lookup.keySet();
 		
+		// first calculate the lookups to find all elements + their corresponding node checks
+		// TODO lfritsche: add inplace attributes
 		List<Pair<SearchKey, Lookup>> searchPlan = new ArrayList<>();
 		while(!uncheckedNodes.isEmpty()) {
 			Collection<SearchKey> checkedSearchKeys = filterAndSortKeys(uncheckedSearchKeys, uncheckedNodes);
@@ -78,6 +93,7 @@ public abstract class OperationalShortcutRule {
 			checkedSearchKeys.add(key);
 		}
 		
+		// now add edge checks to check all unchecked edges
 		Map<SearchKey, EdgeCheck> key2uncheckedEdgeCheck = new HashMap<>();
 		for(TGGRuleEdge edge : uncheckedEdges) {
 			if(edge.getBindingType() == BindingType.CREATE)
@@ -90,6 +106,7 @@ public abstract class OperationalShortcutRule {
 			key2uncheckedEdgeCheck.put(key, key2edgeCheck.get(key));
 		}
 		
+		// add NAC checks as the last constraints that are evaluated
 		Map<SearchKey, NACNodeCheck> key2nacNodeCheck = new HashMap<>();
 		for(TGGRuleEdge edge : uncheckedEdges) {
 			if(edge.getBindingType() != BindingType.NEGATIVE)
@@ -108,7 +125,7 @@ public abstract class OperationalShortcutRule {
 	
 	private Collection<SearchKey> filterAndSortKeys(Collection<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes) {
 		return keys.stream()
-				.filter(k -> validKey(uncheckedNodes, k))
+				.filter(k -> validLookupKey(uncheckedNodes, k))
 				.filter(k -> k.edge.getBindingType() != BindingType.NEGATIVE)
 				.filter(k -> k.edge.getBindingType() != BindingType.CREATE)
 //				.filter(k -> 
@@ -117,7 +134,8 @@ public abstract class OperationalShortcutRule {
 				.collect(Collectors.toList());
 	}
 	
-	private boolean validKey(Collection<TGGRuleNode> uncheckedNodes, SearchKey key) {
+	// a valid lookup key is a key where source xor target has already been checked
+	private boolean validLookupKey(Collection<TGGRuleNode> uncheckedNodes, SearchKey key) {
 		boolean first  =  uncheckedNodes.contains(key.sourceNode) && !uncheckedNodes.contains(key.targetNode) &&  key.reverse;
 		boolean second = !uncheckedNodes.contains(key.sourceNode) &&  uncheckedNodes.contains(key.targetNode) && !key.reverse;
 		return first || second;

@@ -15,6 +15,12 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
+/**
+ * This class is a util that helps which backward navigation between EMF objects.
+ * 
+ * @author lfritsche
+ *
+ */
 public class SCEMFUtil {
 	
 	public static List<?> getOppositeReference(final EObject target, final EClass sourceType,

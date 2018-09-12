@@ -8,6 +8,15 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGGRule;
 import language.TGGRuleElement;
 
+/**
+ * Container class that contains the overlap information between a source and a target rule.
+ * It contains the successfully mapped elements of both sides as well as those elements that
+ * are to be created and deleted.
+ * Additionally, it also contains context elements which were not mapped.
+ * 
+ * @author lfritsche
+ *
+ */
 public class TGGOverlap {
 	public TGGRule sourceRule;
 	public TGGRule targetRule;

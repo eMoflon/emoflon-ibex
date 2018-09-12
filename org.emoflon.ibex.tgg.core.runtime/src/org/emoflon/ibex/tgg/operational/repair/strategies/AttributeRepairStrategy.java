@@ -19,6 +19,13 @@ import language.DomainType;
 import language.TGGRule;
 import runtime.TGGRuleApplication;
 
+/**
+ * 
+ * This class handles the repairing attempts of broken matches by trying to repair attributes that do not comply with constraints.
+ * 
+ * @author lfritsche
+ *
+ */
 public class AttributeRepairStrategy extends AbstractRepairStrategy {
 
 	private OperationalStrategy operationalStrategy;
@@ -62,18 +69,6 @@ public class AttributeRepairStrategy extends AbstractRepairStrategy {
 		} catch (Exception e) {
 		}
 		return iMatch;
-	}
-
-	@Override
-	// if a new match was found for the old TGGRuleApplication then we can assume that everything was correct
-	protected boolean checkIfRepairWasSucessful(TGGRuleApplication ra, IMatch oldMatch, IMatch newMatch) {
-		return true;
-	}
-
-	@Override
-	// does not need to be revoked since we only change attributes which can simply be removed by the clean algorithm
-	protected boolean revokeRepair(TGGRuleApplication ra) {
-		return true;
 	}
 
 	@Override

@@ -36,6 +36,17 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.TGGRuleCorr;
 
+/**
+ * 
+ * This class calculates overlaps of all pairs of rules of a TGG to identify which elements
+ * are to be preserved when we transform a source rule match to a target rule match.
+ * These overlaps are then used to generated shortcut rules.
+ * The overlaps themselves are calculated by formulating the overlap problem as an ILP by defining
+ * matching candidates between both source and target rule. 
+ * 
+ * @author lfritsche
+ *
+ */
 public class OverlapUtil {
 	protected final static Logger logger = Logger.getLogger(TGGOverlap.class);
 	private IbexOptions options;

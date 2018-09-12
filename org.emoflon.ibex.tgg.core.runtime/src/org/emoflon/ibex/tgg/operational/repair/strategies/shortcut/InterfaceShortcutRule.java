@@ -25,6 +25,17 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
+/**
+ * This class implements a special type of operationalized shortcut rules.
+ * It focusses on interface edges, i.e. edges between created and context nodes.
+ * These edges get deleted when the context is deleted and often trigger an avalanche of invalidated rule applications
+ * when a rule application is removed.
+ * To circumvent this, InterfaceShortcutRules do not simply revoke a rule application with broken interface edges but try to 
+ * restore consistency by fixing them. 
+ * 
+ * @author lfritsche
+ *
+ */
 public class InterfaceShortcutRule extends OperationalShortcutRule {
 	
 	private OperationalStrategy strategy;

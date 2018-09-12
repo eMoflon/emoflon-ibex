@@ -5,14 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.gen.GENBlackPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -31,6 +29,12 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
+/**
+ * This class handles all operationalized shortcut rules and their application to fix a broken match.
+ * 
+ * @author lfritsche
+ *
+ */
 public class ShortcutPatternTool {
 	
 	protected final static Logger logger = Logger.getLogger(RepairStrategyController.class);
@@ -76,7 +80,7 @@ public class ShortcutPatternTool {
 
 	private IMatch processBrokenMatch(Collection<OperationalShortcutRule> rules, IMatch brokenMatch) {
 		for(OperationalShortcutRule osr : rules) {
-			logger.info("Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");
+			logger.debug("Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");
 			
 			IMatch newMatch = processBrokenMatch(osr, brokenMatch);
 			if(newMatch == null)
@@ -90,6 +94,12 @@ public class ShortcutPatternTool {
 		return null;
 	}
 	
+	/**
+	 * transforms the given operationalized shortcut rule match into a match conforming to a target rule match
+	 * @param osr
+	 * @param scMatch
+	 * @return
+	 */
 	private IMatch transformToTargetMatch(OperationalShortcutRule osr, IMatch scMatch) {
 		IMatch newMatch = new SimpleMatch(osr.getScRule().getTargetRule().getName() + PatternSuffixes.CONSISTENCY);
 		
@@ -125,7 +135,7 @@ public class ShortcutPatternTool {
 	 * @param edgesToRevoke
 	 *            the edges to revoke
 	 */
-	private void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
+	private void revokeElements(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
 		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> strategy.addToTrash(node));
 	}
 	
@@ -144,7 +154,7 @@ public class ShortcutPatternTool {
 		Set<EObject> nodesToRevoke = new HashSet<>();
 		deletedRuleNodes.forEach(n -> nodesToRevoke.add((EObject) brokenMatch.get(n.getName())));
 		
-		revoke(nodesToRevoke, edgesToRevoke);
+		revokeElements(nodesToRevoke, edgesToRevoke);
 		
 		Collection<TGGRuleNode> contextRuleNodes = TGGCollectionUtil.filterNodes(osc.getScRule().getNodes(), BindingType.CONTEXT);
 		for(TGGRuleNode n : contextRuleNodes) {

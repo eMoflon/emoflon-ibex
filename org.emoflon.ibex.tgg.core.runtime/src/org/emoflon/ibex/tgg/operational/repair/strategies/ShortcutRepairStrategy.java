@@ -15,6 +15,15 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import runtime.TGGRuleApplication;
 
+/**
+ * 
+ * This class attempts to repair broken matches by using operationalized shortcut rules (OSR).
+ * These OSRs detect specific situations (like certain deltas) and try to repair the broken match to be either a valid match of its rule again
+ * or by transforming the match to that of another rule.
+ * 
+ * @author lfritsche
+ *
+ */
 public class ShortcutRepairStrategy extends AbstractRepairStrategy{
 
 	private OperationalStrategy operationalStrategy;
@@ -43,16 +52,6 @@ public class ShortcutRepairStrategy extends AbstractRepairStrategy{
 	protected IMatch repair(TGGRuleApplication ra, IMatch iMatch) {
 		updateDirection();
 		return scTool.processBrokenMatch(syncDirection, iMatch);
-	}
-
-	@Override
-	protected boolean checkIfRepairWasSucessful(TGGRuleApplication ra, IMatch oldMatch, IMatch newMatch) {
-		return true;
-	}
-
-	@Override
-	protected boolean revokeRepair(TGGRuleApplication ra) {
-		return true;
 	}
 
 	private void updateDirection() {

@@ -9,6 +9,12 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
+/**
+ * A utility class to filter sets of TGGRuleElements.
+ * 
+ * @author lfritsche
+ *
+ */
 public class TGGCollectionUtil {
 	
 	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleElement> elements) {

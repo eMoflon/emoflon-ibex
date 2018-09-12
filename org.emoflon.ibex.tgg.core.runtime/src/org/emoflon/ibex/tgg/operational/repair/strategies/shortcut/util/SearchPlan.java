@@ -11,6 +11,12 @@ import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.N
 
 import language.TGGRuleNode;
 
+/**
+ * This class is a container for a search plan consisting of an ordered list of lookup operation and
+ * maps for node checks, edge checks and nac checks
+ * @author lfritsche
+ *
+ */
 public class SearchPlan {
 
 	public List<Pair<SearchKey, Lookup>> lookUpPlan;
