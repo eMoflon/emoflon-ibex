@@ -10,6 +10,8 @@ import java.util.Arrays;
 
 import javax.naming.directory.InvalidAttributeValueException;
 
+import org.emoflon.ibex.common.collections.CollectionFactory;
+import org.emoflon.ibex.common.collections.IntToIntMap;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
@@ -19,8 +21,6 @@ import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;
 import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
-
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 /**
  * This class is a wrapper around GLPK allowing the usage of this ILPSolver with
@@ -279,7 +279,7 @@ final class GLPKWrapper extends ILPSolver {
 			ILPSolver.logger.error("No optimal or feasible solution found.");
 			throw new RuntimeException("No optimal or feasible solution found.");
 		}
-		Int2IntOpenHashMap variableSolutions = new Int2IntOpenHashMap();
+		IntToIntMap variableSolutions = CollectionFactory.cfactory.createIntToIntMap();
 		double optimum = GLPK.glp_mip_obj_val(this.problem);
 		ILPSolver.logger.debug("GLPK found solution: " + optimum + " - Optimal: " + optimal);
 		for (int variable : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
@@ -309,7 +309,7 @@ final class GLPKWrapper extends ILPSolver {
 		}
 		currentTimeout = Math.min(currentTimeout, GLPKWrapper.MAX_TIMEOUT);
 		if (this.ilpProblem.getVariableIdsOfUnfixedVariables().size() <= 0)
-			return this.ilpProblem.createILPSolution(new Int2IntOpenHashMap(), true, 0);
+			return this.ilpProblem.createILPSolution(CollectionFactory.cfactory.createIntToIntMap(), true, 0);
 		try {
 			this.prepareModel();
 			int exitCode = this.solveModel(currentTimeout);
