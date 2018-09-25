@@ -22,6 +22,7 @@ import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
+import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import IBeXLanguage.IBeXAttributeConstraint;
@@ -71,6 +72,8 @@ public class ContextPatternTransformation {
 	public IBeXPatternSet transform() {
 		if(strategy instanceof MODELGEN)
 			createModelGenPatterns();
+		if(strategy instanceof CC)
+			createCCPatterns();
 
 		// TODO: Handle other operationalisations
 
@@ -99,6 +102,16 @@ public class ContextPatternTransformation {
 		genPatternTransformer.transform(rule);
 	}
 
+	private void createCCPatterns() {
+		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
+			createCCPattern(rule);
+	}
+
+	private void createCCPattern(TGGRule rule) {
+		CCPatternTransformation ccPatternTransformer = new CCPatternTransformation(this, options);
+		ccPatternTransformer.transform(rule);
+	}
+	
 	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {
 		// Root pattern
 		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
