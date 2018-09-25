@@ -1,8 +1,11 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -73,7 +76,11 @@ public class AttributeRepairStrategy extends AbstractRepairStrategy {
 
 	@Override
 	protected boolean isCandidate(TGGRuleApplication ra, IMatch iMatch) {
-		return ra.getNodeMappings().keySet().size() == ra.getNodeMappings().values().size();
+		if(ra.getNodeMappings().keySet().size() != (int) ra.getNodeMappings().values().stream().filter(n -> n != null).count())
+			return false;
+		
+		boolean isDangling = ra.getNodeMappings().values().parallelStream().map(n -> EMFManipulationUtils.isDanglingNode(Optional.of(n))).reduce(false, (a,b) -> a || b);
+		return !isDangling;
 	}
 
 }
