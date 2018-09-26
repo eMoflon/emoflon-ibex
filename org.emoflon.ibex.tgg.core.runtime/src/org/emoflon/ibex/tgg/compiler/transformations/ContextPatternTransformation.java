@@ -55,7 +55,7 @@ import language.TGGRuleNode;
 public class ContextPatternTransformation {
 	public static final int MAX_NUM_OF_EDGES_IN_PATTERN = 3;
 
-	private static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
+	protected static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
 	private final boolean USE_INVOCATIONS_FOR_REFERENCES;
 	private IbexOptions options;
 	private List<IBeXContext> ibexContextPatterns = new ArrayList<>();
@@ -75,17 +75,18 @@ public class ContextPatternTransformation {
 
 	public IBeXPatternSet transform() {
 		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
-			if (strategy instanceof MODELGEN)
+			String classname = strategy.getClass().getName();
+			if (classname.contains("MODELGEN"))
 				createModelGenPattern(rule);
-			else if (strategy instanceof SYNC)
+			else if (classname.contains("SYNC"))
 				createSYNCPattern(rule);
-			else if (strategy instanceof CC)
+			else if (classname.contains("CC"))
 				createCCPattern(rule);
-			else if (strategy instanceof CO)
+			else if (classname.contains("CO"))
 				createCOPattern(rule);
-			else if (strategy instanceof FWD_OPT)
+			else if (classname.contains("FWD_OPT"))
 				createFWD_OPTPattern(rule);
-			else if (strategy instanceof BWD_OPT)
+			else if (classname.contains("BWD_OPT"))
 				createBWD_OPTPattern(rule);
 			else
 				throw new IllegalArgumentException("Strategy undefined!");
@@ -211,7 +212,7 @@ public class ContextPatternTransformation {
 		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern,
 				allEdges.size() > MAX_NUM_OF_EDGES_IN_PATTERN);
 	}
-
+	
 	public void transformInNodeAttributeConditions(IBeXContextPattern ibexPattern, TGGRuleNode node) {
 		Objects.requireNonNull(ibexPattern, "ibexContextPattern must not be null!");
 
@@ -222,7 +223,6 @@ public class ContextPatternTransformation {
 		}
 
 		for (TGGInplaceAttributeExpression attrExp : node.getAttrExpr()) {
-			if (node.getBindingType().equals(BindingType.CONTEXT)) {
 				IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE
 						.createIBeXAttributeConstraint();
 				ibexAttrConstraint.setNode(ibexNode.get());
@@ -233,11 +233,10 @@ public class ContextPatternTransformation {
 				convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
 						.ifPresent(value -> ibexAttrConstraint.setValue(value));
 				ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
-			}
 		}
 	}
 
-	private Optional<IBeXAttributeValue> convertValue(IBeXContextPattern ibexPattern, TGGExpression valueExpr,
+	protected Optional<IBeXAttributeValue> convertValue(IBeXContextPattern ibexPattern, TGGExpression valueExpr,
 			EAttribute eAttribute) {
 		if (valueExpr instanceof TGGEnumExpression) {
 			return Optional.of(convertAttributeValue((TGGEnumExpression) valueExpr));
@@ -264,7 +263,7 @@ public class ContextPatternTransformation {
 		return ibexConstant;
 	}
 
-	private IBeXRelation convertRelation(TGGAttributeConstraintOperators operator) {
+	protected IBeXRelation convertRelation(TGGAttributeConstraintOperators operator) {
 		switch (operator) {
 		case GREATER:
 			return IBeXRelation.GREATER;

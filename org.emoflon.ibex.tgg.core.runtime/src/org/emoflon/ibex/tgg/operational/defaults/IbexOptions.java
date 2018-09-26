@@ -39,7 +39,7 @@ public class IbexOptions {
 		workspacePath = "./../";
 		repairAttributes = true;
 		setIlpSolver(SupportedILPSolver.Sat4J);
-		useEdgePatterns = true;
+		useEdgePatterns = false;
 	}
 
 	public IbexOptions debug(boolean debug) {

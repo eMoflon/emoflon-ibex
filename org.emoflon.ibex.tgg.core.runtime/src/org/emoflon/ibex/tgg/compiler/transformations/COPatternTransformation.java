@@ -38,15 +38,15 @@ public class COPatternTransformation extends OperationalPatternTransformation {
 	
 	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
-		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
-		contextNodes.addAll(TGGModelUtils.getNodesByOperator(rule, BindingType.CREATE));
+		List<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
+		nodes.addAll(TGGModelUtils.getNodesByOperator(rule, BindingType.CREATE));
 		
-		for (final TGGRuleNode node : contextNodes) {
+		for (final TGGRuleNode node : nodes) {
 			parent.transformNode(ibexPattern, node);
 		}
 		
 		// Transform attributes.
-		for (final TGGRuleNode node : contextNodes) {
+		for (final TGGRuleNode node : nodes) {
 			parent.transformInNodeAttributeConditions(ibexPattern, node);
 		}
 	}

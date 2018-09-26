@@ -39,23 +39,23 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 	
 	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
-		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
-		contextNodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
+		List<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
+		nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
 		
-		for (final TGGRuleNode node : contextNodes) {
+		for (final TGGRuleNode node : nodes) {
 			parent.transformNode(ibexPattern, node);
 		}
 		
 		// Transform attributes.
-		for (final TGGRuleNode node : contextNodes) {
+		for (final TGGRuleNode node : nodes) {
 			parent.transformInNodeAttributeConditions(ibexPattern, node);
 		}
 	}
-	
+
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
 		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
-		edges.addAll(TGGModelUtils.getReferencesByOperator(rule, BindingType.CREATE));
+		edges.addAll(TGGModelUtils.getReferencesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
 		
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);

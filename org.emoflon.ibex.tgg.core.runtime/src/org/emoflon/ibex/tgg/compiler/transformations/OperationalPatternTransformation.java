@@ -3,21 +3,27 @@ package org.emoflon.ibex.tgg.compiler.transformations;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
+import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
+import IBeXLanguage.IBeXRelation;
 import language.BindingType;
 import language.DomainType;
 import language.NAC;
 import language.TGGComplementRule;
+import language.TGGInplaceAttributeExpression;
 import language.TGGRule;
 import language.TGGRuleNode;
 
