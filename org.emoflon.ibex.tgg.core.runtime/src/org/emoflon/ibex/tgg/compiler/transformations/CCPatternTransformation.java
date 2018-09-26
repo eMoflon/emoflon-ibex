@@ -39,7 +39,6 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 	
 	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
-		//TODO All source, all target, but only context corr
 		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
 		contextNodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
 		contextNodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
@@ -56,7 +55,6 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 	
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
-		//TODO All source, all target, but only context corr
 		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
 		edges.addAll(TGGModelUtils.getReferencesByOperator(rule, BindingType.CREATE));
 		
