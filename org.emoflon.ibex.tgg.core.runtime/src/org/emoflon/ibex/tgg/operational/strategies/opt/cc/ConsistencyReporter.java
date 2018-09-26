@@ -91,7 +91,7 @@ public class ConsistencyReporter {
 		String refNamePrefix = TGGModelUtils.getMarkerRefNamePrefix(BindingType.CREATE, type);
 		for (EReference ref : c.eClass().getEAllReferences()) {
 			if(ref.getName().startsWith(refNamePrefix)) {							
-				createdNodes.addAll((Collection<EObject>) ra.eGet(ref));			
+				createdNodes.add((EObject)ra.eGet(ref));			
 			}
 		}
 		return createdNodes;
