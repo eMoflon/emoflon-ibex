@@ -9,7 +9,6 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
-import language.DomainType;
 import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
@@ -19,7 +18,6 @@ public class COPatternTransformation extends OperationalPatternTransformation {
 
 	public COPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
 		super(parent, options);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

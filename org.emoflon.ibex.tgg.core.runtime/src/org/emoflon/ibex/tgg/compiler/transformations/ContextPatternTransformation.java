@@ -22,6 +22,7 @@ import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
+import org.emoflon.ibex.tgg.operational.strategies.opt.*;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
@@ -73,14 +74,22 @@ public class ContextPatternTransformation {
 	}
 
 	public IBeXPatternSet transform() {
-		if (strategy instanceof MODELGEN)
-			createModelGenPatterns();
-		else if (strategy instanceof SYNC)
-			createSYNCPatterns();
-		else if (strategy instanceof CC)
-			createCCPatterns();
-
-		// TODO: Handle other operationalisations
+		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
+			if (strategy instanceof MODELGEN)
+				createModelGenPattern(rule);
+			else if (strategy instanceof SYNC)
+				createSYNCPattern(rule);
+			else if (strategy instanceof CC)
+				createCCPattern(rule);
+			else if (strategy instanceof CO)
+				createCOPattern(rule);
+			else if (strategy instanceof FWD_OPT)
+				createFWD_OPTPattern(rule);
+			else if (strategy instanceof BWD_OPT)
+				createBWD_OPTPattern(rule);
+			else
+				throw new IllegalArgumentException("Strategy undefined!");
+		}
 
 		return createSortedPatternSet();
 	}
@@ -97,19 +106,9 @@ public class ContextPatternTransformation {
 		return patternToRuleMap;
 	}
 
-	private void createModelGenPatterns() {
-		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
-			createModelGenPattern(rule);
-	}
-
 	private void createModelGenPattern(TGGRule rule) {
 		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this, options);
 		genPatternTransformer.transform(rule);
-	}
-	
-	private void createSYNCPatterns() {
-		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
-			createSYNCPattern(rule);
 	}
 
 	private void createSYNCPattern(TGGRule rule) {
@@ -117,16 +116,26 @@ public class ContextPatternTransformation {
 		syncPatternTransformer.transform(rule);
 	}
 
-	private void createCCPatterns() {
-		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
-			createCCPattern(rule);
-	}
-
 	private void createCCPattern(TGGRule rule) {
 		CCPatternTransformation ccPatternTransformer = new CCPatternTransformation(this, options);
 		ccPatternTransformer.transform(rule);
 	}
-	
+
+	private void createCOPattern(TGGRule rule) {
+		COPatternTransformation coPatternTransformer = new COPatternTransformation(this, options);
+		coPatternTransformer.transform(rule);
+	}
+
+	private void createFWD_OPTPattern(TGGRule rule) {
+		FWD_OPTPatternTransformation fwd_optPatternTransformer = new FWD_OPTPatternTransformation(this, options);
+		fwd_optPatternTransformer.transform(rule);
+	}
+
+	private void createBWD_OPTPattern(TGGRule rule) {
+		BWD_OPTPatternTransformation bwd_optPatternTransformer = new BWD_OPTPatternTransformation(this, options);
+		bwd_optPatternTransformer.transform(rule);
+	}
+
 	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {
 		// Root pattern
 		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
@@ -178,7 +187,8 @@ public class ContextPatternTransformation {
 		return nacPattern;
 	}
 
-	public void transformEdge(EReference type, IBeXNode srcNode, IBeXNode trgNode, IBeXContextPattern ibexPattern, boolean tooManyEdges) {
+	public void transformEdge(EReference type, IBeXNode srcNode, IBeXNode trgNode, IBeXContextPattern ibexPattern,
+			boolean tooManyEdges) {
 		if (USE_INVOCATIONS_FOR_REFERENCES && tooManyEdges) {
 			transformEdgeToPatternInvocation(type, srcNode, trgNode, ibexPattern);
 			return;
@@ -198,7 +208,8 @@ public class ContextPatternTransformation {
 		if (allEdges.stream().anyMatch(e -> isGreaterEOpposite(e, edge)))
 			return;
 
-		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern, allEdges.size() > MAX_NUM_OF_EDGES_IN_PATTERN );
+		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern,
+				allEdges.size() > MAX_NUM_OF_EDGES_IN_PATTERN);
 	}
 
 	public void transformInNodeAttributeConditions(IBeXContextPattern ibexPattern, TGGRuleNode node) {
