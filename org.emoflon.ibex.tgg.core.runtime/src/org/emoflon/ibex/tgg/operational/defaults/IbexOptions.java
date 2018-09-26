@@ -26,6 +26,11 @@ public class IbexOptions {
 	private SupportedILPSolver ilpSolver;
 	private boolean repairAttributes;
 	private EPackage corrMetamodel;
+
+	/**
+	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
+	 * If this is false (disabled), then edge patterns are never used.
+	 */
 	private boolean useEdgePatterns;
 
 	public IbexOptions() {
@@ -34,7 +39,7 @@ public class IbexOptions {
 		workspacePath = "./../";
 		repairAttributes = true;
 		setIlpSolver(SupportedILPSolver.Sat4J);
-		useEdgePatterns = false;
+		useEdgePatterns = true;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -45,11 +50,11 @@ public class IbexOptions {
 	public boolean debug() {
 		return debug;
 	}
-	
+
 	public boolean repairAttributes() {
 		return repairAttributes;
 	}
-	
+
 	public IbexOptions repairAttributes(boolean repairAttributes) {
 		this.repairAttributes = repairAttributes;
 		return this;
@@ -135,7 +140,7 @@ public class IbexOptions {
 	public boolean blackInterpSupportsAttrConstrs() {
 		return blackInterpSupportsAttrConstrs;
 	}
-	
+
 	public void blackInterpSupportsAttrConstrs(boolean value) {
 		blackInterpSupportsAttrConstrs = value;
 	}
@@ -148,8 +153,7 @@ public class IbexOptions {
 	}
 
 	/**
-	 * @param ilpSolver
-	 *            the ilpSolver to set
+	 * @param ilpSolver the ilpSolver to set
 	 */
 	public IbexOptions setIlpSolver(SupportedILPSolver ilpSolver) {
 		this.ilpSolver = ilpSolver;
@@ -159,7 +163,7 @@ public class IbexOptions {
 	public void setCorrMetamodel(EPackage pack) {
 		this.corrMetamodel = pack;
 	}
-	
+
 	public EPackage getCorrMetamodel() {
 		return this.corrMetamodel;
 	}
@@ -167,7 +171,7 @@ public class IbexOptions {
 	public boolean getUseEdgePatterns() {
 		return useEdgePatterns;
 	}
-	
+
 	public IbexOptions setUseEdgePatterns(boolean value) {
 		useEdgePatterns = value;
 		return this;

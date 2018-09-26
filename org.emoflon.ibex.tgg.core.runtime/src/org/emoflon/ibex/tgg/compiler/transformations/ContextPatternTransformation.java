@@ -50,6 +50,8 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class ContextPatternTransformation {
+	public static final int MAX_NUM_OF_EDGES_IN_PATTERN = 3;
+
 	private static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
 	private final boolean USE_INVOCATIONS_FOR_REFERENCES;
 	private IbexOptions options;
@@ -161,8 +163,8 @@ public class ContextPatternTransformation {
 		return nacPattern;
 	}
 
-	public void transformEdge(EReference type, IBeXNode srcNode, IBeXNode trgNode, IBeXContextPattern ibexPattern) {
-		if (USE_INVOCATIONS_FOR_REFERENCES) {
+	public void transformEdge(EReference type, IBeXNode srcNode, IBeXNode trgNode, IBeXContextPattern ibexPattern, boolean tooManyEdges) {
+		if (USE_INVOCATIONS_FOR_REFERENCES && tooManyEdges) {
 			transformEdgeToPatternInvocation(type, srcNode, trgNode, ibexPattern);
 			return;
 		}
@@ -181,7 +183,7 @@ public class ContextPatternTransformation {
 		if (allEdges.stream().anyMatch(e -> isGreaterEOpposite(e, edge)))
 			return;
 
-		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern);
+		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern, allEdges.size() > MAX_NUM_OF_EDGES_IN_PATTERN );
 	}
 
 	public void transformInNodeAttributeConditions(IBeXContextPattern ibexPattern, TGGRuleNode node) {
@@ -272,7 +274,7 @@ public class ContextPatternTransformation {
 	private void transformEdgeToPatternInvocation(EReference type, IBeXNode ibexSourceNode, IBeXNode ibexTargetNode,
 			IBeXContextPattern ibexPattern) {
 		if (ibexSourceNode == ibexTargetNode) {
-			transformEdge(type, ibexSourceNode, ibexTargetNode, ibexPattern);
+			transformEdge(type, ibexSourceNode, ibexTargetNode, ibexPattern, false);
 			return;
 		}
 
@@ -325,19 +327,19 @@ public class ContextPatternTransformation {
 	private void transformCorr(IBeXContextPattern ibexPattern, TGGRuleCorr corr) {
 		EReference srcType = ((EReference) corr.getType().getEStructuralFeature("source"));
 		TGGRuleNode srcOfCorr = corr.getSource();
-		transformEdge(srcType, corr, srcOfCorr, ibexPattern);
+		transformEdge(srcType, corr, srcOfCorr, ibexPattern, false);
 
 		EReference trgType = ((EReference) corr.getType().getEStructuralFeature("target"));
 		TGGRuleNode trgOfCorr = corr.getTarget();
-		transformEdge(trgType, corr, trgOfCorr, ibexPattern);
+		transformEdge(trgType, corr, trgOfCorr, ibexPattern, false);
 	}
 
 	private void transformEdge(EReference type, TGGRuleNode srcNode, TGGRuleNode trgNode,
-			IBeXContextPattern ibexPattern) {
+			IBeXContextPattern ibexPattern, boolean tooManyEdges) {
 		IBeXNode sourceNode = transformNode(ibexPattern, srcNode);
 		IBeXNode targetNode = transformNode(ibexPattern, trgNode);
 
-		transformEdge(type, sourceNode, targetNode, ibexPattern);
+		transformEdge(type, sourceNode, targetNode, ibexPattern, tooManyEdges);
 	}
 
 	private boolean isGreaterEOpposite(TGGRuleEdge e1, TGGRuleEdge e2) {

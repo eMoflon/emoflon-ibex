@@ -65,34 +65,36 @@ public class ConsistencyPatternTransformation {
 		return ibexPattern;
 	}
 
-	private void createAndConnectProtocolNode(TGGRule kernel, IBeXContextPattern ibexPattern) {
+	private void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
 		IBeXNode protocolNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-		protocolNode.setName(TGGPatternUtil.getProtocolNodeName(kernel.getName()));
+		protocolNode.setName(TGGPatternUtil.getProtocolNodeName(rule.getName()));
 		EClass type = (EClass) options.getCorrMetamodel()
-				.getEClassifier(TGGModelUtils.getMarkerTypeName(kernel.getName()));
+				.getEClassifier(TGGModelUtils.getMarkerTypeName(rule.getName()));
 		protocolNode.setType(type);
 		ibexPattern.getSignatureNodes().add(protocolNode);
 
-		connectProtocolNode(ibexPattern, protocolNode, kernel);
+		connectProtocolNode(ibexPattern, protocolNode, rule);
 	}
 
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, TGGRule kernel) {
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CONTEXT, DomainType.SRC);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CONTEXT, DomainType.TRG);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CREATE, DomainType.SRC);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CREATE, DomainType.TRG);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CONTEXT, DomainType.CORR);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CREATE, DomainType.CORR);
+	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, TGGRule rule) {
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.SRC);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.TRG);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.SRC);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.TRG);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.CORR);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.CORR);
 	}
 
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, TGGRule kernel, IBeXNode protocolNode,
+	private void connectProtocolNode(IBeXContextPattern ibexPattern, TGGRule rule, IBeXNode protocolNode,
 			BindingType type, DomainType domain) {
-		Collection<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperatorAndDomain(kernel, type, domain);
+		Collection<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperatorAndDomain(rule, type, domain);
 
 		for (TGGRuleNode node : nodes) {
 			EReference ref = (EReference) protocolNode.getType()
 					.getEStructuralFeature(TGGModelUtils.getMarkerRefName(type, domain, node.getName()));
-			parent.transformEdge(ref, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern);
+			parent.transformEdge(ref, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern,
+					rule.getEdges().size()
+							+ rule.getNodes().size() > ContextPatternTransformation.MAX_NUM_OF_EDGES_IN_PATTERN);
 		}
 	}
 

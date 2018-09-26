@@ -19,6 +19,7 @@ public class PrecedenceGraph implements IMatchContainer {
 	private SYNC strategy;
 
 	private Collection<Object> translated;
+	private Collection<IMatch> pending = cfactory.createObjectSet();
 
 	private Map<IMatch, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
 	private Map<Object, Collection<IMatch>> requiredBy = cfactory.createObjectToObjectHashMap();
@@ -32,7 +33,12 @@ public class PrecedenceGraph implements IMatchContainer {
 		this.translated = translated;
 	}
 
-	public void addMatch(IMatch m) {
+	@Override
+	public void addMatch(IMatch match) {
+		pending.add(match);
+	}
+	
+	private void handleMatch(IMatch m) {
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getPatternName());
 
@@ -134,11 +140,18 @@ public class PrecedenceGraph implements IMatchContainer {
 
 	@Override
 	public Set<IMatch> getMatches() {
+		pending.forEach(this::handleMatch);
+		pending.clear();
 		return readySet;
 	}
 
 	@Override
 	public boolean removeMatch(IMatch match) {
+		if(pending.contains(match)) {
+			pending.remove(match);
+			return true;
+		}
+		
 		Collection<Object> dependentObjects = requires.remove(match);
 		if (dependentObjects != null) {
 			for (Object o : dependentObjects) {

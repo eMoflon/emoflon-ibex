@@ -137,9 +137,9 @@ public class SYNCPatternTransformation {
 
 		// Transform edges
 		if (candidate.getEDirection() == EdgeDirection.OUTGOING)
-			parent.transformEdge(candidate.getEdgeType(), firstIBeXNode, secondIBeXNode, nacPattern);
+			parent.transformEdge(candidate.getEdgeType(), firstIBeXNode, secondIBeXNode, nacPattern, false);
 		else
-			parent.transformEdge(candidate.getEdgeType(), secondIBeXNode, firstIBeXNode, nacPattern);
+			parent.transformEdge(candidate.getEdgeType(), secondIBeXNode, firstIBeXNode, nacPattern, false);
 
 		nacPattern.setName(getFilterNACPatternName(candidate, rule));
 
@@ -173,11 +173,17 @@ public class SYNCPatternTransformation {
 		TGGRuleNode nodeInRule = candidate.getNodeInRule();
 		switch (candidate.getEDirection()) {
 		case INCOMING:
-			nodeInRule.getIncomingEdges().forEach(e -> parent.transformNode(nacPattern, e.getSrcNode()));
+			nodeInRule.getIncomingEdges()
+				.stream()//
+				.filter(e -> e.getType().equals(candidate.getEdgeType()))//
+				.forEach(e -> parent.transformNode(nacPattern, e.getSrcNode()));
 			break;
 
 		case OUTGOING:
-			nodeInRule.getOutgoingEdges().forEach(e -> parent.transformNode(nacPattern, e.getTrgNode()));
+			nodeInRule.getOutgoingEdges()
+				.stream()//
+				.filter(e -> e.getType().equals(candidate.getEdgeType()))//
+				.forEach(e -> parent.transformNode(nacPattern, e.getTrgNode()));
 			break;
 
 		default:
