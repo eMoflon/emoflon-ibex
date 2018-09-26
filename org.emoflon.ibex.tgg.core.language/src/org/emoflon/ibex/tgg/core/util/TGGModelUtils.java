@@ -51,6 +51,10 @@ public class TGGModelUtils {
 	}
 
 	public static String getMarkerRefName(BindingType type, DomainType domain, String markedOVName) {
-		return type.getLiteral() + "__" + domain.getLiteral() + "__" + markedOVName;
+		return getMarkerRefNamePrefix(type, domain) + markedOVName;
+	}
+	
+	public static String getMarkerRefNamePrefix(BindingType type, DomainType domain) {
+		return type.getLiteral() + "__" + domain.getLiteral() + "__";
 	}
 }

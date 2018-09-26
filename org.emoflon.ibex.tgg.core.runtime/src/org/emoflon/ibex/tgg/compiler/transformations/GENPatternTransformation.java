@@ -2,10 +2,12 @@ package org.emoflon.ibex.tgg.compiler.transformations;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getGENBlackPatternName;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXAttributeConstraint;
@@ -15,8 +17,11 @@ import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXRelation;
+import language.BindingType;
 import language.TGGComplementRule;
 import language.TGGRule;
+import language.TGGRuleEdge;
+import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
 public class GENPatternTransformation extends OperationalPatternTransformation {
@@ -88,5 +93,27 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 
 		invocation.setInvokedPattern(consistencyPatternOfKernel);
 		ibexPattern.getInvocations().add(invocation);
+	}
+	
+	@Override
+	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
+		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
+		for (final TGGRuleNode node : contextNodes) {
+			parent.transformNode(ibexPattern, node);
+		}
+		
+		// Transform attributes.
+		for (final TGGRuleNode node : contextNodes) {
+			parent.transformInNodeAttributeConditions(ibexPattern, node);
+		}
+	}
+	
+	@Override
+	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
+		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
+		for (TGGRuleEdge edge : edges)
+			parent.transformEdge(edges, edge, ibexPattern);
+
+		parent.addContextPattern(ibexPattern, rule);
 	}
 }

@@ -23,8 +23,8 @@ import language.TGGRuleNode;
 
 public class OperationalPatternTransformation {
 
-	private ContextPatternTransformation parent;
-	private IbexOptions options;
+	protected ContextPatternTransformation parent;
+	protected IbexOptions options;
 
 	public OperationalPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
 		this.parent = parent;
@@ -38,7 +38,15 @@ public class OperationalPatternTransformation {
 	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
 		throw new IllegalArgumentException("Method handleComplementRules must be overridden!");
 	}
+	
+	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
+		throw new IllegalArgumentException("Method transformNodes must be overridden!");
+	}
 
+	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
+		throw new IllegalArgumentException("Method transformNodes must be overridden!");
+	}
+	
 	public void transform(TGGRule rule) {
 		String patternName = getPatternName(rule);
 
@@ -50,25 +58,13 @@ public class OperationalPatternTransformation {
 		ibexPattern.setName(patternName);
 
 		// Transform nodes.
-		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
-		for (final TGGRuleNode node : contextNodes) {
-			parent.transformNode(ibexPattern, node);
-		}
-
-		// Transform attributes.
-		for (final TGGRuleNode node : contextNodes) {
-			parent.transformInNodeAttributeConditions(ibexPattern, node);
-		}
+		transformNodes(ibexPattern, rule);
 
 		// Ensure that all nodes must be disjoint even if they have the same type.
 		EditorToIBeXPatternHelper.addInjectivityConstraints(ibexPattern);
 
 		// Transform edges.
-		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
-		for (TGGRuleEdge edge : edges)
-			parent.transformEdge(edges, edge, ibexPattern);
-
-		parent.addContextPattern(ibexPattern, rule);
+		transformEdges(ibexPattern, rule);
 
 		// NACs
 		for (NAC nac : rule.getNacs())
