@@ -106,7 +106,7 @@ public class ContextPatternTransformation {
 		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this, options);
 		genPatternTransformer.transform(rule);
 	}
-	
+
 	private void createSYNCPatterns() {
 		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
 			createSYNCPattern(rule);
@@ -126,7 +126,7 @@ public class ContextPatternTransformation {
 		CCPatternTransformation ccPatternTransformer = new CCPatternTransformation(this, options);
 		ccPatternTransformer.transform(rule);
 	}
-	
+
 	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {
 		// Root pattern
 		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
@@ -178,7 +178,8 @@ public class ContextPatternTransformation {
 		return nacPattern;
 	}
 
-	public void transformEdge(EReference type, IBeXNode srcNode, IBeXNode trgNode, IBeXContextPattern ibexPattern, boolean tooManyEdges) {
+	public void transformEdge(EReference type, IBeXNode srcNode, IBeXNode trgNode, IBeXContextPattern ibexPattern,
+			boolean tooManyEdges) {
 		if (USE_INVOCATIONS_FOR_REFERENCES && tooManyEdges) {
 			transformEdgeToPatternInvocation(type, srcNode, trgNode, ibexPattern);
 			return;
@@ -198,7 +199,8 @@ public class ContextPatternTransformation {
 		if (allEdges.stream().anyMatch(e -> isGreaterEOpposite(e, edge)))
 			return;
 
-		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern, allEdges.size() > MAX_NUM_OF_EDGES_IN_PATTERN );
+		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern,
+				allEdges.size() > MAX_NUM_OF_EDGES_IN_PATTERN);
 	}
 
 	public void transformInNodeAttributeConditions(IBeXContextPattern ibexPattern, TGGRuleNode node) {
@@ -211,18 +213,15 @@ public class ContextPatternTransformation {
 		}
 
 		for (TGGInplaceAttributeExpression attrExp : node.getAttrExpr()) {
-			if (node.getBindingType().equals(BindingType.CONTEXT)) {
-				IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE
-						.createIBeXAttributeConstraint();
-				ibexAttrConstraint.setNode(ibexNode.get());
-				ibexAttrConstraint.setType(attrExp.getAttribute());
+			IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
+			ibexAttrConstraint.setNode(ibexNode.get());
+			ibexAttrConstraint.setType(attrExp.getAttribute());
 
-				IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
-				ibexAttrConstraint.setRelation(ibexRelation);
-				convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
-						.ifPresent(value -> ibexAttrConstraint.setValue(value));
-				ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
-			}
+			IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
+			ibexAttrConstraint.setRelation(ibexRelation);
+			convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
+					.ifPresent(value -> ibexAttrConstraint.setValue(value));
+			ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
 		}
 	}
 
