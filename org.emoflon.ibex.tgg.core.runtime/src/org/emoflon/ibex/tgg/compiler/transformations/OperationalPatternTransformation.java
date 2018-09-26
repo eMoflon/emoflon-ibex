@@ -1,8 +1,9 @@
 package org.emoflon.ibex.tgg.compiler.transformations;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
+
 import java.util.Collection;
-import java.util.List;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
@@ -18,7 +19,6 @@ import language.DomainType;
 import language.NAC;
 import language.TGGComplementRule;
 import language.TGGRule;
-import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class OperationalPatternTransformation {
@@ -30,15 +30,15 @@ public class OperationalPatternTransformation {
 		this.parent = parent;
 		this.options = options;
 	}
-	
+
 	protected String getPatternName(TGGRule rule) {
 		throw new IllegalArgumentException("Method getPatternName must be overridden!");
 	}
-	
+
 	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
 		throw new IllegalArgumentException("Method handleComplementRules must be overridden!");
 	}
-	
+
 	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
 		throw new IllegalArgumentException("Method transformNodes must be overridden!");
 	}
@@ -46,7 +46,7 @@ public class OperationalPatternTransformation {
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
 		throw new IllegalArgumentException("Method transformNodes must be overridden!");
 	}
-	
+
 	public void transform(TGGRule rule) {
 		String patternName = getPatternName(rule);
 
@@ -101,34 +101,36 @@ public class OperationalPatternTransformation {
 		return ibexPattern;
 	}
 
-	private void createAndConnectProtocolNode(TGGRule kernel, IBeXContextPattern ibexPattern) {
+	private void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
 		IBeXNode protocolNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-		protocolNode.setName(TGGPatternUtil.getProtocolNodeName(kernel.getName()));
+		protocolNode.setName(TGGPatternUtil.getProtocolNodeName(rule.getName()));
 		EClass type = (EClass) options.getCorrMetamodel()
-				.getEClassifier(TGGModelUtils.getMarkerTypeName(kernel.getName()));
+				.getEClassifier(TGGModelUtils.getMarkerTypeName(rule.getName()));
 		protocolNode.setType(type);
 		ibexPattern.getSignatureNodes().add(protocolNode);
 
-		connectProtocolNode(ibexPattern, protocolNode, kernel);
+		connectProtocolNode(ibexPattern, protocolNode, rule);
 	}
 
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, TGGRule kernel) {
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CONTEXT, DomainType.SRC);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CONTEXT, DomainType.TRG);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CREATE, DomainType.SRC);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CREATE, DomainType.TRG);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CONTEXT, DomainType.CORR);
-		connectProtocolNode(ibexPattern, kernel, protocolNode, BindingType.CREATE, DomainType.CORR);
+	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, TGGRule rule) {
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.SRC);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.TRG);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.SRC);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.TRG);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.CORR);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.CORR);
 	}
 
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, TGGRule kernel, IBeXNode protocolNode,
+	private void connectProtocolNode(IBeXContextPattern ibexPattern, TGGRule rule, IBeXNode protocolNode,
 			BindingType type, DomainType domain) {
-		Collection<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperatorAndDomain(kernel, type, domain);
+		Collection<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperatorAndDomain(rule, type, domain);
 
 		for (TGGRuleNode node : nodes) {
 			EReference ref = (EReference) protocolNode.getType()
 					.getEStructuralFeature(TGGModelUtils.getMarkerRefName(type, domain, node.getName()));
-			parent.transformEdge(ref, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern);
+			parent.transformEdge(ref, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern,
+					rule.getEdges().size()
+							+ rule.getNodes().size() > ContextPatternTransformation.MAX_NUM_OF_EDGES_IN_PATTERN);
 		}
 	}
 }
