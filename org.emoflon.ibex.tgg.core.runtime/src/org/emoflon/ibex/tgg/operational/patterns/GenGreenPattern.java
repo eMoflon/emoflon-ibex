@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.patterns;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
@@ -46,5 +47,10 @@ public class GenGreenPattern extends IbexGreenPattern {
 	protected List<TGGAttributeConstraint> sortConstraints(List<TGGParamValue> variables, List<TGGAttributeConstraint> constraints) {
 		SearchPlanAction spa = new SearchPlanAction(variables, constraints, true, getSrcTrgNodesCreatedByPattern());
 		return spa.sortConstraints();
+	}
+
+	@Override
+	public Collection<TGGRuleNode> getMarkedContextNodes() {
+		return Collections.emptyList();
 	}
 }

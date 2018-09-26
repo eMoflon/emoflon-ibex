@@ -13,7 +13,7 @@ import language.TGG;
 import language.TGGComplementRule;
 import language.TGGRule;
 
-public class MatchContainer {
+public class MatchContainer implements IMatchContainer {
 	private TGG tgg;
 	private Map<IMatch, String> matchToRuleName;
 	private Set<IMatch> kernelMatches;
@@ -50,20 +50,12 @@ public class MatchContainer {
 		kernelMatches.removeAll(matches);
 	}
 
-	public IMatch getNext() {
-		return getMatches().iterator().next();
-	}
-
 	public Set<IMatch> getMatches() {
 		return matchToRuleName.keySet();
 	}
 
 	public IMatch getNextKernel() {
 		return kernelMatches.iterator().next();
-	}
-
-	public boolean isEmpty() {
-		return matchToRuleName.isEmpty();
 	}
 
 	public String getRuleName(IMatch match) {
@@ -75,5 +67,9 @@ public class MatchContainer {
 	public void removeAllMatches() {
 		matchToRuleName.clear();
 		kernelMatches.clear();
+	}
+
+	public void matchApplied(IMatch m) {
+		// Default: do nothing
 	}
 }

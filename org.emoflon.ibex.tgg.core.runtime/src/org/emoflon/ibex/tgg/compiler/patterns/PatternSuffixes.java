@@ -60,7 +60,9 @@ public class PatternSuffixes {
 	public static final String CONSTRAINT = SEP + "CONSTRAINT_NAC";
 
 	/** Used for user-defined NACs */
-	public static final String NAC = SEP + "USER_NAC";
+	public static final String USER_NAC = SEP + "USER_NAC";
+	
+	public static final String FILTER_NAC = SEP + "FILTER_NAC";
 	
 	/** Used for edge patterns */
 	public static final String EDGE = SEP + "EDGE";

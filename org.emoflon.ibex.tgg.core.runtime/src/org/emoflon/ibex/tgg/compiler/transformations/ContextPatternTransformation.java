@@ -23,6 +23,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import IBeXLanguage.IBeXAttributeConstraint;
@@ -70,9 +71,11 @@ public class ContextPatternTransformation {
 	}
 
 	public IBeXPatternSet transform() {
-		if(strategy instanceof MODELGEN)
+		if (strategy instanceof MODELGEN)
 			createModelGenPatterns();
-		if(strategy instanceof CC)
+		else if (strategy instanceof SYNC)
+			createSYNCPatterns();
+		else if (strategy instanceof CC)
 			createCCPatterns();
 
 		// TODO: Handle other operationalisations
@@ -100,6 +103,16 @@ public class ContextPatternTransformation {
 	private void createModelGenPattern(TGGRule rule) {
 		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this, options);
 		genPatternTransformer.transform(rule);
+	}
+	
+	private void createSYNCPatterns() {
+		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
+			createSYNCPattern(rule);
+	}
+
+	private void createSYNCPattern(TGGRule rule) {
+		SYNCPatternTransformation syncPatternTransformer = new SYNCPatternTransformation(this, options);
+		syncPatternTransformer.transform(rule);
 	}
 
 	private void createCCPatterns() {
@@ -267,7 +280,7 @@ public class ContextPatternTransformation {
 		patternToRuleMap.put(ibexPattern, tggElement);
 	}
 
-	private void addContextPattern(final IBeXContextPattern ibexPattern) {
+	public void addContextPattern(final IBeXContextPattern ibexPattern) {
 		Objects.requireNonNull(ibexPattern, "The pattern must not be null!");
 
 		ibexContextPatterns.add(ibexPattern);

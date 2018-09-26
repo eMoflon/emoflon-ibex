@@ -65,4 +65,9 @@ public class BWDOptFusedGreenPattern extends FusedGreenPattern {
 	public void createMarkers(String ruleName, IMatch match) {
 		createMarkers(ruleName, match, TGGPatternUtil::getBWDOptBlackPatternName);
 	}
+
+	@Override
+	public Collection<TGGRuleNode> getMarkedContextNodes() {
+		return factory.getBlackTrgNodesInRule();
+	}
 }

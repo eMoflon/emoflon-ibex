@@ -53,14 +53,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		// Collect created edges to revoke.
 		pattern.getSrcTrgEdgesCreatedByPattern().forEach(e -> {
 			EMFEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
-			strategy.removeCreatedEdge(runtimeEdge);
 			edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
-		});
-
-		// Remove marked edges.
-		pattern.getEdgesMarkedByPattern().forEach(e -> {
-			EMFEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
-			strategy.removeMarkedEdge(runtimeEdge);
 		});
 
 		return edgesToRevoke;

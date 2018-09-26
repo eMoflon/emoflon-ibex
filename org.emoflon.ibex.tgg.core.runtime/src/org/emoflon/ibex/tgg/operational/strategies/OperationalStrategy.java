@@ -19,7 +19,6 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
@@ -29,6 +28,7 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttr
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
@@ -63,9 +63,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected Resource p;
 
 	// Match and pattern management
-	protected MatchContainer operationalMatchContainer;
+	protected IMatchContainer operationalMatchContainer;
 	protected Map<TGGRuleApplication, IMatch> consistencyMatches;
-	protected Set<EMFEdge> markedAndCreatedEdges;
 	private boolean domainsHaveNoSharedTypes;
 	private Map<String, IGreenPatternFactory> factories;
 
@@ -94,7 +93,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		greenInterpreter = new IbexGreenInterpreter(this);
 
 		consistencyMatches = cfactory.createObjectToObjectHashMap();
-		markedAndCreatedEdges = cfactory.createEMFEdgeHashSet();
 	}
 
 	/***** Resource management *****/
@@ -185,9 +183,13 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		rs.getResources().remove(res);
 		rs.getResources().remove(flattenedRes);
 
-		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG(), this);
+		this.operationalMatchContainer = createMatchContainer();
 
 		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
+	}
+
+	protected IMatchContainer createMatchContainer() {
+		return new MatchContainer(options.flattenedTGG(), this);
 	}
 
 	protected Resource loadFlattenedTGGResource() throws IOException {
@@ -336,15 +338,16 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		comatch.ifPresent(cm -> {
 			logger.debug("Successfully applied: " + match.getPatternName());
+			operationalMatchContainer.matchApplied(match);
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
 			updatePolicy.notifyMatchHasBeenApplied(cm, ruleName);
 		});
 
 		return comatch;
 	}
-
+	
 	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
-
+		// Default: do nothing
 	}
 
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {

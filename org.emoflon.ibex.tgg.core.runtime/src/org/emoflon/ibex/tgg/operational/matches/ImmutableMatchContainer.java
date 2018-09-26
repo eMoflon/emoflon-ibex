@@ -5,9 +5,9 @@ import java.util.Set;
 
 public class ImmutableMatchContainer {
 	
-	private MatchContainer matchContainer;
+	private IMatchContainer matchContainer;
 	
-	public ImmutableMatchContainer(MatchContainer matchContainer) {
+	public ImmutableMatchContainer(IMatchContainer matchContainer) {
 		this.matchContainer = matchContainer;
 	}
 	
