@@ -65,4 +65,9 @@ public class FWDOptFusedGreenPattern extends FusedGreenPattern {
 	public void createMarkers(String ruleName, IMatch match) {
 		createMarkers(ruleName, match, TGGPatternUtil::getFWDOptBlackPatternName);
 	}
+
+	@Override
+	public Collection<TGGRuleNode> getMarkedContextNodes() {
+		return factory.getBlackSrcNodesInRule();
+	}
 }

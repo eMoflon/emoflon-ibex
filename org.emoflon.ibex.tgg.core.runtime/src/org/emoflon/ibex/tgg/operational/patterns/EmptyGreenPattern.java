@@ -71,4 +71,9 @@ public class EmptyGreenPattern implements IGreenPattern {
 	public void createMarkers(String ruleName, IMatch match) {
 		
 	}
+
+	@Override
+	public Collection<TGGRuleNode> getMarkedContextNodes() {
+		return Collections.emptyList();
+	}
 }

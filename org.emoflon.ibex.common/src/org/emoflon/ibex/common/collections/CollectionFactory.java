@@ -3,12 +3,12 @@ package org.emoflon.ibex.common.collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.emoflon.ibex.common.collections.fastutil.FastUtilCollectionFactory;
+import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.common.emf.EMFEdge;
 
 public abstract class CollectionFactory {
-	public static final CollectionFactory cfactory // = new JDKCollectionFactory();
-			= new FastUtilCollectionFactory();
+	public static final CollectionFactory cfactory = new JDKCollectionFactory();
+		//	= new FastUtilCollectionFactory();
 
 	public abstract <K, V> Map<K, V> createObjectToObjectLinkedHashMap();
 

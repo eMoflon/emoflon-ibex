@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns;
 
+import language.TGGRule;
+
 public class TGGPatternUtil {
 	public static final String protocolNodeSuffix = "_eMoflon_ProtocolNode";
 
@@ -73,6 +75,10 @@ public class TGGPatternUtil {
 	}
 
 	public static String getNACPatternName(String nacName) {
-		return nacName + PatternSuffixes.NAC;
+		return nacName + PatternSuffixes.USER_NAC;
+	}
+	
+	public static String getFilterNACPatternName(FilterNACCandidate candidate, TGGRule rule) {
+		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC;  
 	}
 }

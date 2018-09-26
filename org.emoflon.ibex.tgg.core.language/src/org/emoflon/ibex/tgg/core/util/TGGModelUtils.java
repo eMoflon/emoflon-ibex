@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import language.BindingType;
 import language.DomainType;
+import language.NAC;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -16,16 +17,14 @@ public class TGGModelUtils {
 	public static List<TGGRuleNode> getNodesByOperator(TGGRule rule, BindingType type) {
 		Objects.requireNonNull(rule, "The rule must not be null!");
 		return rule.getNodes().stream() //
-				.filter(n -> type.equals(n.getBindingType()))
-				.sorted((a, b) -> a.getName().compareTo(b.getName())) //
+				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
 				.collect(Collectors.toList());
 	}
 
 	public static List<TGGRuleEdge> getReferencesByOperator(TGGRule rule, BindingType type) {
 		Objects.requireNonNull(rule, "The rule must not be null!");
 		return rule.getEdges().stream() //
-				.filter(n -> type.equals(n.getBindingType()))
-				.sorted((a, b) -> a.getName().compareTo(b.getName())) //
+				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
 				.collect(Collectors.toList());
 	}
 
@@ -39,18 +38,31 @@ public class TGGModelUtils {
 		return rule.getNodes().stream().allMatch(n -> n.getBindingType() == BindingType.CREATE);
 	}
 
-	public static Collection<TGGRuleNode> getNodesByOperatorAndDomain(TGGRule rule, BindingType type, DomainType domain) {
-		return getNodesByOperator(rule, type)
-				.stream()
-				.filter(n -> n.getDomainType().equals(domain))
+	public static Collection<TGGRuleNode> getNodesByOperatorAndDomain(TGGRule rule, BindingType type,
+			DomainType domain) {
+		return getNodesByOperator(rule, type)//
+				.stream()//
+				.filter(n -> n.getDomainType().equals(domain))//
 				.collect(Collectors.toList());
 	}
-	
+
 	public static String getMarkerTypeName(String ruleName) {
 		return ruleName + "__" + "Marker";
 	}
 
 	public static String getMarkerRefName(BindingType type, DomainType domain, String markedOVName) {
 		return type.getLiteral() + "__" + domain.getLiteral() + "__" + markedOVName;
+	}
+
+	public static Collection<? extends TGGRuleEdge> getReferencesByOperatorAndDomain(TGGRule rule, BindingType type,
+			DomainType domain) {
+		return getReferencesByOperator(rule, type)//
+				.stream()//
+				.filter(e -> e.getDomainType().equals(domain))//
+				.collect(Collectors.toList());
+	}
+
+	public static boolean isOfDomain(NAC nac, DomainType domain) {
+		return nac.getNodes().stream().anyMatch(n -> n.getDomainType().equals(domain));
 	}
 }

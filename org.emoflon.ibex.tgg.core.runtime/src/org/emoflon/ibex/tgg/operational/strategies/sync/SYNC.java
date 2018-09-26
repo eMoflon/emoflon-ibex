@@ -22,6 +22,7 @@ import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -48,6 +49,10 @@ public abstract class SYNC extends OperationalStrategy {
 
 	// Forward or backward sync
 	protected SYNC_Strategy strategy;
+	
+	// All translated elements
+	private Collection<Object> translated = cfactory.createObjectSet();
+	private Map<IMatch, Collection<Object>> consistencyToTranslated = cfactory.createObjectToObjectHashMap();
 
 	/***** Constructors *****/
 
@@ -55,7 +60,7 @@ public abstract class SYNC extends OperationalStrategy {
 		super(options);
 		redInterpreter = new IbexRedInterpreter(this);
 	}
-	
+
 	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
 		this.redInterpreter = redInterpreter;
 	}
@@ -152,83 +157,38 @@ public abstract class SYNC extends OperationalStrategy {
 		strategy = new BWD_Strategy();
 		run();
 	}
-	
+
 	/***** Marker Handling *******/
+
+	/**
+	 * Override in subclass if markers for protocol are not required (this can speed
+	 * up the translation process).
+	 */
+	@Override
+	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
+		createMarkers(greenPattern, cm, ruleName);
+	}
 	
 	protected void fillInProtocolData(TGGRuleApplication protocolNode, int protocolNodeID) {
-		// FIXME: Protocol is now typed!
+		// FIXME: Protocol is now typed!  Multi-almalgamation!
 //		protocolNode.getCreatedSrc().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
 //		protocolNode.getCreatedTrg().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
 //		protocolNode.getCreatedCorr().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
 	}
 
-	@Override
-	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
-		markedAndCreatedEdges.addAll(cm.getCreatedEdges());
-		greenPattern.getEdgesMarkedByPattern().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
-		createMarkers(greenPattern, cm, ruleName);
-	}
-
-	// FIXME: Extract to extra precedence graph class 
-	// FIXME: Make more efficient by using precedence graph?
-	public boolean matchIsReady(IMatch m) {
-		String ruleName = operationalMatchContainer.getRuleName(m);
-		IGreenPatternFactory factory = getGreenFactory(ruleName);
-		IGreenPattern greenPattern = factory.create(m.getPatternName());
-		return allContextElementsAlreadyProcessed(m, greenPattern, ruleName);
-	}
-
-	protected boolean allContextElementsAlreadyProcessed(IMatch match, IGreenPattern greenPattern, String ruleName) {
-		return allEdgesAlreadyProcessed(greenPattern.getMarkedContextEdges(), match);
-	}
-
+	/***** Match and pattern management *****/
+	
 	public EMFEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
 		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
 		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
 		EReference ref = specificationEdge.getType();
 		return new EMFEdge(src, trg, ref);
 	}
-
-	public void removeCreatedEdge(EMFEdge runtimeEdge) {
-		markedAndCreatedEdges.remove(runtimeEdge);
+	
+	@Override
+	protected IMatchContainer createMatchContainer() {
+		return new PrecedenceGraph(this, translated);
 	}
-
-	public void removeMarkedEdge(EMFEdge runtimeEdge) {
-		markedAndCreatedEdges.remove(runtimeEdge);
-	}
-
-	public boolean allEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IMatch match) {
-		for (TGGRuleEdge edge : specificationEdges) {
-			EObject src = (EObject) match.get(edge.getSrcNode().getName());
-			EObject trg = (EObject) match.get(edge.getTrgNode().getName());
-			EReference ref = edge.getType();
-			if (!markedAndCreatedEdges.contains(new EMFEdge(src, trg, ref)))
-				return false;
-		}
-
-		return true;
-	}
-
-	public boolean someEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IMatch match) {
-		for (TGGRuleEdge edge : specificationEdges) {
-			EObject src = (EObject) match.get(edge.getSrcNode().getName());
-			EObject trg = (EObject) match.get(edge.getTrgNode().getName());
-			EReference ref = edge.getType();
-
-			if (src == null | trg == null | ref == null)
-				throw new IllegalStateException(
-						"The match " + match.getPatternName() + " is invalid for this operational strategy (the edge -"
-								+ ref.getName() + "-> appears to be expected but is missing)!  "
-								+ "Are you sure you have implemented isPatternRelevant correctly?");
-
-			if (markedAndCreatedEdges.contains(new EMFEdge(src, trg, ref)))
-				return true;
-		}
-
-		return false;
-	}
-
-	/***** Match and pattern management *****/
 
 	@Override
 	protected boolean addConsistencyMatch(IMatch match) {
@@ -238,7 +198,20 @@ public abstract class SYNC extends OperationalStrategy {
 				logger.debug(match.getPatternName() + " appears to be fixed.");
 				brokenRuleApplications.remove(ruleAppNode);
 			}
-
+			
+			// Add translated elements
+			IGreenPatternFactory gFactory = getGreenFactory(match.getRuleName());
+			Collection<Object> translatedElts = cfactory.createObjectSet();
+			translatedElts.addAll(gFactory.getGreenSrcNodesInRule().stream().map(n -> match.get(n.getName())).collect(Collectors.toList()));
+			translatedElts.addAll(gFactory.getGreenTrgNodesInRule().stream().map(n -> match.get(n.getName())).collect(Collectors.toList()));
+			
+			translatedElts.addAll(gFactory.getGreenSrcEdgesInRule().stream().map(e -> getRuntimeEdge(match, e)).collect(Collectors.toList()));
+			translatedElts.addAll(gFactory.getGreenTrgEdgesInRule().stream().map(e -> getRuntimeEdge(match, e)).collect(Collectors.toList()));
+			
+			consistencyToTranslated.put(match, translatedElts);
+			
+			translated.addAll(translatedElts);
+			
 			return true;
 		}
 
@@ -256,6 +229,9 @@ public abstract class SYNC extends OperationalStrategy {
 	protected void addBrokenMatch(IMatch match) {
 		TGGRuleApplication ra = getRuleApplicationNode(match);
 		brokenRuleApplications.put(ra, match);
+		
+		// Remove translated elements
+		translated.removeAll(consistencyToTranslated.remove(match));
 	}
 
 	@Override
@@ -272,7 +248,6 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	public IGreenPattern revokes(IMatch match) {
-		// String ruleName = getRuleApplicationNode(match).getName();
 		return strategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
 	}
 
@@ -378,7 +353,7 @@ public abstract class SYNC extends OperationalStrategy {
 			fillInProtocolData(complProtocolNode, localCounter);
 		}
 	}
-	
+
 	protected boolean isComplementRuleApplicable(IMatch match, String ruleName) {
 		if (!isPatternRelevantForInterpreter(match.getPatternName())) {
 			logger.debug("Not relevant for interpreter: " + match.getPatternName());
