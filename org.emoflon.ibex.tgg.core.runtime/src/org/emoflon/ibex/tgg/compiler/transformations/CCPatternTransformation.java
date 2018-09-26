@@ -9,6 +9,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
+import language.DomainType;
 import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
@@ -38,8 +39,11 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 	
 	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
+		//TODO All source, all target, but only context corr
 		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
-		contextNodes.addAll(TGGModelUtils.getNodesByOperator(rule, BindingType.CREATE));
+		contextNodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
+		contextNodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
+		
 		for (final TGGRuleNode node : contextNodes) {
 			parent.transformNode(ibexPattern, node);
 		}
@@ -52,8 +56,10 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 	
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
+		//TODO All source, all target, but only context corr
 		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
 		edges.addAll(TGGModelUtils.getReferencesByOperator(rule, BindingType.CREATE));
+		
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
 
