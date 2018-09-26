@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -11,8 +12,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
+import language.BindingType;
+import language.DomainType;
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
@@ -80,6 +84,18 @@ public class ConsistencyReporter {
 	public Collection<EObject> getInconsistentCorrNodes() {
 		return inconsistentCorrNodes;
 	}
+	
+	private Collection<EObject> getCreatedNodes(EObject c, DomainType type) {
+		TGGRuleApplication ra = (TGGRuleApplication) c;
+		Collection<EObject> createdNodes = new ArrayList<>();
+		String refNamePrefix = TGGModelUtils.getMarkerRefNamePrefix(BindingType.CREATE, type);
+		for (EReference ref : c.eClass().getEAllReferences()) {
+			if(ref.getName().startsWith(refNamePrefix)) {							
+				createdNodes.add((EObject)ra.eGet(ref));			
+			}
+		}
+		return createdNodes;
+	}
 
 	private Collection<EObject> extractInconsistentNodes(Resource resource, Resource protocol, Domain domain) {
 		Iterator<EObject> it = resource.getAllContents();
@@ -91,26 +107,24 @@ public class ConsistencyReporter {
 		}
 		protocol.getContents().forEach(c -> {
 			if (c instanceof TGGRuleApplication) {
-				TGGRuleApplication ra = (TGGRuleApplication) c;
-				Collection<EObject> createdNodes;
+				Collection<EObject> createdNodes = new ArrayList<>();
 
-				//FIXME:  Protocol is now typed
-//				switch (domain) {
-//				case SRC:
-//					createdNodes = ra.getCreatedSrc();
-//					break;
-//				case TRG:
-//					createdNodes = ra.getCreatedTrg();
-//					break;
-//				case CORR:
-//					createdNodes = ra.getCreatedCorr();
-//					break;
-//				default:
-//					createdNodes = null;
-//					break;
-//				}
-//
-//				nodes.removeAll(createdNodes);
+				switch (domain) {
+				case SRC:
+					createdNodes = getCreatedNodes(c, DomainType.SRC);
+					break;
+				case TRG:
+					createdNodes = getCreatedNodes(c, DomainType.TRG);
+					break;
+				case CORR:
+					createdNodes = getCreatedNodes(c, DomainType.CORR);
+					break;
+				default:
+					createdNodes = null;
+					break;
+				}
+
+				nodes.removeAll(createdNodes);
 			}
 
 		});
@@ -140,22 +154,22 @@ public class ConsistencyReporter {
 			}
 		}
 
-		//FIXME: Protocol is now typed
-//		protocol.getContents().forEach(c -> {
-//			if (c instanceof TGGRuleApplication) {
-//				TGGRuleApplication ra = (TGGRuleApplication) c;
-//				Collection<TGGRuleEdge> specificationEdges = domain == Domain.SRC
-//						? strategy.getGreenFactory(ra.getName()).getGreenSrcEdgesInRule()
-//						: strategy.getGreenFactory(ra.getName()).getGreenTrgEdgesInRule();
-//				for (TGGRuleEdge specificationEdge : specificationEdges) {
-//					EObject srcOfEdge = ra.getNodeMappings().get(specificationEdge.getSrcNode().getName());
-//					EObject trgOfEdge = ra.getNodeMappings().get(specificationEdge.getTrgNode().getName());
-//					EReference refOfEdge = specificationEdge.getType();
-//					EMFEdge edge = new EMFEdge(srcOfEdge, trgOfEdge, refOfEdge);
-//					edges.remove(edge);
-//				}
-//			}
-//		});
+		protocol.getContents().forEach(c -> {
+			if (c instanceof TGGRuleApplication) {
+				TGGRuleApplication ra = (TGGRuleApplication) c;
+				String ruleName = ra.eClass().getName().substring(0, ra.eClass().getName().length() - 8);
+				Collection<TGGRuleEdge> specificationEdges = domain == Domain.SRC
+						? strategy.getGreenFactory(ruleName).getGreenSrcEdgesInRule()
+						: strategy.getGreenFactory(ruleName).getGreenTrgEdgesInRule();
+				for (TGGRuleEdge specificationEdge : specificationEdges) {
+					EObject srcOfEdge = ra.getNodeMappings().get(specificationEdge.getSrcNode().getName());
+					EObject trgOfEdge = ra.getNodeMappings().get(specificationEdge.getTrgNode().getName());
+					EReference refOfEdge = specificationEdge.getType();
+					EMFEdge edge = new EMFEdge(srcOfEdge, trgOfEdge, refOfEdge);
+					edges.remove(edge);
+				}
+			}
+		});
 		return edges;
 	}
 

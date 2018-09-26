@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
-import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -19,62 +18,29 @@ import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXRelation;
 import language.BindingType;
-import language.NAC;
 import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
-public class GENPatternTransformation {
-	private ContextPatternTransformation parent;
-	private IbexOptions options;
-
+public class GENPatternTransformation extends OperationalPatternTransformation {
+	
 	public GENPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
-		this.parent = parent;
-		this.options = options;
+		super(parent, options);
 	}
-
-	public void transform(TGGRule rule) {
-		String patternName = getGENBlackPatternName(rule.getName());
-
-		if (parent.isTransformed(patternName))
-			return;
-
-		// Root pattern
-		IBeXContextPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
-		ibexPattern.setName(patternName);
-
-		// Transform nodes.
-		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
-		for (final TGGRuleNode node : contextNodes) {
-			parent.transformNode(ibexPattern, node);
-		}
-
-		// Transform attributes.
-		for (final TGGRuleNode node : contextNodes) {
-			parent.transformInNodeAttributeConditions(ibexPattern, node);
-		}
-
-		// Ensure that all nodes must be disjoint even if they have the same type.
-		EditorToIBeXPatternHelper.addInjectivityConstraints(ibexPattern);
-
-		// Transform edges.
-		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
-		for (TGGRuleEdge edge : edges)
-			parent.transformEdge(edges, edge, ibexPattern);
-
-		parent.addContextPattern(ibexPattern, rule);
-
-		// NACs
-		for (NAC nac : rule.getNacs())
-			parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
-
-		// Complement rule
+	
+	@Override
+	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
 		if (rule instanceof TGGComplementRule)
 			handleComplementRuleForGEN((TGGComplementRule) rule, ibexPattern);
 	}
-
+	
+	@Override
+	protected String getPatternName(TGGRule rule) {
+		return getGENBlackPatternName(rule.getName());
+	}
+	
 	/**
 	 * Complement rules require a positive invocation to the consistency pattern of
 	 * their kernel rule.
@@ -83,7 +49,7 @@ public class GENPatternTransformation {
 	 * @param ibexPattern
 	 */
 	private void handleComplementRuleForGEN(TGGComplementRule crule, IBeXContextPattern ibexPattern) {
-		IBeXContextPattern consistencyPatternOfKernel = new ConsistencyPatternTransformation(parent, options).createConsistencyPattern(crule.getKernel());
+		IBeXContextPattern consistencyPatternOfKernel = createConsistencyPattern(crule.getKernel(), crule);
 
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(true);
@@ -127,5 +93,27 @@ public class GENPatternTransformation {
 
 		invocation.setInvokedPattern(consistencyPatternOfKernel);
 		ibexPattern.getInvocations().add(invocation);
+	}
+	
+	@Override
+	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
+		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
+		for (final TGGRuleNode node : contextNodes) {
+			parent.transformNode(ibexPattern, node);
+		}
+		
+		// Transform attributes.
+		for (final TGGRuleNode node : contextNodes) {
+			parent.transformInNodeAttributeConditions(ibexPattern, node);
+		}
+	}
+	
+	@Override
+	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
+		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
+		for (TGGRuleEdge edge : edges)
+			parent.transformEdge(edges, edge, ibexPattern);
+
+		parent.addContextPattern(ibexPattern, rule);
 	}
 }

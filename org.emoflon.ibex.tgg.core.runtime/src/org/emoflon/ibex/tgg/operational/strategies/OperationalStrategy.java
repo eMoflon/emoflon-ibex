@@ -347,7 +347,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 	
 	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
-		// Default: do nothing
+		createMarkers(greenPattern, cm, ruleName);
 	}
 
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {

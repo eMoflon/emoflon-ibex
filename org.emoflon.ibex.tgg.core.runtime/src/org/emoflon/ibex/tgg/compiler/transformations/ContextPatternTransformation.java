@@ -22,6 +22,7 @@ import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
+import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
@@ -37,6 +38,7 @@ import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXPatternSet;
 import IBeXLanguage.IBeXRelation;
+import language.BindingType;
 import language.NAC;
 import language.TGGAttributeConstraintOperators;
 import language.TGGEnumExpression;
@@ -73,21 +75,14 @@ public class ContextPatternTransformation {
 	public IBeXPatternSet transform() {
 		if (strategy instanceof MODELGEN)
 			createModelGenPatterns();
-		else if (strategy instanceof SYNC) {
+		else if (strategy instanceof SYNC)
 			createSYNCPatterns();
-		}
+		else if (strategy instanceof CC)
+			createCCPatterns();
+
+		// TODO: Handle other operationalisations
 
 		return createSortedPatternSet();
-	}
-
-	private void createSYNCPatterns() {
-		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
-			createSYNCPattern(rule);
-	}
-
-	private void createSYNCPattern(TGGRule rule) {
-		SYNCPatternTransformation syncPatternTransformer = new SYNCPatternTransformation(this, options);
-		syncPatternTransformer.transform(rule);
 	}
 
 	public boolean isTransformed(String patternName) {
@@ -111,8 +106,28 @@ public class ContextPatternTransformation {
 		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this, options);
 		genPatternTransformer.transform(rule);
 	}
+	
+	private void createSYNCPatterns() {
+		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
+			createSYNCPattern(rule);
+	}
 
-	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern ibexPattern) {
+	private void createSYNCPattern(TGGRule rule) {
+		SYNCPatternTransformation syncPatternTransformer = new SYNCPatternTransformation(this, options);
+		syncPatternTransformer.transform(rule);
+	}
+
+	private void createCCPatterns() {
+		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
+			createCCPattern(rule);
+	}
+
+	private void createCCPattern(TGGRule rule) {
+		CCPatternTransformation ccPatternTransformer = new CCPatternTransformation(this, options);
+		ccPatternTransformer.transform(rule);
+	}
+	
+	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {
 		// Root pattern
 		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
 
@@ -146,7 +161,7 @@ public class ContextPatternTransformation {
 			ArrayList<IBeXNode> localNodes = new ArrayList<>();
 
 			for (IBeXNode node : nacPattern.getSignatureNodes()) {
-				Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, node.getName());
+				Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(parent, node.getName());
 
 				if (src.isPresent())
 					invocation.getMapping().put(src.get(), node);
@@ -157,7 +172,7 @@ public class ContextPatternTransformation {
 			nacPattern.getLocalNodes().addAll(localNodes);
 
 			invocation.setInvokedPattern(nacPattern);
-			ibexPattern.getInvocations().add(invocation);
+			parent.getInvocations().add(invocation);
 		}
 
 		return nacPattern;
@@ -196,15 +211,18 @@ public class ContextPatternTransformation {
 		}
 
 		for (TGGInplaceAttributeExpression attrExp : node.getAttrExpr()) {
-			IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
-			ibexAttrConstraint.setNode(ibexNode.get());
-			ibexAttrConstraint.setType(attrExp.getAttribute());
+			if (node.getBindingType().equals(BindingType.CONTEXT)) {
+				IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE
+						.createIBeXAttributeConstraint();
+				ibexAttrConstraint.setNode(ibexNode.get());
+				ibexAttrConstraint.setType(attrExp.getAttribute());
 
-			IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
-			ibexAttrConstraint.setRelation(ibexRelation);
-			convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
-					.ifPresent(value -> ibexAttrConstraint.setValue(value));
-			ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
+				IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
+				ibexAttrConstraint.setRelation(ibexRelation);
+				convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
+						.ifPresent(value -> ibexAttrConstraint.setValue(value));
+				ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
+			}
 		}
 	}
 
