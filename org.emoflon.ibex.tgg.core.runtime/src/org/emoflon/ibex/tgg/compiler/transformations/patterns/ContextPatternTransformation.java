@@ -360,11 +360,11 @@ public class ContextPatternTransformation {
 	private void transformCorr(IBeXContextPattern ibexPattern, TGGRuleCorr corr) {
 		EReference srcType = ((EReference) corr.getType().getEStructuralFeature("source"));
 		TGGRuleNode srcOfCorr = corr.getSource();
-		transformEdge(srcType, corr, srcOfCorr, ibexPattern, false);
+		transformEdge(srcType, corr, srcOfCorr, ibexPattern, true);
 
 		EReference trgType = ((EReference) corr.getType().getEStructuralFeature("target"));
 		TGGRuleNode trgOfCorr = corr.getTarget();
-		transformEdge(trgType, corr, trgOfCorr, ibexPattern, false);
+		transformEdge(trgType, corr, trgOfCorr, ibexPattern, true);
 	}
 
 	private void transformEdge(EReference type, TGGRuleNode srcNode, TGGRuleNode trgNode,
