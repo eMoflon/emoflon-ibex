@@ -319,11 +319,6 @@ class DefaultFilesGenerator {
 				}
 				
 				@Override
-				protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
-					// Use super implementation if you with to create a protocol.
-				}
-				
-				@Override
 				public void loadModels() throws IOException {
 					s = loadResource(options.projectPath() + "/instances/src.xmi");
 					t = createResource(options.projectPath() + "/instances/trg.xmi");
@@ -374,11 +369,6 @@ class DefaultFilesGenerator {
 				@Override
 				public boolean isPatternRelevantForCompiler(String patternName) {
 					return patternName.endsWith(PatternSuffixes.BWD);
-				}
-				
-				@Override
-				protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
-					// Use super implementation if you with to create a protocol.
 				}
 				
 				@Override

@@ -144,8 +144,9 @@ public class IbexOptions {
 		return blackInterpSupportsAttrConstrs;
 	}
 
-	public void blackInterpSupportsAttrConstrs(boolean value) {
+	public IbexOptions blackInterpSupportsAttrConstrs(boolean value) {
 		blackInterpSupportsAttrConstrs = value;
+		return this;
 	}
 
 	/**

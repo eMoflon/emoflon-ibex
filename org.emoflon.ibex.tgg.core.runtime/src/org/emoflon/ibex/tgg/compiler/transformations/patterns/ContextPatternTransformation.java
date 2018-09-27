@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.transformations;
+package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
 
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EAttribute;
@@ -17,6 +18,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -70,24 +72,23 @@ public class ContextPatternTransformation {
 
 	public IBeXPatternSet transform() {
 		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
-			String classname = strategy.getClass().getName();
-			if (classname.contains("MODELGEN"))
-				createModelGenPattern(rule);
-			else if (classname.contains("SYNC"))
-				createSYNCPattern(rule);
-			else if (classname.contains("CC"))
-				createCCPattern(rule);
-			else if (classname.contains("CO"))
-				createCOPattern(rule);
-			else if (classname.contains("FWD_OPT"))
-				createFWD_OPTPattern(rule);
-			else if (classname.contains("BWD_OPT"))
-				createBWD_OPTPattern(rule);
-			else
-				throw new IllegalArgumentException("Strategy undefined!");
+			createPatternIfRelevant(rule, this::createModelGenPattern, PatternSuffixes.GEN);
+			createPatternIfRelevant(rule, this::createFWDPattern, PatternSuffixes.FWD);
+			createPatternIfRelevant(rule, this::createBWDPattern, PatternSuffixes.BWD);
+			createPatternIfRelevant(rule, this::createConsistencyPattern, PatternSuffixes.CONSISTENCY);
+			createPatternIfRelevant(rule, this::createCCPattern, PatternSuffixes.CC);
+			createPatternIfRelevant(rule, this::createCOPattern, PatternSuffixes.CO);
+			createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternSuffixes.FWD_OPT);
+			createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternSuffixes.BWD_OPT);
 		}
 
 		return createSortedPatternSet();
+	}
+
+	private void createPatternIfRelevant(TGGRule rule, Consumer<TGGRule> transformer, String suffix) {
+		if(strategy.isPatternRelevantForCompiler(suffix)) {
+			transformer.accept(rule);
+		}
 	}
 
 	public boolean isTransformed(String patternName) {
@@ -107,9 +108,19 @@ public class ContextPatternTransformation {
 		genPatternTransformer.transform(rule);
 	}
 
-	private void createSYNCPattern(TGGRule rule) {
-		SYNCPatternTransformation syncPatternTransformer = new SYNCPatternTransformation(this, options);
-		syncPatternTransformer.transform(rule);
+	private void createFWDPattern(TGGRule rule) {
+		FWDPatternTransformation fwdPatternTransformer = new FWDPatternTransformation(this, options);
+		fwdPatternTransformer.transform(rule);
+	}
+	
+	private void createBWDPattern(TGGRule rule) {
+		BWDPatternTransformation  bwdPatternTransformer = new BWDPatternTransformation(this, options);
+		bwdPatternTransformer.transform(rule);
+	}
+	
+	public void createConsistencyPattern(TGGRule rule) {
+		ConsistencyPatternTransformation consistencyPatternTransformer = new ConsistencyPatternTransformation(this, options);
+		consistencyPatternTransformer.transform(rule);
 	}
 
 	private void createCCPattern(TGGRule rule) {
@@ -207,7 +218,7 @@ public class ContextPatternTransformation {
 		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern,
 				allEdges.size() > MAX_NUM_OF_EDGES_IN_PATTERN);
 	}
-	
+
 	public void transformInNodeAttributeConditions(IBeXContextPattern ibexPattern, TGGRuleNode node) {
 		Objects.requireNonNull(ibexPattern, "ibexContextPattern must not be null!");
 
@@ -218,16 +229,15 @@ public class ContextPatternTransformation {
 		}
 
 		for (TGGInplaceAttributeExpression attrExp : node.getAttrExpr()) {
-				IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE
-						.createIBeXAttributeConstraint();
-				ibexAttrConstraint.setNode(ibexNode.get());
-				ibexAttrConstraint.setType(attrExp.getAttribute());
+			IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
+			ibexAttrConstraint.setNode(ibexNode.get());
+			ibexAttrConstraint.setType(attrExp.getAttribute());
 
-				IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
-				ibexAttrConstraint.setRelation(ibexRelation);
-				convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
-						.ifPresent(value -> ibexAttrConstraint.setValue(value));
-				ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
+			IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
+			ibexAttrConstraint.setRelation(ibexRelation);
+			convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
+					.ifPresent(value -> ibexAttrConstraint.setValue(value));
+			ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
 		}
 	}
 

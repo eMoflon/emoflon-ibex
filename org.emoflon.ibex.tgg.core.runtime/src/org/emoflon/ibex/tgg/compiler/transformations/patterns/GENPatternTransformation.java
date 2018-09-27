@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.transformations;
+package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getGENBlackPatternName;
 
@@ -18,6 +18,8 @@ import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXRelation;
 import language.BindingType;
+import language.DomainType;
+import language.NAC;
 import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
@@ -25,22 +27,22 @@ import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
 public class GENPatternTransformation extends OperationalPatternTransformation {
-	
+
 	public GENPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
 		super(parent, options);
 	}
-	
+
+	@Override
+	protected String getPatternName(TGGRule rule) {
+		return getGENBlackPatternName(rule.getName());
+	}
+
 	@Override
 	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
 		if (rule instanceof TGGComplementRule)
 			handleComplementRuleForGEN((TGGComplementRule) rule, ibexPattern);
 	}
-	
-	@Override
-	protected String getPatternName(TGGRule rule) {
-		return getGENBlackPatternName(rule.getName());
-	}
-	
+
 	/**
 	 * Complement rules require a positive invocation to the consistency pattern of
 	 * their kernel rule.
@@ -49,7 +51,9 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 	 * @param ibexPattern
 	 */
 	private void handleComplementRuleForGEN(TGGComplementRule crule, IBeXContextPattern ibexPattern) {
-		IBeXContextPattern consistencyPatternOfKernel = createConsistencyPattern(crule.getKernel(), crule);
+		parent.createConsistencyPattern(crule.getKernel());
+		IBeXContextPattern consistencyPatternOfKernel = parent
+				.getPattern(TGGPatternUtil.getConsistencyPatternName(crule.getKernel().getName()));
 
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(true);
@@ -94,20 +98,20 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 		invocation.setInvokedPattern(consistencyPatternOfKernel);
 		ibexPattern.getInvocations().add(invocation);
 	}
-	
+
 	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
 		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
 		for (final TGGRuleNode node : contextNodes) {
 			parent.transformNode(ibexPattern, node);
 		}
-		
+
 		// Transform attributes.
 		for (final TGGRuleNode node : contextNodes) {
 			parent.transformInNodeAttributeConditions(ibexPattern, node);
 		}
 	}
-	
+
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
 		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
@@ -115,5 +119,14 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 			parent.transformEdge(edges, edge, ibexPattern);
 
 		parent.addContextPattern(ibexPattern, rule);
+	}
+
+	@Override
+	protected void transformNACs(IBeXContextPattern ibexPattern, TGGRule rule) {
+		// Output Domain User NACs
+		for (NAC nac : rule.getNacs()) {
+			if (TGGModelUtils.isOfDomain(nac, DomainType.SRC))
+				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
+		}
 	}
 }

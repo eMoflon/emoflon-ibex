@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.transformations;
+package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 
@@ -6,7 +6,8 @@ import java.util.Collection;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -20,49 +21,10 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class ConsistencyPatternTransformation {
-
-	private ContextPatternTransformation parent;
-	private IbexOptions options;
+public class ConsistencyPatternTransformation extends OperationalPatternTransformation {
 
 	public ConsistencyPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
-		this.parent = parent;
-		this.options = options;
-	}
-
-	public IBeXContextPattern createConsistencyPattern(TGGRule rule) {
-		String patternName = getConsistencyPatternName(rule.getName());
-
-		if (parent.isTransformed(patternName))
-			return parent.getPattern(patternName);
-
-		// Root pattern
-		IBeXContextPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
-		ibexPattern.setName(patternName);
-
-		// Transform nodes
-		rule.getNodes().forEach(n -> {
-			parent.transformNode(ibexPattern, n);
-		});
-
-		// Transform attributes.
-		for (final TGGRuleNode node : rule.getNodes()) {
-			parent.transformInNodeAttributeConditions(ibexPattern, node);
-		}
-
-		// Ensure that all nodes must be disjoint even if they have the same type
-		EditorToIBeXPatternHelper.addInjectivityConstraints(ibexPattern);
-
-		// Transform edges.
-		for (TGGRuleEdge edge : rule.getEdges())
-			parent.transformEdge(rule.getEdges(), edge, ibexPattern);
-
-		// Create protocol node and connections to nodes in pattern
-		createAndConnectProtocolNode(rule, ibexPattern);
-
-		parent.addContextPattern(ibexPattern, rule);
-
-		return ibexPattern;
+		super(parent, options);
 	}
 
 	private void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
@@ -96,4 +58,48 @@ public class ConsistencyPatternTransformation {
 		}
 	}
 
+	@Override
+	protected String getPatternName(TGGRule rule) {
+		return getConsistencyPatternName(rule.getName());
+	}
+
+	@Override
+	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
+		// Nothing to do
+	}
+
+	@Override
+	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
+		rule.getNodes().forEach(n -> {
+			parent.transformNode(ibexPattern, n);
+		});
+
+		// Transform attributes
+		for (final TGGRuleNode node : rule.getNodes()) {
+			parent.transformInNodeAttributeConditions(ibexPattern, node);
+		}
+	}
+
+	@Override
+	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
+		for (TGGRuleEdge edge : rule.getEdges())
+			parent.transformEdge(rule.getEdges(), edge, ibexPattern);
+
+		// Create protocol node and connections to nodes in pattern
+		createAndConnectProtocolNode(rule, ibexPattern);
+
+	}
+
+	@Override
+	protected void transformNACs(IBeXContextPattern ibexPattern, TGGRule rule) {
+		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+			parent.addContextPattern(createFilterNAC(ibexPattern, candidate, rule));
+		}
+
+		filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule, options);
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+			parent.addContextPattern(createFilterNAC(ibexPattern, candidate, rule));
+		}
+	}
 }
