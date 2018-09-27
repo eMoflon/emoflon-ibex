@@ -128,18 +128,20 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
+				logger.info("Starting MODELGEN");
+				long tic = System.currentTimeMillis();
 				«fileName» generator = new «fileName»();
+				long toc = System.currentTimeMillis();
+				logger.info("Completed init for MODELGEN in: " + (toc - tic) + " ms");
 				
 				MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 				stop.setTimeOutInMS(1000);
 				generator.setStopCriterion(stop);
 				
-				logger.info("Starting MODELGEN");
-				long tic = System.currentTimeMillis();
+				tic = System.currentTimeMillis();
 				generator.run();
-				long toc = System.currentTimeMillis();
+				toc = System.currentTimeMillis();
 				logger.info("Completed MODELGEN in: " + (toc - tic) + " ms");
-				
 				
 				generator.saveModels();
 				generator.terminate();
@@ -159,12 +161,15 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
-				«fileName» sync = new «fileName»();
-				
 				logger.info("Starting SYNC");
 				long tic = System.currentTimeMillis();
-				sync.forward();
+				«fileName» sync = new «fileName»();
 				long toc = System.currentTimeMillis();
+				logger.info("Completed init for SYNC in: " + (toc - tic) + " ms");
+				
+				tic = System.currentTimeMillis();
+				sync.forward();
+				toc = System.currentTimeMillis();
 				logger.info("Completed SYNC in: " + (toc - tic) + " ms");
 				
 				sync.saveModels();
@@ -293,13 +298,16 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
-				«fileName» init_fwd = new «fileName»();
-				
 				logger.info("Starting INITIAL FWD");
 				long tic = System.currentTimeMillis();
-				init_fwd.forward();
+				«fileName» init_fwd = new «fileName»();
 				long toc = System.currentTimeMillis();
-				logger.info("Completed INITIAL FWD in: " + (toc - tic) + " ms");
+				logger.info("Completed init for FWD in: " + (toc - tic) + " ms");
+				
+				tic = System.currentTimeMillis();
+				init_fwd.forward();
+				toc = System.currentTimeMillis();
+				logger.info("Completed INITIAL_FWD in: " + (toc - tic) + " ms");
 				
 				init_fwd.saveModels();
 				init_fwd.terminate();
@@ -308,6 +316,11 @@ class DefaultFilesGenerator {
 				@Override
 				public boolean isPatternRelevantForCompiler(String patternName) {
 					return patternName.endsWith(PatternSuffixes.FWD);
+				}
+				
+				@Override
+				protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+					// Use super implementation if you with to create a protocol.
 				}
 				
 				@Override
@@ -343,13 +356,16 @@ class DefaultFilesGenerator {
 			engine,
 			projectName,
 			'''
-				«fileName» init_bwd = new «fileName»();
-				
 				logger.info("Starting INITIAL BWD");
 				long tic = System.currentTimeMillis();
-				init_bwd.backward();
+				«fileName» init_bwd = new «fileName»();
 				long toc = System.currentTimeMillis();
-				logger.info("Completed INITIAL BWD in: " + (toc - tic) + " ms");
+				logger.info("Completed init for BWD in: " + (toc - tic) + " ms");
+				
+				tic = System.currentTimeMillis();
+				init_bwd.backward();
+				toc = System.currentTimeMillis();
+				logger.info("Completed INITIAL_BWD in: " + (toc - tic) + " ms");
 				
 				init_bwd.saveModels();
 				init_bwd.terminate();
@@ -358,6 +374,11 @@ class DefaultFilesGenerator {
 				@Override
 				public boolean isPatternRelevantForCompiler(String patternName) {
 					return patternName.endsWith(PatternSuffixes.BWD);
+				}
+				
+				@Override
+				protected void createMarkers(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+					// Use super implementation if you with to create a protocol.
 				}
 				
 				@Override

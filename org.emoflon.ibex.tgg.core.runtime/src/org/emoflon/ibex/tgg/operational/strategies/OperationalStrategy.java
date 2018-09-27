@@ -36,7 +36,7 @@ import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
-import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 import language.TGG;
 import language.TGGComplementRule;
@@ -80,7 +80,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	/***** Constructors *****/
 
 	public OperationalStrategy(IbexOptions options) {
-		this(options, new RandomMatchUpdatePolicy());
+		this(options, new NextMatchUpdatePolicy());
 	}
 
 	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {

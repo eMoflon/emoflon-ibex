@@ -92,9 +92,7 @@ public class ConsistencyPatternTransformation {
 		for (TGGRuleNode node : nodes) {
 			EReference ref = (EReference) protocolNode.getType()
 					.getEStructuralFeature(TGGModelUtils.getMarkerRefName(type, domain, node.getName()));
-			parent.transformEdge(ref, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern,
-					rule.getEdges().size()
-							+ rule.getNodes().size() > ContextPatternTransformation.MAX_NUM_OF_EDGES_IN_PATTERN);
+			parent.transformEdge(ref, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern, false);
 		}
 	}
 

@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import language.BindingType;
 import language.DomainType;
@@ -20,15 +21,20 @@ import language.TGGRuleNode;
 public class FilterNACAnalysis {
 	private DomainType domain;
 	private TGGRule rule;
+	private IbexOptions options;
 
-	public FilterNACAnalysis(DomainType domain, TGGRule rule) {
+	public FilterNACAnalysis(DomainType domain, TGGRule rule, IbexOptions options) {
 		this.domain = domain;
 		this.rule = rule;
+		this.options = options;
 	}
 
 	public Collection<FilterNACCandidate> computeFilterNACCandidates() {
 		final Collection<FilterNACCandidate> filterNACs = new ArrayList<>();
 
+		if(options.getLookAheadStrategy().equals(FilterNACStrategy.NONE))
+			return filterNACs;
+		
 		for (TGGRuleNode n : rule.getNodes()) {
 			EClass nodeClass = n.getType();
 

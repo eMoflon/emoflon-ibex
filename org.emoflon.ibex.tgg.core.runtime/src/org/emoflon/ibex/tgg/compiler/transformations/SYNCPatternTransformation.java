@@ -56,12 +56,12 @@ public class SYNCPatternTransformation {
 				.createConsistencyPattern(rule);
 		parent.addContextPattern(consistencyPattern, rule);
 
-		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule);
+		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
 			parent.addContextPattern(createFilterNAC(consistencyPattern, candidate, rule));
 		}
 
-		filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule);
+		filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule, options);
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
 			parent.addContextPattern(createFilterNAC(consistencyPattern, candidate, rule));
 		}
@@ -109,7 +109,7 @@ public class SYNCPatternTransformation {
 		}
 
 		// Filter NACs
-		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(inputDomain, rule);
+		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(inputDomain, rule, options);
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate, rule));
 		}

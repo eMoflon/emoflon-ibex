@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EPackage;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -26,6 +27,7 @@ public class IbexOptions {
 	private SupportedILPSolver ilpSolver;
 	private boolean repairAttributes;
 	private EPackage corrMetamodel;
+	private FilterNACStrategy lookAheadStrategy;
 
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
@@ -40,6 +42,7 @@ public class IbexOptions {
 		repairAttributes = true;
 		setIlpSolver(SupportedILPSolver.Sat4J);
 		useEdgePatterns = true;
+		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -174,6 +177,15 @@ public class IbexOptions {
 
 	public IbexOptions setUseEdgePatterns(boolean value) {
 		useEdgePatterns = value;
+		return this;
+	}
+
+	public FilterNACStrategy getLookAheadStrategy() {
+		return lookAheadStrategy;
+	}
+	
+	public IbexOptions setLookAheadStrategy(FilterNACStrategy lookAheadStrategy) {
+		this.lookAheadStrategy = lookAheadStrategy;
 		return this;
 	}
 }

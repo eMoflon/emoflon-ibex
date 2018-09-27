@@ -38,7 +38,6 @@ import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXPatternSet;
 import IBeXLanguage.IBeXRelation;
-import language.BindingType;
 import language.NAC;
 import language.TGGAttributeConstraintOperators;
 import language.TGGEnumExpression;
