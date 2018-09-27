@@ -21,10 +21,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
-import org.emoflon.ibex.tgg.operational.strategies.opt.*;
-import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import IBeXLanguage.IBeXAttributeConstraint;
