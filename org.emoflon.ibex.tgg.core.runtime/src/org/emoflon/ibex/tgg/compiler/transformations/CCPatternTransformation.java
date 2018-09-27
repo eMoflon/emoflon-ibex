@@ -39,26 +39,25 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 	
 	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
-		//TODO All source, all target, but only context corr
-		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
-		contextNodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
-		contextNodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
+		List<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
+		nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
+		nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
 		
-		for (final TGGRuleNode node : contextNodes) {
+		for (final TGGRuleNode node : nodes) {
 			parent.transformNode(ibexPattern, node);
 		}
 		
 		// Transform attributes.
-		for (final TGGRuleNode node : contextNodes) {
+		for (final TGGRuleNode node : nodes) {
 			parent.transformInNodeAttributeConditions(ibexPattern, node);
 		}
 	}
 	
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
-		//TODO All source, all target, but only context corr
 		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
-		edges.addAll(TGGModelUtils.getReferencesByOperator(rule, BindingType.CREATE));
+		edges.addAll(TGGModelUtils.getReferencesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
+		edges.addAll(TGGModelUtils.getReferencesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
 		
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);

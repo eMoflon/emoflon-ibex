@@ -22,6 +22,7 @@ import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
+import org.emoflon.ibex.tgg.operational.strategies.opt.*;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
@@ -53,7 +54,7 @@ import language.TGGRuleNode;
 public class ContextPatternTransformation {
 	public static final int MAX_NUM_OF_EDGES_IN_PATTERN = 3;
 
-	private static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
+	protected static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
 	private final boolean USE_INVOCATIONS_FOR_REFERENCES;
 	private IbexOptions options;
 	private List<IBeXContext> ibexContextPatterns = new ArrayList<>();
@@ -72,14 +73,23 @@ public class ContextPatternTransformation {
 	}
 
 	public IBeXPatternSet transform() {
-		if (strategy instanceof MODELGEN)
-			createModelGenPatterns();
-		else if (strategy instanceof SYNC)
-			createSYNCPatterns();
-		else if (strategy instanceof CC)
-			createCCPatterns();
-
-		// TODO: Handle other operationalisations
+		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
+			String classname = strategy.getClass().getName();
+			if (classname.contains("MODELGEN"))
+				createModelGenPattern(rule);
+			else if (classname.contains("SYNC"))
+				createSYNCPattern(rule);
+			else if (classname.contains("CC"))
+				createCCPattern(rule);
+			else if (classname.contains("CO"))
+				createCOPattern(rule);
+			else if (classname.contains("FWD_OPT"))
+				createFWD_OPTPattern(rule);
+			else if (classname.contains("BWD_OPT"))
+				createBWD_OPTPattern(rule);
+			else
+				throw new IllegalArgumentException("Strategy undefined!");
+		}
 
 		return createSortedPatternSet();
 	}
@@ -96,19 +106,9 @@ public class ContextPatternTransformation {
 		return patternToRuleMap;
 	}
 
-	private void createModelGenPatterns() {
-		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
-			createModelGenPattern(rule);
-	}
-
 	private void createModelGenPattern(TGGRule rule) {
 		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this, options);
 		genPatternTransformer.transform(rule);
-	}
-
-	private void createSYNCPatterns() {
-		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
-			createSYNCPattern(rule);
 	}
 
 	private void createSYNCPattern(TGGRule rule) {
@@ -116,14 +116,24 @@ public class ContextPatternTransformation {
 		syncPatternTransformer.transform(rule);
 	}
 
-	private void createCCPatterns() {
-		for (TGGRule rule : options.getFlattenedConcreteTGGRules())
-			createCCPattern(rule);
-	}
-
 	private void createCCPattern(TGGRule rule) {
 		CCPatternTransformation ccPatternTransformer = new CCPatternTransformation(this, options);
 		ccPatternTransformer.transform(rule);
+	}
+
+	private void createCOPattern(TGGRule rule) {
+		COPatternTransformation coPatternTransformer = new COPatternTransformation(this, options);
+		coPatternTransformer.transform(rule);
+	}
+
+	private void createFWD_OPTPattern(TGGRule rule) {
+		FWD_OPTPatternTransformation fwd_optPatternTransformer = new FWD_OPTPatternTransformation(this, options);
+		fwd_optPatternTransformer.transform(rule);
+	}
+
+	private void createBWD_OPTPattern(TGGRule rule) {
+		BWD_OPTPatternTransformation bwd_optPatternTransformer = new BWD_OPTPatternTransformation(this, options);
+		bwd_optPatternTransformer.transform(rule);
 	}
 
 	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {
@@ -201,7 +211,7 @@ public class ContextPatternTransformation {
 		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern,
 				allEdges.size() > MAX_NUM_OF_EDGES_IN_PATTERN);
 	}
-
+	
 	public void transformInNodeAttributeConditions(IBeXContextPattern ibexPattern, TGGRuleNode node) {
 		Objects.requireNonNull(ibexPattern, "ibexContextPattern must not be null!");
 
@@ -212,19 +222,20 @@ public class ContextPatternTransformation {
 		}
 
 		for (TGGInplaceAttributeExpression attrExp : node.getAttrExpr()) {
-			IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
-			ibexAttrConstraint.setNode(ibexNode.get());
-			ibexAttrConstraint.setType(attrExp.getAttribute());
+				IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE
+						.createIBeXAttributeConstraint();
+				ibexAttrConstraint.setNode(ibexNode.get());
+				ibexAttrConstraint.setType(attrExp.getAttribute());
 
-			IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
-			ibexAttrConstraint.setRelation(ibexRelation);
-			convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
-					.ifPresent(value -> ibexAttrConstraint.setValue(value));
-			ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
+				IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
+				ibexAttrConstraint.setRelation(ibexRelation);
+				convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
+						.ifPresent(value -> ibexAttrConstraint.setValue(value));
+				ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
 		}
 	}
 
-	private Optional<IBeXAttributeValue> convertValue(IBeXContextPattern ibexPattern, TGGExpression valueExpr,
+	protected Optional<IBeXAttributeValue> convertValue(IBeXContextPattern ibexPattern, TGGExpression valueExpr,
 			EAttribute eAttribute) {
 		if (valueExpr instanceof TGGEnumExpression) {
 			return Optional.of(convertAttributeValue((TGGEnumExpression) valueExpr));
@@ -251,7 +262,7 @@ public class ContextPatternTransformation {
 		return ibexConstant;
 	}
 
-	private IBeXRelation convertRelation(TGGAttributeConstraintOperators operator) {
+	protected IBeXRelation convertRelation(TGGAttributeConstraintOperators operator) {
 		switch (operator) {
 		case GREATER:
 			return IBeXRelation.GREATER;
