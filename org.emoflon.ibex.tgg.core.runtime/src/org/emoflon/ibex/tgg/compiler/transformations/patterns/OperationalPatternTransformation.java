@@ -82,9 +82,6 @@ public abstract class OperationalPatternTransformation {
 		IBeXNode secondIBeXNode = IBeXPatternFactory.createNode(NODE_NAME, getOtherNodeType(candidate));
 		nacPattern.getSignatureNodes().add(secondIBeXNode);
 
-		// Transform attributes
-		parent.transformInNodeAttributeConditions(nacPattern, firstNode);
-
 		// Transform edges
 		if (candidate.getEDirection() == EdgeDirection.OUTGOING)
 			parent.transformEdge(candidate.getEdgeType(), firstIBeXNode, secondIBeXNode, nacPattern, false);
