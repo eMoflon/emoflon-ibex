@@ -173,7 +173,7 @@ public class EditorToIBeXPatternHelper {
 	 * @param node2
 	 *            the second node
 	 */
-	private static void addInjectivityConstraintIfNecessary(final IBeXContextPattern ibexPattern, final IBeXNode node1,
+	public static void addInjectivityConstraintIfNecessary(final IBeXContextPattern ibexPattern, final IBeXNode node1,
 			final IBeXNode node2) {
 		if (EcoreUtils.areTypesCompatible(node1.getType(), node2.getType())) {
 			IBeXNodePair nodePair = IBeXLanguageFactory.eINSTANCE.createIBeXNodePair();
