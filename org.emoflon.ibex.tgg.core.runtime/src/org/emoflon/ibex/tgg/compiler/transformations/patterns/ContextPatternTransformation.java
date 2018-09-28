@@ -103,44 +103,44 @@ public class ContextPatternTransformation {
 		return patternToRuleMap;
 	}
 
-	private void createModelGenPattern(TGGRule rule) {
+	private IBeXContextPattern createModelGenPattern(TGGRule rule) {
 		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this, options);
-		genPatternTransformer.transform(rule);
+		return genPatternTransformer.transform(rule);
 	}
 
-	private void createFWDPattern(TGGRule rule) {
+	private IBeXContextPattern createFWDPattern(TGGRule rule) {
 		FWDPatternTransformation fwdPatternTransformer = new FWDPatternTransformation(this, options);
-		fwdPatternTransformer.transform(rule);
+		return fwdPatternTransformer.transform(rule);
 	}
 	
-	private void createBWDPattern(TGGRule rule) {
+	private IBeXContextPattern createBWDPattern(TGGRule rule) {
 		BWDPatternTransformation  bwdPatternTransformer = new BWDPatternTransformation(this, options);
-		bwdPatternTransformer.transform(rule);
+		return bwdPatternTransformer.transform(rule);
 	}
 	
-	public void createConsistencyPattern(TGGRule rule) {
+	public IBeXContextPattern createConsistencyPattern(TGGRule rule) {
 		ConsistencyPatternTransformation consistencyPatternTransformer = new ConsistencyPatternTransformation(this, options);
-		consistencyPatternTransformer.transform(rule);
+		return consistencyPatternTransformer.transform(rule);
 	}
 
-	private void createCCPattern(TGGRule rule) {
+	private IBeXContextPattern createCCPattern(TGGRule rule) {
 		CCPatternTransformation ccPatternTransformer = new CCPatternTransformation(this, options);
-		ccPatternTransformer.transform(rule);
+		return ccPatternTransformer.transform(rule);
 	}
 
-	private void createCOPattern(TGGRule rule) {
+	private IBeXContextPattern createCOPattern(TGGRule rule) {
 		COPatternTransformation coPatternTransformer = new COPatternTransformation(this, options);
-		coPatternTransformer.transform(rule);
+		return coPatternTransformer.transform(rule);
 	}
 
-	private void createFWD_OPTPattern(TGGRule rule) {
+	private IBeXContextPattern createFWD_OPTPattern(TGGRule rule) {
 		FWD_OPTPatternTransformation fwd_optPatternTransformer = new FWD_OPTPatternTransformation(this, options);
-		fwd_optPatternTransformer.transform(rule);
+		return fwd_optPatternTransformer.transform(rule);
 	}
 
-	private void createBWD_OPTPattern(TGGRule rule) {
+	private IBeXContextPattern createBWD_OPTPattern(TGGRule rule) {
 		BWD_OPTPatternTransformation bwd_optPatternTransformer = new BWD_OPTPatternTransformation(this, options);
-		bwd_optPatternTransformer.transform(rule);
+		return bwd_optPatternTransformer.transform(rule);
 	}
 
 	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {

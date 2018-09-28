@@ -5,7 +5,6 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getGENBlackP
 import java.util.List;
 import java.util.Optional;
 
-import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -15,7 +14,6 @@ import IBeXLanguage.IBeXConstant;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
-import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXRelation;
 import language.BindingType;
 import language.DomainType;
@@ -55,25 +53,7 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 		IBeXContextPattern consistencyPatternOfKernel = parent
 				.getPattern(TGGPatternUtil.getConsistencyPatternName(crule.getKernel().getName()));
 
-		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
-		invocation.setPositive(true);
-
-		// Creating mapping for invocation: missing signature nodes of the invoked
-		// pattern are added as local nodes to the invoking pattern
-		for (IBeXNode node : consistencyPatternOfKernel.getSignatureNodes()) {
-			Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, node.getName());
-
-			if (src.isPresent())
-				invocation.getMapping().put(src.get(), node);
-			else {
-				IBeXNode newLocalNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-				newLocalNode.setName(node.getName());
-				newLocalNode.setType(node.getType());
-				ibexPattern.getLocalNodes().add(newLocalNode);
-
-				invocation.getMapping().put(newLocalNode, node);
-			}
-		}
+		createInvocation(ibexPattern, consistencyPatternOfKernel, true);
 
 		// Add additional attribute condition for "closing the kernel"
 		Optional<IBeXNode> node = ibexPattern.getLocalNodes()//
@@ -94,9 +74,6 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 			tae.setNode(protocolNode);
 			ibexPattern.getAttributeConstraint().add(tae);
 		});
-
-		invocation.setInvokedPattern(consistencyPatternOfKernel);
-		ibexPattern.getInvocations().add(invocation);
 	}
 
 	@Override

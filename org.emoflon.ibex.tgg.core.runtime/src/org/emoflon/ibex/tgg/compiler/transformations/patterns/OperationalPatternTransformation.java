@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
+import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
@@ -44,11 +45,11 @@ public abstract class OperationalPatternTransformation {
 
 	protected abstract void transformNACs(IBeXContextPattern ibexPattern, TGGRule rule);
 
-	public void transform(TGGRule rule) {
+	public IBeXContextPattern transform(TGGRule rule) {
 		String patternName = getPatternName(rule);
 
 		if (parent.isTransformed(patternName))
-			return;
+			return parent.getPattern(patternName);
 
 		// Root pattern
 		IBeXContextPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
@@ -80,6 +81,8 @@ public abstract class OperationalPatternTransformation {
 
 		// Complement rule
 		handleComplementRules(rule, ibexPattern);
+		
+		return ibexPattern;
 	}
 
 	protected IBeXContextPattern createFilterNAC(IBeXContextPattern ibexPattern, FilterNACCandidate candidate,
@@ -127,6 +130,31 @@ public abstract class OperationalPatternTransformation {
 		EditorToIBeXPatternHelper.addInjectivityConstraints(nacPattern);
 
 		return nacPattern;
+	}
+	
+	protected void createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee, boolean isPositive) {
+		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
+		invocation.setPositive(isPositive);
+
+		// Creating mapping for invocation: missing signature nodes of the invoked
+		// pattern are added as local nodes to the invoking pattern
+		for (IBeXNode node : invokee.getSignatureNodes()) {
+			Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(invoker, node.getName());
+
+			if (src.isPresent())
+				invocation.getMapping().put(src.get(), node);
+			else {
+				IBeXNode newLocalNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
+				newLocalNode.setName(node.getName());
+				newLocalNode.setType(node.getType());
+				invoker.getLocalNodes().add(newLocalNode);
+
+				invocation.getMapping().put(newLocalNode, node);
+			}
+		}
+		
+		invocation.setInvokedPattern(invokee);
+		invoker.getInvocations().add(invocation);
 	}
 
 	private void addNodesOfSameTypeFromInvoker(TGGRule rule, IBeXContextPattern nacPattern,
