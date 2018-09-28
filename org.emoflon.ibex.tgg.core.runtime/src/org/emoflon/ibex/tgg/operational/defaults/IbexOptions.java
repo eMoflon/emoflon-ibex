@@ -41,7 +41,7 @@ public class IbexOptions {
 		workspacePath = "./../";
 		repairAttributes = true;
 		setIlpSolver(SupportedILPSolver.Sat4J);
-		useEdgePatterns = true;
+		useEdgePatterns = false;
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
 	}
 

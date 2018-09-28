@@ -44,6 +44,14 @@ public class TGGPatternUtil {
 	public static String getBWDOptBlackPatternName(String ruleName) {
 		return ruleName + PatternSuffixes.BWD_OPT;
 	}
+	
+	public static String getGenForCCBlackPatternName(String ruleName) {
+		return ruleName + PatternSuffixes.GENForCC;
+	}
+	
+	public static String getGenForCOBlackPatternName(String ruleName) {
+		return ruleName + PatternSuffixes.GENForCO;
+	}
 
 	/**
 	 * Returns the axiom name encoded in the name of the rule
