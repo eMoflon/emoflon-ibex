@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.transformations.patterns;
+package org.emoflon.ibex.tgg.compiler.transformations.patterns.common;
 
 import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWithName;
 import static org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper.addInjectivityConstraintIfNecessary;
@@ -15,6 +15,7 @@ import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
@@ -29,24 +30,26 @@ public abstract class OperationalPatternTransformation {
 
 	protected ContextPatternTransformation parent;
 	protected IbexOptions options;
+	protected TGGRule rule;
 
-	public OperationalPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
+	public OperationalPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
 		this.parent = parent;
 		this.options = options;
+		this.rule = rule;
 	}
 
-	protected abstract String getPatternName(TGGRule rule);
+	protected abstract String getPatternName();
 
-	protected abstract void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern);
+	protected abstract void handleComplementRules(IBeXContextPattern ibexPattern);
 
-	protected abstract void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule);
+	protected abstract void transformNodes(IBeXContextPattern ibexPattern);
 
-	protected abstract void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule);
+	protected abstract void transformEdges(IBeXContextPattern ibexPattern);
 
-	protected abstract void transformNACs(IBeXContextPattern ibexPattern, TGGRule rule);
+	protected abstract void transformNACs(IBeXContextPattern ibexPattern);
 
-	public IBeXContextPattern transform(TGGRule rule) {
-		String patternName = getPatternName(rule);
+	public IBeXContextPattern transform() {
+		String patternName = getPatternName();
 
 		if (parent.isTransformed(patternName))
 			return parent.getPattern(patternName);
@@ -57,7 +60,7 @@ public abstract class OperationalPatternTransformation {
 		parent.addContextPattern(ibexPattern, rule);
 
 		// Transform nodes.
-		transformNodes(ibexPattern, rule);
+		transformNodes(ibexPattern);
 
 		// Ensure that all nodes must be disjoint even if they have the same type.
 		List<TGGRuleNode> allNodes = rule.getNodes();
@@ -74,19 +77,18 @@ public abstract class OperationalPatternTransformation {
 		}
 
 		// Transform edges.
-		transformEdges(ibexPattern, rule);
+		transformEdges(ibexPattern);
 
 		// Transform NACs
-		transformNACs(ibexPattern, rule);
+		transformNACs(ibexPattern);
 
 		// Complement rule
-		handleComplementRules(rule, ibexPattern);
+		handleComplementRules(ibexPattern);
 		
 		return ibexPattern;
 	}
 
-	protected IBeXContextPattern createFilterNAC(IBeXContextPattern ibexPattern, FilterNACCandidate candidate,
-			TGGRule rule) {
+	protected IBeXContextPattern createFilterNAC(IBeXContextPattern ibexPattern, FilterNACCandidate candidate) {
 		// Root pattern
 		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
 
@@ -94,7 +96,7 @@ public abstract class OperationalPatternTransformation {
 		TGGRuleNode firstNode = candidate.getNodeInRule();
 		IBeXNode firstIBeXNode = parent.transformNode(nacPattern, firstNode);
 
-		addNodesOfSameTypeFromInvoker(rule, nacPattern, candidate, firstIBeXNode);
+		addNodesOfSameTypeFromInvoker(nacPattern, candidate, firstIBeXNode);
 
 		IBeXNode secondIBeXNode = IBeXPatternFactory.createNode(NODE_NAME, getOtherNodeType(candidate));
 		nacPattern.getSignatureNodes().add(secondIBeXNode);
@@ -157,7 +159,7 @@ public abstract class OperationalPatternTransformation {
 		invoker.getInvocations().add(invocation);
 	}
 
-	private void addNodesOfSameTypeFromInvoker(TGGRule rule, IBeXContextPattern nacPattern,
+	private void addNodesOfSameTypeFromInvoker(IBeXContextPattern nacPattern,
 			FilterNACCandidate candidate, IBeXNode inRuleNode) {
 		TGGRuleNode nodeInRule = candidate.getNodeInRule();
 		switch (candidate.getEDirection()) {

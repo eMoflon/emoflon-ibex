@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.transformations.patterns;
+package org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd;
 
 import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWithName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFWDOptBlackPatternName;
@@ -13,6 +13,8 @@ import java.util.Optional;
 
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
@@ -26,17 +28,17 @@ import language.TGGRuleNode;
 
 public class FWD_OPTPatternTransformation extends OperationalPatternTransformation {
 
-	public FWD_OPTPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
-		super(parent, options);
+	public FWD_OPTPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
+		super(parent, options, rule);
 	}
 
 	@Override
-	protected String getPatternName(TGGRule rule) {
+	protected String getPatternName() {
 		return getFWDOptBlackPatternName(rule.getName());
 	}
 
 	@Override
-	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
+	protected void handleComplementRules(IBeXContextPattern ibexPattern) {
 		if(rule instanceof TGGComplementRule) {
 			TGGComplementRule compRule = (TGGComplementRule) rule;
 			IBeXContextPattern kernelConsistencyPattern = parent.createConsistencyPattern(compRule.getKernel());
@@ -49,7 +51,7 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 	}
 
 	@Override
-	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
+	protected void transformNodes(IBeXContextPattern ibexPattern) {
 		List<TGGRuleNode> contextNodes = getNodesByOperator(rule, BindingType.CONTEXT);
 		contextNodes.addAll(getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
 		for (final TGGRuleNode node : contextNodes)
@@ -61,7 +63,7 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 	}
 
 	@Override
-	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
+	protected void transformEdges(IBeXContextPattern ibexPattern) {
 		List<TGGRuleEdge> edges = getEdgesByOperator(rule, BindingType.CONTEXT);
 		edges.addAll(getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
 		for (TGGRuleEdge edge : edges)
@@ -69,11 +71,11 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 	}
 
 	@Override
-	protected void transformNACs(IBeXContextPattern ibexPattern, TGGRule rule) {
+	protected void transformNACs(IBeXContextPattern ibexPattern) {
 		// Filter NACs
 		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
-			parent.addContextPattern(createFilterNAC(ibexPattern, candidate, rule));
+			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 	}
 }

@@ -22,8 +22,20 @@ import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWDPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWD_OPTPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.FusedBWDPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.FusedBWD_OPTPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.ConsistencyPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWDPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_OPTPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FusedFWDPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FusedFWD_OPTPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCCPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCOPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.CCPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.COPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -45,6 +57,7 @@ import language.BindingType;
 import language.DomainType;
 import language.NAC;
 import language.TGGAttributeConstraintOperators;
+import language.TGGComplementRule;
 import language.TGGEnumExpression;
 import language.TGGExpression;
 import language.TGGInplaceAttributeExpression;
@@ -93,13 +106,30 @@ public class ContextPatternTransformation {
 				createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternSuffixes.BWD_OPT);
 			}
 
-			if (strategy.getGreenFactory(rule.getName()).isComplementRule()) {
+			if (isComplementRule(rule)) {
 				createPatternIfRelevant(rule, this::createGenForCCPattern, PatternSuffixes.GENForCC);
 				createPatternIfRelevant(rule, this::createGenForCOPattern, PatternSuffixes.GENForCO);
+
+				TGGComplementRule crule = (TGGComplementRule) rule;
+				TGGRule kernel = crule.getKernel();
+
+				if (isDomainProgressive(crule, DomainType.SRC) || isDomainProgressive(kernel, DomainType.SRC)) {
+					createPatternIfRelevant(rule, this::createFusedFWDPattern, PatternSuffixes.FWD);
+					createPatternIfRelevant(rule, this::createFusedFWD_OPTPattern, PatternSuffixes.FWD_OPT);
+				}
+
+				if (isDomainProgressive(crule, DomainType.TRG) || isDomainProgressive(kernel, DomainType.TRG)) {
+					createPatternIfRelevant(rule, this::createFusedBWDPattern, PatternSuffixes.BWD);
+					createPatternIfRelevant(rule, this::createFusedBWD_OPTPattern, PatternSuffixes.BWD_OPT);
+				}
 			}
 		}
 
 		return createSortedPatternSet();
+	}
+
+	private boolean isComplementRule(TGGRule rule) {
+		return strategy.getGreenFactory(rule.getName()).isComplementRule();
 	}
 
 	private boolean isDomainProgressive(TGGRule rule, DomainType domain) {
@@ -126,54 +156,73 @@ public class ContextPatternTransformation {
 	}
 
 	private IBeXContextPattern createModelGenPattern(TGGRule rule) {
-		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this, options);
-		return genPatternTransformer.transform(rule);
+		GENPatternTransformation transformer = new GENPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFWDPattern(TGGRule rule) {
-		FWDPatternTransformation fwdPatternTransformer = new FWDPatternTransformation(this, options);
-		return fwdPatternTransformer.transform(rule);
+		FWDPatternTransformation transformer = new FWDPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
 	private IBeXContextPattern createBWDPattern(TGGRule rule) {
-		BWDPatternTransformation bwdPatternTransformer = new BWDPatternTransformation(this, options);
-		return bwdPatternTransformer.transform(rule);
+		BWDPatternTransformation transformer = new BWDPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
 	public IBeXContextPattern createConsistencyPattern(TGGRule rule) {
-		ConsistencyPatternTransformation consistencyPatternTransformer = new ConsistencyPatternTransformation(this,
-				options);
-		return consistencyPatternTransformer.transform(rule);
+		ConsistencyPatternTransformation transformer = new ConsistencyPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
 	private IBeXContextPattern createCCPattern(TGGRule rule) {
-		CCPatternTransformation ccPatternTransformer = new CCPatternTransformation(this, options);
-		return ccPatternTransformer.transform(rule);
+		CCPatternTransformation transformer = new CCPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
 	private IBeXContextPattern createCOPattern(TGGRule rule) {
-		COPatternTransformation coPatternTransformer = new COPatternTransformation(this, options);
-		return coPatternTransformer.transform(rule);
+		COPatternTransformation transformer = new COPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFWD_OPTPattern(TGGRule rule) {
-		FWD_OPTPatternTransformation fwd_optPatternTransformer = new FWD_OPTPatternTransformation(this, options);
-		return fwd_optPatternTransformer.transform(rule);
+		FWD_OPTPatternTransformation transformer = new FWD_OPTPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
 	private IBeXContextPattern createBWD_OPTPattern(TGGRule rule) {
-		BWD_OPTPatternTransformation bwd_optPatternTransformer = new BWD_OPTPatternTransformation(this, options);
-		return bwd_optPatternTransformer.transform(rule);
+		BWD_OPTPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
-	private void createGenForCCPattern(TGGRule rule) {
-		GENForCCPatternTransformation genForccPatternTransformer = new GENForCCPatternTransformation(this, options);
-		genForccPatternTransformer.transform(rule);
+	private IBeXContextPattern createGenForCCPattern(TGGRule rule) {
+		GENForCCPatternTransformation transformer = new GENForCCPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
-	private void createGenForCOPattern(TGGRule rule) {
-		GENForCOPatternTransformation genForcoPatternTransformer = new GENForCOPatternTransformation(this, options);
-		genForcoPatternTransformer.transform(rule);
+	private IBeXContextPattern createGenForCOPattern(TGGRule rule) {
+		GENForCOPatternTransformation transformer = new GENForCOPatternTransformation(this, options, rule);
+		return transformer.transform();
+	}
+
+	private IBeXContextPattern createFusedFWDPattern(TGGRule rule) {
+		FusedFWDPatternTransformation transformer = new FusedFWDPatternTransformation(this, options, rule);
+		return transformer.transform();
+	}
+
+	private IBeXContextPattern createFusedBWDPattern(TGGRule rule) {
+		FusedBWDPatternTransformation transformer = new FusedBWDPatternTransformation(this, options, rule);
+		return transformer.transform();
+	}
+
+	private IBeXContextPattern createFusedFWD_OPTPattern(TGGRule rule) {
+		FusedFWD_OPTPatternTransformation transformer = new FusedFWD_OPTPatternTransformation(this, options, rule);
+		return transformer.transform();
+	}
+
+	private IBeXContextPattern createFusedBWD_OPTPattern(TGGRule rule) {
+		FusedBWD_OPTPatternTransformation transformer = new FusedBWD_OPTPatternTransformation(this, options, rule);
+		return transformer.transform();
 	}
 
 	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {

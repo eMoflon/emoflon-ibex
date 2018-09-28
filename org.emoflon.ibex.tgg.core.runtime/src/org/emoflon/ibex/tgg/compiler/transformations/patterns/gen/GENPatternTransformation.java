@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.transformations.patterns;
+package org.emoflon.ibex.tgg.compiler.transformations.patterns.gen;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getGENBlackPatternName;
 
@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
@@ -26,17 +28,17 @@ import runtime.RuntimePackage;
 
 public class GENPatternTransformation extends OperationalPatternTransformation {
 
-	public GENPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
-		super(parent, options);
+	public GENPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
+		super(parent, options, rule);
 	}
 
 	@Override
-	protected String getPatternName(TGGRule rule) {
+	protected String getPatternName() {
 		return getGENBlackPatternName(rule.getName());
 	}
 
 	@Override
-	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
+	protected void handleComplementRules(IBeXContextPattern ibexPattern) {
 		if (rule instanceof TGGComplementRule)
 			handleComplementRuleForGEN((TGGComplementRule) rule, ibexPattern);
 	}
@@ -77,7 +79,7 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 	}
 
 	@Override
-	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
+	protected void transformNodes(IBeXContextPattern ibexPattern) {
 		List<TGGRuleNode> contextNodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
 		for (final TGGRuleNode node : contextNodes) {
 			parent.transformNode(ibexPattern, node);
@@ -90,7 +92,7 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 	}
 
 	@Override
-	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
+	protected void transformEdges(IBeXContextPattern ibexPattern) {
 		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
@@ -99,7 +101,7 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 	}
 
 	@Override
-	protected void transformNACs(IBeXContextPattern ibexPattern, TGGRule rule) {
+	protected void transformNACs(IBeXContextPattern ibexPattern) {
 		// Output Domain User NACs
 		for (NAC nac : rule.getNacs()) {
 			if (TGGModelUtils.isOfDomain(nac, DomainType.SRC))

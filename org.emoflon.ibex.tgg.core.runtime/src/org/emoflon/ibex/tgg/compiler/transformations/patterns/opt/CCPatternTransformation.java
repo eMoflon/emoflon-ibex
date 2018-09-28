@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.transformations.patterns;
+package org.emoflon.ibex.tgg.compiler.transformations.patterns.opt;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getCCBlackPatternName;
 
@@ -9,6 +9,8 @@ import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
@@ -25,63 +27,59 @@ import language.TGGRuleNode;
 
 public class CCPatternTransformation extends OperationalPatternTransformation {
 
-	public CCPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
-		super(parent, options);
+	public CCPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
+		super(parent, options, rule);
 	}
 
 	@Override
-	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
-		if (rule instanceof TGGComplementRule)
-			handleComplementRuleForCC((TGGComplementRule) rule, ibexPattern);
-	}
-
-	
-		/**
-		 * Complement rules require a positive invocation to the consistency pattern of
-		 * their kernel rule.
-		 * 
-		 * @param rule
-		 * @param ibexPattern
-		 */
-	private void handleComplementRuleForCC(TGGComplementRule crule, IBeXContextPattern ibexPattern) {
-			parent.createConsistencyPattern(crule.getKernel());
-			IBeXContextPattern consistencyPatternOfKernel = parent
-					.getPattern(TGGPatternUtil.getConsistencyPatternName(crule.getKernel().getName()));
-
-			IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
-			invocation.setPositive(true);
-
-			// Creating mapping for invocation: missing signature nodes of the invoked
-			// pattern are added as local nodes to the invoking pattern
-			for (IBeXNode node : consistencyPatternOfKernel.getSignatureNodes()) {
-				Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, node.getName());
-
-				if (src.isPresent())
-					invocation.getMapping().put(src.get(), node);
-				else {
-					IBeXNode newLocalNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-					newLocalNode.setName(node.getName());
-					newLocalNode.setType(node.getType());
-					ibexPattern.getLocalNodes().add(newLocalNode);
-
-					invocation.getMapping().put(newLocalNode, node);
-				}
-			}
-
-			//IBeXPatternInvocation genForCCInvocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
-			//genForCCInvocation.setPositive(true);
-
-			invocation.setInvokedPattern(consistencyPatternOfKernel);
-			ibexPattern.getInvocations().add(invocation);
-	}
-
-	@Override
-	protected String getPatternName(TGGRule rule) {
+	protected String getPatternName() {
 		return getCCBlackPatternName(rule.getName());
 	}
 
 	@Override
-	protected void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule) {
+	protected void handleComplementRules(IBeXContextPattern ibexPattern) {
+		if (rule instanceof TGGComplementRule)
+			handleComplementRuleForCC((TGGComplementRule) rule, ibexPattern);
+	}
+
+	/**
+	 * Complement rules require a positive invocation to the consistency pattern of
+	 * their kernel rule.
+	 * 
+	 * @param rule
+	 * @param ibexPattern
+	 */
+	private void handleComplementRuleForCC(TGGComplementRule crule, IBeXContextPattern ibexPattern) {
+		parent.createConsistencyPattern(crule.getKernel());
+		IBeXContextPattern consistencyPatternOfKernel = parent
+				.getPattern(TGGPatternUtil.getConsistencyPatternName(crule.getKernel().getName()));
+
+		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
+		invocation.setPositive(true);
+
+		// Creating mapping for invocation: missing signature nodes of the invoked
+		// pattern are added as local nodes to the invoking pattern
+		for (IBeXNode node : consistencyPatternOfKernel.getSignatureNodes()) {
+			Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, node.getName());
+
+			if (src.isPresent())
+				invocation.getMapping().put(src.get(), node);
+			else {
+				IBeXNode newLocalNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
+				newLocalNode.setName(node.getName());
+				newLocalNode.setType(node.getType());
+				ibexPattern.getLocalNodes().add(newLocalNode);
+
+				invocation.getMapping().put(newLocalNode, node);
+			}
+		}
+
+		invocation.setInvokedPattern(consistencyPatternOfKernel);
+		ibexPattern.getInvocations().add(invocation);
+	}
+
+	@Override
+	protected void transformNodes(IBeXContextPattern ibexPattern) {
 		List<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);
 		nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
 		nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
@@ -97,7 +95,7 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 	}
 
 	@Override
-	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
+	protected void transformEdges(IBeXContextPattern ibexPattern) {
 		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
 		edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
 		edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
@@ -107,15 +105,15 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 	}
 
 	@Override
-	protected void transformNACs(IBeXContextPattern ibexPattern, TGGRule rule) {
+	protected void transformNACs(IBeXContextPattern ibexPattern) {
 		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
-			parent.addContextPattern(createFilterNAC(ibexPattern, candidate, rule));
+			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
-		
+
 		filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule, options);
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
-			parent.addContextPattern(createFilterNAC(ibexPattern, candidate, rule));
+			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 	}
 }
