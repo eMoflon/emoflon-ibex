@@ -50,6 +50,9 @@ import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
 public abstract class OperationalStrategy implements IMatchObserver {
+	private long currentIntervalStart = -1;
+	private final long INTERVAL_LENGTH = 5000;
+	private long matchCounter = 0;
 
 	protected final static Logger logger = Logger.getLogger(OperationalStrategy.class);
 
@@ -209,6 +212,15 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	@Override
 	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
+		matchCounter++;
+		if (currentIntervalStart == -1) {
+			logger.info("Now collecting matches...");
+			currentIntervalStart = System.currentTimeMillis();
+		} else if (System.currentTimeMillis() - currentIntervalStart > INTERVAL_LENGTH) {
+			logger.info("Collected " + matchCounter + " matches...");
+			currentIntervalStart = System.currentTimeMillis();
+		}
+
 		addOperationalRuleMatch((IMatch) match);
 	}
 
@@ -345,7 +357,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		return comatch;
 	}
-	
+
 	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
 		createMarkers(greenPattern, cm, ruleName);
 	}

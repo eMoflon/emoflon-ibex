@@ -21,7 +21,7 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.moflon.emf.codegen,
  org.sat4j.core;visibility:=reexport,
  org.sat4j.pb;visibility:=reexport,
- org.emoflon.ibex.gt
+ org.emoflon.ibex.gt;visibility:=reexport
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/commons-io-2.5.jar,

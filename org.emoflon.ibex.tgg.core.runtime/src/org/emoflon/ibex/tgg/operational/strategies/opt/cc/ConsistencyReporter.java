@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getCreatedNodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,10 +13,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-import language.BindingType;
 import language.DomainType;
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
@@ -83,18 +82,6 @@ public class ConsistencyReporter {
 
 	public Collection<EObject> getInconsistentCorrNodes() {
 		return inconsistentCorrNodes;
-	}
-	
-	private Collection<EObject> getCreatedNodes(EObject c, DomainType type) {
-		TGGRuleApplication ra = (TGGRuleApplication) c;
-		Collection<EObject> createdNodes = new ArrayList<>();
-		String refNamePrefix = TGGModelUtils.getMarkerRefNamePrefix(BindingType.CREATE, type);
-		for (EReference ref : c.eClass().getEAllReferences()) {
-			if(ref.getName().startsWith(refNamePrefix)) {							
-				createdNodes.add((EObject)ra.eGet(ref));			
-			}
-		}
-		return createdNodes;
 	}
 
 	private Collection<EObject> extractInconsistentNodes(Resource resource, Resource protocol, Domain domain) {
