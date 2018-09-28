@@ -18,7 +18,6 @@ import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXNode;
 import language.BindingType;
 import language.DomainType;
-import language.NAC;
 import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
@@ -74,13 +73,6 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		// Output Domain User NACs
-		for (NAC nac : rule.getNacs()) {
-			if (TGGModelUtils.isOfDomain(nac, DomainType.SRC))
-				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
-		}
-
-		// Filter NACs
 		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule, options);
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));

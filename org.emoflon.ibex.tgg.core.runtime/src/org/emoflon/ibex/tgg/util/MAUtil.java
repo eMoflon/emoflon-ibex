@@ -63,17 +63,6 @@ public class MAUtil {
 		return edge;
 	}
 
-//	public static Collection<TGGRuleEdge> getComplementCorrContextEdgesNotInKernel(TGGComplementRule rule,
-//			Collection<TGGRuleNode> signatureNodes) {
-//		ArrayList<TGGRuleEdge> edges = new ArrayList<>();
-//
-//		rule.getNodes().stream().filter(TGGRuleCorr.class::isInstance)
-//				.filter(c -> c.getBindingType() == BindingType.CONTEXT).filter(c -> nodeIsNotInKernel(rule, c))
-//				.map(TGGRuleCorr.class::cast).forEach(c -> AbstractCorrPattern.extractSourceAndTargetEdges(c, edges));
-//
-//		return edges.stream().map(e -> createProxyEdge(signatureNodes, e)).collect(Collectors.toList());
-//	}
-
 	public static void addComplementGivenDomainAndContextNodes(TGGComplementRule rule,
 			Collection<TGGRuleNode> signatureNodes, DomainType domain) {
 		for (TGGRuleNode n : rule.getNodes()) {
@@ -86,27 +75,6 @@ public class MAUtil {
 	public static boolean nodeIsNotInKernel(TGGComplementRule rule, TGGRuleElement node) {
 		return rule.getKernel().getNodes().stream().noneMatch(re -> re.getName().equals(node.getName()));
 	}
-
-//	public static void createMarkedInvocations(DomainType domain, TGGComplementRule rule, IBlackPattern pattern) {
-//		for (TGGRuleElement e : pattern.getSignatureNodes()) {
-//			TGGRuleNode node = (TGGRuleNode) e;
-//			if (nodeIsNotInKernel(rule, node) && node.getDomainType().equals(domain)) {
-//				IBlackPattern markedPattern = pattern.getPatternFactory().getLocalMarkedPattern(node.getDomainType());
-//				TGGRuleNode invokedObject = (TGGRuleNode) markedPattern.getSignatureNodes().stream().findAny().get();
-//
-//				Map<TGGRuleNode, TGGRuleNode> mapping = new HashMap<>();
-//				mapping.put(node, invokedObject);
-//
-//				if (node.getBindingType() == BindingType.CREATE)
-//					pattern.addNegativeInvocation(markedPattern, mapping);
-//
-//				else if (node.getBindingType() == BindingType.CONTEXT) {
-//					pattern.addPositiveInvocation(markedPattern, mapping);
-//				}
-//
-//			}
-//		}
-//	}
 
 	public static String setFusedName(String complementName, String kernelName) {
 		return complementName + FUSED + kernelName;

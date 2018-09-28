@@ -27,6 +27,7 @@ import language.TGGAttributeExpression;
 import language.TGGEnumExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
+import language.TGGNamedElement;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -239,7 +240,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private boolean isBlackNode(TGGRuleNode srcNode, IGreenPattern greenPattern) {
-		return !greenPattern.getSrcTrgNodesCreatedByPattern().contains(srcNode);
+		return !containsByName(greenPattern.getSrcTrgNodesCreatedByPattern(), srcNode);
 	}
 
 	private boolean violatesContainerSemantics(String ruleName, IGreenPattern greenPattern, IMatch match) {
@@ -256,7 +257,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	private boolean violationOfContainerSemanticsIsPossible(IGreenPattern greenPattern, TGGRuleEdge greenEdge) {
 		return greenEdge.getType().isContainment()
-				&& !greenPattern.getSrcTrgNodesCreatedByPattern().contains(greenEdge.getTrgNode());
+				&& !containsByName(greenPattern.getSrcTrgNodesCreatedByPattern(), greenEdge.getTrgNode());
 	}
 
 	private boolean violatesUpperBounds(String ruleName, IGreenPattern greenPattern, IMatch match) {
@@ -280,7 +281,11 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	 */
 	private boolean violationIsPossible(IGreenPattern greenPattern, TGGRuleEdge greenEdge) {
 		return greenEdge.getType().getUpperBound() != -1
-				&& !greenPattern.getSrcTrgNodesCreatedByPattern().contains(greenEdge.getSrcNode());
+				&& !containsByName(greenPattern.getSrcTrgNodesCreatedByPattern(), greenEdge.getSrcNode());
+	}
+
+	private boolean containsByName(Collection<? extends TGGNamedElement> elts, TGGNamedElement elt) {
+		return elts.stream().anyMatch(x -> x.getName().equals(elt.getName()));
 	}
 
 	private boolean violatesUpperBounds(String ruleName, TGGRuleEdge greenEdge, IMatch match,

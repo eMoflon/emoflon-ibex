@@ -27,12 +27,10 @@ import language.TGGRuleNode;
 public abstract class IbexGreenPattern implements IGreenPattern {
 	protected IGreenPatternFactory factory;
 	protected OperationalStrategy strategy;
-	protected List<TGGAttributeConstraint> sortedConstraints;
 	
 	public IbexGreenPattern(GreenPatternFactory factory) {
 		this.factory = factory;
 		this.strategy = factory.getStrategy();
-		this.sortedConstraints = sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints());
 	}
 	
 	@Override
@@ -40,7 +38,7 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 		try {			
 			return new RuntimeTGGAttributeConstraintContainer(
 					factory.getAttributeCSPVariables(), 
-					sortedConstraints,
+					 sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints()),
 					match,
 					factory.getOptions().constraintProvider());
 		} catch (Exception e) {

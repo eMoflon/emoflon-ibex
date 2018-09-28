@@ -206,22 +206,24 @@ public class ContextPatternTransformation {
 	}
 
 	private IBeXContextPattern createFusedFWDPattern(TGGRule rule) {
-		FusedFWDPatternTransformation transformer = new FusedFWDPatternTransformation(this, options, rule);
+		FusedFWDPatternTransformation transformer = new FusedFWDPatternTransformation(this, options, rule, strategy);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFusedBWDPattern(TGGRule rule) {
-		FusedBWDPatternTransformation transformer = new FusedBWDPatternTransformation(this, options, rule);
+		FusedBWDPatternTransformation transformer = new FusedBWDPatternTransformation(this, options, rule, strategy);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFusedFWD_OPTPattern(TGGRule rule) {
-		FusedFWD_OPTPatternTransformation transformer = new FusedFWD_OPTPatternTransformation(this, options, rule);
+		FusedFWD_OPTPatternTransformation transformer = new FusedFWD_OPTPatternTransformation(this, options, rule,
+				strategy);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFusedBWD_OPTPattern(TGGRule rule) {
-		FusedBWD_OPTPatternTransformation transformer = new FusedBWD_OPTPatternTransformation(this, options, rule);
+		FusedBWD_OPTPatternTransformation transformer = new FusedBWD_OPTPatternTransformation(this, options, rule,
+				strategy);
 		return transformer.transform();
 	}
 
