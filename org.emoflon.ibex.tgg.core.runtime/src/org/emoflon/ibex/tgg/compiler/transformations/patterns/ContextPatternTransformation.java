@@ -20,6 +20,8 @@ import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCCPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCOPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -80,6 +82,10 @@ public class ContextPatternTransformation {
 			createPatternIfRelevant(rule, this::createCOPattern, PatternSuffixes.CO);
 			createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternSuffixes.FWD_OPT);
 			createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternSuffixes.BWD_OPT);
+			if (strategy.getGreenFactory(rule.getName()).isComplementRule()) {
+				createPatternIfRelevant(rule, this::createGenForCCPattern, PatternSuffixes.GENForCC);
+				createPatternIfRelevant(rule, this::createGenForCOPattern, PatternSuffixes.GENForCO);
+			}
 		}
 
 		return createSortedPatternSet();
@@ -143,6 +149,16 @@ public class ContextPatternTransformation {
 		return bwd_optPatternTransformer.transform(rule);
 	}
 
+	private void createGenForCCPattern(TGGRule rule) {
+		GENForCCPatternTransformation genForccPatternTransformer = new GENForCCPatternTransformation(this, options);
+		genForccPatternTransformer.transform(rule);
+	}
+
+	private void createGenForCOPattern(TGGRule rule) {
+		GENForCOPatternTransformation genForcoPatternTransformer = new GENForCOPatternTransformation(this, options);
+		genForcoPatternTransformer.transform(rule);
+	}
+	
 	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {
 		// Root pattern
 		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();

@@ -172,7 +172,7 @@ public class PatternSuffixes {
 	 * original TGG rule. This pattern is needed to ensure maximality for CC of
 	 * complement rules is met.
 	 */
-	public static final String GENForCC = "_GenForCC";
+	public static final String GENForCC = SEP + "GenForCC";
 	
 	/**
 	 * Used for consistency checking of existing links. Represents the context for
@@ -191,7 +191,7 @@ public class PatternSuffixes {
 	 * original TGG rule. This pattern is needed to ensure maximality for CO of
 	 * complement rules is met.
 	 */
-	public static final String GENForCO = "_GenForCO";
+	public static final String GENForCO = SEP + "GenForCO";
 
 	/**
 	 * This suffix indicates a marked pattern with a local protocol node, i.e., the

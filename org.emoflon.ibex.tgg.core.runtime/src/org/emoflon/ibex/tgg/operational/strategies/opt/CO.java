@@ -22,7 +22,7 @@ public abstract class CO extends CC {
 
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.CO);
+		return patternName.endsWith(PatternSuffixes.CO) || patternName.endsWith(PatternSuffixes.GENForCO);
 	}
 
 	@Override
