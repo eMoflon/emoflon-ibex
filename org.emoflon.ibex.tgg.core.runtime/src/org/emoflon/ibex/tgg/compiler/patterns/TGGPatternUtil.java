@@ -1,6 +1,16 @@
 package org.emoflon.ibex.tgg.compiler.patterns;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
+
+import language.BindingType;
+import language.DomainType;
 import language.TGGRule;
+import runtime.TGGRuleApplication;
 
 public class TGGPatternUtil {
 	public static final String protocolNodeSuffix = "_eMoflon_ProtocolNode";
@@ -80,5 +90,17 @@ public class TGGPatternUtil {
 	
 	public static String getFilterNACPatternName(FilterNACCandidate candidate, TGGRule rule) {
 		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC;  
+	}
+	
+	public static Collection<EObject> getCreatedNodes(EObject c, DomainType type) {
+		TGGRuleApplication ra = (TGGRuleApplication) c;
+		Collection<EObject> createdNodes = new ArrayList<>();
+		String refNamePrefix = TGGModelUtils.getMarkerRefNamePrefix(BindingType.CREATE, type);
+		for (EReference ref : c.eClass().getEAllReferences()) {
+			if(ref.getName().startsWith(refNamePrefix)) {							
+				createdNodes.add((EObject)ra.eGet(ref));			
+			}
+		}
+		return createdNodes;
 	}
 }
