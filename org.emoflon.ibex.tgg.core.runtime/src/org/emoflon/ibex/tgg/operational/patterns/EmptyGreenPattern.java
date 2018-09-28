@@ -64,7 +64,7 @@ public class EmptyGreenPattern implements IGreenPattern {
 	
 	@Override
 	public boolean isToBeIgnored(IMatch match) {
-		return false;
+		return true;
 	}
 
 	@Override

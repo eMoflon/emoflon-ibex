@@ -57,11 +57,7 @@ public class GENForCOPatternTransformation extends OperationalPatternTransformat
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern, TGGRule rule) {
-		// Output Domain User NACs
-		for (NAC nac : rule.getNacs()) {
-			if (TGGModelUtils.isOfDomain(nac, DomainType.SRC))
-				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
-		}
+		
 	}
 	
 }

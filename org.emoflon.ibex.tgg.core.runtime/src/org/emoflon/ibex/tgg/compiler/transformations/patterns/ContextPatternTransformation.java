@@ -82,8 +82,10 @@ public class ContextPatternTransformation {
 			createPatternIfRelevant(rule, this::createCOPattern, PatternSuffixes.CO);
 			createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternSuffixes.FWD_OPT);
 			createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternSuffixes.BWD_OPT);
-			createPatternIfRelevant(rule, this::createGenForCCPattern, PatternSuffixes.GENForCC);
-			createPatternIfRelevant(rule, this::createGenForCOPattern, PatternSuffixes.GENForCO);
+			if (strategy.getGreenFactory(rule.getName()).isComplementRule()) {
+				createPatternIfRelevant(rule, this::createGenForCCPattern, PatternSuffixes.GENForCC);
+				createPatternIfRelevant(rule, this::createGenForCOPattern, PatternSuffixes.GENForCO);
+			}
 		}
 
 		return createSortedPatternSet();
@@ -106,7 +108,7 @@ public class ContextPatternTransformation {
 	public Map<IBeXContextPattern, TGGNamedElement> getPatternToRuleMap() {
 		return patternToRuleMap;
 	}
-
+ 
 	private void createModelGenPattern(TGGRule rule) {
 		GENPatternTransformation genPatternTransformer = new GENPatternTransformation(this, options);
 		genPatternTransformer.transform(rule);
