@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.*;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getCCBlackPatternName;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,20 +12,16 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
-import IBeXLanguage.IBeXAttributeConstraint;
-import IBeXLanguage.IBeXConstant;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
-import IBeXLanguage.IBeXRelation;
 import language.BindingType;
 import language.DomainType;
 import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
 
 public class CCPatternTransformation extends OperationalPatternTransformation {
 
@@ -102,9 +98,9 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
-		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
-		edges.addAll(TGGModelUtils.getReferencesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
-		edges.addAll(TGGModelUtils.getReferencesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
+		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
+		edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
+		edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
 
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);

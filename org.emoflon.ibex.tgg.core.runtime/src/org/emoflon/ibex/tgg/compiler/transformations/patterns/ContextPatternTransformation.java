@@ -1,6 +1,8 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
+import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +41,8 @@ import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXPatternSet;
 import IBeXLanguage.IBeXRelation;
+import language.BindingType;
+import language.DomainType;
 import language.NAC;
 import language.TGGAttributeConstraintOperators;
 import language.TGGEnumExpression;
@@ -75,13 +79,20 @@ public class ContextPatternTransformation {
 	public IBeXPatternSet transform() {
 		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
 			createPatternIfRelevant(rule, this::createModelGenPattern, PatternSuffixes.GEN);
-			createPatternIfRelevant(rule, this::createFWDPattern, PatternSuffixes.FWD);
-			createPatternIfRelevant(rule, this::createBWDPattern, PatternSuffixes.BWD);
 			createPatternIfRelevant(rule, this::createConsistencyPattern, PatternSuffixes.CONSISTENCY);
 			createPatternIfRelevant(rule, this::createCCPattern, PatternSuffixes.CC);
 			createPatternIfRelevant(rule, this::createCOPattern, PatternSuffixes.CO);
-			createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternSuffixes.FWD_OPT);
-			createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternSuffixes.BWD_OPT);
+
+			if (isDomainProgressive(rule, DomainType.SRC)) {
+				createPatternIfRelevant(rule, this::createFWDPattern, PatternSuffixes.FWD);
+				createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternSuffixes.FWD_OPT);
+			}
+
+			if (isDomainProgressive(rule, DomainType.TRG)) {
+				createPatternIfRelevant(rule, this::createBWDPattern, PatternSuffixes.BWD);
+				createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternSuffixes.BWD_OPT);
+			}
+
 			if (strategy.getGreenFactory(rule.getName()).isComplementRule()) {
 				createPatternIfRelevant(rule, this::createGenForCCPattern, PatternSuffixes.GENForCC);
 				createPatternIfRelevant(rule, this::createGenForCOPattern, PatternSuffixes.GENForCO);
@@ -91,8 +102,13 @@ public class ContextPatternTransformation {
 		return createSortedPatternSet();
 	}
 
+	private boolean isDomainProgressive(TGGRule rule, DomainType domain) {
+		return !getNodesByOperatorAndDomain(rule, BindingType.CREATE, domain).isEmpty()
+				|| !getEdgesByOperatorAndDomain(rule, BindingType.CREATE, domain).isEmpty();
+	}
+
 	private void createPatternIfRelevant(TGGRule rule, Consumer<TGGRule> transformer, String suffix) {
-		if(strategy.isPatternRelevantForCompiler(suffix)) {
+		if (strategy.isPatternRelevantForCompiler(suffix)) {
 			transformer.accept(rule);
 		}
 	}
@@ -118,14 +134,15 @@ public class ContextPatternTransformation {
 		FWDPatternTransformation fwdPatternTransformer = new FWDPatternTransformation(this, options);
 		return fwdPatternTransformer.transform(rule);
 	}
-	
+
 	private IBeXContextPattern createBWDPattern(TGGRule rule) {
-		BWDPatternTransformation  bwdPatternTransformer = new BWDPatternTransformation(this, options);
+		BWDPatternTransformation bwdPatternTransformer = new BWDPatternTransformation(this, options);
 		return bwdPatternTransformer.transform(rule);
 	}
-	
+
 	public IBeXContextPattern createConsistencyPattern(TGGRule rule) {
-		ConsistencyPatternTransformation consistencyPatternTransformer = new ConsistencyPatternTransformation(this, options);
+		ConsistencyPatternTransformation consistencyPatternTransformer = new ConsistencyPatternTransformation(this,
+				options);
 		return consistencyPatternTransformer.transform(rule);
 	}
 
@@ -158,7 +175,7 @@ public class ContextPatternTransformation {
 		GENForCOPatternTransformation genForcoPatternTransformer = new GENForCOPatternTransformation(this, options);
 		genForcoPatternTransformer.transform(rule);
 	}
-	
+
 	public IBeXContextPattern transformNac(TGGRule rule, NAC nac, IBeXContextPattern parent) {
 		// Root pattern
 		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();

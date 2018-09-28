@@ -49,8 +49,8 @@ public class COPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
-		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
-		edges.addAll(TGGModelUtils.getReferencesByOperator(rule, BindingType.CREATE));
+		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
+		edges.addAll(TGGModelUtils.getEdgesByOperator(rule, BindingType.CREATE));
 
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);

@@ -235,15 +235,10 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			logger.debug("Received but rejected " + match.getPatternName());
 	}
 
-	protected boolean addConsistencyMatch(IMatch match) {
-		if (matchIsValidIsomorphism(match)) {
-			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
-			consistencyMatches.put(ruleAppNode, match);
-			logger.debug("Received and added consistency match: " + match.getPatternName());
-			return true;
-		}
-
-		return false;
+	protected void addConsistencyMatch(IMatch match) {
+		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
+		consistencyMatches.put(ruleAppNode, match);
+		logger.debug("Received and added consistency match: " + match.getPatternName());
 	}
 
 	@Override
@@ -261,18 +256,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	public boolean isPatternRelevantForInterpreter(String patternName) {
 		return isPatternRelevantForCompiler(patternName);
 	}
-
-	private boolean matchIsValidIsomorphism(IMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
-			// Make sure that node mappings comply to bindings in match
-			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
-			return ruleAppNode.getNodeMappings().keySet().stream()
-					.noneMatch(n -> ruleAppNode.getNodeMappings().get(n) != match.get(n));
-		}
-
-		return true;
-	}
-
+	
 	private boolean matchIsDomainConform(IMatch match) {
 		if (domainsHaveNoSharedTypes)
 			return true;
@@ -475,7 +459,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return getKernelRulesNames().contains(kernelName);
 	}
 
-	protected boolean isComplementMatch(String complementName) {
+	public boolean isComplementMatch(String complementName) {
 		return getComplementRulesNames().contains(complementName);
 	}
 

@@ -1,8 +1,11 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
+import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWithName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getBWDOptBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
@@ -10,6 +13,7 @@ import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
+import IBeXLanguage.IBeXNode;
 import language.BindingType;
 import language.DomainType;
 import language.NAC;
@@ -25,18 +29,21 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 	}
 
 	@Override
-	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
-		if (rule instanceof TGGComplementRule)
-			handleComplementRuleForFWD_OPT((TGGComplementRule) rule, ibexPattern);
-	}
-
-	private void handleComplementRuleForFWD_OPT(TGGComplementRule rule, IBeXContextPattern ibexPattern) {
-		// TODO Multi-Amalgamation
-	}
-
-	@Override
 	protected String getPatternName(TGGRule rule) {
 		return getBWDOptBlackPatternName(rule.getName());
+	}
+	
+	@Override
+	protected void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern) {
+		if(rule instanceof TGGComplementRule) {
+			TGGComplementRule compRule = (TGGComplementRule) rule;
+			IBeXContextPattern kernelConsistencyPattern = parent.createConsistencyPattern(compRule.getKernel());
+			
+			createInvocation(ibexPattern, kernelConsistencyPattern, true);
+			
+			Optional<IBeXNode> markerNode = findIBeXNodeWithName(ibexPattern, getProtocolNodeName(compRule.getKernel().getName()));
+			markerNode.ifPresent(ibexPattern.getSignatureNodes()::add);
+		}
 	}
 
 	@Override
@@ -56,8 +63,8 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
-		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
-		edges.addAll(TGGModelUtils.getReferencesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
+		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
+		edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
 
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);

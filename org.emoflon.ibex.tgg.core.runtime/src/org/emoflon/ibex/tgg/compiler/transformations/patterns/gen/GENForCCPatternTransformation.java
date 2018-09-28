@@ -1,7 +1,9 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.gen;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getGenForCCBlackPatternName;
+
 import java.util.List;
+
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
@@ -9,8 +11,6 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
-import language.DomainType;
-import language.NAC;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -46,7 +46,7 @@ public class GENForCCPatternTransformation extends OperationalPatternTransformat
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
-		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
+		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
 

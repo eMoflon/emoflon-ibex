@@ -21,7 +21,7 @@ public class TGGModelUtils {
 				.collect(Collectors.toList());
 	}
 
-	public static List<TGGRuleEdge> getReferencesByOperator(TGGRule rule, BindingType type) {
+	public static List<TGGRuleEdge> getEdgesByOperator(TGGRule rule, BindingType type) {
 		Objects.requireNonNull(rule, "The rule must not be null!");
 		return rule.getEdges().stream() //
 				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
@@ -58,9 +58,9 @@ public class TGGModelUtils {
 		return type.getLiteral() + "__" + domain.getLiteral() + "__";
 	}
 
-	public static Collection<? extends TGGRuleEdge> getReferencesByOperatorAndDomain(TGGRule rule, BindingType type,
+	public static Collection<? extends TGGRuleEdge> getEdgesByOperatorAndDomain(TGGRule rule, BindingType type,
 			DomainType domain) {
-		return getReferencesByOperator(rule, type)//
+		return getEdgesByOperator(rule, type)//
 				.stream()//
 				.filter(e -> e.getDomainType().equals(domain))//
 				.collect(Collectors.toList());

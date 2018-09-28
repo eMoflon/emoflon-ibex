@@ -100,15 +100,32 @@ public class TGGPatternUtil {
 		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC;  
 	}
 	
-	public static Collection<EObject> getCreatedNodes(EObject c, DomainType type) {
-		TGGRuleApplication ra = (TGGRuleApplication) c;
-		Collection<EObject> createdNodes = new ArrayList<>();
-		String refNamePrefix = TGGModelUtils.getMarkerRefNamePrefix(BindingType.CREATE, type);
-		for (EReference ref : c.eClass().getEAllReferences()) {
+	public static Collection<EObject> getNodes(EObject ruleAppNode, BindingType binding, DomainType type) {
+		TGGRuleApplication ra = (TGGRuleApplication) ruleAppNode;
+		Collection<EObject> nodes = new ArrayList<>();
+		String refNamePrefix = TGGModelUtils.getMarkerRefNamePrefix(binding, type);
+		for (EReference ref : ruleAppNode.eClass().getEAllReferences()) {
 			if(ref.getName().startsWith(refNamePrefix)) {							
-				createdNodes.add((EObject)ra.eGet(ref));			
+				nodes.add((EObject)ra.eGet(ref));			
 			}
 		}
-		return createdNodes;
+		return nodes;
+	}
+	
+	public static Collection<EObject> getAllNodes(EObject ruleAppNode){
+		Collection<EObject> allNodes = new ArrayList<>();
+		
+		allNodes.addAll(getNodes(ruleAppNode, BindingType.CREATE, DomainType.SRC));
+		allNodes.addAll(getNodes(ruleAppNode, BindingType.CONTEXT, DomainType.SRC));
+		allNodes.addAll(getNodes(ruleAppNode, BindingType.CREATE, DomainType.TRG));
+		allNodes.addAll(getNodes(ruleAppNode, BindingType.CONTEXT, DomainType.TRG));
+		
+		return allNodes;
+	}
+
+	public static EObject getNode(EObject ruleAppNode, BindingType binding, DomainType domain, String ovName) {
+		TGGRuleApplication ra = (TGGRuleApplication) ruleAppNode;
+		String refName = TGGModelUtils.getMarkerRefName(binding, domain, ovName);
+		return (EObject) ra.eGet(ruleAppNode.eClass().getEStructuralFeature(refName));	
 	}
 }

@@ -4,32 +4,23 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.OperationalPatternTransformation;
 
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
 import language.TGGAttributeConstraint;
-import language.TGGAttributeConstraintOperators;
 import language.TGGAttributeExpression;
 import language.TGGAttributeVariable;
 import language.TGGComplementRule;
 import language.TGGEnumExpression;
-import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGParamValue;
-import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
 
 public class MAUtil {
 	public static final String FUSED = "FFF";
-
-//	private static boolean kernelNodeIsNotInComplement(TGGRuleElement kernelNode, IBlackPattern pattern) {
-//		return pattern.getSignatureNodes().stream().noneMatch(re -> re.getName().equals(kernelNode.getName()));
-//	}
 	
 	public static TGGRuleNode createProxyNode(TGGRuleNode node) {
 		TGGRuleNode copiedNode = LanguageFactory.eINSTANCE.createTGGRuleNode();

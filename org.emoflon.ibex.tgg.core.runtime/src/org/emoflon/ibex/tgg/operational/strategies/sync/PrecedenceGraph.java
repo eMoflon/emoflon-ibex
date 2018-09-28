@@ -37,7 +37,7 @@ public class PrecedenceGraph implements IMatchContainer {
 	public void addMatch(IMatch match) {
 		pending.add(match);
 	}
-	
+
 	private void handleMatch(IMatch m) {
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getPatternName());
@@ -111,6 +111,9 @@ public class PrecedenceGraph implements IMatchContainer {
 
 	@Override
 	public void matchApplied(IMatch m) {
+		if (!translates.containsKey(m))
+			return;
+
 		Collection<Object> translatedElts = translates.get(m);
 		for (Object translatedElement : translatedElts) {
 			// Handle children: this parent has now been translated and can be removed
@@ -129,12 +132,12 @@ public class PrecedenceGraph implements IMatchContainer {
 				Collection<IMatch> siblings = cfactory.createObjectSet();
 				siblings.addAll(translatedBy.get(translatedElement));
 				siblings.remove(m);
-				
+
 				readySet.removeAll(siblings);
 				removeMatches(siblings);
 			}
 		}
-		
+
 		translated.addAll(translatedElts);
 	}
 
@@ -147,11 +150,11 @@ public class PrecedenceGraph implements IMatchContainer {
 
 	@Override
 	public boolean removeMatch(IMatch match) {
-		if(pending.contains(match)) {
+		if (pending.contains(match)) {
 			pending.remove(match);
 			return true;
 		}
-		
+
 		Collection<Object> dependentObjects = requires.remove(match);
 		if (dependentObjects != null) {
 			for (Object o : dependentObjects) {
@@ -183,8 +186,10 @@ public class PrecedenceGraph implements IMatchContainer {
 
 	@Override
 	public IMatch getNextKernel() {
-		// TODO: Multi-Amalgamation
-		return null;
+		return getMatches().stream()//
+				.filter(m -> strategy.isComplementMatch(m.getRuleName()))//
+				.findAny()//
+				.get();
 	}
 
 	@Override

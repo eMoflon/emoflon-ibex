@@ -91,7 +91,7 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
-		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
+		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
 

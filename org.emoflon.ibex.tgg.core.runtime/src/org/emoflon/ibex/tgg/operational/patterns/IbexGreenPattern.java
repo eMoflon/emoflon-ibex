@@ -8,7 +8,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
@@ -24,7 +23,6 @@ import language.TGGAttributeConstraint;
 import language.TGGParamValue;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
 
 public abstract class IbexGreenPattern implements IGreenPattern {
 	protected IGreenPatternFactory factory;
@@ -120,13 +118,6 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		match.getParameterNames().stream()
-			.filter(n -> !TGGPatternUtil.isAttrNode(n))
-			.forEach(n -> {
-				@SuppressWarnings("unchecked")
-				EcoreEMap<String, EObject> map = (EcoreEMap<String, EObject>) ra.eGet(RuntimePackage.eINSTANCE.getTGGRuleApplication_NodeMappings());
-				map.put(n, (EObject) match.get(n));
-			});
 		strategy.setIsRuleApplicationFinal(ra);
 		match.put(TGGPatternUtil.getProtocolNodeName(ruleName), ra);
 	}

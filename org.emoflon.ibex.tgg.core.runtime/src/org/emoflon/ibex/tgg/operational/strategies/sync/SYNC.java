@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getCreatedNodes;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNodes;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -31,6 +31,7 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStr
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
+import language.BindingType;
 import language.DomainType;
 import language.TGGComplementRule;
 import language.TGGRuleEdge;
@@ -175,9 +176,12 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	protected void fillInProtocolData(TGGRuleApplication protocolNode, int protocolNodeID) {
-		getCreatedNodes(protocolNode, DomainType.SRC).stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
-		getCreatedNodes(protocolNode, DomainType.TRG).stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
-		getCreatedNodes(protocolNode, DomainType.CORR).stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
+		getNodes(protocolNode, BindingType.CREATE, DomainType.SRC).stream()
+				.forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
+		getNodes(protocolNode, BindingType.CREATE, DomainType.TRG).stream()
+				.forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
+		getNodes(protocolNode, BindingType.CREATE, DomainType.CORR).stream()
+				.forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
 	}
 
 	/***** Match and pattern management *****/
@@ -195,35 +199,27 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	@Override
-	protected boolean addConsistencyMatch(IMatch match) {
-		if (super.addConsistencyMatch(match)) {
-			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
-			if (brokenRuleApplications.containsKey(ruleAppNode)) {
-				logger.debug(match.getPatternName() + " appears to be fixed.");
-				brokenRuleApplications.remove(ruleAppNode);
-			}
+	protected void addConsistencyMatch(IMatch match) {
+		super.addConsistencyMatch(match);
 
-			// Add translated elements
-			IGreenPatternFactory gFactory = getGreenFactory(match.getRuleName());
-			Collection<Object> translatedElts = cfactory.createObjectSet();
-			translatedElts.addAll(gFactory.getGreenSrcNodesInRule().stream().map(n -> match.get(n.getName()))
-					.collect(Collectors.toList()));
-			translatedElts.addAll(gFactory.getGreenTrgNodesInRule().stream().map(n -> match.get(n.getName()))
-					.collect(Collectors.toList()));
-
-			translatedElts.addAll(gFactory.getGreenSrcEdgesInRule().stream().map(e -> getRuntimeEdge(match, e))
-					.collect(Collectors.toList()));
-			translatedElts.addAll(gFactory.getGreenTrgEdgesInRule().stream().map(e -> getRuntimeEdge(match, e))
-					.collect(Collectors.toList()));
-
-			consistencyToTranslated.put(match, translatedElts);
-
-			translated.addAll(translatedElts);
-
-			return true;
+		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
+		if (brokenRuleApplications.containsKey(ruleAppNode)) {
+			logger.debug(match.getPatternName() + " appears to be fixed.");
+			brokenRuleApplications.remove(ruleAppNode);
 		}
 
-		return false;
+		// Add translated elements
+		IGreenPatternFactory gFactory = getGreenFactory(match.getRuleName());
+		Collection<Object> translatedElts = cfactory.createObjectSet();
+
+		gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
+		gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
+		gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+		gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+
+		consistencyToTranslated.put(match, translatedElts);
+
+		translated.addAll(translatedElts);
 	}
 
 	@Override

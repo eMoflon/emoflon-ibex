@@ -11,8 +11,6 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
-import language.DomainType;
-import language.NAC;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -48,7 +46,7 @@ public class GENForCOPatternTransformation extends OperationalPatternTransformat
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
-		List<TGGRuleEdge> edges = TGGModelUtils.getReferencesByOperator(rule, BindingType.CONTEXT);
+		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
 

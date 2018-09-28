@@ -13,7 +13,7 @@ import language.TGGRuleNode;
 
 public abstract class SYNC_Strategy {
 	public abstract String getSuffix();
-	
+
 	public boolean isPatternRelevantForInterpreter(String patternName) {
 		return patternName.endsWith(getSuffix());
 	}
@@ -23,12 +23,13 @@ public abstract class SYNC_Strategy {
 	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory greenFactory, IMatch m) {
 		IMatch copy = m.copy();
 
-		IGreenPattern greenPattern = greenFactory.create(PatternSuffixes.removeSuffix(copy.getPatternName()) + getSuffix());
+		IGreenPattern greenPattern = greenFactory
+				.create(PatternSuffixes.removeSuffix(copy.getPatternName()) + getSuffix());
 
 		copy.getParameterNames().removeAll(//
-					getNodesInOutputDomain(greenPattern).stream()//
-							.map(n -> n.getName())//
-							.collect(Collectors.toList()));
+				getNodesInOutputDomain(greenPattern).stream()//
+						.map(n -> n.getName())//
+						.collect(Collectors.toList()));
 
 		return greenPattern.getAttributeConstraintContainer(copy);
 	}

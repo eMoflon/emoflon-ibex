@@ -5,8 +5,8 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFWDOptBla
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
 import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperator;
 import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getReferencesByOperator;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getReferencesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperator;
+import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,8 +62,8 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule) {
-		List<TGGRuleEdge> edges = getReferencesByOperator(rule, BindingType.CONTEXT);
-		edges.addAll(getReferencesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
+		List<TGGRuleEdge> edges = getEdgesByOperator(rule, BindingType.CONTEXT);
+		edges.addAll(getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
 	}
