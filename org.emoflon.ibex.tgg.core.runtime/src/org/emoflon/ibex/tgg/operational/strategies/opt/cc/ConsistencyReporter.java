@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNodes;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,12 +12,15 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
+import language.BindingType;
+import language.DomainType;
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
-public class ConsistencyReporter {	
+public class ConsistencyReporter {
 	private OperationalStrategy strategy;
 
 	private Collection<EObject> inconsistentSrcNodes;
@@ -29,36 +33,36 @@ public class ConsistencyReporter {
 	public void init(OperationalStrategy strategy) {
 		this.strategy = strategy;
 		inconsistentSrcNodes = extractInconsistentNodes(strategy.getSourceResource(), strategy.getProtocolResource(),
-				Domain.SRC);
+				DomainType.SRC);
 		inconsistentTrgNodes = extractInconsistentNodes(strategy.getTargetResource(), strategy.getProtocolResource(),
-				Domain.TRG);
+				DomainType.TRG);
 		inconsistentSrcEdges = extractInconsistentEdges(strategy.getSourceResource(), strategy.getProtocolResource(),
-				Domain.SRC);
+				DomainType.SRC);
 		inconsistentTrgEdges = extractInconsistentEdges(strategy.getTargetResource(), strategy.getProtocolResource(),
-				Domain.TRG);
+				DomainType.TRG);
 	}
 
 	public void initWithCorr(OperationalStrategy strategy) {
 		this.strategy = strategy;
 		init(strategy);
 		inconsistentCorrNodes = //
-				extractInconsistentNodes(strategy.getCorrResource(), strategy.getProtocolResource(), Domain.CORR);
+				extractInconsistentNodes(strategy.getCorrResource(), strategy.getProtocolResource(), DomainType.CORR);
 	}
 
 	public void initSrc(OperationalStrategy strategy) {
 		this.strategy = strategy;
 		inconsistentSrcNodes = extractInconsistentNodes(strategy.getSourceResource(), strategy.getProtocolResource(),
-				Domain.SRC);
+				DomainType.SRC);
 		inconsistentSrcEdges = extractInconsistentEdges(strategy.getSourceResource(), strategy.getProtocolResource(),
-				Domain.SRC);
+				DomainType.SRC);
 	}
 
 	public void initTrg(OperationalStrategy strategy) {
 		this.strategy = strategy;
 		inconsistentTrgNodes = extractInconsistentNodes(strategy.getTargetResource(), strategy.getProtocolResource(),
-				Domain.TRG);
+				DomainType.TRG);
 		inconsistentTrgEdges = extractInconsistentEdges(strategy.getTargetResource(), strategy.getProtocolResource(),
-				Domain.TRG);
+				DomainType.TRG);
 	}
 
 	public Collection<EObject> getInconsistentSrcNodes() {
@@ -81,7 +85,7 @@ public class ConsistencyReporter {
 		return inconsistentCorrNodes;
 	}
 
-	private Collection<EObject> extractInconsistentNodes(Resource resource, Resource protocol, Domain domain) {
+	private Collection<EObject> extractInconsistentNodes(Resource resource, Resource protocol, DomainType domain) {
 		Iterator<EObject> it = resource.getAllContents();
 
 		Set<EObject> nodes = cfactory.createObjectSet();
@@ -91,32 +95,14 @@ public class ConsistencyReporter {
 		}
 		protocol.getContents().forEach(c -> {
 			if (c instanceof TGGRuleApplication) {
-				TGGRuleApplication ra = (TGGRuleApplication) c;
-				Collection<EObject> createdNodes;
-
-				switch (domain) {
-				case SRC:
-					createdNodes = ra.getCreatedSrc();
-					break;
-				case TRG:
-					createdNodes = ra.getCreatedTrg();
-					break;
-				case CORR:
-					createdNodes = ra.getCreatedCorr();
-					break;
-				default:
-					createdNodes = null;
-					break;
-				}
-
+				Collection<EObject> createdNodes = getNodes(c, BindingType.CREATE, domain);
 				nodes.removeAll(createdNodes);
 			}
-
 		});
 		return nodes;
 	}
 
-	private Collection<EMFEdge> extractInconsistentEdges(Resource resource, Resource protocol, Domain domain) {
+	private Collection<EMFEdge> extractInconsistentEdges(Resource resource, Resource protocol, DomainType domain) {
 		Iterator<EObject> it = resource.getAllContents();
 		Collection<EMFEdge> edges = cfactory.createEMFEdgeHashSet();
 
@@ -135,19 +121,21 @@ public class ConsistencyReporter {
 						edges.add(new EMFEdge(node, (EObject) getterResult, ref));
 					}
 				}
-
 			}
 		}
 
 		protocol.getContents().forEach(c -> {
 			if (c instanceof TGGRuleApplication) {
 				TGGRuleApplication ra = (TGGRuleApplication) c;
-				Collection<TGGRuleEdge> specificationEdges = domain == Domain.SRC
-						? strategy.getGreenFactory(ra.getName()).getGreenSrcEdgesInRule()
-						: strategy.getGreenFactory(ra.getName()).getGreenTrgEdgesInRule();
+				String ruleName = ra.eClass().getName().substring(0, ra.eClass().getName().length() - 8);
+				Collection<TGGRuleEdge> specificationEdges = domain == DomainType.SRC
+						? strategy.getGreenFactory(ruleName).getGreenSrcEdgesInRule()
+						: strategy.getGreenFactory(ruleName).getGreenTrgEdgesInRule();
 				for (TGGRuleEdge specificationEdge : specificationEdges) {
-					EObject srcOfEdge = ra.getNodeMappings().get(specificationEdge.getSrcNode().getName());
-					EObject trgOfEdge = ra.getNodeMappings().get(specificationEdge.getTrgNode().getName());
+					EObject srcOfEdge = TGGPatternUtil.getNode(ra, specificationEdge.getSrcNode().getBindingType(),
+							domain, specificationEdge.getSrcNode().getName());
+					EObject trgOfEdge = TGGPatternUtil.getNode(ra, specificationEdge.getTrgNode().getBindingType(),
+							domain, specificationEdge.getTrgNode().getName());
 					EReference refOfEdge = specificationEdge.getType();
 					EMFEdge edge = new EMFEdge(srcOfEdge, trgOfEdge, refOfEdge);
 					edges.remove(edge);
@@ -156,9 +144,4 @@ public class ConsistencyReporter {
 		});
 		return edges;
 	}
-
-	private enum Domain {
-		SRC, TRG, CORR
-	}
-
 }

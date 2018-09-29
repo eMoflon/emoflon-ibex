@@ -5,7 +5,8 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterNACStrategy;
+import org.eclipse.emf.ecore.EPackage;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -14,28 +15,7 @@ import language.TGG;
 import language.TGGRule;
 
 public class IbexOptions {
-
-	private FilterNACStrategy filterNACStrategy = FilterNACStrategy.FILTER_NACS;
-
 	private boolean blackInterpSupportsAttrConstrs = true;
-
-	/**
-	 * CorrContext nodes are local nodes in the SrcContext and TrgContext pattern
-	 */
-	private boolean setCorrContextNodesAsLocalNodes = false;
-
-	/**
-	 * EdgePatterns are only created if the number of edges in this pattern is at
-	 * least this constant
-	 */
-	private int minimumNumberOfEdgesToCreateEdgePatterns = 3;
-
-	/**
-	 * Indicates if the edge patterns should be typed including attribute conditions
-	 * and sub types
-	 */
-	private boolean stronglyTypedEdgedPatterns = true;
-
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
@@ -45,8 +25,15 @@ public class IbexOptions {
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private SupportedILPSolver ilpSolver;
-	
 	private boolean repairAttributes;
+	private EPackage corrMetamodel;
+	private FilterNACStrategy lookAheadStrategy;
+
+	/**
+	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
+	 * If this is false (disabled), then edge patterns are never used.
+	 */
+	private boolean useEdgePatterns;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
@@ -54,6 +41,8 @@ public class IbexOptions {
 		workspacePath = "./../";
 		repairAttributes = true;
 		setIlpSolver(SupportedILPSolver.Sat4J);
+		useEdgePatterns = false;
+		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -64,11 +53,11 @@ public class IbexOptions {
 	public boolean debug() {
 		return debug;
 	}
-	
+
 	public boolean repairAttributes() {
 		return repairAttributes;
 	}
-	
+
 	public IbexOptions repairAttributes(boolean repairAttributes) {
 		this.repairAttributes = repairAttributes;
 		return this;
@@ -133,10 +122,6 @@ public class IbexOptions {
 				.collect(Collectors.toList());
 	}
 
-	public FilterNACStrategy getFilterNACStrategy() {
-		return filterNACStrategy;
-	}
-
 	public IbexOptions setConstraintProvider(RuntimeTGGAttrConstraintProvider constraintProvider) {
 		this.constraintProvider = constraintProvider;
 		return this;
@@ -158,40 +143,9 @@ public class IbexOptions {
 	public boolean blackInterpSupportsAttrConstrs() {
 		return blackInterpSupportsAttrConstrs;
 	}
-	
-	public void blackInterpSupportsAttrConstrs(boolean value) {
+
+	public IbexOptions blackInterpSupportsAttrConstrs(boolean value) {
 		blackInterpSupportsAttrConstrs = value;
-	}
-
-	public int minimumNumberOfEdgesToCreateEdgePatterns() {
-		return minimumNumberOfEdgesToCreateEdgePatterns;
-	}
-
-	public IbexOptions minimumNumberOfEdgesToCreateEdgePatterns(int n) {
-		minimumNumberOfEdgesToCreateEdgePatterns = n;
-		return this;
-	}
-	
-	public boolean setCorrContextNodesAsLocalNodes() {
-		return setCorrContextNodesAsLocalNodes;
-	}
-	
-	public IbexOptions setCorrContextNodesAsLocalNodes(boolean value) {
-		setCorrContextNodesAsLocalNodes = value;
-		return this;
-	}
-
-	public boolean stronglyTypedEdgedPatterns() {
-		return stronglyTypedEdgedPatterns;
-	}
-
-	public IbexOptions stronglyTypedEdgedPatterns(boolean value) {
-		stronglyTypedEdgedPatterns = value;
-		return this;
-	}	
-	
-	public IbexOptions setFilterNACStrategy(FilterNACStrategy filterNACStrategy) {
-		this.filterNACStrategy = filterNACStrategy;
 		return this;
 	}
 
@@ -203,11 +157,36 @@ public class IbexOptions {
 	}
 
 	/**
-	 * @param ilpSolver
-	 *            the ilpSolver to set
+	 * @param ilpSolver the ilpSolver to set
 	 */
 	public IbexOptions setIlpSolver(SupportedILPSolver ilpSolver) {
 		this.ilpSolver = ilpSolver;
+		return this;
+	}
+
+	public void setCorrMetamodel(EPackage pack) {
+		this.corrMetamodel = pack;
+	}
+
+	public EPackage getCorrMetamodel() {
+		return this.corrMetamodel;
+	}
+
+	public boolean getUseEdgePatterns() {
+		return useEdgePatterns;
+	}
+
+	public IbexOptions setUseEdgePatterns(boolean value) {
+		useEdgePatterns = value;
+		return this;
+	}
+
+	public FilterNACStrategy getLookAheadStrategy() {
+		return lookAheadStrategy;
+	}
+	
+	public IbexOptions setLookAheadStrategy(FilterNACStrategy lookAheadStrategy) {
+		this.lookAheadStrategy = lookAheadStrategy;
 		return this;
 	}
 }

@@ -7,9 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
@@ -27,7 +24,6 @@ import IBeXLanguage.IBeXDeletePattern;
 import IBeXLanguage.IBeXEdge;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
-import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXPatternSet;
 
@@ -238,45 +234,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	}
 
 	/**
-	 * Create an {@link IBeXPattern} for the given edge. If an {@link IBeXPattern}
-	 * for the given {@link EReference} exists already, the existing pattern is
-	 * returned.
-	 * 
-	 * @param edgeType
-	 *            the EReference to create a pattern for
-	 * @return the created IBeXPattern
-	 */
-	private Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType) {
-		Objects.requireNonNull(edgeType, "Edge type must not be null!");
-
-		EClass sourceType = edgeType.getEContainingClass();
-		EClass targetType = edgeType.getEReferenceType();
-
-		if (sourceType == null || targetType == null) {
-			logError("Cannot resolve reference source or target type.");
-			return Optional.empty();
-		}
-		String name = String.format("edge-%s-%s-%s", sourceType.getName(), edgeType.getName(), targetType.getName());
-		if (nameToPattern.containsKey(name)) {
-			return Optional.of((IBeXContextPattern) nameToPattern.get(name));
-		}
-
-		IBeXContextPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
-		edgePattern.setName(name);
-		addContextPattern(edgePattern);
-
-		IBeXNode ibexSignatureSourceNode = IBeXPatternFactory.createNode("src", sourceType);
-		edgePattern.getSignatureNodes().add(ibexSignatureSourceNode);
-
-		IBeXNode ibexSignatureTargetNode = IBeXPatternFactory.createNode("trg", targetType);
-		edgePattern.getSignatureNodes().add(ibexSignatureTargetNode);
-
-		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSignatureSourceNode, ibexSignatureTargetNode, edgeType);
-		edgePattern.getLocalEdges().add(ibexEdge);
-		return Optional.of(edgePattern);
-	}
-
-	/**
 	 * Transforms an edge to a pattern invocation.
 	 * 
 	 * @param editorReference
@@ -314,12 +271,13 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			return;
 		}
 
-		Optional<IBeXContextPattern> edgePatternOptional = createEdgePattern(editorReference.getType());
+		Optional<IBeXContextPattern> edgePatternOptional = IBeXPatternUtils.createEdgePattern(editorReference.getType(), nameToPattern, s -> logError(s));
 		if (!edgePatternOptional.isPresent()) {
 			logError("Cannot create edge pattern for type " + editorReference.getType().getName());
 			return;
 		}
 		IBeXContextPattern edgePattern = edgePatternOptional.get();
+		addContextPattern(edgePattern);
 
 		Optional<IBeXNode> ibexSignatureSourceNode = //
 				IBeXPatternUtils.findIBeXNodeWithName(edgePattern.getSignatureNodes(), "src");

@@ -1,8 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNodes;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -10,13 +12,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.collections.CollectionFactory;
+import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -24,7 +31,10 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStr
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
+import language.BindingType;
+import language.DomainType;
 import language.TGGComplementRule;
+import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
 public abstract class SYNC extends OperationalStrategy {
@@ -38,14 +48,24 @@ public abstract class SYNC extends OperationalStrategy {
 	protected AbstractRepairStrategy repairStrategy;
 	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = CollectionFactory.cfactory
 			.createObjectToObjectHashMap();
+	protected IRedInterpreter redInterpreter;
 
 	// Forward or backward sync
 	protected SYNC_Strategy strategy;
+
+	// All translated elements
+	private Collection<Object> translated = cfactory.createObjectSet();
+	private Map<IMatch, Collection<Object>> consistencyToTranslated = cfactory.createObjectToObjectHashMap();
 
 	/***** Constructors *****/
 
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);
+		redInterpreter = new IbexRedInterpreter(this);
+	}
+
+	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
+		this.redInterpreter = redInterpreter;
 	}
 
 	/***** Resource management *****/
@@ -60,12 +80,15 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	public void loadModels() throws IOException {
+		long tic = System.currentTimeMillis();
 		s = loadResource(options.projectPath() + "/instances/src.xmi");
 		t = loadResource(options.projectPath() + "/instances/trg.xmi");
 		c = loadResource(options.projectPath() + "/instances/corr.xmi");
 		p = loadResource(options.projectPath() + "/instances/protocol.xmi");
-
 		EcoreUtil.resolveAll(rs);
+		long toc = System.currentTimeMillis();
+
+		logger.info("Loaded all models in: " + (toc - tic) / 1000.0 + "s");
 	}
 
 	/***** Sync algorithm *****/
@@ -141,21 +164,62 @@ public abstract class SYNC extends OperationalStrategy {
 		run();
 	}
 
+	/***** Marker Handling *******/
+
+	/**
+	 * Override in subclass if markers for protocol are not required (this can speed
+	 * up the translation process).
+	 */
+	@Override
+	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
+		createMarkers(greenPattern, cm, ruleName);
+	}
+
+	protected void fillInProtocolData(TGGRuleApplication protocolNode, int protocolNodeID) {
+		getNodes(protocolNode, BindingType.CREATE, DomainType.SRC).stream()
+				.forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
+		getNodes(protocolNode, BindingType.CREATE, DomainType.TRG).stream()
+				.forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
+		getNodes(protocolNode, BindingType.CREATE, DomainType.CORR).stream()
+				.forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
+	}
+
 	/***** Match and pattern management *****/
 
-	@Override
-	protected boolean addConsistencyMatch(IMatch match) {
-		if (super.addConsistencyMatch(match)) {
-			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
-			if (brokenRuleApplications.containsKey(ruleAppNode)) {
-				logger.debug(match.getPatternName() + " appears to be fixed.");
-				brokenRuleApplications.remove(ruleAppNode);
-			}
+	public EMFEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
+		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
+		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
+		EReference ref = specificationEdge.getType();
+		return new EMFEdge(src, trg, ref);
+	}
 
-			return true;
+	@Override
+	protected IMatchContainer createMatchContainer() {
+		return new PrecedenceGraph(this, translated);
+	}
+
+	@Override
+	protected void addConsistencyMatch(IMatch match) {
+		super.addConsistencyMatch(match);
+
+		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
+		if (brokenRuleApplications.containsKey(ruleAppNode)) {
+			logger.debug(match.getPatternName() + " appears to be fixed.");
+			brokenRuleApplications.remove(ruleAppNode);
 		}
 
-		return false;
+		// Add translated elements
+		IGreenPatternFactory gFactory = getGreenFactory(match.getRuleName());
+		Collection<Object> translatedElts = cfactory.createObjectSet();
+
+		gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
+		gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
+		gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+		gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+
+		consistencyToTranslated.put(match, translatedElts);
+
+		translated.addAll(translatedElts);
 	}
 
 	@Override
@@ -169,6 +233,9 @@ public abstract class SYNC extends OperationalStrategy {
 	protected void addBrokenMatch(IMatch match) {
 		TGGRuleApplication ra = getRuleApplicationNode(match);
 		brokenRuleApplications.put(ra, match);
+
+		// Remove translated elements
+		translated.removeAll(consistencyToTranslated.remove(match));
 	}
 
 	@Override
@@ -185,7 +252,6 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	public IGreenPattern revokes(IMatch match) {
-		// String ruleName = getRuleApplicationNode(match).getName();
 		return strategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
 	}
 
@@ -264,17 +330,17 @@ public abstract class SYNC extends OperationalStrategy {
 
 		if (MAUtil.isFusedPatternMatch(ruleName)) {
 			protocolNode = (TGGRuleApplication) comatch
-					.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getKernelName(ruleName)));
+					.get(TGGPatternUtil.getProtocolNodeName(MAUtil.getKernelName(ruleName)));
 		} else {
 			// if it is a kernel or a complement rule
-			protocolNode = (TGGRuleApplication) comatch.get(
-					ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
+			protocolNode = (TGGRuleApplication) comatch
+					.get(TGGPatternUtil.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		}
 
 		if (isComplementMatch(ruleName)) {
 			// complement protocol has to have same ID as its kernel protocol
-			TGGRuleApplication kernelProtocolNode = (TGGRuleApplication) comatch.get(
-					ConsistencyPattern.getProtocolNodeName(getComplementRule(ruleName).get().getKernel().getName()));
+			TGGRuleApplication kernelProtocolNode = (TGGRuleApplication) comatch
+					.get(TGGPatternUtil.getProtocolNodeName(getComplementRule(ruleName).get().getKernel().getName()));
 			localCounter = protocolNodeToID.get(kernelProtocolNode);
 		} else {
 			idCounter++;
@@ -286,16 +352,10 @@ public abstract class SYNC extends OperationalStrategy {
 
 		if (MAUtil.isFusedPatternMatch(ruleName)) {
 			TGGRuleApplication complProtocolNode = ((TGGRuleApplication) comatch
-					.get(ConsistencyPattern.getProtocolNodeName(MAUtil.getComplementName(ruleName))));
+					.get(TGGPatternUtil.getProtocolNodeName(MAUtil.getComplementName(ruleName))));
 			protocolNodeToID.put(complProtocolNode, localCounter);
 			fillInProtocolData(complProtocolNode, localCounter);
 		}
-	}
-
-	protected void fillInProtocolData(TGGRuleApplication protocolNode, int protocolNodeID) {
-		protocolNode.getCreatedSrc().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
-		protocolNode.getCreatedTrg().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
-		protocolNode.getCreatedCorr().stream().forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
 	}
 
 	protected boolean isComplementRuleApplicable(IMatch match, String ruleName) {
@@ -309,7 +369,7 @@ public abstract class SYNC extends OperationalStrategy {
 			return true;
 		}
 
-		EObject kernelProtocol = (EObject) match.get(ConsistencyPattern.getProtocolNodeName(cr.getKernel().getName()));
+		EObject kernelProtocol = (EObject) match.get(TGGPatternUtil.getProtocolNodeName(cr.getKernel().getName()));
 		Set<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
 
 		// If any node from bounded CR context was created after

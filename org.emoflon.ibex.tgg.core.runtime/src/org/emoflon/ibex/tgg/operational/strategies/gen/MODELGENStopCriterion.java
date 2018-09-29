@@ -4,12 +4,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 
+import org.apache.log4j.Logger;
+
 import language.TGG;
 import language.TGGRule;
 
 public class MODELGENStopCriterion {
-
+	private static Logger logger = Logger.getLogger(MODELGENStopCriterion.class); 
+	
 	private long startTime = System.currentTimeMillis();
+	private long currentIntervalStart = startTime;
+	private final long INTERVAL_LENGTH = 5000; 
 
 	private TGG tgg;
 
@@ -106,6 +111,14 @@ public class MODELGENStopCriterion {
 			currentRuleCount.put(ruleName, currentRuleCount.get(ruleName) + 1);
 		else
 			currentRuleCount.put(ruleName, 1);
+		
+		logUpdate();
 	}
 
+	private void logUpdate() {
+		if(System.currentTimeMillis() - currentIntervalStart > INTERVAL_LENGTH) {
+			logger.info("Generated " + (currentSrcCount + currentTrgCount) + " elements...");
+			currentIntervalStart = System.currentTimeMillis();
+		}
+	}
 }

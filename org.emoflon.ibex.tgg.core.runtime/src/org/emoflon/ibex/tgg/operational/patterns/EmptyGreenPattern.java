@@ -64,11 +64,16 @@ public class EmptyGreenPattern implements IGreenPattern {
 	
 	@Override
 	public boolean isToBeIgnored(IMatch match) {
-		return false;
+		return true;
 	}
 
 	@Override
 	public void createMarkers(String ruleName, IMatch match) {
 		
+	}
+
+	@Override
+	public Collection<TGGRuleNode> getMarkedContextNodes() {
+		return Collections.emptyList();
 	}
 }

@@ -10,7 +10,7 @@ public class RandomKernelMatchUpdatePolicy extends UpdatePolicy {
 	
 	@Override
 	public IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
-		return matchContainer.getNextRandomKernel(options.tgg().getRules());
+		return matchContainer.getNextKernel();
 	}
 	
 	public void setOptions(IbexOptions options) {

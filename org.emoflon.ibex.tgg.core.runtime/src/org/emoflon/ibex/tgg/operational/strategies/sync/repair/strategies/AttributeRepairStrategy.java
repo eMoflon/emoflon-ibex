@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
@@ -50,6 +51,6 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 	}
 	
 	private boolean noMissingNodes(TGGRuleApplication ra) {
-		return !ra.getNodeMappings().values().contains(null);
+		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
 	}
 }

@@ -4,22 +4,25 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
+import language.BindingType;
+import language.DomainType;
 import language.TGGAttributeConstraint;
 import language.TGGParamValue;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
-import runtime.TGGRuleApplication;
 
 public abstract class IbexGreenPattern implements IGreenPattern {
 	protected IGreenPatternFactory factory;
@@ -32,12 +35,10 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	
 	@Override
 	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
-		try {
-			List<TGGAttributeConstraint> sortedConstraints = sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints());
-			
+		try {			
 			return new RuntimeTGGAttributeConstraintContainer(
 					factory.getAttributeCSPVariables(), 
-					sortedConstraints,
+					 sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints()),
 					match,
 					factory.getOptions().constraintProvider());
 		} catch (Exception e) {
@@ -72,25 +73,50 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	
 	@Override
 	public void createMarkers(String ruleName, IMatch match) {
-		RuntimePackage runtimePackage = RuntimePackage.eINSTANCE;
-
-		TGGRuleApplication ra = (TGGRuleApplication) EcoreUtil.create(runtimePackage.getTGGRuleApplication());
+		EPackage corrPackage = strategy.getOptions().getCorrMetamodel();
+		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(ruleName));
+		
+		EObject ra = EcoreUtil.create(type);
 		strategy.getProtocolResource().getContents().add(ra);
-
-		ra.setName(ruleName);
-
-		factory.getGreenSrcNodesInRule().forEach(n -> ra.getCreatedSrc().add((EObject) match.get(n.getName())));
-		factory.getGreenTrgNodesInRule().forEach(n -> ra.getCreatedTrg().add((EObject) match.get(n.getName())));
-		factory.getGreenCorrNodesInRule().forEach(n -> ra.getCreatedCorr().add((EObject) match.get(n.getName())));
 		
-		factory.getBlackSrcNodesInRule().forEach(n -> ra.getContextSrc().add((EObject) match.get(n.getName())));
-		factory.getBlackTrgNodesInRule().forEach(n -> ra.getContextTrg().add((EObject) match.get(n.getName())));
+	
+		for (TGGRuleNode n : factory.getGreenSrcNodesInRule()) {
+			String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.SRC, n.getName());
+			EReference ref = (EReference) type.getEStructuralFeature(refName);			
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
 		
-		match.getParameterNames().stream()
-			.filter(n -> !IbexBasePattern.isAttrNode(n))
-			.forEach(n -> ra.getNodeMappings().put(n, (EObject) match.get(n)));
+		for (TGGRuleNode n : factory.getBlackSrcNodesInRule()) {
+			String refName = TGGModelUtils.getMarkerRefName(BindingType.CONTEXT, DomainType.SRC, n.getName());
+			EReference ref = (EReference) type.getEStructuralFeature(refName);			
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
 
+		for (TGGRuleNode n : factory.getGreenTrgNodesInRule()) {
+			String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.TRG, n.getName());
+			EReference ref = (EReference) type.getEStructuralFeature(refName);			
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+		
+		for (TGGRuleNode n : factory.getBlackTrgNodesInRule()) {
+			String refName = TGGModelUtils.getMarkerRefName(BindingType.CONTEXT, DomainType.TRG, n.getName());
+			EReference ref = (EReference) type.getEStructuralFeature(refName);			
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+
+		for (TGGRuleNode n : factory.getGreenCorrNodesInRule()) {
+			String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.CORR, n.getName());
+			EReference ref = (EReference) type.getEStructuralFeature(refName);			
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+		
+		for (TGGRuleNode n : factory.getBlackCorrNodesInRule()) {
+			String refName = TGGModelUtils.getMarkerRefName(BindingType.CONTEXT, DomainType.CORR, n.getName());
+			EReference ref = (EReference) type.getEStructuralFeature(refName);			
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+		
 		strategy.setIsRuleApplicationFinal(ra);
-		match.put(ConsistencyPattern.getProtocolNodeName(ruleName), ra);
+		match.put(TGGPatternUtil.getProtocolNodeName(ruleName), ra);
 	}
 }

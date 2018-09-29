@@ -44,4 +44,9 @@ public class BWDOptGreenPattern extends IbexGreenPattern {
 	public boolean isToBeIgnored(IMatch match) {
 		return !factory.isComplementRule() && factory.getGreenTrgNodesInRule().isEmpty() && factory.getGreenTrgEdgesInRule().isEmpty();
 	}
+
+	@Override
+	public Collection<TGGRuleNode> getMarkedContextNodes() {
+		return factory.getBlackTrgNodesInRule();
+	}
 }

@@ -1,16 +1,26 @@
 package org.emoflon.ibex.common.patterns;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EReference;
+import org.moflon.core.utilities.EcoreUtils;
 
 import IBeXLanguage.IBeXContext;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXDeletePattern;
+import IBeXLanguage.IBeXEdge;
+import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNamedElement;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPattern;
@@ -28,8 +38,7 @@ public class IBeXPatternUtils {
 	/**
 	 * Checks whether the given pattern is empty.
 	 * 
-	 * @param ibexPattern
-	 *            the pattern
+	 * @param ibexPattern the pattern
 	 * @return <code>true</code> if the pattern contains no nodes
 	 */
 	public static boolean isEmptyPattern(final IBeXContext ibexPattern) {
@@ -39,8 +48,7 @@ public class IBeXPatternUtils {
 	/**
 	 * Checks whether the given pattern is empty.
 	 * 
-	 * @param ibexPattern
-	 *            the pattern
+	 * @param ibexPattern the pattern
 	 * @return <code>true</code> if the pattern contains no nodes
 	 */
 	public static boolean isEmptyPattern(final IBeXContextPattern ibexPattern) {
@@ -50,10 +58,8 @@ public class IBeXPatternUtils {
 	/**
 	 * Finds a node with the given name in the given pattern.
 	 * 
-	 * @param ibexPattern
-	 *            the IBeXPattern, must not be <code>null</code>
-	 * @param name
-	 *            the name to search for
+	 * @param ibexPattern the IBeXPattern, must not be <code>null</code>
+	 * @param name        the name to search for
 	 * @return an Optional for a local IBeXNode
 	 */
 	public static Optional<IBeXNode> findIBeXNodeWithName(final IBeXPattern ibexPattern, final String name) {
@@ -86,10 +92,8 @@ public class IBeXPatternUtils {
 	 * Searches for an {@link IBeXNode} with the given name in the given list of
 	 * nodes.
 	 * 
-	 * @param nodes
-	 *            the nodes
-	 * @param name
-	 *            the name to search for
+	 * @param nodes the nodes
+	 * @param name  the name to search for
 	 * @return an {@link Optional} for a node with the given name
 	 */
 	public static Optional<IBeXNode> findIBeXNodeWithName(final List<IBeXNode> nodes, final String name) {
@@ -104,12 +108,9 @@ public class IBeXPatternUtils {
 	 * Searches for an {@link IBeXNode} with the given name in the given lists of
 	 * nodes.
 	 * 
-	 * @param nodes
-	 *            the nodes
-	 * @param nodes2
-	 *            more nodes
-	 * @param name
-	 *            the name to search for
+	 * @param nodes  the nodes
+	 * @param nodes2 more nodes
+	 * @param name   the name to search for
 	 * @return an {@link Optional} for a node with the given name
 	 */
 	public static Optional<IBeXNode> findIBeXNodeWithName(final List<IBeXNode> nodes, final List<IBeXNode> nodes2,
@@ -125,13 +126,11 @@ public class IBeXPatternUtils {
 	/**
 	 * Returns the context pattern with the given name.
 	 * 
-	 * @param patternSet
-	 *            the pattern set
-	 * @param name
-	 *            the name to search
+	 * @param patternSet the pattern set
+	 * @param name       the name to search
 	 * @return the context pattern with the given name
-	 * @throws NoSuchElementException
-	 *             if no context pattern with the given name exists
+	 * @throws NoSuchElementException if no context pattern with the given name
+	 *                                exists
 	 */
 	public static IBeXContext getContextPattern(final IBeXPatternSet patternSet, final String name) {
 		Optional<IBeXContext> pattern = patternSet.getContextPatterns().stream() //
@@ -146,13 +145,11 @@ public class IBeXPatternUtils {
 	/**
 	 * Returns the create pattern with the given name.
 	 * 
-	 * @param patternSet
-	 *            the pattern set
-	 * @param name
-	 *            the name to search
+	 * @param patternSet the pattern set
+	 * @param name       the name to search
 	 * @return the create pattern with the given name
-	 * @throws NoSuchElementException
-	 *             if no create pattern with the given name exists
+	 * @throws NoSuchElementException if no create pattern with the given name
+	 *                                exists
 	 */
 	public static IBeXCreatePattern getCreatePattern(final IBeXPatternSet patternSet, final String name) {
 		Optional<IBeXCreatePattern> pattern = patternSet.getCreatePatterns().stream() //
@@ -167,13 +164,11 @@ public class IBeXPatternUtils {
 	/**
 	 * Returns the a delete pattern with the given name.
 	 * 
-	 * @param patternSet
-	 *            the pattern set
-	 * @param name
-	 *            the name to search
+	 * @param patternSet the pattern set
+	 * @param name       the name to search
 	 * @return the delete pattern with the given name
-	 * @throws NoSuchElementException
-	 *             if no delete pattern with the given name exists
+	 * @throws NoSuchElementException if no delete pattern with the given name
+	 *                                exists
 	 */
 	public static IBeXDeletePattern getDeletePattern(final IBeXPatternSet patternSet, final String name) {
 		Optional<IBeXDeletePattern> pattern = patternSet.getDeletePatterns().stream() //
@@ -188,8 +183,7 @@ public class IBeXPatternUtils {
 	/**
 	 * Returns all nodes of a context pattern.
 	 * 
-	 * @param ibexPattern
-	 *            the context pattern
+	 * @param ibexPattern the context pattern
 	 * @return all signature and local nodes
 	 */
 	public static List<IBeXNode> getAllNodes(final IBeXContextPattern ibexPattern) {
@@ -198,5 +192,51 @@ public class IBeXPatternUtils {
 		allNodes.addAll(ibexPattern.getSignatureNodes());
 		allNodes.sort(sortByName);
 		return allNodes;
+	}
+
+	/**
+	 * Create an {@link IBeXPattern} for the given edge. If an {@link IBeXPattern}
+	 * for the given {@link EReference} exists already, the existing pattern is
+	 * returned.
+	 * 
+	 * @param edgeType the EReference to create a pattern for
+	 * @return the created IBeXPattern
+	 */
+	public static <T extends IBeXContext> Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType,
+			HashMap<String, T> nameToPattern, Consumer<String> logError) {
+		Objects.requireNonNull(edgeType, "Edge type must not be null!");
+
+		EClass sourceType = edgeType.getEContainingClass();
+		EClass targetType = edgeType.getEReferenceType();
+
+		if (sourceType == null || targetType == null) {
+			logError.accept("Cannot resolve reference source or target type.");
+			return Optional.empty();
+		}
+
+		String name = String.format("edge-%s-%s-%s", EcoreUtils.getFQN(sourceType).replace(".", "_"),
+				edgeType.getName(), EcoreUtils.getFQN(targetType).replace(".", "_"));
+
+		if (nameToPattern.containsKey(name)) {
+			return Optional.of((IBeXContextPattern) nameToPattern.get(name));
+		}
+
+		IBeXContextPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
+		edgePattern.setName(name);
+
+		IBeXNode ibexSignatureSourceNode = IBeXPatternFactory.createNode("src", sourceType);
+		edgePattern.getSignatureNodes().add(ibexSignatureSourceNode);
+
+		IBeXNode ibexSignatureTargetNode = IBeXPatternFactory.createNode("trg", targetType);
+		edgePattern.getSignatureNodes().add(ibexSignatureTargetNode);
+
+		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSignatureSourceNode, ibexSignatureTargetNode, edgeType);
+		edgePattern.getLocalEdges().add(ibexEdge);
+		return Optional.of(edgePattern);
+	}
+
+	public static Collection<Optional<IBeXNode>> findIBexNodes(IBeXPattern ibexPattern, Collection<String> nodes) {
+		return nodes.stream()//
+				.map(name -> findIBeXNodeWithName(ibexPattern, name)).collect(Collectors.toList());
 	}
 }

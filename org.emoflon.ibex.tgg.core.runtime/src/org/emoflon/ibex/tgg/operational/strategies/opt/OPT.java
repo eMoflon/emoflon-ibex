@@ -25,7 +25,7 @@ import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.collections.ObjectToIntMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -406,7 +406,7 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected Collection<EObject> getRuleApplicationNodes(final IMatch comatch) {
-		return comatch.getParameterNames().stream().filter(p -> p.endsWith(ConsistencyPattern.protocolNodeSuffix))
+		return comatch.getParameterNames().stream().filter(p -> p.endsWith(TGGPatternUtil.protocolNodeSuffix))
 				.map(comatch::get).map(EObject.class::cast).collect(Collectors.toList());
 	}
 

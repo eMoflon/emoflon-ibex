@@ -1,9 +1,9 @@
 package org.emoflon.ibex.common.operational;
 
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-
 import java.util.Collection;
 import java.util.Map;
+
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 /**
  * A simple implementation of {@link IMatch}.
@@ -27,7 +27,7 @@ public class SimpleMatch implements IMatch {
 	 */
 	public SimpleMatch(final String patternName) {
 		this.patternName = patternName;
-		this.parameters = cfactory.createObjectToObjectLinkedHashMap();
+		this.parameters = cfactory.createObjectToObjectHashMap();
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class SimpleMatch implements IMatch {
 	 */
 	public SimpleMatch(final IMatch match) {
 		this.patternName = match.getPatternName();
-		this.parameters = cfactory.createObjectToObjectLinkedHashMap();
+		this.parameters = cfactory.createObjectToObjectHashMap();
 		match.getParameterNames().forEach(parameterName -> {
 			this.parameters.put(parameterName, match.get(parameterName));
 		});
