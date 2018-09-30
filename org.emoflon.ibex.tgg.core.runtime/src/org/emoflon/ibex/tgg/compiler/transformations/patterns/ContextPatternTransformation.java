@@ -96,12 +96,12 @@ public class ContextPatternTransformation {
 			createPatternIfRelevant(rule, this::createCCPattern, PatternSuffixes.CC);
 			createPatternIfRelevant(rule, this::createCOPattern, PatternSuffixes.CO);
 
-			if (isDomainProgressive(rule, DomainType.SRC)) {
+			if (isDomainProgressive(rule, DomainType.SRC) || isComplementRule(rule)) {
 				createPatternIfRelevant(rule, this::createFWDPattern, PatternSuffixes.FWD);
 				createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternSuffixes.FWD_OPT);
 			}
 
-			if (isDomainProgressive(rule, DomainType.TRG)) {
+			if (isDomainProgressive(rule, DomainType.TRG) || isComplementRule(rule)) {
 				createPatternIfRelevant(rule, this::createBWDPattern, PatternSuffixes.BWD);
 				createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternSuffixes.BWD_OPT);
 			}

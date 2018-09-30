@@ -121,7 +121,6 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		if (isBWDOptBlackPattern(patternName))
 			return createGreenPattern(BWDOptGreenPattern.class);
 		
-		logger.debug("Did not find a black pattern for " + patternName + ". An empty green pattern is created!");
 		return createGreenPattern(EmptyGreenPattern.class);
 	}
 

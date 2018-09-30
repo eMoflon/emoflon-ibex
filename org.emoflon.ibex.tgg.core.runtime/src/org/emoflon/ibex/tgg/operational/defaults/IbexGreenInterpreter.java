@@ -157,7 +157,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 		// Check if pattern should be ignored
 		if (greenPattern.isToBeIgnored(match)) {
-			logger.debug("Blocking application as match is to be ignored.");
 			return Optional.empty();
 		}
 
