@@ -54,6 +54,7 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 	protected void transformNodes(IBeXContextPattern ibexPattern) {
 		List<TGGRuleNode> contextNodes = getNodesByOperator(rule, BindingType.CONTEXT);
 		contextNodes.addAll(getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
+		
 		for (final TGGRuleNode node : contextNodes)
 			parent.transformNode(ibexPattern, node);
 
@@ -66,13 +67,13 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
 		List<TGGRuleEdge> edges = getEdgesByOperator(rule, BindingType.CONTEXT);
 		edges.addAll(getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC));
+		
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
 	}
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		// Filter NACs
 		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));

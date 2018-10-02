@@ -57,9 +57,8 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 		}
 
 		// Transform in-node attributes.
-		for (final TGGRuleNode node : nodes) {
+		for (final TGGRuleNode node : nodes)
 			parent.transformInNodeAttributeConditions(ibexPattern, node);
-		}
 	}
 
 	@Override
@@ -78,5 +77,4 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 	}
-
 }
