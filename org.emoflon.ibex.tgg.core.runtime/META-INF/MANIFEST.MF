@@ -23,7 +23,6 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.sat4j.pb;visibility:=reexport
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: lib/commons-io-2.5.jar,
  lib/commons-lang3-3.5.jar,
  lib/gurobi.jar,
@@ -63,6 +62,7 @@ Export-Package: .,
  org.emoflon.ibex.tgg.compiler.defaults,
  org.emoflon.ibex.tgg.compiler.patterns,
  org.emoflon.ibex.tgg.compiler.patterns.cc,
+ org.emoflon.ibex.tgg.compiler.patterns.co,
  org.emoflon.ibex.tgg.compiler.patterns.common,
  org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds,
  org.emoflon.ibex.tgg.compiler.patterns.gen,
@@ -80,10 +80,12 @@ Export-Package: .,
  org.emoflon.ibex.tgg.operational.matches,
  org.emoflon.ibex.tgg.operational.patterns,
  org.emoflon.ibex.tgg.operational.strategies,
- org.emoflon.ibex.tgg.operational.strategies.cc,
- org.emoflon.ibex.tgg.operational.strategies.co,
  org.emoflon.ibex.tgg.operational.strategies.gen,
+ org.emoflon.ibex.tgg.operational.strategies.opt,
+ org.emoflon.ibex.tgg.operational.strategies.opt.cc,
  org.emoflon.ibex.tgg.operational.strategies.sync,
+ org.emoflon.ibex.tgg.operational.strategies.sync.repair,
+ org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies,
  org.emoflon.ibex.tgg.operational.updatepolicy,
  org.emoflon.ibex.tgg.util,
  org.emoflon.ibex.tgg.util.ilp,
@@ -92,5 +94,5 @@ Export-Package: .,
  runtime.impl,
  runtime.util
 Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime
-Import-Package: org.eclipse.pde.core.plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 

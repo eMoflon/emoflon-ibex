@@ -1,12 +1,13 @@
 package org.emoflon.ibex.common.visualization;
 
 import java.util.Optional;
+
 import org.eclipse.emf.ecore.presentation.EcoreEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
-import org.moflon.core.ui.visualisation.EMoflonVisualiser;
+import org.moflon.core.ui.visualisation.common.EMoflonVisualiser;
 
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXCreatePattern;

@@ -86,11 +86,6 @@ public abstract class MODELGEN extends OperationalStrategy {
 		return patternName.endsWith(PatternSuffixes.GEN) || patternName.endsWith(PatternSuffixes.GEN_AXIOM_NAC);
 	}
 
-	@Override
-	protected void setModelGen() {
-		options.setModelGen(true);
-	}
-
 	/**
 	 * differently from the super class implementation, MODELGEN (i) does not remove
 	 * successful matches (but uses them repeatedly) (ii) updates the state of its
@@ -114,6 +109,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 					processComplementRuleMatches(cm);
 			});
 		}
+		
 		return true;
 	}
 
@@ -193,14 +189,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	@Override
-	protected void wrapUp() {
-
-	}
-
-	@Override
 	public void run() throws IOException {
 		collectMatchesForAxioms();
-		super.run();
+		do
+			blackInterpreter.updateMatches();
+		while (processOneOperationalRuleMatch());
 	}
 
 	/**
@@ -211,7 +204,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 */
 	private void collectMatchesForAxioms() {
 		options.tgg().getRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom()).forEach(r -> {
-			addOperationalRuleMatch(r.getName(), new SimpleMatch(GENBlackPattern.getName(r.getName())));
+			addOperationalRuleMatch(new SimpleMatch(GENBlackPattern.getName(r.getName())));
 		});
 	}
 

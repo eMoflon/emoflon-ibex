@@ -1,10 +1,9 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.io.IOException;
-import java.math.MathContext;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.common.emf.EMFEdgeHashingStrategy;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
@@ -40,15 +38,9 @@ import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.RepairStrategyController;
-import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
-import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import language.TGG;
 import language.TGGComplementRule;
 import language.TGGRule;
@@ -63,278 +55,83 @@ import runtime.impl.RuntimePackageImpl;
 public abstract class OperationalStrategy implements IMatchObserver {
 
 	protected final static Logger logger = Logger.getLogger(OperationalStrategy.class);
+
+	// Resource management
 	protected final URI base;
-
 	protected ResourceSet rs;
-
 	protected Resource trash;
 	protected Resource s;
 	protected Resource t;
 	protected Resource c;
 	protected Resource p;
 
+	// Match and pattern management
 	protected MatchContainer operationalMatchContainer;
+	protected Map<TGGRuleApplication, IMatch> consistencyMatches;
+	protected Set<EMFEdge> markedAndCreatedEdges;
+	private boolean domainsHaveNoSharedTypes;
+	private Map<String, IGreenPatternFactory> factories;
+
+	// Configuration
 	protected IUpdatePolicy updatePolicy;
-
-	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
-
-	private RepairStrategyController repairController;
-
-	protected Set<EMFEdge> markedAndCreatedEdges = new ObjectOpenCustomHashSet<>(new EMFEdgeHashingStrategy());
-	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = new Object2ObjectOpenHashMap<>();
-	public Map<TGGRuleApplication, IMatch> repairCandidates = new Object2ObjectOpenHashMap<>();
-	protected Map<TGGRuleApplication, IMatch> recentConsistencyMatches = new Object2ObjectOpenHashMap<>();
-
 	protected final IbexOptions options;
 
+	// Model manipulation
+	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 	protected IBlackInterpreter blackInterpreter;
 	protected IGreenInterpreter greenInterpreter;
 	protected IRedInterpreter redInterpreter;
 
-	private boolean domainsHaveNoSharedTypes;
-
-	private Map<String, IGreenPatternFactory> factories;
+	/***** Constructors *****/
 
 	public OperationalStrategy(IbexOptions options) {
 		this(options, new RandomMatchUpdatePolicy());
 	}
 
-	public OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
-		base = URI.createPlatformResourceURI("/", true);
-
+	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
 		this.options = options;
-
-		setModelGen();
-
 		this.updatePolicy = policy;
 
+		base = URI.createPlatformResourceURI("/", true);
 		factories = new HashMap<>();
 
 		greenInterpreter = new IbexGreenInterpreter(this);
 		redInterpreter = new IbexRedInterpreter(this);
+
+		consistencyMatches = cfactory.createObjectToObjectHashMap();
+		markedAndCreatedEdges = cfactory.createEMFEdgeHashSet();
 	}
 
-	private void initializeRepairStrategies(IbexOptions options) {
-		repairController = new RepairStrategyController(this, repairCandidates, recentConsistencyMatches, brokenRuleApplications);
+	/***** Resource management *****/
 
-		if (options.repairUsingShortcutRules()) {
-			repairController.registerStrategy(new ShortcutRepairStrategy(this));
-		}
-
-		if (options.repairAttributes()) {
-			repairController.registerStrategy(new AttributeRepairStrategy(this));
-		}
+	public ResourceSet getResourceSet() {
+		return rs;
 	}
 
-	@Override
-	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		this.addOperationalRuleMatch(PatternSuffixes.removeSuffix(match.getPatternName()), (IMatch) match);
+	public Resource getSourceResource() {
+		return s;
 	}
 
-	@Override
-	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
-			this.addBrokenMatch((IMatch) match);
-		}
-		this.removeOperationalRuleMatch((IMatch) match);
+	public Resource getTargetResource() {
+		return t;
 	}
 
-	/**
-	 * Decide if matches of this pattern should be watched and notified by the
-	 * pattern matcher
-	 * 
-	 * @param patternName
-	 * @return
-	 */
-	@Override
-	abstract public boolean isPatternRelevantForCompiler(String patternName);
-
-	protected void setModelGen() {
-		options.setModelGen(false);
+	public Resource getCorrResource() {
+		return c;
 	}
 
-	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
-		this.blackInterpreter = blackInterpreter;
-
-		createAndPrepareResourceSet();
-		registerInternalMetamodels();
-		registerUserMetamodels();
-		loadTGG();
-		initialiseBlackInterpreter();
-		loadModels();
-		initializeRepairStrategies(options);
-
-		this.trash = createResource("instances/trash.xmi");
-		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
+	public Resource getProtocolResource() {
+		return p;
 	}
 
-	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
-		this.greenInterpreter = greenInterpreter;
-	}
-
-	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
-		this.redInterpreter = redInterpreter;
-	}
-
-	protected abstract void registerUserMetamodels() throws IOException;
-
-	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return isPatternRelevantForCompiler(patternName);
-	}
-
-	public void addOperationalRuleMatch(String ruleName, IMatch match) {
-		addMatchToRecentConsistencyMatches(match);
-		if (this.isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(ruleName, match) && matchIsValidIsomorphism(ruleName, match)) {
-			operationalMatchContainer.addMatch(ruleName, match);
-			logger.debug("Received and added " + match.getPatternName());
-		} else
-			logger.debug("Received but rejected " + match.getPatternName());
-	}
-
-	private void addMatchToRecentConsistencyMatches(IMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
-			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
-			recentConsistencyMatches.put(ruleAppNode, match);
-		}
-	}
-
-	private boolean matchIsValidIsomorphism(String ruleName, IMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
-			// Make sure that node mappings comply to bindings in match
-			TGGRuleApplication ruleAppNode = (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(ruleName));
-			return ruleAppNode.getNodeMappings().keySet().stream().noneMatch(n -> ruleAppNode.getNodeMappings().get(n) != match.get(n));
-		}
-
-		return true;
-	}
-
-	private boolean matchIsDomainConform(String ruleName, IMatch match) {
-		if (domainsHaveNoSharedTypes)
-			return true;
-
-		return matchedNodesAreInCorrectResource(s, getGreenFactory(ruleName).getBlackSrcNodesInRule(), match) && matchedNodesAreInCorrectResource(s, getGreenFactory(ruleName).getGreenSrcNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getBlackTrgNodesInRule(), match) && matchedNodesAreInCorrectResource(t, getGreenFactory(ruleName).getGreenTrgNodesInRule(), match);
-	}
-
-	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, IMatch match) {
-		return nodes.stream().noneMatch(n -> match.isInMatch(n.getName()) && !nodeIsInResource(match, n.getName(), r));
-	}
-
-	private boolean nodeIsInResource(IMatch match, String name, Resource r) {
-		return ((EObject) match.get(name)).eResource().equals(r);
-	}
-
-	public void removeOperationalRuleMatch(IMatch match) {
-		operationalMatchContainer.removeMatch(match);
+	public TGG getTGG() {
+		return options.tgg();
 	}
 
 	abstract public void saveModels() throws IOException;
 
 	abstract public void loadModels() throws IOException;
 
-	protected void initialiseBlackInterpreter() throws IOException {
-		// Attempt initialisation
-		Optional<RuntimeException> initExcep = Optional.empty();
-		try {
-			blackInterpreter.initialise(rs.getPackageRegistry(), this);
-			blackInterpreter.setOptions(options);
-		} catch (RuntimeException e) {
-			initExcep = Optional.of(e);
-		}
-
-		// Even if init failed still attempt to monitor before failing
-		try {
-			// Ensure that the resource set is empty
-			rs.getResources().clear();
-			blackInterpreter.monitor(rs);
-		} finally {
-			if (initExcep.isPresent())
-				throw initExcep.get();
-		}
-	}
-
-	/**
-	 * Terminates the strategy
-	 * 
-	 * @throws IOException
-	 */
-	public void terminate() throws IOException {
-		removeBlackInterpreter();
-	}
-
-	/**
-	 * Removes the black interpreter and all references to the black interpreter
-	 * from the strategy and its resources
-	 */
-	protected void removeBlackInterpreter() {
-		if (blackInterpreter == null)
-			return;
-
-		blackInterpreter.terminate();
-		blackInterpreter = null;
-		rs.getAllContents().forEachRemaining(c -> c.eAdapters().clear());
-		rs.eAdapters().clear();
-		Object[] matches = operationalMatchContainer.getMatches().toArray();
-		for (Object m : matches)
-			this.operationalMatchContainer.removeMatch((IMatch) m);
-
-		logger.debug("Removed black interpreter");
-	}
-
-	/**
-	 * Replaces the black interpreter and initializes the new black interpreter
-	 * 
-	 * @param newBlackInterpreter
-	 *            The black interpreter to replace the existing black interpreter
-	 */
-	protected void reinitializeBlackInterpreter(IBlackInterpreter newBlackInterpreter) {
-		this.removeBlackInterpreter();
-		this.blackInterpreter = newBlackInterpreter;
-		this.blackInterpreter.initialise(rs.getPackageRegistry(), this);
-		this.blackInterpreter.setOptions(options);
-		this.blackInterpreter.monitor(rs);
-	}
-
-	protected void loadTGG() throws IOException {
-		Resource res = loadTGGResource();
-		Resource flattenedRes = loadFlattenedTGGResource();
-
-		options.tgg((TGG) res.getContents().get(0));
-		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-
-		// Instantiate runtime constraint provider with loaded constraint definition
-		// library
-		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(options.tgg().getAttributeConstraintDefinitionLibrary());
-		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
-		options.setConstraintProvider(runtimeConstraintProvider);
-
-		rs.getResources().remove(res);
-		rs.getResources().remove(flattenedRes);
-
-		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG());
-
-		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
-	}
-	
-	public void setCorr(EPackage pack) {
-		options.tgg().setCorr(pack);
-		options.flattenedTGG().setCorr(pack);
-	}
-
-	protected Resource loadFlattenedTGGResource() throws IOException {
-		return loadResource(options.projectPath() + "/model/" + options.projectName() + "_flattened.tgg.xmi");
-	}
-
-	protected Resource loadTGGResource() throws IOException {
-		return loadResource(options.projectPath() + "/model/" + options.projectName() + ".tgg.xmi");
-	}
-
-	/**
-	 * Set mappings before loading the metamodel resources plugin:/resource/ ->
-	 * file:/to/workspace/root/
-	 * 
-	 * @throws IOException
-	 */
 	protected void createAndPrepareResourceSet() {
 		rs = blackInterpreter.createAndPrepareResourceSet(options.workspacePath());
 	}
@@ -367,105 +164,172 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return res;
 	}
 
-	public void run() throws IOException {
-		do {
-			attemptBrokenMatchRepair();
-		} while (processBrokenMatches());
+	protected void loadTGG() throws IOException {
+		Resource res = loadTGGResource();
+		Resource flattenedRes = loadFlattenedTGGResource();
 
-		do {
-			blackInterpreter.updateMatches();
-		} while (processOneOperationalRuleMatch());
+		EcoreUtil.resolveAll(rs);
+		EcoreUtil.UnresolvedProxyCrossReferencer//
+				.find(rs)//
+				.forEach((eob, settings) -> logger.error("Problems resolving: " + eob));
+		
+		options.tgg((TGG) res.getContents().get(0));
+		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
 
-		wrapUp();
+		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
+				options.tgg().getAttributeConstraintDefinitionLibrary());
+		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
+		options.setConstraintProvider(runtimeConstraintProvider);
+
+		rs.getResources().remove(res);
+		rs.getResources().remove(flattenedRes);
+
+		this.operationalMatchContainer = new MatchContainer(options.flattenedTGG());
+
+		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
 	}
 
-	private boolean attemptBrokenMatchRepair() {
-		do {
-			blackInterpreter.updateMatches();
-		} while (processOneOperationalRuleMatch());
-		
-		do {
-			recentConsistencyMatches.clear();
-			
-			// attempt to repair matches
-			blackInterpreter.updateMatches();
-			repairController.repairMatches();
-			
-			// check if new matches show succession of former repair steps
-			if (repairController.repairCandidatesPending()) {
-				blackInterpreter.updateMatches();
-				repairController.repairsSuccessful();
-			}
-		} while(!repairCandidates.isEmpty());
+	protected Resource loadFlattenedTGGResource() throws IOException {
+		return loadResource(options.projectPath() + "/model/" + options.projectName() + "_flattened.tgg.xmi");
+	}
+
+	protected Resource loadTGGResource() throws IOException {
+		return loadResource(options.projectPath() + "/model/" + options.projectName() + ".tgg.xmi");
+	}
+
+	public void addToTrash(EObject o) {
+		TempContainer c = (TempContainer) trash.getContents().get(0);
+		c.getObjects().add(EcoreUtil.getRootContainer(o));
+	}
+
+	/***** Match and pattern management *****/
+
+	@Override
+	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
+		addOperationalRuleMatch((IMatch) match);
+	}
+
+	protected void addOperationalRuleMatch(IMatch match) {
+		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY))
+			addConsistencyMatch(match);
+
+		if (isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(match)) {
+			operationalMatchContainer.addMatch(match);
+			logger.debug("Received and added " + match);
+		} else
+			logger.debug("Received but rejected " + match);
+	}
+
+	protected boolean addConsistencyMatch(IMatch match) {
+		if (matchIsValidIsomorphism(match)) {
+			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
+			consistencyMatches.put(ruleAppNode, match);
+			logger.debug("Received and added consistency match: " + match);
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
+		if (removeOperationalRuleMatch((IMatch) match)) {
+			logger.debug("Removed due to delete event from pattern matcher: ");
+			logger.debug(match);
+		}
+	}
+
+	protected boolean removeOperationalRuleMatch(IMatch match) {
+		return operationalMatchContainer.removeMatch(match);
+	}
+
+	public boolean isPatternRelevantForInterpreter(String patternName) {
+		return isPatternRelevantForCompiler(patternName);
+	}
+
+	private boolean matchIsValidIsomorphism(IMatch match) {
+		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
+			// Make sure that node mappings comply to bindings in match
+			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
+			return ruleAppNode.getNodeMappings().keySet().stream()
+					.noneMatch(n -> ruleAppNode.getNodeMappings().get(n) != match.get(n));
+		}
+
 		return true;
 	}
+
+	private boolean matchIsDomainConform(IMatch match) {
+		if (domainsHaveNoSharedTypes)
+			return true;
+
+		return matchedNodesAreInCorrectResource(s, //
+				getGreenFactory(match.getRuleName()).getBlackSrcNodesInRule(), match)
+				&& matchedNodesAreInCorrectResource(s, //
+						getGreenFactory(match.getRuleName()).getGreenSrcNodesInRule(), match)
+				&& matchedNodesAreInCorrectResource(t, //
+						getGreenFactory(match.getRuleName()).getBlackTrgNodesInRule(), match)
+				&& matchedNodesAreInCorrectResource(t, //
+						getGreenFactory(match.getRuleName()).getGreenTrgNodesInRule(), match);
+	}
+
+	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, IMatch match) {
+		return nodes.stream().noneMatch(n -> match.isInMatch(n.getName()) && !nodeIsInResource(match, n.getName(), r));
+	}
+
+	private boolean nodeIsInResource(IMatch match, String name, Resource r) {
+		return ((EObject) match.get(name)).eResource().equals(r);
+	}
+
+	public IGreenPattern revokes(IMatch match) {
+		throw new IllegalStateException("Not clear how to revoke a match of " + match.getPatternName());
+	}
+
+	public abstract void run() throws IOException;
 
 	protected boolean processOneOperationalRuleMatch() {
 		if (operationalMatchContainer.isEmpty())
 			return false;
-		
+
 		IMatch match = chooseOneMatch();
-		if(match == null)
-			return false;
-		
 		String ruleName = operationalMatchContainer.getRuleName(match);
 
-		processOperationalRuleMatch(ruleName, match);
+		Optional<IMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
+
+		if (result.isPresent())
+			logger.debug("Removed as it has just been applied: ");
+		else
+			logger.debug("Removed as application failed: ");
+		
+		logger.debug(match);
+		
 		return true;
 	}
 
-
 	protected IMatch chooseOneMatch() {
-		return updatePolicy.chooseOneMatch(createImmutableMatchContainer());
-	}
+		IMatch match = updatePolicy.chooseOneMatch(new ImmutableMatchContainer(operationalMatchContainer));
+		if (match == null)
+			throw new IllegalStateException("Update policies should never return null!");
 
-	private ImmutableMatchContainer createImmutableMatchContainer() {
-		if(repairCandidates.isEmpty())
-			return new ImmutableMatchContainer(operationalMatchContainer);
-
-		Map<String, Collection<String>> rule2greenParam = new HashMap<>();
-
-		for(String ruleName : factories.keySet()) {
-			Collection<String> greenParamNames = new ArrayList<>();
-			greenParamNames.addAll(factories.get(ruleName).getGreenSrcNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
-			greenParamNames.addAll(factories.get(ruleName).getGreenTrgNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
-			rule2greenParam.put(ruleName, greenParamNames);
-		}
-		
-		Set<Object> brokenCandidates = repairCandidates.values()
-				.stream()
-				.flatMap(c -> c.getParameterNames()
-						.stream()
-						.filter(p -> rule2greenParam.get(PatternSuffixes.removeSuffix(c.getPatternName())).contains(p))
-						.map(p -> c.get(p)))
-				.collect(Collectors.toSet());
-		
-		MatchContainer filteredContainer = operationalMatchContainer.copy();
-		
-		Collection<IMatch> unavailableMatches = operationalMatchContainer.getMatches()
-				.stream()
-				.filter(m -> m.getParameterNames()
-						.stream()
-						.map(p -> m.get(p))
-						.anyMatch(e -> brokenCandidates.contains(e)))
-				.collect(Collectors.toList());
-		
-		filteredContainer.removeMatches(unavailableMatches);
-		return new ImmutableMatchContainer(filteredContainer);
+		return match;
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
 		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
+			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
 
+		
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.getPatternName());
+		
+		logger.debug("Attempting to apply: " + match.getPatternName() + " with " + greenPattern);
+
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
-			logger.info("Successfully applied: " + match.getPatternName());
+			logger.debug("Successfully applied: " + match);
 			markedAndCreatedEdges.addAll(cm.getCreatedEdges());
 			greenPattern.getEdgesMarkedByPattern().forEach(e -> markedAndCreatedEdges.add(getRuntimeEdge(cm, e)));
 			createMarkers(greenPattern, cm, ruleName);
@@ -484,8 +348,172 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		greenPattern.createMarkers(ruleName, comatch);
 	}
 
+	public TGGRuleApplication getRuleApplicationNode(IMatch match) {
+		return (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(//
+				PatternSuffixes.removeSuffix(match.getPatternName())));
+	}
+
+	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
+		return runtimeConstraintProvider;
+	}
+
+	protected Optional<TGGRule> getRule(String ruleName) {
+		return options.tgg().getRules().stream()//
+				.filter(r -> r.getName().equals(ruleName))//
+				.findFirst();
+	}
+
+	/****** Initialisation, termination *****/
+
+	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
+		this.blackInterpreter = blackInterpreter;
+
+		createAndPrepareResourceSet();
+		registerInternalMetamodels();
+		registerUserMetamodels();
+		loadTGG();
+		loadModels();
+		initialiseBlackInterpreter();
+
+		this.trash = createResource("instances/trash.xmi");
+		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
+	}
+
+	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
+		this.greenInterpreter = greenInterpreter;
+	}
+
+	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
+		this.redInterpreter = redInterpreter;
+	}
+
+	protected abstract void registerUserMetamodels() throws IOException;
+
+	protected void initialiseBlackInterpreter() throws IOException {
+		Optional<RuntimeException> initExcep = Optional.empty();
+		try {
+			blackInterpreter.initialise(rs.getPackageRegistry(), this);
+			blackInterpreter.setOptions(options);
+		} catch (RuntimeException e) {
+			initExcep = Optional.of(e);
+		}
+
+		try {
+			blackInterpreter.monitor(rs);
+		} finally {
+			if (initExcep.isPresent())
+				throw initExcep.get();
+		}
+	}
+
+	public void terminate() throws IOException {
+		removeBlackInterpreter();
+	}
+
+	/**
+	 * Removes the black interpreter and all references to the black interpreter
+	 * from the strategy and its resources
+	 */
+	protected void removeBlackInterpreter() {
+		if (blackInterpreter == null)
+			return;
+
+		blackInterpreter.terminate();
+		blackInterpreter = null;
+		rs.getAllContents().forEachRemaining(c -> c.eAdapters().clear());
+		rs.eAdapters().clear();
+		Object[] matches = operationalMatchContainer.getMatches().toArray();
+		for (Object m : matches)
+			this.operationalMatchContainer.removeMatch((IMatch) m);
+
+		logger.debug("Removed black interpreter");
+	}
+
+	/**
+	 * Replaces the black interpreter and initialises the new black interpreter
+	 * 
+	 * @param newBlackInterpreter
+	 *            The black interpreter to replace the existing black interpreter
+	 */
+	protected void reinitializeBlackInterpreter(IBlackInterpreter newBlackInterpreter) {
+		this.removeBlackInterpreter();
+		this.blackInterpreter = newBlackInterpreter;
+		this.blackInterpreter.initialise(rs.getPackageRegistry(), this);
+		this.blackInterpreter.setOptions(options);
+		this.blackInterpreter.monitor(rs);
+	}
+
+	/***** Multi-Amalgamation *****/
+
 	public void setIsRuleApplicationFinal(TGGRuleApplication ra) {
 		ra.setFinal(true);
+	}
+
+	protected Optional<TGGComplementRule> getComplementRule(String ruleName) {
+		return getRule(ruleName)//
+				.filter(TGGComplementRule.class::isInstance)//
+				.map(TGGComplementRule.class::cast);
+	}
+
+	protected boolean isKernelMatch(String kernelName) {
+		return getKernelRulesNames().contains(kernelName);
+	}
+
+	protected boolean isComplementMatch(String complementName) {
+		return getComplementRulesNames().contains(complementName);
+	}
+
+	protected Set<String> getComplementRulesNames() {
+		Set<String> complementRulesNames = options.tgg().getRules().stream()//
+				.filter(TGGComplementRule.class::isInstance)//
+				.map(TGGRule::getName)//
+				.collect(Collectors.toSet());
+		return complementRulesNames;
+	}
+
+	protected Set<String> getKernelRulesNames() {
+		Set<String> kernelRulesNames = options.tgg().getRules().stream()//
+				.filter(TGGComplementRule.class::isInstance)//
+				.map(TGGComplementRule.class::cast)//
+				.map(TGGComplementRule::getKernel)//
+				.map(TGGRule::getName)//
+				.distinct()//
+				.collect(Collectors.toSet());
+		return kernelRulesNames;
+	}
+
+	protected boolean tggContainsComplementRules() {
+		return !getComplementRulesNames().isEmpty();
+	}
+
+	public IGreenPatternFactory getGreenFactory(String ruleName) {
+		assert (ruleName != null);
+		if (!factories.containsKey(ruleName)) {
+			if (isFusedPatternMatch(ruleName)) {
+				factories.put(ruleName, new GreenFusedPatternFactory(ruleName, options, this));
+			} else {
+				factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
+			}
+		}
+
+		return factories.get(ruleName);
+	}
+
+	/***** Edge bookkeeping *****/
+
+	public EMFEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
+		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
+		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
+		EReference ref = specificationEdge.getType();
+		return new EMFEdge(src, trg, ref);
+	}
+
+	public void removeCreatedEdge(EMFEdge runtimeEdge) {
+		markedAndCreatedEdges.remove(runtimeEdge);
+	}
+
+	public void removeMarkedEdge(EMFEdge runtimeEdge) {
+		markedAndCreatedEdges.remove(runtimeEdge);
 	}
 
 	public boolean allEdgesAlreadyProcessed(Collection<TGGRuleEdge> specificationEdges, IMatch match) {
@@ -507,8 +535,10 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			EReference ref = edge.getType();
 
 			if (src == null | trg == null | ref == null)
-				throw new IllegalStateException("The match " + match.getPatternName() + " is invalid for this operational strategy (the edge -" + ref.getName() + "-> appears to be expected but is missing)!  "
-						+ "Are you sure you have implemented isPatternRelevant correctly?");
+				throw new IllegalStateException(
+						"The match " + match.getPatternName() + " is invalid for this operational strategy (the edge -"
+								+ ref.getName() + "-> appears to be expected but is missing)!  "
+								+ "Are you sure you have implemented isPatternRelevant correctly?");
 
 			if (markedAndCreatedEdges.contains(new EMFEdge(src, trg, ref)))
 				return true;
@@ -517,104 +547,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return false;
 	}
 
-	/***** Methods for reacting to broken matches of consistency patterns ******/
-
-	public TGGRuleApplication getRuleApplicationNode(IMatch match) {
-		return (TGGRuleApplication) match.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(match.getPatternName())));
-	}
-
-	public void addBrokenMatch(IMatch match) {
-		TGGRuleApplication ra = getRuleApplicationNode(match);
-		repairCandidates.put(ra, match);
-	}
-
-	protected boolean processBrokenMatches() {
-		if (brokenRuleApplications.isEmpty())
-			return false;
-
-		revokeAllMatches();
-
-		return true;
-	}
-
-	private void revokeAllMatches() {
-		while (!brokenRuleApplications.isEmpty()) {
-			ObjectOpenHashSet<TGGRuleApplication> revoked = new ObjectOpenHashSet<>();
-			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
-				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
-				revoked.add(ra);
-			}
-			for (TGGRuleApplication revokedRA : revoked)
-				brokenRuleApplications.remove(revokedRA);
-		}
-	}
-
-	public EMFEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
-		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
-		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
-		EReference ref = specificationEdge.getType();
-		return new EMFEdge(src, trg, ref);
-	}
-
-	public ResourceSet getResourceSet() {
-		return rs;
-	}
-
-	public Resource getSourceResource() {
-		return s;
-	}
-
-	public Resource getTargetResource() {
-		return t;
-	}
-
-	public Resource getCorrResource() {
-		return c;
-	}
-
-	public Resource getProtocolResource() {
-		return p;
-	}
-
-	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
-		return runtimeConstraintProvider;
-	}
-
-	abstract protected void wrapUp();
-
-	public TGG getTGG() {
-		return options.tgg();
-	}
-
-	protected Optional<TGGRule> getRule(String ruleName) {
-		return getTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findFirst();
-	}
-
-	protected Optional<TGGComplementRule> getComplementRule(String ruleName) {
-		return getRule(ruleName).filter(TGGComplementRule.class::isInstance).map(TGGComplementRule.class::cast);
-	}
-
-	protected boolean isKernelMatch(String kernelName) {
-		return getKernelRulesNames().contains(kernelName);
-	}
-
-	protected boolean isComplementMatch(String complementName) {
-		return getComplementRulesNames().contains(complementName);
-	}
-
-	protected Set<String> getComplementRulesNames() {
-		Set<String> complementRulesNames = getTGG().getRules().stream().filter(r -> r instanceof TGGComplementRule).map(n -> n.getName()).collect(Collectors.toSet());
-		return complementRulesNames;
-	}
-
-	protected Set<String> getKernelRulesNames() {
-		Set<String> kernelRulesNames = getTGG().getRules().stream().filter(r -> r instanceof TGGComplementRule).map(n -> ((TGGComplementRule) n).getKernel().getName()).distinct().collect(Collectors.toSet());
-		return kernelRulesNames;
-	}
-
-	protected boolean tggContainsComplementRules() {
-		return !getComplementRulesNames().isEmpty();
-	}
+	/***** Configuration *****/
 
 	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
 		if (updatePolicy == null)
@@ -625,36 +558,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	public IUpdatePolicy getUpdatePolicy() {
 		return updatePolicy;
-	}
-
-	public IGreenPatternFactory getGreenFactory(String ruleName) {
-		assert (ruleName != null);
-		if (!factories.containsKey(ruleName)) {
-			if (isFusedPatternMatch(ruleName)) {
-				factories.put(ruleName, new GreenFusedPatternFactory(ruleName, options, this));
-			} else {
-				factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
-			}
-		}
-
-		return factories.get(ruleName);
-	}
-
-	public void removeCreatedEdge(EMFEdge runtimeEdge) {
-		markedAndCreatedEdges.remove(runtimeEdge);
-	}
-
-	public void removeMarkedEdge(EMFEdge runtimeEdge) {
-		markedAndCreatedEdges.remove(runtimeEdge);
-	}
-
-	public void addToTrash(EObject o) {
-		TempContainer c = (TempContainer) trash.getContents().get(0);
-		c.getObjects().add(EcoreUtil.getRootContainer(o));
-	}
-
-	public IGreenPattern revokes(IMatch match) {
-		throw new IllegalStateException("Not clear how to revoke a match of " + match.getPatternName());
 	}
 
 	public IbexOptions getOptions() {

@@ -1,4 +1,6 @@
 /bin
 /model/*.xmi
+/model/*.genmodel
 !/**/.keep*
 /xtend-gen/
+/gen/*

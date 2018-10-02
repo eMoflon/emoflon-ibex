@@ -16,7 +16,7 @@ import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
 import org.moflon.core.utilities.WorkspaceHelper;
 
-import language.csp.definition.TGGAttributeConstraintDefinition;
+import language.TGGAttributeConstraintDefinition;
 
 public class AttrCondDefLibraryProvider {
 	private static final Logger logger = Logger.getLogger(AttrCondDefLibraryProvider.class);

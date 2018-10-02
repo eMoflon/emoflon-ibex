@@ -28,13 +28,13 @@ public class IbexOptions {
 	 * EdgePatterns are only created if the number of edges in this pattern is at
 	 * least this constant
 	 */
-	private int minimumNumberOfEdgesToCreateEdgePatterns = Integer.MAX_VALUE;
+	private int minimumNumberOfEdgesToCreateEdgePatterns = 3;
 
 	/**
 	 * Indicates if the edge patterns should be typed including attribute conditions
 	 * and sub types
 	 */
-	private boolean stronglyTypedEdgedPatterns = false;
+	private boolean stronglyTypedEdgedPatterns = true;
 
 	private boolean debug;
 	private String workspacePath;
@@ -44,7 +44,6 @@ public class IbexOptions {
 	private TGG flattenedTGG;
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
-	private boolean isModelGen;
 	private SupportedILPSolver ilpSolver;
 	
 	private boolean repairAttributes;
@@ -57,15 +56,6 @@ public class IbexOptions {
 		repairAttributes = true;
 		useShortcutRules = false;
 		setIlpSolver(SupportedILPSolver.Sat4J);
-	}
-
-	public boolean isModelGen() {
-		return isModelGen;
-	}
-
-	public IbexOptions setModelGen(boolean isModelGen) {
-		this.isModelGen = isModelGen;
-		return this;
 	}
 
 	public IbexOptions debug(boolean debug) {

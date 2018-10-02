@@ -1,9 +1,9 @@
 package org.emoflon.ibex.tgg.compiler.defaults
 
 import java.util.Collection
-import language.csp.definition.TGGAttributeConstraintDefinition
-import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
+import language.TGGAttributeConstraintDefinition
 import org.moflon.core.utilities.MoflonUtil
+import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
 
 class DefaultFilesGenerator {
 
@@ -177,7 +177,7 @@ class DefaultFilesGenerator {
 	static def generateCCAppFile(String projectName, String fileName, String engine, String additionalImports) {
 		return generateBasicStructure(
 			'''
-				import org.emoflon.ibex.tgg.operational.strategies.cc.CC;
+				import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 				«additionalImports»
 			''',
 			fileName,
@@ -204,7 +204,7 @@ class DefaultFilesGenerator {
 	static def generateCOAppFile(String projectName, String fileName, String engine, String additionalImports) {
 		return generateBasicStructure(
 			'''
-				import org.emoflon.ibex.tgg.operational.strategies.co.CO;
+				import org.emoflon.ibex.tgg.operational.strategies.opt.CO;
 				«additionalImports»
 			''',
 			fileName,
@@ -231,7 +231,7 @@ class DefaultFilesGenerator {
 	static def generateFWDOptAppFile(String projectName, String fileName, String engine, String additionalImports) {
 		return generateBasicStructure(
 			'''
-				import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_OPT;
+				import org.emoflon.ibex.tgg.operational.strategies.opt.FWD_OPT;
 				«additionalImports»
 			''',
 			fileName,
@@ -257,7 +257,7 @@ class DefaultFilesGenerator {
 	static def generateBWDOptAppFile(String projectName, String fileName, String engine, String additionalImports) {
 		return generateBasicStructure(
 			'''
-				import org.emoflon.ibex.tgg.operational.strategies.sync.BWD_OPT;
+				import org.emoflon.ibex.tgg.operational.strategies.opt.BWD_OPT;
 				«additionalImports»
 			''',
 			fileName,

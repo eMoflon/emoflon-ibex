@@ -113,7 +113,6 @@ public class Adornment implements Iterable<Boolean> {
 	 */
 	@Override
 	public int hashCode() {
-		// TODO double check this
 		int size = (length >> 3) + ((length & 7) > 0 ? 1 : 0);
 		byte[] bytes = new byte[size + Integer.SIZE / Byte.SIZE];
 		int index = 0;
@@ -540,8 +539,6 @@ public class Adornment implements Iterable<Boolean> {
 	 */
 	public int cardinality() {
 		int count = 0;
-		// FIXME: need to test performance, if still not satisfied, change it to
-		// 256-bits table based
 		for (int idx = 0; idx < bits.length; idx++) {
 			count += pop(bits[idx]);
 		}

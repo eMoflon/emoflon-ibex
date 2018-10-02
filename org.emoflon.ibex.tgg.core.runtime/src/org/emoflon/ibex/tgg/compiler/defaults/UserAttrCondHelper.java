@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.compiler.defaults;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import language.csp.definition.TGGAttributeConstraintDefinition;
+import language.TGGAttributeConstraintDefinition;
 
 public class UserAttrCondHelper {
 	public static String getFileName(String name) {

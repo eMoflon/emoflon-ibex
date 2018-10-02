@@ -8,9 +8,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.common.IbexBasePattern;
 
 import language.DomainType;
+import language.TGGAttributeConstraint;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.csp.TGGAttributeConstraint;
 
 public class CheckLocalTranslationStatePattern extends IbexBasePattern {
 	private static final String PROTOCOL_NAME = "protocol";	
