@@ -16,6 +16,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.UpdatePolicy;
 
 import language.TGGComplementRule;
@@ -66,7 +67,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	/** Constructors **/
 
 	public MODELGEN(IbexOptions options) throws IOException {
-		super(options);
+		super(options, new RandomMatchUpdatePolicy(50));
 	}
 
 	/********************** Public Interface *********************/
