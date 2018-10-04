@@ -73,6 +73,14 @@ public class TGGPatternUtil {
 	public static String getConsistencyPatternName(String ruleName) {
 		return ruleName + PatternSuffixes.CONSISTENCY;
 	}
+	
+	public static String getProtocolPatternName(String ruleName) {
+		return ruleName + PatternSuffixes.PROTOCOL;
+	}
+	
+	public static String getProtocolCorePatternName(String ruleName) {
+		return ruleName + PatternSuffixes.PROTOCOL_CORE;
+	}
 
 	public static String getNACPatternName(String nacName) {
 		return nacName + PatternSuffixes.USER_NAC;

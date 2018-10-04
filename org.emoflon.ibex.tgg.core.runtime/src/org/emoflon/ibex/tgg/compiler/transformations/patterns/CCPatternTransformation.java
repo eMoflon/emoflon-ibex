@@ -76,4 +76,11 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate, rule));
 		}
 	}
+
+	@Override
+	protected boolean patternIsEmpty(TGGRule rule) {
+		return TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT).isEmpty() && 
+				TGGModelUtils.getReferencesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC).isEmpty() && 
+				TGGModelUtils.getReferencesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG).isEmpty();
+	}
 }

@@ -60,4 +60,10 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate, rule));
 		}
 	}
+
+	@Override
+	protected boolean patternIsEmpty(TGGRule rule) {
+		return TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT).isEmpty() && 
+				TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC).isEmpty();		
+	}
 }

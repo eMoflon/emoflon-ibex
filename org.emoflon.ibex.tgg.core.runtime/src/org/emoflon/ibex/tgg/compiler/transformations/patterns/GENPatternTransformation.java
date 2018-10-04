@@ -55,25 +55,7 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 		IBeXContextPattern consistencyPatternOfKernel = parent
 				.getPattern(TGGPatternUtil.getConsistencyPatternName(crule.getKernel().getName()));
 
-		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
-		invocation.setPositive(true);
-
-		// Creating mapping for invocation: missing signature nodes of the invoked
-		// pattern are added as local nodes to the invoking pattern
-		for (IBeXNode node : consistencyPatternOfKernel.getSignatureNodes()) {
-			Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, node.getName());
-
-			if (src.isPresent())
-				invocation.getMapping().put(src.get(), node);
-			else {
-				IBeXNode newLocalNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-				newLocalNode.setName(node.getName());
-				newLocalNode.setType(node.getType());
-				ibexPattern.getLocalNodes().add(newLocalNode);
-
-				invocation.getMapping().put(newLocalNode, node);
-			}
-		}
+		parent.createInvocation(ibexPattern, consistencyPatternOfKernel);
 
 		// Add additional attribute condition for "closing the kernel"
 		Optional<IBeXNode> node = ibexPattern.getLocalNodes()//
@@ -95,8 +77,6 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 			ibexPattern.getAttributeConstraint().add(tae);
 		});
 
-		invocation.setInvokedPattern(consistencyPatternOfKernel);
-		ibexPattern.getInvocations().add(invocation);
 	}
 
 	@Override
@@ -128,5 +108,10 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 			if (TGGModelUtils.isOfDomain(nac, DomainType.SRC))
 				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
 		}
+	}
+
+	@Override
+	protected boolean patternIsEmpty(TGGRule rule) {
+		return TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT).isEmpty();		
 	}
 }

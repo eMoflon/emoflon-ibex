@@ -151,6 +151,16 @@ public class PatternSuffixes {
 	public static final String CONSISTENCY = SEP + "CONSISTENCY";
 
 	/**
+	 * This pattern contains the protocol node and all marked elements (marking edges)
+	 */
+	public static final String PROTOCOL = SEP + "PROTOCOL";
+	
+	/**
+	 * This pattern contains a protocol node
+	 */
+	public static final String PROTOCOL_CORE = SEP + "PROTOCOL_CORE";
+	
+	/**
 	 * Used as part of PROTOCOL patterns.
 	 */
 	public static final String WHOLE = SEP + "WHOLE";

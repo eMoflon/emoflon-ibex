@@ -1,10 +1,18 @@
 package org.emoflon.ibex.tgg.compiler.patterns;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
+
+import IBeXLanguage.IBeXAttributeConstraint;
+import IBeXLanguage.IBeXContextPattern;
+import IBeXLanguage.IBeXEdge;
+import IBeXLanguage.IBeXNode;
+import IBeXLanguage.IBeXNodePair;
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGRuleEdge;
@@ -112,4 +120,59 @@ public class IBeXPatternOptimiser {
 
 		return hierarchy;
 	}
+	
+	public static void optimizeIBeXPattern(IBeXContextPattern invoker, IBeXContextPattern invokee) {
+		optimizeEdges(invoker, invokee);
+		optimizeInjectivityConstraints(invoker, invokee);
+		optimizeAttributeConstraints(invoker, invokee);
+	}
+
+	private static void optimizeAttributeConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
+		Collection<IBeXAttributeConstraint> revokedConstraints = new ArrayList<>();
+		for (IBeXAttributeConstraint constraint : invoker.getAttributeConstraint()) {
+			if(invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(constraint.getNode().getName()))) {
+				revokedConstraints.add(constraint);
+			}
+		}
+		EcoreUtil.deleteAll(revokedConstraints, true);
+		invoker.getAttributeConstraint().removeAll(revokedConstraints);
+	}
+
+	private static void optimizeInjectivityConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
+		Collection<IBeXNodePair> revokedPairs = new ArrayList<>();
+
+		for(IBeXNodePair injPair : invoker.getInjectivityConstraints()) {
+			IBeXNode first = injPair.getValues().get(0);
+			IBeXNode second = injPair.getValues().get(1);
+			boolean firstFoundInInvokee = invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(first.getName()));
+			boolean secondFoundInInvokee = invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(second.getName()));
+			
+			if(firstFoundInInvokee && secondFoundInInvokee) {
+				revokedPairs.add(injPair);
+			}
+		}
+		EcoreUtil.deleteAll(revokedPairs, true);
+		invoker.getInjectivityConstraints().removeAll(revokedPairs);
+	}
+
+	private static void optimizeEdges(IBeXContextPattern invoker, IBeXContextPattern invokee) {
+		Collection<IBeXEdge> revokedEdges = new ArrayList<>();
+
+		for(IBeXEdge edge : invoker.getLocalEdges()) {
+			IBeXNode srcNode = edge.getSourceNode();
+			IBeXNode trgNode = edge.getTargetNode();
+			
+			boolean foundInInvokee = invokee.getLocalEdges()
+					.stream()
+					.anyMatch(e -> e.getSourceNode().getName().equals(srcNode.getName()) && e.getTargetNode().getName().equals(trgNode.getName()));
+			
+			if(foundInInvokee) {
+				revokedEdges.add(edge);
+			}
+		}
+		EcoreUtil.deleteAll(revokedEdges, true);
+		invoker.getLocalEdges().removeAll(revokedEdges);
+	}
+	
+	
 }

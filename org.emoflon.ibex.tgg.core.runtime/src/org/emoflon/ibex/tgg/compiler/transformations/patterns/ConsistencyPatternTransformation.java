@@ -27,37 +27,6 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 		super(parent, options);
 	}
 
-	private void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
-		IBeXNode protocolNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-		protocolNode.setName(TGGPatternUtil.getProtocolNodeName(rule.getName()));
-		EClass type = (EClass) options.getCorrMetamodel()
-				.getEClassifier(TGGModelUtils.getMarkerTypeName(rule.getName()));
-		protocolNode.setType(type);
-		ibexPattern.getSignatureNodes().add(protocolNode);
-
-		connectProtocolNode(ibexPattern, protocolNode, rule);
-	}
-
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, TGGRule rule) {
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.SRC);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.TRG);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.SRC);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.TRG);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.CORR);
-		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.CORR);
-	}
-
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, TGGRule rule, IBeXNode protocolNode,
-			BindingType type, DomainType domain) {
-		Collection<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperatorAndDomain(rule, type, domain);
-
-		for (TGGRuleNode node : nodes) {
-			EReference ref = (EReference) protocolNode.getType()
-					.getEStructuralFeature(TGGModelUtils.getMarkerRefName(type, domain, node.getName()));
-			parent.transformEdge(ref, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern, false);
-		}
-	}
-
 	@Override
 	protected String getPatternName(TGGRule rule) {
 		return getConsistencyPatternName(rule.getName());
@@ -86,7 +55,7 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 			parent.transformEdge(rule.getEdges(), edge, ibexPattern);
 
 		// Create protocol node and connections to nodes in pattern
-		createAndConnectProtocolNode(rule, ibexPattern);
+		parent.createAndConnectProtocolNode(rule, ibexPattern);
 
 	}
 
@@ -101,5 +70,10 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate, rule));
 		}
+	}
+
+	@Override
+	protected boolean patternIsEmpty(TGGRule rule) {
+		return rule.getNodes().isEmpty();
 	}
 }

@@ -78,4 +78,10 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 		}
 	}
 
+	@Override
+	protected boolean patternIsEmpty(TGGRule rule) {
+		return TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT).isEmpty() && 
+				TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG).isEmpty();
+	}
+
 }
