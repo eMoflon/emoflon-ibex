@@ -1,22 +1,24 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut;
 
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
+import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getMarkerRefName;
+import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getMarkerTypeName;
+
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.BlackPatternCompiler;
-import org.emoflon.ibex.tgg.compiler.patterns.BlackPatternFactory;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.DECCandidate;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACHelper;
-import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGOverlap;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.BindingType;
 import language.DomainType;
@@ -39,9 +41,9 @@ import runtime.RuntimePackage;
  */
 public class InterfaceShortcutRule extends OperationalShortcutRule {
 	
-	private OperationalStrategy strategy;
+	private SYNC strategy;
 	
-	public InterfaceShortcutRule(OperationalStrategy strategy, SyncDirection direction, ShortcutRule scRule) {
+	public InterfaceShortcutRule(SYNC strategy, SyncDirection direction, ShortcutRule scRule) {
 		super(direction, scRule.copy());
 		this.strategy = strategy;
 
@@ -82,21 +84,23 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 			break;
 		default: throw new RuntimeException("Shortcut Rules can only be operationalized for FORWARD and BACKWARD operations");
 		}
-		createRuleApplicationNode();
+		createRuleApplicationNode(scRule.getTargetRule());
 	}
 	
-	private void createRuleApplicationNode() {
+	private void createRuleApplicationNode(TGGRule targetRule) {
 		TGGRuleNode raNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		raNode.setName(ConsistencyPattern.getProtocolNodeName(scRule.getSourceRule().getName()));
-		raNode.setType(RuntimePackage.eINSTANCE.getTGGRuleApplication());
+		raNode.setName(getProtocolNodeName(scRule.getSourceRule().getName()));
+		EClass type = (EClass) strategy.getOptions().getCorrMetamodel().getEClassifier(getMarkerTypeName(targetRule.getName()));
+		raNode.setType(type);
 		raNode.setBindingType(BindingType.CONTEXT);
-		
-		EReference createSrcRef = RuntimePackage.eINSTANCE.getTGGRuleApplication_CreatedSrc();
-		EReference createCorrRef = RuntimePackage.eINSTANCE.getTGGRuleApplication_CreatedCorr();
-		EReference createTrgRef = RuntimePackage.eINSTANCE.getTGGRuleApplication_CreatedTrg();
-		EReference contextSrcRef = RuntimePackage.eINSTANCE.getTGGRuleApplication_ContextSrc();
-		EReference contextTrgRef = RuntimePackage.eINSTANCE.getTGGRuleApplication_ContextTrg();
-		
+
+
+		Function<TGGRuleNode, EReference>  createSrcRef = n -> getProtocolRef(raNode, BindingType.CREATE, DomainType.SRC, n);
+		Function<TGGRuleNode, EReference>  createCorrRef = n -> getProtocolRef(raNode, BindingType.CREATE, DomainType.CORR, n);
+		Function<TGGRuleNode, EReference>  createTrgRef = n -> getProtocolRef(raNode, BindingType.CREATE, DomainType.TRG, n);
+		Function<TGGRuleNode, EReference>  contextSrcRef = n -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.SRC, n);
+		Function<TGGRuleNode, EReference>  contextTrgRef = n -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.TRG, n);
+
 		createRuleApplicationLink(createSrcRef, contextSrcRef, raNode, DomainType.SRC);
 		createRuleApplicationLink(createCorrRef, null, raNode, DomainType.CORR);
 		createRuleApplicationLink(createTrgRef, contextTrgRef, raNode, DomainType.TRG);
@@ -104,7 +108,11 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 		scRule.getNodes().add(raNode);
 	}
 	
-	private void createRuleApplicationLink(EReference createdRef, EReference contextRef, TGGRuleNode raNode, DomainType dType) {
+	private EReference getProtocolRef(TGGRuleNode protocolNode, BindingType bType, DomainType dType, TGGRuleNode node) {
+		return (EReference) protocolNode.getType().getEStructuralFeature(getMarkerRefName(bType, dType, node.getName()));
+	}
+	
+	private void createRuleApplicationLink(Function<TGGRuleNode, EReference> createdRef, Function<TGGRuleNode, EReference> contextRef, TGGRuleNode raNode, DomainType dType) {
 		TGGOverlap overlap = scRule.getOverlap();
 		Stream<TGGRuleNode> createdNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.creations), dType).stream();
 		Stream<TGGRuleNode> deletedNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.deletions), dType).stream();
@@ -121,14 +129,14 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 		contextMappingNodeKeys = contextMappingNodeKeys.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE)).filter(n -> scRule.getNodes().contains(n));
 
 		if(createdRef != null) {
-			createdNodes.forEach(n -> createRuleApplicationEdge(createdRef, raNode, n, BindingType.CREATE));
-			deletedNodes.forEach(n -> createRuleApplicationEdge(createdRef, raNode, n, BindingType.DELETE));
-			createdMappingNodeKeys.forEach(n -> createRuleApplicationEdge(createdRef, raNode, n, BindingType.CONTEXT));
+			createdNodes.forEach(n -> createRuleApplicationEdge(createdRef.apply(n), raNode, n, BindingType.CREATE));
+			deletedNodes.forEach(n -> createRuleApplicationEdge(createdRef.apply(n), raNode, n, BindingType.DELETE));
+			createdMappingNodeKeys.forEach(n -> createRuleApplicationEdge(createdRef.apply(n), raNode, n, BindingType.CONTEXT));
 		}
 		if(contextRef != null) {
-			sourceRuleUnboundContextNodes.forEach(n -> createRuleApplicationEdge(contextRef, raNode, n, BindingType.DELETE));
-			targetRuleUnboundContextNodes.forEach(n -> createRuleApplicationEdge(contextRef, raNode, n, BindingType.CREATE));
-			contextMappingNodeKeys.forEach(n -> createRuleApplicationEdge(contextRef, raNode, n, BindingType.CONTEXT));
+			sourceRuleUnboundContextNodes.forEach(n -> createRuleApplicationEdge(contextRef.apply(n), raNode, n, BindingType.DELETE));
+			targetRuleUnboundContextNodes.forEach(n -> createRuleApplicationEdge(contextRef.apply(n), raNode, n, BindingType.CREATE));
+			contextMappingNodeKeys.forEach(n -> createRuleApplicationEdge(contextRef.apply(n), raNode, n, BindingType.CONTEXT));
 		}
 	}
 	
@@ -145,24 +153,23 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 	}
 
 	private void createDECNacs(TGGRule targetRule, DomainType domain) {
-		BlackPatternCompiler bComp = new BlackPatternCompiler(strategy.getOptions());
-		BlackPatternFactory bFac = new BlackPatternFactory(targetRule, bComp);
-		
-		Collection<DECCandidate> decCandidates = new ForbidAllFilterACsPattern(domain, bFac).getDECCandidates(targetRule, domain);
-		for(DECCandidate dec : decCandidates) {
-			TGGRuleNode decNode = scRule.mapRuleNodeToSCRuleNode(dec.node, SCInputRule.TARGET);
+		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(domain, targetRule, strategy.getOptions());
+
+		Collection<FilterNACCandidate> decCandidates = filterNACAnalysis.computeFilterNACCandidates();
+		for(FilterNACCandidate dec : decCandidates) {
+			TGGRuleNode decNode = scRule.mapRuleNodeToSCRuleNode(dec.getNodeInRule(), SCInputRule.TARGET);
 			TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
-			edge.setType(dec.edgeType);
+			edge.setType(dec.getEdgeType());
 			edge.setBindingType(BindingType.NEGATIVE);
 			edge.setDomainType(decNode.getDomainType());
 			
 			TGGRuleNode node = LanguageFactory.eINSTANCE.createTGGRuleNode();
 			node.setName("decNode");
 			node.setDomainType(decNode.getDomainType());
-			node.setType(FilterACHelper.getOppositeType(dec.edgeType, dec.direction));
+			node.setType(dec.getOtherNodeType());
 			node.setBindingType(BindingType.NEGATIVE);
 			
-			switch(dec.direction) {
+			switch(dec.getEDirection()) {
 			case INCOMING:
 				edge.setSrcNode(node);
 				edge.setTrgNode(decNode);
@@ -173,7 +180,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 				break;
 			}
 			
-			edge.setName(edge.getSrcNode().getName() + "__" + dec.edgeType.getName() + "__" + edge.getTrgNode().getName());
+			edge.setName(edge.getSrcNode().getName() + "__" + dec.getEdgeType().getName() + "__" + edge.getTrgNode().getName());
 			
 			scRule.getNodes().add(node);
 			scRule.getEdges().add(edge);

@@ -24,9 +24,11 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
@@ -69,7 +71,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected IMatchContainer operationalMatchContainer;
 	protected Map<TGGRuleApplication, IMatch> consistencyMatches;
 	private boolean domainsHaveNoSharedTypes;
-	private Map<String, IGreenPatternFactory> factories;
+	protected Map<String, IGreenPatternFactory> factories;
 
 	// Configuration
 	protected IUpdatePolicy updatePolicy;
@@ -79,7 +81,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 	protected IBlackInterpreter blackInterpreter;
 	protected IGreenInterpreter greenInterpreter;
-	protected IRedInterpreter redInterpreter;
 
 	/***** Constructors *****/
 
@@ -95,7 +96,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		factories = new HashMap<>();
 
 		greenInterpreter = new IbexGreenInterpreter(this);
-		redInterpreter = new IbexRedInterpreter(this);
 
 		consistencyMatches = cfactory.createObjectToObjectHashMap();
 	}
@@ -162,7 +162,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return res;
 	}
 
-	protected Resource createResource(String workspaceRelativePath) {
+	public Resource createResource(String workspaceRelativePath) {
 		URI uri = URI.createURI(workspaceRelativePath);
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
@@ -194,7 +194,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected IMatchContainer createMatchContainer() {
-		return new MatchContainer(options.flattenedTGG(), this);
+		return new MatchContainer(options.flattenedTGG());
 	}
 
 	protected Resource loadFlattenedTGGResource() throws IOException {
@@ -394,10 +394,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	
 	public IGreenInterpreter getGreenInterpreter() {
 		return greenInterpreter;
-	}
-
-	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
-		this.redInterpreter = redInterpreter;
 	}
 
 	protected abstract void registerUserMetamodels() throws IOException;

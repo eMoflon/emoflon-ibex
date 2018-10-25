@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
 
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,14 +11,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.eclipse.core.internal.localstore.SafeChunkyInputStream;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
-import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.GreenSCPattern;
@@ -25,7 +24,7 @@ import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalSh
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.BindingType;
 import language.DomainType;
@@ -47,7 +46,7 @@ public class ShortcutPatternTool {
 	private int numOfDeletedNodes = 0;
 	private int numOfDeletedEdges = 0;
 	
-	private OperationalStrategy strategy;
+	private SYNC strategy;
 	private Collection<ShortcutRule> scRules;
 	private Map<String, Collection<OperationalShortcutRule>> tggRule2srcSCRule;
 	private Map<String, Collection<OperationalShortcutRule>> tggRule2trgSCRule;
@@ -56,7 +55,7 @@ public class ShortcutPatternTool {
 	
 	private IGreenInterpreter greenInterpreter;
 	
-	public ShortcutPatternTool(OperationalStrategy strategy, Collection<ShortcutRule> scRules) {
+	public ShortcutPatternTool(SYNC strategy, Collection<ShortcutRule> scRules) {
 		this.scRules = scRules;
 		this.strategy = strategy;
 		initialize();
@@ -135,15 +134,14 @@ public class ShortcutPatternTool {
 			newMatch.put(n.getName(), scMatch.get(osr.getScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET).getName()))
 		);
 		
-		String oldRaName = ConsistencyPattern.getProtocolNodeName(osr.getScRule().getSourceRule().getName());
-		String raName = ConsistencyPattern.getProtocolNodeName(osr.getScRule().getTargetRule().getName());
+//		String oldRaName = getProtocolNodeName(osr.getScRule().getSourceRule().getName());
+		String raName = getProtocolNodeName(osr.getScRule().getTargetRule().getName());
 
-		TGGRuleApplication ra = (TGGRuleApplication) scMatch.get(oldRaName);
-		ra.setName(osr.getScRule().getTargetRule().getName());
+		TGGRuleApplication ra = (TGGRuleApplication) scMatch.get(raName);
 		
-		newMatch.put(raName, scMatch.get(oldRaName));
-		ra.getNodeMappings().clear();
-		newMatch.getParameterNames().forEach(p -> ra.getNodeMappings().put(p, (EObject) newMatch.get(p)));
+		newMatch.put(raName, scMatch.get(raName));
+//		ra.getNodeMappings().clear();
+//		newMatch.getParameterNames().forEach(p -> ra.getNodeMappings().put(p, (EObject) newMatch.get(p)));
 		
 		return newMatch;
 	}
@@ -177,10 +175,9 @@ public class ShortcutPatternTool {
 		Collection<TGGRuleEdge> deletedRuleEdges = TGGCollectionUtil.filterEdges(osc.getScRule().getEdges(), BindingType.DELETE);
 		
 		Set<EMFEdge> edgesToRevoke = new HashSet<>();
-		// Collect created edges to revoke.
+		// Collect edges to revoke.
 		deletedRuleEdges.forEach(e -> {
 			EMFEdge runtimeEdge = strategy.getRuntimeEdge(brokenMatch, e);
-			strategy.removeCreatedEdge(runtimeEdge);
 			edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
 		});
 		

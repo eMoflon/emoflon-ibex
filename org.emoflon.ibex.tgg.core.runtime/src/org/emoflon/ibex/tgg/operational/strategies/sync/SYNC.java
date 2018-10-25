@@ -2,8 +2,10 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNodes;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +28,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
@@ -132,7 +135,7 @@ public abstract class SYNC extends OperationalStrategy {
 				if(repairedMatch != null) {
 					alreadyProcessed.add(repairCandidate);
 					if(repairCandidate != repairedMatch) {
-						TGGRuleApplication ra = (TGGRuleApplication) repairedMatch.get(ConsistencyPattern.getProtocolNodeName(repairedMatch.getRuleName()));
+						TGGRuleApplication ra = (TGGRuleApplication) repairedMatch.get(getProtocolNodeName(repairedMatch.getRuleName()));
 						brokenRuleApplications.put(ra, repairedMatch);
 						alreadyProcessed.add(repairedMatch);
 					}
@@ -313,45 +316,45 @@ public abstract class SYNC extends OperationalStrategy {
 		return strategy.determineCSP(factory, m);
 	}
 	
-	@Override
-	protected IMatch chooseOneMatch() {
-		return updatePolicy.chooseOneMatch(createImmutableMatchContainer());
-	}
-
-	private ImmutableMatchContainer createImmutableMatchContainer() {
-		if(brokenRuleApplications.isEmpty())
-			return new ImmutableMatchContainer(operationalMatchContainer);
-
-		Map<String, Collection<String>> rule2greenParam = new HashMap<>();
-
-		for(String ruleName : factories.keySet()) {
-			Collection<String> greenParamNames = new ArrayList<>();
-			greenParamNames.addAll(factories.get(ruleName).getGreenSrcNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
-			greenParamNames.addAll(factories.get(ruleName).getGreenTrgNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
-			rule2greenParam.put(ruleName, greenParamNames);
-		}
-		
-		Set<Object> brokenCandidates = brokenRuleApplications.values()
-				.stream()
-				.flatMap(c -> c.getParameterNames()
-						.stream()
-						.filter(p -> rule2greenParam.get(PatternSuffixes.removeSuffix(c.getPatternName())).contains(p))
-						.map(p -> c.get(p)))
-				.collect(Collectors.toSet());
-		
-		MatchContainer filteredContainer = operationalMatchContainer.copy();
-		
-		Collection<IMatch> unavailableMatches = operationalMatchContainer.getMatches()
-				.stream()
-				.filter(m -> m.getParameterNames()
-						.stream()
-						.map(p -> m.get(p))
-						.anyMatch(e -> brokenCandidates.contains(e)))
-				.collect(Collectors.toList());
-		
-		filteredContainer.removeMatches(unavailableMatches);
-		return new ImmutableMatchContainer(filteredContainer);
-	}
+//	@Override
+//	protected IMatch chooseOneMatch() {
+//		return updatePolicy.chooseOneMatch(createImmutableMatchContainer());
+//	}
+//
+//	private ImmutableMatchContainer createImmutableMatchContainer() {
+//		if(brokenRuleApplications.isEmpty())
+//			return new ImmutableMatchContainer(operationalMatchContainer);
+//
+//		Map<String, Collection<String>> rule2greenParam = new HashMap<>();
+//
+//		for(String ruleName : factories.keySet()) {
+//			Collection<String> greenParamNames = new ArrayList<>();
+//			greenParamNames.addAll(factories.get(ruleName).getGreenSrcNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
+//			greenParamNames.addAll(factories.get(ruleName).getGreenTrgNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
+//			rule2greenParam.put(ruleName, greenParamNames);
+//		}
+//		
+//		Set<Object> brokenCandidates = brokenRuleApplications.values()
+//				.stream()
+//				.flatMap(c -> c.getParameterNames()
+//						.stream()
+//						.filter(p -> rule2greenParam.get(PatternSuffixes.removeSuffix(c.getPatternName())).contains(p))
+//						.map(p -> c.get(p)))
+//				.collect(Collectors.toSet());
+//		
+//		MatchContainer filteredContainer = operationalMatchContainer.copy();
+//		
+//		Collection<IMatch> unavailableMatches = operationalMatchContainer.getMatches()
+//				.stream()
+//				.filter(m -> m.getParameterNames()
+//						.stream()
+//						.map(p -> m.get(p))
+//						.anyMatch(e -> brokenCandidates.contains(e)))
+//				.collect(Collectors.toList());
+//		
+//		filteredContainer.removeMatches(unavailableMatches);
+//		return new ImmutableMatchContainer(filteredContainer);
+//	}
 
 
 	/***** Multi-Amalgamation *****/

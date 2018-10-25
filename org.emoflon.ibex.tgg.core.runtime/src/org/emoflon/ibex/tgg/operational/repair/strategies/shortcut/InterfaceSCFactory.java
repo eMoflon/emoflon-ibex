@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.BindingType;
 import language.DomainType;
@@ -16,9 +16,9 @@ import language.TGGRule;
 public class InterfaceSCFactory {
 
 	private Collection<ShortcutRule> scRules;
-	private OperationalStrategy strategy;
+	private SYNC strategy;
 
-	public InterfaceSCFactory(OperationalStrategy strategy, Collection<ShortcutRule> scRules) {
+	public InterfaceSCFactory(SYNC strategy, Collection<ShortcutRule> scRules) {
 		this.strategy = strategy;
 		this.scRules = scRules;
 	}

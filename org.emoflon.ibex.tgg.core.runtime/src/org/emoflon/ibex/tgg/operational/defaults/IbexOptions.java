@@ -26,6 +26,7 @@ public class IbexOptions {
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private SupportedILPSolver ilpSolver;
 	private boolean repairAttributes;
+	private boolean useShortcutRules;
 	private EPackage corrMetamodel;
 	private FilterNACStrategy lookAheadStrategy;
 

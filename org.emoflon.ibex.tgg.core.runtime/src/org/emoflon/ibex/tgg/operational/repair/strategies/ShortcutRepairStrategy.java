@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.ShortcutPatternTool;
@@ -31,11 +32,11 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 	protected final static Logger logger = Logger.getLogger(AbstractRepairStrategy.class);
 	
-	private OperationalStrategy operationalStrategy;
+	private SYNC operationalStrategy;
 	private ShortcutPatternTool scTool;
 	private SyncDirection syncDirection;
 	
-	public ShortcutRepairStrategy(OperationalStrategy operationalStrategy) {
+	public ShortcutRepairStrategy(SYNC operationalStrategy) {
 		this.operationalStrategy = operationalStrategy;
 		operationalStrategy.getResourceSet().eAdapters().add(new ECrossReferenceAdapter());		
 		initialize();
@@ -58,7 +59,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	}
 	
 	private boolean noMissingNodes(TGGRuleApplication ra) {
-		return ra.getNodeMappings().keySet().size() == ra.getNodeMappings().values().size();
+		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
 	}
 
 	@Override

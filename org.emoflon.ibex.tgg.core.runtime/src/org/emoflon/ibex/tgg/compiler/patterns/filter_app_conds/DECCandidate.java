@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds;
 
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
 
 import language.TGGRuleNode;
 

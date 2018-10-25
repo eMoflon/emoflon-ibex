@@ -20,9 +20,10 @@ public class MatchContainer implements IMatchContainer {
 
 	private MatchContainer(MatchContainer old) {
 		this.matchToRuleName = cfactory.createObjectToObjectLinkedHashMap();
-		matchToRuleName.putAll(old.matchToRuleName);
+		this.matchToRuleName.putAll(old.matchToRuleName);
 		this.tgg = old.tgg;
-		this.kernelMatches = kernelMatches.clone();
+		this.kernelMatches = cfactory.createObjectSet();
+		this.kernelMatches.addAll(old.kernelMatches);
 	}
 	
 	public MatchContainer(TGG tgg) {
@@ -80,7 +81,7 @@ public class MatchContainer implements IMatchContainer {
 		// Default: do nothing
 	}
 
-	public MatchContainer copy() {
+	public IMatchContainer copy() {
 		return new MatchContainer(this);
 	}
 }
