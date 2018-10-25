@@ -43,6 +43,8 @@ public class IbexOptions {
 		repairAttributes = true;
 		useShortcutRules = false;
 		setIlpSolver(SupportedILPSolver.Sat4J);
+		useEdgePatterns = false;
+		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
 	}
 
 	public IbexOptions debug(boolean debug) {
