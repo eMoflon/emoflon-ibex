@@ -61,7 +61,7 @@ public abstract class BWD_OPT extends OPT {
 	public boolean isPatternRelevantForInterpreter(String patternName) {
 		return patternName.endsWith(PatternSuffixes.BWD_OPT);
 	}
-
+	
 	@Override
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);

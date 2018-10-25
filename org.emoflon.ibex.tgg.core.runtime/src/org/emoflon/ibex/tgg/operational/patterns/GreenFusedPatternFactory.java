@@ -83,11 +83,11 @@ public class GreenFusedPatternFactory extends GreenPatternFactory {
 	}
 	
 	private boolean containedViaName(TGGRuleNode n, Collection<? extends TGGRuleNode> nodes) {
-		return nodes.stream().noneMatch(on -> on.getName().contentEquals(n.getName()));
+		return nodes.stream().anyMatch(on -> on.getName().contentEquals(n.getName()));
 	}
 	
 	private boolean containedViaName(TGGRuleEdge e, Collection<? extends TGGRuleEdge> edges) {
-		return edges.stream().noneMatch(oe -> oe.getName().contentEquals(e.getName()));
+		return edges.stream().anyMatch(oe -> oe.getName().contentEquals(e.getName()));
 	}
 
 	@Override

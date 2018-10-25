@@ -37,4 +37,9 @@ public class CCGreenPattern extends IbexGreenPattern {
 	public Collection<TGGRuleCorr> getCorrNodes() {
 		return factory.getGreenCorrNodesInRule();
 	}
+
+	@Override
+	public Collection<TGGRuleNode> getMarkedContextNodes() {
+		return Collections.emptyList();
+	}
 }

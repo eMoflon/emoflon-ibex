@@ -47,6 +47,6 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 	}
 	
 	private boolean noMissingNodes(TGGRuleApplication ra) {
-		return !ra.getNodeMappings().values().contains(null);
+		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
 	}
 }

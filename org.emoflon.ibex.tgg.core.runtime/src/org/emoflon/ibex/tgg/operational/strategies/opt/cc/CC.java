@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -23,6 +23,7 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 import language.TGGComplementRule;
 import language.TGGRuleCorr;
+import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 
 public abstract class CC extends OPT {
@@ -63,7 +64,7 @@ public abstract class CC extends OPT {
 
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.CC);
+		return patternName.endsWith(PatternSuffixes.CC) || patternName.endsWith(PatternSuffixes.GENForCC);
 	}
 
 	@Override
@@ -122,7 +123,7 @@ public abstract class CC extends OPT {
 		}
 
 		TGGRuleApplication application = (TGGRuleApplication) comatch
-				.get(ConsistencyPattern.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
+				.get(TGGPatternUtil.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
 		application.setAmalgamated(true);
 	}
 
@@ -228,8 +229,8 @@ public abstract class CC extends OPT {
 	}
 
 	@Override
-	public void setIsRuleApplicationFinal(TGGRuleApplication ra) {
-		ra.setFinal(false);
+	public void setIsRuleApplicationFinal(EObject ra) {
+		ra.eSet(RuntimePackage.eINSTANCE.getTGGRuleApplication_Final(), false);
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational.patterns;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.emoflon.ibex.tgg.compiler.patterns.sync.BWDBlackPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 
 import language.TGGRuleCorr;
@@ -58,6 +58,11 @@ public class BWDFusedGreenPattern extends FusedGreenPattern {
 	
 	@Override
 	public void createMarkers(String ruleName, IMatch match) {
-		createMarkers(ruleName, match, BWDBlackPattern::getName);
+		createMarkers(ruleName, match, TGGPatternUtil::getBWDBlackPatternName);
+	}
+
+	@Override
+	public Collection<TGGRuleNode> getMarkedContextNodes() {
+		return factory.getBlackTrgNodesInRule();
 	}
 }

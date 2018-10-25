@@ -44,4 +44,9 @@ public class FWDOptGreenPattern extends IbexGreenPattern {
 	public boolean isToBeIgnored(IMatch match) {
 		return !factory.isComplementRule() && factory.getGreenSrcNodesInRule().isEmpty() && factory.getGreenSrcEdgesInRule().isEmpty();
 	}
+
+	@Override
+	public Collection<TGGRuleNode> getMarkedContextNodes() {
+		return factory.getBlackSrcNodesInRule();
+	}
 }

@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.compiler.defaults;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
-import org.emoflon.ibex.tgg.core.transformation.EditorTGGtoInternalTGG;
+import org.emoflon.ibex.tgg.compiler.transformations.EditorTGGtoInternalTGG;
 import org.emoflon.ibex.tgg.core.transformation.TGGProject;
 import org.emoflon.ibex.tgg.ide.admin.BuilderExtension;
 import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;

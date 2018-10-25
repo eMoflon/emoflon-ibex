@@ -26,9 +26,12 @@ public interface IGreenPattern {
 
 	/** The corr nodes to be created by applying this pattern **/
 	Collection<TGGRuleCorr> getCorrNodes();
-
+	
 	/** All nodes to be marked by applying this pattern **/
 	Collection<TGGRuleNode> getNodesMarkedByPattern();
+
+	/** All context nodes that already have to be marked to apply this pattern **/
+	Collection<TGGRuleNode> getMarkedContextNodes();
 
 	/** All edges marked by applying this pattern **/
 	Collection<TGGRuleEdge> getEdgesMarkedByPattern();

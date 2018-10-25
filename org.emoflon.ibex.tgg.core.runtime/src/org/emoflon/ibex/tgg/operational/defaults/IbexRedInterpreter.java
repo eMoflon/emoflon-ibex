@@ -12,18 +12,18 @@ import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 public class IbexRedInterpreter implements IRedInterpreter {
-	private final OperationalStrategy strategy;
+	private final SYNC strategy;
 	
 	private int numOfDeletedNodes = 0;
 	private int numOfDeletedEdges = 0;
 
-	public IbexRedInterpreter(final OperationalStrategy operationalStrategy) {
+	public IbexRedInterpreter(final SYNC operationalStrategy) {
 		this.strategy = operationalStrategy;
 	}
 
@@ -56,14 +56,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		// Collect created edges to revoke.
 		pattern.getSrcTrgEdgesCreatedByPattern().forEach(e -> {
 			EMFEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
-			strategy.removeCreatedEdge(runtimeEdge);
 			edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
-		});
-
-		// Remove marked edges.
-		pattern.getEdgesMarkedByPattern().forEach(e -> {
-			EMFEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
-			strategy.removeMarkedEdge(runtimeEdge);
 		});
 
 		return edgesToRevoke;
