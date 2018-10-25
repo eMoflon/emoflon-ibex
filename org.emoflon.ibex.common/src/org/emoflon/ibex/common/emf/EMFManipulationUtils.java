@@ -1,14 +1,20 @@
 package org.emoflon.ibex.common.emf;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
 
 /**
  * Utility methods for manipulating EMF models.
@@ -108,9 +114,9 @@ public class EMFManipulationUtils {
 	 */
 	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
 			final Consumer<EObject> danglingNodeAction) {
-		deleteEdges(edgesToDelete, false);
+		deleteEdges(edgesToDelete, danglingNodeAction, false);
+		deleteEdges(edgesToDelete, danglingNodeAction, true);
 		deleteNodes(nodesToDelete, danglingNodeAction);
-		deleteEdges(edgesToDelete, true);
 	}
 
 	/**
@@ -126,9 +132,51 @@ public class EMFManipulationUtils {
 			if (isDanglingNode(node)) {
 				danglingNodeAction.accept(node);
 			}
+			if(!node.eContents().isEmpty())
+				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction);
+//			EcoreUtil.delete(node, false);
+//			delete(node, danglingNodeAction);
 		}
 		EcoreUtil.deleteAll(nodesToDelete, false);
 	}
+	
+	private static void delete(EObject eObject, final Consumer<EObject> danglingNodeAction)
+	  {
+	    EObject rootEObject = EcoreUtil.getRootContainer(eObject);
+	    Resource resource = rootEObject.eResource();
+
+	    Collection<EStructuralFeature.Setting> usages;
+	    if (resource == null)
+	    {
+	      usages = UsageCrossReferencer.find(eObject, rootEObject);
+	    }
+	    else
+	    {
+	      ResourceSet resourceSet = resource.getResourceSet();
+	      if (resourceSet == null)
+	      {
+	        usages = UsageCrossReferencer.find(eObject, resource);
+	      }
+	      else
+	      {
+	        usages = UsageCrossReferencer.find(eObject, resourceSet);
+	      }
+	    }
+
+	    for (EStructuralFeature.Setting setting : usages)
+	    {
+	      if (setting.getEStructuralFeature().isChangeable())
+	      {
+    	    if (isDanglingNode(eObject)) {
+				danglingNodeAction.accept(eObject);
+			}
+	        EcoreUtil.remove(setting, eObject);
+	      }
+	    }
+
+	    //FIXME [Greg] Why doesn't this work?
+	    //EcoreUtil.remove(eObject);
+	  }
 
 	/**
 	 * Deletes the edges whose type has the containment set to the given value.
@@ -138,9 +186,15 @@ public class EMFManipulationUtils {
 	 * @param containment
 	 *            the containment setting
 	 */
-	private static void deleteEdges(final Set<EMFEdge> edgesToDelete, boolean containment) {
+	private static void deleteEdges(final Set<EMFEdge> edgesToDelete, final Consumer<EObject> danglingNodeAction, boolean containment) {
 		for (EMFEdge edge : edgesToDelete) {
 			if (isContainment(edge.getType()) == containment) {
+				if (isDanglingNode(edge.getSource())) {
+					danglingNodeAction.accept(edge.getSource());
+				}
+				if (isDanglingNode(edge.getTarget())) {
+					danglingNodeAction.accept(edge.getTarget());
+				}
 				deleteEdge(edge.getSource(), edge.getTarget(), edge.getType());
 			}
 		}

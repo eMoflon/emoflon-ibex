@@ -50,6 +50,7 @@ import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
+import language.LanguagePackage;
 import language.NAC;
 import language.TGG;
 import language.TGGAttributeConstraint;
@@ -154,7 +155,7 @@ public class EditorTGGtoInternalTGG {
 
 			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule.getSourcePatterns(), DomainType.SRC));
 			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule.getTargetPatterns(), DomainType.TRG));
-			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextRule.getCorrespondencePatterns()));
+			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(tggRule, xtextRule.getCorrespondencePatterns()));
 
 			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule.getNodes()));
 
@@ -198,7 +199,7 @@ public class EditorTGGtoInternalTGG {
 			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getSourcePatterns(), DomainType.SRC));
 			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getTargetPatterns(), DomainType.TRG));
 			tggComplementRule.getNodes()
-					.addAll(createTGGRuleNodesFromCorrOVs(xtextCompRule.getCorrespondencePatterns()));
+					.addAll(createTGGRuleNodesFromCorrOVs(tggComplementRule, xtextCompRule.getCorrespondencePatterns()));
 
 			tggComplementRule.getEdges().addAll(createTGGRuleEdges(tggComplementRule.getNodes()));
 
@@ -341,14 +342,7 @@ public class EditorTGGtoInternalTGG {
 			if (node.getDomainType() == DomainType.SRC || node.getDomainType() == DomainType.TRG) {
 				ObjectVariablePattern ov = (ObjectVariablePattern) tggToXtext.get(node);
 				for (LinkVariablePattern lv : ov.getLinkVariablePatterns()) {
-					TGGRuleEdge tggEdge = tggFactory.createTGGRuleEdge();
-					tggEdge.setType(lv.getType());
-					tggEdge.setSrcNode(node);
-					tggEdge.setTrgNode((TGGRuleNode) xtextToTGG.get(lv.getTarget()));
-					tggEdge.setBindingType(getBindingType(lv.getOp()));
-					tggEdge.setDomainType(node.getDomainType());
-					tggEdge.setName(tggEdge.getSrcNode().getName() + "__" + tggEdge.getType().getName() + "__"
-							+ tggEdge.getTrgNode().getName() + "_eMoflonEdge");
+					TGGRuleEdge tggEdge = createTGGRuleEdge(node, (TGGRuleNode) xtextToTGG.get(lv.getTarget()), lv.getType(), getBindingType(lv.getOp()));
 					map(lv, tggEdge);
 					result.add(tggEdge);
 				}
@@ -358,7 +352,19 @@ public class EditorTGGtoInternalTGG {
 		return result;
 	}
 
-	private Collection<TGGRuleNode> createTGGRuleNodesFromCorrOVs(Collection<CorrVariablePattern> corrOVs) {
+	private TGGRuleEdge createTGGRuleEdge(TGGRuleNode srcNode, TGGRuleNode trgNode, EReference eType, BindingType bType) {
+		TGGRuleEdge tggEdge = tggFactory.createTGGRuleEdge();
+		tggEdge.setType(eType);
+		tggEdge.setSrcNode(srcNode);
+		tggEdge.setTrgNode(trgNode);
+		tggEdge.setBindingType(bType);
+		tggEdge.setDomainType(srcNode.getDomainType());
+		tggEdge.setName(tggEdge.getSrcNode().getName() + "__" + tggEdge.getType().getName() + "__"
+				+ tggEdge.getTrgNode().getName() + "_eMoflonEdge");
+		return tggEdge;
+	}
+
+	private Collection<TGGRuleNode> createTGGRuleNodesFromCorrOVs(TGGRule rule, Collection<CorrVariablePattern> corrOVs) {
 		ArrayList<TGGRuleNode> result = new ArrayList<>();
 		for (CorrVariablePattern cv : corrOVs) {
 			TGGRuleCorr corrNode = tggFactory.createTGGRuleCorr();
@@ -368,6 +374,10 @@ public class EditorTGGtoInternalTGG {
 			corrNode.setDomainType(DomainType.CORR);
 			corrNode.setSource((TGGRuleNode) xtextToTGG.get(cv.getSource()));
 			corrNode.setTarget((TGGRuleNode) xtextToTGG.get(cv.getTarget()));
+
+			rule.getEdges().add(createTGGRuleEdge(corrNode, corrNode.getSource(), (EReference) corrNode.getType().getEStructuralFeature("source"), corrNode.getBindingType()));
+			rule.getEdges().add(createTGGRuleEdge(corrNode, corrNode.getTarget(), (EReference) corrNode.getType().getEStructuralFeature("target"), corrNode.getBindingType()));
+			
 			result.add(corrNode);
 			map(cv, corrNode);
 		}
