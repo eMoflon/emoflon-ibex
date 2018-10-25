@@ -28,6 +28,12 @@ public class MatchContainer {
 		this.matchToRuleName = cfactory.createObjectToObjectLinkedHashMap();
 		this.random = new Random();
 	}
+	
+	private MatchContainer(MatchContainer old) {
+		this.matchToRuleName = cfactory.createObjectToObjectLinkedHashMap();
+		matchToRuleName.putAll(old.matchToRuleName);
+		this.random = new Random();
+	}
 
 	public void addMatch(IMatch match) {
 		matchToRuleName.put(match, match.getRuleName());
@@ -47,6 +53,8 @@ public class MatchContainer {
 	}
 
 	public IMatch getNext() {
+		if(matchToRuleName.isEmpty())
+			return null;
 		return matchToRuleName.keySet().iterator().next();
 	}
 
@@ -55,6 +63,9 @@ public class MatchContainer {
 	}
 
 	public IMatch getNextRandom() {
+		if(matchToRuleName.isEmpty())
+			return null;
+		
 		Iterator<IMatch> it = matchToRuleName.keySet().iterator();
 		int randomIndex = random.nextInt(matchToRuleName.size());
 		for (int count = 0; count < randomIndex; count++) {
@@ -91,5 +102,9 @@ public class MatchContainer {
 		if (isFusedPatternMatch(match.getPatternName()))
 			return match.getPatternName();
 		return matchToRuleName.get(match);
+	}
+	
+	public MatchContainer copy() {
+		return new MatchContainer(this);
 	}
 }

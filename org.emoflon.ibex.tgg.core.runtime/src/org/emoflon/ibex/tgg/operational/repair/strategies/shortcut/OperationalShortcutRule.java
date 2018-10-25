@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +23,8 @@ import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.N
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.SCEMFUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import org.apache.log4j.Logger;
+
 import language.BindingType;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -41,6 +44,8 @@ import language.TGGRuleNode;
  *
  */
 public abstract class OperationalShortcutRule {
+	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
+
 	protected SyncDirection direction;
 	protected ShortcutRule scRule;
 	
@@ -55,10 +60,10 @@ public abstract class OperationalShortcutRule {
 		this.direction = direction;
 
 		this.markedElements = new HashSet<>();
-		this.key2lookup = new Object2ObjectOpenHashMap<>();
-		this.element2nodeCheck = new Object2ObjectOpenHashMap<>();
-		this.key2edgeCheck = new Object2ObjectOpenHashMap<>();
-		this.key2nacNodeCheck= new Object2ObjectOpenHashMap<>();
+		this.key2lookup = cfactory.createObjectToObjectHashMap();
+		this.element2nodeCheck = cfactory.createObjectToObjectHashMap();
+		this.key2edgeCheck = cfactory.createObjectToObjectHashMap();
+		this.key2nacNodeCheck= cfactory.createObjectToObjectHashMap();
 	}
 
 	abstract protected void operationalize();
@@ -80,7 +85,10 @@ public abstract class OperationalShortcutRule {
 		while(!uncheckedNodes.isEmpty()) {
 			Collection<SearchKey> checkedSearchKeys = filterAndSortKeys(uncheckedSearchKeys, uncheckedNodes);
 			if(checkedSearchKeys.isEmpty()) {
-				throw new RuntimeException("Searchplan could not be generated for OperationalShortcutRule - " + scRule);
+				// TODO lfritsche: clear this up
+//				throw new RuntimeException("Searchplan could not be generated for OperationalShortcutRule - " + scRule);
+				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + scRule.getName());
+				return null;
 			}
 			
 			SearchKey key = checkedSearchKeys.iterator().next();
@@ -273,5 +281,9 @@ public abstract class OperationalShortcutRule {
 
 	public Map<SearchKey, Lookup> getKey2singLookup() {
 		return key2lookup;
+	}
+	
+	public String getName() {
+		return scRule.getSourceRule().getName() + "_OSC_" + scRule.getTargetRule().getName();
 	}
 }

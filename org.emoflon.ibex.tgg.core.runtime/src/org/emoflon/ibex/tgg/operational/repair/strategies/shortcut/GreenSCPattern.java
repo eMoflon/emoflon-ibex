@@ -20,12 +20,12 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.BindingType;
 import language.DomainType;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeExpression;
+import language.TGGParamValue;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.basic.expressions.TGGAttributeExpression;
-import language.basic.expressions.TGGParamValue;
-import language.csp.TGGAttributeConstraint;
 import runtime.TGGRuleApplication;
 
 /**

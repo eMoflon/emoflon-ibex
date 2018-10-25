@@ -29,6 +29,7 @@ import language.TGGLiteralExpression;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import runtime.RuntimePackage;
 
 /**
  * @author leblebici Util class for creating EObjects, Edges, and
@@ -37,6 +38,9 @@ import language.TGGRuleNode;
 public class IbexGreenInterpreter implements IGreenInterpreter {
 	private static final Logger logger = Logger.getLogger(IbexGreenInterpreter.class);
 	
+	
+	private int numOfCreatedNodes = 0;
+	private int numOfCreatedEdges= 0;
 	private OperationalStrategy operationalStrategy;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
@@ -49,6 +53,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	public Collection<EMFEdge> createEdges(IMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
+		numOfCreatedEdges += greenEdges.stream().filter(e -> !e.getSrcNode().getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).count();
 		Collection<EMFEdge> result = new ArrayList<>();
 		for (TGGRuleEdge e : greenEdges) {
 			EObject src = (EObject) comatch.get(e.getSrcNode().getName());
@@ -72,6 +77,8 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
+		numOfCreatedNodes++;
+		
 		EObject newObj = EcoreUtil.create(node.getType());
 		handlePlacementInResource(node, resource, newObj);
 
@@ -130,6 +137,8 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private EObject createCorr(IMatch comatch, TGGRuleNode node, Object src, Object trg, Resource corrR) {
+		numOfCreatedNodes++;
+		
 		EObject corr = createNode(comatch, node, corrR);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
@@ -193,5 +202,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	protected boolean allContextElementsAlreadyProcessed(IMatch match, IGreenPattern greenPattern, String ruleName) {
 		return operationalStrategy.allEdgesAlreadyProcessed(greenPattern.getMarkedContextEdges(), match);
+	}
+
+	@Override
+	public int getNumOfCreatedElements() {
+		return numOfCreatedNodes + numOfCreatedEdges;
 	}
 }

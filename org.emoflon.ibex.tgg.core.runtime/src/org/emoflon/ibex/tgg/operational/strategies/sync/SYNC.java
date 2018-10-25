@@ -3,6 +3,8 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -17,14 +19,18 @@ import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
+import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
 
 import language.TGGComplementRule;
+import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 public abstract class SYNC extends OperationalStrategy {
@@ -35,7 +41,7 @@ public abstract class SYNC extends OperationalStrategy {
 	protected int idCounter = 0;
 
 	// Repair
-	protected AbstractRepairStrategy repairStrategy;
+	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
 	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = CollectionFactory.cfactory
 			.createObjectToObjectHashMap();
 
@@ -75,27 +81,54 @@ public abstract class SYNC extends OperationalStrategy {
 		repair();
 		rollBack();
 		translate();
+		
+		if(options.debug()) {
+			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream().filter(rStr -> rStr instanceof ShortcutRepairStrategy).map(rStr -> (ShortcutRepairStrategy) rStr).findFirst();
+			logger.info("Created elements so far: " + greenInterpreter.getNumOfCreatedElements());
+			logger.info("Deleted elements so far: " + (redInterpreter.getNumOfDeletedElements() + (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
+		}
 	}
 
 	protected void repair() {
 		initializeRepairStrategy(options);
 
-		do
-			blackInterpreter.updateMatches();
-		while (repairOneBrokenMatch());
+		// TODO loop this together with roll back
+		translate();
+		repairBrokenMatches();
+		blackInterpreter.updateMatches();
 	}
 
 	protected void initializeRepairStrategy(IbexOptions options) {
+		if(!repairStrategies.isEmpty())
+			return;
+		
+		if (options.repairUsingShortcutRules()) {
+			repairStrategies.add(new ShortcutRepairStrategy(this));
+		}
 		if (options.repairAttributes()) {
-			repairStrategy = new AttributeRepairStrategy(this);
+			repairStrategies.add(new AttributeRepairStrategy(this));
 		}
 	}
 
-	protected boolean repairOneBrokenMatch() {
-		return repairStrategy//
-				.chooseOneMatch(brokenRuleApplications)//
-				.map(repairStrategy::repair)//
-				.orElse(false);
+	protected boolean repairBrokenMatches() {
+		Collection<IMatch> alreadyProcessed = cfactory.createObjectSet();
+		for(AbstractRepairStrategy rStrategy : repairStrategies) {
+			for (IMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
+				if(alreadyProcessed.contains(repairCandidate))
+					continue;
+			
+				IMatch repairedMatch = rStrategy.repair(repairCandidate);
+				if(repairedMatch != null) {
+					alreadyProcessed.add(repairCandidate);
+					if(repairCandidate != repairedMatch) {
+						TGGRuleApplication ra = (TGGRuleApplication) repairedMatch.get(ConsistencyPattern.getProtocolNodeName(repairedMatch.getRuleName()));
+						brokenRuleApplications.put(ra, repairedMatch);
+						alreadyProcessed.add(repairedMatch);
+					}
+				}
+			}
+		}
+		return !alreadyProcessed.isEmpty();
 	}
 
 	protected void translate() {
@@ -140,6 +173,16 @@ public abstract class SYNC extends OperationalStrategy {
 		strategy = new BWD_Strategy();
 		run();
 	}
+	
+	@Override
+	public void terminate() throws IOException {
+		super.terminate();
+		if(options.debug()) {
+			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream().filter(rStr -> rStr instanceof ShortcutRepairStrategy).map(rStr -> (ShortcutRepairStrategy) rStr).findFirst();
+			logger.info("Total created elements: " + greenInterpreter.getNumOfCreatedElements());
+			logger.info("Total deleted elements: " + (redInterpreter.getNumOfDeletedElements() + (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
+		}
+	}
 
 	/***** Match and pattern management *****/
 
@@ -148,13 +191,11 @@ public abstract class SYNC extends OperationalStrategy {
 		if (super.addConsistencyMatch(match)) {
 			TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 			if (brokenRuleApplications.containsKey(ruleAppNode)) {
-				logger.debug(match.getPatternName() + " appears to be fixed.");
+				logger.info(match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
 				brokenRuleApplications.remove(ruleAppNode);
 			}
-
 			return true;
 		}
-
 		return false;
 	}
 
@@ -215,6 +256,47 @@ public abstract class SYNC extends OperationalStrategy {
 	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, IMatch m) {
 		return strategy.determineCSP(factory, m);
 	}
+	
+	@Override
+	protected IMatch chooseOneMatch() {
+		return updatePolicy.chooseOneMatch(createImmutableMatchContainer());
+	}
+
+	private ImmutableMatchContainer createImmutableMatchContainer() {
+		if(brokenRuleApplications.isEmpty())
+			return new ImmutableMatchContainer(operationalMatchContainer);
+
+		Map<String, Collection<String>> rule2greenParam = new HashMap<>();
+
+		for(String ruleName : factories.keySet()) {
+			Collection<String> greenParamNames = new ArrayList<>();
+			greenParamNames.addAll(factories.get(ruleName).getGreenSrcNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
+			greenParamNames.addAll(factories.get(ruleName).getGreenTrgNodesInRule().stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
+			rule2greenParam.put(ruleName, greenParamNames);
+		}
+		
+		Set<Object> brokenCandidates = brokenRuleApplications.values()
+				.stream()
+				.flatMap(c -> c.getParameterNames()
+						.stream()
+						.filter(p -> rule2greenParam.get(PatternSuffixes.removeSuffix(c.getPatternName())).contains(p))
+						.map(p -> c.get(p)))
+				.collect(Collectors.toSet());
+		
+		MatchContainer filteredContainer = operationalMatchContainer.copy();
+		
+		Collection<IMatch> unavailableMatches = operationalMatchContainer.getMatches()
+				.stream()
+				.filter(m -> m.getParameterNames()
+						.stream()
+						.map(p -> m.get(p))
+						.anyMatch(e -> brokenCandidates.contains(e)))
+				.collect(Collectors.toList());
+		
+		filteredContainer.removeMatches(unavailableMatches);
+		return new ImmutableMatchContainer(filteredContainer);
+	}
+
 
 	/***** Multi-Amalgamation *****/
 
@@ -340,5 +422,9 @@ public abstract class SYNC extends OperationalStrategy {
 				.collect(Collectors.toSet());
 
 		return allComplementRuleMatches;
+	}
+	
+	public SYNC_Strategy getStrategy() {
+		return strategy;
 	}
 }

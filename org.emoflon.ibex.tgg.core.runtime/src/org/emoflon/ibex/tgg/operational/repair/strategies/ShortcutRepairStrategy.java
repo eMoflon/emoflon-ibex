@@ -1,10 +1,12 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.ShortcutPatternTool;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
@@ -12,6 +14,7 @@ import org.emoflon.ibex.tgg.operational.repair.strategies.util.OverlapUtil;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
 
 import runtime.TGGRuleApplication;
 
@@ -24,12 +27,14 @@ import runtime.TGGRuleApplication;
  * @author lfritsche
  *
  */
-public class ShortcutRepairStrategy extends AbstractRepairStrategy{
+public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
+	protected final static Logger logger = Logger.getLogger(AbstractRepairStrategy.class);
+	
 	private OperationalStrategy operationalStrategy;
 	private ShortcutPatternTool scTool;
 	private SyncDirection syncDirection;
-
+	
 	public ShortcutRepairStrategy(OperationalStrategy operationalStrategy) {
 		this.operationalStrategy = operationalStrategy;
 		operationalStrategy.getResourceSet().eAdapters().add(new ECrossReferenceAdapter());		
@@ -44,14 +49,25 @@ public class ShortcutRepairStrategy extends AbstractRepairStrategy{
 	}
 	
 	@Override
-	protected boolean isCandidate(TGGRuleApplication ra, IMatch iMatch) {
+	public Collection<IMatch> chooseMatches(Map<TGGRuleApplication, IMatch> brokenRuleApplications) {
+		return brokenRuleApplications.keySet()//
+				.stream()//
+				.filter(this::noMissingNodes)//
+				.map(brokenRuleApplications::get)//
+				.collect(Collectors.toList());
+	}
+	
+	private boolean noMissingNodes(TGGRuleApplication ra) {
 		return ra.getNodeMappings().keySet().size() == ra.getNodeMappings().values().size();
 	}
 
 	@Override
-	protected IMatch repair(TGGRuleApplication ra, IMatch iMatch) {
+	public IMatch repair(IMatch repairCandiate) {
 		updateDirection();
-		return scTool.processBrokenMatch(syncDirection, iMatch);
+		IMatch repairedMatch = scTool.processBrokenMatch(syncDirection, repairCandiate);
+		if(repairedMatch != null)
+			logger.info("Repaired: " + repairCandiate.getPatternName() + "->" + repairedMatch.getPatternName() + " (" + repairCandiate.hashCode() + "->" + repairedMatch.hashCode() + ")");
+		return repairedMatch;
 	}
 
 	private void updateDirection() {
@@ -59,5 +75,9 @@ public class ShortcutRepairStrategy extends AbstractRepairStrategy{
 			syncDirection = ((SYNC) operationalStrategy).getStrategy() instanceof FWD_Strategy ? SyncDirection.FORWARD : SyncDirection.BACKWARD;
 		else
 			syncDirection = SyncDirection.UNDEFINED;
+	}
+	
+	public int countDeletedElements() {
+		return scTool.countDeletedElements();
 	}
 }

@@ -12,6 +12,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.DECCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.FilterACHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.filter_app_conds.ForbidAllFilterACsPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.sync.ConsistencyPattern;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGOverlap;
@@ -107,17 +108,17 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 		TGGOverlap overlap = scRule.getOverlap();
 		Stream<TGGRuleNode> createdNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.creations), dType).stream();
 		Stream<TGGRuleNode> deletedNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.deletions), dType).stream();
-		Stream<TGGRuleNode> sourceRuleUnboundContextNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.unboundContext), dType).stream().filter(n -> scRule.getSourceRule().getNodes().contains(n));
-		Stream<TGGRuleNode> targetRuleUnboundContextNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.unboundContext), dType).stream().filter(n -> scRule.getTargetRule().getNodes().contains(n));
+		Stream<TGGRuleNode> sourceRuleUnboundContextNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.unboundSrcContext), dType).stream().filter(n -> scRule.getSourceRule().getNodes().contains(n));
+		Stream<TGGRuleNode> targetRuleUnboundContextNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.unboundTrgContext), dType).stream().filter(n -> scRule.getTargetRule().getNodes().contains(n));
 		Stream<TGGRuleNode> createdMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CREATE).stream();
 		Stream<TGGRuleNode> contextMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CONTEXT).stream();
 
-		createdNodes = createdNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n)).filter(n -> scRule.getNodes().contains(n));
-		deletedNodes = deletedNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n)).filter(n -> scRule.getNodes().contains(n));
-		sourceRuleUnboundContextNodes = sourceRuleUnboundContextNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n)).filter(n -> scRule.getNodes().contains(n));
-		targetRuleUnboundContextNodes = targetRuleUnboundContextNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n)).filter(n -> scRule.getNodes().contains(n));
-		createdMappingNodeKeys = createdMappingNodeKeys.map(n -> scRule.mapRuleNodeToSCRuleNode(n)).filter(n -> scRule.getNodes().contains(n));
-		contextMappingNodeKeys = contextMappingNodeKeys.map(n -> scRule.mapRuleNodeToSCRuleNode(n)).filter(n -> scRule.getNodes().contains(n));
+		deletedNodes = deletedNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE)).filter(n -> scRule.getNodes().contains(n));
+		createdNodes = createdNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET)).filter(n -> scRule.getNodes().contains(n));
+		sourceRuleUnboundContextNodes = sourceRuleUnboundContextNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE)).filter(n -> scRule.getNodes().contains(n));
+		targetRuleUnboundContextNodes = targetRuleUnboundContextNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET)).filter(n -> scRule.getNodes().contains(n));
+		createdMappingNodeKeys = createdMappingNodeKeys.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE)).filter(n -> scRule.getNodes().contains(n));
+		contextMappingNodeKeys = contextMappingNodeKeys.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE)).filter(n -> scRule.getNodes().contains(n));
 
 		if(createdRef != null) {
 			createdNodes.forEach(n -> createRuleApplicationEdge(createdRef, raNode, n, BindingType.CREATE));
@@ -149,7 +150,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 		
 		Collection<DECCandidate> decCandidates = new ForbidAllFilterACsPattern(domain, bFac).getDECCandidates(targetRule, domain);
 		for(DECCandidate dec : decCandidates) {
-			TGGRuleNode decNode = scRule.mapRuleNodeToSCRuleNode(dec.node);
+			TGGRuleNode decNode = scRule.mapRuleNodeToSCRuleNode(dec.node, SCInputRule.TARGET);
 			TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
 			edge.setType(dec.edgeType);
 			edge.setBindingType(BindingType.NEGATIVE);

@@ -40,7 +40,10 @@ public class LocalPatternSearch {
 	protected LocalPatternSearch(OperationalShortcutRule osr) {
 		this.osr = osr;
 		this.searchPlan = osr.createSearchPlan();
-		buildComponents();
+
+		// TODO lfritsche: clear up
+		if(searchPlan != null)
+			buildComponents();
 	}
 	
 	private void buildComponents() {

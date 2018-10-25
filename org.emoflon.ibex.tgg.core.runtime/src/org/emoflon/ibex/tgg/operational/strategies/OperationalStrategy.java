@@ -70,7 +70,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected Map<TGGRuleApplication, IMatch> consistencyMatches;
 	protected Set<EMFEdge> markedAndCreatedEdges;
 	private boolean domainsHaveNoSharedTypes;
-	private Map<String, IGreenPatternFactory> factories;
+	protected Map<String, IGreenPatternFactory> factories;
 
 	// Configuration
 	protected IUpdatePolicy updatePolicy;
@@ -158,7 +158,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return res;
 	}
 
-	protected Resource createResource(String workspaceRelativePath) {
+	public Resource createResource(String workspaceRelativePath) {
 		URI uri = URI.createURI(workspaceRelativePath);
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
@@ -291,6 +291,9 @@ public abstract class OperationalStrategy implements IMatchObserver {
 			return false;
 
 		IMatch match = chooseOneMatch();
+		if(match == null)
+			return false;
+		
 		String ruleName = operationalMatchContainer.getRuleName(match);
 
 		Optional<IMatch> result = processOperationalRuleMatch(ruleName, match);
@@ -381,6 +384,10 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
 		this.greenInterpreter = greenInterpreter;
+	}
+	
+	public IGreenInterpreter getGreenInterpreter() {
+		return greenInterpreter;
 	}
 
 	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
