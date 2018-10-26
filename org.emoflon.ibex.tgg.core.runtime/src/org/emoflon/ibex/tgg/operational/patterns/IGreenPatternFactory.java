@@ -28,6 +28,8 @@ public interface IGreenPatternFactory {
 	
 	public Collection<TGGRuleCorr> getGreenCorrNodesInRule();
 	
+	public Collection<TGGRuleEdge> getGreenCorrEdgesInRule();
+	
 	public Collection<TGGRuleEdge> getGreenSrcEdgesInRule();
 	
 	public Collection<TGGRuleEdge> getGreenTrgEdgesInRule();
@@ -49,4 +51,5 @@ public interface IGreenPatternFactory {
 	public List<TGGAttributeConstraint> getAttributeConstraints();
 
 	public List<TGGParamValue> getAttributeCSPVariables();
+
 }

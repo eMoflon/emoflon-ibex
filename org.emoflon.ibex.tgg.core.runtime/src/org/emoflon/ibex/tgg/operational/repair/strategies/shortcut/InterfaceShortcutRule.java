@@ -5,6 +5,7 @@ import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getMarkerRefName;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getMarkerTypeName;
 
 import java.util.Collection;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,7 +27,6 @@ import language.LanguageFactory;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
 
 /**
  * This class implements a special type of operationalized shortcut rules.
@@ -84,70 +84,80 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 			break;
 		default: throw new RuntimeException("Shortcut Rules can only be operationalized for FORWARD and BACKWARD operations");
 		}
-		createRuleApplicationNode(scRule.getTargetRule());
+		createRuleApplicationNode();
 	}
 	
-	private void createRuleApplicationNode(TGGRule targetRule) {
-		TGGRuleNode raNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		raNode.setName(getProtocolNodeName(scRule.getSourceRule().getName()));
-		EClass type = (EClass) strategy.getOptions().getCorrMetamodel().getEClassifier(getMarkerTypeName(targetRule.getName()));
-		raNode.setType(type);
-		raNode.setBindingType(BindingType.CONTEXT);
+	private void createRuleApplicationNode() {
+		TGGRuleNode oldRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
+		oldRaNode.setName(getProtocolNodeName(scRule.getSourceRule().getName()));
+		EClass oldRaType = (EClass) strategy.getOptions().getCorrMetamodel().getEClassifier(getMarkerTypeName(this.scRule.getSourceRule().getName()));
+		oldRaNode.setType(oldRaType);
+		oldRaNode.setBindingType(BindingType.DELETE);
 
-
-		Function<TGGRuleNode, EReference>  createSrcRef = n -> getProtocolRef(raNode, BindingType.CREATE, DomainType.SRC, n);
-		Function<TGGRuleNode, EReference>  createCorrRef = n -> getProtocolRef(raNode, BindingType.CREATE, DomainType.CORR, n);
-		Function<TGGRuleNode, EReference>  createTrgRef = n -> getProtocolRef(raNode, BindingType.CREATE, DomainType.TRG, n);
-		Function<TGGRuleNode, EReference>  contextSrcRef = n -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.SRC, n);
-		Function<TGGRuleNode, EReference>  contextTrgRef = n -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.TRG, n);
-
-		createRuleApplicationLink(createSrcRef, contextSrcRef, raNode, DomainType.SRC);
-		createRuleApplicationLink(createCorrRef, null, raNode, DomainType.CORR);
-		createRuleApplicationLink(createTrgRef, contextTrgRef, raNode, DomainType.TRG);
+		TGGRuleNode newRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
+		newRaNode.setName(getProtocolNodeName(scRule.getTargetRule().getName()));
+		EClass newRaType = (EClass) strategy.getOptions().getCorrMetamodel().getEClassifier(getMarkerTypeName(this.scRule.getTargetRule().getName()));
+		newRaNode.setType(newRaType);
+		newRaNode.setBindingType(BindingType.CREATE);
 		
-		scRule.getNodes().add(raNode);
+		BiFunction<TGGRuleNode, TGGRuleNode, EReference>  createSrcRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CREATE, DomainType.SRC, n);
+		BiFunction<TGGRuleNode, TGGRuleNode, EReference>  createCorrRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CREATE, DomainType.CORR, n);
+		BiFunction<TGGRuleNode, TGGRuleNode, EReference>  createTrgRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CREATE, DomainType.TRG, n);
+		BiFunction<TGGRuleNode, TGGRuleNode, EReference>  contextSrcRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.SRC, n);
+		BiFunction<TGGRuleNode, TGGRuleNode, EReference>  contextCorrRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.CORR, n);
+		BiFunction<TGGRuleNode, TGGRuleNode, EReference>  contextTrgRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.TRG, n);
+
+		createRuleApplicationLink(createSrcRef, contextSrcRef, oldRaNode, newRaNode, DomainType.SRC);
+		createRuleApplicationLink(createCorrRef, contextCorrRef, oldRaNode, newRaNode, DomainType.CORR);
+		createRuleApplicationLink(createTrgRef, contextTrgRef, oldRaNode, newRaNode, DomainType.TRG);
+		
+		scRule.getNodes().add(oldRaNode);
+		scRule.getNodes().add(newRaNode);
 	}
 	
 	private EReference getProtocolRef(TGGRuleNode protocolNode, BindingType bType, DomainType dType, TGGRuleNode node) {
 		return (EReference) protocolNode.getType().getEStructuralFeature(getMarkerRefName(bType, dType, node.getName()));
 	}
 	
-	private void createRuleApplicationLink(Function<TGGRuleNode, EReference> createdRef, Function<TGGRuleNode, EReference> contextRef, TGGRuleNode raNode, DomainType dType) {
+	private void createRuleApplicationLink(BiFunction<TGGRuleNode, TGGRuleNode, EReference> createdRef, BiFunction<TGGRuleNode, TGGRuleNode, EReference> contextRef, TGGRuleNode oldRaNode, TGGRuleNode newRaNode, DomainType dType) {
 		TGGOverlap overlap = scRule.getOverlap();
 		Stream<TGGRuleNode> createdNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.creations), dType).stream();
 		Stream<TGGRuleNode> deletedNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.deletions), dType).stream();
 		Stream<TGGRuleNode> sourceRuleUnboundContextNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.unboundSrcContext), dType).stream().filter(n -> scRule.getSourceRule().getNodes().contains(n));
 		Stream<TGGRuleNode> targetRuleUnboundContextNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.unboundTrgContext), dType).stream().filter(n -> scRule.getTargetRule().getNodes().contains(n));
-		Stream<TGGRuleNode> createdMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CREATE).stream();
-		Stream<TGGRuleNode> contextMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CONTEXT).stream();
+		Stream<TGGRuleNode> sourceRuleCreatedMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CREATE).stream();
+		Stream<TGGRuleNode> sourceRuleContextMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CONTEXT).stream();
+		Stream<TGGRuleNode> targetRuleCreatedMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.values()), dType, BindingType.CREATE).stream();
+		Stream<TGGRuleNode> targetRuleContextMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.values()), dType, BindingType.CONTEXT).stream();
 
-		deletedNodes = deletedNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE)).filter(n -> scRule.getNodes().contains(n));
-		createdNodes = createdNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET)).filter(n -> scRule.getNodes().contains(n));
-		sourceRuleUnboundContextNodes = sourceRuleUnboundContextNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE)).filter(n -> scRule.getNodes().contains(n));
-		targetRuleUnboundContextNodes = targetRuleUnboundContextNodes.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET)).filter(n -> scRule.getNodes().contains(n));
-		createdMappingNodeKeys = createdMappingNodeKeys.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE)).filter(n -> scRule.getNodes().contains(n));
-		contextMappingNodeKeys = contextMappingNodeKeys.map(n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE)).filter(n -> scRule.getNodes().contains(n));
-
+		Function<TGGRuleNode, TGGRuleNode> srcToSCNode = n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE);
+		Function<TGGRuleNode, TGGRuleNode> trgToSCNode = n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET);
+		
 		if(createdRef != null) {
-			createdNodes.forEach(n -> createRuleApplicationEdge(createdRef.apply(n), raNode, n, BindingType.CREATE));
-			deletedNodes.forEach(n -> createRuleApplicationEdge(createdRef.apply(n), raNode, n, BindingType.DELETE));
-			createdMappingNodeKeys.forEach(n -> createRuleApplicationEdge(createdRef.apply(n), raNode, n, BindingType.CONTEXT));
+			deletedNodes.forEach(n -> createRuleApplicationEdge(createdRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
+			createdNodes.forEach(n -> createRuleApplicationEdge(createdRef.apply(newRaNode, n), newRaNode, n, BindingType.CREATE, trgToSCNode.apply(n)));
+			sourceRuleCreatedMappingNodeKeys.forEach(n -> createRuleApplicationEdge(createdRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
+			targetRuleCreatedMappingNodeKeys.forEach(n -> createRuleApplicationEdge(createdRef.apply(newRaNode, n), newRaNode, n, BindingType.CREATE, trgToSCNode.apply(n)));
 		}
 		if(contextRef != null) {
-			sourceRuleUnboundContextNodes.forEach(n -> createRuleApplicationEdge(contextRef.apply(n), raNode, n, BindingType.DELETE));
-			targetRuleUnboundContextNodes.forEach(n -> createRuleApplicationEdge(contextRef.apply(n), raNode, n, BindingType.CREATE));
-			contextMappingNodeKeys.forEach(n -> createRuleApplicationEdge(contextRef.apply(n), raNode, n, BindingType.CONTEXT));
+			sourceRuleUnboundContextNodes.forEach(n -> createRuleApplicationEdge(contextRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
+			targetRuleUnboundContextNodes.forEach(n -> createRuleApplicationEdge(contextRef.apply(newRaNode, n), newRaNode, n, BindingType.CREATE, trgToSCNode.apply(n)));
+			sourceRuleContextMappingNodeKeys.forEach(n -> createRuleApplicationEdge(contextRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
+			targetRuleContextMappingNodeKeys.forEach(n -> createRuleApplicationEdge(contextRef.apply(newRaNode, n), newRaNode, n, BindingType.CREATE, trgToSCNode.apply(n)));
 		}
 	}
 	
-	private void createRuleApplicationEdge(EReference ref, TGGRuleNode raNode, TGGRuleNode targetNode, BindingType bType) {
+	private void createRuleApplicationEdge(EReference ref, TGGRuleNode raNode, TGGRuleNode node, BindingType bType, TGGRuleNode scNode) {
+		if(!scRule.getNodes().contains(scNode))
+			return;
+		
 		TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
-		edge.setName(raNode.getName() + "__" + ref.getName() + "__" + targetNode.getName());
+		edge.setName(raNode.getName() + "__" + ref.getName() + "__" + scNode.getName());
 		edge.setType(ref);
 		edge.setBindingType(bType);
-		edge.setDomainType(targetNode.getDomainType());
+		edge.setDomainType(node.getDomainType());
 		edge.setSrcNode(raNode);
-		edge.setTrgNode(targetNode);
+		edge.setTrgNode(scNode);
 		
 		scRule.getEdges().add(edge);
 	}

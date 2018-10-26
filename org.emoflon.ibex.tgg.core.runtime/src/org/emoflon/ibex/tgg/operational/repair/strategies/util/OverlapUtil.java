@@ -5,7 +5,6 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
@@ -76,6 +76,7 @@ public class OverlapUtil {
 	}
 
 	public Collection<ShortcutRule> calculateShortcutRules(TGG tgg) {
+		// create copy for tgg since we have to enrich each rule with corr edges
 		calculateOverlaps(tgg);
 		return extractShortcutsFromOverlaps();
 	}
@@ -107,33 +108,6 @@ public class OverlapUtil {
 			}
 		}
 		overlaps.removeIf(o -> !containsBothDomains(o));
-	}
-	
-	private TGGRule copy(TGGRule rule) {
-		Collection<String> linkNames = new HashSet<>();
-		TGGRule newRule = EcoreUtil.copy(rule);
-		Set<TGGRuleEdge> links = rule.getNodes().stream()
-				.filter(n -> n instanceof TGGRuleCorr)
-				.map(c -> (TGGRuleCorr) c)
-				.flatMap(c -> c.getOutgoingEdges().stream())
-				.collect(Collectors.toSet());
-		
-		for(TGGRuleEdge edge : links) {
-			TGGRuleEdge newEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
-			newEdge.setName(edge.getSrcNode().getName() + "_" + edge.getType().getName() + "_" + edge.getTrgNode().getName());
-			if(linkNames.contains(newEdge.getName())) 
-				continue;
-			
-			linkNames.add(newEdge.getName());
-			newEdge.setType(edge.getType());
-			newEdge.setBindingType(edge.getBindingType());
-			newEdge.setDomainType(edge.getDomainType());
-			newEdge.setSrcNode(newRule.getNodes().stream().filter(n -> n.getName().equals(edge.getSrcNode().getName())).findFirst().get());
-			newEdge.setTrgNode(newRule.getNodes().stream().filter(n -> n.getName().equals(edge.getTrgNode().getName())).findFirst().get());
-			newEdge.getSrcNode().getOutgoingEdges().add(newEdge);
-		}
-		
-		return newRule;
 	}
 	
 	private boolean containsBothDomains(TGGOverlap overlap) {
@@ -238,9 +212,14 @@ public class OverlapUtil {
 
 //		sourceRule.getNodes().stream().flatMap(n -> n.getOutgoingEdges().stream()).forEach(e -> sourceEdgeMap.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__"  + e.getTrgNode().getName(), e));
 //		targetRule.getNodes().stream().flatMap(n -> n.getOutgoingEdges().stream()).forEach(e -> targetEdgeMap.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__"  + e.getTrgNode().getName(), e));
+
+		createAndRegisterCorrEdges(sourceRule);
+		createAndRegisterCorrEdges(targetRule);
+		
 		
 		sourceRule.getEdges().forEach(e -> sourceEdgeMap.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__"  + e.getTrgNode().getName(), e));
 		targetRule.getEdges().forEach(e -> targetEdgeMap.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__"  + e.getTrgNode().getName(), e));
+		
 		
 		for (TGGRuleEdge sourceEdge : sourceEdgeMap.values()) {
 			for (TGGRuleEdge targetEdge : targetEdgeMap.values()) {
@@ -266,6 +245,35 @@ public class OverlapUtil {
 			}
 		}
 		return candidates;
+	}
+
+	private void createAndRegisterCorrEdges(TGGRule rule) {
+		Collection<TGGRuleCorr> corrs = rule.getNodes()
+				.stream()
+				.filter(n -> n instanceof TGGRuleCorr)
+				.map(n -> (TGGRuleCorr) n)
+				.collect(Collectors.toList());
+		
+		for (TGGRuleCorr corr : corrs) {
+			TGGRuleEdge incomingEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+			incomingEdge.setType((EReference) corr.getType().getEStructuralFeature("source"));
+			incomingEdge.setDomainType(corr.getDomainType());
+			incomingEdge.setBindingType(corr.getBindingType());
+			incomingEdge.setSrcNode(corr);
+			incomingEdge.setTrgNode(corr.getSource());
+			incomingEdge.setName(incomingEdge.getSrcNode().getName() + "__" + incomingEdge.getType().getName() + "__"  + incomingEdge.getTrgNode().getName());
+			
+			TGGRuleEdge outgoingEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+			outgoingEdge.setType((EReference) corr.getType().getEStructuralFeature("target"));
+			outgoingEdge.setDomainType(corr.getDomainType());
+			outgoingEdge.setBindingType(corr.getBindingType());
+			outgoingEdge.setSrcNode(corr);
+			outgoingEdge.setTrgNode(corr.getTarget());
+			outgoingEdge.setName(outgoingEdge.getSrcNode().getName() + "__" + outgoingEdge.getType().getName() + "__"  + outgoingEdge.getTrgNode().getName());
+			
+			rule.getEdges().add(incomingEdge);
+			rule.getEdges().add(outgoingEdge);
+		}
 	}
 
 	private int[] createILPProblem(TGGRule sourceRule, TGGRule targetRule) {

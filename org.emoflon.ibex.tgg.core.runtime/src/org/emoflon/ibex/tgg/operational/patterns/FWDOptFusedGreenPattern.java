@@ -70,4 +70,9 @@ public class FWDOptFusedGreenPattern extends FusedGreenPattern {
 	public Collection<TGGRuleNode> getMarkedContextNodes() {
 		return factory.getBlackSrcNodesInRule();
 	}
+	
+	@Override
+	public Collection<TGGRuleEdge> getCorrEdges() {
+		return factory.getGreenCorrEdgesInRule();
+	}
 }

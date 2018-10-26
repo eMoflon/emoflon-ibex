@@ -170,4 +170,9 @@ public class GreenSCPattern implements IGreenPattern {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Collection<TGGRuleEdge> getCorrEdges() {
+		return TGGCollectionUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.CORR, BindingType.CREATE);
+	}
 }

@@ -187,6 +187,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		cspContainer.applyCSPValues(comatch);
 
 		createCorrs(comatch, greenPattern.getCorrNodes(), operationalStrategy.getCorrResource());
+		createEdges(comatch, greenPattern.getCorrEdges(), true);
 
 		return Optional.of(comatch);
 	}

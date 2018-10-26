@@ -38,6 +38,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	protected Collection<TGGRuleNode> greenSrcNodesInRule = new ArrayList<>();
 	protected Collection<TGGRuleNode> greenTrgNodesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleCorr> greenCorrNodesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> greenCorrEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> greenSrcEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> greenTrgEdgesInRule = new ArrayList<>();;
 
@@ -61,6 +62,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 		greenSrcEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.SRC)));
 		greenTrgEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.TRG)));
+		greenCorrEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.CORR)));
 
 		blackSrcNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.SRC));
 		blackTrgNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.TRG));
@@ -200,6 +202,11 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	@Override
 	public Collection<TGGRuleCorr> getGreenCorrNodesInRule() {
 		return greenCorrNodesInRule;
+	}
+
+	@Override
+	public Collection<TGGRuleEdge> getGreenCorrEdgesInRule() {
+		return greenCorrEdgesInRule;
 	}
 
 	@Override
