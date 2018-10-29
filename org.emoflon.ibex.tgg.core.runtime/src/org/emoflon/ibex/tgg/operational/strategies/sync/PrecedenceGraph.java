@@ -19,6 +19,7 @@ public class PrecedenceGraph implements IMatchContainer {
 	private SYNC strategy;
 
 	private Collection<Object> translated;
+	private Collection<Object> pendingElts;
 	private Collection<IMatch> pending = cfactory.createObjectSet();
 
 	private Map<IMatch, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
@@ -28,9 +29,10 @@ public class PrecedenceGraph implements IMatchContainer {
 
 	private Set<IMatch> readySet = cfactory.createObjectSet();
 
-	public PrecedenceGraph(SYNC strategy, Collection<Object> translated) {
+	public PrecedenceGraph(SYNC strategy, Collection<Object> translated, Collection<Object> pendingElts) {
 		this.strategy = strategy;
 		this.translated = translated;
+		this.pendingElts = pendingElts;
 	}
 
 	@Override
@@ -43,6 +45,9 @@ public class PrecedenceGraph implements IMatchContainer {
 		IGreenPattern gPattern = gFactory.create(m.getPatternName());
 
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
+			return;
+		
+		if(anElementIsPending(m, gPattern))
 			return;
 
 		// Register nodes
@@ -108,6 +113,16 @@ public class PrecedenceGraph implements IMatchContainer {
 
 		return false;
 	}
+	
+	private boolean anElementIsPending(IMatch m, IGreenPattern gPattern) {
+		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
+			Object createdObj = m.get(createdNode.getName());
+			if (pendingElts.contains(createdObj))
+				return true;
+		}
+
+		return false;
+	}
 
 	@Override
 	public void matchApplied(IMatch m) {
@@ -145,7 +160,20 @@ public class PrecedenceGraph implements IMatchContainer {
 	public Set<IMatch> getMatches() {
 		pending.forEach(this::handleMatch);
 		pending.clear();
-		return readySet;
+		return validate(readySet);
+	}
+	
+	private Set<IMatch> validate(Set<IMatch> readySet) {
+		if(pendingElts.isEmpty())
+			return readySet;
+		
+		Set<IMatch> filteredReadySet = cfactory.createObjectSet();
+		for(IMatch m : readySet) {
+			if(m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p))))
+				continue;
+			filteredReadySet.add(m);
+		}
+		return filteredReadySet;
 	}
 
 	@Override

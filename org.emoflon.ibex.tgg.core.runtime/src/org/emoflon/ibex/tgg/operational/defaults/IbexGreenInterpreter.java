@@ -177,7 +177,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 
 		IMatch comatch = match.copy();
-
+		
 		createNonCorrNodes(comatch, greenPattern.getSrcNodes(), operationalStrategy.getSourceResource());
 		createEdges(comatch, greenPattern.getSrcEdges(), true);
 
@@ -195,7 +195,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private boolean matchIsInvalid(String ruleName, IGreenPattern greenPattern, IMatch match) {
 		return violatesConformTypesOfGreenNodes(match, greenPattern, ruleName)
 				|| violatesUpperBounds(ruleName, greenPattern, match)
-				|| violatesContainerSemantics(ruleName, greenPattern, match)
+//				|| violatesContainerSemantics(ruleName, greenPattern, match)
 				|| createsDoubleEdge(ruleName, greenPattern, match)
 				|| createsCyclicContainment(ruleName, greenPattern, match);
 	}

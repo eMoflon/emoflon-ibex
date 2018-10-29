@@ -15,9 +15,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.GreenSCPattern;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.InterfaceSCFactory;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
@@ -32,6 +35,7 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
+import runtime.TempContainer;
 
 /**
  * This class handles all operationalized shortcut rules and their application to fix a broken match.
@@ -103,17 +107,16 @@ public class ShortcutPatternTool {
 			if(rule2matcher.get(osr) == null)
 				continue;
 			
-			logger.info("Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");
+			logger.debug("Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");
 			
 			IMatch newMatch = processBrokenMatch(osr, brokenMatch);
 			if(newMatch == null)
 				continue;
-			
 
 			Optional<IMatch> newCoMatch = processCreations(osr, newMatch);
 			if(!newCoMatch.isPresent())
 				continue;
-			
+
 			processDeletions(osr, newMatch);
 			
 			return transformToTargetMatch(osr, newCoMatch.get());
@@ -134,14 +137,9 @@ public class ShortcutPatternTool {
 			newMatch.put(n.getName(), scMatch.get(osr.getScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET).getName()))
 		);
 		
-//		String oldRaName = getProtocolNodeName(osr.getScRule().getSourceRule().getName());
-		String raName = getProtocolNodeName(osr.getScRule().getTargetRule().getName());
-
-		TGGRuleApplication ra = (TGGRuleApplication) scMatch.get(raName);
-		
-		newMatch.put(raName, scMatch.get(raName));
-//		ra.getNodeMappings().clear();
-//		newMatch.getParameterNames().forEach(p -> ra.getNodeMappings().put(p, (EObject) newMatch.get(p)));
+		IGreenPatternFactory greenFactory = strategy.getGreenFactory(osr.getScRule().getTargetRule().getName());
+		IGreenPattern greenPattern = greenFactory.create(TGGPatternUtil.getFWDBlackPatternName(osr.getScRule().getTargetRule().getName()));
+		greenPattern.createMarkers(osr.getScRule().getTargetRule().getName(), newMatch);
 		
 		return newMatch;
 	}
@@ -191,7 +189,7 @@ public class ShortcutPatternTool {
 		Collection<TGGRuleNode> contextRuleNodes = TGGCollectionUtil.filterNodes(osc.getScRule().getNodes(), BindingType.CONTEXT);
 		for(TGGRuleNode n : contextRuleNodes) {
 			EObject e = (EObject) brokenMatch.get(n.getName());
-			if(e.eContainer() == null && e.eResource() == null) {
+			if(e.eContainer() == null && e.eResource() == null || e.eResource() != null && e.eResource().getContents().get(0) instanceof TempContainer) {
 				if(n.getDomainType().equals(DomainType.SRC))
 					strategy.getSourceResource().getContents().add(e);
 				if(n.getDomainType().equals(DomainType.TRG))

@@ -59,7 +59,8 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	}
 	
 	private boolean noMissingNodes(TGGRuleApplication ra) {
-		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
+//		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
+		return true;
 	}
 
 	@Override

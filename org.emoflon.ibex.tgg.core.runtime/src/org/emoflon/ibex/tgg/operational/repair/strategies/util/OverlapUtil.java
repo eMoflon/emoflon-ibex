@@ -94,6 +94,9 @@ public class OverlapUtil {
 				
 				if(sourceRule instanceof TGGComplementRule || targetRule instanceof TGGComplementRule)
 					continue;
+				
+				if(sourceRule.isAbstract() || targetRule.isAbstract())
+					continue;
 
 				if (sourceRule.equals(targetRule)) {
 //					overlaps.add(createReinsertMapping(sourceRule));

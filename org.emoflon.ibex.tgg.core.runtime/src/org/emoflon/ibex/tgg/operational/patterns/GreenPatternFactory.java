@@ -17,6 +17,7 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import language.BindingType;
 import language.DomainType;
 import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintLibrary;
 import language.TGGComplementRule;
 import language.TGGParamValue;
 import language.TGGRule;
@@ -262,5 +263,10 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	@Override
 	public List<TGGParamValue> getAttributeCSPVariables() {
 		return variables;
+	}
+
+	@Override
+	public TGGAttributeConstraintLibrary getAttributeLibrary() {
+		return rule.getAttributeConditionLibrary();
 	}
 }

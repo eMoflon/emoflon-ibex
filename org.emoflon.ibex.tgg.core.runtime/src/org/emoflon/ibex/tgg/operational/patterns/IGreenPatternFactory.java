@@ -7,6 +7,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintLibrary;
 import language.TGGParamValue;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -51,5 +52,7 @@ public interface IGreenPatternFactory {
 	public List<TGGAttributeConstraint> getAttributeConstraints();
 
 	public List<TGGParamValue> getAttributeCSPVariables();
+	
+	public TGGAttributeConstraintLibrary getAttributeLibrary();
 
 }

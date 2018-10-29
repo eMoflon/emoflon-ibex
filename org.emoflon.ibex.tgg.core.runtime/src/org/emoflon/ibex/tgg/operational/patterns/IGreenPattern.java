@@ -42,7 +42,7 @@ public interface IGreenPattern {
 
 	/** All context edges that already have to be marked to apply this pattern **/
 	Collection<TGGRuleEdge> getMarkedContextEdges();
-
+	
 	/** The set of attribute constraints to be solved when applying this pattern **/
 	IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match);
 

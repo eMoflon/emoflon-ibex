@@ -232,22 +232,22 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		if (isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(match)) {
 			operationalMatchContainer.addMatch(match);
-			logger.debug("Received and added " + match.getPatternName());
+			logger.debug("Received and added " + match.getPatternName() + "(" + match.hashCode() + ")");
 		} else
-			logger.debug("Received but rejected " + match.getPatternName());
+			logger.debug("Received but rejected " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	protected void addConsistencyMatch(IMatch match) {
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		consistencyMatches.put(ruleAppNode, match);
-		logger.debug("Received and added consistency match: " + match.getPatternName());
+		logger.debug("Received and added consistency match: " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	@Override
 	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
 		if (removeOperationalRuleMatch((IMatch) match)) {
 			logger.debug("Removed due to delete event from pattern matcher: ");
-			logger.debug(match.getPatternName());
+			logger.debug(match.getPatternName() + "(" + match.hashCode() + ")");
 		}
 	}
 
@@ -330,12 +330,12 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.getPatternName());
 
-		logger.debug("Attempting to apply: " + match.getPatternName() + " with " + greenPattern);
+		logger.debug("Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
 
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
-			logger.debug("Successfully applied: " + match.getPatternName());
+			logger.debug("Successfully applied: " + match.getPatternName() + "(" + match.hashCode() + ")");
 			operationalMatchContainer.matchApplied(match);
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
 			updatePolicy.notifyMatchHasBeenApplied(cm, ruleName);
