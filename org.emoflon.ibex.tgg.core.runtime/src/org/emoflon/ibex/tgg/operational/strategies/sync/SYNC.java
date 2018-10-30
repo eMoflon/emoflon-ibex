@@ -103,6 +103,7 @@ public abstract class SYNC extends OperationalStrategy {
 		repair();
 		rollBack();
 		translate();
+		logCreatedAndDeletedNumbers();
 	}
 
 	protected void repair() {
@@ -228,16 +229,6 @@ public abstract class SYNC extends OperationalStrategy {
 				.forEach(n -> nodeToProtocolID.put(n, protocolNodeID));
 	}
 
-	@Override
-	public void terminate() throws IOException {
-		super.terminate();
-		if(options.debug()) {
-			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream().filter(rStr -> rStr instanceof ShortcutRepairStrategy).map(rStr -> (ShortcutRepairStrategy) rStr).findFirst();
-			logger.info("Total created elements: " + greenInterpreter.getNumOfCreatedElements());
-			logger.info("Total deleted elements: " + (redInterpreter.getNumOfDeletedElements() + (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
-		}
-	}
-
 	/***** Match and pattern management *****/
 
 	public EMFEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
@@ -258,7 +249,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		if (brokenRuleApplications.containsKey(ruleAppNode)) {
-			logger.debug(match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
+			logger.info(match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 		}
 
@@ -459,5 +450,13 @@ public abstract class SYNC extends OperationalStrategy {
 	
 	public SYNC_Strategy getStrategy() {
 		return strategy;
+	}
+	
+	private void logCreatedAndDeletedNumbers() {
+		if(options.debug()) {
+			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream().filter(rStr -> rStr instanceof ShortcutRepairStrategy).map(rStr -> (ShortcutRepairStrategy) rStr).findFirst();
+			logger.info("Created elements: " + greenInterpreter.getNumOfCreatedElements());
+			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedElements() + (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
+		}
 	}
 }

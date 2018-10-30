@@ -148,8 +148,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private EObject createCorr(IMatch comatch, TGGRuleNode node, Object src, Object trg, Resource corrR) {
-		numOfCreatedNodes++;
-		
 		EObject corr = createNode(comatch, node, corrR);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
@@ -342,6 +340,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	@Override
 	public int getNumOfCreatedElements() {
-		return numOfCreatedNodes + numOfCreatedEdges;
+		return numOfCreatedNodes;
 	}
 }
