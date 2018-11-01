@@ -143,17 +143,6 @@ public abstract class SYNC extends OperationalStrategy {
 					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
 					brokenRuleApplications.put(newRa, repairedMatch);
 					alreadyProcessed.add(repairedMatch);
-					
-//					// Add translated elements
-//					IGreenPatternFactory gFactory = getGreenFactory(repairedMatch.getRuleName());
-//					Collection<Object> translatedElts = cfactory.createObjectSet();
-//
-//					gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(repairedMatch.get(n.getName())));
-//					gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(repairedMatch.get(n.getName())));
-//					gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(repairedMatch, e)));
-//					gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(repairedMatch, e)));
-//					
-//					translated.addAll(translatedElts);
 				}
 			}
 		}

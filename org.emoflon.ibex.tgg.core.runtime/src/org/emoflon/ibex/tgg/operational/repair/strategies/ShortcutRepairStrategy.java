@@ -44,7 +44,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 	private void initialize() {
 		OverlapUtil util = new OverlapUtil(operationalStrategy.getOptions());
-		Collection<ShortcutRule> shortcutRules = util.calculateShortcutRules(operationalStrategy.getTGG());
+		Collection<ShortcutRule> shortcutRules = util.calculateShortcutRules(operationalStrategy.getOptions().flattenedTGG());
 		scTool = new ShortcutPatternTool(operationalStrategy, shortcutRules);
 		updateDirection();
 	}
