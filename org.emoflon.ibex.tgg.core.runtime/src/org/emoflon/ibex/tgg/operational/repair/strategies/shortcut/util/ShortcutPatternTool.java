@@ -200,6 +200,6 @@ public class ShortcutPatternTool {
 	}
 
 	public int countDeletedElements() {
-		return numOfDeletedNodes + numOfDeletedEdges;
+		return numOfDeletedNodes;
 	}
 }
