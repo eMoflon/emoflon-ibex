@@ -6,6 +6,7 @@ import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
@@ -47,8 +48,8 @@ public class PrecedenceGraph implements IMatchContainer {
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
 			return;
 		
-		if(anElementIsPending(m, gPattern))
-			return;
+//		if(anElementIsPending(m, gPattern))
+//			return;
 
 		// Register nodes
 		for (TGGRuleNode contextNode : gPattern.getMarkedContextNodes()) {
@@ -114,14 +115,17 @@ public class PrecedenceGraph implements IMatchContainer {
 		return false;
 	}
 	
-	private boolean anElementIsPending(IMatch m, IGreenPattern gPattern) {
+	private boolean noElementIsPending(IMatch m) {
+		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPattern gPattern = gFactory.create(m.getPatternName());
+		
 		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
 			Object createdObj = m.get(createdNode.getName());
 			if (pendingElts.contains(createdObj))
-				return true;
+				return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override
@@ -158,8 +162,9 @@ public class PrecedenceGraph implements IMatchContainer {
 
 	@Override
 	public Set<IMatch> getMatches() {
-		pending.forEach(this::handleMatch);
-		pending.clear();
+		Collection<IMatch> notPendingMatches = pending.stream().filter(this::noElementIsPending).collect(Collectors.toList());
+		notPendingMatches.forEach(this::handleMatch);
+		pending.removeAll(notPendingMatches);
 		return validate(readySet);
 	}
 	

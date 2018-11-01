@@ -11,19 +11,24 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
+import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SearchKey;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SearchPlan;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.EdgeCheck;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.SCEMFUtil;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.moflon.core.utilities.eMoflonEMFUtil;
-
-import org.apache.log4j.Logger;
 
 import language.BindingType;
 import language.TGGRuleEdge;
@@ -46,6 +51,7 @@ import language.TGGRuleNode;
 public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
 
+	protected SYNC strategy;
 	protected SyncDirection direction;
 	protected ShortcutRule scRule;
 	
@@ -54,8 +60,11 @@ public abstract class OperationalShortcutRule {
 	protected Map<TGGRuleNode, NodeCheck> element2nodeCheck;
 	protected Map<SearchKey, EdgeCheck> key2edgeCheck;
 	protected Map<SearchKey, NACNodeCheck> key2nacNodeCheck;
+	protected CSPCheck cspCheck;
 
-	public OperationalShortcutRule(SyncDirection direction, ShortcutRule scRule) {
+	private IGreenPattern greenPattern;
+
+	public OperationalShortcutRule(SYNC stragey, SyncDirection direction, ShortcutRule scRule) {
 		this.scRule = scRule;
 		this.direction = direction;
 
@@ -128,7 +137,7 @@ public abstract class OperationalShortcutRule {
 			key2nacNodeCheck.put(key, this.key2nacNodeCheck.get(key));
 		}
 		
-		return new SearchPlan(searchPlan, element2nodeCheck, key2uncheckedEdgeCheck, key2nacNodeCheck);
+		return new SearchPlan(searchPlan, element2nodeCheck, key2uncheckedEdgeCheck, key2nacNodeCheck, cspCheck);
 	}
 	
 	private Collection<SearchKey> filterAndSortKeys(Collection<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes) {
@@ -173,6 +182,15 @@ public abstract class OperationalShortcutRule {
 				createNACNodeCheck(forwardKey);
 			}
 		}
+		
+		cspCheck = (name2candidates) -> {
+			IMatch match = new SCMatch(scRule.getName(), name2candidates);
+			IRuntimeTGGAttrConstrContainer cspContainer = getGreenPattern().getAttributeConstraintContainer(match);
+			if (!cspContainer.solve()) {
+				return false;
+			}
+			return true;
+		};
 	}
 
 	private void createLookup(SearchKey key) {
@@ -285,5 +303,16 @@ public abstract class OperationalShortcutRule {
 	
 	public String getName() {
 		return scRule.getSourceRule().getName() + "_OSC_" + scRule.getTargetRule().getName();
+	}
+	
+	public IGreenPattern getGreenPattern() {
+		if(greenPattern == null) {
+			greenPattern = createGreenPattern();
+		}
+		return greenPattern;
+	}
+
+	private IGreenPattern createGreenPattern() {
+		return new GreenSCPattern(strategy.getGreenFactory(scRule.getTargetRule().getName()), this);
 	}
 }

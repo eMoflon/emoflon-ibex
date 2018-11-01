@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.EdgeCheck;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.NACNodeCheck;
@@ -40,7 +39,7 @@ public class LocalPatternSearch {
 	protected LocalPatternSearch(OperationalShortcutRule osr) {
 		this.osr = osr;
 		this.searchPlan = osr.createSearchPlan();
-
+		
 		// TODO lfritsche: clear up
 		if(searchPlan != null)
 			buildComponents();
@@ -79,6 +78,10 @@ public class LocalPatternSearch {
 			
 			lastComponent = nacNodeCheckComp;
 		}
+		
+		Component cspCheckComp = new CSPCheckComponent(searchPlan.cspCheck);
+		lastComponent.setNextComponent(cspCheckComp);
+		lastComponent = cspCheckComp;
 	}
 	
 	protected SCMatch findMatch(Map<String, EObject> name2entryNodeElem) {
@@ -236,6 +239,21 @@ public class LocalPatternSearch {
 				 return nextComponent.apply();
 			 }
 			 return ReturnState.NEGATIVE;
+		}
+	}
+	
+	private class CSPCheckComponent extends Component {
+		CSPCheck cspCheck;
+		
+		public CSPCheckComponent(CSPCheck cspCheck) {
+			this.cspCheck = cspCheck;
+		}
+
+		@Override
+		public ReturnState apply() {
+			if(cspCheck.checkConstraint(name2candidates))
+				return ReturnState.SUCCESS;
+			return ReturnState.FAILURE;
 		}
 	}
 	

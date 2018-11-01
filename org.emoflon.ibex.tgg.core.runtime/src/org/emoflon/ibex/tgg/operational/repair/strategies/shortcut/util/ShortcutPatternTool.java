@@ -54,7 +54,6 @@ public class ShortcutPatternTool {
 	private Collection<ShortcutRule> scRules;
 	private Map<String, Collection<OperationalShortcutRule>> tggRule2srcSCRule;
 	private Map<String, Collection<OperationalShortcutRule>> tggRule2trgSCRule;
-	private Map<OperationalShortcutRule, GreenSCPattern> rule2greenPattern;
 	private Map<OperationalShortcutRule, LocalPatternSearch> rule2matcher;
 	
 	private IGreenInterpreter greenInterpreter;
@@ -72,8 +71,6 @@ public class ShortcutPatternTool {
 		rule2matcher = new HashMap<>();
 		tggRule2srcSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
 		tggRule2trgSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
-		rule2greenPattern = new HashMap<>();
-		rule2matcher.keySet().stream().forEach(osc -> rule2greenPattern.put(osc, new GreenSCPattern(strategy.getGreenFactory(osc.getScRule().getTargetRule().getName()), osc)));
 		greenInterpreter = strategy.getGreenInterpreter();
 		
 		persistSCRules();
@@ -199,7 +196,7 @@ public class ShortcutPatternTool {
 	}
 	
 	private Optional<IMatch> processCreations(OperationalShortcutRule osc, IMatch brokenMatch) {
-		return greenInterpreter.apply(rule2greenPattern.get(osc), osc.getScRule().getTargetRule().getName(), brokenMatch);
+		return greenInterpreter.apply(osc.getGreenPattern(), osc.getScRule().getTargetRule().getName(), brokenMatch);
 	}
 
 	public int countDeletedElements() {

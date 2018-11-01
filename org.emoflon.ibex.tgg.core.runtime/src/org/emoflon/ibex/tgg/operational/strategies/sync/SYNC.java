@@ -112,7 +112,6 @@ public abstract class SYNC extends OperationalStrategy {
 		// TODO loop this together with roll back
 		translate();
 		repairBrokenMatches();
-		blackInterpreter.updateMatches();
 	}
 
 	protected void initializeRepairStrategy(IbexOptions options) {
@@ -145,16 +144,16 @@ public abstract class SYNC extends OperationalStrategy {
 					brokenRuleApplications.put(newRa, repairedMatch);
 					alreadyProcessed.add(repairedMatch);
 					
-					// Add translated elements
-					IGreenPatternFactory gFactory = getGreenFactory(repairedMatch.getRuleName());
-					Collection<Object> translatedElts = cfactory.createObjectSet();
-
-					gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(repairedMatch.get(n.getName())));
-					gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(repairedMatch.get(n.getName())));
-					gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(repairedMatch, e)));
-					gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(repairedMatch, e)));
-					
-					translated.addAll(translatedElts);
+//					// Add translated elements
+//					IGreenPatternFactory gFactory = getGreenFactory(repairedMatch.getRuleName());
+//					Collection<Object> translatedElts = cfactory.createObjectSet();
+//
+//					gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(repairedMatch.get(n.getName())));
+//					gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(repairedMatch.get(n.getName())));
+//					gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(repairedMatch, e)));
+//					gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(repairedMatch, e)));
+//					
+//					translated.addAll(translatedElts);
 				}
 			}
 		}
@@ -264,6 +263,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 		consistencyToTranslated.put(match, translatedElts);
 
+		pending.removeAll(translatedElts);
 		translated.addAll(translatedElts);
 	}
 
@@ -429,7 +429,6 @@ public abstract class SYNC extends OperationalStrategy {
 				return false;
 			}
 		}
-
 		return true;
 	}
 

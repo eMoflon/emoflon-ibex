@@ -143,6 +143,6 @@ public class IbexRedInterpreter implements IRedInterpreter {
 
 	@Override
 	public int getNumOfDeletedElements() {
-		return numOfDeletedNodes + numOfDeletedEdges;
+		return numOfDeletedNodes;
 	}
 }

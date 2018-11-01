@@ -41,10 +41,8 @@ import language.TGGRuleNode;
  */
 public class InterfaceShortcutRule extends OperationalShortcutRule {
 	
-	private SYNC strategy;
-	
 	public InterfaceShortcutRule(SYNC strategy, SyncDirection direction, ShortcutRule scRule) {
-		super(direction, scRule.copy());
+		super(strategy, direction, scRule.copy());
 		this.strategy = strategy;
 
 		operationalize();
