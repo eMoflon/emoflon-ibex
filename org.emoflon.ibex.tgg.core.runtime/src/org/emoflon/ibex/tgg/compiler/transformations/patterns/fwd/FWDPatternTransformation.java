@@ -29,6 +29,6 @@ public class FWDPatternTransformation extends FWD_OPTPatternTransformation {
 			if (TGGModelUtils.isOfDomain(nac, DomainType.TRG))
 				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
 		}
-
+		
 	}
 }

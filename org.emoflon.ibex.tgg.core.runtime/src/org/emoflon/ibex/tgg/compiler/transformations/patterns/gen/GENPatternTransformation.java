@@ -55,7 +55,7 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 		IBeXContextPattern consistencyPatternOfKernel = parent
 				.getPattern(TGGPatternUtil.getConsistencyPatternName(crule.getKernel().getName()));
 
-		createInvocation(ibexPattern, consistencyPatternOfKernel, true);
+		parent.createInvocation(ibexPattern, consistencyPatternOfKernel);
 
 		// Add additional attribute condition for "closing the kernel"
 		Optional<IBeXNode> node = ibexPattern.getLocalNodes()//
@@ -76,6 +76,7 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 			tae.setNode(protocolNode);
 			ibexPattern.getAttributeConstraint().add(tae);
 		});
+
 	}
 
 	@Override
@@ -107,5 +108,10 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 			if (TGGModelUtils.isOfDomain(nac, DomainType.SRC))
 				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
 		}
+	}
+
+	@Override
+	protected boolean patternIsEmpty(TGGRule rule) {
+		return TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT).isEmpty();		
 	}
 }

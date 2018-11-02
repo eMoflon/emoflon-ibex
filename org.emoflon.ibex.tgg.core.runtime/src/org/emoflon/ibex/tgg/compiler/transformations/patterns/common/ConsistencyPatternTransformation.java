@@ -30,36 +30,6 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 		super(parent, options, rule);
 	}
 
-	private void createAndConnectProtocolNode(IBeXContextPattern ibexPattern) {
-		IBeXNode protocolNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
-		protocolNode.setName(getProtocolNodeName(rule.getName()));
-		EClass type = (EClass) options.getCorrMetamodel().getEClassifier(getMarkerTypeName(rule.getName()));
-		protocolNode.setType(type);
-		ibexPattern.getSignatureNodes().add(protocolNode);
-
-		connectProtocolNode(ibexPattern, protocolNode);
-	}
-
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode) {
-		connectProtocolNode(ibexPattern, protocolNode, BindingType.CONTEXT, DomainType.SRC);
-		connectProtocolNode(ibexPattern, protocolNode, BindingType.CONTEXT, DomainType.TRG);
-		connectProtocolNode(ibexPattern, protocolNode, BindingType.CREATE, DomainType.SRC);
-		connectProtocolNode(ibexPattern, protocolNode, BindingType.CREATE, DomainType.TRG);
-		connectProtocolNode(ibexPattern, protocolNode, BindingType.CONTEXT, DomainType.CORR);
-		connectProtocolNode(ibexPattern, protocolNode, BindingType.CREATE, DomainType.CORR);
-	}
-
-	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, BindingType type,
-			DomainType domain) {
-		Collection<TGGRuleNode> nodes = getNodesByOperatorAndDomain(rule, type, domain);
-
-		for (TGGRuleNode node : nodes) {
-			EReference ref = (EReference) protocolNode.getType()
-					.getEStructuralFeature(getMarkerRefName(type, domain, node.getName()));
-			parent.transformEdge(ref, protocolNode, parent.transformNode(ibexPattern, node), ibexPattern, false);
-		}
-	}
-
 	@Override
 	protected String getPatternName() {
 		return getConsistencyPatternName(rule.getName());
@@ -88,7 +58,7 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 			parent.transformEdge(rule.getEdges(), edge, ibexPattern);
 
 		// Create protocol node and connections to nodes in pattern
-		createAndConnectProtocolNode(ibexPattern);
+		parent.createAndConnectProtocolNode(rule, ibexPattern);
 
 	}
 
@@ -103,5 +73,10 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
+	}
+
+	@Override
+	protected boolean patternIsEmpty(TGGRule rule) {
+		return rule.getNodes().isEmpty();
 	}
 }

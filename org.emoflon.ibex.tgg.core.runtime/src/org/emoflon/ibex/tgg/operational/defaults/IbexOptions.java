@@ -29,6 +29,7 @@ public class IbexOptions {
 	private boolean useShortcutRules;
 	private EPackage corrMetamodel;
 	private FilterNACStrategy lookAheadStrategy;
+	private boolean optimizeSyncPattern;
 
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
@@ -45,6 +46,7 @@ public class IbexOptions {
 		setIlpSolver(SupportedILPSolver.Sat4J);
 		useEdgePatterns = false;
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
+		optimizeSyncPattern = false;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -198,6 +200,15 @@ public class IbexOptions {
 	
 	public IbexOptions setLookAheadStrategy(FilterNACStrategy lookAheadStrategy) {
 		this.lookAheadStrategy = lookAheadStrategy;
+		return this;
+	}
+
+	public boolean optimizeSyncPattern() {
+		return optimizeSyncPattern;
+	}
+
+	public IbexOptions setOptimizeSyncPattern(boolean optimizeSyncPattern) {
+		this.optimizeSyncPattern = optimizeSyncPattern;
 		return this;
 	}
 }
