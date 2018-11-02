@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.BindingType;
@@ -30,13 +30,13 @@ public class InterfaceSCFactory {
 			TGGRule targetRule = scRule.getTargetRule();
 			
 			// we do not want rules that do not preserve elements or contain no interface edges
-			if(TGGCollectionUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE).size() + TGGCollectionUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE).size() == 0)
+			if(TGGUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE).size() + TGGUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
 			
-			if(TGGCollectionUtil.filterNodes(scRule.getMergedNodes(), DomainType.SRC).size() == 0)
+			if(TGGUtil.filterNodes(scRule.getMergedNodes(), DomainType.SRC).size() == 0)
 				continue;
 			
-			if(TGGCollectionUtil.filterNodes(scRule.getMergedNodes(), DomainType.TRG).size() == 0)
+			if(TGGUtil.filterNodes(scRule.getMergedNodes(), DomainType.TRG).size() == 0)
 				continue;
 			
 			InterfaceShortcutRule isr = new InterfaceShortcutRule(strategy, direction, scRule);

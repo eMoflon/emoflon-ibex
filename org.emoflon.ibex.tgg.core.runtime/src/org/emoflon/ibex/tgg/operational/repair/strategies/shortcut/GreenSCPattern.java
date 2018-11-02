@@ -18,7 +18,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IbexGreenPattern;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.BindingType;
@@ -53,37 +53,37 @@ public class GreenSCPattern extends IbexGreenPattern {
 	
 	@Override
 	public Collection<TGGRuleNode> getSrcNodes() {
-		return TGGCollectionUtil.filterNodes(oscRule.getScRule().getNodes(), DomainType.SRC, BindingType.CREATE);
+		return TGGUtil.filterNodes(oscRule.getScRule().getNodes(), DomainType.SRC, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleEdge> getSrcEdges() {
-		return TGGCollectionUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.SRC, BindingType.CREATE);
+		return TGGUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.SRC, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleNode> getTrgNodes() {
-		return TGGCollectionUtil.filterNodes(oscRule.getScRule().getNodes(), DomainType.TRG, BindingType.CREATE);
+		return TGGUtil.filterNodes(oscRule.getScRule().getNodes(), DomainType.TRG, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleEdge> getTrgEdges() {
-		return TGGCollectionUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.TRG, BindingType.CREATE);
+		return TGGUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.TRG, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleCorr> getCorrNodes() {
-		return TGGCollectionUtil.filterNodes(oscRule.getScRule().getNodes(), DomainType.CORR, BindingType.CREATE).stream().map(n -> (TGGRuleCorr) n).collect(Collectors.toList());
+		return TGGUtil.filterNodes(oscRule.getScRule().getNodes(), DomainType.CORR, BindingType.CREATE).stream().map(n -> (TGGRuleCorr) n).collect(Collectors.toList());
 	}
 
 	@Override
 	public Collection<TGGRuleNode> getNodesMarkedByPattern() {
-		return TGGCollectionUtil.filterNodes(oscRule.markedElements);
+		return TGGUtil.filterNodes(oscRule.markedElements);
 	}
 
 	@Override
 	public Collection<TGGRuleEdge> getEdgesMarkedByPattern() {
-		return TGGCollectionUtil.filterEdges(oscRule.markedElements).stream().filter(e -> e.getBindingType() == null).collect(Collectors.toList());
+		return TGGUtil.filterEdges(oscRule.markedElements).stream().filter(e -> e.getBindingType() == null).collect(Collectors.toList());
 	}
 
 	@Override
@@ -175,6 +175,6 @@ public class GreenSCPattern extends IbexGreenPattern {
 
 	@Override
 	public Collection<TGGRuleEdge> getCorrEdges() {
-		return TGGCollectionUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.CORR, BindingType.CREATE);
+		return TGGUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.CORR, BindingType.CREATE);
 	}
 }

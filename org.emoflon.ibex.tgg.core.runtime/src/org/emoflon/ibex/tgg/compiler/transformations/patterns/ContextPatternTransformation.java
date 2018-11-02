@@ -75,6 +75,7 @@ import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import static org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil.isAxiomatic;
 
 public class ContextPatternTransformation {
 	public static final int MAX_NUM_OF_EDGES_IN_PATTERN = 3;
@@ -312,7 +313,7 @@ public class ContextPatternTransformation {
 		if(fwdPatternPresent && consistencyPatternPresent)  {
 			createInvocation(consistencyPattern, fwdPattern);
 			
-			optimizeIBeXPattern(consistencyPattern, bwdPattern);
+			optimizeIBeXPattern(consistencyPattern, fwdPattern);
 		}
 		
 		if(bwdPatternPresent && consistencyPatternPresent) {
@@ -322,13 +323,15 @@ public class ContextPatternTransformation {
 		}
 
 		if(fwdPatternPresent && bwdPatternPresent) {
-			IBeXContextPattern genPattern = createModelGenPattern(rule);
-			if(genPattern != null) {
-				createInvocation(fwdPattern, genPattern);
-				createInvocation(bwdPattern, genPattern);
-				
-				optimizeIBeXPattern(fwdPattern, genPattern);
-				optimizeIBeXPattern(bwdPattern, genPattern);
+			if(!isAxiomatic(rule)) {
+				IBeXContextPattern genPattern = createModelGenPattern(rule);
+				if(genPattern != null) {
+					createInvocation(fwdPattern, genPattern);
+					createInvocation(bwdPattern, genPattern);
+					
+					optimizeIBeXPattern(fwdPattern, genPattern);
+					optimizeIBeXPattern(bwdPattern, genPattern);
+				}
 			}
 		}
 		
@@ -526,7 +529,7 @@ public class ContextPatternTransformation {
 
 		if (node instanceof TGGRuleCorr) {
 			TGGRuleCorr corr = (TGGRuleCorr) node;
-			transformCorr(ibexPattern, corr);
+//			transformCorr(ibexPattern, corr);
 		}
 
 		return ibexNode;

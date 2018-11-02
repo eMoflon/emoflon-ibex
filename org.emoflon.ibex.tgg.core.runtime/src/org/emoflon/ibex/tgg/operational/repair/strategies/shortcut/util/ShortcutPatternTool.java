@@ -26,7 +26,7 @@ import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.InterfaceSCFa
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule.SCInputRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.BindingType;
@@ -166,8 +166,8 @@ public class ShortcutPatternTool {
 	}
 	
 	private void processDeletions(OperationalShortcutRule osc, IMatch brokenMatch) {
-		Collection<TGGRuleNode> deletedRuleNodes = TGGCollectionUtil.filterNodes(osc.getScRule().getNodes(), BindingType.DELETE);
-		Collection<TGGRuleEdge> deletedRuleEdges = TGGCollectionUtil.filterEdges(osc.getScRule().getEdges(), BindingType.DELETE);
+		Collection<TGGRuleNode> deletedRuleNodes = TGGUtil.filterNodes(osc.getScRule().getNodes(), BindingType.DELETE);
+		Collection<TGGRuleEdge> deletedRuleEdges = TGGUtil.filterEdges(osc.getScRule().getEdges(), BindingType.DELETE);
 		
 		Set<EMFEdge> edgesToRevoke = new HashSet<>();
 		// Collect edges to revoke.
@@ -183,7 +183,7 @@ public class ShortcutPatternTool {
 		numOfDeletedEdges += edgesToRevoke.stream().filter(e -> !e.getSource().eClass().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).count();
 		revokeElements(nodesToRevoke, edgesToRevoke);
 		
-		Collection<TGGRuleNode> contextRuleNodes = TGGCollectionUtil.filterNodes(osc.getScRule().getNodes(), BindingType.CONTEXT);
+		Collection<TGGRuleNode> contextRuleNodes = TGGUtil.filterNodes(osc.getScRule().getNodes(), BindingType.CONTEXT);
 		for(TGGRuleNode n : contextRuleNodes) {
 			EObject e = (EObject) brokenMatch.get(n.getName());
 			if(e.eContainer() == null && e.eResource() == null || e.eResource() != null && e.eResource().getContents().get(0) instanceof TempContainer) {

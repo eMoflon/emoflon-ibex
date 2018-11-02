@@ -17,7 +17,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGCollectionUtil;
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGOverlap;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
@@ -57,28 +57,28 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 		case FORWARD:
 			createDECNacs(scRule.getTargetRule(), DomainType.SRC);
 
-			transformEdges(TGGCollectionUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
-			transformInterfaceEdges(TGGCollectionUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE), BindingType.NEGATIVE);
+			transformEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
+			transformInterfaceEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE), BindingType.NEGATIVE);
 			
-			transformNodes(TGGCollectionUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
+			transformNodes(TGGUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
 			
-			removeEdges(TGGCollectionUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE));
-			removeNodes(TGGCollectionUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.DELETE));
+			removeEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE));
+			removeNodes(TGGUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.DELETE));
 			
-			addNACforCreatedInterface(TGGCollectionUtil.filterEdges(scRule.getEdges(), DomainType.TRG));
+			addNACforCreatedInterface(TGGUtil.filterEdges(scRule.getEdges(), DomainType.TRG));
 			break;
 		case BACKWARD:
 			createDECNacs(scRule.getTargetRule(), DomainType.TRG);
 
-			transformEdges(TGGCollectionUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
-			transformInterfaceEdges(TGGCollectionUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE), BindingType.NEGATIVE);
+			transformEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
+			transformInterfaceEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE), BindingType.NEGATIVE);
 			
-			transformNodes(TGGCollectionUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
+			transformNodes(TGGUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
 			
-			removeEdges(TGGCollectionUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE));
-			removeNodes(TGGCollectionUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.DELETE));
+			removeEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE));
+			removeNodes(TGGUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.DELETE));
 			
-			addNACforCreatedInterface(TGGCollectionUtil.filterEdges(scRule.getEdges(), DomainType.SRC));
+			addNACforCreatedInterface(TGGUtil.filterEdges(scRule.getEdges(), DomainType.SRC));
 			break;
 		default: throw new RuntimeException("Shortcut Rules can only be operationalized for FORWARD and BACKWARD operations");
 		}
@@ -112,10 +112,10 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 	
 	private void createRuleApplicationLink(BiFunction<TGGRuleNode, TGGRuleNode, EReference> createdRef, BiFunction<TGGRuleNode, TGGRuleNode, EReference> contextRef, TGGRuleNode oldRaNode, DomainType dType) {
 		TGGOverlap overlap = scRule.getOverlap();
-		Stream<TGGRuleNode> deletedNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.deletions), dType).stream();
-		Stream<TGGRuleNode> sourceRuleUnboundContextNodes = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.unboundSrcContext), dType).stream().filter(n -> scRule.getSourceRule().getNodes().contains(n));
-		Stream<TGGRuleNode> sourceRuleCreatedMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CREATE).stream();
-		Stream<TGGRuleNode> sourceRuleContextMappingNodeKeys = TGGCollectionUtil.filterNodes(TGGCollectionUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CONTEXT).stream();
+		Stream<TGGRuleNode> deletedNodes = TGGUtil.filterNodes(TGGUtil.filterNodes(overlap.deletions), dType).stream();
+		Stream<TGGRuleNode> sourceRuleUnboundContextNodes = TGGUtil.filterNodes(TGGUtil.filterNodes(overlap.unboundSrcContext), dType).stream().filter(n -> scRule.getSourceRule().getNodes().contains(n));
+		Stream<TGGRuleNode> sourceRuleCreatedMappingNodeKeys = TGGUtil.filterNodes(TGGUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CREATE).stream();
+		Stream<TGGRuleNode> sourceRuleContextMappingNodeKeys = TGGUtil.filterNodes(TGGUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CONTEXT).stream();
 
 		Function<TGGRuleNode, TGGRuleNode> srcToSCNode = n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE);
 		

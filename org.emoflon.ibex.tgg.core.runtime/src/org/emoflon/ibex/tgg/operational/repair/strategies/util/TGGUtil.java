@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import language.BindingType;
 import language.DomainType;
+import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -15,7 +16,7 @@ import language.TGGRuleNode;
  * @author lfritsche
  *
  */
-public class TGGCollectionUtil {
+public class TGGUtil {
 	
 	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleElement> elements) {
 		return elements.stream().filter(e -> e instanceof TGGRuleNode).map(e -> (TGGRuleNode) e).collect(Collectors.toList());
@@ -48,4 +49,10 @@ public class TGGCollectionUtil {
 	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleEdge> elements, DomainType dType, BindingType bType) {
 		return filterEdges(filterEdges(elements, bType), dType);
 	}
+	
+	public static boolean isAxiomatic(TGGRule rule) {
+		return rule.getNodes().stream().noneMatch(n -> n.getBindingType() == BindingType.CONTEXT) && 
+				rule.getEdges().stream().noneMatch(e -> e.getBindingType() == BindingType.CONTEXT);
+	}
+
 }
