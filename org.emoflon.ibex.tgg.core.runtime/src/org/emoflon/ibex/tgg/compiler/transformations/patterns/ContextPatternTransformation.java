@@ -42,6 +42,8 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCOPatter
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.CCPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.COPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolCorePatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;

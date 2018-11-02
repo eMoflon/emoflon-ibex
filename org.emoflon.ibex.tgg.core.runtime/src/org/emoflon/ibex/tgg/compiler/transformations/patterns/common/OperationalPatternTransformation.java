@@ -51,7 +51,7 @@ public abstract class OperationalPatternTransformation {
 
 	protected abstract void transformNACs(IBeXContextPattern ibexPattern);
 	
-	protected boolean patternIsEmpty(TGGRule rule) {
+	protected boolean patternIsEmpty() {
 		return rule.getNodes().isEmpty();
 	}
 
@@ -61,7 +61,7 @@ public abstract class OperationalPatternTransformation {
 		if (parent.isTransformed(patternName))
 			return parent.getPattern(patternName);
 
-		if (patternIsEmpty(rule))
+		if (patternIsEmpty())
 			return null;
 		
 		// Root pattern
