@@ -109,9 +109,4 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
 		}
 	}
-
-	@Override
-	protected boolean patternIsEmpty(TGGRule rule) {
-		return TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT).isEmpty();		
-	}
 }

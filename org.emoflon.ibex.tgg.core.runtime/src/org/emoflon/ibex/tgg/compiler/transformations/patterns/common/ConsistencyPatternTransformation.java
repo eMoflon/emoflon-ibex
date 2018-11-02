@@ -74,9 +74,4 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 	}
-
-	@Override
-	protected boolean patternIsEmpty(TGGRule rule) {
-		return rule.getNodes().isEmpty();
-	}
 }

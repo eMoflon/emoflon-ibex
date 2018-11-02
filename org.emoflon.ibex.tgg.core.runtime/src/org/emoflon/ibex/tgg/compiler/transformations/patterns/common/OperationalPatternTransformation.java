@@ -38,22 +38,25 @@ public abstract class OperationalPatternTransformation {
 	public OperationalPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
 		this.parent = parent;
 		this.options = options;
+		this.rule = rule;
 	}
 
-	protected abstract String getPatternName(TGGRule rule);
+	protected abstract String getPatternName();
 
-	protected abstract void handleComplementRules(TGGRule rule, IBeXContextPattern ibexPattern);
+	protected abstract void handleComplementRules(IBeXContextPattern ibexPattern);
 
-	protected abstract void transformNodes(IBeXContextPattern ibexPattern, TGGRule rule);
+	protected abstract void transformNodes(IBeXContextPattern ibexPattern);
 
-	protected abstract void transformEdges(IBeXContextPattern ibexPattern, TGGRule rule);
+	protected abstract void transformEdges(IBeXContextPattern ibexPattern);
 
-	protected abstract void transformNACs(IBeXContextPattern ibexPattern, TGGRule rule);
+	protected abstract void transformNACs(IBeXContextPattern ibexPattern);
 	
-	protected abstract boolean patternIsEmpty(TGGRule rule);
+	protected boolean patternIsEmpty(TGGRule rule) {
+		return rule.getNodes().isEmpty();
+	}
 
-	public IBeXContextPattern transform(TGGRule rule) {
-		String patternName = getPatternName(rule);
+	public IBeXContextPattern transform() {
+		String patternName = getPatternName();
 
 		if (parent.isTransformed(patternName))
 			return parent.getPattern(patternName);
@@ -90,13 +93,12 @@ public abstract class OperationalPatternTransformation {
 		transformNACs(ibexPattern);
 
 		// Complement rule
-		handleComplementRules(rule, ibexPattern);
+		handleComplementRules(ibexPattern);
 		
 		return ibexPattern;
 	}
 
-	protected IBeXContextPattern createFilterNAC(IBeXContextPattern ibexPattern, FilterNACCandidate candidate,
-			TGGRule rule) {
+	protected IBeXContextPattern createFilterNAC(IBeXContextPattern ibexPattern, FilterNACCandidate candidate) {
 		
 		if(parent.isTransformed(getFilterNACPatternName(candidate, rule))) {
 			IBeXContextPattern nacPattern =  parent.getPattern(getFilterNACPatternName(candidate, rule));
@@ -111,7 +113,7 @@ public abstract class OperationalPatternTransformation {
 		TGGRuleNode firstNode = candidate.getNodeInRule();
 		IBeXNode firstIBeXNode = parent.transformNode(nacPattern, firstNode);
 
-		addNodesOfSameTypeFromInvoker(rule, nacPattern, candidate, firstIBeXNode);
+		addNodesOfSameTypeFromInvoker(nacPattern, candidate, firstIBeXNode);
 
 		IBeXNode secondIBeXNode = IBeXPatternFactory.createNode(NODE_NAME, getOtherNodeType(candidate));
 		nacPattern.getSignatureNodes().add(secondIBeXNode);
