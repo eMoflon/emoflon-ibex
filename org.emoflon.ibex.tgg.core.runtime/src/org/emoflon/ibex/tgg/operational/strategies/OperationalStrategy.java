@@ -258,7 +258,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 	
 	private boolean matchIsDomainConform(IMatch match) {
-		if (domainsHaveNoSharedTypes)
+		if (domainsHaveNoSharedTypes || options.ignoreSrcTrgInjectivity())
 			return true;
 
 		return matchedNodesAreInCorrectResource(s, //

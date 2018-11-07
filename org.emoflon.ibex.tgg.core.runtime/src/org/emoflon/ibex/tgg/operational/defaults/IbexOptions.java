@@ -28,6 +28,8 @@ public class IbexOptions {
 	private boolean repairAttributes;
 	private EPackage corrMetamodel;
 	private FilterNACStrategy lookAheadStrategy;
+	private boolean ignoreSrcTrgInjecitity;
+	
 
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
@@ -43,6 +45,7 @@ public class IbexOptions {
 		setIlpSolver(SupportedILPSolver.Sat4J);
 		useEdgePatterns = false;
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
+		ignoreSrcTrgInjecitity = false;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -187,6 +190,15 @@ public class IbexOptions {
 	
 	public IbexOptions setLookAheadStrategy(FilterNACStrategy lookAheadStrategy) {
 		this.lookAheadStrategy = lookAheadStrategy;
+		return this;
+	}
+	
+	public boolean ignoreSrcTrgInjectivity() {
+		return ignoreSrcTrgInjecitity;
+	}
+	
+	public IbexOptions ignoreSrcTrgInjectivity(boolean ignoreSrcTrgInjecitity) {
+		this.ignoreSrcTrgInjecitity = ignoreSrcTrgInjecitity;
 		return this;
 	}
 }
