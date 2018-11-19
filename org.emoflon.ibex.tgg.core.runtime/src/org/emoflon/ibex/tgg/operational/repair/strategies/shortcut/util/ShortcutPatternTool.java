@@ -73,6 +73,10 @@ public class ShortcutPatternTool {
 		tggRule2trgSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
 		greenInterpreter = strategy.getGreenInterpreter();
 		
+		logger.info("Generated " + scRules.size() + "Short-Cut Rules...");
+		logger.info("Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Forward Repair Rules...");
+		logger.info("Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Backward Repair Rules...");
+
 		persistSCRules();
 	}
 	
