@@ -217,8 +217,8 @@ public class OverlapUtil {
 //		sourceRule.getNodes().stream().flatMap(n -> n.getOutgoingEdges().stream()).forEach(e -> sourceEdgeMap.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__"  + e.getTrgNode().getName(), e));
 //		targetRule.getNodes().stream().flatMap(n -> n.getOutgoingEdges().stream()).forEach(e -> targetEdgeMap.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__"  + e.getTrgNode().getName(), e));
 
-		createAndRegisterCorrEdges(sourceRule);
-		createAndRegisterCorrEdges(targetRule);
+//		createAndRegisterCorrEdges(sourceRule);
+//		createAndRegisterCorrEdges(targetRule);
 		
 		
 		sourceRule.getEdges().forEach(e -> sourceEdgeMap.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__"  + e.getTrgNode().getName(), e));

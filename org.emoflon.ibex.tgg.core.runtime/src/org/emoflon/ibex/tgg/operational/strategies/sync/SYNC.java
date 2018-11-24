@@ -32,6 +32,7 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.util.MAUtil;
+import org.sat4j.specs.IOptimizationProblem;
 
 import language.BindingType;
 import language.DomainType;
@@ -54,13 +55,6 @@ public abstract class SYNC extends OperationalStrategy {
 
 	// Forward or backward sync
 	protected SYNC_Strategy strategy;
-
-	// All translated elements
-	private Collection<Object> translated = cfactory.createObjectSet();
-	private Map<IMatch, Collection<Object>> consistencyToTranslated = cfactory.createObjectToObjectHashMap();
-
-	// Pending elements that are to be deleted but have not yet
-	private Collection<Object> pending = cfactory.createObjectSet();
 
 	/***** Constructors *****/
 
@@ -162,7 +156,9 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	protected boolean revokeBrokenMatches() {
-		pending.clear();
+		// clear pending elements since every element that has not been repaired until now has to be revoked
+		if(operationalMatchContainer instanceof PrecedenceGraph)
+			((PrecedenceGraph) operationalMatchContainer).clearPendingElements();
 
 		if (brokenRuleApplications.isEmpty())
 			return false;
@@ -228,7 +224,7 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	protected IMatchContainer createMatchContainer() {
-		return new PrecedenceGraph(this, translated, pending);
+		return new PrecedenceGraph(this);
 	}
 
 	@Override
@@ -240,20 +236,8 @@ public abstract class SYNC extends OperationalStrategy {
 			logger.info(match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 		}
-
-		// Add translated elements
-		IGreenPatternFactory gFactory = getGreenFactory(match.getRuleName());
-		Collection<Object> translatedElts = cfactory.createObjectSet();
-
-		gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
-		gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
-		gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
-		gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
-
-		consistencyToTranslated.put(match, translatedElts);
-
-		pending.removeAll(translatedElts);
-		translated.addAll(translatedElts);
+		
+		operationalMatchContainer.matchApplied(match);
 	}
 
 	@Override
@@ -261,16 +245,14 @@ public abstract class SYNC extends OperationalStrategy {
 		super.removeMatch(match);
 
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY))
-			addBrokenMatch((IMatch) match);
+			addConsistencyBrokenMatch((IMatch) match);
 	}
 
-	protected void addBrokenMatch(IMatch match) {
+	protected void addConsistencyBrokenMatch(IMatch match) {
 		TGGRuleApplication ra = getRuleApplicationNode(match);
 		brokenRuleApplications.put(ra, match);
 
-		// Transfer elements to the pending collection
-		translated.removeAll(consistencyToTranslated.get(brokenRuleApplications.get(ra)));
-		pending.addAll(consistencyToTranslated.remove(brokenRuleApplications.get(ra)));
+		operationalMatchContainer.removeMatch(match);
 	}
 
 	@Override

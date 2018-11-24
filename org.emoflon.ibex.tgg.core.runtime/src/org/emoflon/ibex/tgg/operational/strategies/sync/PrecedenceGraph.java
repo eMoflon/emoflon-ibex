@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -15,12 +16,13 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import runtime.TGGRuleApplication;
 
 public class PrecedenceGraph implements IMatchContainer {
 	private SYNC strategy;
 
-	private Collection<Object> translated;
-	private Collection<Object> pendingElts;
+	private Collection<Object> translated = cfactory.createObjectSet();;
+	private Collection<Object> pendingElts = cfactory.createObjectSet();;
 	private Collection<IMatch> pending = cfactory.createObjectSet();
 
 	private Map<IMatch, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
@@ -28,12 +30,12 @@ public class PrecedenceGraph implements IMatchContainer {
 	private Map<IMatch, Collection<Object>> translates = cfactory.createObjectToObjectHashMap();
 	private Map<Object, Collection<IMatch>> translatedBy = cfactory.createObjectToObjectHashMap();
 
+	private Map<TGGRuleApplication, Collection<Object>> raToTranslated = cfactory.createObjectToObjectHashMap();
+	
 	private Set<IMatch> readySet = cfactory.createObjectSet();
 
-	public PrecedenceGraph(SYNC strategy, Collection<Object> translated, Collection<Object> pendingElts) {
+	public PrecedenceGraph(SYNC strategy) {
 		this.strategy = strategy;
-		this.translated = translated;
-		this.pendingElts = pendingElts;
 	}
 
 	@Override
@@ -48,9 +50,6 @@ public class PrecedenceGraph implements IMatchContainer {
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
 			return;
 		
-//		if(anElementIsPending(m, gPattern))
-//			return;
-
 		// Register nodes
 		for (TGGRuleNode contextNode : gPattern.getMarkedContextNodes()) {
 			Object contextObj = m.get(contextNode.getName());
@@ -130,6 +129,11 @@ public class PrecedenceGraph implements IMatchContainer {
 
 	@Override
 	public void matchApplied(IMatch m) {
+		if (m.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
+			consistencyMatchApplied(m);
+			return;
+		}
+		
 		if (!translates.containsKey(m))
 			return;
 
@@ -159,6 +163,44 @@ public class PrecedenceGraph implements IMatchContainer {
 
 		translated.addAll(translatedElts);
 	}
+	
+	private void consistencyMatchApplied(IMatch m) {
+		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
+		if(raToTranslated.containsKey(ra))
+			return;
+		
+		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+
+		// Add translated elements
+		Collection<Object> translatedElts = cfactory.createObjectSet();
+
+		gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
+		gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
+		gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(strategy.getRuntimeEdge(m, e)));
+		gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(strategy.getRuntimeEdge(m, e)));
+
+		raToTranslated.put(ra, translatedElts);
+
+		translated.addAll(translatedElts);
+		pending.removeAll(translatedElts);
+		
+		for (Object translatedElement : translatedElts) {
+			// Handle children: this parent has now been translated and can be removed
+			Collection<IMatch> dependentMatches = requiredBy.remove(translatedElement);
+			if (dependentMatches != null) {
+				for (IMatch dependentMatch : dependentMatches) {
+					Collection<Object> requiredElts = requires.get(dependentMatch);
+					requiredElts.remove(translatedElement);
+					if (requiredElts.isEmpty())
+						readySet.add(dependentMatch);
+				}
+			}
+		}
+	}
+	
+	public void clearPendingElements() {
+		pendingElts.clear();
+	}
 
 	@Override
 	public Set<IMatch> getMatches() {
@@ -183,6 +225,10 @@ public class PrecedenceGraph implements IMatchContainer {
 
 	@Override
 	public boolean removeMatch(IMatch match) {
+		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
+			return removeConsistencyMatch(match);
+		}
+		
 		if (pending.contains(match)) {
 			pending.remove(match);
 			return true;
@@ -209,6 +255,18 @@ public class PrecedenceGraph implements IMatchContainer {
 
 		readySet.remove(match);
 
+		return true;
+	}
+	
+	public boolean removeConsistencyMatch(IMatch m) {
+		// Transfer elements to the pending collection
+		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
+		if(!raToTranslated.containsKey(ra))
+			return true;
+		
+		translated.removeAll(raToTranslated.get(ra));
+		pendingElts.addAll(raToTranslated.remove(ra));
+		
 		return true;
 	}
 
