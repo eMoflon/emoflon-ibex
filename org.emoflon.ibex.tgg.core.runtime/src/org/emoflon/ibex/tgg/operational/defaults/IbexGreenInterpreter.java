@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.GreenSCPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
@@ -193,7 +194,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private boolean matchIsInvalid(String ruleName, IGreenPattern greenPattern, IMatch match) {
 		return violatesConformTypesOfGreenNodes(match, greenPattern, ruleName)
 				|| violatesUpperBounds(ruleName, greenPattern, match)
-//				|| violatesContainerSemantics(ruleName, greenPattern, match)
+				|| violatesContainerSemantics(ruleName, greenPattern, match)
 				|| createsDoubleEdge(ruleName, greenPattern, match)
 				|| createsCyclicContainment(ruleName, greenPattern, match);
 	}
@@ -251,6 +252,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private boolean violatesContainerSemantics(String ruleName, IGreenPattern greenPattern, IMatch match) {
+		// GreenSCPattern do not need this check since it is allowed in order to repair a model
+		if(greenPattern instanceof GreenSCPattern)
+			return false;
+		
 		for (TGGRuleEdge greenEdge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
 			if (violationOfContainerSemanticsIsPossible(greenPattern, greenEdge)) {
 				EObject trgObj = (EObject) match.get(greenEdge.getTrgNode().getName());

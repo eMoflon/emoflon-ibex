@@ -123,6 +123,12 @@ public class PrecedenceGraph implements IMatchContainer {
 			if (pendingElts.contains(createdObj))
 				return false;
 		}
+		
+		for (TGGRuleNode contextNode : gPattern.getMarkedContextNodes()) {
+			Object contextObj = m.get(contextNode.getName());
+			if (pendingElts.contains(contextObj))
+				return false;
+		}
 
 		return true;
 	}
@@ -222,7 +228,7 @@ public class PrecedenceGraph implements IMatchContainer {
 		}
 		return filteredReadySet;
 	}
-
+ 
 	@Override
 	public boolean removeMatch(IMatch match) {
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
