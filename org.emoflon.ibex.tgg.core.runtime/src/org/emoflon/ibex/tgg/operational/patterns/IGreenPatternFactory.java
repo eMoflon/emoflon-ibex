@@ -43,7 +43,7 @@ public interface IGreenPatternFactory {
 
 	public Collection<TGGRuleEdge> getBlackSrcEdgesInRule();
 
-	Collection<TGGRuleEdge> getBlackTrgEdgesInRule();
+	public Collection<TGGRuleEdge> getBlackTrgEdgesInRule();
 	
 	public boolean isAxiom();
 	
@@ -54,5 +54,7 @@ public interface IGreenPatternFactory {
 	public List<TGGParamValue> getAttributeCSPVariables();
 	
 	public TGGAttributeConstraintLibrary getAttributeLibrary();
+
+	Collection<TGGRuleEdge> getBlackCorrEdgesInRule();
 
 }

@@ -39,15 +39,16 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	protected Collection<TGGRuleNode> greenSrcNodesInRule = new ArrayList<>();
 	protected Collection<TGGRuleNode> greenTrgNodesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleCorr> greenCorrNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> greenCorrEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> greenSrcEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> greenTrgEdgesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> greenCorrEdgesInRule = new ArrayList<>();;
 
 	protected Collection<TGGRuleNode> blackSrcNodesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleNode> blackTrgNodesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleCorr> blackCorrNodesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> blackSrcEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> blackTrgEdgesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> blackCorrEdgesInRule = new ArrayList<>();;
 
 	public GreenPatternFactory(String ruleName, IbexOptions options, OperationalStrategy strategy) {
 		this(options, strategy);
@@ -72,6 +73,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 		blackSrcEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.SRC)));
 		blackTrgEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.TRG)));
+		blackCorrEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.CORR)));
 
 		constraints.addAll(rule.getAttributeConditionLibrary().getTggAttributeConstraints());
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
@@ -243,6 +245,11 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	@Override
 	public Collection<TGGRuleEdge> getBlackTrgEdgesInRule() {
 		return blackTrgEdgesInRule;
+	}
+	
+	@Override
+	public Collection<TGGRuleEdge> getBlackCorrEdgesInRule() {
+		return blackCorrEdgesInRule;
 	}
 
 	@Override
