@@ -43,13 +43,14 @@ import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleNode;
 import language.impl.LanguagePackageImpl;
+import monitor.IbexMonitor;
 import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
-public abstract class OperationalStrategy implements IMatchObserver {
+public abstract class OperationalStrategy implements IMatchObserver, IbexMonitor {
 	private long currentIntervalStart = -1;
 	private final long INTERVAL_LENGTH = 5000;
 	private long matchCounter = 0;
@@ -177,7 +178,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-
+		
+		
 		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
 				options.tgg().getAttributeConstraintDefinitionLibrary());
 		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
@@ -313,6 +315,9 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	protected IMatch chooseOneMatch() {
 		IMatch match = updatePolicy.chooseOneMatch(new ImmutableMatchContainer(operationalMatchContainer));
+		//System.out.print("match:");
+		System.out.println(match);
+		
 		if (match == null)
 			throw new IllegalStateException("Update policies should never return null!");
 
@@ -526,4 +531,11 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	public IbexOptions getOptions() {
 		return options;
 	}
+	
+	public void getMemoryConsumed() {
+        Runtime runtime = Runtime.getRuntime();
+        long memory = runtime.totalMemory() - runtime.freeMemory();
+        logger.info("Memory consumed in Bytes: " + memory);        
+    }
+	
 }
