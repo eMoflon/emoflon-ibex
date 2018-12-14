@@ -31,6 +31,8 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
+import org.emoflon.ibex.tgg.operational.monitoring.MemoryConsumption;
+import org.emoflon.ibex.tgg.operational.monitoring.ObservableOperation;
 import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -80,6 +82,8 @@ public abstract class OperationalStrategy implements IMatchObserver, IbexMonitor
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 	protected IBlackInterpreter blackInterpreter;
 	protected IGreenInterpreter greenInterpreter;
+	
+	ObservableOperation observableOperation = new ObservableOperation();
 
 	/***** Constructors *****/
 
@@ -537,5 +541,9 @@ public abstract class OperationalStrategy implements IMatchObserver, IbexMonitor
         long memory = runtime.totalMemory() - runtime.freeMemory();
         logger.info("Memory consumed in Bytes: " + memory);        
     }
+	
+	public void getMonitor() {
+		new MemoryConsumption(observableOperation);
+	}
 	
 }
