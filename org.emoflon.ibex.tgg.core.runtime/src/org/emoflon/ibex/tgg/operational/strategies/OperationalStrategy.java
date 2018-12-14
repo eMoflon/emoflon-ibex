@@ -45,14 +45,13 @@ import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleNode;
 import language.impl.LanguagePackageImpl;
-import monitor.IbexMonitor;
 import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
-public abstract class OperationalStrategy implements IMatchObserver, IbexMonitor {
+public abstract class OperationalStrategy implements IMatchObserver {
 	private long currentIntervalStart = -1;
 	private final long INTERVAL_LENGTH = 5000;
 	private long matchCounter = 0;
@@ -535,12 +534,6 @@ public abstract class OperationalStrategy implements IMatchObserver, IbexMonitor
 	public IbexOptions getOptions() {
 		return options;
 	}
-	
-	public void getMemoryConsumed() {
-        Runtime runtime = Runtime.getRuntime();
-        long memory = runtime.totalMemory() - runtime.freeMemory();
-        logger.info("Memory consumed in Bytes: " + memory);        
-    }
 	
 	public void getMonitor() {
 		new MemoryConsumption(observableOperation);
