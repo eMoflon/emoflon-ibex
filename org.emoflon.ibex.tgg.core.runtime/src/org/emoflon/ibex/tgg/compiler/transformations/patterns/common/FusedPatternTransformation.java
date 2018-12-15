@@ -83,6 +83,7 @@ public abstract class FusedPatternTransformation extends OperationalPatternTrans
 
 	private List<TGGRuleEdge> determineContextEdges() {
 		List<TGGRuleEdge> contextEdgesInFusedPattern = new ArrayList<>();
+		contextEdgesInFusedPattern.addAll(fusedFactory.getBlackCorrEdgesInRule());
 		contextEdgesInFusedPattern.addAll(fusedFactory.getBlackSrcEdgesInRule());
 		contextEdgesInFusedPattern.addAll(fusedFactory.getBlackTrgEdgesInRule());
 

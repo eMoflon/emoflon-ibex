@@ -11,4 +11,6 @@ public interface IGreenInterpreter {
 	 * Rule application can fail due to invalid attribute values (the provided match is not as expected).
 	 */
 	Optional<IMatch> apply(IGreenPattern greenPattern, String ruleName, IMatch match);
+	
+	int getNumOfCreatedElements();
 }

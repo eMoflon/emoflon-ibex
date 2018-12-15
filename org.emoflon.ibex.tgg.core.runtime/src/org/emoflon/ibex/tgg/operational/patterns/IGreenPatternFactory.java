@@ -7,6 +7,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintLibrary;
 import language.TGGParamValue;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -28,6 +29,8 @@ public interface IGreenPatternFactory {
 	
 	public Collection<TGGRuleCorr> getGreenCorrNodesInRule();
 	
+	public Collection<TGGRuleEdge> getGreenCorrEdgesInRule();
+	
 	public Collection<TGGRuleEdge> getGreenSrcEdgesInRule();
 	
 	public Collection<TGGRuleEdge> getGreenTrgEdgesInRule();
@@ -40,7 +43,7 @@ public interface IGreenPatternFactory {
 
 	public Collection<TGGRuleEdge> getBlackSrcEdgesInRule();
 
-	Collection<TGGRuleEdge> getBlackTrgEdgesInRule();
+	public Collection<TGGRuleEdge> getBlackTrgEdgesInRule();
 	
 	public boolean isAxiom();
 	
@@ -49,4 +52,9 @@ public interface IGreenPatternFactory {
 	public List<TGGAttributeConstraint> getAttributeConstraints();
 
 	public List<TGGParamValue> getAttributeCSPVariables();
+	
+	public TGGAttributeConstraintLibrary getAttributeLibrary();
+
+	Collection<TGGRuleEdge> getBlackCorrEdgesInRule();
+
 }

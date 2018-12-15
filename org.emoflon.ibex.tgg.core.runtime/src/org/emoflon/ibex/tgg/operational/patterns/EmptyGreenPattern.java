@@ -76,4 +76,9 @@ public class EmptyGreenPattern implements IGreenPattern {
 	public Collection<TGGRuleNode> getMarkedContextNodes() {
 		return Collections.emptyList();
 	}
+	
+	@Override
+	public Collection<TGGRuleEdge> getCorrEdges() {
+		return Collections.emptyList();
+	}
 }

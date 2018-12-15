@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 
 import language.TGGRuleNode;
@@ -31,5 +32,10 @@ public class FilterNACCandidate {
 	public String toString() {
 		return getNodeInRule().getName() + "_" + getEdgeType().getName() + "_"
 				+ getEDirection().toString().toLowerCase() + "_" + getNodeInRule().getDomainType().getName();
+	}
+	
+	public EClass getOtherNodeType() {
+		return getEDirection() == EdgeDirection.OUTGOING ? (EClass) getEdgeType().getEType()
+				: (EClass) getEdgeType().eContainer();
 	}
 }

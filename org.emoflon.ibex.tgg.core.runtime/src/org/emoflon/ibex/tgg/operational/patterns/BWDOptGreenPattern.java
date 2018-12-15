@@ -49,4 +49,9 @@ public class BWDOptGreenPattern extends IbexGreenPattern {
 	public Collection<TGGRuleNode> getMarkedContextNodes() {
 		return factory.getBlackTrgNodesInRule();
 	}
+	
+	@Override
+	public Collection<TGGRuleEdge> getCorrEdges() {
+		return factory.getGreenCorrEdgesInRule();
+	}
 }

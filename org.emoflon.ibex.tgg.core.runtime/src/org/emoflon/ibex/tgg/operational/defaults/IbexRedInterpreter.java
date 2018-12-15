@@ -19,6 +19,9 @@ import runtime.TGGRuleApplication;
 
 public class IbexRedInterpreter implements IRedInterpreter {
 	private final SYNC strategy;
+	
+	private int numOfDeletedNodes = 0;
+	private int numOfDeletedEdges = 0;
 
 	public IbexRedInterpreter(final SYNC operationalStrategy) {
 		this.strategy = operationalStrategy;
@@ -133,6 +136,13 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 *            the edges to revoke
 	 */
 	private void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
+		numOfDeletedNodes += nodesToRevoke.size();
+		numOfDeletedEdges += edgesToRevoke.size();
 		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> strategy.addToTrash(node));
+	}
+
+	@Override
+	public int getNumOfDeletedElements() {
+		return numOfDeletedNodes;
 	}
 }

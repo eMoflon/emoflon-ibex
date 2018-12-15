@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.GreenSCPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
@@ -31,6 +32,7 @@ import language.TGGNamedElement;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import runtime.RuntimePackage;
 
 /**
  * @author leblebici Util class for creating EObjects, Edges, and
@@ -38,7 +40,10 @@ import language.TGGRuleNode;
  */
 public class IbexGreenInterpreter implements IGreenInterpreter {
 	private static final Logger logger = Logger.getLogger(IbexGreenInterpreter.class);
-
+	
+	
+	private int numOfCreatedNodes = 0;
+	private int numOfCreatedEdges= 0;
 	private OperationalStrategy operationalStrategy;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
@@ -51,6 +56,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	public Collection<EMFEdge> createEdges(IMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
+		numOfCreatedEdges += greenEdges.stream().filter(e -> !e.getSrcNode().getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).count();
 		Collection<EMFEdge> result = new ArrayList<>();
 		for (TGGRuleEdge e : greenEdges) {
 			EObject src = (EObject) comatch.get(e.getSrcNode().getName());
@@ -74,6 +80,8 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
+		numOfCreatedNodes++;
+		
 		EObject newObj = EcoreUtil.create(node.getType());
 		handlePlacementInResource(node, resource, newObj);
 
@@ -168,7 +176,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 
 		IMatch comatch = match.copy();
-
+		
 		createNonCorrNodes(comatch, greenPattern.getSrcNodes(), operationalStrategy.getSourceResource());
 		createEdges(comatch, greenPattern.getSrcEdges(), true);
 
@@ -178,6 +186,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		cspContainer.applyCSPValues(comatch);
 
 		createCorrs(comatch, greenPattern.getCorrNodes(), operationalStrategy.getCorrResource());
+		createEdges(comatch, greenPattern.getCorrEdges(), true);
 
 		return Optional.of(comatch);
 	}
@@ -243,6 +252,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private boolean violatesContainerSemantics(String ruleName, IGreenPattern greenPattern, IMatch match) {
+		// GreenSCPattern do not need this check since it is allowed in order to repair a model
+		if(greenPattern instanceof GreenSCPattern)
+			return false;
+		
 		for (TGGRuleEdge greenEdge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
 			if (violationOfContainerSemanticsIsPossible(greenPattern, greenEdge)) {
 				EObject trgObj = (EObject) match.get(greenEdge.getTrgNode().getName());
@@ -328,5 +341,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 
 		return false;
+	}
+
+	@Override
+	public int getNumOfCreatedElements() {
+		return numOfCreatedNodes;
 	}
 }

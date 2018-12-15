@@ -42,10 +42,12 @@ public class IbexOptions {
 		projectPath = "/";
 		workspacePath = "./../";
 		repairAttributes = true;
+		useShortcutRules = false;
 		setIlpSolver(SupportedILPSolver.Sat4J);
 		useEdgePatterns = false;
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
 		ignoreSrcTrgInjecitity = false;
+		optimizeSyncPattern = false;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -55,6 +57,15 @@ public class IbexOptions {
 
 	public boolean debug() {
 		return debug;
+	}
+
+	public boolean repairUsingShortcutRules() {
+		return useShortcutRules;
+	}
+	
+	public IbexOptions repairUsingShortcutRules(boolean useShortcutRules) {
+		this.useShortcutRules = useShortcutRules;
+		return this;
 	}
 
 	public boolean repairAttributes() {
@@ -192,7 +203,16 @@ public class IbexOptions {
 		this.lookAheadStrategy = lookAheadStrategy;
 		return this;
 	}
-	
+
+	public boolean optimizeSyncPattern() {
+		return optimizeSyncPattern;
+	}
+
+	public IbexOptions setOptimizeSyncPattern(boolean optimizeSyncPattern) {
+		this.optimizeSyncPattern = optimizeSyncPattern;
+		return this;
+	}
+
 	public boolean ignoreSrcTrgInjectivity() {
 		return ignoreSrcTrgInjecitity;
 	}

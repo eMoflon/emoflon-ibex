@@ -17,6 +17,7 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import language.BindingType;
 import language.DomainType;
 import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintLibrary;
 import language.TGGComplementRule;
 import language.TGGParamValue;
 import language.TGGRule;
@@ -40,12 +41,14 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	protected Collection<TGGRuleCorr> greenCorrNodesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> greenSrcEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> greenTrgEdgesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> greenCorrEdgesInRule = new ArrayList<>();;
 
 	protected Collection<TGGRuleNode> blackSrcNodesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleNode> blackTrgNodesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleCorr> blackCorrNodesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> blackSrcEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> blackTrgEdgesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> blackCorrEdgesInRule = new ArrayList<>();;
 
 	public GreenPatternFactory(String ruleName, IbexOptions options, OperationalStrategy strategy) {
 		this(options, strategy);
@@ -61,6 +64,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 		greenSrcEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.SRC)));
 		greenTrgEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.TRG)));
+		greenCorrEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.CORR)));
 
 		blackSrcNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.SRC));
 		blackTrgNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.TRG));
@@ -69,6 +73,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 		blackSrcEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.SRC)));
 		blackTrgEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.TRG)));
+		blackCorrEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.CORR)));
 
 		constraints.addAll(rule.getAttributeConditionLibrary().getTggAttributeConstraints());
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
@@ -203,6 +208,11 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	}
 
 	@Override
+	public Collection<TGGRuleEdge> getGreenCorrEdgesInRule() {
+		return greenCorrEdgesInRule;
+	}
+
+	@Override
 	public Collection<TGGRuleEdge> getGreenSrcEdgesInRule() {
 		return greenSrcEdgesInRule;
 	}
@@ -236,6 +246,11 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	public Collection<TGGRuleEdge> getBlackTrgEdgesInRule() {
 		return blackTrgEdgesInRule;
 	}
+	
+	@Override
+	public Collection<TGGRuleEdge> getBlackCorrEdgesInRule() {
+		return blackCorrEdgesInRule;
+	}
 
 	@Override
 	public boolean isAxiom() {
@@ -255,5 +270,10 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	@Override
 	public List<TGGParamValue> getAttributeCSPVariables() {
 		return variables;
+	}
+
+	@Override
+	public TGGAttributeConstraintLibrary getAttributeLibrary() {
+		return rule.getAttributeConditionLibrary();
 	}
 }

@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
@@ -36,6 +37,7 @@ public abstract class ILPSolver {
 	 */
 	protected ILPSolver(ILPProblem ilpProblem) {
 		this.ilpProblem = ilpProblem;
+		logger.setLevel(Level.FATAL);
 	}
 
 	/**
