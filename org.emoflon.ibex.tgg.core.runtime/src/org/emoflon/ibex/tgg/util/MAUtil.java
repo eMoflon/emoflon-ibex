@@ -20,7 +20,7 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class MAUtil {
-	public static final String FUSED = "FFF";
+	public static final String FUSED = "_FUSED_";
 	
 	public static TGGRuleNode createProxyNode(TGGRuleNode node) {
 		TGGRuleNode copiedNode = LanguageFactory.eINSTANCE.createTGGRuleNode();

@@ -78,6 +78,9 @@ public abstract class OperationalPatternTransformation {
 			for (int j = i + 1; j < allNodes.size(); j++) {
 				TGGRuleNode ruleNode_i = allNodes.get(i);
 				TGGRuleNode ruleNode_j = allNodes.get(j);
+				if(options.ignoreSrcTrgInjectivity() || ruleNode_i.getBindingType() != ruleNode_j.getBindingType())
+					continue;
+				
 				if (IBeXPatternOptimiser.unequalConstraintNecessary(ruleNode_i, ruleNode_j)) {
 					findIBeXNodeWithName(ibexPattern, ruleNode_i.getName())//
 							.ifPresent(ni -> findIBeXNodeWithName(ibexPattern, ruleNode_j.getName())//

@@ -24,11 +24,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
-import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
@@ -71,7 +69,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected IMatchContainer operationalMatchContainer;
 	protected Map<TGGRuleApplication, IMatch> consistencyMatches;
 	private boolean domainsHaveNoSharedTypes;
-	protected Map<String, IGreenPatternFactory> factories;
+	private Map<String, IGreenPatternFactory> factories;
 
 	// Configuration
 	protected IUpdatePolicy updatePolicy;
@@ -162,7 +160,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return res;
 	}
 
-	public Resource createResource(String workspaceRelativePath) {
+	protected Resource createResource(String workspaceRelativePath) {
 		URI uri = URI.createURI(workspaceRelativePath);
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
@@ -194,7 +192,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected IMatchContainer createMatchContainer() {
-		return new MatchContainer(options.flattenedTGG());
+		return new MatchContainer(options.flattenedTGG(), this);
 	}
 
 	protected Resource loadFlattenedTGGResource() throws IOException {
@@ -232,9 +230,9 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		if (isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(match)) {
 			operationalMatchContainer.addMatch(match);
-			logger.debug("Received and added " + match.getPatternName() + "(" + match.hashCode() + ")");
+			logger.debug("Received and added " + match.getPatternName());
 		} else
-			logger.debug("Received but rejected " + match.getPatternName() + "(" + match.hashCode() + ")");
+			logger.debug("Received but rejected " + match.getPatternName());
 	}
 
 	protected void addConsistencyMatch(IMatch match) {
@@ -247,7 +245,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
 		if (removeOperationalRuleMatch((IMatch) match)) {
 			logger.debug("Removed due to delete event from pattern matcher: ");
-			logger.debug(match.getPatternName() + "(" + match.hashCode() + ")");
+			logger.debug(match.getPatternName());
 		}
 	}
 
@@ -260,7 +258,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 	
 	private boolean matchIsDomainConform(IMatch match) {
-		if (domainsHaveNoSharedTypes)
+		if (domainsHaveNoSharedTypes || options.ignoreSrcTrgInjectivity())
 			return true;
 
 		return matchedNodesAreInCorrectResource(s, //
@@ -335,7 +333,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
-			logger.debug("Successfully applied: " + match.getPatternName() + "(" + match.hashCode() + ")");
+			logger.debug("Successfully applied: " + match.getPatternName());
 			operationalMatchContainer.matchApplied(match);
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
 			updatePolicy.notifyMatchHasBeenApplied(cm, ruleName);
@@ -391,7 +389,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
 		this.greenInterpreter = greenInterpreter;
 	}
-	
+
 	public IGreenInterpreter getGreenInterpreter() {
 		return greenInterpreter;
 	}

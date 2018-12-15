@@ -26,10 +26,10 @@ public class IbexOptions {
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private SupportedILPSolver ilpSolver;
 	private boolean repairAttributes;
-	private boolean useShortcutRules;
 	private EPackage corrMetamodel;
 	private FilterNACStrategy lookAheadStrategy;
-	private boolean optimizeSyncPattern;
+	private boolean ignoreSrcTrgInjecitity;
+	
 
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
@@ -46,6 +46,7 @@ public class IbexOptions {
 		setIlpSolver(SupportedILPSolver.Sat4J);
 		useEdgePatterns = false;
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
+		ignoreSrcTrgInjecitity = false;
 		optimizeSyncPattern = false;
 	}
 
@@ -57,7 +58,7 @@ public class IbexOptions {
 	public boolean debug() {
 		return debug;
 	}
-	
+
 	public boolean repairUsingShortcutRules() {
 		return useShortcutRules;
 	}
@@ -66,7 +67,7 @@ public class IbexOptions {
 		this.useShortcutRules = useShortcutRules;
 		return this;
 	}
-	
+
 	public boolean repairAttributes() {
 		return repairAttributes;
 	}
@@ -209,6 +210,15 @@ public class IbexOptions {
 
 	public IbexOptions setOptimizeSyncPattern(boolean optimizeSyncPattern) {
 		this.optimizeSyncPattern = optimizeSyncPattern;
+		return this;
+	}
+
+	public boolean ignoreSrcTrgInjectivity() {
+		return ignoreSrcTrgInjecitity;
+	}
+	
+	public IbexOptions ignoreSrcTrgInjectivity(boolean ignoreSrcTrgInjecitity) {
+		this.ignoreSrcTrgInjecitity = ignoreSrcTrgInjecitity;
 		return this;
 	}
 }
