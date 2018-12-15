@@ -135,6 +135,7 @@ public class LocalPatternSearch {
 			Object lookupTarget = lookup.lookup(name2candidates.get(lookupSourceName));
 			
 			if (lookupTarget != null && lookupTarget instanceof List<?>) {
+				@SuppressWarnings("unchecked")
 				List<EObject> candidateList = (List<EObject>) lookupTarget;
 				for(EObject candidate : candidateList) {
 					if(currentCandidates.contains(candidate))

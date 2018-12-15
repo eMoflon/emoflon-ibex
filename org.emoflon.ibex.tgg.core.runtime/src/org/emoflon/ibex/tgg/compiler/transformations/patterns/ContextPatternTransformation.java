@@ -7,6 +7,7 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFWDBlackP
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil.isAxiomatic;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,10 +73,8 @@ import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGNamedElement;
 import language.TGGRule;
-import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import static org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil.isAxiomatic;
 
 public class ContextPatternTransformation {
 	public static final int MAX_NUM_OF_EDGES_IN_PATTERN = 3;
@@ -527,22 +526,7 @@ public class ContextPatternTransformation {
 
 		ibexPattern.getSignatureNodes().add(ibexNode);
 
-		if (node instanceof TGGRuleCorr) {
-			TGGRuleCorr corr = (TGGRuleCorr) node;
-//			transformCorr(ibexPattern, corr);
-		}
-
 		return ibexNode;
-	}
-
-	private void transformCorr(IBeXContextPattern ibexPattern, TGGRuleCorr corr) {
-		EReference srcType = ((EReference) corr.getType().getEStructuralFeature("source"));
-		TGGRuleNode srcOfCorr = corr.getSource();
-		transformEdge(srcType, corr, srcOfCorr, ibexPattern, false);
-
-		EReference trgType = ((EReference) corr.getType().getEStructuralFeature("target"));
-		TGGRuleNode trgOfCorr = corr.getTarget();
-		transformEdge(trgType, corr, trgOfCorr, ibexPattern, false);
 	}
 
 	private void transformEdge(EReference type, TGGRuleNode srcNode, TGGRuleNode trgNode,

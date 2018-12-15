@@ -1,6 +1,5 @@
 package org.emoflon.ibex.common.emf;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -10,11 +9,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
 
 /**
  * Utility methods for manipulating EMF models.
@@ -134,50 +129,10 @@ public class EMFManipulationUtils {
 			}
 			if(!node.eContents().isEmpty())
 				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction);
-//			EcoreUtil.delete(node, false);
-//			delete(node, danglingNodeAction);
 		}
 		EcoreUtil.deleteAll(nodesToDelete, false);
 	}
 	
-	private static void delete(EObject eObject, final Consumer<EObject> danglingNodeAction)
-	  {
-	    EObject rootEObject = EcoreUtil.getRootContainer(eObject);
-	    Resource resource = rootEObject.eResource();
-
-	    Collection<EStructuralFeature.Setting> usages;
-	    if (resource == null)
-	    {
-	      usages = UsageCrossReferencer.find(eObject, rootEObject);
-	    }
-	    else
-	    {
-	      ResourceSet resourceSet = resource.getResourceSet();
-	      if (resourceSet == null)
-	      {
-	        usages = UsageCrossReferencer.find(eObject, resource);
-	      }
-	      else
-	      {
-	        usages = UsageCrossReferencer.find(eObject, resourceSet);
-	      }
-	    }
-
-	    for (EStructuralFeature.Setting setting : usages)
-	    {
-	      if (setting.getEStructuralFeature().isChangeable())
-	      {
-    	    if (isDanglingNode(eObject)) {
-				danglingNodeAction.accept(eObject);
-			}
-	        EcoreUtil.remove(setting, eObject);
-	      }
-	    }
-
-	    //FIXME [Greg] Why doesn't this work?
-	    //EcoreUtil.remove(eObject);
-	  }
-
 	/**
 	 * Deletes the edges whose type has the containment set to the given value.
 	 * 

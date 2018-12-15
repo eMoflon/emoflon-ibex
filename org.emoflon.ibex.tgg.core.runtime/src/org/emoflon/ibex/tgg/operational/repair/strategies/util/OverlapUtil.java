@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
@@ -26,11 +24,9 @@ import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
 import language.BindingType;
 import language.DomainType;
-import language.LanguageFactory;
 import language.TGG;
 import language.TGGComplementRule;
 import language.TGGRule;
-import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -118,17 +114,6 @@ public class OverlapUtil {
 		boolean containsSrc = overlap.mappings.keySet().stream().anyMatch(k -> k.getDomainType() == DomainType.SRC && k.getBindingType() == BindingType.CREATE);
 		boolean containsTrg = overlap.mappings.keySet().stream().anyMatch(k -> k.getDomainType() == DomainType.TRG && k.getBindingType() == BindingType.CREATE);
 		return containsSrc && containsTrg;
-	}
-
-	private TGGOverlap createReinsertMapping(TGGRule rule) {
-		Map<TGGRuleElement, TGGRuleElement> mappings = cfactory.createObjectToObjectHashMap();
-		for (TGGRuleNode node : rule.getNodes()) {
-			mappings.put(node, node);
-		}
-		for (TGGRuleEdge edge : rule.getEdges()) {
-			mappings.put(edge, edge);
-		}
-		return new TGGOverlap(rule, rule, mappings, new ArrayList<>(),  new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 	}
 	
 	private TGGOverlap createMappings(TGGRule sourceRule, TGGRule targetRule, boolean mapContext) {
@@ -249,35 +234,6 @@ public class OverlapUtil {
 			}
 		}
 		return candidates;
-	}
-
-	private void createAndRegisterCorrEdges(TGGRule rule) {
-		Collection<TGGRuleCorr> corrs = rule.getNodes()
-				.stream()
-				.filter(n -> n instanceof TGGRuleCorr)
-				.map(n -> (TGGRuleCorr) n)
-				.collect(Collectors.toList());
-		
-		for (TGGRuleCorr corr : corrs) {
-			TGGRuleEdge incomingEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
-			incomingEdge.setType((EReference) corr.getType().getEStructuralFeature("source"));
-			incomingEdge.setDomainType(corr.getDomainType());
-			incomingEdge.setBindingType(corr.getBindingType());
-			incomingEdge.setSrcNode(corr);
-			incomingEdge.setTrgNode(corr.getSource());
-			incomingEdge.setName(incomingEdge.getSrcNode().getName() + "__" + incomingEdge.getType().getName() + "__"  + incomingEdge.getTrgNode().getName());
-			
-			TGGRuleEdge outgoingEdge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
-			outgoingEdge.setType((EReference) corr.getType().getEStructuralFeature("target"));
-			outgoingEdge.setDomainType(corr.getDomainType());
-			outgoingEdge.setBindingType(corr.getBindingType());
-			outgoingEdge.setSrcNode(corr);
-			outgoingEdge.setTrgNode(corr.getTarget());
-			outgoingEdge.setName(outgoingEdge.getSrcNode().getName() + "__" + outgoingEdge.getType().getName() + "__"  + outgoingEdge.getTrgNode().getName());
-			
-			rule.getEdges().add(incomingEdge);
-			rule.getEdges().add(outgoingEdge);
-		}
 	}
 
 	private int[] createILPProblem(TGGRule sourceRule, TGGRule targetRule) {

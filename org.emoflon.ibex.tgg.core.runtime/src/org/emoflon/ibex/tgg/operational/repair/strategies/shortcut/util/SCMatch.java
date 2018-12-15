@@ -4,8 +4,6 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 
 /**
  * Represents a match for a operationalized shortcut rule application

@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-
 import language.TGG;
 import language.TGGComplementRule;
 import language.TGGRule;

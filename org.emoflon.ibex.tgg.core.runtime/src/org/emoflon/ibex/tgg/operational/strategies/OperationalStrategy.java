@@ -160,7 +160,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return res;
 	}
 
-	protected Resource createResource(String workspaceRelativePath) {
+	public Resource createResource(String workspaceRelativePath) {
 		URI uri = URI.createURI(workspaceRelativePath);
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
@@ -192,7 +192,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected IMatchContainer createMatchContainer() {
-		return new MatchContainer(options.flattenedTGG(), this);
+		return new MatchContainer(options.flattenedTGG());
 	}
 
 	protected Resource loadFlattenedTGGResource() throws IOException {

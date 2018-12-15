@@ -1,24 +1,13 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.common;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getMarkerRefName;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getMarkerTypeName;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
-import java.util.Collection;
-
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
-import IBeXLanguage.IBeXLanguageFactory;
-import IBeXLanguage.IBeXNode;
-import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;

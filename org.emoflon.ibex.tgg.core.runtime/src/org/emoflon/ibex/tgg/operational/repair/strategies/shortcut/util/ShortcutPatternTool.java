@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +19,6 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.GreenSCPattern;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.InterfaceSCFactory;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
@@ -33,8 +30,6 @@ import language.BindingType;
 import language.DomainType;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
-import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 
 /**
@@ -48,7 +43,6 @@ public class ShortcutPatternTool {
 	protected final static Logger logger = Logger.getLogger(ShortcutPatternTool.class);
 	
 	private int numOfDeletedNodes = 0;
-	private int numOfDeletedEdges = 0;
 	
 	private SYNC strategy;
 	private Collection<ShortcutRule> scRules;
@@ -184,7 +178,6 @@ public class ShortcutPatternTool {
 		deletedRuleNodes.forEach(n -> nodesToRevoke.add((EObject) brokenMatch.get(n.getName())));
 		
 		numOfDeletedNodes += nodesToRevoke.size();
-		numOfDeletedEdges += edgesToRevoke.stream().filter(e -> !e.getSource().eClass().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).count();
 		revokeElements(nodesToRevoke, edgesToRevoke);
 		
 		Collection<TGGRuleNode> contextRuleNodes = TGGUtil.filterNodes(osc.getScRule().getNodes(), BindingType.CONTEXT);

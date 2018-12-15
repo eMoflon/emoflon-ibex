@@ -29,6 +29,8 @@ public class IbexOptions {
 	private EPackage corrMetamodel;
 	private FilterNACStrategy lookAheadStrategy;
 	private boolean ignoreSrcTrgInjecitity;
+	private boolean useShortcutRules;
+	private boolean optimizeSyncPattern;
 	
 
 	/**

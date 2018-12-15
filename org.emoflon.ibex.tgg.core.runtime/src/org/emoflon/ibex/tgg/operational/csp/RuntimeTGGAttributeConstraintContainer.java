@@ -139,19 +139,9 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 			EDataType type = attr.getEAttributeType();
 			Object value = cspVal.getRight();
 
-			//TODO lfritsche: fixme
-//			if (value != null && type != null && attr != null) {
-//				Object toSet = coerceToType(type, value);
-//				if (!valueAlreadySet(entry, attr, toSet))
-//					entry.eSet(attr, toSet);
-//			}
 			if(value != null && type != null && attr != null)
 				entry.eSet(attr, coerceToType(type, value));
 		}
-	}
-
-	private boolean valueAlreadySet(EObject entry, EAttribute attr, Object toSet) {
-		return toSet.equals(entry.eGet(attr));
 	}
 
 	private Object coerceToType(EDataType type, Object o) {

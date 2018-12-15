@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 

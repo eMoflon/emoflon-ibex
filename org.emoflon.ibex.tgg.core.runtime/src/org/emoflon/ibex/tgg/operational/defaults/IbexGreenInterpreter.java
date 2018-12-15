@@ -32,7 +32,6 @@ import language.TGGNamedElement;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import runtime.RuntimePackage;
 
 /**
  * @author leblebici Util class for creating EObjects, Edges, and
@@ -43,7 +42,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	
 	
 	private int numOfCreatedNodes = 0;
-	private int numOfCreatedEdges= 0;
 	private OperationalStrategy operationalStrategy;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
@@ -56,7 +54,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	public Collection<EMFEdge> createEdges(IMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
-		numOfCreatedEdges += greenEdges.stream().filter(e -> !e.getSrcNode().getType().equals(RuntimePackage.eINSTANCE.getTGGRuleApplication())).count();
 		Collection<EMFEdge> result = new ArrayList<>();
 		for (TGGRuleEdge e : greenEdges) {
 			EObject src = (EObject) comatch.get(e.getSrcNode().getName());

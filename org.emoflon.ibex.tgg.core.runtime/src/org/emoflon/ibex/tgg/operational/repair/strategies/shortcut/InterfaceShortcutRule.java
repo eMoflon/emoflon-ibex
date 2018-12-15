@@ -183,10 +183,6 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 		filterNodes.stream().forEach(n -> n.setBindingType(target));
 	}
 
-	private void transformEntryNodes(Collection<TGGRuleNode> filterNodes, BindingType target) {
-		filterNodes.stream().filter(n -> scRule.getMergedNodes().contains(n)).forEach(n -> n.setBindingType(target));
-	}
-	
 	private void transformEdges(Collection<TGGRuleEdge> filteredEdges, BindingType target) {
 		filteredEdges.forEach(e -> e.setBindingType(target));
 	}

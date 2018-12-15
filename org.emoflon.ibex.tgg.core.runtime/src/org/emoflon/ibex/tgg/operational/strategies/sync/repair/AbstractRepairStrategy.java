@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.sync.repair;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 

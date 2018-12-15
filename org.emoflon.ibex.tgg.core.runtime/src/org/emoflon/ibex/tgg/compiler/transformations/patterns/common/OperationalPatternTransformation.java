@@ -3,9 +3,6 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns.common;
 import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWithName;
 import static org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper.addInjectivityConstraintIfNecessary;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFilterNACPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFWDBlackPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getBWDBlackPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 
 import java.util.ArrayList;
 import java.util.List;
