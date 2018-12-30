@@ -217,16 +217,16 @@ public abstract class OPT extends OperationalStrategy {
 			});
 		}
 
-//		HandleDependencies handleCycles = new HandleDependencies(this.appliedBundles, this.edgeToMarkingMatches,
-//				this.nodeToMarkingMatches, this.matchToContextNodes, this.matchToContextEdges);
-//
-//		List<Set<List<Integer>>> cyclicConstraints = handleCycles.getCyclicConstraints();
-//		for (Set<List<Integer>> constraints : cyclicConstraints) {
-//			for (List<Integer> variables : constraints) {
-//				ilpProblem.addExclusion(variables.stream().map(v -> "x" + v), "EXCL_cycle" + this.nameCounter++,
-//						variables.size() - 1);
-//			}
-//		}
+		HandleDependencies handleCycles = new HandleDependencies(this.appliedBundles, this.edgeToMarkingMatches,
+				this.nodeToMarkingMatches, this.matchToContextNodes, this.matchToContextEdges);
+
+		List<Set<List<Integer>>> cyclicConstraints = handleCycles.getCyclicConstraints();
+		for (Set<List<Integer>> constraints : cyclicConstraints) {
+			for (List<Integer> variables : constraints) {
+				ilpProblem.addExclusion(variables.stream().map(v -> "x" + v), "EXCL_cycle" + this.nameCounter++,
+						variables.size() - 1);
+			}
+		}
 	}
 
 	protected void defineILPImplications(final BinaryILPProblem ilpProblem) {
