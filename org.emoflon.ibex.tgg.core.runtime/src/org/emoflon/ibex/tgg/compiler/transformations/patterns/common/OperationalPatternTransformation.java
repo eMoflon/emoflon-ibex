@@ -78,7 +78,7 @@ public abstract class OperationalPatternTransformation {
 				if(ruleNode_i.getBindingType() != ruleNode_j.getBindingType())
 					continue;
 				
-				if(options.ignoreSrcTrgInjectivity() && !ruleNode_i.getDomainType().equals(ruleNode_j.getDomainType()))
+				if(options.ignoreInjectivity().test(ruleNode_i, ruleNode_j))
 					continue;
 				
 				if (IBeXPatternOptimiser.unequalConstraintNecessary(ruleNode_i, ruleNode_j)) {
