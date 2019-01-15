@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EDataType;
@@ -177,6 +178,9 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 				return Integer.parseInt((String) o);
 			else if (o instanceof String && type.getInstanceClass().equals(double.class))
 				return Double.parseDouble((String) o);
+			else if (o instanceof BasicEList)
+				// Shallow copy
+				return ((BasicEList<?>) o).clone();
 			else if (o instanceof Collection)
 				// Currently no handling for collections
 				return o;
