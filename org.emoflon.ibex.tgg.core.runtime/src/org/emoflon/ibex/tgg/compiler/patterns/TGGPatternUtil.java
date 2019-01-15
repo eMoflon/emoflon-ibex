@@ -12,14 +12,7 @@ import language.DomainType;
 import language.TGGRule;
 import runtime.TGGRuleApplication;
 
-import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver;
-import org.emoflon.ibex.tgg.operational.monitoring.GeneratedPatternsSize;
-import org.emoflon.ibex.tgg.operational.monitoring.ObservableOperation;
-
 public class TGGPatternUtil {
-	ObservableOperation observableOperation = new ObservableOperation();
-	IbexObserver observer = new GeneratedPatternsSize(observableOperation);
-	
 	public static final String protocolNodeSuffix = "_eMoflon_ProtocolNode";
 
 	public static String getProtocolNodeName(String ruleName) {
@@ -135,5 +128,4 @@ public class TGGPatternUtil {
 		String refName = TGGModelUtils.getMarkerRefName(binding, domain, ovName);
 		return (EObject) ra.eGet(ruleAppNode.eClass().getEStructuralFeature(refName));	
 	}
-	
 }
