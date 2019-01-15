@@ -1,9 +1,33 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
-public class ObservableOperation {
+import java.util.ArrayList;
+import java.util.List;
 
-	public enum Monitor {
-		IDLE, MEMORY, SIZEPARRETN;
+public class ObservableOperation {
+	private List<IbexObserver> observers = new ArrayList<IbexObserver>();
+	String observerName;
+	
+	public void setObseverName(String observerName) {
+		this.observerName = observerName;
+		notifyAllObservers();
+	}
+	
+	public void attach(IbexObserver observer) {
+		observers.add(observer);
+	}
+	
+	public void dettach(IbexObserver observer) {
+		observers.remove(observer);
+	}
+	
+	public void notifyAllObservers() {
+		for(IbexObserver observer : observers) {
+			observer.update();
+		}
+	}
+	
+	/*public enum Monitor {
+		IDLE, MEMORY;
 	};
 	
 	Monitor monitor;
@@ -26,5 +50,7 @@ public class ObservableOperation {
 	
 	public void setMonitor() {
 		System.out.println("Idle Monitor");
-	}
+	}*/
+	
+	
 }
