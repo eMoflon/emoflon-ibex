@@ -33,6 +33,7 @@ import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver;
 import org.emoflon.ibex.tgg.operational.monitoring.MemoryConsumption;
+import org.emoflon.ibex.tgg.operational.monitoring.GeneratedPatternsSize;
 import org.emoflon.ibex.tgg.operational.monitoring.ObservableOperation;
 import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
@@ -84,7 +85,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected IGreenInterpreter greenInterpreter;
 	
 	ObservableOperation observableOperation = new ObservableOperation();
-	IbexObserver observer = new MemoryConsumption(observableOperation);
+	IbexObserver memoryConsumptionObserver = new MemoryConsumption(observableOperation);
+	IbexObserver generatedPatternsSizeObserver = new GeneratedPatternsSize(observableOperation);
 
 	/***** Constructors *****/
 
