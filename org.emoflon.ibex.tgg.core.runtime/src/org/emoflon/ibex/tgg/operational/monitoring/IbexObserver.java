@@ -4,6 +4,7 @@ public abstract class IbexObserver {
 
 	protected ObservableOperation observableOperation;
 
-	public abstract void getMemoryConsumed();
+//	public abstract void getMemoryConsumed();
+	public abstract void getGeneratedPatternsSize();
 
 }

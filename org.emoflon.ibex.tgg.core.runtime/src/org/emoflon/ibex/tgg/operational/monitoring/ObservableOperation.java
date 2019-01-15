@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational.monitoring;
 public class ObservableOperation {
 
 	public enum Monitor {
-		IDLE, MEMORY;
+		IDLE, MEMORY, SIZEPARRETN;
 	};
 	
 	Monitor monitor;
@@ -18,6 +18,8 @@ public class ObservableOperation {
 			new MemoryConsumption().getMemoryConsumed();			
 		case IDLE:
 			setMonitor();
+		case SIZEPARRETN:
+			new GeneratedPatternsSize().getGeneratedPatternsSize();
 		}
 		return monitor;
 	}
