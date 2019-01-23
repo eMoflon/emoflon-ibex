@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.defaults;
 
 import java.util.Collection;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
