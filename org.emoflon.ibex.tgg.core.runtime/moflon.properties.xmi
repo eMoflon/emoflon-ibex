@@ -2,5 +2,4 @@
 <org.moflon.core.propertycontainer:MoflonPropertiesContainer xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.moflon.core.propertycontainer="platform:/plugin/org.moflon.core.propertycontainer/model/Propertycontainer.ecore" projectName="org.emoflon.ibex.tgg.core.runtime">
   <metaModelProject MetaModelProjectName="NO_META_MODEL_PROJECT_NAME_SET_YET"/>
   <replaceGenModel/>
-  <sdmCodegeneratorHandlerId/>
 </org.moflon.core.propertycontainer:MoflonPropertiesContainer>
