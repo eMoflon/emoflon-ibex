@@ -539,7 +539,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return options;
 	}
 	
-	public void invokeOberver() {
+	public void invokeObserver() {
 		observableOperation.setObseverName("Memory Consumed Monitor");
 	}
 	
