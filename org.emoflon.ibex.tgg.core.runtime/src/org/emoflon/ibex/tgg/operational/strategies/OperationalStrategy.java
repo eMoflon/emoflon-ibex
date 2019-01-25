@@ -332,6 +332,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
+		generatedPatternsSizeObserver.helper(match.getPatternName());
 		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
