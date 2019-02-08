@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import IBeXLanguage.IBeXContextPattern;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 public class GeneratedPatternsSizeObserver extends IbexObserver{    
 
@@ -28,16 +29,16 @@ public class GeneratedPatternsSizeObserver extends IbexObserver{
     }
     
     public void setEdges(IBeXContextPattern ibexPattern) {
-        String key = ibexPattern.getName();
-        if (!edges.containsKey(key)) {
-            edges.put(key, ibexPattern.getLocalEdges().size());
+        String patternName = PatternSuffixes.removeSuffix(ibexPattern.getName());
+        if (!edges.containsKey(patternName)) {
+            edges.put(patternName, ibexPattern.getLocalEdges().size());
         }
     }
     
     public void setNodes(IMatch match) {
-        String key = match.getPatternName();
-        if (!nodes.containsKey(key)) {
-            nodes.put(key, match.getParameterNames().size());
+        String patternName = PatternSuffixes.removeSuffix(match.getPatternName());
+        if (!nodes.containsKey(patternName)) {
+            nodes.put(patternName, match.getParameterNames().size());
         }
     }    
     
@@ -45,11 +46,11 @@ public class GeneratedPatternsSizeObserver extends IbexObserver{
         Iterator<Entry<String, Integer>> node = nodes.entrySet().iterator();
         while (node.hasNext()) {
             Map.Entry<String, Integer> pair = (Map.Entry<String, Integer>)node.next();
-            String key = pair.getKey().toString();
-            Integer edgeSize = edges.get(key) != null ? edges.get(key).intValue() : 0;
-            Integer nodeSize = nodes.get(key) != null ? nodes.get(key).intValue() : 0;
+            String patternName = pair.getKey().toString();
+            Integer edgeSize = edges.get(patternName) != null ? edges.get(patternName).intValue() : 0;
+            Integer nodeSize = nodes.get(patternName) != null ? nodes.get(patternName).intValue() : 0;
             Integer totalSize = edgeSize + nodeSize;
-            System.out.println(key + " = " + totalSize);
+            logger.info(patternName + ": " + totalSize);
             node.remove();
         }
     }
