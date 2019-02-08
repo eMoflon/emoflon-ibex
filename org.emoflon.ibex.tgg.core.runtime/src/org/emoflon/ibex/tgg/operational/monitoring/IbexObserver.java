@@ -8,7 +8,7 @@ public abstract class IbexObserver {
 	
 	public abstract void update();
 
-	public void helper(String parameter) {
+	public void helper(Object parameter) {
 	}
 
 }

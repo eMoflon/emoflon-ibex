@@ -31,9 +31,9 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
+import org.emoflon.ibex.tgg.operational.monitoring.GeneratedPatternsSize;
 import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver;
 import org.emoflon.ibex.tgg.operational.monitoring.MemoryConsumption;
-import org.emoflon.ibex.tgg.operational.monitoring.GeneratedPatternsSize;
 import org.emoflon.ibex.tgg.operational.monitoring.ObservableOperation;
 import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
@@ -322,9 +322,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	protected IMatch chooseOneMatch() {
 		IMatch match = updatePolicy.chooseOneMatch(new ImmutableMatchContainer(operationalMatchContainer));
-		//System.out.print("match:");
-		System.out.println(match);
-		
+
 		if (match == null)
 			throw new IllegalStateException("Update policies should never return null!");
 
@@ -332,15 +330,17 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		generatedPatternsSizeObserver.helper(match.getPatternName());
+		generatedPatternsSizeObserver.helper(match);
+		
 		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
-
+	
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
-		IGreenPattern greenPattern = factory.create(match.getPatternName());
 
+		IGreenPattern greenPattern = factory.create(match.getPatternName());
+		
 		logger.debug("Attempting to apply: " + match.getPatternName() + " with " + greenPattern);
 
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
