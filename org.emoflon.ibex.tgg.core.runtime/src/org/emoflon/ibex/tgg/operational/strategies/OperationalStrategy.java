@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -31,9 +32,10 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
-import org.emoflon.ibex.tgg.operational.monitoring.GeneratedPatternsSize;
+import org.emoflon.ibex.tgg.operational.monitoring.GeneratedPatternsSizeObserver;
 import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver;
-import org.emoflon.ibex.tgg.operational.monitoring.MemoryConsumption;
+import org.emoflon.ibex.tgg.operational.monitoring.MemoryConsumptionObserver;
+import org.emoflon.ibex.tgg.operational.monitoring.ModelSizeObserver;
 import org.emoflon.ibex.tgg.operational.monitoring.ObservableOperation;
 import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
@@ -85,8 +87,9 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected IGreenInterpreter greenInterpreter;
 	
 	ObservableOperation observableOperation = new ObservableOperation();
-	IbexObserver memoryConsumptionObserver = new MemoryConsumption(observableOperation);
-	IbexObserver generatedPatternsSizeObserver = new GeneratedPatternsSize(observableOperation);
+	IbexObserver memoryConsumptionObserver = new MemoryConsumptionObserver(observableOperation);
+	GeneratedPatternsSizeObserver generatedPatternsSizeObserver = new GeneratedPatternsSizeObserver(observableOperation);
+	ModelSizeObserver modelSizeObserver = new ModelSizeObserver(observableOperation);
 
 	/***** Constructors *****/
 
@@ -299,6 +302,28 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	public abstract void run() throws IOException;
+	
+	/*public int getNumberOfObjectsInModels() {
+        int sizeS = 0;
+        TreeIterator<EObject> treeIterator = s.getAllContents();
+        while(treeIterator.hasNext()) {
+            treeIterator.next();
+            sizeS++;
+        }
+        int sizeC = 0;
+        treeIterator = c.getAllContents();
+        while(treeIterator.hasNext()) {
+            treeIterator.next();
+            sizeC++;
+        }
+        int sizeT = 0;
+        treeIterator = t.getAllContents();
+        while(treeIterator.hasNext()) {
+            treeIterator.next();
+            sizeT++;
+        }
+        return sizeS + sizeC + sizeT;        
+    }*/
 
 	protected boolean processOneOperationalRuleMatch() {
 		if (operationalMatchContainer.isEmpty())
@@ -330,8 +355,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		generatedPatternsSizeObserver.helper(match);
-		
+		generatedPatternsSizeObserver.setNodes(match);
 		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
@@ -541,7 +565,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 	
 	public void invokeObserver() {
-		observableOperation.setObseverName("Memory Consumed Monitor");
+		modelSizeObserver.getResources(s, c, t);
+		observableOperation.setObseverName("Memory Consumed Observer");
 	}
 	
 	
