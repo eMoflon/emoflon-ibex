@@ -42,4 +42,9 @@ public class COGreenPattern extends IbexGreenPattern {
 	public Collection<TGGRuleNode> getMarkedContextNodes() {
 		return Collections.emptyList();
 	}
+	
+	@Override
+	public Collection<TGGRuleEdge> getCorrEdges() {
+		return factory.getGreenCorrEdgesInRule();
+	}
 }

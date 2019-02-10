@@ -47,6 +47,10 @@ public abstract class OperationalPatternTransformation {
 	protected abstract void transformEdges(IBeXContextPattern ibexPattern);
 
 	protected abstract void transformNACs(IBeXContextPattern ibexPattern);
+	
+	protected boolean patternIsEmpty() {
+		return rule.getNodes().isEmpty();
+	}
 
 	public IBeXContextPattern transform() {
 		String patternName = getPatternName();
@@ -54,6 +58,9 @@ public abstract class OperationalPatternTransformation {
 		if (parent.isTransformed(patternName))
 			return parent.getPattern(patternName);
 
+		if (patternIsEmpty())
+			return null;
+		
 		// Root pattern
 		IBeXContextPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
 		ibexPattern.setName(patternName);
@@ -68,6 +75,12 @@ public abstract class OperationalPatternTransformation {
 			for (int j = i + 1; j < allNodes.size(); j++) {
 				TGGRuleNode ruleNode_i = allNodes.get(i);
 				TGGRuleNode ruleNode_j = allNodes.get(j);
+				if(ruleNode_i.getBindingType() != ruleNode_j.getBindingType())
+					continue;
+				
+				if(options.ignoreInjectivity().test(ruleNode_i, ruleNode_j))
+					continue;
+				
 				if (IBeXPatternOptimiser.unequalConstraintNecessary(ruleNode_i, ruleNode_j)) {
 					findIBeXNodeWithName(ibexPattern, ruleNode_i.getName())//
 							.ifPresent(ni -> findIBeXNodeWithName(ibexPattern, ruleNode_j.getName())//
@@ -89,6 +102,13 @@ public abstract class OperationalPatternTransformation {
 	}
 
 	protected IBeXContextPattern createFilterNAC(IBeXContextPattern ibexPattern, FilterNACCandidate candidate) {
+		
+		if(parent.isTransformed(getFilterNACPatternName(candidate, rule))) {
+			IBeXContextPattern nacPattern =  parent.getPattern(getFilterNACPatternName(candidate, rule));
+			createNegativeInvocation(ibexPattern, nacPattern);
+			return nacPattern;
+		}
+		
 		// Root pattern
 		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
 
@@ -110,12 +130,21 @@ public abstract class OperationalPatternTransformation {
 		nacPattern.setName(getFilterNACPatternName(candidate, rule));
 
 		// Invoke NAC from parent: nodes with/without pre-image are signature/local
+		createNegativeInvocation(ibexPattern, nacPattern);
+
+		// Ensure that all nodes must be disjoint even if they have the same type.
+		EditorToIBeXPatternHelper.addInjectivityConstraints(nacPattern);
+
+		return nacPattern;
+	}
+
+	private void createNegativeInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(false);
 		ArrayList<IBeXNode> localNodes = new ArrayList<>();
 
-		for (IBeXNode node : nacPattern.getSignatureNodes()) {
-			Optional<IBeXNode> src = findIBeXNodeWithName(ibexPattern, node.getName());
+		for (IBeXNode node : invokee.getSignatureNodes()) {
+			Optional<IBeXNode> src = findIBeXNodeWithName(invoker, node.getName());
 
 			if (src.isPresent())
 				invocation.getMapping().put(src.get(), node);
@@ -123,15 +152,10 @@ public abstract class OperationalPatternTransformation {
 				localNodes.add(node);
 		}
 
-		nacPattern.getLocalNodes().addAll(localNodes);
+		invokee.getLocalNodes().addAll(localNodes);
 
-		invocation.setInvokedPattern(nacPattern);
-		ibexPattern.getInvocations().add(invocation);
-
-		// Ensure that all nodes must be disjoint even if they have the same type.
-		EditorToIBeXPatternHelper.addInjectivityConstraints(nacPattern);
-
-		return nacPattern;
+		invocation.setInvokedPattern(invokee);
+		invoker.getInvocations().add(invocation);
 	}
 	
 	protected void createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee, boolean isPositive) {

@@ -3,12 +3,9 @@ package org.emoflon.ibex.tgg.operational.strategies.opt;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PrimitiveIterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,8 +38,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
-
-import com.google.common.collect.Sets;
 
 import language.TGGRuleNode;
 
@@ -224,27 +219,14 @@ public abstract class OPT extends OperationalStrategy {
 
 		HandleDependencies handleCycles = new HandleDependencies(this.appliedBundles, this.edgeToMarkingMatches,
 				this.nodeToMarkingMatches, this.matchToContextNodes, this.matchToContextEdges);
-		Collection<Integer> allCyclicBundles = handleCycles.getCyclicDependenciesBetweenBundles().keySet();
 
-		for(int cycle : allCyclicBundles) {
-			Set<List<Integer>> cyclicConstraints = this.getCyclicConstraints(handleCycles.getRuleApplications(cycle));
-			for (List<Integer> variables : cyclicConstraints) {
+		List<Set<List<Integer>>> cyclicConstraints = handleCycles.getCyclicConstraints();
+		for (Set<List<Integer>> constraints : cyclicConstraints) {
+			for (List<Integer> variables : constraints) {
 				ilpProblem.addExclusion(variables.stream().map(v -> "x" + v), "EXCL_cycle" + this.nameCounter++,
 						variables.size() - 1);
 			}
 		}
-	}
-
-	private Set<List<Integer>> getCyclicConstraints(final List<IntSet> dependentRuleApplications) {
-		List<HashSet<Integer>> sets = new ArrayList<>();
-		for (IntSet tHashSet : dependentRuleApplications) {
-			HashSet<Integer> set = new HashSet<>();
-			PrimitiveIterator.OfInt it = tHashSet.iterator();
-			while (it.hasNext())
-				set.add(it.nextInt());
-			sets.add(set);
-		}
-		return Sets.cartesianProduct(sets);
 	}
 
 	protected void defineILPImplications(final BinaryILPProblem ilpProblem) {
@@ -378,8 +360,7 @@ public abstract class OPT extends OperationalStrategy {
 		return result;
 	}
 
-	protected Set<EObject> getNodes(final IMatch comatch,
-			final Collection<? extends TGGRuleNode> specNodes) {
+	protected Set<EObject> getNodes(final IMatch comatch, final Collection<? extends TGGRuleNode> specNodes) {
 		Set<EObject> result = cfactory.createObjectSet();
 		specNodes.forEach(n -> {
 			result.add((EObject) comatch.get(n.getName()));

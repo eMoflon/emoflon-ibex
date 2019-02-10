@@ -3,4 +3,7 @@
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="language.LanguagePackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore"/>
   </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="language.repair.RepairPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/repair"/>
+  </extension>
 </plugin>

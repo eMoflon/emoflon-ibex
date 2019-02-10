@@ -1,10 +1,19 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.emoflon.ibex.tgg.core.language;singleton:=true
-Bundle-Name: eMoflon::IBeX Bidirectional Model Transformation via Triple Graph Grammars - Language
+Automatic-Module-Name: org.emoflon.ibex.tgg.core.language
+Bundle-SymbolicName: org.emoflon.ibex.tgg.core.language;singleton:=tru
+ e
+Export-Package: language,
+ language.impl,
+ language.repair,
+ language.util,
+ org.emoflon.ibex.tgg.core.transformation,
+ org.emoflon.ibex.tgg.core.util,
+ language.repair.util,
+ language.repair.impl
+Bundle-Name: eMoflon::IBeX Bidirectional Model Transformation via Trip
+ le Graph Grammars - Language
 Bundle-Version: 1.0.0.qualifier
-Bundle-ManifestVersion: 2
-Bundle-ActivationPolicy: lazy
-Bundle-Vendor: eMoflon::IBeX Developers
+Bundle-ClassPath: .
 Require-Bundle: com.google.guava,
  org.apache.log4j,
  org.eclipse.core.runtime,
@@ -13,11 +22,6 @@ Require-Bundle: com.google.guava,
  org.emoflon.ibex.tgg.editor,
  org.emoflon.ibex.tgg.ide,
  org.moflon.core.utilities
-Bundle-ClassPath: .
-Export-Package: language,
- language.impl,
- language.util,
- org.emoflon.ibex.tgg.core.transformation,
- org.emoflon.ibex.tgg.core.util
-Automatic-Module-Name: org.emoflon.ibex.tgg.core.language
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: eMoflon::IBeX Developers
+Bundle-ManifestVersion: 2

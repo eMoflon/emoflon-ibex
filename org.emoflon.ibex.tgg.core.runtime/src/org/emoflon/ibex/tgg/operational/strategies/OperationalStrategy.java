@@ -171,7 +171,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		return res;
 	}
 
-	protected Resource createResource(String workspaceRelativePath) {
+	public Resource createResource(String workspaceRelativePath) {
 		URI uri = URI.createURI(workspaceRelativePath);
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
@@ -204,7 +204,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected IMatchContainer createMatchContainer() {
-		return new MatchContainer(options.flattenedTGG(), this);
+		return new MatchContainer(options.flattenedTGG());
 	}
 
 	protected Resource loadFlattenedTGGResource() throws IOException {
@@ -250,7 +250,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	protected void addConsistencyMatch(IMatch match) {
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		consistencyMatches.put(ruleAppNode, match);
-		logger.debug("Received and added consistency match: " + match.getPatternName());
+		logger.debug("Received and added consistency match: " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	@Override
@@ -270,7 +270,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 	
 	private boolean matchIsDomainConform(IMatch match) {
-		if (domainsHaveNoSharedTypes)
+		if (domainsHaveNoSharedTypes || options.ignoreDomainConformity())
 			return true;
 
 		return matchedNodesAreInCorrectResource(s, //
@@ -364,8 +364,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
 
 		IGreenPattern greenPattern = factory.create(match.getPatternName());
-		
-		logger.debug("Attempting to apply: " + match.getPatternName() + " with " + greenPattern);
+
+		logger.debug("Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
 
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
@@ -425,6 +425,10 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
 		this.greenInterpreter = greenInterpreter;
+	}
+
+	public IGreenInterpreter getGreenInterpreter() {
+		return greenInterpreter;
 	}
 
 	protected abstract void registerUserMetamodels() throws IOException;

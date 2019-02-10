@@ -80,6 +80,12 @@ public class GreenFusedPatternFactory extends GreenPatternFactory {
 				complementFactory.getBlackTrgEdgesInRule().stream()
 					.filter(e -> !containedViaName(e, kernelFactory.getGreenTrgEdgesInRule()))
 					.collect(Collectors.toList()));
+		
+		blackCorrEdgesInRule.addAll(kernelFactory.getBlackCorrEdgesInRule());
+		blackCorrEdgesInRule.addAll(
+				complementFactory.getBlackCorrEdgesInRule().stream()
+					.filter(e -> !containedViaName(e, kernelFactory.getGreenCorrEdgesInRule()))
+					.collect(Collectors.toList()));
 	}
 	
 	private boolean containedViaName(TGGRuleNode n, Collection<? extends TGGRuleNode> nodes) {

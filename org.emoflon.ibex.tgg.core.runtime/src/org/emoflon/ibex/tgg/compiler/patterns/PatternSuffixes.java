@@ -28,6 +28,15 @@ public class PatternSuffixes {
 	public static final String USER_NAC = SEP + "USER_NAC";
 
 	public static final String FILTER_NAC = SEP + "FILTER_NAC";
+	
+	/** Used for edge patterns */
+	public static final String EDGE = SEP + "EDGE";
+
+	/**
+	 * Contains the entire context of the original TGG rule and invocations to the
+	 * corresponding patterns of super-rules.
+	 */
+	public static final String GEN_REFINEMENT_INVOCATIONS = SEP + "GEN_REFINEMENT_INVOCATIONS";
 
 	/**
 	 * Contains the entire context of the original TGG rule together with
@@ -74,6 +83,21 @@ public class PatternSuffixes {
 	 * protocol.
 	 */
 	public static final String CONSISTENCY = SEP + "CONSISTENCY";
+
+	/**
+	 * This pattern contains the protocol node and all marked elements (marking edges)
+	 */
+	public static final String PROTOCOL = SEP + "PROTOCOL";
+	
+	/**
+	 * This pattern contains a protocol node
+	 */
+	public static final String PROTOCOL_CORE = SEP + "PROTOCOL_CORE";
+	
+	/**
+	 * Used as part of PROTOCOL patterns.
+	 */
+	public static final String WHOLE = SEP + "WHOLE";
 
 	/**
 	 * Used for consistency checking. Represents the context for creating potential

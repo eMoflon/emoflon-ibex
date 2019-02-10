@@ -3,16 +3,22 @@ package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PrimitiveIterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.collections.IntSet;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
+
+import com.google.common.collect.Sets;
 
 public class HandleDependencies {
 
@@ -33,6 +39,8 @@ public class HandleDependencies {
 	private Map<EObject, IntSet> nodeToMarkingMatches = cfactory.createObjectToObjectHashMap();
 	private Set<Bundle> appliedBundles;
 	private IntToObjectMap<Bundle> matchToBundle = cfactory.createIntToObjectHashMap();
+
+	private Logger logger = Logger.getLogger(HandleDependencies.class);
 
 	public HandleDependencies(Set<Bundle> appliedBundles, Map<EMFEdge, IntSet> edgeToMarkingMatches,
 			Map<EObject, IntSet> nodeToMarkingMatches, IntToObjectMap<Set<EObject>> matchToContextNodes,
@@ -85,9 +93,33 @@ public class HandleDependencies {
 	 * 
 	 * @return Collection of all cycles found in dependencies between bundles
 	 */
-	public IntToObjectMap<ArrayList<Integer>> getCyclicDependenciesBetweenBundles() {
+	private IntToObjectMap<ArrayList<Integer>> getCyclicDependenciesBetweenBundles() {
 		detectAllBundleCycles();
 		return cyclicDependencies;
+	}
+
+	public List<Set<List<Integer>>> getCyclicConstraints() {
+		List<Set<List<Integer>>> allCyclicConstraints = new ArrayList<>();
+		
+		Collection<Integer> allCycles = getCyclicDependenciesBetweenBundles().keySet();
+
+		for (int cycleID : allCycles) {
+			final List<IntSet> ruleApplicationsInCycle = getRuleApplications(cycleID);
+
+			List<HashSet<Integer>> sets = new ArrayList<>();
+			for (IntSet tHashSet : ruleApplicationsInCycle) {
+				HashSet<Integer> set = new HashSet<>();
+				PrimitiveIterator.OfInt it = tHashSet.iterator();
+				while (it.hasNext())
+					set.add(it.nextInt());
+				sets.add(set);
+				logger.debug("Cycles: " + set);
+			}			
+			
+			allCyclicConstraints.add(Sets.cartesianProduct(sets));
+		}
+		
+		return allCyclicConstraints;
 	}
 
 	private void detectAllBundleCycles() {
@@ -129,14 +161,14 @@ public class HandleDependencies {
 	}
 
 	/**
-	 * Find all rule applications for each bundle
+	 * Find all rule applications for each bundle in a given cycle
 	 * 
-	 * @param detectedCycle - specific cycle between bundles
-	 * @return Collection of rule applications inside the bundle
+	 * @param detectedCycleID - specific cycle between bundles
+	 * @return Collection of rule applications inside the bundles that make up the cycle
 	 */
-	public List<IntSet> getRuleApplications(int detectedCycle) {
+	private List<IntSet> getRuleApplications(int detectedCycleID) {
 		List<IntSet> bundleToComplementRuleApplication = new ArrayList<>();
-		for (int bundleID : cyclicDependencies.get(detectedCycle)) {
+		for (int bundleID : cyclicDependencies.get(detectedCycleID)) {
 			IntSet set = getBundle(bundleID).getAllComplementMatches();
 			// Note: if the set is empty then it means the cyclic dependency must involve
 			// the kernel directly. In this case, we add the kernel match and use it to

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.defaults;
 
 import java.util.Collection;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
@@ -13,6 +14,7 @@ import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 import language.TGG;
 import language.TGGRule;
+import language.TGGRuleNode;
 
 public class IbexOptions {
 	private boolean blackInterpSupportsAttrConstrs = true;
@@ -28,6 +30,10 @@ public class IbexOptions {
 	private boolean repairAttributes;
 	private EPackage corrMetamodel;
 	private FilterNACStrategy lookAheadStrategy;
+	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity;
+	private boolean ignoreDomainConformity;
+	private boolean useShortcutRules;
+	private boolean optimizeSyncPattern;
 
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
@@ -40,9 +46,13 @@ public class IbexOptions {
 		projectPath = "/";
 		workspacePath = "./../";
 		repairAttributes = true;
+		useShortcutRules = false;
 		setIlpSolver(SupportedILPSolver.Sat4J);
 		useEdgePatterns = false;
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
+		ignoreInjecitity = (x,y) -> false;
+		ignoreDomainConformity = false;
+		optimizeSyncPattern = false;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -52,6 +62,15 @@ public class IbexOptions {
 
 	public boolean debug() {
 		return debug;
+	}
+
+	public boolean repairUsingShortcutRules() {
+		return useShortcutRules;
+	}
+	
+	public IbexOptions repairUsingShortcutRules(boolean useShortcutRules) {
+		this.useShortcutRules = useShortcutRules;
+		return this;
 	}
 
 	public boolean repairAttributes() {
@@ -188,6 +207,33 @@ public class IbexOptions {
 	
 	public IbexOptions setLookAheadStrategy(FilterNACStrategy lookAheadStrategy) {
 		this.lookAheadStrategy = lookAheadStrategy;
+		return this;
+	}
+
+	public boolean optimizeSyncPattern() {
+		return optimizeSyncPattern;
+	}
+
+	public IbexOptions setOptimizeSyncPattern(boolean optimizeSyncPattern) {
+		this.optimizeSyncPattern = optimizeSyncPattern;
+		return this;
+	}
+
+	public BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjectivity() {
+		return ignoreInjecitity;
+	}
+	
+	public IbexOptions ignoreInjectivity(BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity) {
+		this.ignoreInjecitity = ignoreInjecitity;
+		return this;
+	}
+
+	public boolean ignoreDomainConformity() {
+		return ignoreDomainConformity;
+	}
+	
+	public IbexOptions ignoreDomainConformity(boolean ignoreDomainConformity) {
+		this.ignoreDomainConformity = ignoreDomainConformity;
 		return this;
 	}
 }

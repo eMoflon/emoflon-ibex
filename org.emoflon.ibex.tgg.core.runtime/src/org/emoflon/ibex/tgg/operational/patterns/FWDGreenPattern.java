@@ -64,4 +64,9 @@ public class FWDGreenPattern extends IbexGreenPattern {
 	public Collection<TGGRuleNode> getMarkedContextNodes() {
 		return factory.getBlackSrcNodesInRule();
 	}
+	
+	@Override
+	public Collection<TGGRuleEdge> getCorrEdges() {
+		return factory.getGreenCorrEdgesInRule();
+	}
 }

@@ -18,8 +18,7 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
  org.moflon.core.utilities;visibility:=reexport
-Bundle-ClassPath: .,
- lib/fastutil-8.1.1.jar
+Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: IBeXLanguage,

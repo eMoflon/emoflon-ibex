@@ -1,8 +1,13 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
+import static org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser.optimizeIBeXPattern;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getBWDBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFWDBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil.isAxiomatic;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +20,7 @@ import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
@@ -27,6 +33,7 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWD_OPTPattern
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.FusedBWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.FusedBWD_OPTPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.ConsistencyPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_OPTPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FusedFWDPatternTransformation;
@@ -36,6 +43,8 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCOPatter
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.CCPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.COPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolCorePatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -64,7 +73,6 @@ import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGNamedElement;
 import language.TGGRule;
-import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
@@ -123,6 +131,7 @@ public class ContextPatternTransformation {
 					createPatternIfRelevant(rule, this::createFusedBWD_OPTPattern, PatternSuffixes.BWD_OPT);
 				}
 			}
+			optimizeSyncPatterns(rule);
 		}
 
 		return createSortedPatternSet();
@@ -156,74 +165,84 @@ public class ContextPatternTransformation {
 	}
 
 	private IBeXContextPattern createModelGenPattern(TGGRule rule) {
-		GENPatternTransformation transformer = new GENPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new GENPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFWDPattern(TGGRule rule) {
-		FWDPatternTransformation transformer = new FWDPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new FWDPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createBWDPattern(TGGRule rule) {
-		BWDPatternTransformation transformer = new BWDPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new BWDPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	public IBeXContextPattern createConsistencyPattern(TGGRule rule) {
-		ConsistencyPatternTransformation transformer = new ConsistencyPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new ConsistencyPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createCCPattern(TGGRule rule) {
-		CCPatternTransformation transformer = new CCPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new CCPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createCOPattern(TGGRule rule) {
-		COPatternTransformation transformer = new COPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new COPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFWD_OPTPattern(TGGRule rule) {
-		FWD_OPTPatternTransformation transformer = new FWD_OPTPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new FWD_OPTPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createBWD_OPTPattern(TGGRule rule) {
-		BWD_OPTPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createGenForCCPattern(TGGRule rule) {
-		GENForCCPatternTransformation transformer = new GENForCCPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new GENForCCPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createGenForCOPattern(TGGRule rule) {
-		GENForCOPatternTransformation transformer = new GENForCOPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new GENForCOPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFusedFWDPattern(TGGRule rule) {
-		FusedFWDPatternTransformation transformer = new FusedFWDPatternTransformation(this, options, rule, strategy);
+		OperationalPatternTransformation transformer = new FusedFWDPatternTransformation(this, options, rule, strategy);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFusedBWDPattern(TGGRule rule) {
-		FusedBWDPatternTransformation transformer = new FusedBWDPatternTransformation(this, options, rule, strategy);
+		OperationalPatternTransformation transformer = new FusedBWDPatternTransformation(this, options, rule, strategy);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFusedFWD_OPTPattern(TGGRule rule) {
-		FusedFWD_OPTPatternTransformation transformer = new FusedFWD_OPTPatternTransformation(this, options, rule,
+		OperationalPatternTransformation transformer = new FusedFWD_OPTPatternTransformation(this, options, rule,
 				strategy);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFusedBWD_OPTPattern(TGGRule rule) {
-		FusedBWD_OPTPatternTransformation transformer = new FusedBWD_OPTPatternTransformation(this, options, rule,
+		OperationalPatternTransformation transformer = new FusedBWD_OPTPatternTransformation(this, options, rule,
 				strategy);
+		return transformer.transform();
+	}
+
+	protected IBeXContextPattern createProtocolPattern(TGGRule rule) {
+		OperationalPatternTransformation transformer = new ProtocolPatternTransformation(this, options, rule);
+		return transformer.transform();
+	}
+	
+	protected IBeXContextPattern createProtocolCorePattern(TGGRule rule) {
+		OperationalPatternTransformation transformer = new ProtocolCorePatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 
@@ -276,6 +295,80 @@ public class ContextPatternTransformation {
 		}
 
 		return nacPattern;
+	}
+	
+	public void optimizeSyncPatterns(TGGRule rule) {
+		if(!options.optimizeSyncPattern())
+			return;
+		
+		IBeXContextPattern fwdPattern = getPattern(getFWDBlackPatternName(rule.getName()));
+		IBeXContextPattern bwdPattern = getPattern(getBWDBlackPatternName(rule.getName()));
+		IBeXContextPattern consistencyPattern = getPattern(getConsistencyPatternName(rule.getName()));
+		
+		boolean fwdPatternPresent = fwdPattern != null;
+		boolean bwdPatternPresent = bwdPattern != null;
+		boolean consistencyPatternPresent = consistencyPattern != null;
+
+		if(fwdPatternPresent && consistencyPatternPresent)  {
+			createInvocation(consistencyPattern, fwdPattern);
+			
+			optimizeIBeXPattern(consistencyPattern, fwdPattern);
+		}
+		
+		if(bwdPatternPresent && consistencyPatternPresent) {
+			createInvocation(consistencyPattern, bwdPattern);	
+			
+			optimizeIBeXPattern(consistencyPattern, bwdPattern);
+		}
+
+		if(fwdPatternPresent && bwdPatternPresent) {
+			if(!isAxiomatic(rule)) {
+				IBeXContextPattern genPattern = createModelGenPattern(rule);
+				if(genPattern != null) {
+					createInvocation(fwdPattern, genPattern);
+					createInvocation(bwdPattern, genPattern);
+					
+					optimizeIBeXPattern(fwdPattern, genPattern);
+					optimizeIBeXPattern(bwdPattern, genPattern);
+				}
+			}
+		}
+		
+		if(consistencyPatternPresent) {
+			IBeXContextPattern protocolPattern = createProtocolPattern(rule);
+			IBeXContextPattern protocolCorePattern = createProtocolCorePattern(rule);
+			
+			createInvocation(consistencyPattern, protocolPattern);
+			createInvocation(protocolPattern, protocolCorePattern);
+
+			optimizeIBeXPattern(consistencyPattern, protocolPattern);
+			optimizeIBeXPattern(protocolPattern, protocolCorePattern);
+		}
+	}
+	
+	public void createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
+		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
+		invocation.setPositive(true);
+
+		// Creating mapping for invocation: missing signature nodes of the invoked
+		// pattern are added as local nodes to the invoking pattern
+		for (IBeXNode node : invokee.getSignatureNodes()) {
+			Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(invoker, node.getName());
+
+			if (src.isPresent())
+				invocation.getMapping().put(src.get(), node);
+			else {
+				IBeXNode newLocalNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
+				newLocalNode.setName(node.getName());
+				newLocalNode.setType(node.getType());
+				invoker.getLocalNodes().add(newLocalNode);
+
+				invocation.getMapping().put(newLocalNode, node);
+			}
+		}
+
+		invocation.setInvokedPattern(invokee);
+		invoker.getInvocations().add(invocation);
 	}
 
 	public void transformEdge(EReference type, IBeXNode srcNode, IBeXNode trgNode, IBeXContextPattern ibexPattern,
@@ -433,22 +526,7 @@ public class ContextPatternTransformation {
 
 		ibexPattern.getSignatureNodes().add(ibexNode);
 
-		if (node instanceof TGGRuleCorr) {
-			TGGRuleCorr corr = (TGGRuleCorr) node;
-			transformCorr(ibexPattern, corr);
-		}
-
 		return ibexNode;
-	}
-
-	private void transformCorr(IBeXContextPattern ibexPattern, TGGRuleCorr corr) {
-		EReference srcType = ((EReference) corr.getType().getEStructuralFeature("source"));
-		TGGRuleNode srcOfCorr = corr.getSource();
-		transformEdge(srcType, corr, srcOfCorr, ibexPattern, false);
-
-		EReference trgType = ((EReference) corr.getType().getEStructuralFeature("target"));
-		TGGRuleNode trgOfCorr = corr.getTarget();
-		transformEdge(trgType, corr, trgOfCorr, ibexPattern, false);
 	}
 
 	private void transformEdge(EReference type, TGGRuleNode srcNode, TGGRuleNode trgNode,
@@ -482,5 +560,40 @@ public class ContextPatternTransformation {
 		ibexPatternSet.getContextPatterns().addAll(ibexContextPatterns);
 
 		return ibexPatternSet;
+	}
+	
+	public void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
+		IBeXNode protocolNode = createProtocolNode(rule, ibexPattern);
+		connectProtocolNode(ibexPattern, protocolNode, rule);
+	}
+
+	public IBeXNode createProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
+		IBeXNode protocolNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
+		protocolNode.setName(TGGPatternUtil.getProtocolNodeName(rule.getName()));
+		EClass type = (EClass) options.getCorrMetamodel()
+				.getEClassifier(TGGModelUtils.getMarkerTypeName(rule.getName()));
+		protocolNode.setType(type);
+		ibexPattern.getSignatureNodes().add(protocolNode);
+		return protocolNode;
+	}
+
+	private void connectProtocolNode(IBeXContextPattern ibexPattern, IBeXNode protocolNode, TGGRule rule) {
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.SRC);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.TRG);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.SRC);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.TRG);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CONTEXT, DomainType.CORR);
+		connectProtocolNode(ibexPattern, rule, protocolNode, BindingType.CREATE, DomainType.CORR);
+	}
+
+	private void connectProtocolNode(IBeXContextPattern ibexPattern, TGGRule rule, IBeXNode protocolNode,
+			BindingType type, DomainType domain) {
+		Collection<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperatorAndDomain(rule, type, domain);
+
+		for (TGGRuleNode node : nodes) {
+			EReference ref = (EReference) protocolNode.getType()
+					.getEStructuralFeature(TGGModelUtils.getMarkerRefName(type, domain, node.getName()));
+			transformEdge(ref, protocolNode, transformNode(ibexPattern, node), ibexPattern, false);
+		}
 	}
 }

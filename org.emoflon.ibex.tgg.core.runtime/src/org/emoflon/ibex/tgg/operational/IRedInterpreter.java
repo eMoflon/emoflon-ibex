@@ -6,4 +6,5 @@ public interface IRedInterpreter {
 
 	void revokeOperationalRule(IMatch match);
 
+	int getNumOfDeletedElements();
 }

@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-
 import language.TGG;
 import language.TGGComplementRule;
 import language.TGGRule;
@@ -18,7 +16,15 @@ public class MatchContainer implements IMatchContainer {
 	private Map<IMatch, String> matchToRuleName;
 	private Set<IMatch> kernelMatches;
 
-	public MatchContainer(TGG tgg, OperationalStrategy op) {
+	private MatchContainer(MatchContainer old) {
+		this.matchToRuleName = cfactory.createObjectToObjectLinkedHashMap();
+		this.matchToRuleName.putAll(old.matchToRuleName);
+		this.tgg = old.tgg;
+		this.kernelMatches = cfactory.createObjectSet();
+		this.kernelMatches.addAll(old.kernelMatches);
+	}
+	
+	public MatchContainer(TGG tgg) {
 		this.matchToRuleName = cfactory.createObjectToObjectHashMap();
 		this.kernelMatches = cfactory.createObjectSet();
 		this.tgg = tgg;
@@ -71,5 +77,9 @@ public class MatchContainer implements IMatchContainer {
 
 	public void matchApplied(IMatch m) {
 		// Default: do nothing
+	}
+
+	public IMatchContainer copy() {
+		return new MatchContainer(this);
 	}
 }

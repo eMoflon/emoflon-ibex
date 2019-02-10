@@ -28,7 +28,7 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	protected IGreenPatternFactory factory;
 	protected OperationalStrategy strategy;
 	
-	public IbexGreenPattern(GreenPatternFactory factory) {
+	public IbexGreenPattern(IGreenPatternFactory factory) {
 		this.factory = factory;
 		this.strategy = factory.getStrategy();
 	}

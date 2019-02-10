@@ -70,4 +70,9 @@ public class BWDOptFusedGreenPattern extends FusedGreenPattern {
 	public Collection<TGGRuleNode> getMarkedContextNodes() {
 		return factory.getBlackTrgNodesInRule();
 	}
+	
+	@Override
+	public Collection<TGGRuleEdge> getCorrEdges() {
+		return Collections.emptyList();
+	}
 }
