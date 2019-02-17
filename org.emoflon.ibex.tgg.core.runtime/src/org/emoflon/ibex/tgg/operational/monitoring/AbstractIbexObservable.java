@@ -53,8 +53,12 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	public void notifyDoneInit() {
 		observers.forEach(o -> o.update(ObservableEvent.DONEINIT));
 	}
-	
-	
+
+	@Override
+	public void notifyMatchApplied(IMatch match) {
+		observers.forEach(o -> o.update(ObservableEvent.MATCHAPPLIED));
+		
+	}
 
 	/**
 	 * @return the updatePolicy
@@ -75,6 +79,7 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 
 	@Override
 	public IMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) {
+		observers.forEach(o -> o.update(ObservableEvent.CHOOSEMATCH, matchContainer));
 		if(this.updatePolicy == null) {
 			throw new RuntimeException("No update strategy configured");
 		} else {

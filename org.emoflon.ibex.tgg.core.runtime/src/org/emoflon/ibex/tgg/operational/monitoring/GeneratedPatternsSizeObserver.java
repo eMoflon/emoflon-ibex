@@ -10,23 +10,16 @@ import IBeXLanguage.IBeXContextPattern;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
-public class GeneratedPatternsSizeObserver extends IbexObserver{    
+public class GeneratedPatternsSizeObserver extends AbstractIbexObserver{    
 
-    protected final static Logger logger = Logger.getLogger(GeneratedPatternsSizeObserver.class);
-    public HashMap<String, Integer> edges = new HashMap<String, Integer>();
-    public HashMap<String, Integer> nodes = new HashMap<String, Integer>();
-
-
-    public GeneratedPatternsSizeObserver(ObservableOperation observableOperation) {
-        this.observableOperation = observableOperation;
-        this.observableOperation.attach(this);
-    }
-        
-    @Override
-    public void update() {
-        logger.info("Generated Patterns Size: ");
-        this.calculteSize();
-    }
+   
+	private final static Logger logger = Logger.getLogger(GeneratedPatternsSizeObserver.class);
+    private HashMap<String, Integer> edges = new HashMap<String, Integer>();
+    private HashMap<String, Integer> nodes = new HashMap<String, Integer>();
+    
+    public GeneratedPatternsSizeObserver(IbexObservable observable) {
+		super(observable);
+	}
     
     public void setEdges(IBeXContextPattern ibexPattern) {
         String patternName = PatternSuffixes.removeSuffix(ibexPattern.getName());
@@ -42,7 +35,7 @@ public class GeneratedPatternsSizeObserver extends IbexObserver{
         }
     }    
     
-    public void calculteSize() {
+    public void calculateSize() {
         Iterator<Entry<String, Integer>> node = nodes.entrySet().iterator();
         while (node.hasNext()) {
             Map.Entry<String, Integer> pair = (Map.Entry<String, Integer>)node.next();
@@ -54,5 +47,11 @@ public class GeneratedPatternsSizeObserver extends IbexObserver{
             node.remove();
         }
     }
+
+	@Override
+	public void update(ObservableEvent eventType, Object... additionalInformation) {
+		logger.info("Generated Patterns Size: ");
+        this.calculateSize();
+	}
         
 }

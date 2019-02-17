@@ -324,10 +324,13 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Optional<IMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
-		if (result.isPresent())
+		if (result.isPresent()) {
+			this.notifyMatchApplied(match);
 			logger.debug("Removed as it has just been applied: ");
-		else
+		}
+		else {
 			logger.debug("Removed as application failed: ");
+		}
 
 		logger.debug(match);
 

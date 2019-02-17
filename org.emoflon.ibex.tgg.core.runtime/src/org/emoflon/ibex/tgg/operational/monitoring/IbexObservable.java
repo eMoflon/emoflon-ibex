@@ -34,6 +34,10 @@ public interface IbexObservable {
 	 */
 	public void notifyDoneInit();
 	
+	/**
+	 * Called when a match has been successfully applied
+	 */
+	public void notifyMatchApplied(IMatch match);
 	
 	/**
 	 * Called when a match needs to be chosen.

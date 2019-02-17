@@ -4,35 +4,35 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-public class ModelSizeObserver extends IbexObserver {
+public class ModelSizeObserver extends AbstractIbexObserver {
 
-	protected Resource s;
-	protected Resource t;
-	protected Resource c;
+	private final static Logger logger = Logger.getLogger(ModelSizeObserver.class);
+	private int currentSize;
 
-	ObservableOperation observableOperation = new ObservableOperation();
-	int size;
-
-	protected final static Logger logger = Logger.getLogger(ModelSizeObserver.class);
-
-	public ModelSizeObserver(ObservableOperation observableOperation) {
-		this.observableOperation = observableOperation;
-		this.observableOperation.attach(this);
+	public ModelSizeObserver(IbexObservable observable) {
+		super(observable);
 	}
-
+	
 	@Override
-	public void update() {
-		logger.info("Size of input models is " + this.size + " elements");
-		logger.info("***********************");
-
+	public void update(ObservableEvent eventType, Object... additionalInformation) {
+		switch(eventType) {
+			case DONEINIT: 
+			case MATCHAPPLIED:
+				if(this.getObservable() instanceof OperationalStrategy) {
+					OperationalStrategy op = (OperationalStrategy) this.getObservable();
+					this.currentSize = this.getNumberOfObjectsInModels(op.getSourceResource(), op.getCorrResource(), op.getTargetResource());
+					logger.info("Size of input models is " + this.currentSize + " elements");
+					logger.info("***********************");
+					break;
+				}
+		default:
+			break;	
+		}
 	}
 
-	public void getResources(Resource s, Resource c, Resource t) {
-		getNumberOfObjectsInModels(s, c, t);
-	}
-
-	public int getNumberOfObjectsInModels(Resource s, Resource c, Resource t) {
+	private int getNumberOfObjectsInModels(Resource s, Resource c, Resource t) {
 		int sizeS = 0;
 		TreeIterator<EObject> treeIterator = s.getAllContents();
 		while (treeIterator.hasNext()) {
@@ -51,8 +51,11 @@ public class ModelSizeObserver extends IbexObserver {
 			treeIterator.next();
 			sizeT++;
 		}
-		size = sizeS + sizeC + sizeT;
-		return size;
+		return sizeS + sizeC + sizeT;
+	}
+	
+	public int getCurrentSize() {
+		return currentSize;
 	}
 
 }

@@ -2,21 +2,23 @@ package org.emoflon.ibex.tgg.operational.monitoring;
 
 import org.apache.log4j.Logger;
 
-public class MemoryConsumptionObserver extends IbexObserver{
+public class MemoryConsumptionObserver extends AbstractIbexObserver{
 	
-	protected final static Logger logger = Logger.getLogger(MemoryConsumptionObserver.class);
+	private final static Logger logger = Logger.getLogger(MemoryConsumptionObserver.class);
+	private long currentMemoryConsumption = 0;
 	
-	public MemoryConsumptionObserver(ObservableOperation observableOperation) {
-		this.observableOperation = observableOperation;
-		this.observableOperation.attach(this);
+	public MemoryConsumptionObserver(IbexObservable observable) {
+		super(observable);
 	}
-	
-	@Override
-	public void update() {
-		Runtime runtime = Runtime.getRuntime();
-		long memory = runtime.totalMemory() - runtime.freeMemory();
-		logger.info("Memory consumed in Bytes: " + memory);		
-	}
-	
 
+	@Override
+	public void update(ObservableEvent eventType, Object... additionalInformation) {
+		Runtime runtime = Runtime.getRuntime();
+		this.currentMemoryConsumption = runtime.totalMemory() - runtime.freeMemory();
+		logger.info("Memory consumed in Bytes: " + currentMemoryConsumption);
+	}
+
+	public long getCurrentMemoryConsumption() {
+		return currentMemoryConsumption;
+	}
 }
