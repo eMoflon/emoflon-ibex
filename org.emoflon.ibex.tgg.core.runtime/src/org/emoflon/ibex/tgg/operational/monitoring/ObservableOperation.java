@@ -25,6 +25,4 @@ public class ObservableOperation {
 			observer.update();
 		}
 	}
-	
-	
 }
