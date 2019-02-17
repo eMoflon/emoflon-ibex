@@ -1,9 +1,10 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
-public abstract class IbexObserver {
-
-	protected ObservableOperation observableOperation;
+public interface IbexObserver {
 	
-	public abstract void update();
+	public enum ObservableEvent {
+		STARTLOADING, LOADINGFINISHED, STARTINIT, DONEINIT; 
+	}
+	public abstract void update(ObservableEvent eventType, Object... additionalInformation);
 	
 }
