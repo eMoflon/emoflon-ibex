@@ -5,8 +5,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
-
 public class NumberOfMatchesObserver extends IbexObserver{
 
     protected final static Logger logger = Logger.getLogger(GeneratedPatternsSizeObserver.class);
