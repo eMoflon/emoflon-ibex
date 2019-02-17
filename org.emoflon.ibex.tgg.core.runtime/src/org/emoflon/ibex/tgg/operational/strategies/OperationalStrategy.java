@@ -36,6 +36,7 @@ import org.emoflon.ibex.tgg.operational.monitoring.GeneratedPatternsSizeObserver
 import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver;
 import org.emoflon.ibex.tgg.operational.monitoring.MemoryConsumptionObserver;
 import org.emoflon.ibex.tgg.operational.monitoring.ModelSizeObserver;
+import org.emoflon.ibex.tgg.operational.monitoring.NumberOfMatchesObserver;
 import org.emoflon.ibex.tgg.operational.monitoring.ObservableOperation;
 import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
@@ -90,6 +91,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	IbexObserver memoryConsumptionObserver = new MemoryConsumptionObserver(observableOperation);
 	GeneratedPatternsSizeObserver generatedPatternsSizeObserver = new GeneratedPatternsSizeObserver(observableOperation);
 	ModelSizeObserver modelSizeObserver = new ModelSizeObserver(observableOperation);
+	NumberOfMatchesObserver numOfMatchesObserver = new NumberOfMatchesObserver(observableOperation);
 
 	/***** Constructors *****/
 
@@ -355,18 +357,22 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		generatedPatternsSizeObserver.setNodes(match);
+		//generatedPatternsSizeObserver.setNodes(match);
+		
+		System.out.println("hello test 123");
 		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
-	
+		
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
 
 		IGreenPattern greenPattern = factory.create(match.getPatternName());
 
 		logger.debug("Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
-
+		//logger.debug("Pattern: " + match.getPatternName() + " matches: " + operationalMatchContainer.getMatches().size());
+		numOfMatchesObserver.getMatch(match, operationalMatchContainer);
+		observableOperation.setObseverName("Number of matches for each pattern");
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
@@ -572,7 +578,4 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		modelSizeObserver.getResources(s, c, t);
 		observableOperation.setObseverName("Memory Consumed Observer");
 	}
-	
-	
-	
 }
