@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -32,12 +31,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
-import org.emoflon.ibex.tgg.operational.monitoring.GeneratedPatternsSizeObserver;
-import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver;
-import org.emoflon.ibex.tgg.operational.monitoring.MemoryConsumptionObserver;
-import org.emoflon.ibex.tgg.operational.monitoring.ModelSizeObserver;
-import org.emoflon.ibex.tgg.operational.monitoring.NumberOfMatchesObserver;
-import org.emoflon.ibex.tgg.operational.monitoring.ObservableOperation;
+import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
 import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -56,7 +50,7 @@ import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
-public abstract class OperationalStrategy implements IMatchObserver {
+public abstract class OperationalStrategy extends AbstractIbexObservable implements IMatchObserver  {
 	private long currentIntervalStart = -1;
 	private final long INTERVAL_LENGTH = 5000;
 	private long matchCounter = 0;
@@ -79,19 +73,12 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private Map<String, IGreenPatternFactory> factories;
 
 	// Configuration
-	protected IUpdatePolicy updatePolicy;
 	protected final IbexOptions options;
 
 	// Model manipulation
 	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
 	protected IBlackInterpreter blackInterpreter;
 	protected IGreenInterpreter greenInterpreter;
-	
-	ObservableOperation observableOperation = new ObservableOperation();
-	IbexObserver memoryConsumptionObserver = new MemoryConsumptionObserver(observableOperation);
-	GeneratedPatternsSizeObserver generatedPatternsSizeObserver = new GeneratedPatternsSizeObserver(observableOperation);
-	ModelSizeObserver modelSizeObserver = new ModelSizeObserver(observableOperation);
-	NumberOfMatchesObserver numOfMatchesObserver = new NumberOfMatchesObserver(observableOperation);
 
 	/***** Constructors *****/
 
@@ -101,8 +88,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
 		this.options = options;
-		this.updatePolicy = policy;
-
+		this.setUpdatePolicy(policy);
+		
 		base = URI.createPlatformResourceURI("/", true);
 		factories = new HashMap<>();
 
@@ -348,7 +335,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected IMatch chooseOneMatch() {
-		IMatch match = updatePolicy.chooseOneMatch(new ImmutableMatchContainer(operationalMatchContainer));
+		IMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
 
 		if (match == null)
 			throw new IllegalStateException("Update policies should never return null!");
@@ -358,9 +345,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
 		//generatedPatternsSizeObserver.setNodes(match);
-		
-		System.out.println("hello test 123");
-		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
+		if (!this.getUpdatePolicy().matchShouldBeApplied(match, ruleName)) { //TODO JaneJ update the way this is called
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
@@ -371,15 +356,13 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		logger.debug("Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
 		//logger.debug("Pattern: " + match.getPatternName() + " matches: " + operationalMatchContainer.getMatches().size());
-		numOfMatchesObserver.getMatch(match, operationalMatchContainer);
-		observableOperation.setObseverName("Number of matches for each pattern");
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
 			logger.debug("Successfully applied: " + match.getPatternName());
 			operationalMatchContainer.matchApplied(match);
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
-			updatePolicy.notifyMatchHasBeenApplied(cm, ruleName);
+			this.getUpdatePolicy().notifyMatchHasBeenApplied(cm, ruleName); //TODO JaneJ update the way this is called
 		});
 
 		return comatch;
@@ -416,17 +399,24 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	/****** Initialisation, termination *****/
 
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
+		this.notifyStartInit();
 		this.blackInterpreter = blackInterpreter;
-
+		
 		createAndPrepareResourceSet();
 		registerInternalMetamodels();
 		registerUserMetamodels();
+		
+		this.notifyStartLoading();
 		loadTGG();
 		loadModels();
+		this.notifyLoadingFinished();
+		
 		initialiseBlackInterpreter();
 
 		this.trash = createResource("instances/trash.xmi");
 		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
+		
+		this.notifyDoneInit();
 	}
 
 	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
@@ -559,23 +549,7 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	/***** Configuration *****/
 
-	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
-		if (updatePolicy == null)
-			throw new NullPointerException("UpdatePolicy must not be set to null.");
-		else
-			this.updatePolicy = updatePolicy;
-	}
-
-	public IUpdatePolicy getUpdatePolicy() {
-		return updatePolicy;
-	}
-
 	public IbexOptions getOptions() {
 		return options;
-	}
-	
-	public void invokeObserver() {
-		modelSizeObserver.getResources(s, c, t);
-		observableOperation.setObseverName("Memory Consumed Observer");
 	}
 }

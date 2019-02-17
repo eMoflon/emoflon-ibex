@@ -6,13 +6,13 @@ import java.util.Set;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver.ObservableEvent;
-import org.emoflon.ibex.tgg.operational.updatepolicy.UpdatePolicy;
+import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 public abstract class AbstractIbexObservable implements IbexObservable {
 	
 	private Set<IbexObserver> observers = new HashSet<IbexObserver>();
 	
-	private UpdatePolicy updatePolicy;
+	private IUpdatePolicy updatePolicy;
 	
 	@Override
 	public void registerObserver(IbexObserver observer) {
@@ -59,15 +59,18 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	/**
 	 * @return the updatePolicy
 	 */
-	public UpdatePolicy getUpdatePolicy() {
+	public IUpdatePolicy getUpdatePolicy() {
 		return updatePolicy;
 	}
 
 	/**
 	 * @param updatePolicy the updatePolicy to set
 	 */
-	public void setUpdatePolicy(UpdatePolicy updatePolicy) {
-		this.updatePolicy = updatePolicy;
+	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
+		if (updatePolicy == null)
+			throw new NullPointerException("UpdatePolicy must not be set to null.");
+		else
+			this.updatePolicy = updatePolicy;
 	}
 
 	@Override
