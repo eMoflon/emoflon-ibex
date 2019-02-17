@@ -19,7 +19,7 @@ public class NumberOfMatchesObserver extends IbexObserver{
 	@Override
 	public void update() {
 		// TODO Auto-generated method stub
-		logger.info("Pattern: " + patternName + " hasMatches: " + matchesSize);
+		logger.info("Pattern: " + patternName + " hasMatches : " + matchesSize);
 	}
 	
 	public void getMatch(IMatch match, IMatchContainer operationalMatchContainer) {
