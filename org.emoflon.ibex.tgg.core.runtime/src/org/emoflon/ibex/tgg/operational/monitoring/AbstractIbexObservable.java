@@ -10,14 +10,13 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 public abstract class AbstractIbexObservable implements IbexObservable {
 	
-	private Set<IbexObserver> observers = new HashSet<IbexObserver>();
+	private Set<IbexObserver> observers = new HashSet<IbexObserver>(); 
 	
-	private IUpdatePolicy updatePolicy;
+	private IUpdatePolicy updatePolicy; 
 	
 	@Override
-	public void registerObserver(IbexObserver observer) {
-		if(observer!= null)
-		{
+	public void registerObserver(IbexObserver observer) { 
+		if(observer!= null) {
 			observers.add(observer);
 		}
 		
@@ -56,7 +55,7 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 
 	@Override
 	public void notifyMatchApplied(IMatch match) {
-		observers.forEach(o -> o.update(ObservableEvent.MATCHAPPLIED));
+		observers.forEach(o -> o.update(ObservableEvent.MATCHAPPLIED, match));
 		
 	}
 
