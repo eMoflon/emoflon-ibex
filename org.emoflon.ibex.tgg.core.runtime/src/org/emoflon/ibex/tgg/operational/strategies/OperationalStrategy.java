@@ -325,7 +325,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		removeOperationalRuleMatch(match);
 
 		if (result.isPresent()) {
-			this.notifyMatchApplied(match);
 			logger.debug("Removed as it has just been applied: ");
 		}
 		else {
@@ -363,6 +362,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		comatch.ifPresent(cm -> {
 			logger.debug("Successfully applied: " + match.getPatternName());
+			this.notifyMatchApplied(match);
 			operationalMatchContainer.matchApplied(match);
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
 			this.getUpdatePolicy().notifyMatchHasBeenApplied(cm, ruleName); //TODO JaneJ update the way this is called
