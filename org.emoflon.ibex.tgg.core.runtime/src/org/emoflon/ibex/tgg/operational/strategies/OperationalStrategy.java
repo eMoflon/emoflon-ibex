@@ -545,12 +545,16 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 				factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
 			}
 		}
+		
 
 		return factories.get(ruleName);
 	}
 
 	/***** Configuration *****/
-
+	public Map<String, IGreenPatternFactory> getFactories() {
+		return factories;
+	}
+	
 	public IbexOptions getOptions() {
 		return options;
 	}
