@@ -54,9 +54,9 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	}
 
 	@Override
-	public void notifyMatchApplied(IMatch match) {
+	public void notifyMatchApplied(IMatch match, String ruleName) {
 		observers.forEach(o -> o.update(ObservableEvent.MATCHAPPLIED, match));
-		
+		this.getUpdatePolicy().notifyMatchHasBeenApplied(match, ruleName); //TODO JaneJ update the way this is called
 	}
 
 	/**
@@ -77,7 +77,7 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	}
 
 	@Override
-	public IMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) {
+	public IMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) { //tells observer a match needs to be chosen and choses a match by using the update policy
 		observers.forEach(o -> o.update(ObservableEvent.CHOOSEMATCH, matchContainer));
 		if(this.updatePolicy == null) {
 			throw new RuntimeException("No update strategy configured");

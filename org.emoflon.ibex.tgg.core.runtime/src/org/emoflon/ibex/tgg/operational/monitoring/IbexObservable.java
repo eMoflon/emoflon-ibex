@@ -37,7 +37,7 @@ public interface IbexObservable {
 	/**
 	 * Called when a match has been successfully applied
 	 */
-	public void notifyMatchApplied(IMatch match);
+	public void notifyMatchApplied(IMatch match, String ruleName);
 	
 	/**
 	 * Called when a match needs to be chosen.
