@@ -48,7 +48,7 @@ public class VictoryMonitorRule extends AbstractIbexObserver {
 		
 		/**
 		 * Called when a match has been successfully applied
-		 * @param match The match that has been applied
+		 * @param factory 
 		 */
 		
 		public void ruleHasBeenChosen(IGreenPatternFactory factory);
