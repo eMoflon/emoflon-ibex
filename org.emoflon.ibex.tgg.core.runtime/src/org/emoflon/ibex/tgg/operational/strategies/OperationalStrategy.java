@@ -558,4 +558,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	public IbexOptions getOptions() {
 		return options;
 	}
+	
+	public IMatchContainer getMatchContainer() {
+		return operationalMatchContainer;
+	}
 }
