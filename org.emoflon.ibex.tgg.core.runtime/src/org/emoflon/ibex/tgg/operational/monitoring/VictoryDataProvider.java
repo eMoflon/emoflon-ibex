@@ -16,7 +16,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
     @Override
     public TGGRule getRule(String pRuleName) {
         try {
-            return op.getTGG().getRules().stream().filter(r -> r.getName().equals(pRuleName)).findFirst().get();
+            return op.getOptions().flattenedTGG().getRules().stream().filter(r -> r.getName().equals(pRuleName)).findFirst().get();
         }
         catch (Exception e) {
             logger.error(e);
@@ -24,3 +24,4 @@ public class VictoryDataProvider implements IVictoryDataProvider {
         }
     }
 }
+
