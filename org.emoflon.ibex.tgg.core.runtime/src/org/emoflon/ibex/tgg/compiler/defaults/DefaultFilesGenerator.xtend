@@ -4,7 +4,7 @@ import java.util.Collection
 import language.TGGAttributeConstraintDefinition
 import org.moflon.core.utilities.MoflonUtil
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
-
+ 
 class DefaultFilesGenerator {
 
 	static def String generateUserRuntimeAttrCondFactory(Collection<String> userDefConstraints, String projectName) {

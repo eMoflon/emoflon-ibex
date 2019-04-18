@@ -47,8 +47,6 @@ public interface IGreenPatternFactory {
 	
 	public boolean isAxiom();
 	
-	public boolean isComplementRule();
-
 	public List<TGGAttributeConstraint> getAttributeConstraints();
 
 	public List<TGGParamValue> getAttributeCSPVariables();

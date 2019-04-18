@@ -14,17 +14,13 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.opt.OPT;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
-import language.TGGComplementRule;
 import language.TGGRuleCorr;
-import runtime.RuntimePackage;
-import runtime.TGGRuleApplication;
 
 public abstract class CC extends OPT {
 
@@ -86,71 +82,9 @@ public abstract class CC extends OPT {
 		}
 
 		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
-		comatch.ifPresent(cm -> {
-			if (isKernelMatch(ruleName))
-				processComplementRuleMatches(cm);
-		});
 
 		removeOperationalRuleMatch(match);
 		return true;
-	}
-
-	private void processComplementRuleMatches(IMatch comatch) {
-		blackInterpreter.updateMatches();
-		// last applied match was kernel
-		int kernelMatchID = this.idToMatch.size();
-
-		// collection needed to handle maximality
-		Set<IMatch> complementRuleContextMatches = findAllComplementRuleContextMatches();
-
-		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
-
-		// collection needed to handle uniqueness
-		IntToObjectMap<Set<EObject>> complementMatchToContextNodes = cfactory.createIntToObjectHashMap();
-
-		while (complementRuleMatches.iterator().hasNext()) {
-			IMatch match = complementRuleMatches.iterator().next();
-			applyMatchAndHandleUniqueness(match, complementMatchToContextNodes);
-			complementRuleMatches.remove(match);
-			removeOperationalRuleMatch(match);
-		}
-
-		// check if all found CR matches are really applied
-		while (complementRuleContextMatches.iterator().hasNext()) {
-			IMatch match = complementRuleContextMatches.iterator().next();
-			handleMaximality(match, kernelMatchID);
-			complementRuleContextMatches.remove(match);
-		}
-
-		TGGRuleApplication application = (TGGRuleApplication) comatch
-				.get(TGGPatternUtil.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
-		application.setAmalgamated(true);
-	}
-
-	/**
-	 * Maximality check that assures complement rule is applied, is only done for
-	 * nodes. It might be in the future that some tests show that this is also
-	 * needed for edges.
-	 */
-	private void handleMaximality(IMatch match, int kernelMatchID) {
-		String ruleName = removeAllSuffixes(match.getPatternName());
-		TGGComplementRule rule = getComplementRule(ruleName).get();
-		if (rule.isBounded()) {
-			// check if the complement rule was applied. If not, mark its kernel as invalid.
-			Set<EObject> contextNodes = getGenContextNodes(match);
-			if (!matchToContextNodes.containsValue(contextNodes))
-				invalidKernels.add(kernelMatchID);
-		}
-	}
-
-	private void applyMatchAndHandleUniqueness(IMatch match,
-			IntToObjectMap<Set<EObject>> complementMatchToContextNodes) {
-		String ruleName = operationalMatchContainer.getRuleName(match);
-		if (processOperationalRuleMatch(ruleName, match) != null) {
-			TGGComplementRule rule = getComplementRule(ruleName).get();
-			if (rule.isBounded())
-				findDuplicatedMatches(idToMatch.size(), complementMatchToContextNodes);
-		}
 	}
 
 	/**
@@ -200,15 +134,6 @@ public abstract class CC extends OPT {
 				.filter(m -> m.getPatternName().contains(getGENPatternForMaximality())).collect(Collectors.toSet());
 	}
 
-	/**
-	 * @return Collection of all complement matches existing in the match container
-	 */
-	private Set<IMatch> findAllComplementRuleMatches() {
-		return operationalMatchContainer.getMatches().stream()
-				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.getPatternName())))
-				.collect(Collectors.toSet());
-	}
-
 	@Override
 	protected void wrapUp() {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
@@ -226,11 +151,6 @@ public abstract class CC extends OPT {
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.init(this);
-	}
-
-	@Override
-	public void setIsRuleApplicationFinal(EObject ra) {
-		ra.eSet(RuntimePackage.eINSTANCE.getTGGRuleApplication_Final(), false);
 	}
 
 	@Override

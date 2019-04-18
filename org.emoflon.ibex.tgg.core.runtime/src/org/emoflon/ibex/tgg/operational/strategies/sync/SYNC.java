@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -18,7 +17,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -31,11 +29,9 @@ import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
-import org.emoflon.ibex.tgg.util.MAUtil;
 
 import language.BindingType;
 import language.DomainType;
-import language.TGGComplementRule;
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
@@ -273,148 +269,12 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		if (!tggContainsComplementRules())
-			// If TGG does not contain complement rules, bookkeeping is not necessary
-			return super.processOperationalRuleMatch(ruleName, match);
-
-		if (isComplementMatch(ruleName))
-			if (!isComplementRuleApplicable(match, ruleName)) {
-				logger.debug("Complement rule is not applicable: " + match.getPatternName());
-				return Optional.empty();
-			}
-
 		Optional<IMatch> comatch = super.processOperationalRuleMatch(ruleName, match);
-
-		comatch.ifPresent(cm -> {
-			doBookkeepingForKernelAndComplementMatches(ruleName, cm);
-			if (MAUtil.isFusedPatternMatch(ruleName))
-				removeDuplicatedComplementMatches(ruleName, cm);
-		});
-
 		return comatch;
 	}
 
 	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, IMatch m) {
 		return strategy.determineCSP(factory, m);
-	}
-	
-	/***** Multi-Amalgamation *****/
-
-	/**
-	 * Removes complement match that was already applied together in kernel in the
-	 * fused match
-	 */
-	protected void removeDuplicatedComplementMatches(String fusedRuleName, IMatch comatch) {
-		blackInterpreter.updateMatches();
-		Set<IMatch> complementMatches = findAllComplementRuleMatches();
-
-		for (IMatch match : complementMatches) {
-			if (isComplementMatchRelevant(fusedRuleName, match)) {
-
-				Set<EObject> fusedNodes = comatch.getParameterNames().stream()//
-						.map(n -> (EObject) comatch.get(n))//
-						.collect(Collectors.toSet());
-				Set<EObject> complementNodes = match.getParameterNames().stream()//
-						.map(n -> (EObject) match.get(n))//
-						.collect(Collectors.toSet());
-
-				if (fusedNodes.containsAll(complementNodes)) {
-					removeOperationalRuleMatch(match);
-					logger.debug(
-							"Removed complement rule as it has already been applied as a fused rule application with its kernel:");
-					logger.debug("Complement rule:" + match);
-					logger.debug("fused rule: " + comatch);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Removes complement matches that were not part of the fused match, and also
-	 * irrelevant complement matches
-	 */
-	protected boolean isComplementMatchRelevant(String fusedRuleName, IMatch match) {
-		String complementName = MAUtil.getComplementName(fusedRuleName);
-
-		return complementName.equals(PatternSuffixes.removeSuffix(match.getPatternName()))
-				&& isPatternRelevantForInterpreter(match.getPatternName());
-	}
-
-	protected void doBookkeepingForKernelAndComplementMatches(String ruleName, IMatch comatch) {
-		TGGRuleApplication protocolNode;
-		int localCounter;
-
-		if (MAUtil.isFusedPatternMatch(ruleName)) {
-			protocolNode = (TGGRuleApplication) comatch
-					.get(TGGPatternUtil.getProtocolNodeName(MAUtil.getKernelName(ruleName)));
-		} else {
-			// if it is a kernel or a complement rule
-			protocolNode = (TGGRuleApplication) comatch
-					.get(TGGPatternUtil.getProtocolNodeName(PatternSuffixes.removeSuffix(comatch.getPatternName())));
-		}
-
-		if (isComplementMatch(ruleName)) {
-			// complement protocol has to have same ID as its kernel protocol
-			TGGRuleApplication kernelProtocolNode = (TGGRuleApplication) comatch
-					.get(TGGPatternUtil.getProtocolNodeName(getComplementRule(ruleName).get().getKernel().getName()));
-			localCounter = protocolNodeToID.get(kernelProtocolNode);
-		} else {
-			idCounter++;
-			localCounter = idCounter;
-		}
-
-		protocolNodeToID.put(protocolNode, localCounter);
-		fillInProtocolData(protocolNode, localCounter);
-
-		if (MAUtil.isFusedPatternMatch(ruleName)) {
-			TGGRuleApplication complProtocolNode = ((TGGRuleApplication) comatch
-					.get(TGGPatternUtil.getProtocolNodeName(MAUtil.getComplementName(ruleName))));
-			protocolNodeToID.put(complProtocolNode, localCounter);
-			fillInProtocolData(complProtocolNode, localCounter);
-		}
-	}
-
-	protected boolean isComplementRuleApplicable(IMatch match, String ruleName) {
-		if (!isPatternRelevantForInterpreter(match.getPatternName())) {
-			logger.debug("Not relevant for interpreter: " + match.getPatternName());
-			return false;
-		}
-
-		TGGComplementRule cr = getComplementRule(ruleName).get();
-		if (!cr.isBounded()) {
-			return true;
-		}
-
-		EObject kernelProtocol = (EObject) match.get(TGGPatternUtil.getProtocolNodeName(cr.getKernel().getName()));
-		Set<EObject> contextNodes = getContextNodesWithoutProtocolNode(match);
-
-		// If any node from bounded CR context was created after
-		// its kernel was applied, CR is not applicable!
-		for (EObject contextNode : contextNodes) {
-			if (nodeToProtocolID.get(contextNode) != null // The context might not even have been created yet???
-					&& nodeToProtocolID.get(contextNode) > protocolNodeToID.get(kernelProtocol)) {
-				logger.debug("Complement match " + match.getPatternName() + " is not applicable as " + contextNode
-						+ " (id = " + nodeToProtocolID.get(contextNode) + ")" + " was created after " + kernelProtocol
-						+ " (id = " + protocolNodeToID.get(kernelProtocol) + ")");
-				return false;
-			}
-		}
-		return true;
-	}
-
-	protected Set<EObject> getContextNodesWithoutProtocolNode(IMatch match) {
-		Set<EObject> contextNodes = match.getParameterNames().stream()
-				.filter(n -> !(match.get(n) instanceof TGGRuleApplication)).map(n -> (EObject) match.get(n))
-				.collect(Collectors.toSet());
-		return contextNodes;
-	}
-
-	protected Set<IMatch> findAllComplementRuleMatches() {
-		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches().stream()
-				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.getPatternName())))
-				.collect(Collectors.toSet());
-
-		return allComplementRuleMatches;
 	}
 	
 	public SYNC_Strategy getStrategy() {

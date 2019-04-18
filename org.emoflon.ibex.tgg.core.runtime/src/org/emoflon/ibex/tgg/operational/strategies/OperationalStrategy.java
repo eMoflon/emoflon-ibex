@@ -1,15 +1,12 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -31,7 +28,6 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
-import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
@@ -39,12 +35,10 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 import language.TGG;
-import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleNode;
 import language.impl.LanguagePackageImpl;
 import runtime.RuntimeFactory;
-import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
@@ -447,68 +441,10 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		this.blackInterpreter.monitor(rs);
 	}
 
-	/***** Multi-Amalgamation *****/
-
-	public void setIsRuleApplicationFinal(EObject ruleApplication) {
-		ruleApplication.eSet(RuntimePackage.eINSTANCE.getTGGRuleApplication_Final(), true);
-	}
-
-	protected Optional<TGGComplementRule> getComplementRule(String ruleName) {
-		return getRule(ruleName)//
-				.filter(TGGComplementRule.class::isInstance)//
-				.map(TGGComplementRule.class::cast);
-	}
-
-	protected boolean isKernelMatch(String kernelName) {
-		return getKernelRulesNames().contains(kernelName);
-	}
-
-	public boolean isComplementMatch(String complementName) {
-		return getComplementRulesNames().contains(complementName);
-	}
-
-	private Set<String> cacheComplementRulesNames = null;
-
-	protected Set<String> getComplementRulesNames() {
-		if (cacheComplementRulesNames == null) {
-
-			cacheComplementRulesNames = options.tgg().getRules().stream()//
-					.filter(TGGComplementRule.class::isInstance)//
-					.map(TGGRule::getName)//
-					.collect(Collectors.toSet());
-		}
-
-		return cacheComplementRulesNames;
-	}
-
-	private Set<String> cacheKernelRulesNames = null;
-
-	protected Set<String> getKernelRulesNames() {
-		if (cacheKernelRulesNames == null) {
-			cacheKernelRulesNames = options.tgg().getRules().stream()//
-					.filter(TGGComplementRule.class::isInstance)//
-					.map(TGGComplementRule.class::cast)//
-					.map(TGGComplementRule::getKernel)//
-					.map(TGGRule::getName)//
-					.distinct()//
-					.collect(Collectors.toSet());
-		}
-
-		return cacheKernelRulesNames;
-	}
-
-	protected boolean tggContainsComplementRules() {
-		return !getComplementRulesNames().isEmpty();
-	}
-
 	public IGreenPatternFactory getGreenFactory(String ruleName) {
 		assert (ruleName != null);
 		if (!factories.containsKey(ruleName)) {
-			if (isFusedPatternMatch(ruleName)) {
-				factories.put(ruleName, new GreenFusedPatternFactory(ruleName, options, this));
-			} else {
-				factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
-			}
+			factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
 		}
 
 		return factories.get(ruleName);

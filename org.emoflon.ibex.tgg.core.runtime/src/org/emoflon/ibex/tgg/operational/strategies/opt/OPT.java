@@ -331,12 +331,6 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected void handleBundles(final IMatch comatch, final String ruleName) {
-		if (!this.getComplementRule(ruleName).isPresent()) {
-			Bundle appliedBundle = new Bundle(this.idCounter);
-			this.appliedBundles.add(appliedBundle);
-			this.lastAppliedBundle = appliedBundle;
-		}
-
 		this.lastAppliedBundle.addMatch(this.idCounter);
 
 		// add context nodes and edges of this concrete match to its bundle
