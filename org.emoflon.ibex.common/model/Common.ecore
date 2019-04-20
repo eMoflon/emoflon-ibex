@@ -178,7 +178,11 @@
     <eLiterals name="SMALLER" value="5"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXCSP">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A pattern consists of local edges and nodes, signature nodes. It can invoke other patterns and force nodes be different."/>
+    </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="package" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
         eType="#//IBeXAttributeValue" containment="true"/>
   </eClassifiers>
