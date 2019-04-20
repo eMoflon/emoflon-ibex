@@ -1,5 +1,5 @@
 package org.emoflon.ibex.tgg.compiler.defaults
-
+ 
 import java.util.Collection
 import language.TGGAttributeConstraintDefinition
 import org.moflon.core.utilities.MoflonUtil

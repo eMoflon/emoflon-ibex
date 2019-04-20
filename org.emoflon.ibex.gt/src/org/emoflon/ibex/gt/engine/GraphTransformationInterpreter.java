@@ -415,4 +415,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			throw new IllegalArgumentException("Cannot remove a match which was never added!");
 		}
 	}
+
+	public IBeXPatternSet getPatternSet() {
+		return patternSet;
+	}
 }
