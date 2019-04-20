@@ -132,9 +132,13 @@ public abstract class OperationalPatternTransformation {
 				if(param instanceof TGGAttributeExpression) {
 					TGGAttributeExpression tggAttrExpr = (TGGAttributeExpression) param;
 					IBeXAttributeExpression attrExpr = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeExpression();
-					iCSP.getValues().add(attrExpr);
-					attrExpr.setNode(IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, tggAttrExpr.getObjectVar().getName()).get());
+					Optional<IBeXNode> iBeXNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, tggAttrExpr.getObjectVar().getName());
+					if(iBeXNode.isPresent())
+						attrExpr.setNode(iBeXNode.get());
+					else
+						break;
 					attrExpr.setAttribute(tggAttrExpr.getAttribute());
+					iCSP.getValues().add(attrExpr);
 				}
 				else if(param instanceof TGGEnumExpression) {
 					TGGEnumExpression tggEnumExpr = (TGGEnumExpression) param;
@@ -151,6 +155,9 @@ public abstract class OperationalPatternTransformation {
 					constant.setStringValue("\"" + tggLiteralExpr.getValue() + "\"");
 				}
 			}
+			
+			if(iCSP.getValues().size() == csp.getParameters().size())
+				ibexPattern.getCsps().add(iCSP);
 		}
 	}
 
