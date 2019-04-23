@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import language.TGGRule;
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
@@ -28,10 +29,9 @@ public class VictoryDataProvider implements IVictoryDataProvider {
     }
     
     @Override
-    public Set<IMatch> getNeighboringMatches(IMatch match, int k) {
-    	Set<IMatch> matches = this.getMatches(match);
-    	// TODO: neighboring matches implementation
-    	return matches;
+    public Set<EObject> getMatchNeighbourhood(IMatch match, int k) {
+	// TODO: match neighborhood implementation
+	return null;
     }
     
     @Override
