@@ -122,10 +122,10 @@ public abstract class OperationalPatternTransformation {
 			IBeXCSP iCSP = IBeXLanguageFactory.eINSTANCE.createIBeXCSP();
 			iCSP.setName(csp.getDefinition().getName());
 			if(csp.getDefinition().isUserDefined()) {
-				iCSP.setPackage("org.emoflon.ibex.tgg.operational.csp.constraints");
+				iCSP.setPackage("org.emoflon.ibex.tgg.operational.csp.constraints.custom." + ((TGG) rule.eContainer()).getName().toLowerCase());
 			}
 			else {
-				iCSP.setPackage("org.emoflon.ibex.tgg.operational.csp.constraints.custom." + ((TGG) rule.eContainer()).getName().toLowerCase());
+				iCSP.setPackage("org.emoflon.ibex.tgg.operational.csp.constraints");
 			}
 			
 			for(TGGParamValue param : csp.getParameters()) {
