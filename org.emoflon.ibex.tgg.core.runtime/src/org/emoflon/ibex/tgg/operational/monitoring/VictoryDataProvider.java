@@ -38,34 +38,41 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 
 	@Override
 	public Set<EObject> getMatchNeighbourhood(IMatch match, int k) {
-
-		Resource srcR = op.getSourceResource();
-		Resource trgR = op.getTargetResource();
-
-		EObject trgCnt = trgR.getContents().get(0);
-		EObject srcCnt = srcR.getContents().get(0);
-
 		Set<EObject> list = new HashSet<EObject>();
-
-		TGGRule rule = getRule(match.getRuleName());
-		for (String p : match.getParameterNames()) {
-			for (TGGRuleNode node : rule.getNodes()) {
-				String nodeName = node.getName();
-				if (nodeName.equals(p) && !node.getDomainType().equals(DomainType.CORR)) {
-					if (k > 0) {
-						if (srcCnt.toString().indexOf(node.getType().getName()) > 0) {
-							getList(list, srcR.getContents(), k, 0);
+		try {
+			if (match != null && match.getParameterNames().size() > 0) {
+				Resource srcR = op.getSourceResource();
+				Resource trgR = op.getTargetResource();
+	
+				EObject trgCnt = trgR.getContents().get(0);
+				EObject srcCnt = srcR.getContents().get(0);
+	
+				TGGRule rule = getRule(match.getRuleName());
+				for (String p : match.getParameterNames()) {
+					for (TGGRuleNode node : rule.getNodes()) {
+						String nodeName = node.getName();
+						if (nodeName.equals(p) && !node.getDomainType().equals(DomainType.CORR)) {
+							if (k > 0) {
+								if (srcCnt.toString().indexOf(node.getType().getName()) > 0) {
+									getList(list, srcR.getContents(), k, 0);
+								}
+	
+								if (trgCnt.toString().indexOf(node.getType().getName()) > 0) {
+									getList(list, trgR.getContents(), k, 0);
+								}
+							} else {
+								list.add((EObject) match.get(p));
+							}
 						}
-
-						if (trgCnt.toString().indexOf(node.getType().getName()) > 0) {
-							getList(list, trgR.getContents(), k, 0);
-						}
-					} else {
-						list.add((EObject) match.get(p));
 					}
 				}
+			} else {
+				logger.error("Match is null or empty");
 			}
+		} catch (Exception e) {
+			logger.error(e);
 		}
+		
 		return list;
 	}
 
