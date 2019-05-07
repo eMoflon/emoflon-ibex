@@ -87,53 +87,6 @@ public abstract class CC extends OPT {
 		return true;
 	}
 
-	/**
-	 * Uniqueness check among same CR matches of the same CR is only done for nodes.
-	 * It might be in the future that some tests show that this is also needed for
-	 * edges.
-	 */
-	private void findDuplicatedMatches(int currentComplementMatch,
-			IntToObjectMap<Set<EObject>> complementMatchToContextNodes) {
-
-		Set<EObject> contextNodesForCurrentComplementMatch = matchToContextNodes.get(currentComplementMatch);
-		for (int previousComplementMatch : complementMatchToContextNodes.keySet()) {
-			// check if matches belong to the same complement rule
-			if (matchIdToRuleName.get(currentComplementMatch).equals(matchIdToRuleName.get(previousComplementMatch))) {
-				if (matchToContextNodes.get(previousComplementMatch).equals(contextNodesForCurrentComplementMatch)) {
-					if (!sameComplementMatches.containsKey(currentComplementMatch)) {
-						sameComplementMatches.put(currentComplementMatch, cfactory.createIntSet());
-						sameComplementMatches.get(currentComplementMatch).add(currentComplementMatch);
-						sameComplementMatches.get(currentComplementMatch).add(previousComplementMatch);
-					} else {
-						sameComplementMatches.get(currentComplementMatch).add(previousComplementMatch);
-					}
-				}
-			}
-		}
-		complementMatchToContextNodes.put(currentComplementMatch, contextNodesForCurrentComplementMatch);
-	}
-
-	private String removeAllSuffixes(String name) {
-		if (name.indexOf(getGENPatternForMaximality()) == -1)
-			return name;
-		return name.substring(0, name.indexOf(getGENPatternForMaximality()));
-	}
-
-	private Set<EObject> getGenContextNodes(IMatch match) {
-		Set<EObject> contextNodes = match.getParameterNames().stream()//
-				.map(n -> (EObject) match.get(n))//
-				.collect(Collectors.toSet());
-		return contextNodes;
-	}
-
-	/**
-	 * @return Collection of all complement matches that has to be applied.
-	 */
-	private Set<IMatch> findAllComplementRuleContextMatches() {
-		return operationalMatchContainer.getMatches().stream()
-				.filter(m -> m.getPatternName().contains(getGENPatternForMaximality())).collect(Collectors.toSet());
-	}
-
 	@Override
 	protected void wrapUp() {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
