@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -31,7 +29,6 @@ import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
-import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
@@ -39,12 +36,10 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 import language.TGG;
-import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleNode;
 import language.impl.LanguagePackageImpl;
 import runtime.RuntimeFactory;
-import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
@@ -473,6 +468,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			throw new NullPointerException("UpdatePolicy must not be set to null.");
 		else
 			this.updatePolicy = updatePolicy;
+	}
+	
+	public Map<String, IGreenPatternFactory> getFactories() {
+		return factories;
 	}
 
 	public IUpdatePolicy getUpdatePolicy() {
