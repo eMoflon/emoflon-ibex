@@ -31,6 +31,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
+import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
 import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -49,7 +50,7 @@ import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
-public abstract class OperationalStrategy implements IMatchObserver {
+public abstract class OperationalStrategy extends AbstractIbexObservable implements IMatchObserver  {
 	private long currentIntervalStart = -1;
 	private final long INTERVAL_LENGTH = 5000;
 	private long matchCounter = 0;
@@ -72,7 +73,6 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	private Map<String, IGreenPatternFactory> factories;
 
 	// Configuration
-	protected IUpdatePolicy updatePolicy;
 	protected final IbexOptions options;
 
 	// Model manipulation
@@ -88,8 +88,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
 		this.options = options;
-		this.updatePolicy = policy;
-
+		this.setUpdatePolicy(policy);
+		
 		base = URI.createPlatformResourceURI("/", true);
 		factories = new HashMap<>();
 
@@ -177,7 +177,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-
+		
+		
 		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
 				options.tgg().getAttributeConstraintDefinitionLibrary());
 		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
@@ -290,6 +291,28 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	public abstract void run() throws IOException;
+	
+	/*public int getNumberOfObjectsInModels() {
+        int sizeS = 0;
+        TreeIterator<EObject> treeIterator = s.getAllContents();
+        while(treeIterator.hasNext()) {
+            treeIterator.next();
+            sizeS++;
+        }
+        int sizeC = 0;
+        treeIterator = c.getAllContents();
+        while(treeIterator.hasNext()) {
+            treeIterator.next();
+            sizeC++;
+        }
+        int sizeT = 0;
+        treeIterator = t.getAllContents();
+        while(treeIterator.hasNext()) {
+            treeIterator.next();
+            sizeT++;
+        }
+        return sizeS + sizeC + sizeT;        
+    }*/
 
 	protected boolean processOneOperationalRuleMatch() {
 		if (operationalMatchContainer.isEmpty())
@@ -301,10 +324,12 @@ public abstract class OperationalStrategy implements IMatchObserver {
 		Optional<IMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
-		if (result.isPresent())
+		if (result.isPresent()) {
 			logger.debug("Removed as it has just been applied: ");
-		else
+		}
+		else {
 			logger.debug("Removed as application failed: ");
+		}
 
 		logger.debug(match);
 
@@ -312,7 +337,8 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected IMatch chooseOneMatch() {
-		IMatch match = updatePolicy.chooseOneMatch(new ImmutableMatchContainer(operationalMatchContainer));
+		IMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
+
 		if (match == null)
 			throw new IllegalStateException("Update policies should never return null!");
 
@@ -320,23 +346,25 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	}
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		if (!updatePolicy.matchShouldBeApplied(match, ruleName)) {
+		//generatedPatternsSizeObserver.setNodes(match);
+		if (!this.getUpdatePolicy().matchShouldBeApplied(match, ruleName)) { //TODO JaneJ update the way this is called
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
-
+		
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
+
 		IGreenPattern greenPattern = factory.create(match.getPatternName());
 
 		logger.debug("Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
-
+		//logger.debug("Pattern: " + match.getPatternName() + " matches: " + operationalMatchContainer.getMatches().size());
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
 			logger.debug("Successfully applied: " + match.getPatternName());
+			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
-			updatePolicy.notifyMatchHasBeenApplied(cm, ruleName);
 		});
 
 		return comatch;
@@ -373,17 +401,24 @@ public abstract class OperationalStrategy implements IMatchObserver {
 	/****** Initialisation, termination *****/
 
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
+		this.notifyStartInit();
 		this.blackInterpreter = blackInterpreter;
-
+		
 		createAndPrepareResourceSet();
 		registerInternalMetamodels();
 		registerUserMetamodels();
+		
+		this.notifyStartLoading();
 		loadTGG();
 		loadModels();
+		this.notifyLoadingFinished();
+		
 		initialiseBlackInterpreter();
 
 		this.trash = createResource("instances/trash.xmi");
 		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
+		
+		this.notifyDoneInit();
 	}
 
 	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
@@ -510,24 +545,21 @@ public abstract class OperationalStrategy implements IMatchObserver {
 				factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
 			}
 		}
+		
 
 		return factories.get(ruleName);
 	}
 
 	/***** Configuration *****/
-
-	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
-		if (updatePolicy == null)
-			throw new NullPointerException("UpdatePolicy must not be set to null.");
-		else
-			this.updatePolicy = updatePolicy;
+	public Map<String, IGreenPatternFactory> getFactories() {
+		return factories;
 	}
-
-	public IUpdatePolicy getUpdatePolicy() {
-		return updatePolicy;
-	}
-
+	
 	public IbexOptions getOptions() {
 		return options;
+	}
+	
+	public IMatchContainer getMatchContainer() {
+		return operationalMatchContainer;
 	}
 }

@@ -242,7 +242,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 				.map(m -> PatternSuffixes.removeSuffix(m.getPatternName()))//
 				.collect(Collectors.toSet());
 
-		return updatePolicy.getNumberOfApplications(uniqueRulesNames);
+		return this.getUpdatePolicy().getNumberOfApplications(uniqueRulesNames);
 	}
 
 	/**
