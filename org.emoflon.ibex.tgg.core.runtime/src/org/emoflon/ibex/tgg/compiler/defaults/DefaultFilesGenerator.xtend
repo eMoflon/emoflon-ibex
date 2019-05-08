@@ -127,17 +127,16 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Logger;
 			import org.apache.log4j.BasicConfigurator;
 			
-			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			import org.emoflon.ibex.tgg.operational.monitoring.IVictoryDataProvider;
 			import org.emoflon.ibex.tgg.operational.monitoring.VictoryDataProvider;
 			import org.emoflon.ibex.tgg.ui.debug.core.IbexDebugUI;
+			
 			«additionalImports»
 			
 			public class «fileName» extends «strategy» {
 			
 				public «fileName»() throws IOException {
-					super(createIbexOptions());
-					registerBlackInterpreter(new «engine»());
+					super();
 				}
 			
 				public static void main(String[] args) throws IOException {
@@ -148,12 +147,6 @@ class DefaultFilesGenerator {
 				}
 				
 				«body»
-				
-				«generateMetamodelRegistration()»
-				
-				private static IbexOptions createIbexOptions() {
-					return _RegistrationHelper.createIbexOptions();
-				}
 			}
 		'''
 	}
@@ -195,17 +188,16 @@ class DefaultFilesGenerator {
 	static def generateModelGenDebugFile(String projectName, String fileName, String engine, String additionalImports) {
 		return generateDebugStructure(
 			'''
-				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
-				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»._RegistrationHelper;
+				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».MODELGEN_App;
 				«additionalImports»
 			''',
 			fileName,
-			"MODELGEN",
+			"MODELGEN_App",
 			engine,
 			projectName,
 			'''
-				logger.info("Starting MODELGEN");
+				logger.info("Starting MODELGEN_Debug");
 				long tic = System.currentTimeMillis();
 				«fileName» generator = new «fileName»();
 				long toc = System.currentTimeMillis();
@@ -222,16 +214,16 @@ class DefaultFilesGenerator {
 				    ui.getIbexController().register(generator);
 				
 				    try {
-						logger.info("Starting MODELGEN");
+						logger.info("Starting MODELGEN_Debug");
 						long runTic = System.currentTimeMillis();
 						generator.run();
 						long runToc = System.currentTimeMillis();
-						logger.info("Completed MODELGEN in: " + (runToc - runTic) + " ms");
+						logger.info("Completed MODELGEN_Debug in: " + (runToc - runTic) + " ms");
 				
 						generator.saveModels();
 						generator.terminate();
 				    } catch (IOException pIOE) {
-						logger.error("MODELGEN threw an IOException", pIOE);
+						logger.error("MODELGEN_Debug threw an IOException", pIOE);
 				    }
 				}, "IBeX main thread").start();
 				
