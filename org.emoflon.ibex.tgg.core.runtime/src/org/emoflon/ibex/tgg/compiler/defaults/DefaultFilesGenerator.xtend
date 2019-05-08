@@ -119,7 +119,7 @@ class DefaultFilesGenerator {
 	static def String generateDebugStructure(String additionalImports, String fileName, String strategy, String engine,
 		String projectName, String setUpRoutine, String body) {
 		'''
-			package org.emoflon.ibex.tgg.run.debug;
+			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».debug;
 			
 			import java.io.IOException;
 			
