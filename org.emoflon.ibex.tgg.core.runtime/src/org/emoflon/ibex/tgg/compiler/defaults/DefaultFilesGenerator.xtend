@@ -130,6 +130,7 @@ class DefaultFilesGenerator {
 			import org.emoflon.ibex.tgg.operational.monitoring.IVictoryDataProvider;
 			import org.emoflon.ibex.tgg.operational.monitoring.VictoryDataProvider;
 			import org.emoflon.ibex.tgg.ui.debug.core.IbexDebugUI;
+			import org.emoflon.ibex.tgg.ui.debug.options.IUserOptions.Op;
 			
 			«additionalImports»
 			
@@ -199,13 +200,13 @@ class DefaultFilesGenerator {
 				long tic = System.currentTimeMillis();
 				«fileName» generator = new «fileName»();
 				long toc = System.currentTimeMillis();
-				logger.info("Completed init for MODELGEN in: " + (toc - tic) + " ms");
+				logger.info("Completed init for MODELGEN_Debug in: " + (toc - tic) + " ms");
 				
 				MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 				generator.setStopCriterion(stop);
 				
 				IVictoryDataProvider dataProvider = new VictoryDataProvider(generator);
-				IbexDebugUI ui = IbexDebugUI.create(dataProvider);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, Op.MODELGEN);
 				
 				new Thread(() -> {
 				
@@ -419,6 +420,48 @@ class DefaultFilesGenerator {
 		)
 	}
 
+	static def generateInitialFwdDebugAppFile(String projectName, String fileName) {
+		return generateDebugStructure(
+			'''
+				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».INITIAL_FWD_App;
+			''',
+			fileName,
+			"INITIAL_FWD_App",
+			projectName,
+			'''
+				logger.info("Starting INITIAL_FWD_Debug");
+				long tic = System.currentTimeMillis();
+				«fileName» init_fwd = new «fileName»();
+				long toc = System.currentTimeMillis();
+				logger.info("Completed init for INITIAL_FWD_Debug in: " + (toc - tic) + " ms");
+				
+				IVictoryDataProvider dataProvider = new VictoryDataProvider(init_fwd);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, Op.INITIAL_FWD);
+
+				new Thread(() -> {
+				
+				    ui.getIbexController().register(init_fwd);
+				
+				    try {
+						logger.info("Starting INITIAL_FWD_Debug");
+						long runTic = System.currentTimeMillis();
+						init_fwd.forward();
+						long runToc = System.currentTimeMillis();
+						logger.info("Completed INITIAL_FWD_Debug in: " + (runToc - runTic) + " ms");
+				
+						init_fwd.saveModels();
+						init_fwd.terminate();
+					} catch (IOException pIOE) {
+						logger.error("INITIAL_FWD_Debug threw an IOException", pIOE);
+				    }
+				}, "IBeX main thread").start();
+				
+				ui.run();
+			''',
+			""
+		)
+	}
+
 	static def generateInitialBwdAppFile(String projectName, String fileName, String engine, String additionalImports) {
 		return generateBasicStructure(
 			'''
@@ -472,6 +515,48 @@ class DefaultFilesGenerator {
 		)
 	}
 
+	static def generateInitialBwdDebugAppFile(String projectName, String fileName) {
+		return generateDebugStructure(
+			'''
+				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».INITIAL_BWD_App;
+			''',
+			fileName,
+			"INITIAL_BWD_App",
+			projectName,
+			'''
+				logger.info("Starting INITIAL_BWD_Debug");
+				long tic = System.currentTimeMillis();
+				«fileName» init_bwd = new «fileName»();
+				long toc = System.currentTimeMillis();
+				logger.info("Completed init for INITIAL_BWD_Debug in: " + (toc - tic) + " ms");
+				
+				IVictoryDataProvider dataProvider = new VictoryDataProvider(init_bwd);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, Op.INITIAL_BWD);
+
+				new Thread(() -> {
+				
+				    ui.getIbexController().register(init_bwd);
+				
+				    try {
+						logger.info("Starting INITIAL_BWD_Debug");
+						long runTic = System.currentTimeMillis();
+						init_bwd.backward();
+						long runToc = System.currentTimeMillis();
+						logger.info("Completed INITIAL_BWD_Debug in: " + (runToc - runTic) + " ms");
+				
+						init_bwd.saveModels();
+						init_bwd.terminate();
+					} catch (IOException pIOE) {
+						logger.error("INITIAL_BWD_Debug threw an IOException", pIOE);
+				    }
+				}, "IBeX main thread").start();
+				
+				ui.run();
+			''',
+			""
+		)
+	}
+	
 	def static generateMetamodelRegistration() {
 		'''
 			@Override
