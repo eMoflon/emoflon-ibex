@@ -19,10 +19,6 @@ public class ImmutableMatchContainer {
 		return Collections.unmodifiableSet(matchContainer.getMatches());
 	}
 	
-	public IMatch getNextKernel() {
-		return matchContainer.getNextKernel();
-	}
-	
 	public boolean isEmpty() {
 		return matchContainer.isEmpty();
 	}

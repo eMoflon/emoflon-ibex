@@ -21,11 +21,6 @@ public class ProtocolCorePatternTransformation extends OperationalPatternTransfo
 	}
 
 	@Override
-	protected void handleComplementRules(IBeXContextPattern ibexPattern) {
-		// Do nothing
-	}
-
-	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern) {
 		parent.createProtocolNode(rule, ibexPattern);
 	}

@@ -25,7 +25,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 import language.BindingType;
 import language.DomainType;
 import language.TGG;
-import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -88,9 +87,6 @@ public class OverlapUtil {
 			for (int j = i; j < tgg.getRules().size(); j++) {
 				TGGRule sourceRule = tgg.getRules().get(i);
 				TGGRule targetRule = tgg.getRules().get(j);
-				
-				if(sourceRule instanceof TGGComplementRule || targetRule instanceof TGGComplementRule)
-					continue;
 				
 				if(sourceRule.isAbstract() || targetRule.isAbstract())
 					continue;

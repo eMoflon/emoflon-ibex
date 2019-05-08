@@ -76,10 +76,6 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConditionLibrary"
         lowerBound="1" eType="#//TGGAttributeConstraintLibrary" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGComplementRule" eSuperTypes="#//TGGRule">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bounded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="kernel" eType="#//TGGRule"/>
-  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGInplaceAttributeExpression">
     <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" lowerBound="1"
         eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>

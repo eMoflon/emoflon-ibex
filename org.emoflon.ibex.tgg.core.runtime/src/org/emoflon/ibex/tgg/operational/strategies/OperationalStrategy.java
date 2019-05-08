@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -73,6 +72,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	private Map<String, IGreenPatternFactory> factories;
 
 	// Configuration
+	protected IUpdatePolicy updatePolicy;
 	protected final IbexOptions options;
 
 	// Model manipulation
@@ -177,8 +177,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-		
-		
+
 		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
 				options.tgg().getAttributeConstraintDefinitionLibrary());
 		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
@@ -291,28 +290,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	public abstract void run() throws IOException;
-	
-	/*public int getNumberOfObjectsInModels() {
-        int sizeS = 0;
-        TreeIterator<EObject> treeIterator = s.getAllContents();
-        while(treeIterator.hasNext()) {
-            treeIterator.next();
-            sizeS++;
-        }
-        int sizeC = 0;
-        treeIterator = c.getAllContents();
-        while(treeIterator.hasNext()) {
-            treeIterator.next();
-            sizeC++;
-        }
-        int sizeT = 0;
-        treeIterator = t.getAllContents();
-        while(treeIterator.hasNext()) {
-            treeIterator.next();
-            sizeT++;
-        }
-        return sizeS + sizeC + sizeT;        
-    }*/
 
 	protected boolean processOneOperationalRuleMatch() {
 		if (operationalMatchContainer.isEmpty())
@@ -324,12 +301,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Optional<IMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
-		if (result.isPresent()) {
+		if (result.isPresent())
 			logger.debug("Removed as it has just been applied: ");
-		}
-		else {
+		else
 			logger.debug("Removed as application failed: ");
-		}
 
 		logger.debug(match);
 
@@ -351,13 +326,12 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
-		
-		IGreenPatternFactory factory = getGreenFactory(ruleName);
 
+		IGreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.getPatternName());
 
 		logger.debug("Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
-		//logger.debug("Pattern: " + match.getPatternName() + " matches: " + operationalMatchContainer.getMatches().size());
+
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
@@ -365,6 +339,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
+			updatePolicy.notifyMatchHasBeenApplied(cm, ruleName);
 		});
 
 		return comatch;
@@ -403,7 +378,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
 		this.notifyStartInit();
 		this.blackInterpreter = blackInterpreter;
-		
+
 		createAndPrepareResourceSet();
 		registerInternalMetamodels();
 		registerUserMetamodels();
@@ -482,79 +457,28 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		this.blackInterpreter.monitor(rs);
 	}
 
-	/***** Multi-Amalgamation *****/
-
-	public void setIsRuleApplicationFinal(EObject ruleApplication) {
-		ruleApplication.eSet(RuntimePackage.eINSTANCE.getTGGRuleApplication_Final(), true);
-	}
-
-	protected Optional<TGGComplementRule> getComplementRule(String ruleName) {
-		return getRule(ruleName)//
-				.filter(TGGComplementRule.class::isInstance)//
-				.map(TGGComplementRule.class::cast);
-	}
-
-	protected boolean isKernelMatch(String kernelName) {
-		return getKernelRulesNames().contains(kernelName);
-	}
-
-	public boolean isComplementMatch(String complementName) {
-		return getComplementRulesNames().contains(complementName);
-	}
-
-	private Set<String> cacheComplementRulesNames = null;
-
-	protected Set<String> getComplementRulesNames() {
-		if (cacheComplementRulesNames == null) {
-
-			cacheComplementRulesNames = options.tgg().getRules().stream()//
-					.filter(TGGComplementRule.class::isInstance)//
-					.map(TGGRule::getName)//
-					.collect(Collectors.toSet());
-		}
-
-		return cacheComplementRulesNames;
-	}
-
-	private Set<String> cacheKernelRulesNames = null;
-
-	protected Set<String> getKernelRulesNames() {
-		if (cacheKernelRulesNames == null) {
-			cacheKernelRulesNames = options.tgg().getRules().stream()//
-					.filter(TGGComplementRule.class::isInstance)//
-					.map(TGGComplementRule.class::cast)//
-					.map(TGGComplementRule::getKernel)//
-					.map(TGGRule::getName)//
-					.distinct()//
-					.collect(Collectors.toSet());
-		}
-
-		return cacheKernelRulesNames;
-	}
-
-	protected boolean tggContainsComplementRules() {
-		return !getComplementRulesNames().isEmpty();
-	}
-
 	public IGreenPatternFactory getGreenFactory(String ruleName) {
 		assert (ruleName != null);
 		if (!factories.containsKey(ruleName)) {
-			if (isFusedPatternMatch(ruleName)) {
-				factories.put(ruleName, new GreenFusedPatternFactory(ruleName, options, this));
-			} else {
-				factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
-			}
+			factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
 		}
-		
 
 		return factories.get(ruleName);
 	}
 
 	/***** Configuration *****/
-	public Map<String, IGreenPatternFactory> getFactories() {
-		return factories;
+
+	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
+		if (updatePolicy == null)
+			throw new NullPointerException("UpdatePolicy must not be set to null.");
+		else
+			this.updatePolicy = updatePolicy;
 	}
-	
+
+	public IUpdatePolicy getUpdatePolicy() {
+		return updatePolicy;
+	}
+
 	public IbexOptions getOptions() {
 		return options;
 	}

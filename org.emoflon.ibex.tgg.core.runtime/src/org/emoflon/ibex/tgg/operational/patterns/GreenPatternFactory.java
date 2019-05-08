@@ -18,7 +18,6 @@ import language.BindingType;
 import language.DomainType;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeConstraintLibrary;
-import language.TGGComplementRule;
 import language.TGGParamValue;
 import language.TGGRule;
 import language.TGGRuleCorr;
@@ -255,11 +254,6 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	@Override
 	public boolean isAxiom() {
 		return blackSrcNodesInRule.isEmpty() && blackTrgNodesInRule.isEmpty() && blackCorrNodesInRule.isEmpty();
-	}
-
-	@Override
-	public boolean isComplementRule() {
-		return (rule instanceof TGGComplementRule);
 	}
 
 	@Override

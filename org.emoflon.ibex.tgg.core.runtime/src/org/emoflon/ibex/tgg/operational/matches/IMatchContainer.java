@@ -16,8 +16,6 @@ public interface IMatchContainer {
 	
 	public Set<IMatch> getMatches();
 	
-	public IMatch getNextKernel();
-	
 	default boolean isEmpty() {
 		return getMatches().isEmpty();
 	}

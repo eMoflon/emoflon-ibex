@@ -10,14 +10,13 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
-import org.emoflon.ibex.tgg.operational.updatepolicy.RandomKernelMatchUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 public abstract class CO extends CC {
 
 	public CO(IbexOptions options) throws IOException {
-		super(options, new RandomKernelMatchUpdatePolicy());
-		RandomKernelMatchUpdatePolicy policy = (RandomKernelMatchUpdatePolicy) getUpdatePolicy();
-		policy.setOptions(options);
+		super(options, new NextMatchUpdatePolicy());
+		NextMatchUpdatePolicy policy = (NextMatchUpdatePolicy) getUpdatePolicy();
 	}
 
 	@Override
