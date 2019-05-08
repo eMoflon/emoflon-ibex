@@ -116,7 +116,7 @@ class DefaultFilesGenerator {
 		'''
 	}
 	
-	static def String generateDebugStructure(String additionalImports, String fileName, String strategy, String engine,
+	static def String generateDebugStructure(String additionalImports, String fileName, String strategy,
 		String projectName, String setUpRoutine, String body) {
 		'''
 			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».debug;
@@ -185,16 +185,14 @@ class DefaultFilesGenerator {
 		)
 	}
 	
-	static def generateModelGenDebugFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateModelGenDebugFile(String projectName, String fileName) {
 		return generateDebugStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
 				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».MODELGEN_App;
-				«additionalImports»
 			''',
 			fileName,
 			"MODELGEN_App",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting MODELGEN_Debug");
