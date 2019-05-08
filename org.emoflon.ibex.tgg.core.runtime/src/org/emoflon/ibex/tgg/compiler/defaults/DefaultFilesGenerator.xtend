@@ -215,7 +215,7 @@ class DefaultFilesGenerator {
 				generator.setStopCriterion(stop);
 				
 				IVictoryDataProvider dataProvider = new VictoryDataProvider(generator);
-				IbexDebugUI ui = IbexDebugUI.create(dataProvider, false);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider);
 				
 				new Thread(() -> {
 				
@@ -233,7 +233,7 @@ class DefaultFilesGenerator {
 				    } catch (IOException pIOE) {
 						logger.error("MODELGEN threw an IOException", pIOE);
 				    }
-				}).start();
+				}, "IBeX main thread").start();
 				
 				ui.run();
 			''',
