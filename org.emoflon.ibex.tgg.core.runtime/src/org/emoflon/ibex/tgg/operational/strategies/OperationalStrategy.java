@@ -67,7 +67,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	private Map<String, IGreenPatternFactory> factories;
 
 	// Configuration
-	protected IUpdatePolicy updatePolicy;
 	protected final IbexOptions options;
 
 	// Model manipulation
@@ -334,7 +333,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
-			updatePolicy.notifyMatchHasBeenApplied(cm, ruleName);
 		});
 
 		return comatch;
@@ -463,19 +461,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	/***** Configuration *****/
 
-	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
-		if (updatePolicy == null)
-			throw new NullPointerException("UpdatePolicy must not be set to null.");
-		else
-			this.updatePolicy = updatePolicy;
-	}
-	
 	public Map<String, IGreenPatternFactory> getFactories() {
 		return factories;
-	}
-
-	public IUpdatePolicy getUpdatePolicy() {
-		return updatePolicy;
 	}
 
 	public IbexOptions getOptions() {
