@@ -1,22 +1,16 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
-
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
