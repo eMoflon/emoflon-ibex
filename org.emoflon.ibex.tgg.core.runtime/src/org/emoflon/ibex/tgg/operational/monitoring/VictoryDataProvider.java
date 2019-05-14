@@ -10,12 +10,9 @@ import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
@@ -43,10 +40,10 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	@Override
 	public Set<EObject> getMatchNeighbourhood(IMatch match, int k) {
 
-		Set<EObject> list = new HashSet<EObject>();
+		Set<EObject> neighbors = new HashSet<EObject>();
 		Set<EObject> resourceList = new HashSet<EObject>();
-		Set<TGGRuleNode> candidate = new HashSet<TGGRuleNode>();
-		HashMap<String, Set<TGGRuleNode>> nodes = new HashMap<String, Set<TGGRuleNode>>();
+		Set<TGGRuleNode> startingPoint = new HashSet<TGGRuleNode>();
+		HashMap<String, Set<TGGRuleNode>> nodeRelations = new HashMap<String, Set<TGGRuleNode>>();
 
 		try {
 
@@ -71,15 +68,15 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 						if (edges.size() > 0) {
 							for (TGGRuleEdge edge : edges) {
 								TGGRuleNode trgNode = edge.getTrgNode();
-								if (nodes.containsKey(node.getName())) {
-									nodes.get(node.getName()).add(trgNode);
+								if (nodeRelations.containsKey(node.getName())) {
+									nodeRelations.get(node.getName()).add(trgNode);
 								} else {
 									Set<TGGRuleNode> temp = new HashSet<TGGRuleNode>() {
 										{
 											add(trgNode);
 										}
 									};
-									nodes.put(node.getName(), temp);
+									nodeRelations.put(node.getName(), temp);
 								}
 							}
 						}
@@ -87,55 +84,55 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 				}
 			}
 
-			candidate = makeCandidates(nodes, match);
+			startingPoint = makeStartingPoints(nodeRelations, match);
+			
 			for (int i = 1; i <= k; i++) {
-				Set<TGGRuleNode> candidate_tmp = new HashSet<TGGRuleNode>();
-
-				Set<TGGRuleNode> finalNodes = new HashSet<TGGRuleNode>();
-				for (TGGRuleNode c : candidate) {
-					if (nodes.containsKey(c.getName())) {
-						finalNodes.addAll(nodes.get(c.getName()));
+				Set<TGGRuleNode> startingPoint_tmp = new HashSet<TGGRuleNode>();
+				Set<TGGRuleNode> finalNodeRelations = new HashSet<TGGRuleNode>();
+				for (TGGRuleNode s : startingPoint) {
+					if (nodeRelations.containsKey(s.getName())) {
+						finalNodeRelations.addAll(nodeRelations.get(s.getName()));
 					}
 				}
 
-				for (TGGRuleNode c : candidate) {
-					TGGRuleNode f = finalNodes.stream().filter(x -> x.getName().equals(c.getName())).findFirst().orElse(null);
+				for (TGGRuleNode s : startingPoint) {
+					TGGRuleNode f = finalNodeRelations.stream().filter(x -> x.getName().equals(s.getName())).findFirst().orElse(null);
 					if (f != null) {
-						finalNodes.remove(f);
+						finalNodeRelations.remove(f);
 					}
 				}
 
-				for (TGGRuleNode n : finalNodes) {
+				for (TGGRuleNode n : finalNodeRelations) {
 					for (EObject r : resourceList) {
 						if (r.toString().toLowerCase().indexOf("." + n.getName() + "impl") > 0) {
 							EObject p = (EObject) match.get(n.getName());
 							if (!r.equals(p)) {
-								list.add(r);
-								candidate_tmp.add(n);
+								neighbors.add(r);
+								startingPoint_tmp.add(n);
 							}
 						}
 					}
 				}
-				candidate = candidate_tmp;
+				startingPoint = startingPoint_tmp; 
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 
-		return list;
+		return neighbors;
 	}
 
-	private Set<TGGRuleNode> makeCandidates(HashMap<String, Set<TGGRuleNode>> nodes, IMatch match) {
-		Set<TGGRuleNode> candidate = new HashSet<TGGRuleNode>();
+	private Set<TGGRuleNode> makeStartingPoints(HashMap<String, Set<TGGRuleNode>> nodes, IMatch match) {
+		Set<TGGRuleNode> startingPoint = new HashSet<TGGRuleNode>();
 		TGGRule rule = getRule(match.getRuleName());
 		for (String p : match.getParameterNames()) {
 			TGGRuleNode node = rule.getNodes().stream().filter(n -> n.getName().equals(p)).findFirst().get();
 			if (node.getBindingType().equals(BindingType.CONTEXT) && !node.getDomainType().equals(DomainType.CORR)) {
-				candidate.add(node);
+				startingPoint.add(node);
 			}
 		}
-		return candidate;
+		return startingPoint;
 	}
 
 	@Override
