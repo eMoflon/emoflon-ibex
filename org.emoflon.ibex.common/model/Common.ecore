@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ASCII"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="IBeXLanguage" nsURI="platform:/resource/org.emoflon.ibex.common/model/Common.ecore"
     nsPrefix="IBeXLanguage">
@@ -166,6 +166,15 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="deletePatterns" upperBound="-1"
         eType="#//IBeXDeletePattern" containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXCSP">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A pattern consists of local edges and nodes, signature nodes. It can invoke other patterns and force nodes be different."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="package" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
+        eType="#//IBeXAttributeValue" containment="true"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="IBeXRelation">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="The relations for attribute constraints."/>
@@ -176,14 +185,5 @@
     <eLiterals name="UNEQUAL" value="3"/>
     <eLiterals name="SMALLER_OR_EQUAL" value="4"/>
     <eLiterals name="SMALLER" value="5"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXCSP">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="A pattern consists of local edges and nodes, signature nodes. It can invoke other patterns and force nodes be different."/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="package" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
-        eType="#//IBeXAttributeValue" containment="true"/>
   </eClassifiers>
 </ecore:EPackage>
