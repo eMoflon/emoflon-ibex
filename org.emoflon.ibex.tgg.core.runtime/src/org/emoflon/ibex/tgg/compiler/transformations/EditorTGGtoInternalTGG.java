@@ -66,7 +66,6 @@ import language.TGGAttributeConstraintOperators;
 import language.TGGAttributeConstraintParameterDefinition;
 import language.TGGAttributeExpression;
 import language.TGGAttributeVariable;
-import language.TGGComplementRule;
 import language.TGGEnumExpression;
 import language.TGGExpression;
 import language.TGGInplaceAttributeExpression;
@@ -191,17 +190,6 @@ public class EditorTGGtoInternalTGG {
 
 			tggNac.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextNac.getAttrConditions()));
 		}
-	}
-
-	private boolean hasAdditionalContext(TGGComplementRule tggComplementRule) {
-		Collection<TGGRuleNode> contextComplementRuleNodes = tggComplementRule.getNodes().stream()
-				.filter(n -> n.getBindingType().equals(BindingType.CONTEXT)).collect(Collectors.toSet());
-		Collection<TGGRuleNode> kernelNodes = tggComplementRule.getKernel().getNodes();
-		for (TGGRuleNode node : contextComplementRuleNodes) {
-			if (kernelNodes.stream().noneMatch(cn -> cn.getName().equals(node.getName())))
-				return true;
-		}
-		return false;
 	}
 
 	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {
@@ -501,10 +489,8 @@ public class EditorTGGtoInternalTGG {
 			}
 		}
 
-
 		return corrModel;
 	}
-
 
 	private EClassifier createMarkerClass(Rule rule) {
 		return createMarkerClass(rule.getName(), rule.getSourcePatterns(), rule.getCorrespondencePatterns(),

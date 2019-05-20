@@ -128,6 +128,7 @@ public class IbexOptions {
 	}
 
 	public Collection<TGGRule> getFlattenedConcreteTGGRules() {
+
 		return flattenedTGG.getRules()//
 				.stream()//
 				.filter(r -> !r.isAbstract())//

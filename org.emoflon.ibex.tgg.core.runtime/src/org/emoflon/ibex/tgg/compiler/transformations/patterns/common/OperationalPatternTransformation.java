@@ -53,8 +53,6 @@ public abstract class OperationalPatternTransformation {
 
 	protected abstract String getPatternName();
 
-	protected abstract void handleComplementRules(IBeXContextPattern ibexPattern);
-
 	protected abstract void transformNodes(IBeXContextPattern ibexPattern);
 
 	protected abstract void transformEdges(IBeXContextPattern ibexPattern);
@@ -111,9 +109,6 @@ public abstract class OperationalPatternTransformation {
 		// Transform CEPs
 		transformCEPs(ibexPattern);
 
-		// Complement rule
-		handleComplementRules(ibexPattern);
-		
 		return ibexPattern;
 	}
 

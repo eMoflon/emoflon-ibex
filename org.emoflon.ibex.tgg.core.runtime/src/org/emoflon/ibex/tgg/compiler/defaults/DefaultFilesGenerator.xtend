@@ -4,7 +4,7 @@ import java.util.Collection
 import language.TGGAttributeConstraintDefinition
 import org.moflon.core.utilities.MoflonUtil
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
-
+ 
 class DefaultFilesGenerator {
 
 	static def String generateUserRuntimeAttrCondFactory(Collection<String> userDefConstraints, String projectName) {
@@ -115,6 +115,48 @@ class DefaultFilesGenerator {
 			}
 		'''
 	}
+	
+	static def String generateDebugStructure(String additionalImports, String fileName, String strategy, String engine,
+		String projectName, String setUpRoutine, String body) {
+		'''
+			package org.emoflon.ibex.tgg.run.debug;
+			
+			import java.io.IOException;
+			
+			import org.apache.log4j.Level;
+			import org.apache.log4j.Logger;
+			import org.apache.log4j.BasicConfigurator;
+			
+			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+			import org.emoflon.ibex.tgg.operational.monitoring.IVictoryDataProvider;
+			import org.emoflon.ibex.tgg.operational.monitoring.VictoryDataProvider;
+			import org.emoflon.ibex.tgg.ui.debug.core.IbexDebugUI;
+			«additionalImports»
+			
+			public class «fileName» extends «strategy» {
+			
+				public «fileName»() throws IOException {
+					super(createIbexOptions());
+					registerBlackInterpreter(new «engine»());
+				}
+			
+				public static void main(String[] args) throws IOException {
+					BasicConfigurator.configure();
+					Logger.getRootLogger().setLevel(Level.INFO);
+			
+					«setUpRoutine»
+				}
+				
+				«body»
+				
+				«generateMetamodelRegistration()»
+				
+				private static IbexOptions createIbexOptions() {
+					return _RegistrationHelper.createIbexOptions();
+				}
+			}
+		'''
+	}
 
 	static def generateModelGenFile(String projectName, String fileName, String engine, String additionalImports) {
 		return generateBasicStructure(
@@ -145,6 +187,55 @@ class DefaultFilesGenerator {
 				
 				generator.saveModels();
 				generator.terminate();
+			''',
+			""
+		)
+	}
+	
+	static def generateModelGenDebugFile(String projectName, String fileName, String engine, String additionalImports) {
+		return generateDebugStructure(
+			'''
+				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
+				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
+				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»._RegistrationHelper;
+				«additionalImports»
+			''',
+			fileName,
+			"MODELGEN",
+			engine,
+			projectName,
+			'''
+				logger.info("Starting MODELGEN");
+				long tic = System.currentTimeMillis();
+				«fileName» generator = new «fileName»();
+				long toc = System.currentTimeMillis();
+				logger.info("Completed init for MODELGEN in: " + (toc - tic) + " ms");
+				
+				MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
+				generator.setStopCriterion(stop);
+				
+				IVictoryDataProvider dataProvider = new VictoryDataProvider(generator);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, false);
+				
+				new Thread(() -> {
+				
+				    ui.getIbexController().register(generator);
+				
+				    try {
+						logger.info("Starting MODELGEN");
+						long runTic = System.currentTimeMillis();
+						generator.run();
+						long runToc = System.currentTimeMillis();
+						logger.info("Completed MODELGEN in: " + (runToc - runTic) + " ms");
+				
+						generator.saveModels();
+						generator.terminate();
+				    } catch (IOException pIOE) {
+						logger.error("MODELGEN threw an IOException", pIOE);
+				    }
+				}).start();
+				
+				ui.run();
 			''',
 			""
 		)
