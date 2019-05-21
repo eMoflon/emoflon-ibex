@@ -43,8 +43,8 @@ public class EClassifiersManager {
 	/**
 	 * Creates a new EClassifiersManager.
 	 * 
-	 * @param mappings
-	 *            the mappings of URIs to package paths set via the properties file
+	 * @param mappings the mappings of URIs to package paths set via the properties
+	 *                 file
 	 */
 	public EClassifiersManager(final Map<String, String> mappings) {
 		this.mappings = mappings;
@@ -53,8 +53,7 @@ public class EClassifiersManager {
 	/**
 	 * Loads the EClasses from the given meta-model resource.
 	 * 
-	 * @param ecoreFile
-	 *            the resource
+	 * @param ecoreFile the resource
 	 */
 	public void loadMetaModelClasses(final Resource ecoreFile) {
 		EObject rootElement = ecoreFile.getContents().get(0);
@@ -66,8 +65,7 @@ public class EClassifiersManager {
 	/**
 	 * Loads the EClasses from the given package.
 	 * 
-	 * @param ePackage
-	 *            the package
+	 * @param ePackage the package
 	 */
 	private void loadMetaModelClasses(final EPackage ePackage) {
 		boolean isEcore = "ecore".equals(ePackage.getName());
@@ -86,8 +84,7 @@ public class EClassifiersManager {
 	 * Returns the import path for the Java package containing the code for the
 	 * given Ecore package.
 	 * 
-	 * @param ePackage
-	 *            the package
+	 * @param ePackage the package
 	 * @return the import path for package
 	 */
 	private String getPackagePath(final EPackage ePackage) {
@@ -102,20 +99,32 @@ public class EClassifiersManager {
 	/**
 	 * Adds the EPackage to the meta-models.
 	 * 
-	 * @param ePackage
-	 *            the package to add
+	 * @param ePackage the package to add
 	 */
 	private void addPackage(final EPackage ePackage) {
 		String packageClassName = getPackageClassName(ePackage.getName());
 		String packageImport = getPackagePath(ePackage) + "." + packageClassName;
+		packageImport = correctPackageImportWithMapping(packageImport);
 		packageNameToPath.put(packageClassName, packageImport);
+	}
+
+	/**
+	 * Give the user the chance to correct any package mapping with values in the
+	 * property file.
+	 * 
+	 * @param packageImport initial import
+	 * @return fixed import
+	 */
+	private String correctPackageImportWithMapping(String packageImport) {
+		if (mappings.containsKey(packageImport))
+			return mappings.get(packageImport);
+		return packageImport;
 	}
 
 	/**
 	 * Return the name of the Package class.
 	 * 
-	 * @param modelName
-	 *            the package of the meta-model
+	 * @param modelName the package of the meta-model
 	 */
 	private static String getPackageClassName(String modelName) {
 		return Character.toUpperCase(modelName.charAt(0)) + modelName.substring(1) + "Package";
@@ -124,8 +133,7 @@ public class EClassifiersManager {
 	/**
 	 * Determines the set of necessary imports for the given EClassifiers.
 	 * 
-	 * @param types
-	 *            the EClassifiers to import
+	 * @param types the EClassifiers to import
 	 * @return the types for Java import statements
 	 */
 	private Set<String> getImportsForTypes(final Set<? extends EClassifier> types) {
@@ -142,8 +150,7 @@ public class EClassifiersManager {
 	/**
 	 * Determines the set of necessary type imports for a set of nodes.
 	 * 
-	 * @param nodes
-	 *            the nodes
+	 * @param nodes the nodes
 	 * @return the types for Java import statements
 	 */
 	public Set<String> getImportsForNodeTypes(final List<GTNode> nodes) {
@@ -153,8 +160,7 @@ public class EClassifiersManager {
 	/**
 	 * Determines the set of necessary type imports for the parameters.
 	 * 
-	 * @param parameters
-	 *            the parameters
+	 * @param parameters the parameters
 	 * @return the types for Java import statements
 	 */
 	public Set<String> getImportsForDataTypes(final List<GTParameter> parameters) {
