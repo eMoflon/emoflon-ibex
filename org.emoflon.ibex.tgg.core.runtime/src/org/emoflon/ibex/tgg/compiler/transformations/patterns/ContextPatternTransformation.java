@@ -34,8 +34,6 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.Consistency
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_OPTPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCCPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCOPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.CCPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.COPatternTransformation;
@@ -175,16 +173,6 @@ public class ContextPatternTransformation {
 
 	private IBeXContextPattern createBWD_OPTPattern(TGGRule rule) {
 		OperationalPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule);
-		return transformer.transform();
-	}
-
-	private IBeXContextPattern createGenForCCPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new GENForCCPatternTransformation(this, options, rule);
-		return transformer.transform();
-	}
-
-	private IBeXContextPattern createGenForCOPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new GENForCOPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
 

@@ -16,7 +16,6 @@ public abstract class CO extends CC {
 
 	public CO(IbexOptions options) throws IOException {
 		super(options, new NextMatchUpdatePolicy());
-		NextMatchUpdatePolicy policy = (NextMatchUpdatePolicy) getUpdatePolicy();
 	}
 
 	@Override
