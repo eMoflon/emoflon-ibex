@@ -5,13 +5,10 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -81,9 +78,9 @@ public abstract class CC extends OPT {
 			return true;
 		}
 
-		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
-
+		processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
+		
 		return true;
 	}
 
