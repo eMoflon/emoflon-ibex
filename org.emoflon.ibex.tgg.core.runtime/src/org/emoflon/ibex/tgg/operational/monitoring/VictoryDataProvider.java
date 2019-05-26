@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -164,5 +165,10 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 			logger.error(e);
 			return null;
 		}
+	}
+	
+	@Override
+	public void saveModels() throws IOException {
+		op.saveModels();
 	}
 }
