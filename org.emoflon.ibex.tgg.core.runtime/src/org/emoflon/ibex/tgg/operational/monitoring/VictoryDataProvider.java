@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
