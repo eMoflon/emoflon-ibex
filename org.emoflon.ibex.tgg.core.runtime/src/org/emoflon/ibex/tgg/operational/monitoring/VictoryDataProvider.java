@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,10 +13,12 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.apache.commons.io.FilenameUtils;
 
 public class VictoryDataProvider implements IVictoryDataProvider {
 
@@ -86,7 +89,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 			}
 
 			startingPoint = makeStartingPoints(nodeRelations, match);
-			
+
 			for (int i = 1; i <= k; i++) {
 				Set<TGGRuleNode> startingPoint_tmp = new HashSet<TGGRuleNode>();
 				Set<TGGRuleNode> finalNodeRelations = new HashSet<TGGRuleNode>();
@@ -97,7 +100,8 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 				}
 
 				for (TGGRuleNode s : startingPoint) {
-					TGGRuleNode f = finalNodeRelations.stream().filter(x -> x.getName().equals(s.getName())).findFirst().orElse(null);
+					TGGRuleNode f = finalNodeRelations.stream().filter(x -> x.getName().equals(s.getName())).findFirst()
+							.orElse(null);
 					if (f != null) {
 						finalNodeRelations.remove(f);
 					}
@@ -114,7 +118,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 						}
 					}
 				}
-				startingPoint = startingPoint_tmp; 
+				startingPoint = startingPoint_tmp;
 			}
 
 		} catch (Exception e) {
@@ -166,9 +170,27 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public void saveModels() throws IOException {
-		op.saveModels();
+		Long time = System.currentTimeMillis();
+		saveModel(op.getSourceResource(), time);
+		saveModel(op.getTargetResource(), time);
+		saveModel(op.getProtocolResource(), time);
+		saveModel(op.getCorrResource(), time);
+	}
+
+	private void saveModel(Resource r, Long time) throws IOException {
+		URI uri = r.getURI();
+		String path = uri.toString();
+
+		String newPath = FilenameUtils.getPath(path);
+		newPath += FilenameUtils.getBaseName(path) + "-";
+		newPath += time + "." + FilenameUtils.getExtension(path);
+
+		URI newUri = URI.createURI(newPath);
+		r.setURI(newUri);
+		r.save(null);
+		r.setURI(uri);
 	}
 }
