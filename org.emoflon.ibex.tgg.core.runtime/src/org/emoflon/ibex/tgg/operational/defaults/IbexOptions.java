@@ -7,9 +7,12 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EPackage;
+import org.emoflon.ibex.gt.democles.runtime.DemoclesGTEngine;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
+import org.emoflon.ibex.tgg.runtime.engine.DemoclesTGGEngine;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 import language.TGG;
@@ -40,19 +43,27 @@ public class IbexOptions {
 	 * If this is false (disabled), then edge patterns are never used.
 	 */
 	private boolean useEdgePatterns;
+	private IBlackInterpreter blackInterpreter;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
+	
 		projectPath = "/";
 		workspacePath = "./../";
-		repairAttributes = true;
-		useShortcutRules = false;
-		setIlpSolver(SupportedILPSolver.Sat4J);
-		useEdgePatterns = false;
+
+		blackInterpreter = new DemoclesTGGEngine();
+		ilpSolver = SupportedILPSolver.Sat4J;
+		
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
+		
 		ignoreInjecitity = (x,y) -> false;
 		ignoreDomainConformity = false;
+
+		useEdgePatterns = false;
 		optimizeSyncPattern = false;
+
+		repairAttributes = true;
+		useShortcutRules = false;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -166,6 +177,15 @@ public class IbexOptions {
 
 	public IbexOptions blackInterpSupportsAttrConstrs(boolean value) {
 		blackInterpSupportsAttrConstrs = value;
+		return this;
+	}
+	
+	public IBlackInterpreter getBlackInterpreter() {
+		return blackInterpreter;
+	}
+	
+	public IbexOptions setBlackInterpreter(IBlackInterpreter blackInterpreter) {
+		this.blackInterpreter = blackInterpreter;
 		return this;
 	}
 
