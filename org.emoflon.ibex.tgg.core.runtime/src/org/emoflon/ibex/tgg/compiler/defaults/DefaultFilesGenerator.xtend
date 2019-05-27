@@ -514,6 +514,35 @@ class DefaultFilesGenerator {
 			'''
 		)
 	}
+	
+	static def generateIntegrateAppFile(String projectName, String fileName, String engine, String additionalImports) {
+		return generateBasicStructure(
+			'''
+				import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+				«additionalImports»
+			''',
+			fileName,
+			"INTEGRATE",
+			engine,
+			projectName,
+			'''
+				logger.info("Starting INTEGRATE");
+				long tic = System.currentTimeMillis();
+				«fileName» integrate = new «fileName»();
+				long toc = System.currentTimeMillis();
+				logger.info("Completed init for INTEGRATE in: " + (toc - tic) + " ms");
+				
+				tic = System.currentTimeMillis();
+				integrate.integrate();
+				toc = System.currentTimeMillis();
+				logger.info("Completed INTEGRATE in: " + (toc - tic) + " ms");
+				
+				integrate.saveModels();
+				integrate.terminate();
+			''',
+			""
+		)
+	}
 
 	static def generateInitialBwdDebugAppFile(String projectName, String fileName) {
 		return generateDebugStructure(

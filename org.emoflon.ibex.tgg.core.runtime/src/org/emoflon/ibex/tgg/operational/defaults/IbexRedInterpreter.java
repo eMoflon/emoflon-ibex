@@ -12,18 +12,18 @@ import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 public class IbexRedInterpreter implements IRedInterpreter {
-	private final SYNC strategy;
+	private final ExtOperationalStrategy strategy;
 	
 	private int numOfDeletedNodes = 0;
 
-	public IbexRedInterpreter(final SYNC operationalStrategy) {
-		this.strategy = operationalStrategy;
+	public IbexRedInterpreter(final ExtOperationalStrategy extOperationalStrategy) {
+		this.strategy = extOperationalStrategy;
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		revoke(nodesToRevoke, edgesToRevoke);
 	}
 
-	private void revokeCorr(EObject corr, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
+	public void revokeCorr(EObject corr, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
 		EReference srcFeature = (EReference) corr.eClass().getEStructuralFeature("source");
 		EReference trgFeature = (EReference) corr.eClass().getEStructuralFeature("target");
 
@@ -134,7 +134,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 * @param edgesToRevoke
 	 *            the edges to revoke
 	 */
-	private void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
+	public void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
 		numOfDeletedNodes += nodesToRevoke.size();
 		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> strategy.addToTrash(node));
 	}

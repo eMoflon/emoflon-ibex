@@ -12,28 +12,30 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 public class PrecedenceGraph implements IMatchContainer {
-	private SYNC strategy;
+	protected ExtOperationalStrategy strategy;
 
-	private Collection<Object> translated = cfactory.createObjectSet();;
-	private Collection<Object> pendingElts = cfactory.createObjectSet();;
-	private Collection<IMatch> pending = cfactory.createObjectSet();
+	protected Collection<Object> translated = cfactory.createObjectSet();;
+	protected Collection<Object> pendingElts = cfactory.createObjectSet();;
+	protected Collection<IMatch> pending = cfactory.createObjectSet();
 
-	private Map<IMatch, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
-	private Map<Object, Collection<IMatch>> requiredBy = cfactory.createObjectToObjectHashMap();
-	private Map<IMatch, Collection<Object>> translates = cfactory.createObjectToObjectHashMap();
-	private Map<Object, Collection<IMatch>> translatedBy = cfactory.createObjectToObjectHashMap();
+	protected Map<IMatch, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
+	protected Map<Object, Collection<IMatch>> requiredBy = cfactory.createObjectToObjectHashMap();
+	protected Map<IMatch, Collection<Object>> translates = cfactory.createObjectToObjectHashMap();
+	protected Map<Object, Collection<IMatch>> translatedBy = cfactory.createObjectToObjectHashMap();
 
-	private Map<TGGRuleApplication, Collection<Object>> raToTranslated = cfactory.createObjectToObjectHashMap();
+	protected Map<TGGRuleApplication, Collection<Object>> raToTranslated = cfactory.createObjectToObjectHashMap();
+	protected Map<TGGRuleApplication, IMatch> raToMatch = cfactory.createObjectToObjectHashMap();
 	
-	private Set<IMatch> readySet = cfactory.createObjectSet();
+	protected Set<IMatch> readySet = cfactory.createObjectSet();
 
-	public PrecedenceGraph(SYNC strategy) {
+	public PrecedenceGraph(ExtOperationalStrategy strategy) {
 		this.strategy = strategy;
 	}
 
@@ -185,6 +187,7 @@ public class PrecedenceGraph implements IMatchContainer {
 		gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(strategy.getRuntimeEdge(m, e)));
 
 		raToTranslated.put(ra, translatedElts);
+		raToMatch.put(ra, m);
 
 		translated.addAll(translatedElts);
 		pending.removeAll(translatedElts);
