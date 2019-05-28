@@ -33,7 +33,6 @@ import org.moflon.tgg.mosl.tgg.AttrCondDef;
 import org.moflon.tgg.mosl.tgg.AttributeAssignment;
 import org.moflon.tgg.mosl.tgg.AttributeConstraint;
 import org.moflon.tgg.mosl.tgg.AttributeExpression;
-import org.moflon.tgg.mosl.tgg.ComplementRule;
 import org.moflon.tgg.mosl.tgg.ContextLinkVariablePattern;
 import org.moflon.tgg.mosl.tgg.ContextObjectVariablePattern;
 import org.moflon.tgg.mosl.tgg.CorrType;
@@ -67,7 +66,6 @@ import language.TGGAttributeConstraintOperators;
 import language.TGGAttributeConstraintParameterDefinition;
 import language.TGGAttributeExpression;
 import language.TGGAttributeVariable;
-import language.TGGComplementRule;
 import language.TGGEnumExpression;
 import language.TGGExpression;
 import language.TGGInplaceAttributeExpression;
@@ -145,7 +143,6 @@ public class EditorTGGtoInternalTGG {
 
 		translateXTextRulesToTGGRules(xtextTGG, tgg);
 		translateXTextRuleRefinementsToTGGRuleRefinements(xtextTGG, tgg);
-		translateXTextComplementRulesToTGGComplementRules(xtextTGG, tgg);
 		translateXTextNacsToTGGNacs(xtextTGG, tgg);
 
 		tgg = addOppositeEdges(tgg);
@@ -193,40 +190,6 @@ public class EditorTGGtoInternalTGG {
 
 			tggNac.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextNac.getAttrConditions()));
 		}
-	}
-
-	private void translateXTextComplementRulesToTGGComplementRules(TripleGraphGrammarFile xtextTGG, TGG tgg) {
-		for (ComplementRule xtextCompRule : xtextTGG.getComplementRules()) {
-			TGGComplementRule tggComplementRule = tggFactory.createTGGComplementRule();
-			tggComplementRule.setName(xtextCompRule.getName());
-			TGGRule kernel = (TGGRule) xtextToTGG.get(xtextCompRule.getKernel());
-			tggComplementRule.setKernel(kernel);
-			tgg.getRules().add(tggComplementRule);
-			map(xtextCompRule, tggComplementRule);
-
-			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getSourcePatterns(), DomainType.SRC));
-			tggComplementRule.getNodes().addAll(createTGGRuleNodes(xtextCompRule.getTargetPatterns(), DomainType.TRG));
-			tggComplementRule.getNodes()
-					.addAll(createTGGRuleNodesFromCorrOVs(tggComplementRule, xtextCompRule.getCorrespondencePatterns()));
-
-			tggComplementRule.getEdges().addAll(createTGGRuleEdges(tggComplementRule.getNodes()));
-
-			tggComplementRule
-					.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextCompRule.getAttrConditions()));
-
-			tggComplementRule.setBounded(hasAdditionalContext(tggComplementRule));
-		}
-	}
-
-	private boolean hasAdditionalContext(TGGComplementRule tggComplementRule) {
-		Collection<TGGRuleNode> contextComplementRuleNodes = tggComplementRule.getNodes().stream()
-				.filter(n -> n.getBindingType().equals(BindingType.CONTEXT)).collect(Collectors.toSet());
-		Collection<TGGRuleNode> kernelNodes = tggComplementRule.getKernel().getNodes();
-		for (TGGRuleNode node : contextComplementRuleNodes) {
-			if (kernelNodes.stream().noneMatch(cn -> cn.getName().equals(node.getName())))
-				return true;
-		}
-		return false;
 	}
 
 	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {
@@ -526,16 +489,7 @@ public class EditorTGGtoInternalTGG {
 			}
 		}
 
-		for (ComplementRule rule : xtextTGG.getComplementRules()) {
-			corrModel.getEClassifiers().add(createMarkerClass(rule));
-		}
-
 		return corrModel;
-	}
-
-	private EClassifier createMarkerClass(ComplementRule rule) {
-		return createMarkerClass(rule.getName(), rule.getSourcePatterns(), rule.getCorrespondencePatterns(),
-				rule.getTargetPatterns());
 	}
 
 	private EClassifier createMarkerClass(Rule rule) {

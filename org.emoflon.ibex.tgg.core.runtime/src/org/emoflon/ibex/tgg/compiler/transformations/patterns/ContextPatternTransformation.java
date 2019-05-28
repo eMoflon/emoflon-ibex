@@ -30,16 +30,10 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWD_OPTPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.FusedBWDPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.FusedBWD_OPTPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.ConsistencyPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_OPTPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FusedFWDPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FusedFWD_OPTPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCCPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENForCOPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.CCPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.COPatternTransformation;
@@ -66,7 +60,6 @@ import language.BindingType;
 import language.DomainType;
 import language.NAC;
 import language.TGGAttributeConstraintOperators;
-import language.TGGComplementRule;
 import language.TGGEnumExpression;
 import language.TGGExpression;
 import language.TGGInplaceAttributeExpression;
@@ -104,41 +97,20 @@ public class ContextPatternTransformation {
 			createPatternIfRelevant(rule, this::createCCPattern, PatternSuffixes.CC);
 			createPatternIfRelevant(rule, this::createCOPattern, PatternSuffixes.CO);
 
-			if (isDomainProgressive(rule, DomainType.SRC) || isComplementRule(rule)) {
+			if (isDomainProgressive(rule, DomainType.SRC)) {
 				createPatternIfRelevant(rule, this::createFWDPattern, PatternSuffixes.FWD);
 				createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternSuffixes.FWD_OPT);
 			}
 
-			if (isDomainProgressive(rule, DomainType.TRG) || isComplementRule(rule)) {
+			if (isDomainProgressive(rule, DomainType.TRG)) {
 				createPatternIfRelevant(rule, this::createBWDPattern, PatternSuffixes.BWD);
 				createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternSuffixes.BWD_OPT);
 			}
 
-			if (isComplementRule(rule)) {
-				createPatternIfRelevant(rule, this::createGenForCCPattern, PatternSuffixes.GENForCC);
-				createPatternIfRelevant(rule, this::createGenForCOPattern, PatternSuffixes.GENForCO);
-
-				TGGComplementRule crule = (TGGComplementRule) rule;
-				TGGRule kernel = crule.getKernel();
-
-				if (isDomainProgressive(crule, DomainType.SRC) || isDomainProgressive(kernel, DomainType.SRC)) {
-					createPatternIfRelevant(rule, this::createFusedFWDPattern, PatternSuffixes.FWD);
-					createPatternIfRelevant(rule, this::createFusedFWD_OPTPattern, PatternSuffixes.FWD_OPT);
-				}
-
-				if (isDomainProgressive(crule, DomainType.TRG) || isDomainProgressive(kernel, DomainType.TRG)) {
-					createPatternIfRelevant(rule, this::createFusedBWDPattern, PatternSuffixes.BWD);
-					createPatternIfRelevant(rule, this::createFusedBWD_OPTPattern, PatternSuffixes.BWD_OPT);
-				}
-			}
 			optimizeSyncPatterns(rule);
 		}
 
 		return createSortedPatternSet();
-	}
-
-	private boolean isComplementRule(TGGRule rule) {
-		return strategy.getGreenFactory(rule.getName()).isComplementRule();
 	}
 
 	private boolean isDomainProgressive(TGGRule rule, DomainType domain) {
@@ -201,38 +173,6 @@ public class ContextPatternTransformation {
 
 	private IBeXContextPattern createBWD_OPTPattern(TGGRule rule) {
 		OperationalPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule);
-		return transformer.transform();
-	}
-
-	private IBeXContextPattern createGenForCCPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new GENForCCPatternTransformation(this, options, rule);
-		return transformer.transform();
-	}
-
-	private IBeXContextPattern createGenForCOPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new GENForCOPatternTransformation(this, options, rule);
-		return transformer.transform();
-	}
-
-	private IBeXContextPattern createFusedFWDPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new FusedFWDPatternTransformation(this, options, rule, strategy);
-		return transformer.transform();
-	}
-
-	private IBeXContextPattern createFusedBWDPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new FusedBWDPatternTransformation(this, options, rule, strategy);
-		return transformer.transform();
-	}
-
-	private IBeXContextPattern createFusedFWD_OPTPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new FusedFWD_OPTPatternTransformation(this, options, rule,
-				strategy);
-		return transformer.transform();
-	}
-
-	private IBeXContextPattern createFusedBWD_OPTPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new FusedBWD_OPTPatternTransformation(this, options, rule,
-				strategy);
 		return transformer.transform();
 	}
 
