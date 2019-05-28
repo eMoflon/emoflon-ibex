@@ -57,7 +57,7 @@ public class BWDGreenPattern extends IbexGreenPattern {
 	
 	@Override
 	public boolean isToBeIgnored(IMatch match) {
-		return getNodesMarkedByPattern().isEmpty() && getEdgesMarkedByPattern().isEmpty() && !factory.isComplementRule();
+		return getNodesMarkedByPattern().isEmpty() && getEdgesMarkedByPattern().isEmpty() ;
 	}
 
 	@Override

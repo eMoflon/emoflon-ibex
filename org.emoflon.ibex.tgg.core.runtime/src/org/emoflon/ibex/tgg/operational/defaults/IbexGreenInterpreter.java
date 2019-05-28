@@ -39,8 +39,7 @@ import language.TGGRuleNode;
  */
 public class IbexGreenInterpreter implements IGreenInterpreter {
 	private static final Logger logger = Logger.getLogger(IbexGreenInterpreter.class);
-	
-	
+
 	private int numOfCreatedNodes = 0;
 	private OperationalStrategy operationalStrategy;
 
@@ -78,7 +77,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	private EObject createNode(IMatch match, TGGRuleNode node, Resource resource) {
 		numOfCreatedNodes++;
-		
+
 		EObject newObj = EcoreUtil.create(node.getType());
 		handlePlacementInResource(node, resource, newObj);
 
@@ -142,7 +141,11 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private void handlePlacementInResource(TGGRuleNode node, Resource resource, EObject newObj) {
-		resource.getContents().add(newObj);
+		try {
+			resource.getContents().add(newObj);
+		} catch (Exception e) {
+			logger.warn("I had problems placing " + newObj + " in a resource: " + e);
+		}
 	}
 
 	private EObject createCorr(IMatch comatch, TGGRuleNode node, Object src, Object trg, Resource corrR) {
@@ -173,7 +176,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 
 		IMatch comatch = match.copy();
-		
+
 		createNonCorrNodes(comatch, greenPattern.getSrcNodes(), operationalStrategy.getSourceResource());
 		createEdges(comatch, greenPattern.getSrcEdges(), true);
 
@@ -249,10 +252,11 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private boolean violatesContainerSemantics(String ruleName, IGreenPattern greenPattern, IMatch match) {
-		// GreenSCPattern do not need this check since it is allowed in order to repair a model
-		if(greenPattern instanceof GreenSCPattern)
+		// GreenSCPattern do not need this check since it is allowed in order to repair
+		// a model
+		if (greenPattern instanceof GreenSCPattern)
 			return false;
-		
+
 		for (TGGRuleEdge greenEdge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
 			if (violationOfContainerSemanticsIsPossible(greenPattern, greenEdge)) {
 				EObject trgObj = (EObject) match.get(greenEdge.getTrgNode().getName());

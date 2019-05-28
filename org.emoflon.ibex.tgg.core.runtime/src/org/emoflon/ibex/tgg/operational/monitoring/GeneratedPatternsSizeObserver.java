@@ -3,11 +3,10 @@ package org.emoflon.ibex.tgg.operational.monitoring;
 
 
 import java.util.Map;
+
 import org.apache.log4j.Logger;
-import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver.ObservableEvent;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 
 public class GeneratedPatternsSizeObserver extends AbstractIbexObserver{    
 
