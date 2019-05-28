@@ -187,7 +187,6 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		
 		// save models
 		for (Entry<String, Resource> e: resources.entrySet()) {
-			System.out.println(e.getKey());
 			oldUri.put(e.getKey(), e.getValue().getURI());
 			saveModel(e.getValue(), time);
 		}
