@@ -42,7 +42,7 @@ public class FWDOptGreenPattern extends IbexGreenPattern {
 	
 	@Override
 	public boolean isToBeIgnored(IMatch match) {
-		return !factory.isComplementRule() && factory.getGreenSrcNodesInRule().isEmpty() && factory.getGreenSrcEdgesInRule().isEmpty();
+		return factory.getGreenSrcNodesInRule().isEmpty() && factory.getGreenSrcEdgesInRule().isEmpty();
 	}
 
 	@Override
