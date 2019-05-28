@@ -130,7 +130,7 @@ class DefaultFilesGenerator {
 			import org.emoflon.ibex.tgg.operational.monitoring.IVictoryDataProvider;
 			import org.emoflon.ibex.tgg.operational.monitoring.VictoryDataProvider;
 			import org.emoflon.ibex.tgg.ui.debug.core.IbexDebugUI;
-			import org.emoflon.ibex.tgg.ui.debug.options.IUserOptions.Op;
+			import org.emoflon.ibex.tgg.ui.debug.options.IBeXOp;
 			
 			«additionalImports»
 			
@@ -206,7 +206,7 @@ class DefaultFilesGenerator {
 				generator.setStopCriterion(stop);
 				
 				IVictoryDataProvider dataProvider = new VictoryDataProvider(generator);
-				IbexDebugUI ui = IbexDebugUI.create(dataProvider, Op.MODELGEN);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.MODELGEN);
 				
 				new Thread(() -> {
 				
@@ -436,7 +436,7 @@ class DefaultFilesGenerator {
 				logger.info("Completed init for INITIAL_FWD_Debug in: " + (toc - tic) + " ms");
 				
 				IVictoryDataProvider dataProvider = new VictoryDataProvider(init_fwd);
-				IbexDebugUI ui = IbexDebugUI.create(dataProvider, Op.INITIAL_FWD);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_FWD);
 
 				new Thread(() -> {
 				
@@ -531,7 +531,7 @@ class DefaultFilesGenerator {
 				logger.info("Completed init for INITIAL_BWD_Debug in: " + (toc - tic) + " ms");
 				
 				IVictoryDataProvider dataProvider = new VictoryDataProvider(init_bwd);
-				IbexDebugUI ui = IbexDebugUI.create(dataProvider, Op.INITIAL_BWD);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_BWD);
 
 				new Thread(() -> {
 				
