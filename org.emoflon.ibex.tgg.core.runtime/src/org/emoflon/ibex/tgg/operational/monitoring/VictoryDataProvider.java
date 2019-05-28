@@ -3,6 +3,8 @@ package org.emoflon.ibex.tgg.operational.monitoring;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
@@ -173,23 +175,40 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	@Override
 	public void saveModels() throws IOException {
 		Long time = System.currentTimeMillis();
-		saveModel(op.getSourceResource(), time);
-		saveModel(op.getTargetResource(), time);
-		saveModel(op.getProtocolResource(), time);
-		saveModel(op.getCorrResource(), time);
+		
+		LinkedHashMap<String, Resource> resources = new LinkedHashMap<String, Resource>();
+		LinkedHashMap<String, URI> oldUri = new LinkedHashMap<String, URI>();
+		
+		// storing resources that needs to be saved
+		resources.put("s", op.getSourceResource());
+		resources.put("t", op.getTargetResource());
+		resources.put("c", op.getCorrResource());
+		resources.put("p", op.getProtocolResource());
+		
+		// save models
+		for (Entry<String, Resource> e: resources.entrySet()) {
+			System.out.println(e.getKey());
+			oldUri.put(e.getKey(), e.getValue().getURI());
+			saveModel(e.getValue(), time);
+		}
+		
+		// revert the URIs to before saving models
+		for (Entry<String, URI> e: oldUri.entrySet()) {
+			resources.get(e.getKey()).setURI(e.getValue());
+		}
+		
 	}
 
 	private void saveModel(Resource r, Long time) throws IOException {
-		URI uri = r.getURI();
-		String path = uri.toString();
-
+		String path = r.getURI().toString();
+		
+		// generating new URI (name and path) base on old URI
 		String newPath = FilenameUtils.getPath(path);
 		newPath += FilenameUtils.getBaseName(path) + "-";
 		newPath += time + "." + FilenameUtils.getExtension(path);
-
 		URI newUri = URI.createURI(newPath);
+
 		r.setURI(newUri);
 		r.save(null);
-		r.setURI(uri);
 	}
 }
