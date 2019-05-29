@@ -13,6 +13,7 @@ import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.runtime.engine.DemoclesTGGEngine;
+import org.emoflon.ibex.tgg.runtime.hipe.HiPETGGEngine;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 import language.TGG;
@@ -51,7 +52,9 @@ public class IbexOptions {
 		projectPath = "/";
 		workspacePath = "./../";
 
-		blackInterpreter = new DemoclesTGGEngine();
+//		blackInterpreter = new DemoclesTGGEngine();
+		blackInterpreter = new HiPETGGEngine();
+		
 		ilpSolver = SupportedILPSolver.Sat4J;
 		
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
