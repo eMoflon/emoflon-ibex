@@ -77,6 +77,11 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 									nodeRelations.get(node.getName()).add(trgNode);
 								} else {
 									Set<TGGRuleNode> temp = new HashSet<TGGRuleNode>() {
+										/**
+										 * 
+										 */
+										private static final long serialVersionUID = 8535800606662854140L;
+
 										{
 											add(trgNode);
 										}
