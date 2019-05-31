@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -19,6 +20,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+
+import java.util.List;
+
 import org.apache.commons.io.FilenameUtils;
 
 public class VictoryDataProvider implements IVictoryDataProvider {
@@ -26,7 +30,8 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	private final static Logger logger = Logger.getLogger(VictoryDataProvider.class);
 
 	OperationalStrategy op;
-
+	List<Set<EObject>> protocolsList = new ArrayList<Set<EObject>>(); 
+	
 	public VictoryDataProvider(OperationalStrategy pOperationalStrategy) {
 		this.op = pOperationalStrategy;
 	}
@@ -210,4 +215,36 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		r.setURI(newUri);
 		r.save(null);
 	}
+	
+	@Override
+	public List<Set<EObject>> getProtocols() {
+		HashSet<EObject> resourceList = new HashSet<EObject>();
+		Resource p = op.getProtocolResource();
+		TreeIterator<EObject> pTreeIterator = p.getAllContents();
+
+		while (pTreeIterator.hasNext()) {
+			Boolean found = false;
+			EObject item = pTreeIterator.next();
+			if (!protocolsList.equals(null) && protocolsList.size() > 0) {
+				for (Set<EObject> pL : protocolsList) {
+					if (pL.contains(item)) {
+						found = true;
+						break;
+					}
+				}
+			}
+			
+			if (!found) {
+				resourceList.add(item);
+			}
+		}
+
+		// add resource list for each step
+		protocolsList.add(resourceList);
+		
+		return protocolsList;
+	}
+	
+	
+
 }
