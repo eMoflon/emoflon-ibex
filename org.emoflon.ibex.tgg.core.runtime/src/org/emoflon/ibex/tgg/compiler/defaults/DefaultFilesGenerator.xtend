@@ -95,7 +95,7 @@ class DefaultFilesGenerator {
 			
 				public «fileName»() throws IOException {
 					super(createIbexOptions());
-					registerBlackInterpreter(optins.getBlackInterpreter());
+					registerBlackInterpreter(options.getBlackInterpreter());
 				}
 			
 				public static void main(String[] args) throws IOException {
