@@ -10,8 +10,10 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -37,6 +39,8 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 import language.TGG;
 import language.TGGRule;
+import language.TGGRuleCorr;
+import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import language.impl.LanguagePackageImpl;
 import runtime.RuntimeFactory;
@@ -135,8 +139,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	public EPackage loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
 		Resource res = loadResource(workspaceRelativePath);
 		EPackage pack = (EPackage) res.getContents().get(0);
-		rs.getPackageRegistry().put(res.getURI().toString(), pack);
-		rs.getPackageRegistry().put(pack.getNsURI(), pack);
+		pack = (EPackage) rs.getPackageRegistry().getOrDefault(res.getURI().toString(), pack);
+		rs.getPackageRegistry().putIfAbsent(res.getURI().toString(), pack);
+		rs.getPackageRegistry().putIfAbsent(pack.getNsURI(), pack);
 		rs.getResources().remove(res);
 		return pack;
 	}
@@ -171,7 +176,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-
+		
 		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
 				options.tgg().getAttributeConstraintDefinitionLibrary());
 		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
