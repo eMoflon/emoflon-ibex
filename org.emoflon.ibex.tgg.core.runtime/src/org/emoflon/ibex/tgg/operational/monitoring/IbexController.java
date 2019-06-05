@@ -41,7 +41,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	
 	Map<IMatch, Collection<IMatch>> matches = new HashMap<>();
 	matchContainer.getMatches().forEach(match->matches.put(match, null));
-	return chooseOneMatch(matches);
+	return chooseOneMatch(new VictoryDataPackage(matches, null)); // TODO add protocol here
     }
     
     public Map<IMatch,Collection<IMatch>> getMoreMatches(int amount) {
@@ -57,7 +57,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	return null;
     }
 
-    public abstract IMatch chooseOneMatch(Map<IMatch, Collection<IMatch>> matches);
+    public abstract IMatch chooseOneMatch(VictoryDataPackage pDataPackage);
     
     protected abstract int getRequestedMatchCount();
 }
