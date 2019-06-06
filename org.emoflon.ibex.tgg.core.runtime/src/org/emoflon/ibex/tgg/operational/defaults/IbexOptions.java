@@ -8,6 +8,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EPackage;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -40,6 +42,9 @@ public class IbexOptions {
 	 * If this is false (disabled), then edge patterns are never used.
 	 */
 	private boolean useEdgePatterns;
+	
+	// Benchmark Logging
+	private BenchmarkLogger logger;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
@@ -53,6 +58,7 @@ public class IbexOptions {
 		ignoreInjecitity = (x,y) -> false;
 		ignoreDomainConformity = false;
 		optimizeSyncPattern = false;
+		logger = new EmptyBenchmarkLogger();
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -128,7 +134,6 @@ public class IbexOptions {
 	}
 
 	public Collection<TGGRule> getFlattenedConcreteTGGRules() {
-
 		return flattenedTGG.getRules()//
 				.stream()//
 				.filter(r -> !r.isAbstract())//
@@ -234,6 +239,15 @@ public class IbexOptions {
 	
 	public IbexOptions ignoreDomainConformity(boolean ignoreDomainConformity) {
 		this.ignoreDomainConformity = ignoreDomainConformity;
+		return this;
+	}
+
+	public BenchmarkLogger getBenchmarkLogger() {
+		return logger;
+	}
+
+	public IbexOptions setBenchmarkLogger(BenchmarkLogger logger) {
+		this.logger = logger;
 		return this;
 	}
 }
