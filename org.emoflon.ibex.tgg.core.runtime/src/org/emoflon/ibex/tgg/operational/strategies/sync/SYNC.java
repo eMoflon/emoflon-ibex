@@ -18,6 +18,7 @@ import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
@@ -89,10 +90,16 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
+		options.getBenchmarkLogger().startNewRun();
+		BenchmarkLogger.startTimer();
+		
 		repair();
 		rollBack();
 		translate();
 		logCreatedAndDeletedNumbers();
+		
+		collectDataToBeLogged();
+		options.getBenchmarkLogger().addToTranslationTime(BenchmarkLogger.stopTimer());
 	}
 
 	protected void repair() {
@@ -132,6 +139,8 @@ public abstract class SYNC extends OperationalStrategy {
 					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
 					brokenRuleApplications.put(newRa, repairedMatch);
 					alreadyProcessed.add(repairedMatch);
+					
+					options.getBenchmarkLogger().addToNumOfMatchesRepaired(1);
 				}
 			}
 		}
@@ -287,5 +296,13 @@ public abstract class SYNC extends OperationalStrategy {
 			logger.info("Created elements: " + greenInterpreter.getNumOfCreatedElements());
 			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedElements() + (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
 		}
+	}
+
+	@Override
+	protected void collectDataToBeLogged() {
+		super.collectDataToBeLogged();
+		
+		options.getBenchmarkLogger().setNumOfElementsCreated(greenInterpreter.getNumOfCreatedElements());
+		options.getBenchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedElements());
 	}
 }
