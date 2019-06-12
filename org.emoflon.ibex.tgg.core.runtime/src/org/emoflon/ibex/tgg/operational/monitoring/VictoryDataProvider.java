@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -214,5 +215,10 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 
 		r.setURI(newUri);
 		r.save(null);
+	}
+
+	@Override
+	public Collection<TGGRule> getAllRules() {
+	    return op.getOptions().flattenedTGG().getRules();
 	}
 }
