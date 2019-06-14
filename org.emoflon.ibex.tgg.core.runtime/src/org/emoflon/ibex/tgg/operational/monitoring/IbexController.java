@@ -39,7 +39,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	 * Feel free to delete and replace it with your own implementation.
 	 */
 	
-	Map<IMatch, Collection<IMatch>> matches = new HashMap<>();
+	Map<IMatch, String> matches = new HashMap<>();
 	matchContainer.getMatches().forEach(match->matches.put(match, null));
 	return chooseOneMatch(new VictoryDataPackage(matches, null)); // TODO add protocol here
     }
