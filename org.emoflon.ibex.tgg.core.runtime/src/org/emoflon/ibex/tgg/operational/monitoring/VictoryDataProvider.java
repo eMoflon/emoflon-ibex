@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -20,9 +20,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-
-import java.util.List;
-
 import org.apache.commons.io.FilenameUtils;
 
 public class VictoryDataProvider implements IVictoryDataProvider {
@@ -30,7 +27,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	private final static Logger logger = Logger.getLogger(VictoryDataProvider.class);
 
 	OperationalStrategy op;
-	
+
 	public VictoryDataProvider(OperationalStrategy pOperationalStrategy) {
 		this.op = pOperationalStrategy;
 	}
@@ -81,6 +78,11 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 									nodeRelations.get(node.getName()).add(trgNode);
 								} else {
 									Set<TGGRuleNode> temp = new HashSet<TGGRuleNode>() {
+										/**
+										 * 
+										 */
+										private static final long serialVersionUID = 8535800606662854140L;
+
 										{
 											add(trgNode);
 										}
@@ -214,6 +216,9 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		r.setURI(newUri);
 		r.save(null);
 	}
-	
 
+	@Override
+	public Collection<TGGRule> getAllRules() {
+	    return op.getOptions().flattenedTGG().getRules();
+	}
 }

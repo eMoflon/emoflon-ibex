@@ -21,6 +21,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -44,7 +45,7 @@ import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
-public abstract class OperationalStrategy extends AbstractIbexObservable implements IMatchObserver  {
+public abstract class OperationalStrategy extends AbstractIbexObservable implements IMatchObserver {
 	private long currentIntervalStart = -1;
 	private final long INTERVAL_LENGTH = 5000;
 	private long matchCounter = 0;
@@ -81,15 +82,19 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
+		BenchmarkLogger.startTimer();
+		
 		this.options = options;
 		this.setUpdatePolicy(policy);
-		
+
 		base = URI.createPlatformResourceURI("/", true);
 		factories = new HashMap<>();
 
 		greenInterpreter = new IbexGreenInterpreter(this);
 
 		consistencyMatches = cfactory.createObjectToObjectHashMap();
+		
+		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
 	}
 
 	/***** Resource management *****/
@@ -295,9 +300,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Optional<IMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
-		if (result.isPresent())
+		if (result.isPresent()) {
+			options.getBenchmarkLogger().addToNumOfMatchesApplied(1);
 			logger.debug("Removed as it has just been applied: ");
-		else
+		} else
 			logger.debug("Removed as application failed: ");
 
 		logger.debug(match);
@@ -307,7 +313,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected IMatch chooseOneMatch() {
 		IMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
-
+		
 		if (match == null)
 			throw new IllegalStateException("Update policies should never return null!");
 
@@ -369,6 +375,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	/****** Initialisation, termination *****/
 
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
+		BenchmarkLogger.startTimer();
+		
 		this.notifyStartInit();
 		this.blackInterpreter = blackInterpreter;
 
@@ -387,6 +395,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
 		
 		this.notifyDoneInit();
+		
+		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
 	}
 
 	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
@@ -399,7 +409,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected abstract void registerUserMetamodels() throws IOException;
 
-	protected void initialiseBlackInterpreter() throws IOException {
+	protected void initialiseBlackInterpreter() throws IOException {		
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
 			blackInterpreter.initialise(options, rs.getPackageRegistry(), this);
@@ -471,5 +481,11 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	
 	public IMatchContainer getMatchContainer() {
 		return operationalMatchContainer;
+	}
+	
+	/***** Benchmark Logging *****/
+	
+	protected void collectDataToBeLogged() {
+		options.getBenchmarkLogger().setNumOfMatchesFound(matchCounter);
 	}
 }
