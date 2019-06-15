@@ -1,8 +1,14 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
@@ -11,37 +17,24 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
-    public void register(OperationalStrategy pOperationalStrategy) {
-	pOperationalStrategy.registerObserver(this);
-	pOperationalStrategy.setUpdatePolicy(this);
+	HashMap<IMatch, Integer> processedMatches = new HashMap<IMatch, Integer>();
+	
+	public void register(OperationalStrategy pOperationalStrategy) {
+		pOperationalStrategy.registerObserver(this);
+		pOperationalStrategy.setUpdatePolicy(this);
     }
 
     @Override
     public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
-
-	/*
-	 * TODO implement
-	 * This method should do the following things:
-	 * 
-	 * 1)	Limit the number of matches to the number the UI requests
-	 * 	This number is provided by calling getRequestedMatchCount()
-	 * 
-	 * 2)	Map each match to its excluded matches
-	 * 	The keys of the map should be the (limited) list of matches provided by part 1)
-	 * 	The values should be a collection for each key-match that contains all matches
-	 * 		that are excluded if the key-match is applied
-	 * 	If there are no matches that get excluded, simply map the match to null
-	 * 		(rather than creating an empty collection), so as not to waste performance
-	 * 
-	 * -------------
-	 * 
-	 * Note that the code below is just to ensure that the UI keeps working.
-	 * Feel free to delete and replace it with your own implementation.
-	 */
-	
-	Map<IMatch, String> matches = new HashMap<>();
-	matchContainer.getMatches().forEach(match->matches.put(match, null));
-	return chooseOneMatch(new VictoryDataPackage(matches, null)); // TODO add protocol here
+    	this.processMatches(matchContainer);
+    	HashMap<IMatch, Integer> sortedMatches = this.sortByAge(processedMatches);
+    	Map<IMatch, String> matches = this.assignUniqueName(sortedMatches);
+    	
+    	for(Map.Entry<IMatch, String> en: matches.entrySet()) {
+    		System.out.println("Match: " + en.getKey().getPatternName() + " value: " + en.getValue());
+    	} 
+    	
+		return chooseOneMatch(new VictoryDataPackage(matches, null)); // TODO add protocol here
     }
     
     public Map<IMatch,Collection<IMatch>> getMoreMatches(int amount) {
@@ -60,4 +53,51 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
     public abstract IMatch chooseOneMatch(VictoryDataPackage pDataPackage);
     
     protected abstract int getRequestedMatchCount();
+    
+    public void processMatches(ImmutableMatchContainer matchContainer) {
+		Set<IMatch> matches = matchContainer.getMatches();
+		
+		for(IMatch match : matches) {
+            if (!processedMatches.isEmpty()) {
+                if(processedMatches.containsKey(match)) {
+                    int count = processedMatches.get(match);
+                    count += 1;
+                    processedMatches.put(match, count);
+                } else {
+                	processedMatches.put(match, 1);
+                }
+               
+            } else {
+            	processedMatches.put(match, 1);
+            }
+        }
+	}
+	
+	public HashMap<IMatch, Integer> sortByAge(HashMap<IMatch, Integer> pm) { 
+        List<Map.Entry<IMatch, Integer>> list = new LinkedList<Map.Entry<IMatch, Integer> >(pm.entrySet()); 
+
+        Collections.sort(list, new Comparator<Map.Entry<IMatch, Integer> >() { 
+            public int compare(Map.Entry<IMatch, Integer> o1,  
+                               Map.Entry<IMatch, Integer> o2) 
+            { 
+                return (o1.getValue()).compareTo(o2.getValue()); 
+            } 
+        }); 
+
+        HashMap<IMatch, Integer> temp = new LinkedHashMap<IMatch, Integer>(); 
+        for (Map.Entry<IMatch, Integer> aa : list) { 
+            temp.put(aa.getKey(), aa.getValue()); 
+        } 
+        return temp; 
+    } 
+	
+	public Map<IMatch, String> assignUniqueName(HashMap<IMatch, Integer> hm) {
+		Map<IMatch, String> newMap = new LinkedHashMap<>();
+		
+		for (Map.Entry<IMatch, Integer> en : hm.entrySet()) {
+			newMap.put(en.getKey(), (en.getKey().getRuleName()+en.getValue()));
+        }
+		
+		return newMap;
+	} 
 }
