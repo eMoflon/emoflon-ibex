@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,8 +16,8 @@ public class VictoryDataPackage {
 	protocol = pProtocol;
     }
 
-    public Collection<IMatch> getMatches() {
-	return matches.keySet();
+    public Map<IMatch, String> getMatches() {
+	return matches;
     }
 
     public List<Set<EObject>> getProtocol() {
