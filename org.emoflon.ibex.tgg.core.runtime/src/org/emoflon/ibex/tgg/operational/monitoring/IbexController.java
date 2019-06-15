@@ -18,31 +18,41 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
     @Override
     public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
-
-	/*
-	 * TODO implement
-	 * This method should do the following things:
-	 * 
-	 * 1)	Limit the number of matches to the number the UI requests
-	 * 	This number is provided by calling getRequestedMatchCount()
-	 * 
-	 * 2)	Map each match to its excluded matches
-	 * 	The keys of the map should be the (limited) list of matches provided by part 1)
-	 * 	The values should be a collection for each key-match that contains all matches
-	 * 		that are excluded if the key-match is applied
-	 * 	If there are no matches that get excluded, simply map the match to null
-	 * 		(rather than creating an empty collection), so as not to waste performance
-	 * 
-	 * -------------
-	 * 
-	 * Note that the code below is just to ensure that the UI keeps working.
-	 * Feel free to delete and replace it with your own implementation.
-	 */
-	
-	Map<IMatch, Collection<IMatch>> matches = new HashMap<>();
-	matchContainer.getMatches().forEach(match->matches.put(match, null));
-	return chooseOneMatch(matches);
+    	return chooseOneMatch(matchContainer, null);
     }
+
+    @Override
+    public final IMatch chooseOneMatch(ImmutableMatchContainer applicableMatches, ImmutableMatchContainer inapplicableMatches) {
+		/*
+		 * TODO implement
+		 * This method should do the following things:
+		 * 
+		 * 1)	Limit the number of matches to the number the UI requests
+		 * 	This number is provided by calling getRequestedMatchCount()
+		 * 
+		 * 2)	Map each match to its excluded matches
+		 * 	The keys of the map should be the (limited) list of matches provided by part 1)
+		 * 	The values should be a collection for each key-match that contains all matches
+		 * 		that are excluded if the key-match is applied
+		 * 	If there are no matches that get excluded, simply map the match to null
+		 * 		(rather than creating an empty collection), so as not to waste performance
+		 * 
+		 * -------------
+		 * 
+		 * Note that the code below is just to ensure that the UI keeps working.
+		 * Feel free to delete and replace it with your own implementation.
+		 */
+		
+		Map<IMatch, Collection<IMatch>> applicable = new HashMap<>();
+		applicableMatches.getMatches().forEach(match->applicable.put(match, null));
+		
+		Map<IMatch, Collection<IMatch>> inapplicable = new HashMap<>();
+		if(inapplicableMatches != null)
+			inapplicableMatches.getMatches().forEach(match->inapplicable.put(match, null));
+		
+		return chooseOneMatch(applicable, inapplicable);
+    }
+   
     
     public Map<IMatch,Collection<IMatch>> getMoreMatches(int amount) {
 	
@@ -57,7 +67,8 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	return null;
     }
 
-    public abstract IMatch chooseOneMatch(Map<IMatch, Collection<IMatch>> matches);
+    public abstract IMatch chooseOneMatch(Map<IMatch, Collection<IMatch>> applicableMatches, Map<IMatch, Collection<IMatch>> inapplicableMatches);
+    
     
     protected abstract int getRequestedMatchCount();
 }

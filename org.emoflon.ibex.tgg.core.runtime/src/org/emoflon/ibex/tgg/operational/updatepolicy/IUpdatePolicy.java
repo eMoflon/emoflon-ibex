@@ -10,6 +10,10 @@ import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 public interface IUpdatePolicy {	
 	public IMatch chooseOneMatch(ImmutableMatchContainer matchContainer);
 	
+	default IMatch chooseOneMatch(ImmutableMatchContainer applicableMatches, ImmutableMatchContainer inapplicableMatches) {
+		return chooseOneMatch(applicableMatches);
+	}
+	
 	default HashMap<String, Integer> getNumberOfApplications(Set<String> complementRules){
 		HashMap<String, Integer> upperBounds = new HashMap<String, Integer>();
 		complementRules.stream()

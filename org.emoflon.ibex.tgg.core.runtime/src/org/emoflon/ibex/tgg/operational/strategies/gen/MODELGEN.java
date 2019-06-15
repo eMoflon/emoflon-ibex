@@ -10,7 +10,10 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
+import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
+import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver.ObservableEvent;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
@@ -57,6 +60,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * what is possible.
 	 */
 	protected MODELGENStopCriterion stopCriterion;
+	
+	private IMatchContainer matchesBlockedByStopCriterion;
 
 	/** Constructors **/
 
@@ -80,6 +85,12 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 	public void setStopCriterion(MODELGENStopCriterion stop) {
 		this.stopCriterion = stop;
+	}
+	
+	@Override
+	protected void loadTGG() throws IOException {
+		super.loadTGG();
+		matchesBlockedByStopCriterion = this.createMatchContainer();
 	}
 
 	@Override
@@ -145,6 +156,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {
 			String ruleName = operationalMatchContainer.getRuleName(match);
 			if (stopCriterion.dont(ruleName)) {
+				matchesBlockedByStopCriterion.addMatch(match);
 				removeOperationalRuleMatch(match);
 			}
 		}
@@ -164,6 +176,25 @@ public abstract class MODELGEN extends OperationalStrategy {
 		}
 
 		return true;
+	}
+	
+	@Override
+	protected IMatch chooseOneMatch() {
+		IMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer), new ImmutableMatchContainer(matchesBlockedByStopCriterion));
+		
+		if (match == null)
+			throw new IllegalStateException("Update policies should never return null!");
+
+		return match;
+	}
+	
+	public IMatch notifyChooseMatch(ImmutableMatchContainer applicableMatches, ImmutableMatchContainer blockedMatches) { //tells observer a match needs to be chosen and choses a match by using the update policy
+		this.getObservers().forEach(o -> o.update(ObservableEvent.CHOOSEMATCH, applicableMatches));
+		if(this.getUpdatePolicy() == null) {
+			throw new RuntimeException("No update strategy configured");
+		} else {
+			return this.getUpdatePolicy().chooseOneMatch(applicableMatches, blockedMatches);
+		}
 	}
 
 	/**
