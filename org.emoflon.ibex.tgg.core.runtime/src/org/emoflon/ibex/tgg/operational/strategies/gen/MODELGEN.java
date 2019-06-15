@@ -141,23 +141,26 @@ public abstract class MODELGEN extends OperationalStrategy {
 	protected boolean processOneOperationalRuleMatch() {
 		if (stopCriterion.dont() || operationalMatchContainer.isEmpty())
 			return false;
+		
+		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {
+			String ruleName = operationalMatchContainer.getRuleName(match);
+			if (stopCriterion.dont(ruleName)) {
+				removeOperationalRuleMatch(match);
+			}
+		}
 
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 
-		if (stopCriterion.dont(ruleName))
-			removeOperationalRuleMatch(match);
-		else {
-			Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
-			comatch.ifPresent(cm -> {
-				updateStopCriterion(ruleName);
-			});
+		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+		comatch.ifPresent(cm -> {
+			updateStopCriterion(ruleName);
+		});
 
-			// Rule application failed, match must have invalid so remove
-			if (!comatch.isPresent()) {
-				removeOperationalRuleMatch(match);
-				logger.debug("Unable to apply: " + ruleName);
-			}
+		// Rule application failed, match must have invalid so remove
+		if (!comatch.isPresent()) {
+			removeOperationalRuleMatch(match);
+			logger.debug("Unable to apply: " + ruleName);
 		}
 
 		return true;
