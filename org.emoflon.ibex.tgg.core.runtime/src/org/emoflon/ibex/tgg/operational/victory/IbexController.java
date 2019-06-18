@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.monitoring;
+package org.emoflon.ibex.tgg.operational.victory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
+import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
