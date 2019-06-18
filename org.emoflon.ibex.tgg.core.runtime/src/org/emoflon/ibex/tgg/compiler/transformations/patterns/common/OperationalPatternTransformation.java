@@ -117,6 +117,7 @@ public abstract class OperationalPatternTransformation {
 			IBeXCSP iCSP = IBeXLanguageFactory.eINSTANCE.createIBeXCSP();
 			iCSP.setName(csp.getDefinition().getName());
 			if(csp.getDefinition().isUserDefined()) {
+				iCSP.setName("UserDefined_" + iCSP.getName());
 				iCSP.setPackage("org.emoflon.ibex.tgg.operational.csp.constraints.custom." + ((TGG) rule.eContainer()).getName().toLowerCase());
 			}
 			else {
