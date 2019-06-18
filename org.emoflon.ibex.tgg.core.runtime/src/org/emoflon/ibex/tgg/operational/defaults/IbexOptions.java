@@ -7,13 +7,11 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EPackage;
-import org.emoflon.ibex.gt.democles.runtime.DemoclesGTEngine;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.tgg.runtime.engine.DemoclesTGGEngine;
-import org.emoflon.ibex.tgg.runtime.hipe.HiPETGGEngine;
+
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 import language.TGG;
@@ -51,9 +49,6 @@ public class IbexOptions {
 	
 		projectPath = "/";
 		workspacePath = "./../";
-
-//		blackInterpreter = new DemoclesTGGEngine();
-		blackInterpreter = new HiPETGGEngine();
 		
 		ilpSolver = SupportedILPSolver.Sat4J;
 		

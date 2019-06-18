@@ -21,9 +21,7 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.moflon.emf.codegen,
  org.sat4j.core;visibility:=reexport,
  org.sat4j.pb;visibility:=reexport,
- org.emoflon.ibex.gt;visibility:=reexport,
- org.emoflon.ibex.tgg.runtime.hipe;bundle-version="1.0.0",
- org.emoflon.ibex.tgg.runtime.democles;bundle-version="1.0.0"
+ org.emoflon.ibex.gt;visibility:=reexport
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/commons-io-2.5.jar,
@@ -94,5 +92,4 @@ Export-Package: .,
  runtime.util
 Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: org.emoflon.ibex.gt.democles.runtime
 
