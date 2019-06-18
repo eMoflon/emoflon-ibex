@@ -372,6 +372,11 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 				.findFirst();
 	}
 
+	public Map<IMatch, String> getBlockedMatches() {
+	    //TODO
+	    return null;
+	}
+	
 	/****** Initialisation, termination *****/
 
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
