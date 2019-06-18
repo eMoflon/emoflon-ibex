@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.victory;
+package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.util.Collection;
 import java.util.List;
