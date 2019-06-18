@@ -1,11 +1,10 @@
-package org.emoflon.ibex.tgg.operational.victory;
+package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
-import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 

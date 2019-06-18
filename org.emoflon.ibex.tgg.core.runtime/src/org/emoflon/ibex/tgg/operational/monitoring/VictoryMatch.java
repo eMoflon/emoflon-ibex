@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.victory;
+package org.emoflon.ibex.tgg.operational.monitoring;
 
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 
