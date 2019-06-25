@@ -183,7 +183,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 
 	@Override
 	public void saveModels() throws IOException {
-		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
 		Date date = new Date(System.currentTimeMillis());
 		String time = dateFormat.format(date).toString();
 		
