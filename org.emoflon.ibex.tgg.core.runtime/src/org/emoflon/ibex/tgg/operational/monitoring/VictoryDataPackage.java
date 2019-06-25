@@ -3,16 +3,15 @@ package org.emoflon.ibex.tgg.operational.monitoring;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
 
 public class VictoryDataPackage {
     private Map<IMatch, Collection<IMatch>> matches;
-    private List<Set<EObject>> protocol;
+    private List<ProtocolStep> protocol;
 
-    public VictoryDataPackage(Map<IMatch, Collection<IMatch>> pMatches, List<Set<EObject>> pProtocol) {
+    public VictoryDataPackage(Map<IMatch, Collection<IMatch>> pMatches, List<ProtocolStep> pProtocol) {
 	matches = pMatches;
 	protocol = pProtocol;
     }
@@ -25,7 +24,7 @@ public class VictoryDataPackage {
 	return matches.get(pMatch);
     }
 
-    public List<Set<EObject>> getProtocol() {
+    public List<ProtocolStep> getProtocol() {
 	return protocol;
     }
 }

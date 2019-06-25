@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
+import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
@@ -50,7 +51,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		 * free to delete and replace it with your own implementation.
 		 */
 		
-		List<Set<EObject>> protocols = getProtocols();
+		List<ProtocolStep> protocols = null;//getProtocols();
 		Map<IMatch, Collection<IMatch>> matches = new HashMap<>();
 		matchContainer.getMatches().forEach(match -> matches.put(match, null));
 		
