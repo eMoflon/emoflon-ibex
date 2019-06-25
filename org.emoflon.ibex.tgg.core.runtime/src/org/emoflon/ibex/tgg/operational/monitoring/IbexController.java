@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -72,7 +73,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		HashSet<EObject> resourceList = new HashSet<EObject>();
 		Resource p = op.getProtocolResource();
 		TreeIterator<EObject> pTreeIterator = p.getAllContents();
-
+		
 		while (pTreeIterator.hasNext()) {
 			Boolean found = false;
 			EObject item = pTreeIterator.next();
@@ -86,7 +87,20 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			}
 
 			if (!found) {
-				resourceList.add(item);
+				EList<Resource> resources = item.eResource().getResourceSet().getResources();
+				
+				// add source objects
+				TreeIterator<EObject> sTreeIterator = resources.get(0).getAllContents();				
+				while (sTreeIterator.hasNext()) {
+					resourceList.add(sTreeIterator.next());
+				}
+				
+				// add target objects
+				TreeIterator<EObject> tTreeIterator = resources.get(1).getAllContents();				
+				while (sTreeIterator.hasNext()) {
+					resourceList.add(tTreeIterator.next());
+				}
+			
 			}
 		}
 
