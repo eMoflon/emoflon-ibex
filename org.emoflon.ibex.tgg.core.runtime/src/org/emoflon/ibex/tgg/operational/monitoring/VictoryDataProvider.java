@@ -1,6 +1,9 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -180,7 +183,10 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 
 	@Override
 	public void saveModels() throws IOException {
-		Long time = System.currentTimeMillis();
+		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
+		Date date = new Date(System.currentTimeMillis());
+		String time = dateFormat.format(date).toString();
+		
 		
 		LinkedHashMap<String, Resource> resources = new LinkedHashMap<String, Resource>();
 		LinkedHashMap<String, URI> oldUri = new LinkedHashMap<String, URI>();
@@ -204,7 +210,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		
 	}
 
-	private void saveModel(Resource r, Long time) throws IOException {
+	private void saveModel(Resource r, String time) throws IOException {
 		String path = r.getURI().toString();
 		
 		// generating new URI (name and path) base on old URI
