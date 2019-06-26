@@ -21,8 +21,8 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 	private OperationalStrategy op;
-	private List<Set<EObject>> protocolsList = new ArrayList<Set<EObject>>();
-
+	private Set<EObject> resourceList = new HashSet<EObject>();
+	private List<ProtocolStep> protocolsStepList = new ArrayList<ProtocolStep>();
 	public void register(OperationalStrategy pOperationalStrategy) {
 		pOperationalStrategy.registerObserver(this);
 		pOperationalStrategy.setUpdatePolicy(this);
@@ -51,7 +51,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		 * free to delete and replace it with your own implementation.
 		 */
 		
-		List<ProtocolStep> protocols = null;//getProtocols();
+		List<ProtocolStep> protocols = getProtocols();
 		Map<IMatch, Collection<IMatch>> matches = new HashMap<>();
 		matchContainer.getMatches().forEach(match -> matches.put(match, null));
 		
@@ -70,45 +70,29 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		return null;
 	}
 
-	private List<Set<EObject>> getProtocols() {
-		HashSet<EObject> resourceList = new HashSet<EObject>();
-		Resource p = op.getProtocolResource();
-		TreeIterator<EObject> pTreeIterator = p.getAllContents();
-		
-		while (pTreeIterator.hasNext()) {
-			Boolean found = false;
-			EObject item = pTreeIterator.next();
-			if (!protocolsList.equals(null) && protocolsList.size() > 0) {
-				for (Set<EObject> pL : protocolsList) {
-					if (pL.contains(item)) {
-						found = true;
-						break;
-					}
-				}
-			}
+	private List<ProtocolStep> getProtocols() {
+		int index = protocolsStepList.size();
+		HashSet<EObject> srcResourceList = getResourceItems(op.getSourceResource());
+		HashSet<EObject> trgResourceList = getResourceItems(op.getTargetResource());
+		HashSet<EObject> corrResourceList = getResourceItems(op.getCorrResource());
 
-			if (!found) {
-				EList<Resource> resources = item.eResource().getResourceSet().getResources();
-				
-				// add source objects
-				TreeIterator<EObject> sTreeIterator = resources.get(0).getAllContents();				
-				while (sTreeIterator.hasNext()) {
-					resourceList.add(sTreeIterator.next());
-				}
-				
-				// add target objects
-				TreeIterator<EObject> tTreeIterator = resources.get(1).getAllContents();				
-				while (sTreeIterator.hasNext()) {
-					resourceList.add(tTreeIterator.next());
-				}
-			
+		ProtocolStep protocolStep = new ProtocolStep(index, srcResourceList, trgResourceList, corrResourceList);
+		protocolsStepList.add(protocolStep);
+
+		return protocolsStepList;
+	}
+	
+	private HashSet<EObject> getResourceItems(Resource resource) {
+		HashSet<EObject> currentResourceList = new HashSet<EObject>();
+		
+		for (EObject ri: resource.getContents()) {
+			if (!resourceList.contains(ri)) {
+				resourceList.add(ri);
+				currentResourceList.add(ri);
 			}
 		}
-
-		// add resource list for each step
-		protocolsList.add(resourceList);
-
-		return protocolsList;
+		
+		return currentResourceList;
 	}
 
 	public abstract IMatch chooseOneMatch(VictoryDataPackage pDataPackage);
