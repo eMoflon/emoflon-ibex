@@ -8,14 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
@@ -27,6 +22,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	private OperationalStrategy op;
 	private Set<EObject> resourceList = new HashSet<EObject>();
 	private List<ProtocolStep> protocolsStepList = new ArrayList<ProtocolStep>();
+
 	public void register(OperationalStrategy pOperationalStrategy) {
 		pOperationalStrategy.registerObserver(this);
 		pOperationalStrategy.setUpdatePolicy(this);
@@ -54,11 +50,11 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		 * Note that the code below is just to ensure that the UI keeps working. Feel
 		 * free to delete and replace it with your own implementation.
 		 */
-		
+
 		List<ProtocolStep> protocols = getProtocols();
 		Map<IMatch, Collection<IMatch>> matches = new HashMap<>();
 		matchContainer.getMatches().forEach(match -> matches.put(match, null));
-		
+
 		return chooseOneMatch(new VictoryDataPackage(matches, protocols)); // TODO add protocol here
 	}
 
@@ -88,23 +84,23 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			trgResourceList = getResourceItems(items, op.getTargetResource());
 			corrResourceList = getResourceItems(items, op.getCorrResource());
 		}
-	
+
 		ProtocolStep protocolStep = new ProtocolStep(index, srcResourceList, trgResourceList, corrResourceList);
 		protocolsStepList.add(protocolStep);
-		
+
 		return protocolsStepList;
 	}
-	
+
 	private HashSet<EObject> getResourceItems(EList<EObject> items, Resource resource) {
 		HashSet<EObject> currentResourceList = new HashSet<EObject>();
-		
-		for (EObject item: items) {
+
+		for (EObject item : items) {
 			if (!resourceList.contains(item) && item.eResource().equals(resource)) {
 				currentResourceList.add(item);
 				resourceList.add(item);
 			}
 		}
-		
+
 		return currentResourceList;
 	}
 
