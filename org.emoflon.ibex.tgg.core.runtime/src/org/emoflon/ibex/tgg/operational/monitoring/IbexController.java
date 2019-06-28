@@ -32,33 +32,14 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	@Override
 	public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
 
-		/*
-		 * TODO implement This method should do the following things:
-		 * 
-		 * 1) Limit the number of matches to the number the UI requests This number is
-		 * provided by calling getRequestedMatchCount()
-		 * 
-		 * 2) Map each match to its excluded matches The keys of the map should be the
-		 * (limited) list of matches provided by part 1) The values should be a
-		 * collection for each key-match that contains all matches that are excluded if
-		 * the key-match is applied If there are no matches that get excluded, simply
-		 * map the match to null (rather than creating an empty collection), so as not
-		 * to waste performance
-		 * 
-		 * -------------
-		 * 
-		 * Note that the code below is just to ensure that the UI keeps working. Feel
-		 * free to delete and replace it with your own implementation.
-		 */
-
 		List<ProtocolStep> protocols = getProtocols();
-		Map<IMatch, Collection<IMatch>> matches = new HashMap<>();
-		matchContainer.getMatches().forEach(match -> matches.put(match, null));
+		Collection<VictoryMatch> matches = new HashSet<>();
+		matchContainer.getMatches().forEach(match -> matches.add(new VictoryMatch(match)));
 
 		return chooseOneMatch(new VictoryDataPackage(matches, protocols)); // TODO add protocol here
 	}
 
-	public Map<IMatch, Collection<IMatch>> getMoreMatches(int amount) {
+	public Collection<VictoryMatch> getMoreMatches(int amount) {
 
 		/*
 		 * TODO implement This method needs to provide the specified number of
