@@ -83,10 +83,9 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			srcResourceList = getResourceItems(items, op.getSourceResource());
 			trgResourceList = getResourceItems(items, op.getTargetResource());
 			corrResourceList = getResourceItems(items, op.getCorrResource());
+			ProtocolStep protocolStep = new ProtocolStep(index, srcResourceList, trgResourceList, corrResourceList);
+			protocolsStepList.add(protocolStep);
 		}
-
-		ProtocolStep protocolStep = new ProtocolStep(index, srcResourceList, trgResourceList, corrResourceList);
-		protocolsStepList.add(protocolStep);
 
 		return protocolsStepList;
 	}
