@@ -19,6 +19,7 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
@@ -92,12 +93,12 @@ public abstract class SYNC extends OperationalStrategy {
 	public void run() throws IOException {
 		options.getBenchmarkLogger().startNewRun();
 		BenchmarkLogger.startTimer();
-		
+
 		repair();
 		rollBack();
 		translate();
 		logCreatedAndDeletedNumbers();
-		
+
 		collectDataToBeLogged();
 		options.getBenchmarkLogger().addToExecutionTime(BenchmarkLogger.stopTimer());
 	}
@@ -111,9 +112,9 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	protected void initializeRepairStrategy(IbexOptions options) {
-		if(!repairStrategies.isEmpty())
+		if (!repairStrategies.isEmpty())
 			return;
-		
+
 		if (options.repairUsingShortcutRules()) {
 			repairStrategies.add(new ShortcutRepairStrategy(this));
 		}
@@ -124,22 +125,22 @@ public abstract class SYNC extends OperationalStrategy {
 
 	protected boolean repairBrokenMatches() {
 		Collection<IMatch> alreadyProcessed = cfactory.createObjectSet();
-		for(AbstractRepairStrategy rStrategy : repairStrategies) {
+		for (AbstractRepairStrategy rStrategy : repairStrategies) {
 			for (IMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
-				if(alreadyProcessed.contains(repairCandidate))
+				if (alreadyProcessed.contains(repairCandidate))
 					continue;
-			
+
 				IMatch repairedMatch = rStrategy.repair(repairCandidate);
-				if(repairedMatch != null) {
+				if (repairedMatch != null) {
 					alreadyProcessed.add(repairCandidate);
 
 					TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
 					brokenRuleApplications.remove(oldRa);
-					
+
 					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
 					brokenRuleApplications.put(newRa, repairedMatch);
 					alreadyProcessed.add(repairedMatch);
-					
+
 					options.getBenchmarkLogger().addToNumOfMatchesRepaired(1);
 				}
 			}
@@ -160,13 +161,14 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	protected boolean revokeBrokenMatches() {
-		// clear pending elements since every element that has not been repaired until now has to be revoked
-		if(operationalMatchContainer instanceof PrecedenceGraph)
+		// clear pending elements since every element that has not been repaired until
+		// now has to be revoked
+		if (operationalMatchContainer instanceof PrecedenceGraph)
 			((PrecedenceGraph) operationalMatchContainer).clearPendingElements();
 
 		if (brokenRuleApplications.isEmpty())
 			return false;
-		
+
 		revokeAllMatches();
 
 		return true;
@@ -175,12 +177,11 @@ public abstract class SYNC extends OperationalStrategy {
 	protected void revokeAllMatches() {
 		while (!brokenRuleApplications.isEmpty()) {
 			Set<TGGRuleApplication> revoked = cfactory.createObjectSet();
-			
-			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {	
+
+			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
 				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
 				revoked.add(ra);
-				
-			
+
 			}
 			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);
@@ -240,7 +241,7 @@ public abstract class SYNC extends OperationalStrategy {
 			logger.info(match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 		}
-		
+
 		operationalMatchContainer.matchApplied(match);
 	}
 
@@ -285,24 +286,37 @@ public abstract class SYNC extends OperationalStrategy {
 	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, IMatch m) {
 		return strategy.determineCSP(factory, m);
 	}
-	
+
 	public SYNC_Strategy getStrategy() {
 		return strategy;
 	}
-	
+
 	private void logCreatedAndDeletedNumbers() {
-		if(options.debug()) {
-			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream().filter(rStr -> rStr instanceof ShortcutRepairStrategy).map(rStr -> (ShortcutRepairStrategy) rStr).findFirst();
+		if (options.debug()) {
+			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream()
+					.filter(rStr -> rStr instanceof ShortcutRepairStrategy).map(rStr -> (ShortcutRepairStrategy) rStr)
+					.findFirst();
 			logger.info("Created elements: " + greenInterpreter.getNumOfCreatedElements());
-			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedElements() + (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
+			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedElements()
+					+ (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
 		}
 	}
 
 	@Override
 	protected void collectDataToBeLogged() {
 		super.collectDataToBeLogged();
-		
+
+		int repStratDeletions = 0;
+		if (!(options.getBenchmarkLogger() instanceof EmptyBenchmarkLogger))
+			repStratDeletions = repairStrategies.stream() //
+					.filter(rStr -> rStr instanceof ShortcutRepairStrategy) //
+					.map(rStr -> (ShortcutRepairStrategy) rStr) //
+					.findFirst() //
+					.map(srStr -> srStr.countDeletedElements()) //
+					.orElse(0);
+
 		options.getBenchmarkLogger().setNumOfElementsCreated(greenInterpreter.getNumOfCreatedElements());
-		options.getBenchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedElements());
+		options.getBenchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedElements() + //
+				repStratDeletions);
 	}
 }
