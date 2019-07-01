@@ -1,7 +1,10 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
@@ -10,6 +13,8 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
+    private Map<IMatch, VictoryMatch> matchMapping = new HashMap<>();
+    
     public void register(OperationalStrategy pOperationalStrategy) {
 	pOperationalStrategy.registerObserver(this);
 	pOperationalStrategy.setUpdatePolicy(this);
@@ -18,9 +23,9 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
     @Override
     public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
 
-	Collection<VictoryMatch> matches = new HashSet<>();
-	matchContainer.getMatches().forEach(match->matches.add(new VictoryMatch(match)));
-	return chooseOneMatch(new VictoryDataPackage(matches, null)); // TODO add protocol here
+	updateMatchMapping(matchContainer.getMatches());
+	
+	return chooseOneMatch(new VictoryDataPackage(matchMapping.values(), null));
     }
     
     public Collection<VictoryMatch> getMoreMatches(int amount) {
@@ -34,6 +39,17 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	 */
 	
 	return null;
+    }
+    
+    private void updateMatchMapping(Collection<IMatch> pMatches) {
+	
+	for(Iterator<IMatch> iterator = matchMapping.keySet().iterator(); iterator.hasNext();)
+	    if(!pMatches.contains(iterator.next()))
+		iterator.remove();
+	
+	for(IMatch match : pMatches) 
+	    if(!matchMapping.containsKey(match))
+		matchMapping.put(match, new VictoryMatch(match));
     }
 
     public abstract IMatch chooseOneMatch(VictoryDataPackage pDataPackage);
