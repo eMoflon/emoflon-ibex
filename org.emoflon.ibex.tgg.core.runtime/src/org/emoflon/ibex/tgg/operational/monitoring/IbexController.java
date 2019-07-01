@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
+import org.emoflon.ibex.tgg.operational.monitoring.data.TGGObjectGraph;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
@@ -65,7 +66,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			srcResourceList = getResourceItems(items, op.getSourceResource());
 			trgResourceList = getResourceItems(items, op.getTargetResource());
 			corrResourceList = getResourceItems(items, op.getCorrResource());
-			ProtocolStep protocolStep = new ProtocolStep(index, srcResourceList, trgResourceList, corrResourceList);
+			ProtocolStep protocolStep = new ProtocolStep(index, new TGGObjectGraph(srcResourceList, trgResourceList, corrResourceList));
 			protocolsStepList.add(protocolStep);
 		}
 
