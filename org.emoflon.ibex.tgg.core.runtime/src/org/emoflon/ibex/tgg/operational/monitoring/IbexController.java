@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,6 +23,8 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	private OperationalStrategy op;
 	private Set<EObject> resourceList = new HashSet<EObject>();
 	private List<ProtocolStep> protocolsStepList = new ArrayList<ProtocolStep>();
+	private Map<IMatch, VictoryMatch> matchMapping = new HashMap<>();
+    
 
 	public void register(OperationalStrategy pOperationalStrategy) {
 		pOperationalStrategy.registerObserver(this);
@@ -31,12 +34,10 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 	@Override
 	public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
+	    updateMatchMapping(matchContainer.getMatches());
+	
+	    return chooseOneMatch(new VictoryDataPackage(matchMapping.values(), getProtocols()));
 
-		List<ProtocolStep> protocols = getProtocols();
-		Collection<VictoryMatch> matches = new HashSet<>();
-		matchContainer.getMatches().forEach(match -> matches.add(new VictoryMatch(match)));
-
-		return chooseOneMatch(new VictoryDataPackage(matches, protocols)); // TODO add protocol here
 	}
 
 	public Collection<VictoryMatch> getMoreMatches(int amount) {
@@ -85,6 +86,17 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	}
 
 	public abstract IMatch chooseOneMatch(VictoryDataPackage pDataPackage);
+    
+	private void updateMatchMapping(Collection<IMatch> pMatches) {
+	
+	    for(Iterator<IMatch> iterator = matchMapping.keySet().iterator(); iterator.hasNext();)
+		if(!pMatches.contains(iterator.next()))
+		    iterator.remove();
+	
+	    for(IMatch match : pMatches) 
+		if(!matchMapping.containsKey(match))
+		    matchMapping.put(match, new VictoryMatch(match));
+	}
 
 	protected abstract int getRequestedMatchCount();
 }
