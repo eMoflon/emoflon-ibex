@@ -5,7 +5,7 @@ public class BenchmarkRunLog {
 	private final int runNum;
 
 	// Timing in milliseconds
-	protected long translationTime = 0;
+	protected long executionTime = 0;
 
 	// Elements
 	protected long numOfCreatedElements = 0;
@@ -20,12 +20,12 @@ public class BenchmarkRunLog {
 		this.runNum = runNum;
 	}
 
-	public long getTranslationTime() {
-		return translationTime;
+	public long getExecutionTime() {
+		return executionTime;
 	}
 
-	public void addToTranslationTime(long time) {
-		translationTime += time;
+	public void addToExecutionTime(long time) {
+		executionTime += time;
 	}
 
 	public long getNumOfElementsCreated() {
@@ -72,8 +72,8 @@ public class BenchmarkRunLog {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("BenchmarkRunLog #" + runNum + "\n[");
-		builder.append("\n  Translation time .. ");
-		builder.append(getTranslationTime() + "ms");
+		builder.append("\n  Execution time .... ");
+		builder.append(getExecutionTime() + "ms");
 		builder.append("\n  Created elements .. ");
 		builder.append(getNumOfElementsCreated());
 		builder.append("\n  Deleted elements .. ");

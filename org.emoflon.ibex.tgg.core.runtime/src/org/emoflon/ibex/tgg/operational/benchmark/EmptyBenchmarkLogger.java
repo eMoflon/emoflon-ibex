@@ -26,12 +26,12 @@ public class EmptyBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
-	public long getTotalTranslationTime() {
+	public long getTotalExecutionTime() {
 		return -1;
 	}
 
 	@Override
-	public void addToTranslationTime(long time) {
+	public void addToExecutionTime(long time) {
 		// Intentionally left blank
 	}
 

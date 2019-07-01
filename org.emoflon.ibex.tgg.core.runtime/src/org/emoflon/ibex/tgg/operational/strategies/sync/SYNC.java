@@ -99,7 +99,7 @@ public abstract class SYNC extends OperationalStrategy {
 		logCreatedAndDeletedNumbers();
 		
 		collectDataToBeLogged();
-		options.getBenchmarkLogger().addToTranslationTime(BenchmarkLogger.stopTimer());
+		options.getBenchmarkLogger().addToExecutionTime(BenchmarkLogger.stopTimer());
 	}
 
 	protected void repair() {
