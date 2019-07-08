@@ -182,7 +182,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	}
 
 	@Override
-	public void saveModels() throws IOException {
+	public void saveModels(String[] pLocations) throws IOException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
 		Date date = new Date(System.currentTimeMillis());
 		String time = dateFormat.format(date).toString();
@@ -223,6 +223,11 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		r.save(null);
 	}
 
+	public String[][] getDefaultSaveData() {
+	    // TODO
+	    return null;
+	}
+	
 	@Override
 	public Collection<TGGRule> getAllRules() {
 	    return op.getOptions().flattenedTGG().getRules();

@@ -15,6 +15,7 @@ public interface IVictoryDataProvider {
     public Set<IMatch> getMatches(IMatch match);
 	public Set<IMatch> getMatches(String pRuleName);
     public Set<EObject> getMatchNeighbourhood(IMatch match, int k);
-    abstract public void saveModels() throws IOException;
+    abstract public void saveModels(String[] pLocations) throws IOException;
     public Collection<TGGRule> getAllRules();
+    public String[][] getDefaultSaveData();
 }
