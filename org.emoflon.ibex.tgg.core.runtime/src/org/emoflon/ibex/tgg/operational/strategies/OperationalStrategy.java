@@ -137,11 +137,15 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	public EPackage loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
+		String uri = URI.createURI(workspaceRelativePath).toString();
+		if(rs.getPackageRegistry().containsKey(uri)) {
+			return rs.getPackageRegistry().getEPackage(uri);
+		}
 		Resource res = loadResource(workspaceRelativePath);
 		EPackage pack = (EPackage) res.getContents().get(0);
 		pack = (EPackage) rs.getPackageRegistry().getOrDefault(res.getURI().toString(), pack);
-		rs.getPackageRegistry().putIfAbsent(res.getURI().toString(), pack);
-		rs.getPackageRegistry().putIfAbsent(pack.getNsURI(), pack);
+		rs.getPackageRegistry().put(res.getURI().toString(), pack);
+		rs.getPackageRegistry().put(pack.getNsURI(), pack);
 		rs.getResources().remove(res);
 		return pack;
 	}
