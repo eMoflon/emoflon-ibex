@@ -18,6 +18,8 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 	HashMap<IMatch, Integer> processedMatches = new HashMap<IMatch, Integer>();
+	Map<IMatch, String> newMatches = new HashMap<IMatch, String>();
+	int step = 0;
 	
 	public void register(OperationalStrategy pOperationalStrategy) {
 		pOperationalStrategy.registerObserver(this);
@@ -26,15 +28,14 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
     @Override
     public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
+
     	this.processMatches(matchContainer);
-    	HashMap<IMatch, Integer> sortedMatches = this.sortByAge(processedMatches);
-    	Map<IMatch, String> matches = this.assignUniqueName(sortedMatches);
     	
-    	for(Map.Entry<IMatch, String> en: matches.entrySet()) {
-    		System.out.println("Match: " + en.getKey().getPatternName() + " value: " + en.getValue());
-    	} 
-    	
-		return chooseOneMatch(new VictoryDataPackage(matches, null)); // TODO add protocol here
+    	for (Map.Entry<IMatch, Integer> item : processedMatches.entrySet()) {
+			newMatches.put(item.getKey(), (item.getValue().toString()));
+        }
+
+    	return chooseOneMatch(new VictoryDataPackage(newMatches, null)); // TODO add protocol here
     }
     
     public Map<IMatch,Collection<IMatch>> getMoreMatches(int amount) {
@@ -53,51 +54,18 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
     public abstract IMatch chooseOneMatch(VictoryDataPackage pDataPackage);
     
     protected abstract int getRequestedMatchCount();
-    
+   
     public void processMatches(ImmutableMatchContainer matchContainer) {
-		Set<IMatch> matches = matchContainer.getMatches();
-		
-		for(IMatch match : matches) {
+    	Set<IMatch> matches = matchContainer.getMatches();
+    	step = step + 1;
+    	for(IMatch match : matches) {
             if (!processedMatches.isEmpty()) {
-                if(processedMatches.containsKey(match)) {
-                    int count = processedMatches.get(match);
-                    count += 1;
-                    processedMatches.put(match, count);
-                } else {
-                	processedMatches.put(match, 1);
+                if(!processedMatches.containsKey(match)) {
+                    processedMatches.put(match, step);
                 }
-               
             } else {
-            	processedMatches.put(match, 1);
+            	processedMatches.put(match, step);
             }
         }
-	}
-	
-	public HashMap<IMatch, Integer> sortByAge(HashMap<IMatch, Integer> pm) { 
-        List<Map.Entry<IMatch, Integer>> list = new LinkedList<Map.Entry<IMatch, Integer> >(pm.entrySet()); 
-
-        Collections.sort(list, new Comparator<Map.Entry<IMatch, Integer> >() { 
-            public int compare(Map.Entry<IMatch, Integer> o1,  
-                               Map.Entry<IMatch, Integer> o2) 
-            { 
-                return (o1.getValue()).compareTo(o2.getValue()); 
-            } 
-        }); 
-
-        HashMap<IMatch, Integer> temp = new LinkedHashMap<IMatch, Integer>(); 
-        for (Map.Entry<IMatch, Integer> aa : list) { 
-            temp.put(aa.getKey(), aa.getValue()); 
-        } 
-        return temp; 
-    } 
-	
-	public Map<IMatch, String> assignUniqueName(HashMap<IMatch, Integer> hm) {
-		Map<IMatch, String> newMap = new LinkedHashMap<>();
-		
-		for (Map.Entry<IMatch, Integer> en : hm.entrySet()) {
-			newMap.put(en.getKey(), (en.getKey().getRuleName()+en.getValue()));
-        }
-		
-		return newMap;
-	} 
+    }
 }
