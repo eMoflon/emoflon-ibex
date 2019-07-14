@@ -66,6 +66,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected Map<TGGRuleApplication, IMatch> consistencyMatches;
 	private boolean domainsHaveNoSharedTypes;
 	private Map<String, IGreenPatternFactory> factories;
+	
+	protected Map<IMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
 	// Configuration
 	protected final IbexOptions options;
@@ -291,6 +293,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	public abstract void run() throws IOException;
 
 	protected boolean processOneOperationalRuleMatch() {
+		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
@@ -322,7 +325,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
 		//generatedPatternsSizeObserver.setNodes(match);
-		if (!this.getUpdatePolicy().matchShouldBeApplied(match, ruleName)) { //TODO JaneJ update the way this is called
+		if (this.getBlockedMatches().containsKey(match)) { 
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
@@ -371,10 +374,19 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 				.filter(r -> r.getName().equals(ruleName))//
 				.findFirst();
 	}
+	
+	protected void updateBlockedMatches() {
+		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {
+			if(!this.getUpdatePolicy().matchShouldBeApplied(match, operationalMatchContainer.getRuleName(match))) {
+				if(!blockedMatches.containsKey(match))
+					blockedMatches.put(match, "Match is blocked by the update policy");
+				this.operationalMatchContainer.removeMatch(match);
+			}
+		}
+	}
 
 	public Map<IMatch, String> getBlockedMatches() {
-	    //TODO
-	    return null;
+	    return this.blockedMatches;
 	}
 	
 	/****** Initialisation, termination *****/
