@@ -1,15 +1,12 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd;
 
-import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWithName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFWDOptBlackPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
-import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperator;
-import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperator;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
+import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperator;
+import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
@@ -18,10 +15,8 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.Operational
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
-import IBeXLanguage.IBeXNode;
 import language.BindingType;
 import language.DomainType;
-import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -35,19 +30,6 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 	@Override
 	protected String getPatternName() {
 		return getFWDOptBlackPatternName(rule.getName());
-	}
-
-	@Override
-	protected void handleComplementRules(IBeXContextPattern ibexPattern) {
-		if(rule instanceof TGGComplementRule) {
-			TGGComplementRule compRule = (TGGComplementRule) rule;
-			IBeXContextPattern kernelConsistencyPattern = parent.createConsistencyPattern(compRule.getKernel());
-			
-			createInvocation(ibexPattern, kernelConsistencyPattern, true);
-			
-			Optional<IBeXNode> markerNode = findIBeXNodeWithName(ibexPattern, getProtocolNodeName(compRule.getKernel().getName()));
-			markerNode.ifPresent(ibexPattern.getSignatureNodes()::add);
-		}
 	}
 
 	@Override
