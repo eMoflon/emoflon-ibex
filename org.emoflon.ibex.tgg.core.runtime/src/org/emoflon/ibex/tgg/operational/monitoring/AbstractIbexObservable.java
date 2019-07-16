@@ -17,7 +17,7 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	@Override
 	public void registerObserver(IbexObserver observer) { 
 		if(observer!= null) {
-			observers.add(observer);
+			getObservers().add(observer);
 		}
 		
 	}
@@ -26,36 +26,36 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	public void unregisterObserver(IbexObserver observer) {
 		if(observer!= null)
 		{
-			observers.remove(observer);
+			getObservers().remove(observer);
 		}
 	}
 
 	@Override
 	public void notifyStartLoading() {
-		observers.forEach(o -> o.update(ObservableEvent.STARTLOADING));
+		getObservers().forEach(o -> o.update(ObservableEvent.STARTLOADING));
 	}
 	
 	
 	@Override
 	public void notifyLoadingFinished() {
-		observers.forEach(o -> o.update(ObservableEvent.LOADINGFINISHED));
+		getObservers().forEach(o -> o.update(ObservableEvent.LOADINGFINISHED));
 	}
 	
 
 	@Override
 	public void notifyStartInit() {
-		observers.forEach(o -> o.update(ObservableEvent.STARTINIT));
+		getObservers().forEach(o -> o.update(ObservableEvent.STARTINIT));
 	}
 	
 	
 	@Override
 	public void notifyDoneInit() {
-		observers.forEach(o -> o.update(ObservableEvent.DONEINIT));
+		getObservers().forEach(o -> o.update(ObservableEvent.DONEINIT));
 	}
 
 	@Override
 	public void notifyMatchApplied(IMatch match, String ruleName) {
-		observers.forEach(o -> o.update(ObservableEvent.MATCHAPPLIED, match));
+		getObservers().forEach(o -> o.update(ObservableEvent.MATCHAPPLIED, match));
 		this.getUpdatePolicy().notifyMatchHasBeenApplied(match, ruleName); //TODO JaneJ update the way this is called
 	}
 
@@ -78,11 +78,18 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 
 	@Override
 	public IMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) { //tells observer a match needs to be chosen and choses a match by using the update policy
-		observers.forEach(o -> o.update(ObservableEvent.CHOOSEMATCH, matchContainer));
+		getObservers().forEach(o -> o.update(ObservableEvent.CHOOSEMATCH, matchContainer));
 		if(this.updatePolicy == null) {
 			throw new RuntimeException("No update strategy configured");
 		} else {
 			return this.updatePolicy.chooseOneMatch(matchContainer);
 		}
+	}
+
+	/**
+	 * @return the observers
+	 */
+	public final Set<IbexObserver> getObservers() {
+		return observers;
 	}
 }

@@ -1,26 +1,24 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
 
 public class VictoryDataPackage {
-    private Map<IMatch, String> matches;
-    private List<Set<EObject>> protocol;
+    private Collection<VictoryMatch> matches;
+    private List<ProtocolStep> protocol;
 
-    public VictoryDataPackage(Map<IMatch, String> pMatches, List<Set<EObject>> pProtocol) {
+    public VictoryDataPackage(Collection<VictoryMatch> pMatches, List<ProtocolStep> pProtocol) {
 	matches = pMatches;
 	protocol = pProtocol;
     }
 
-    public Map<IMatch, String> getMatches() {
+    public Collection<VictoryMatch> getMatches() {
 	return matches;
     }
 
-    public List<Set<EObject>> getProtocol() {
+    public List<ProtocolStep> getProtocol() {
 	return protocol;
     }
 }
