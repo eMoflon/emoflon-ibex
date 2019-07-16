@@ -99,23 +99,26 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		iterator.remove();
 	}
 
+	VictoryMatch.startMatchCreation(step);
+
 	for (IMatch match : pMatches)
 	    if (matchMapping.containsKey(match))
 		matchMapping.get(match).setBlockingReason(null);
 	    else
-		matchMapping.put(match, new VictoryMatch(match, step));
+		matchMapping.put(match, VictoryMatch.newMatch(match));
 
 	if (operationalStrategy.getBlockedMatches() != null)
 	    operationalStrategy.getBlockedMatches().forEach((match, reason) -> {
 		if (matchMapping.containsKey(match))
 		    matchMapping.get(match).setBlockingReason(reason);
 		else {
-		    VictoryMatch vMatch = new VictoryMatch(match, step);
+		    VictoryMatch vMatch = VictoryMatch.newMatch(match);
 		    vMatch.setBlockingReason(reason);
 		    matchMapping.put(match, vMatch);
 		}
 	    });
 
+	VictoryMatch.finishMatchCreation();
 	step++;
     }
 
