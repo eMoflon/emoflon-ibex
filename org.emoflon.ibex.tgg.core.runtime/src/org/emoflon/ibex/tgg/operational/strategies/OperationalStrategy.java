@@ -1,15 +1,12 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -24,6 +21,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -32,7 +30,6 @@ import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
-import org.emoflon.ibex.tgg.operational.patterns.GreenFusedPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
@@ -40,17 +37,15 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 import language.TGG;
-import language.TGGComplementRule;
 import language.TGGRule;
 import language.TGGRuleNode;
 import language.impl.LanguagePackageImpl;
 import runtime.RuntimeFactory;
-import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
-public abstract class OperationalStrategy extends AbstractIbexObservable implements IMatchObserver  {
+public abstract class OperationalStrategy extends AbstractIbexObservable implements IMatchObserver {
 	private long currentIntervalStart = -1;
 	private final long INTERVAL_LENGTH = 5000;
 	private long matchCounter = 0;
@@ -71,6 +66,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected Map<TGGRuleApplication, IMatch> consistencyMatches;
 	private boolean domainsHaveNoSharedTypes;
 	private Map<String, IGreenPatternFactory> factories;
+	
+	protected Map<IMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
 	// Configuration
 	protected final IbexOptions options;
@@ -87,15 +84,19 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
+		BenchmarkLogger.startTimer();
+		
 		this.options = options;
 		this.setUpdatePolicy(policy);
-		
+
 		base = URI.createPlatformResourceURI("/", true);
 		factories = new HashMap<>();
 
 		greenInterpreter = new IbexGreenInterpreter(this);
 
 		consistencyMatches = cfactory.createObjectToObjectHashMap();
+		
+		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
 	}
 
 	/***** Resource management *****/
@@ -177,8 +178,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		options.tgg((TGG) res.getContents().get(0));
 		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-		
-		
+
 		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
 				options.tgg().getAttributeConstraintDefinitionLibrary());
 		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
@@ -291,30 +291,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	public abstract void run() throws IOException;
-	
-	/*public int getNumberOfObjectsInModels() {
-        int sizeS = 0;
-        TreeIterator<EObject> treeIterator = s.getAllContents();
-        while(treeIterator.hasNext()) {
-            treeIterator.next();
-            sizeS++;
-        }
-        int sizeC = 0;
-        treeIterator = c.getAllContents();
-        while(treeIterator.hasNext()) {
-            treeIterator.next();
-            sizeC++;
-        }
-        int sizeT = 0;
-        treeIterator = t.getAllContents();
-        while(treeIterator.hasNext()) {
-            treeIterator.next();
-            sizeT++;
-        }
-        return sizeS + sizeC + sizeT;        
-    }*/
 
 	protected boolean processOneOperationalRuleMatch() {
+		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
@@ -325,11 +304,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		removeOperationalRuleMatch(match);
 
 		if (result.isPresent()) {
+			options.getBenchmarkLogger().addToNumOfMatchesApplied(1);
 			logger.debug("Removed as it has just been applied: ");
-		}
-		else {
+		} else
 			logger.debug("Removed as application failed: ");
-		}
 
 		logger.debug(match);
 
@@ -338,7 +316,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected IMatch chooseOneMatch() {
 		IMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
-
+		
 		if (match == null)
 			throw new IllegalStateException("Update policies should never return null!");
 
@@ -347,17 +325,16 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
 		//generatedPatternsSizeObserver.setNodes(match);
-		if (!this.getUpdatePolicy().matchShouldBeApplied(match, ruleName)) { //TODO JaneJ update the way this is called
+		if (this.getBlockedMatches().containsKey(match)) { 
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
-		
-		IGreenPatternFactory factory = getGreenFactory(ruleName);
 
+		IGreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.getPatternName());
 
 		logger.debug("Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
-		//logger.debug("Pattern: " + match.getPatternName() + " matches: " + operationalMatchContainer.getMatches().size());
+
 		Optional<IMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
@@ -397,13 +374,29 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 				.filter(r -> r.getName().equals(ruleName))//
 				.findFirst();
 	}
+	
+	protected void updateBlockedMatches() {
+		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {
+			if(!this.getUpdatePolicy().matchShouldBeApplied(match, operationalMatchContainer.getRuleName(match))) {
+				if(!blockedMatches.containsKey(match))
+					blockedMatches.put(match, "Match is blocked by the update policy");
+				this.operationalMatchContainer.removeMatch(match);
+			}
+		}
+	}
 
+	public Map<IMatch, String> getBlockedMatches() {
+	    return this.blockedMatches;
+	}
+	
 	/****** Initialisation, termination *****/
 
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
+		BenchmarkLogger.startTimer();
+		
 		this.notifyStartInit();
 		this.blackInterpreter = blackInterpreter;
-		
+
 		createAndPrepareResourceSet();
 		registerInternalMetamodels();
 		registerUserMetamodels();
@@ -419,6 +412,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
 		
 		this.notifyDoneInit();
+		
+		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
 	}
 
 	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
@@ -431,7 +426,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected abstract void registerUserMetamodels() throws IOException;
 
-	protected void initialiseBlackInterpreter() throws IOException {
+	protected void initialiseBlackInterpreter() throws IOException {		
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
 			blackInterpreter.initialise(options, rs.getPackageRegistry(), this);
@@ -482,84 +477,32 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		this.blackInterpreter.monitor(rs);
 	}
 
-	/***** Multi-Amalgamation *****/
-
-	public void setIsRuleApplicationFinal(EObject ruleApplication) {
-		ruleApplication.eSet(RuntimePackage.eINSTANCE.getTGGRuleApplication_Final(), true);
-	}
-
-	protected Optional<TGGComplementRule> getComplementRule(String ruleName) {
-		return getRule(ruleName)//
-				.filter(TGGComplementRule.class::isInstance)//
-				.map(TGGComplementRule.class::cast);
-	}
-
-	protected boolean isKernelMatch(String kernelName) {
-		return getKernelRulesNames().contains(kernelName);
-	}
-
-	public boolean isComplementMatch(String complementName) {
-		return getComplementRulesNames().contains(complementName);
-	}
-
-	private Set<String> cacheComplementRulesNames = null;
-
-	protected Set<String> getComplementRulesNames() {
-		if (cacheComplementRulesNames == null) {
-
-			cacheComplementRulesNames = options.tgg().getRules().stream()//
-					.filter(TGGComplementRule.class::isInstance)//
-					.map(TGGRule::getName)//
-					.collect(Collectors.toSet());
-		}
-
-		return cacheComplementRulesNames;
-	}
-
-	private Set<String> cacheKernelRulesNames = null;
-
-	protected Set<String> getKernelRulesNames() {
-		if (cacheKernelRulesNames == null) {
-			cacheKernelRulesNames = options.tgg().getRules().stream()//
-					.filter(TGGComplementRule.class::isInstance)//
-					.map(TGGComplementRule.class::cast)//
-					.map(TGGComplementRule::getKernel)//
-					.map(TGGRule::getName)//
-					.distinct()//
-					.collect(Collectors.toSet());
-		}
-
-		return cacheKernelRulesNames;
-	}
-
-	protected boolean tggContainsComplementRules() {
-		return !getComplementRulesNames().isEmpty();
-	}
-
 	public IGreenPatternFactory getGreenFactory(String ruleName) {
 		assert (ruleName != null);
 		if (!factories.containsKey(ruleName)) {
-			if (isFusedPatternMatch(ruleName)) {
-				factories.put(ruleName, new GreenFusedPatternFactory(ruleName, options, this));
-			} else {
-				factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
-			}
+			factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
 		}
-		
 
 		return factories.get(ruleName);
 	}
 
 	/***** Configuration *****/
+
 	public Map<String, IGreenPatternFactory> getFactories() {
 		return factories;
 	}
-	
+
 	public IbexOptions getOptions() {
 		return options;
 	}
 	
 	public IMatchContainer getMatchContainer() {
 		return operationalMatchContainer;
+	}
+	
+	/***** Benchmark Logging *****/
+	
+	protected void collectDataToBeLogged() {
+		options.getBenchmarkLogger().setNumOfMatchesFound(matchCounter);
 	}
 }

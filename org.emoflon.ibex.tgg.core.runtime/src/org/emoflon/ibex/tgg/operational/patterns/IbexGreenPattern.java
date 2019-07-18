@@ -116,7 +116,6 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		strategy.setIsRuleApplicationFinal(ra);
 		match.put(TGGPatternUtil.getProtocolNodeName(ruleName), ra);
 	}
 }

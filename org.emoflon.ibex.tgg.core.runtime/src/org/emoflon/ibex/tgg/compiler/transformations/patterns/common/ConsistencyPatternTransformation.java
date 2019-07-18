@@ -25,11 +25,6 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 	}
 
 	@Override
-	protected void handleComplementRules(IBeXContextPattern ibexPattern) {
-		// Nothing to do
-	}
-
-	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern) {
 		rule.getNodes().forEach(n -> {
 			parent.transformNode(ibexPattern, n);

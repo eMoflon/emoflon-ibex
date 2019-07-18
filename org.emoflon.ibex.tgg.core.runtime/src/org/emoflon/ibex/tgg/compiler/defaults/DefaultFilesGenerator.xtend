@@ -4,7 +4,7 @@ import java.util.Collection
 import language.TGGAttributeConstraintDefinition
 import org.moflon.core.utilities.MoflonUtil
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile
-
+ 
 class DefaultFilesGenerator {
 
 	static def String generateUserRuntimeAttrCondFactory(Collection<String> userDefConstraints, String projectName) {
@@ -116,10 +116,10 @@ class DefaultFilesGenerator {
 		'''
 	}
 	
-	static def String generateDebugStructure(String additionalImports, String fileName, String strategy, String engine,
+	static def String generateDebugStructure(String additionalImports, String fileName, String strategy,
 		String projectName, String setUpRoutine, String body) {
 		'''
-			package org.emoflon.ibex.tgg.run.debug;
+			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».debug;
 			
 			import java.io.IOException;
 			
@@ -127,17 +127,17 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Logger;
 			import org.apache.log4j.BasicConfigurator;
 			
-			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			import org.emoflon.ibex.tgg.operational.monitoring.IVictoryDataProvider;
 			import org.emoflon.ibex.tgg.operational.monitoring.VictoryDataProvider;
 			import org.emoflon.ibex.tgg.ui.debug.core.IbexDebugUI;
+			import org.emoflon.ibex.tgg.ui.debug.options.IBeXOp;
+			
 			«additionalImports»
 			
 			public class «fileName» extends «strategy» {
 			
 				public «fileName»() throws IOException {
-					super(createIbexOptions());
-					registerBlackInterpreter(new «engine»());
+					super();
 				}
 			
 				public static void main(String[] args) throws IOException {
@@ -148,12 +148,6 @@ class DefaultFilesGenerator {
 				}
 				
 				«body»
-				
-				«generateMetamodelRegistration()»
-				
-				private static IbexOptions createIbexOptions() {
-					return _RegistrationHelper.createIbexOptions();
-				}
 			}
 		'''
 	}
@@ -192,48 +186,45 @@ class DefaultFilesGenerator {
 		)
 	}
 	
-	static def generateModelGenDebugFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateModelGenDebugFile(String projectName, String fileName) {
 		return generateDebugStructure(
 			'''
-				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
-				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»._RegistrationHelper;
-				«additionalImports»
+				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».MODELGEN_App;
 			''',
 			fileName,
-			"MODELGEN",
-			engine,
+			"MODELGEN_App",
 			projectName,
 			'''
-				logger.info("Starting MODELGEN");
+				logger.info("Starting MODELGEN_Debug");
 				long tic = System.currentTimeMillis();
 				«fileName» generator = new «fileName»();
 				long toc = System.currentTimeMillis();
-				logger.info("Completed init for MODELGEN in: " + (toc - tic) + " ms");
+				logger.info("Completed init for MODELGEN_Debug in: " + (toc - tic) + " ms");
 				
 				MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 				generator.setStopCriterion(stop);
 				
 				IVictoryDataProvider dataProvider = new VictoryDataProvider(generator);
-				IbexDebugUI ui = IbexDebugUI.create(dataProvider, false);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.MODELGEN);
 				
 				new Thread(() -> {
 				
 				    ui.getIbexController().register(generator);
 				
 				    try {
-						logger.info("Starting MODELGEN");
+						logger.info("Starting MODELGEN_Debug");
 						long runTic = System.currentTimeMillis();
 						generator.run();
 						long runToc = System.currentTimeMillis();
-						logger.info("Completed MODELGEN in: " + (runToc - runTic) + " ms");
+						logger.info("Completed MODELGEN_Debug in: " + (runToc - runTic) + " ms");
 				
 						generator.saveModels();
 						generator.terminate();
 				    } catch (IOException pIOE) {
-						logger.error("MODELGEN threw an IOException", pIOE);
+						logger.error("MODELGEN_Debug threw an IOException", pIOE);
 				    }
-				}).start();
+				}, "IBeX main thread").start();
 				
 				ui.run();
 			''',
@@ -429,6 +420,48 @@ class DefaultFilesGenerator {
 		)
 	}
 
+	static def generateInitialFwdDebugAppFile(String projectName, String fileName) {
+		return generateDebugStructure(
+			'''
+				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».INITIAL_FWD_App;
+			''',
+			fileName,
+			"INITIAL_FWD_App",
+			projectName,
+			'''
+				logger.info("Starting INITIAL_FWD_Debug");
+				long tic = System.currentTimeMillis();
+				«fileName» init_fwd = new «fileName»();
+				long toc = System.currentTimeMillis();
+				logger.info("Completed init for INITIAL_FWD_Debug in: " + (toc - tic) + " ms");
+				
+				IVictoryDataProvider dataProvider = new VictoryDataProvider(init_fwd);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_FWD);
+
+				new Thread(() -> {
+				
+				    ui.getIbexController().register(init_fwd);
+				
+				    try {
+						logger.info("Starting INITIAL_FWD_Debug");
+						long runTic = System.currentTimeMillis();
+						init_fwd.forward();
+						long runToc = System.currentTimeMillis();
+						logger.info("Completed INITIAL_FWD_Debug in: " + (runToc - runTic) + " ms");
+				
+						init_fwd.saveModels();
+						init_fwd.terminate();
+					} catch (IOException pIOE) {
+						logger.error("INITIAL_FWD_Debug threw an IOException", pIOE);
+				    }
+				}, "IBeX main thread").start();
+				
+				ui.run();
+			''',
+			""
+		)
+	}
+
 	static def generateInitialBwdAppFile(String projectName, String fileName, String engine, String additionalImports) {
 		return generateBasicStructure(
 			'''
@@ -482,6 +515,48 @@ class DefaultFilesGenerator {
 		)
 	}
 
+	static def generateInitialBwdDebugAppFile(String projectName, String fileName) {
+		return generateDebugStructure(
+			'''
+				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».INITIAL_BWD_App;
+			''',
+			fileName,
+			"INITIAL_BWD_App",
+			projectName,
+			'''
+				logger.info("Starting INITIAL_BWD_Debug");
+				long tic = System.currentTimeMillis();
+				«fileName» init_bwd = new «fileName»();
+				long toc = System.currentTimeMillis();
+				logger.info("Completed init for INITIAL_BWD_Debug in: " + (toc - tic) + " ms");
+				
+				IVictoryDataProvider dataProvider = new VictoryDataProvider(init_bwd);
+				IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_BWD);
+
+				new Thread(() -> {
+				
+				    ui.getIbexController().register(init_bwd);
+				
+				    try {
+						logger.info("Starting INITIAL_BWD_Debug");
+						long runTic = System.currentTimeMillis();
+						init_bwd.backward();
+						long runToc = System.currentTimeMillis();
+						logger.info("Completed INITIAL_BWD_Debug in: " + (runToc - runTic) + " ms");
+				
+						init_bwd.saveModels();
+						init_bwd.terminate();
+					} catch (IOException pIOE) {
+						logger.error("INITIAL_BWD_Debug threw an IOException", pIOE);
+				    }
+				}, "IBeX main thread").start();
+				
+				ui.run();
+			''',
+			""
+		)
+	}
+	
 	def static generateMetamodelRegistration() {
 		'''
 			@Override

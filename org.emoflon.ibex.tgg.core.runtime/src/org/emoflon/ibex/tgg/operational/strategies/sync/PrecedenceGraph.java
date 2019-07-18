@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-import static org.emoflon.ibex.tgg.util.MAUtil.isFusedPatternMatch;
 
 import java.util.Collection;
 import java.util.Map;
@@ -282,17 +281,7 @@ public class PrecedenceGraph implements IMatchContainer {
 	}
 
 	@Override
-	public IMatch getNextKernel() {
-		return getMatches().stream()//
-				.filter(m -> strategy.isComplementMatch(m.getRuleName()))//
-				.findAny()//
-				.get();
-	}
-
-	@Override
 	public String getRuleName(IMatch match) {
-		if (isFusedPatternMatch(match.getPatternName()))
-			return match.getPatternName();
 		return match.getRuleName();
 	}
 

@@ -1,26 +1,21 @@
 package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.UpdatePolicy;
-
-import language.TGGComplementRule;
-import runtime.TGGRuleApplication;
 
 /**
  * The TGG operation MODELGEN applies TGG rules as they are and thus generates
@@ -87,6 +82,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 	public void setStopCriterion(MODELGENStopCriterion stop) {
 		this.stopCriterion = stop;
 	}
+	
+	@Override
+	protected void loadTGG() throws IOException {
+		super.loadTGG();
+	}
 
 	@Override
 	public void saveModels() throws IOException {
@@ -145,30 +145,53 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 */
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
-		if (stopCriterion.dont() || operationalMatchContainer.isEmpty())
+		this.updateBlockedMatches();
+		if (operationalMatchContainer.isEmpty())
 			return false;
 
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 
-		if (stopCriterion.dont(ruleName))
-			removeOperationalRuleMatch(match);
-		else {
-			Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
-			comatch.ifPresent(cm -> {
-				updateStopCriterion(ruleName);
-				if (isKernelMatch(ruleName))
-					processComplementRuleMatches(cm);
-			});
+		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+		comatch.ifPresent(cm -> {
+			updateStopCriterion(ruleName);
+		});
 
-			// Rule application failed, match must have invalid so remove
-			if (!comatch.isPresent()) {
-				removeOperationalRuleMatch(match);
-				logger.debug("Unable to apply: " + ruleName);
-			}
+		// Rule application failed, match must have invalid so remove
+		if (!comatch.isPresent()) {
+			removeOperationalRuleMatch(match);
+			logger.debug("Unable to apply: " + ruleName);
 		}
 
 		return true;
+	}
+	
+	@Override
+	protected void updateBlockedMatches() {
+		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {
+			String ruleName = operationalMatchContainer.getRuleName(match);
+			if(stopCriterion.dont()) {
+				if(!blockedMatches.containsKey(match))
+					blockedMatches.put(match, "Application blocked by stop criterion");
+				removeOperationalRuleMatch(match);
+			}
+			if (stopCriterion.dont(ruleName)) {
+				if(!blockedMatches.containsKey(match))
+					blockedMatches.put(match, "Application blocked by ruleName stop criterion");
+				removeOperationalRuleMatch(match);
+			}
+		}
+		super.updateBlockedMatches();
+	}
+	
+	@Override
+	protected IMatch chooseOneMatch() {
+		IMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
+		
+		if (match == null)
+			throw new IllegalStateException("Update policies should never return null!");
+
+		return match;
 	}
 
 	/**
@@ -200,88 +223,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 		matchesToRemove.forEach(m -> removeMatch(m));
 	}
 
-	/**
-	 * Find all complement matches, apply and remove them, and finally close the
-	 * kernel so no other complement matches are found for this kernel match.
-	 * 
-	 * @param comatchOfKernel
-	 */
-	private void processComplementRuleMatches(IMatch comatchOfKernel) {
-		blackInterpreter.updateMatches();
-		Set<IMatch> complementRuleMatches = findAllComplementRuleMatches();
-
-		if (!complementRuleMatches.isEmpty()) {
-			HashMap<String, Integer> complementRulesBounds = //
-					getComplementRuleBoundsFromUpdatePolicy(complementRuleMatches);
-
-			while (!complementRuleMatches.isEmpty()) {
-				IMatch match = complementRuleMatches.iterator().next();
-				processComplementRuleMatch(match, complementRulesBounds);
-				complementRuleMatches.remove(match);
-				removeOperationalRuleMatch(match);
-			}
-		}
-
-		// Close the kernel, so other complement rules cannot find this match anymore
-		String ruleName = PatternSuffixes.removeSuffix(comatchOfKernel.getPatternName());
-		TGGRuleApplication application = (TGGRuleApplication) comatchOfKernel
-				.get(TGGPatternUtil.getProtocolNodeName(ruleName));
-		application.setAmalgamated(true);
-	}
-
-	/**
-	 * The update policy can decide to supply upper bounds for complement rule
-	 * application.
-	 * 
-	 * @param complementRuleMatches
-	 * @return
-	 */
-	private HashMap<String, Integer> getComplementRuleBoundsFromUpdatePolicy(Set<IMatch> complementRuleMatches) {
-		Set<String> uniqueRulesNames = complementRuleMatches//
-				.stream()//
-				.map(m -> PatternSuffixes.removeSuffix(m.getPatternName()))//
-				.collect(Collectors.toSet());
-
-		return this.getUpdatePolicy().getNumberOfApplications(uniqueRulesNames);
-	}
-
-	/**
-	 * If complement rule is bounded by additional context (it is clear due to
-	 * maximality how often the rule is to be applied) then just apply it once. If
-	 * the complement rule is unbounded (has no additional context) then use bounds
-	 * from update policy.
-	 * 
-	 * @param match
-	 * @param complementRulesBounds
-	 */
-	private void processComplementRuleMatch(IMatch match, HashMap<String, Integer> complementRulesBounds) {
-		String ruleName = operationalMatchContainer.getRuleName(match);
-		TGGComplementRule rule = (TGGComplementRule) getRule(ruleName).get();
-
-		if (rule.isBounded()) {
-			processOperationalRuleMatch(ruleName, match);
-		} else {
-			IntStream.range(0, complementRulesBounds.get(ruleName))//
-					.forEach(i -> processOperationalRuleMatch(ruleName, match));
-		}
-	}
-
-	/**
-	 * Determine all matches of complement rules.
-	 * 
-	 * @return Set of all complement rule matches currently available for
-	 *         application.
-	 */
-	private Set<IMatch> findAllComplementRuleMatches() {
-		Set<IMatch> allComplementRuleMatches = operationalMatchContainer.getMatches()//
-				.stream()//
-				.filter(m -> getComplementRulesNames().contains(PatternSuffixes.removeSuffix(m.getPatternName())))//
-				.collect(Collectors.toSet());
-
-		return allComplementRuleMatches;
-	}
-
-	/**
+		/**
 	 * Update stop criterion by passing number of created source and target elements
 	 * (nodes and edges).
 	 * 

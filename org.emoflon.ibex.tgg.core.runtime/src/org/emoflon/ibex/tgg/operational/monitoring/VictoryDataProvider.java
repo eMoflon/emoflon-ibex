@@ -1,7 +1,14 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
+import java.io.IOException;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
@@ -11,10 +18,12 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.apache.commons.io.FilenameUtils;
 
 public class VictoryDataProvider implements IVictoryDataProvider {
 
@@ -72,6 +81,11 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 									nodeRelations.get(node.getName()).add(trgNode);
 								} else {
 									Set<TGGRuleNode> temp = new HashSet<TGGRuleNode>() {
+										/**
+										 * 
+										 */
+										private static final long serialVersionUID = 8535800606662854140L;
+
 										{
 											add(trgNode);
 										}
@@ -85,7 +99,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 			}
 
 			startingPoint = makeStartingPoints(nodeRelations, match);
-			
+
 			for (int i = 1; i <= k; i++) {
 				Set<TGGRuleNode> startingPoint_tmp = new HashSet<TGGRuleNode>();
 				Set<TGGRuleNode> finalNodeRelations = new HashSet<TGGRuleNode>();
@@ -96,7 +110,8 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 				}
 
 				for (TGGRuleNode s : startingPoint) {
-					TGGRuleNode f = finalNodeRelations.stream().filter(x -> x.getName().equals(s.getName())).findFirst().orElse(null);
+					TGGRuleNode f = finalNodeRelations.stream().filter(x -> x.getName().equals(s.getName())).findFirst()
+							.orElse(null);
 					if (f != null) {
 						finalNodeRelations.remove(f);
 					}
@@ -113,7 +128,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 						}
 					}
 				}
-				startingPoint = startingPoint_tmp; 
+				startingPoint = startingPoint_tmp;
 			}
 
 		} catch (Exception e) {
@@ -164,5 +179,52 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 			logger.error(e);
 			return null;
 		}
+	}
+
+	@Override
+	public void saveModels() throws IOException {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
+		Date date = new Date(System.currentTimeMillis());
+		String time = dateFormat.format(date).toString();
+		
+		
+		LinkedHashMap<String, Resource> resources = new LinkedHashMap<String, Resource>();
+		LinkedHashMap<String, URI> oldUri = new LinkedHashMap<String, URI>();
+		
+		// storing resources that needs to be saved
+		resources.put("s", op.getSourceResource());
+		resources.put("t", op.getTargetResource());
+		resources.put("c", op.getCorrResource());
+		resources.put("p", op.getProtocolResource());
+		
+		// save models
+		for (Entry<String, Resource> e: resources.entrySet()) {
+			oldUri.put(e.getKey(), e.getValue().getURI());
+			saveModel(e.getValue(), time);
+		}
+		
+		// revert the URIs to before saving models
+		for (Entry<String, URI> e: oldUri.entrySet()) {
+			resources.get(e.getKey()).setURI(e.getValue());
+		}
+		
+	}
+
+	private void saveModel(Resource r, String time) throws IOException {
+		String path = r.getURI().toString();
+		
+		// generating new URI (name and path) base on old URI
+		String newPath = FilenameUtils.getPath(path);
+		newPath += FilenameUtils.getBaseName(path) + "-";
+		newPath += time + "." + FilenameUtils.getExtension(path);
+		URI newUri = URI.createURI(newPath);
+
+		r.setURI(newUri);
+		r.save(null);
+	}
+
+	@Override
+	public Collection<TGGRule> getAllRules() {
+	    return op.getOptions().flattenedTGG().getRules();
 	}
 }
