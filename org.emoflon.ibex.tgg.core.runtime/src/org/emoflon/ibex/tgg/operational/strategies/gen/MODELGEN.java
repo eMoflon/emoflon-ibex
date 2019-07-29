@@ -10,6 +10,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -81,6 +82,11 @@ public abstract class MODELGEN extends OperationalStrategy {
 	public void setStopCriterion(MODELGENStopCriterion stop) {
 		this.stopCriterion = stop;
 	}
+	
+	@Override
+	protected void loadTGG() throws IOException {
+		super.loadTGG();
+	}
 
 	@Override
 	public void saveModels() throws IOException {
@@ -139,28 +145,53 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 */
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
-		if (stopCriterion.dont() || operationalMatchContainer.isEmpty())
+		this.updateBlockedMatches();
+		if (operationalMatchContainer.isEmpty())
 			return false;
 
 		IMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 
-		if (stopCriterion.dont(ruleName))
-			removeOperationalRuleMatch(match);
-		else {
-			Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
-			comatch.ifPresent(cm -> {
-				updateStopCriterion(ruleName);
-			});
+		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+		comatch.ifPresent(cm -> {
+			updateStopCriterion(ruleName);
+		});
 
-			// Rule application failed, match must have invalid so remove
-			if (!comatch.isPresent()) {
-				removeOperationalRuleMatch(match);
-				logger.debug("Unable to apply: " + ruleName);
-			}
+		// Rule application failed, match must have invalid so remove
+		if (!comatch.isPresent()) {
+			removeOperationalRuleMatch(match);
+			logger.debug("Unable to apply: " + ruleName);
 		}
 
 		return true;
+	}
+	
+	@Override
+	protected void updateBlockedMatches() {
+		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {
+			String ruleName = operationalMatchContainer.getRuleName(match);
+			if(stopCriterion.dont()) {
+				if(!blockedMatches.containsKey(match))
+					blockedMatches.put(match, "Application blocked by stop criterion");
+				removeOperationalRuleMatch(match);
+			}
+			if (stopCriterion.dont(ruleName)) {
+				if(!blockedMatches.containsKey(match))
+					blockedMatches.put(match, "Application blocked by ruleName stop criterion");
+				removeOperationalRuleMatch(match);
+			}
+		}
+		super.updateBlockedMatches();
+	}
+	
+	@Override
+	protected IMatch chooseOneMatch() {
+		IMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
+		
+		if (match == null)
+			throw new IllegalStateException("Update policies should never return null!");
+
+		return match;
 	}
 
 	/**
