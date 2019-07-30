@@ -47,52 +47,52 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	}
 
 	@Override
-	public List<Set<EObject>> getMatchNeighbourhoods(List<EObject> nodes, int k) {
-		try {
-			List<Set<EObject>> neighbors = new ArrayList<Set<EObject>>();
-			for (EObject node : nodes) {
-				neighbors.add(getMatchNeighbourhood(node, k));
-			}
-			return neighbors;
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
+    public Collection<EObject> getMatchNeighbourhoods(Collection<EObject> nodes, int k) {
+        try {
+            Collection<EObject> neighbors = new HashSet<EObject>();
+            for (EObject node : nodes) {
+                neighbors.addAll(getMatchNeighbourhood(node, k));
+            }
+            return neighbors;
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-	@Override
-	public Set<EObject> getMatchNeighbourhood(EObject node, int k) {
-		try {
-			Set<EObject> neighbors = new HashSet<EObject>();
-			if (k >= 0) {
-				neighbors.add(node);
-	
-				if (k > 0) {
-					calculateNeighbourhood(neighbors, node, 0, k);
-				}
-			}
+    @Override
+    public Collection<EObject> getMatchNeighbourhood(EObject node, int k) {
+        try {
+            Set<EObject> neighbors = new HashSet<EObject>();
+            if (k >= 0) {
+                neighbors.add(node);
 
-			return neighbors;
-		} catch (Exception e) {
-			logger.error(e);
-			return null;
-		}
-	}
+                if (k > 0) {
+                    calculateNeighbourhood(neighbors, node, 0, k);
+                }
+            }
 
-	private void calculateNeighbourhood(Set<EObject> neighbors, EObject node, int i, int k) {
+            return neighbors;
+        } catch (Exception e) {
+            logger.error(e);
+            return null;
+        }
+    }
 
-		i++;
-		Set<EObject> currentNeighbors = new HashSet<EObject>();
-		currentNeighbors = node.eContents().stream().collect(Collectors.toSet());
-		neighbors.addAll(currentNeighbors);
-		Iterator<EObject> cn = currentNeighbors.iterator();
-		if (i < k) {
-			while (cn.hasNext()) {
-				calculateNeighbourhood(neighbors, cn.next(), i, k);
-			}
-		}
+    private void calculateNeighbourhood(Collection<EObject> neighbors, EObject node, int i, int k) {
 
-	}
+        i++;
+        Set<EObject> currentNeighbors = new HashSet<EObject>();
+        currentNeighbors = node.eContents().stream().collect(Collectors.toSet());
+        neighbors.addAll(currentNeighbors);
+        Iterator<EObject> cn = currentNeighbors.iterator();
+        if (i < k) {
+            while (cn.hasNext()) {
+                calculateNeighbourhood(neighbors, cn.next(), i, k);
+            }
+        }
+
+    } 
 
 	@Override
 	public Set<IMatch> getMatches() {
