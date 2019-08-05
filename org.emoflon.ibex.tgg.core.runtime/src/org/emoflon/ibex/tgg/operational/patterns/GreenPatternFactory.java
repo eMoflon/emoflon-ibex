@@ -48,6 +48,15 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	protected Collection<TGGRuleEdge> blackSrcEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> blackTrgEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> blackCorrEdgesInRule = new ArrayList<>();;
+	
+	//usability-team
+		//declaring -ve or nac src trg n corr nodes n src n trg edges
+	protected Collection<TGGRuleNode> negativeSrcNodesInRule = new ArrayList<>();
+	protected Collection<TGGRuleNode> negativeTrgNodesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleCorr> negativeCorrNodesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> negativeSrcEdgesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleEdge> negativeTrgEdgesInRule = new ArrayList<>();;
+	
 
 	public GreenPatternFactory(String ruleName, IbexOptions options, OperationalStrategy strategy) {
 		this(options, strategy);
@@ -74,6 +83,17 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		blackTrgEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.TRG)));
 		blackCorrEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.CORR)));
 
+       //usability-team
+		//defining -ve or nac nodes n edges for binding type NEGATIVE
+		negativeSrcNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.SRC));
+		negativeTrgNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.TRG));
+		negativeCorrNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
+				.collect(Collectors.toList()));
+
+		negativeSrcEdgesInRule.addAll(validate(getEdges(BindingType.NEGATIVE, DomainType.SRC)));
+		negativeTrgEdgesInRule.addAll(validate(getEdges(BindingType.NEGATIVE, DomainType.TRG)));
+		
+		
 		constraints.addAll(rule.getAttributeConditionLibrary().getTggAttributeConstraints());
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
 	}
@@ -249,6 +269,33 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	@Override
 	public Collection<TGGRuleEdge> getBlackCorrEdgesInRule() {
 		return blackCorrEdgesInRule;
+	}
+	
+	//usability-team
+	//implementing -ve or nac src trg n corr nodes n src n trg edges
+	@Override
+	public Collection<TGGRuleNode> getNegativeSrcNodesInRule() {
+		return negativeSrcNodesInRule;
+	}
+
+	@Override
+	public Collection<TGGRuleNode> getNegativeTrgNodesInRule() {
+		return negativeTrgNodesInRule;
+	}
+
+	@Override
+	public Collection<TGGRuleCorr> getNegativeCorrNodesInRule() {
+		return negativeCorrNodesInRule;
+	}
+
+	@Override
+	public Collection<TGGRuleEdge> getNegativeSrcEdgesInRule() {
+		return negativeSrcEdgesInRule;
+	}
+
+	@Override
+	public Collection<TGGRuleEdge> getNegativeTrgEdgesInRule() {
+		return negativeTrgEdgesInRule;
 	}
 
 	@Override

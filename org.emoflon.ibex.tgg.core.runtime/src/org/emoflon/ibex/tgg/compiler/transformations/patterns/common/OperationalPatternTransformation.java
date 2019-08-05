@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns.common;
 import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWithName;
 import static org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper.addInjectivityConstraintIfNecessary;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFilterNACPatternName;
+//import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
+
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
@@ -132,6 +134,10 @@ public abstract class OperationalPatternTransformation {
 
 		return nacPattern;
 	}
+	
+
+
+
 
 	private void createNegativeInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
@@ -205,8 +211,11 @@ public abstract class OperationalPatternTransformation {
 		}
 	}
 
+	
+	
 	private EClass getOtherNodeType(FilterNACCandidate candidate) {
 		return candidate.getEDirection() == EdgeDirection.OUTGOING ? (EClass) candidate.getEdgeType().getEType()
 				: (EClass) candidate.getEdgeType().eContainer();
 	}
+	
 }

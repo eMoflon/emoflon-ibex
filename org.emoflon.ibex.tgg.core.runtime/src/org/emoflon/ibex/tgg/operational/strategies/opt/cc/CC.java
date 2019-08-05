@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +11,7 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+
 import org.emoflon.ibex.tgg.operational.strategies.opt.OPT;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
@@ -101,49 +99,6 @@ public abstract class CC extends OPT {
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.init(this);
-	}
-
-	@Override
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
-		idToMatch.put(idCounter, comatch);
-		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
-		matchIdToRuleName.put(idCounter, ruleName);
-
-		getGreenNodes(comatch, ruleName).forEach(e -> {
-			if (!nodeToMarkingMatches.containsKey(e))
-				nodeToMarkingMatches.put(e, cfactory.createIntSet());
-			nodeToMarkingMatches.get(e).add(idCounter);
-		});
-
-		getGreenEdges(comatch, ruleName).forEach(e -> {
-			if (!edgeToMarkingMatches.containsKey(e)) {
-				edgeToMarkingMatches.put(e, cfactory.createIntSet());
-			}
-			edgeToMarkingMatches.get(e).add(idCounter);
-		});
-
-		getBlackNodes(comatch, ruleName).forEach(e -> {
-			if (!contextNodeToNeedingMatches.containsKey(e))
-				contextNodeToNeedingMatches.put(e, cfactory.createIntSet());
-			contextNodeToNeedingMatches.get(e).add(idCounter);
-		});
-
-		getBlackEdges(comatch, ruleName).forEach(e -> {
-			if (!contextEdgeToNeedingMatches.containsKey(e)) {
-				contextEdgeToNeedingMatches.put(e, cfactory.createIntSet());
-			}
-			contextEdgeToNeedingMatches.get(e).add(idCounter);
-		});
-
-		matchToContextNodes.put(idCounter, cfactory.createObjectSet());
-		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
-
-		matchToContextEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
-		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
-
-		handleBundles(comatch, ruleName);
-
-		idCounter++;
 	}
 
 	public boolean modelsAreConsistent() {

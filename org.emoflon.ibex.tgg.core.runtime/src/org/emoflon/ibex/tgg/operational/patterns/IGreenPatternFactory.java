@@ -45,6 +45,20 @@ public interface IGreenPatternFactory {
 
 	public Collection<TGGRuleEdge> getBlackTrgEdgesInRule();
 	
+	//usability-team
+	//declaring -ve or nac src trg n corr nodes n src n trg edges
+	public Collection<TGGRuleNode> getNegativeSrcNodesInRule();
+
+	public Collection<TGGRuleNode> getNegativeTrgNodesInRule();
+
+	public Collection<TGGRuleCorr> getNegativeCorrNodesInRule();
+
+	public Collection<TGGRuleEdge> getNegativeSrcEdgesInRule();
+
+	public Collection<TGGRuleEdge> getNegativeTrgEdgesInRule();
+	
+	
+	
 	public boolean isAxiom();
 	
 	public List<TGGAttributeConstraint> getAttributeConstraints();

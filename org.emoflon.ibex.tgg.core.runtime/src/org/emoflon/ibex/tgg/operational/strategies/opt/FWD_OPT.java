@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt;
 
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+
 
 import language.TGGRuleCorr;
 import language.TGGRuleNode;
@@ -60,49 +60,6 @@ public abstract class FWD_OPT extends OPT {
 	@Override
 	public boolean isPatternRelevantForInterpreter(String patternName) {
 		return patternName.endsWith(PatternSuffixes.FWD_OPT);
-	}
-
-	@Override
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
-		idToMatch.put(idCounter, comatch);
-		matchIdToRuleName.put(idCounter, ruleName);
-		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
-
-		getGreenNodes(comatch, ruleName).forEach(e -> {
-			if (!nodeToMarkingMatches.containsKey(e))
-				nodeToMarkingMatches.put(e, cfactory.createIntSet());
-			nodeToMarkingMatches.get(e).add(idCounter);
-		});
-
-		getGreenEdges(comatch, ruleName).forEach(e -> {
-			if (!edgeToMarkingMatches.containsKey(e)) {
-				edgeToMarkingMatches.put(e, cfactory.createIntSet());
-			}
-			edgeToMarkingMatches.get(e).add(idCounter);
-		});
-
-		getBlackNodes(comatch, ruleName).forEach(e -> {
-			if (!contextNodeToNeedingMatches.containsKey(e))
-				contextNodeToNeedingMatches.put(e, cfactory.createIntSet());
-			contextNodeToNeedingMatches.get(e).add(idCounter);
-		});
-
-		getBlackEdges(comatch, ruleName).forEach(e -> {
-			if (!contextEdgeToNeedingMatches.containsKey(e)) {
-				contextEdgeToNeedingMatches.put(e, cfactory.createIntSet());
-			}
-			contextEdgeToNeedingMatches.get(e).add(idCounter);
-		});
-
-		matchToContextNodes.put(idCounter,cfactory.createObjectSet());
-		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
-
-		matchToContextEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
-		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
-
-		handleBundles(comatch, ruleName);
-
-		idCounter++;
 	}
 
 	@Override

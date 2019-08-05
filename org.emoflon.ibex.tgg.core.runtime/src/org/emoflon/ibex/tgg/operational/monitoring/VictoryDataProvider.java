@@ -65,6 +65,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
             logger.error(e);
             return null;
         }
-    }    
+    }
+  
 }
 
