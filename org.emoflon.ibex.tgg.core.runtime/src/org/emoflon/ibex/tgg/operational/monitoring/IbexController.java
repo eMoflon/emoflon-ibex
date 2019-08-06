@@ -81,8 +81,9 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 				corrResourceList = corrResourceListTemp;
 			}
 
+			// TODO add edges here
 			ProtocolStep protocolStep = new ProtocolStep(index,
-					new TGGObjectGraph(srcResourceList, trgResourceList, corrResourceList));
+					new TGGObjectGraph(srcResourceList, trgResourceList, corrResourceList, null));
 
 			protocolsStepList.add(protocolStep);
 		}
