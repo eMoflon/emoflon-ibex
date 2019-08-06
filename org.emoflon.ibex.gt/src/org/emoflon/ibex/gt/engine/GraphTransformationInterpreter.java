@@ -1,7 +1,9 @@
 package org.emoflon.ibex.gt.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,7 +66,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
 	 * The matches (key: pattern name, value: list of matches).
 	 */
-	private Map<String, List<IMatch>> matches = new HashMap<String, List<IMatch>>();
+	private Map<String, Collection<IMatch>> matches = new HashMap<>();
 
 	/**
 	 * Subscriptions for notification of new matches (key: pattern name, value: list
@@ -385,7 +387,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public void addMatch(final IMatch match) {
 		String patternName = match.getPatternName();
 		if (!matches.containsKey(patternName)) {
-			matches.put(patternName, new ArrayList<IMatch>());
+			matches.put(patternName, new HashSet<IMatch>());
 		}
 		matches.get(patternName).add(match);
 
