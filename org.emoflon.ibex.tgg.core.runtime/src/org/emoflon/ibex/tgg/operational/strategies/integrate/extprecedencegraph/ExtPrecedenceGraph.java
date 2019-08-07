@@ -102,6 +102,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		Node node = PrecedencegraphFactory.eINSTANCE.createNode();
 		node.setBroken(false);
 		nodes.getNodes().add(node);
+		node.setMatchAsString(match.toString());
 
 		matchToNode.put(match, node);
 		nodeToMatch.put(node, match);
