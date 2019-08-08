@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.fragments;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
@@ -14,8 +15,10 @@ import language.TGGRuleCorr;
 
 public abstract class MatchIntegrationFragment {
 
-	abstract public boolean apply(AnalysedMatch analysedMatch, INTEGRATE integrate);
+	abstract public boolean softApply(AnalysedMatch analysedMatch, INTEGRATE integrate);
 
+	abstract public boolean hardApply(AnalysedMatch analysedMatch, INTEGRATE integrate);
+	
 	abstract public boolean isApplicable(AnalysedMatch analysedMatch);
 
 	protected IbexRedInterpreter getIbexRedInterpreter(INTEGRATE integrate) {
@@ -26,12 +29,40 @@ public abstract class MatchIntegrationFragment {
 		}
 	}
 
-	protected void delGreenCorr(AnalysedMatch analysedMatch, IbexRedInterpreter interpreter, Set<EObject> nodesToRevoke,
-			Set<EMFEdge> edgesToRevoke) {
+	/**
+	 * <p>
+	 * Determines green correspondence elements and adds them to the passed sets
+	 * (nodesToRevoke & edgesToRevoke).
+	 * </p>
+	 * <p>
+	 * To delete this elements call
+	 * {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
+	 * </p>
+	 * 
+	 * @param analysedMatch Analyzed IMatch
+	 * @param interpreter
+	 * @param nodesToRevoke
+	 * @param edgesToRevoke
+	 */
+	protected void prepareGreenCorrDeletion(AnalysedMatch analysedMatch, IbexRedInterpreter interpreter,
+			Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
 		analysedMatch.getGroupedElements().get(DomainType.CORR).get(BindingType.CREATE).stream() //
 				.filter(e -> e instanceof TGGRuleCorr) //
 				.map(c -> (EObject) analysedMatch.getMatch().get(c.getName())) //
 				.forEach(c -> interpreter.revokeCorr(c, nodesToRevoke, edgesToRevoke));
+	}
+
+	/**
+	 * Deletes all green correspondence elements.
+	 * 
+	 * @param analysedMatch Analyzed IMatch
+	 * @param interpreter   RedInterpreter that performs the deletion
+	 */
+	protected void delGreenCorr(AnalysedMatch analysedMatch, IbexRedInterpreter interpreter) {
+		Set<EObject> nodesToRevoke = new HashSet<EObject>();
+		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
+		prepareGreenCorrDeletion(analysedMatch, interpreter, nodesToRevoke, edgesToRevoke);
+		interpreter.revoke(nodesToRevoke, edgesToRevoke);
 	}
 
 }

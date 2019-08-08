@@ -51,19 +51,24 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
-		initMatchAnalyser();
 		blackInterpreter.updateMatches();
+
+//		repair();
+		setup();
 
 		NodeContainer nodes = getEPG().getExtGraph();
 		Set<AnalysedMatch> analysedMatches = new HashSet<>();
-		for(Node node : nodes.getNodes()) {
-			if(node.isBroken()) {
+		for (Node node : nodes.getNodes()) {
+			if (node.isBroken()) {
 				IMatch match = getEPG().getMatch(node);
 				analysedMatches.add(matchAnalyser.analyse(match));
 			}
 		}
+	}
 
-//		pattern.getComponents().forEach(c -> c.apply(this));
+	protected void setup() {
+		initMatchAnalyser();
+		pattern.getComponents().forEach(c -> c.apply(this));
 	}
 
 	@Override

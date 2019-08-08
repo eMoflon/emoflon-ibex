@@ -24,7 +24,30 @@ public class DELProp extends MatchIntegrationFragment {
 	private final IFPattern bwd = IFPattern.DEL_PROP_BWD;
 
 	@Override
-	public boolean apply(AnalysedMatch analysedMatch, INTEGRATE integrate) {
+	public boolean softApply(AnalysedMatch analysedMatch, INTEGRATE integrate) {
+		DomainType domainToBeDel;
+		if (fwd.matches(analysedMatch.getModPattern())) {
+			domainToBeDel = DomainType.TRG;
+		} else if (bwd.matches(analysedMatch.getModPattern())) {
+			domainToBeDel = DomainType.SRC;
+		} else
+			return false;
+		
+		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
+
+		// Classify elements to be deleted
+		List<TGGRuleElement> toBeDeleted = analysedMatch.getGroupedElements().get(domainToBeDel)
+				.get(BindingType.CREATE);
+		toBeDeleted.stream() //
+				.filter(e -> e instanceof TGGRuleNode) //
+				.map(n -> (EObject) analysedMatch.getMatch().get(n.getName())) //
+				.forEach(o -> integrate.getToBeDeletedElements().add(o));
+
+		return true;
+	}
+
+	@Override
+	public boolean hardApply(AnalysedMatch analysedMatch, INTEGRATE integrate) {
 		DomainType domainToBeDel;
 		if (fwd.matches(analysedMatch.getModPattern())) {
 			domainToBeDel = DomainType.TRG;
@@ -38,7 +61,7 @@ public class DELProp extends MatchIntegrationFragment {
 		Set<EObject> nodesToRevoke = new HashSet<EObject>();
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 
-		delGreenCorr(analysedMatch, interpreter, nodesToRevoke, edgesToRevoke);
+		prepareGreenCorrDeletion(analysedMatch, interpreter, nodesToRevoke, edgesToRevoke);
 
 		// Propagate deletion
 		List<TGGRuleElement> toBeDeleted = analysedMatch.getGroupedElements().get(domainToBeDel)
