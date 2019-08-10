@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,11 +25,14 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class VictoryDataProvider implements IVictoryDataProvider {
 
 	private final static Logger logger = Logger.getLogger(VictoryDataProvider.class);
 
+	String[][] defaultSaveData = new String[4][1];
+	
 	OperationalStrategy op;
 
 	public VictoryDataProvider(OperationalStrategy pOperationalStrategy) {
@@ -187,7 +191,6 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		Date date = new Date(System.currentTimeMillis());
 		String time = dateFormat.format(date).toString();
 		
-		
 		LinkedHashMap<String, Resource> resources = new LinkedHashMap<String, Resource>();
 		LinkedHashMap<String, URI> oldUri = new LinkedHashMap<String, URI>();
 		
@@ -208,6 +211,18 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 			resources.get(e.getKey()).setURI(e.getValue());
 		}
 		
+		for (int i=0; i < pLocations.length; i++ ) {
+			String extension = "." + FilenameUtils.getExtension(pLocations[i]);
+			String path = FilenameUtils.getPath(pLocations[i]);
+			String fileName = FilenameUtils.getBaseName(pLocations[i]);
+			
+			defaultSaveData[i] = new String[] { path, fileName, extension };	
+		}
+		
+		
+		for (String[] e: defaultSaveData) {
+			System.out.println("DefaultSaveData123: " + Arrays.toString(e));
+		}
 	}
 
 	private void saveModel(Resource r, String time) throws IOException {
@@ -215,17 +230,24 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		
 		// generating new URI (name and path) base on old URI
 		String newPath = FilenameUtils.getPath(path);
+		
 		newPath += FilenameUtils.getBaseName(path) + "-";
 		newPath += time + "." + FilenameUtils.getExtension(path);
 		URI newUri = URI.createURI(newPath);
-
+		
 		r.setURI(newUri);
 		r.save(null);
+		
+		/*defaultSaveData = new String[][] {
+            new String[] { "src/path/", "src", ".model" },
+            new String[] { "trg/path/", "trg", ".model" },
+            new String[] { "corr/path/", "corr", ".model" },
+            new String[] { "protocol/path/", "protocol", ".model" } };*/
 	}
 
 	public String[][] getDefaultSaveData() {
 	    // TODO
-	    return null;
+	    return defaultSaveData;
 	}
 	
 	@Override
