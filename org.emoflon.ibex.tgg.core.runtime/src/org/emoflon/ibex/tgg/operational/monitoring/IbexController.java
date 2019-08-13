@@ -13,8 +13,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
+import org.emoflon.ibex.tgg.operational.monitoring.data.Edge;
+import org.emoflon.ibex.tgg.operational.monitoring.data.GraphBuilder;
+import org.emoflon.ibex.tgg.operational.monitoring.data.Node;
 import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
-import org.emoflon.ibex.tgg.operational.monitoring.data.TGGObjectGraph;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
@@ -81,9 +83,25 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 				corrResourceList = corrResourceListTemp;
 			}
 
-			// TODO add edges here
+			// TODO build graph
+			// e.g.:
+			// GraphBuilder builder = new GraphBuilder();
+			// Node google = new Node("Company", "google", null);
+			// Node facebook = new Node("Company", "facebook", null);
+			// Node philipp = new Node("CEO", "Philipp", null);
+			// Node saman = new Node("CEO", "Saman", null);
+			// builder.addSrcNode(google);
+			// builder.addSrcNode(facebook);
+			// builder.addSrcNode(philipp);
+			// builder.addSrcNode(saman);
+			// builder.addEdge(new Edge("ceo", google, philipp));
+			// builder.addEdge(new Edge("ceo", facebook, saman));
+			// Graph graph = builder.build();
+
+			// ProtocolStep protocolStep = new ProtocolStep(index,
+			// 		new TGGObjectGraph(srcResourceList, trgResourceList, corrResourceList, null));
 			ProtocolStep protocolStep = new ProtocolStep(index,
-					new TGGObjectGraph(srcResourceList, trgResourceList, corrResourceList, null));
+				null); // TODO add graph here
 
 			protocolsStepList.add(protocolStep);
 		}
