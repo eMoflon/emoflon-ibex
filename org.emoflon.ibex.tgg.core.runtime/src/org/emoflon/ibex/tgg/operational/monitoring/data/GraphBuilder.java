@@ -13,10 +13,15 @@ public class GraphBuilder {
     }
 
     public GraphBuilder(Graph pGraph) {
+	addGraph(pGraph);
+    }
+    
+    public GraphBuilder addGraph(Graph pGraph) {
 	src.addAll(pGraph.getSrc());
 	trg.addAll(pGraph.getTrg());
 	corr.addAll(pGraph.getCorr());
 	edges.addAll(pGraph.getEdges());
+	return this;
     }
 
     public GraphBuilder addSrcNode(Node pNode) {
