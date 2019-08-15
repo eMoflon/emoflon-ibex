@@ -19,12 +19,15 @@ import precedencegraph.PrecedencegraphFactory;
 
 public class ExtPrecedenceGraph extends PrecedenceGraph {
 
+	private INTEGRATE strategy;
+
 	private NodeContainer nodes;
 	private Map<IMatch, Node> matchToNode = new HashMap<>();
 	private Map<Node, IMatch> nodeToMatch = new HashMap<>();
 
 	public ExtPrecedenceGraph(INTEGRATE strategy) {
 		super(strategy);
+		this.strategy = strategy;
 		nodes = PrecedencegraphFactory.eINSTANCE.createNodeContainer();
 	}
 
@@ -43,21 +46,23 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	}
 
 	public void update() {
+		prepareResource();
+
 		getMatches();
 
 		Set<IMatch> matches = new HashSet<>();
 		matches.addAll(readySet);
 		matches.addAll(requires.keySet());
-		
+
 		matches.removeIf(m -> matchToNode.containsKey(m));
 		matches.forEach(m -> createNode(m));
 		matches.forEach(m -> updateNode(m));
 	}
-	
+
 	public IMatch getMatch(Node node) {
 		return nodeToMatch.get(node);
 	}
-	
+
 	public Node getNode(IMatch match) {
 		return matchToNode.get(match);
 	}
@@ -81,15 +86,15 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 				}
 			});
 		}
-		
+
 		Collection<Object> requiredObjs = requires.get(match);
-		if(requiredObjs != null && !requiredObjs.isEmpty()) {
-			for(Object reqObj : requiredObjs) {
+		if (requiredObjs != null && !requiredObjs.isEmpty()) {
+			for (Object reqObj : requiredObjs) {
 				Collection<IMatch> requiredMatches = translatedBy.get(reqObj);
-				if(requiredMatches != null && !requiredMatches.isEmpty()) {
-					for(IMatch reqMatch : requiredMatches) {
+				if (requiredMatches != null && !requiredMatches.isEmpty()) {
+					for (IMatch reqMatch : requiredMatches) {
 						Node nodeReq = matchToNode.get(reqMatch);
-						if(nodeReq != null) {
+						if (nodeReq != null) {
 							node.getRequires().add(nodeReq);
 						}
 					}
@@ -102,7 +107,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		Node node = PrecedencegraphFactory.eINSTANCE.createNode();
 		node.setBroken(false);
 		nodes.getNodes().add(node);
-		node.setMatchAsString(match.toString());
+		node.setMatchAsString(match.getPatternName());
 
 		matchToNode.put(match, node);
 		nodeToMatch.put(node, match);
@@ -121,6 +126,11 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 			matchToNode.remove(match);
 			nodeToMatch.remove(node);
 		}
+	}
+
+	private void prepareResource() {
+		if (strategy.getEPGResource().getContents().isEmpty())
+			strategy.getEPGResource().getContents().add(nodes);
 	}
 
 }

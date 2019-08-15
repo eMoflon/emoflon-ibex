@@ -7,10 +7,12 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
@@ -28,6 +30,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	private IntegrationPattern pattern;
 	private BrokenMatchAnalyser matchAnalyser;
+	
+	protected Resource epg;
 
 	// Element classification
 	private Set<EObject> undetermined;
@@ -67,7 +71,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	protected void setup() {
-		initMatchAnalyser();
 		pattern.getComponents().forEach(c -> c.apply(this));
 	}
 
@@ -81,6 +84,10 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	protected IMatchContainer createMatchContainer() {
 		return new ExtPrecedenceGraph(this);
 	}
+	
+	public Resource getEPGResource() {
+		return epg;
+	}
 
 	@Override
 	public void saveModels() throws IOException {
@@ -88,6 +95,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		t.save(null);
 		c.save(null);
 		p.save(null);
+		epg.save(null);
 	}
 
 	@Override
@@ -97,6 +105,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		t = loadResource(options.projectPath() + "/instances/trg.xmi");
 		c = loadResource(options.projectPath() + "/instances/corr.xmi");
 		p = loadResource(options.projectPath() + "/instances/protocol.xmi");
+		epg = createResource(options.projectPath() + "/instances/epg.xmi");
 		EcoreUtil.resolveAll(rs);
 		long toc = System.currentTimeMillis();
 
@@ -137,6 +146,17 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 			filterNacMatches.remove(match);
 		else
 			super.removeMatch(match);
+	}
+
+	@Override
+	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
+		super.registerBlackInterpreter(blackInterpreter);
+		
+		BenchmarkLogger.startTimer();
+		
+		initMatchAnalyser();
+		
+		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
 	}
 
 	public BrokenMatchAnalyser getMatchAnalyser() {
