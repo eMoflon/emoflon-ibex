@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -150,24 +152,11 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		for (Entry<String, URI> e : oldUri.entrySet()) {
 			resources.get(e.getKey()).setURI(e.getValue());
 		}
-
-		for (int i=0; i < pLocations.length; i++ ) {
-			String extension = "." + FilenameUtils.getExtension(pLocations[i]);
-			String path = FilenameUtils.getPath(pLocations[i]);
-			String fileName = FilenameUtils.getBaseName(pLocations[i]);
-			
-			defaultSaveData[i] = new String[] { path, fileName, extension };	
-		}
-		
-		
-		for (String[] e: defaultSaveData) {
-			System.out.println("DefaultSaveData123: " + Arrays.toString(e));
-		}
 	}
 
 	private void saveModel(Resource r, String time) throws IOException {
 		String path = r.getURI().toString();
-
+		
 		// generating new URI (name and path) base on old URI
 		String newPath = FilenameUtils.getPath(path);
 		
@@ -177,17 +166,30 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		
 		r.setURI(newUri);
 		r.save(null);
-		
-		/*defaultSaveData = new String[][] {
-            new String[] { "src/path/", "src", ".model" },
-            new String[] { "trg/path/", "trg", ".model" },
-            new String[] { "corr/path/", "corr", ".model" },
-            new String[] { "protocol/path/", "protocol", ".model" } };*/
 	}
 
 	public String[][] getDefaultSaveData() {
-	    // TODO
-	    return defaultSaveData;
+		int count = 0;
+		LinkedHashMap<String, Resource> resources = new LinkedHashMap<String, Resource>();
+
+		resources.put("s", op.getSourceResource());
+		resources.put("t", op.getTargetResource());
+		resources.put("c", op.getCorrResource());
+		resources.put("p", op.getProtocolResource());
+		
+		for (Entry<String, Resource> e : resources.entrySet()) {
+			Resource r = e.getValue();
+			String uri = r.getURI().toString();
+			
+			String extension = FilenameUtils.getExtension(uri);
+			String path = FilenameUtils.getPath(uri);
+			String fileName = FilenameUtils.getBaseName(uri);
+			
+			defaultSaveData[count] = new String[] { path, fileName, extension };
+			count++;
+		}
+		
+		return defaultSaveData;
 	}
 	
 	@Override
