@@ -1,13 +1,19 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
@@ -30,7 +36,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	private IntegrationPattern pattern;
 	private BrokenMatchAnalyser matchAnalyser;
-	
+
 	protected Resource epg;
 
 	// Element classification
@@ -40,6 +46,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	private Set<IMatch> filterNacMatches;
 
+	private Map<EObject, List<EObject>> addedElts;
+
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
@@ -47,6 +55,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		toBeTranslated = new HashSet<>();
 		toBeDeleted = new HashSet<>();
 		filterNacMatches = new HashSet<>();
+		addedElts = new HashMap<>();
 	}
 
 	public void integrate() throws IOException {
@@ -84,7 +93,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	protected IMatchContainer createMatchContainer() {
 		return new ExtPrecedenceGraph(this);
 	}
-	
+
 	public Resource getEPGResource() {
 		return epg;
 	}
@@ -151,11 +160,12 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	@Override
 	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
 		super.registerBlackInterpreter(blackInterpreter);
-		
+
 		BenchmarkLogger.startTimer();
-		
+
+		attachEltAddedDetector();
 		initMatchAnalyser();
-		
+
 		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
 	}
 
@@ -208,6 +218,35 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private void initMatchAnalyser() {
 		if (matchAnalyser == null)
 			matchAnalyser = new BrokenMatchAnalyser(this);
+	}
+
+	private void attachEltAddedDetector() {
+		EContentAdapter adapter = new EContentAdapter() {
+			@Override
+			public void notifyChanged(Notification notification) {
+				if (notification.getEventType() == Notification.ADD
+						|| notification.getEventType() == Notification.ADD_MANY)
+					handleAddedElts(notification);
+				super.notifyChanged(notification);
+			}
+		};
+		s.eAdapters().add(adapter);
+		t.eAdapters().add(adapter);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void handleAddedElts(Notification notf) {
+		EObject container = (EObject) notf.getNotifier();
+		addedElts.computeIfAbsent(container, k -> new ArrayList<EObject>());
+
+		switch (notf.getEventType()) {
+		case Notification.ADD:
+			addedElts.get(container).add((EObject) notf.getNewValue());
+			break;
+		case Notification.ADD_MANY:
+			addedElts.get(container).addAll((List<EObject>) notf.getNewValue());
+			break;
+		}
 	}
 
 	private ExtPrecedenceGraph getEPG() {
