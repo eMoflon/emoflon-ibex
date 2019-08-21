@@ -140,6 +140,7 @@ class DefaultFilesGenerator {
 					super();
 				}
 			
+			    @SuppressWarnings("deprecation")
 				public static void main(String[] args) throws IOException {
 					BasicConfigurator.configure();
 					Logger.getRootLogger().setLevel(Level.INFO);
@@ -196,37 +197,51 @@ class DefaultFilesGenerator {
 			"MODELGEN_App",
 			projectName,
 			'''
-				logger.info("Starting MODELGEN_Debug");
-				long tic = System.currentTimeMillis();
-				«fileName» generator = new «fileName»();
-				long toc = System.currentTimeMillis();
-				logger.info("Completed init for MODELGEN_Debug in: " + (toc - tic) + " ms");
+				boolean restart = true;
+				while (restart) {
+				    restart = false;
+				    
+				    logger.info("Starting MODELGEN_Debug");
+				    long tic = System.currentTimeMillis();
+				    «fileName» generator = new «fileName»();
+				    long toc = System.currentTimeMillis();
+				    logger.info("Completed init for MODELGEN_Debug in: " + (toc - tic) + " ms");
 				
-				MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
-				generator.setStopCriterion(stop);
+				    MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
+				    generator.setStopCriterion(stop);
 				
-				IVictoryDataProvider dataProvider = new VictoryDataProvider(generator);
-				IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.MODELGEN);
+				    IVictoryDataProvider dataProvider = new VictoryDataProvider(generator);
+				    IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.MODELGEN);
 				
-				new Thread(() -> {
+				    Thread ibex = new Thread(() -> {
 				
-				    ui.getIbexController().register(generator);
+				        ui.getIbexController().register(generator);
 				
-				    try {
-						logger.info("Starting MODELGEN_Debug");
-						long runTic = System.currentTimeMillis();
-						generator.run();
-						long runToc = System.currentTimeMillis();
-						logger.info("Completed MODELGEN_Debug in: " + (runToc - runTic) + " ms");
+				        try {
+						    logger.info("Starting MODELGEN_Debug");
+						    long runTic = System.currentTimeMillis();
+						    generator.run();
+						    long runToc = System.currentTimeMillis();
+						    logger.info("Completed MODELGEN_Debug in: " + (runToc - runTic) + " ms");
 				
-						generator.saveModels();
-						generator.terminate();
-				    } catch (IOException pIOE) {
-						logger.error("MODELGEN_Debug threw an IOException", pIOE);
-				    }
-				}, "IBeX main thread").start();
+						    generator.saveModels();
+						    generator.terminate();
+				        } catch (IOException pIOE) {
+						    logger.error("MODELGEN_Debug threw an IOException", pIOE);
+				        }
+				    }, "IBeX main thread");
+				    ibex.start();
 				
-				ui.run();
+				    restart = ui.run();
+				        if (ibex.isAlive())
+				            try {
+				                ibex.join(500);
+				            } catch (InterruptedException pIE) {
+				            } finally {
+				                if (ibex.isAlive())
+				                    ibex.stop();
+				            }
+				}
 			''',
 			""
 		)
@@ -429,34 +444,48 @@ class DefaultFilesGenerator {
 			"INITIAL_FWD_App",
 			projectName,
 			'''
-				logger.info("Starting INITIAL_FWD_Debug");
-				long tic = System.currentTimeMillis();
-				«fileName» init_fwd = new «fileName»();
-				long toc = System.currentTimeMillis();
-				logger.info("Completed init for INITIAL_FWD_Debug in: " + (toc - tic) + " ms");
+				boolean restart = true;
+				while (restart) {
+				    restart = false;
 				
-				IVictoryDataProvider dataProvider = new VictoryDataProvider(init_fwd);
-				IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_FWD);
+				    logger.info("Starting INITIAL_FWD_Debug");
+				    long tic = System.currentTimeMillis();
+				    «fileName» init_fwd = new «fileName»();
+				    long toc = System.currentTimeMillis();
+				    logger.info("Completed init for INITIAL_FWD_Debug in: " + (toc - tic) + " ms");
+				
+				    IVictoryDataProvider dataProvider = new VictoryDataProvider(init_fwd);
+				    IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_FWD);
 
-				new Thread(() -> {
+				    Thread ibex = new Thread(() -> {
 				
-				    ui.getIbexController().register(init_fwd);
+				        ui.getIbexController().register(init_fwd);
 				
-				    try {
-						logger.info("Starting INITIAL_FWD_Debug");
-						long runTic = System.currentTimeMillis();
-						init_fwd.forward();
-						long runToc = System.currentTimeMillis();
-						logger.info("Completed INITIAL_FWD_Debug in: " + (runToc - runTic) + " ms");
+				        try {
+						    logger.info("Starting INITIAL_FWD_Debug");
+						    long runTic = System.currentTimeMillis();
+						    init_fwd.forward();
+						    long runToc = System.currentTimeMillis();
+						    logger.info("Completed INITIAL_FWD_Debug in: " + (runToc - runTic) + " ms");
 				
-						init_fwd.saveModels();
-						init_fwd.terminate();
-					} catch (IOException pIOE) {
-						logger.error("INITIAL_FWD_Debug threw an IOException", pIOE);
-				    }
-				}, "IBeX main thread").start();
-				
-				ui.run();
+						    init_fwd.saveModels();
+						    init_fwd.terminate();
+					    } catch (IOException pIOE) {
+						    logger.error("INITIAL_FWD_Debug threw an IOException", pIOE);
+				        }
+				    }, "IBeX main thread");
+				    ibex.start();
+
+				    restart = ui.run();
+				        if (ibex.isAlive())
+				            try {
+				                ibex.join(500);
+				            } catch (InterruptedException pIE) {
+				            } finally {
+				                if (ibex.isAlive())
+				                    ibex.stop();
+				            }
+				}
 			''',
 			""
 		)
@@ -524,34 +553,48 @@ class DefaultFilesGenerator {
 			"INITIAL_BWD_App",
 			projectName,
 			'''
-				logger.info("Starting INITIAL_BWD_Debug");
-				long tic = System.currentTimeMillis();
-				«fileName» init_bwd = new «fileName»();
-				long toc = System.currentTimeMillis();
-				logger.info("Completed init for INITIAL_BWD_Debug in: " + (toc - tic) + " ms");
+				boolean restart = true;
+				while (restart) {
+				    restart = false;
 				
-				IVictoryDataProvider dataProvider = new VictoryDataProvider(init_bwd);
-				IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_BWD);
+				    logger.info("Starting INITIAL_BWD_Debug");
+				    long tic = System.currentTimeMillis();
+				    «fileName» init_bwd = new «fileName»();
+				    long toc = System.currentTimeMillis();
+				    logger.info("Completed init for INITIAL_BWD_Debug in: " + (toc - tic) + " ms");
+				
+				    IVictoryDataProvider dataProvider = new VictoryDataProvider(init_bwd);
+				    IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_BWD);
 
-				new Thread(() -> {
+				    Thread ibex = new Thread(() -> {
 				
-				    ui.getIbexController().register(init_bwd);
+				        ui.getIbexController().register(init_bwd);
 				
-				    try {
-						logger.info("Starting INITIAL_BWD_Debug");
-						long runTic = System.currentTimeMillis();
-						init_bwd.backward();
-						long runToc = System.currentTimeMillis();
-						logger.info("Completed INITIAL_BWD_Debug in: " + (runToc - runTic) + " ms");
+				        try {
+						    logger.info("Starting INITIAL_BWD_Debug");
+						    long runTic = System.currentTimeMillis();
+						    init_bwd.backward();
+						    long runToc = System.currentTimeMillis();
+						    logger.info("Completed INITIAL_BWD_Debug in: " + (runToc - runTic) + " ms");
 				
-						init_bwd.saveModels();
-						init_bwd.terminate();
-					} catch (IOException pIOE) {
-						logger.error("INITIAL_BWD_Debug threw an IOException", pIOE);
-				    }
-				}, "IBeX main thread").start();
-				
-				ui.run();
+						    init_bwd.saveModels();
+						    init_bwd.terminate();
+					    } catch (IOException pIOE) {
+						    logger.error("INITIAL_BWD_Debug threw an IOException", pIOE);
+				        }
+				    }, "IBeX main thread");
+				    ibex.start();
+
+				    restart = ui.run();
+				        if (ibex.isAlive())
+				            try {
+				                ibex.join(500);
+				            } catch (InterruptedException pIE) {
+				            } finally {
+				                if (ibex.isAlive())
+				                    ibex.stop();
+				            }
+				}
 			''',
 			""
 		)
