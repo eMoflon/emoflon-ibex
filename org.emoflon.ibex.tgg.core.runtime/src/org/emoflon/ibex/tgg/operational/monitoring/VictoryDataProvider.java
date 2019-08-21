@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.DateFormat;
@@ -21,6 +22,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
+import com.sun.jndi.toolkit.url.Uri;
+
 import language.TGGRule;
 
 import org.apache.commons.io.FilenameUtils;
@@ -36,6 +39,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 
 	public VictoryDataProvider(OperationalStrategy pOperationalStrategy) {
 		this.op = pOperationalStrategy;
+		this.getDefaultSaveLocation();
 	}
 
 	@Override
@@ -142,10 +146,19 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		resources.put("c", op.getCorrResource());
 		resources.put("p", op.getProtocolResource());
 
+		System.out.println(Arrays.toString(pLocations));
+		
 		// save models
+		int count = 0;
 		for (Entry<String, Resource> e : resources.entrySet()) {
 			oldUri.put(e.getKey(), e.getValue().getURI());
-			saveModel(e.getValue(), time);
+			
+			if (pLocations.length > 0) {
+				saveModel(e.getValue(), time, pLocations[count]);
+			} else {
+				saveModel(e.getValue(), time, null);
+			}
+			count++;
 		}
 
 		// revert the URIs to before saving models
@@ -154,21 +167,39 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		}
 	}
 
-	private void saveModel(Resource r, String time) throws IOException {
-		String path = r.getURI().toString();
+	private void saveModel(Resource r, String time, String newLocation) throws IOException {
+		String newPath;
+		URI newUri;
 		
-		// generating new URI (name and path) base on old URI
-		String newPath = FilenameUtils.getPath(path);
-		
-		newPath += FilenameUtils.getBaseName(path) + "-";
-		newPath += time + "." + FilenameUtils.getExtension(path);
-		URI newUri = URI.createURI(newPath);
+		if(newLocation != null) {
+			newPath = FilenameUtils.getFullPath(newLocation);			
+			newPath += FilenameUtils.getBaseName(newLocation) + "-";
+			newPath += time + "." + FilenameUtils.getExtension(newLocation);			
+			newUri = URI.createURI(newPath);
+			
+			/*String path = r.getURI().toString();
+			
+			newPath = FilenameUtils.getFullPath(path);
+			newPath += FilenameUtils.getBaseName(path) + "-";
+			newPath += time + "." + FilenameUtils.getExtension(path);
+			newUri = URI.createURI(newPath);*/
+			
+			System.out.println("URI_NewLoc: " + newUri);
+		} else {
+			String path = r.getURI().toString();
+			newPath = FilenameUtils.getPath(path);
+			newPath += FilenameUtils.getBaseName(path) + "-";
+			newPath += time + "." + FilenameUtils.getExtension(path);
+			newUri = URI.createURI(newPath);
+
+			//System.out.println("URI_DefLoc: " + newUri);
+		}
 		
 		r.setURI(newUri);
 		r.save(null);
 	}
-
-	public String[][] getDefaultSaveData() {
+	
+	public void getDefaultSaveLocation() {
 		int count = 0;
 		LinkedHashMap<String, Resource> resources = new LinkedHashMap<String, Resource>();
 
@@ -181,14 +212,16 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 			Resource r = e.getValue();
 			String uri = r.getURI().toString();
 			
-			String extension = FilenameUtils.getExtension(uri);
-			String path = FilenameUtils.getPath(uri);
+			String path =  FilenameUtils.getFullPath(r.getURI().path());
 			String fileName = FilenameUtils.getBaseName(uri);
+			String extension = FilenameUtils.getExtension(uri);					
 			
 			defaultSaveData[count] = new String[] { path, fileName, extension };
 			count++;
 		}
-		
+	}
+
+	public String[][] getDefaultSaveData() {
 		return defaultSaveData;
 	}
 	
