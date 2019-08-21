@@ -172,7 +172,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		URI newUri;
 		
 		if(newLocation != null) {
-			newPath = FilenameUtils.getFullPath(newLocation);			
+			newPath = FilenameUtils.getFullPath("platform:" + newLocation);			
 			newPath += FilenameUtils.getBaseName(newLocation) + "-";
 			newPath += time + "." + FilenameUtils.getExtension(newLocation);			
 			newUri = URI.createURI(newPath);
