@@ -104,6 +104,20 @@ public class FullBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
+	public long getTotalMatchesRevoked() {
+		long totalElem = 0;
+		for (BenchmarkRunLog runLog : runLogs) {
+			totalElem += runLog.getNumOfMatchesRevoked();
+		}
+		return totalElem;
+	}
+
+	@Override
+	public void addToNumOfMatchesRevoked(long numOfMatchesRevoked) {
+		runLogs.get(runCount).addToNumOfMatchesRevoked(numOfMatchesRevoked);
+	}
+
+	@Override
 	public long getTotalMatchesApplied() {
 		long totalElem = 0;
 		for (BenchmarkRunLog runLog : runLogs) {
@@ -138,6 +152,8 @@ public class FullBenchmarkLogger extends BenchmarkLogger {
 		builder.append(getTotalMatchesFound());
 		builder.append("\n  Total matches repaired .. ");
 		builder.append(getTotalMatchesRepaired());
+		builder.append("\n  Total matches revoked ... ");
+		builder.append(getTotalMatchesRevoked());
 		builder.append("\n  Total matches applied ... ");
 		builder.append(getTotalMatchesApplied());
 		builder.append("\n]");

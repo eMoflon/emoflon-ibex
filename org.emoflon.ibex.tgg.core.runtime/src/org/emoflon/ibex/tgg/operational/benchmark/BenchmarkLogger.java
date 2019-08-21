@@ -52,6 +52,10 @@ public abstract class BenchmarkLogger {
 	public abstract long getTotalMatchesRepaired();
 
 	public abstract void addToNumOfMatchesRepaired(long numOfMatches);
+	
+	public abstract long getTotalMatchesRevoked();
+	
+	public abstract void addToNumOfMatchesRevoked(long numOfMatches);
 
 	public abstract long getTotalMatchesApplied();
 

@@ -41,7 +41,7 @@ public class EmptyBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
-	public void setNumOfElementsCreated(long numOfCreatedElements) {
+	public void setNumOfElementsCreated(long numOfElements) {
 		// Intentionally left blank
 	}
 
@@ -51,7 +51,7 @@ public class EmptyBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
-	public void setNumOfElementsDeleted(long numOfDeletedElements) {
+	public void setNumOfElementsDeleted(long numOfElements) {
 		// Intentionally left blank
 	}
 
@@ -61,7 +61,7 @@ public class EmptyBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
-	public void setNumOfMatchesFound(long matchCounter) {
+	public void setNumOfMatchesFound(long numOfMatches) {
 		// Intentionally left blank
 	}
 
@@ -71,7 +71,17 @@ public class EmptyBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
-	public void addToNumOfMatchesRepaired(long numOfMatchesRepaired) {
+	public void addToNumOfMatchesRepaired(long numOfMatches) {
+		// Intentionally left blank
+	}
+
+	@Override
+	public long getTotalMatchesRevoked() {
+		return -1;
+	}
+
+	@Override
+	public void addToNumOfMatchesRevoked(long numOfMatches) {
 		// Intentionally left blank
 	}
 
@@ -81,7 +91,7 @@ public class EmptyBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
-	public void addToNumOfMatchesApplied(long numOfMatchesApplied) {
+	public void addToNumOfMatchesApplied(long numOfMatches) {
 		// Intentionally left blank
 	}
 

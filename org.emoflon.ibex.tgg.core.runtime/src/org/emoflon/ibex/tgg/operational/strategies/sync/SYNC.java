@@ -181,10 +181,11 @@ public abstract class SYNC extends OperationalStrategy {
 			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
 				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
 				revoked.add(ra);
-
 			}
 			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);
+
+			options.getBenchmarkLogger().addToNumOfMatchesRevoked(revoked.size());
 		}
 	}
 
@@ -304,6 +305,9 @@ public abstract class SYNC extends OperationalStrategy {
 
 	@Override
 	protected void collectDataToBeLogged() {
+		if(options.getBenchmarkLogger() instanceof EmptyBenchmarkLogger)
+			return;
+		
 		super.collectDataToBeLogged();
 
 		int repStratDeletions = 0;

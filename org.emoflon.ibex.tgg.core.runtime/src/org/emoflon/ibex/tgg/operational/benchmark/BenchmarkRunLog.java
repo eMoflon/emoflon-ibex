@@ -14,6 +14,7 @@ public class BenchmarkRunLog {
 	// Matches
 	protected long numOfMatchesFound = 0;
 	protected long numOfMatchesRepaired = 0;
+	protected long numOfMatchesRevoked = 0;
 	protected long numOfMatchesApplied = 0;
 	
 	protected BenchmarkRunLog(int runNum) {
@@ -59,6 +60,14 @@ public class BenchmarkRunLog {
 	public void addToNumOfMatchesRepaired(long numOfMatches) {
 		this.numOfMatchesRepaired += numOfMatches;
 	}
+	
+	public long getNumOfMatchesRevoked() {
+		return numOfMatchesRevoked;
+	}
+	
+	public void addToNumOfMatchesRevoked(long numOfMatches) {
+		this.numOfMatchesRevoked += numOfMatches;
+	}
 
 	public long getNumOfMatchesApplied() {
 		return numOfMatchesApplied;
@@ -82,6 +91,8 @@ public class BenchmarkRunLog {
 		builder.append(getNumOfMatchesFound());
 		builder.append("\n  Matches repaired .. ");
 		builder.append(getNumOfMatchesRepaired());
+		builder.append("\n  Matches revoked ... ");
+		builder.append(getNumOfMatchesRevoked());
 		builder.append("\n  Matches applied ... ");
 		builder.append(getNumOfMatchesApplied());
 		builder.append("\n]");
