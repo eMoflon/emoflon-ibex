@@ -32,6 +32,7 @@ public class IFContainer extends LinkedList<MatchIntegrationFragment> implements
 				if(iF.softApply(analysedMatch, integrate))
 					break;
 			}
+			integrate.getAnalysedMatches().put(brokenMatch, analysedMatch);
 		}
 	}
 }

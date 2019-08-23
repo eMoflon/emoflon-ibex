@@ -56,7 +56,7 @@ public class AnalysedMatch {
 	public IMatch getMatch() {
 		return match;
 	}
-	
+
 	public Map<TGGRuleElement, Boolean> getAreElemsDel() {
 		return areElemsDel;
 	}
@@ -89,13 +89,13 @@ public class AnalysedMatch {
 		builder.append("\n]");
 		return builder.toString();
 	}
-	
+
 	private String printFilterNacViolations() {
 		StringBuilder builder = new StringBuilder();
-		for(IMatch fnm : filterNacViolations.keySet()) {
+		for (IMatch fnm : filterNacViolations.keySet()) {
 			builder.append(fnm.getRuleName() + "\n");
 		}
-		return builder.substring(0, builder.length() - 1);
+		return builder.length() == 0 ? builder.toString() : builder.substring(0, builder.length() - 1);
 	}
 
 }

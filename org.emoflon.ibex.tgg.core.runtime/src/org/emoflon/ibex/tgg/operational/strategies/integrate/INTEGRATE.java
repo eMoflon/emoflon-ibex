@@ -29,7 +29,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.Integration
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
 
-import precedencegraph.Node;
 import precedencegraph.NodeContainer;
 
 public abstract class INTEGRATE extends ExtOperationalStrategy {
@@ -47,6 +46,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private Set<IMatch> filterNacMatches;
 
 	private Map<EObject, List<EObject>> addedElts;
+	private Map<IMatch, AnalysedMatch> analysedMatches;
 
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
@@ -56,6 +56,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		toBeDeleted = new HashSet<>();
 		filterNacMatches = new HashSet<>();
 		addedElts = new HashMap<>();
+		analysedMatches = new HashMap<>();
 	}
 
 	public void integrate() throws IOException {
@@ -68,19 +69,25 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 //		repair();
 		setup();
-
-		NodeContainer nodes = getEPG().getExtGraph();
-		Set<AnalysedMatch> analysedMatches = new HashSet<>();
-		for (Node node : nodes.getNodes()) {
-			if (node.isBroken()) {
-				IMatch match = getEPG().getMatch(node);
-				analysedMatches.add(matchAnalyser.analyse(match));
-			}
-		}
+		detectConflicts();
+		cleanUp();
 	}
 
 	protected void setup() {
 		pattern.getComponents().forEach(c -> c.apply(this));
+	}
+
+	protected void detectConflicts() {
+		NodeContainer nodes = getEPG().getExtGraph();
+		// TODO Continue here...
+	}
+
+	protected void cleanUp() {
+		undetermined = new HashSet<>();
+		toBeTranslated = new HashSet<>();
+		toBeDeleted = new HashSet<>();
+		addedElts = new HashMap<>();
+		analysedMatches = new HashMap<>();
 	}
 
 	@Override
@@ -201,11 +208,15 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		return filterNacMatches;
 	}
 
+	public Map<IMatch, AnalysedMatch> getAnalysedMatches() {
+		return analysedMatches;
+	}
+
 	/**
 	 * Applies deltas to source and target models specified by a
 	 * <code>BiConsumer</code>. <br>
 	 * <br>
-	 * BiConsumers parameters: Root elements (src, trg)
+	 * BiConsumer's parameters: Root elements (src, trg)
 	 * 
 	 * @param delta delta to be applied
 	 */
