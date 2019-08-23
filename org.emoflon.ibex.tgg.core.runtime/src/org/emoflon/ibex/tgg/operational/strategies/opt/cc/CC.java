@@ -55,7 +55,8 @@ public abstract class CC extends OPT {
 
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.CC) || patternName.endsWith(PatternSuffixes.GENForCC);
+		return patternName.endsWith(PatternSuffixes.CC) || patternName.endsWith(PatternSuffixes.GENForCC)
+				|| patternName.endsWith(PatternSuffixes.USER_NAC);
 	}
 
 	@Override
@@ -78,7 +79,7 @@ public abstract class CC extends OPT {
 
 		processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
-		
+
 		return true;
 	}
 

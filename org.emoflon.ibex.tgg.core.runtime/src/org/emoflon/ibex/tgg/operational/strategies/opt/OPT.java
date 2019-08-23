@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,11 +23,15 @@ import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.collections.ObjectToIntMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.operational.SimpleMatch;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.patterns.UserNACGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.Bundle;
@@ -343,7 +348,7 @@ public abstract class OPT extends OperationalStrategy {
 		this.defineILPImplications(ilpProblem);
 		
 		//usability-team
-		OperationalStrategy.logger.debug("Adding implications...");
+		OperationalStrategy.logger.debug("Adding NAC handling...");
 		this.defineNACImplications(ilpProblem);
 
 		OperationalStrategy.logger.debug("Defining objective...");
@@ -515,20 +520,7 @@ public abstract class OPT extends OperationalStrategy {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
-
-		getGreenNodes(comatch, ruleName).forEach(e -> {
-			if (!nodeToMarkingMatches.containsKey(e))
-				nodeToMarkingMatches.put(e, cfactory.createIntSet());
-			nodeToMarkingMatches.get(e).add(idCounter);
-		});
-
-		getGreenEdges(comatch, ruleName).forEach(e -> {
-			if (!edgeToMarkingMatches.containsKey(e)) {
-				edgeToMarkingMatches.put(e, cfactory.createIntSet());
-			}
-			edgeToMarkingMatches.get(e).add(idCounter);
-		});
-
+		
 		getBlackNodes(comatch, ruleName).forEach(e -> {
 			if (!contextNodeToNeedingMatches.containsKey(e))
 				contextNodeToNeedingMatches.put(e, cfactory.createIntSet());
@@ -540,6 +532,25 @@ public abstract class OPT extends OperationalStrategy {
 				contextEdgeToNeedingMatches.put(e, cfactory.createIntSet());
 			}
 			contextEdgeToNeedingMatches.get(e).add(idCounter);
+		});
+		
+		matchToContextNodes.put(idCounter, cfactory.createObjectSet());
+		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
+
+		matchToContextEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
+		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
+		
+		getGreenNodes(comatch, ruleName).forEach(e -> {
+			if (!nodeToMarkingMatches.containsKey(e))
+				nodeToMarkingMatches.put(e, cfactory.createIntSet());
+			nodeToMarkingMatches.get(e).add(idCounter);
+		});
+
+		getGreenEdges(comatch, ruleName).forEach(e -> {
+			if (!edgeToMarkingMatches.containsKey(e)) {
+				edgeToMarkingMatches.put(e, cfactory.createIntSet());
+			}
+			edgeToMarkingMatches.get(e).add(idCounter);
 		});
 		
 		//usability-team
@@ -557,23 +568,18 @@ public abstract class OPT extends OperationalStrategy {
 			negativeEdgeToNeedingMatches.get(e).add(idCounter);
 		});
 
-		matchToContextNodes.put(idCounter, cfactory.createObjectSet());
-		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
-
-		matchToContextEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
-		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
-		
 		//usability-team
 		//match to NAC edges n nodes
 		matchToNegativeNodes.put(idCounter, cfactory.createObjectSet());
 		matchToNegativeNodes.get(idCounter).addAll(getNegativeNodes(comatch, ruleName));
-
 		matchToNegativeEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
 		matchToNegativeEdges.get(idCounter).addAll(getNegativeEdges(comatch, ruleName));
-
+				
 		handleBundles(comatch, ruleName);
 
 		idCounter++;
 	}
+	
+	
 
 }

@@ -4,12 +4,15 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getCOBlackPa
 
 import java.util.List;
 
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
+import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -47,5 +50,18 @@ public class COPatternTransformation extends CCPatternTransformation {
 
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
+	}
+	
+	@Override
+	protected void transformNACs(IBeXContextPattern ibexPattern) {
+		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+		}
+
+		filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule, options);
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+		}
 	}
 }

@@ -14,7 +14,6 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
 import language.DomainType;
-import language.NAC;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -67,18 +66,6 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
-		
-		//usability-team 
-		//CC to identify user NACS
-		// Output Domain User NACs
-		for (NAC nac : rule.getNacs()) {
-			if (TGGModelUtils.isOfDomain(nac, DomainType.SRC))
-				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
-		}
-		for (NAC nac : rule.getNacs()) {
-			if (TGGModelUtils.isOfDomain(nac, DomainType.TRG)) 
-				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
-    	}
 	}
 	
 }

@@ -3,14 +3,21 @@ package org.emoflon.ibex.tgg.operational.patterns;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.emoflon.ibex.tgg.operational.matches.IMatch;
+
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class COGreenPattern extends IbexGreenPattern {
+public class UserNACGreenPattern extends IbexGreenPattern {
 
-	public COGreenPattern(GreenPatternFactory factory) {
+	public UserNACGreenPattern(GreenPatternFactory factory) {
 		super(factory);
+	}
+
+	@Override
+	public boolean isToBeIgnored(IMatch match) {
+		return false;
 	}
 
 	@Override
@@ -39,12 +46,17 @@ public class COGreenPattern extends IbexGreenPattern {
 	}
 
 	@Override
+	public Collection<TGGRuleEdge> getCorrEdges() {
+		return Collections.emptyList();
+	}
+
+	@Override
 	public Collection<TGGRuleNode> getMarkedContextNodes() {
 		return Collections.emptyList();
 	}
 	
 	@Override
-	public Collection<TGGRuleEdge> getCorrEdges() {
-		return Collections.emptyList();
+	public void createMarkers(String ruleName, IMatch match) {
+		
 	}
 }

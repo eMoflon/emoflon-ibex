@@ -51,14 +51,8 @@ public abstract class BWD_OPT extends OPT {
 
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.BWD_OPT);
+		return patternName.endsWith(PatternSuffixes.BWD_OPT) || patternName.endsWith(PatternSuffixes.USER_NAC);
 	}
-
-	@Override
-	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return patternName.endsWith(PatternSuffixes.BWD_OPT);
-	}
-	
 	
 	@Override
 	public void saveModels() throws IOException {

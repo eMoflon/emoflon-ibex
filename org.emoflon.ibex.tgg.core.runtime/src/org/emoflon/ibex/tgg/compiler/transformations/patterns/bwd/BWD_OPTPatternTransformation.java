@@ -28,7 +28,7 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 	protected String getPatternName() {
 		return getBWDOptBlackPatternName(rule.getName());
 	}
-	
+
 	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern) {
 		List<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT);

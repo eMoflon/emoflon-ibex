@@ -54,12 +54,7 @@ public abstract class FWD_OPT extends OPT {
 
 	@Override
 	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD_OPT);
-	}
-
-	@Override
-	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD_OPT);
+		return patternName.endsWith(PatternSuffixes.FWD_OPT) || patternName.endsWith(PatternSuffixes.USER_NAC);
 	}
 
 	@Override

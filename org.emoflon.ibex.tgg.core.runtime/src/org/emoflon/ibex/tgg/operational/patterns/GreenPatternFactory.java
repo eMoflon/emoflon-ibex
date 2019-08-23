@@ -16,6 +16,7 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.BindingType;
 import language.DomainType;
+import language.NAC;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeConstraintLibrary;
 import language.TGGParamValue;
@@ -25,7 +26,6 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class GreenPatternFactory implements IGreenPatternFactory {
-	protected String ruleName;
 	protected IbexOptions options;
 	protected List<TGGParamValue> variables = new ArrayList<>();
 	protected List<TGGAttributeConstraint> constraints = new ArrayList<>();
@@ -34,6 +34,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	private Map<String, IGreenPattern> patterns;
 	private OperationalStrategy strategy;
 	private TGGRule rule;
+	private NAC nac;
 
 	protected Collection<TGGRuleNode> greenSrcNodesInRule = new ArrayList<>();
 	protected Collection<TGGRuleNode> greenTrgNodesInRule = new ArrayList<>();;
@@ -52,28 +53,59 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	//usability-team
 		//declaring -ve or nac src trg n corr nodes n src n trg edges
 	protected Collection<TGGRuleNode> negativeSrcNodesInRule = new ArrayList<>();
-	protected Collection<TGGRuleNode> negativeTrgNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleCorr> negativeCorrNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> negativeSrcEdgesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> negativeTrgEdgesInRule = new ArrayList<>();;
+	protected Collection<TGGRuleNode> negativeTrgNodesInRule = new ArrayList<>();
+	protected Collection<TGGRuleCorr> negativeCorrNodesInRule = new ArrayList<>();
+	protected Collection<TGGRuleEdge> negativeSrcEdgesInRule = new ArrayList<>();
+	protected Collection<TGGRuleEdge> negativeTrgEdgesInRule = new ArrayList<>();
 	
 
 	public GreenPatternFactory(String ruleName, IbexOptions options, OperationalStrategy strategy) {
 		this(options, strategy);
-		this.ruleName = ruleName;
+		
+		rule = null;
+		boolean isNac = false;
+		
+		for (TGGRule r : options.flattenedTGG().getRules())
+			if (r.getName().equals(ruleName))
+				rule = r;
+		
+		if (rule == null)
+			for (TGGRule r : options.flattenedTGG().getRules())
+				for (NAC n : r.getNacs())
+					if (n.getName().contentEquals(ruleName)) {
+						rule = r;
+						nac = n;
+						isNac = true;
+						break;
+					}
+		
+		if (rule == null)
+			throw new IllegalStateException("Could not find " + ruleName + " in the TGG.");
+		
+		if (isNac) {
+			 //usability-team
+			//defining -ve or nac nodes n edges for binding type NEGATIVE
+			negativeSrcNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.SRC));
+			negativeTrgNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.TRG));
+			negativeCorrNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
+					.collect(Collectors.toList()));
 
-		rule = options.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findAny()
-				.orElseThrow(() -> new IllegalStateException("Could not find " + ruleName + " in the TGG."));
+			negativeSrcEdgesInRule.addAll(validate(getEdges(BindingType.NEGATIVE, DomainType.SRC)));
+			negativeTrgEdgesInRule.addAll(validate(getEdges(BindingType.NEGATIVE, DomainType.TRG)));
+			
+		}
+		else {
+			greenSrcNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.SRC));
+			greenTrgNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.TRG));
+			greenCorrNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
+					.collect(Collectors.toList()));
 
-		greenSrcNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.SRC));
-		greenTrgNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.TRG));
-		greenCorrNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
-				.collect(Collectors.toList()));
+			greenSrcEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.SRC)));
+			greenTrgEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.TRG)));
+			greenCorrEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.CORR)));
 
-		greenSrcEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.SRC)));
-		greenTrgEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.TRG)));
-		greenCorrEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.CORR)));
-
+		}
+		
 		blackSrcNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.SRC));
 		blackTrgNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.TRG));
 		blackCorrNodesInRule.addAll(getNodes(BindingType.CONTEXT, DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
@@ -81,18 +113,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 		blackSrcEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.SRC)));
 		blackTrgEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.TRG)));
-		blackCorrEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.CORR)));
-
-       //usability-team
-		//defining -ve or nac nodes n edges for binding type NEGATIVE
-		negativeSrcNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.SRC));
-		negativeTrgNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.TRG));
-		negativeCorrNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
-				.collect(Collectors.toList()));
-
-		negativeSrcEdgesInRule.addAll(validate(getEdges(BindingType.NEGATIVE, DomainType.SRC)));
-		negativeTrgEdgesInRule.addAll(validate(getEdges(BindingType.NEGATIVE, DomainType.TRG)));
-		
+		blackCorrEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.CORR)));     
 		
 		constraints.addAll(rule.getAttributeConditionLibrary().getTggAttributeConstraints());
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
@@ -145,35 +166,42 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		if (isBWDOptBlackPattern(patternName))
 			return createGreenPattern(BWDOptGreenPattern.class);
 		
+		if (isUserNACPattern(patternName))
+			return createGreenPattern(UserNACGreenPattern.class);
+		
 		return createGreenPattern(EmptyGreenPattern.class);
 	}
 
 	private boolean isBWDBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getBWDBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.getBWDBlackPatternName(rule.getName()));
 	}
 
 	private boolean isFWDBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getFWDBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.getFWDBlackPatternName(rule.getName()));
 	}
 
 	private boolean isCOBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getCOBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.getCOBlackPatternName(rule.getName()));
 	}
 
 	private boolean isCCBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getCCBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.getCCBlackPatternName(rule.getName()));
 	}
 
 	private boolean isGENBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getGENBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.getGENBlackPatternName(rule.getName()));
 	}
 
 	private boolean isFWDOptBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getFWDOptBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.getFWDOptBlackPatternName(rule.getName()));
 	}
 
 	private boolean isBWDOptBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getBWDOptBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.getBWDOptBlackPatternName(rule.getName()));
+	}
+	
+	private boolean isUserNACPattern(String patternName) {
+		return patternName.equals(TGGPatternUtil.getNACPatternName(nac.getName()));
 	}
  
 	public IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {

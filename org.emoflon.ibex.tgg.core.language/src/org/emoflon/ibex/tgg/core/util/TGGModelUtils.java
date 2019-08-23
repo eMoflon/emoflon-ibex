@@ -27,6 +27,20 @@ public class TGGModelUtils {
 				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
 				.collect(Collectors.toList());
 	}
+	
+	public static List<TGGRuleNode> getNodesByOperator(NAC nac, BindingType type) {
+		Objects.requireNonNull(nac, "The NAC must not be null!");
+		return nac.getNodes().stream() //
+				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
+				.collect(Collectors.toList());
+	}
+
+	public static List<TGGRuleEdge> getEdgesByOperator(NAC nac, BindingType type) {
+		Objects.requireNonNull(nac, "The NAC must not be null!");
+		return nac.getEdges().stream() //
+				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
+				.collect(Collectors.toList());
+	}
 
 	/**
 	 * Checks whether the rule is an axiom
@@ -41,6 +55,14 @@ public class TGGModelUtils {
 	public static Collection<TGGRuleNode> getNodesByOperatorAndDomain(TGGRule rule, BindingType type,
 			DomainType domain) {
 		return getNodesByOperator(rule, type)//
+				.stream()//
+				.filter(n -> n.getDomainType().equals(domain))//
+				.collect(Collectors.toList());
+	}
+	
+	public static Collection<TGGRuleNode> getNodesByOperatorAndDomain(NAC nac, BindingType type,
+			DomainType domain) {
+		return getNodesByOperator(nac, type)//
 				.stream()//
 				.filter(n -> n.getDomainType().equals(domain))//
 				.collect(Collectors.toList());

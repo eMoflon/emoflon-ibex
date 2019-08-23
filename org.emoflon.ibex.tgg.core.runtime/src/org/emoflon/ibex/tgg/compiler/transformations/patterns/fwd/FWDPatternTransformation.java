@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd;
 
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
@@ -22,7 +24,10 @@ public class FWDPatternTransformation extends FWD_OPTPatternTransformation {
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		super.transformNACs(ibexPattern);
+		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+		}
 
 		// Output Domain User NACs
 		for (NAC nac : rule.getNacs()) {

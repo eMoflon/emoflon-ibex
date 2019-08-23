@@ -31,6 +31,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWD_OPTPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.ConsistencyPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.NACPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_OPTPatternTransformation;
@@ -96,6 +97,9 @@ public class ContextPatternTransformation {
 			createPatternIfRelevant(rule, this::createConsistencyPattern, PatternSuffixes.CONSISTENCY);
 			createPatternIfRelevant(rule, this::createCCPattern, PatternSuffixes.CC);
 			createPatternIfRelevant(rule, this::createCOPattern, PatternSuffixes.CO);
+			
+			for (NAC nac : rule.getNacs())
+				createNACPatternIfRelevant(rule, nac, PatternSuffixes.USER_NAC);
 
 			if (isDomainProgressive(rule, DomainType.SRC)) {
 				createPatternIfRelevant(rule, this::createFWDPattern, PatternSuffixes.FWD);
@@ -122,6 +126,12 @@ public class ContextPatternTransformation {
 		if (strategy.isPatternRelevantForCompiler(suffix)) {
 			transformer.accept(rule);
 		}
+	}
+	
+	private void createNACPatternIfRelevant(TGGRule rule, NAC nac, String suffix) {
+		if (strategy.isPatternRelevantForCompiler(suffix)) {
+			new NACPatternTransformation(this, options, rule, nac).transform();
+		}		
 	}
 
 	public boolean isTransformed(String patternName) {
@@ -175,12 +185,12 @@ public class ContextPatternTransformation {
 		OperationalPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
-
+	
 	protected IBeXContextPattern createProtocolPattern(TGGRule rule) {
 		OperationalPatternTransformation transformer = new ProtocolPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
-	
+
 	protected IBeXContextPattern createProtocolCorePattern(TGGRule rule) {
 		OperationalPatternTransformation transformer = new ProtocolCorePatternTransformation(this, options, rule);
 		return transformer.transform();
@@ -236,48 +246,48 @@ public class ContextPatternTransformation {
 
 		return nacPattern;
 	}
-	
+
 	public void optimizeSyncPatterns(TGGRule rule) {
 		if(!options.optimizeSyncPattern())
 			return;
-		
+
 		IBeXContextPattern fwdPattern = getPattern(getFWDBlackPatternName(rule.getName()));
 		IBeXContextPattern bwdPattern = getPattern(getBWDBlackPatternName(rule.getName()));
 		IBeXContextPattern consistencyPattern = getPattern(getConsistencyPatternName(rule.getName()));
-		
+
 		boolean fwdPatternPresent = fwdPattern != null;
 		boolean bwdPatternPresent = bwdPattern != null;
 		boolean consistencyPatternPresent = consistencyPattern != null;
 
-		if(fwdPatternPresent && consistencyPatternPresent)  {
+		if(fwdPatternPresent && consistencyPatternPresent) {
 			createInvocation(consistencyPattern, fwdPattern);
-			
+
 			optimizeIBeXPattern(consistencyPattern, fwdPattern);
 		}
-		
+
 		if(bwdPatternPresent && consistencyPatternPresent) {
-			createInvocation(consistencyPattern, bwdPattern);	
-			
+			createInvocation(consistencyPattern, bwdPattern);
+
 			optimizeIBeXPattern(consistencyPattern, bwdPattern);
 		}
 
 		if(fwdPatternPresent && bwdPatternPresent) {
-			if(!isAxiomatic(rule)) {
+			if (!isAxiomatic(rule)) {
 				IBeXContextPattern genPattern = createModelGenPattern(rule);
-				if(genPattern != null) {
+				if (genPattern != null) {
 					createInvocation(fwdPattern, genPattern);
 					createInvocation(bwdPattern, genPattern);
-					
+
 					optimizeIBeXPattern(fwdPattern, genPattern);
 					optimizeIBeXPattern(bwdPattern, genPattern);
 				}
 			}
 		}
-		
+
 		if(consistencyPatternPresent) {
 			IBeXContextPattern protocolPattern = createProtocolPattern(rule);
 			IBeXContextPattern protocolCorePattern = createProtocolCorePattern(rule);
-			
+
 			createInvocation(consistencyPattern, protocolPattern);
 			createInvocation(protocolPattern, protocolCorePattern);
 
@@ -285,7 +295,7 @@ public class ContextPatternTransformation {
 			optimizeIBeXPattern(protocolPattern, protocolCorePattern);
 		}
 	}
-	
+
 	public void createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(true);
@@ -501,7 +511,7 @@ public class ContextPatternTransformation {
 
 		return ibexPatternSet;
 	}
-	
+
 	public void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
 		IBeXNode protocolNode = createProtocolNode(rule, ibexPattern);
 		connectProtocolNode(ibexPattern, protocolNode, rule);
