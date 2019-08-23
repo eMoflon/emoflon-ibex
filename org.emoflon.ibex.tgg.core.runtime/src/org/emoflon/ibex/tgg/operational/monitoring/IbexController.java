@@ -38,7 +38,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 	updateMatchMapping(matchContainer.getMatches());
 
-	return chooseOneMatch(new VictoryDataPackage(matchMapping.values(), getProtocols()));
+	return chooseOneMatch(new DataPackage(matchMapping.values(), getProtocols()));
     }
 
     public Collection<IbexMatch> getMoreMatches(int amount) {
@@ -122,7 +122,11 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	step++;
     }
 
-    public abstract IMatch chooseOneMatch(VictoryDataPackage pDataPackage);
+    public void update(ObservableEvent pEventType, Object... pAdditionalInformation) {
+	// ignore by default
+    }
+
+    public abstract IMatch chooseOneMatch(DataPackage pDataPackage);
 
     protected abstract int getRequestedMatchCount();
 }

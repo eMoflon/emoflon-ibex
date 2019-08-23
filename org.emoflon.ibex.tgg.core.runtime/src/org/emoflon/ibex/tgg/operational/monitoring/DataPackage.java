@@ -5,16 +5,16 @@ import java.util.List;
 
 import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
 
-public class VictoryDataPackage {
-    private Collection<VictoryMatch> matches;
+public class DataPackage {
+    private Collection<IbexMatch> matches;
     private List<ProtocolStep> protocol;
 
-    public VictoryDataPackage(Collection<VictoryMatch> pMatches, List<ProtocolStep> pProtocol) {
+    public DataPackage(Collection<IbexMatch> pMatches, List<ProtocolStep> pProtocol) {
 	matches = pMatches;
 	protocol = pProtocol;
     }
 
-    public Collection<VictoryMatch> getMatches() {
+    public Collection<IbexMatch> getMatches() {
 	return matches;
     }
 
