@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.monitoring.data.Graph;
+import org.emoflon.ibex.tgg.operational.monitoring.data.GraphBuilder;
 import org.emoflon.ibex.tgg.operational.monitoring.data.Node;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
@@ -47,16 +48,20 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 
 	@Override
     public Graph getMatchNeighbourhoods(Collection<Node> nodes, int k) {
-        try {
-            Collection<EObject> neighbors = new HashSet<EObject>();
-            for (EObject node : nodes) {
-                neighbors.addAll(getMatchNeighbourhood(node, k));
-            }
-            return neighbors;
-        } catch (Exception e) {
-            logger.error(e);
-            return null;
-        }
+		
+		GraphBuilder builder = new GraphBuilder();
+		return builder.build();
+		
+//        try {
+//            Collection<EObject> neighbors = new HashSet<EObject>();
+//            for (EObject node : nodes) {
+//                neighbors.addAll(getMatchNeighbourhood(node, k));
+//            }
+//            return neighbors;
+//        } catch (Exception e) {
+//            logger.error(e);
+//            return null;
+//        }
     }
 
     @Override

@@ -2,9 +2,9 @@ package org.emoflon.ibex.tgg.operational.monitoring.data;
 
 public class ProtocolStep {
 	private int index;
-	private TGGObjectGraph objectGraph;
+	private Graph objectGraph;
 
-	public ProtocolStep(int pIndex, TGGObjectGraph pObjectGraph) {
+	public ProtocolStep(int pIndex, Graph pObjectGraph) {
 		index = pIndex;
 		objectGraph = pObjectGraph;
 	}
@@ -13,7 +13,7 @@ public class ProtocolStep {
 		return index;
 	}
 
-	public TGGObjectGraph getObjectGraph() {
+	public Graph getObjectGraph() {
 		return objectGraph;
 	}
 }
