@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -19,9 +21,15 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
+import org.eclipse.xtend.lib.Data;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
+import com.sun.javafx.collections.MappingChange.Map;
 import com.sun.jndi.toolkit.url.Uri;
 
 import language.TGGRule;
@@ -170,30 +178,17 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	private void saveModel(Resource r, String time, String newLocation) throws IOException {
 		String newPath;
 		URI newUri;
+		File file = new File(newLocation);
 		
-		if(newLocation != null) {
-			newPath = FilenameUtils.getFullPath("platform:" + newLocation);			
-			newPath += FilenameUtils.getBaseName(newLocation) + "-";
-			newPath += time + "." + FilenameUtils.getExtension(newLocation);			
-			newUri = URI.createURI(newPath);
-			
-			/*String path = r.getURI().toString();
-			
-			newPath = FilenameUtils.getFullPath(path);
-			newPath += FilenameUtils.getBaseName(path) + "-";
-			newPath += time + "." + FilenameUtils.getExtension(path);
-			newUri = URI.createURI(newPath);*/
-			
-			System.out.println("URI_NewLoc: " + newUri);
+		if (file.isAbsolute()) {
+			newPath = "file:/" + FilenameUtils.getFullPath(newLocation);			
 		} else {
-			String path = r.getURI().toString();
-			newPath = FilenameUtils.getPath(path);
-			newPath += FilenameUtils.getBaseName(path) + "-";
-			newPath += time + "." + FilenameUtils.getExtension(path);
-			newUri = URI.createURI(newPath);
-
-			//System.out.println("URI_DefLoc: " + newUri);
+			newPath = FilenameUtils.getFullPath("platform:" + newLocation);			
 		}
+		
+		newPath += FilenameUtils.getBaseName(newLocation) + "-";
+		newPath += time + "." + FilenameUtils.getExtension(newLocation);			
+		newUri = URI.createURI(newPath);
 		
 		r.setURI(newUri);
 		r.save(null);
