@@ -127,6 +127,4 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
     }
 
     public abstract IMatch chooseOneMatch(DataPackage pDataPackage);
-
-    protected abstract int getRequestedMatchCount();
 }
