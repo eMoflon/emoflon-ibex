@@ -162,7 +162,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			Graph graph = builder.build();
 
 			ProtocolStep protocolStep = new ProtocolStep(index, graph, ruleName);
-			System.out.println(ruleName);
+			System.out.println(protocolStep.getRuleName());
 			protocolsStepList.add(protocolStep);
 		}
 

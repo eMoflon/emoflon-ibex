@@ -8,6 +8,7 @@ public class ProtocolStep {
 	public ProtocolStep(int pIndex, Graph pObjectGraph, String pRuleName) {
 		index = pIndex;
 		objectGraph = pObjectGraph;
+		ruleName = pRuleName;
 	}
 
 	public int getIndex() {
