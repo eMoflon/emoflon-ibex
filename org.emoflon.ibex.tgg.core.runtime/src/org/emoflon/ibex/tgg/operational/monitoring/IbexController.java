@@ -68,7 +68,8 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	private List<ProtocolStep> getProtocols() {
 		Resource p = operationalStrategy.getProtocolResource();
 		EList<EObject> protocols = p.getContents();
-
+		String ruleName;
+		
 		if (protocols.size() > 0) {
 			
 			int index = protocolsStepList.size();
@@ -115,9 +116,9 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			}
 
 			Collection<Edge> currentEdges = new HashSet<Edge>();
-
+			ruleName = chosenMatch.getRuleName();
 			TGGRule rule = operationalStrategy.getOptions().flattenedTGG().getRules().stream()
-					.filter(r -> r.getName().equals(chosenMatch.getRuleName())).findFirst().orElseGet(null);
+					.filter(r -> r.getName().equals(ruleName)).findFirst().orElseGet(null);
 			Set<TGGRuleEdge> edges = rule.getEdges().stream().filter(
 					e -> !e.getDomainType().equals(DomainType.CORR) && !e.getBindingType().equals(BindingType.CONTEXT))
 					.collect(Collectors.toSet());
@@ -160,7 +161,8 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			builder.addEdges(currentEdges);
 			Graph graph = builder.build();
 
-			ProtocolStep protocolStep = new ProtocolStep(index, graph);
+			ProtocolStep protocolStep = new ProtocolStep(index, graph, ruleName);
+			System.out.println(ruleName);
 			protocolsStepList.add(protocolStep);
 		}
 
