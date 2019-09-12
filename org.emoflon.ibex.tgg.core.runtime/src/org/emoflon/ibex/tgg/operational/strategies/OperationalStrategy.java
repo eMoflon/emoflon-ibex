@@ -36,6 +36,7 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
+import language.NAC;
 import language.TGG;
 import language.TGGRule;
 import language.TGGRuleNode;
@@ -373,6 +374,14 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		return options.tgg().getRules().stream()//
 				.filter(r -> r.getName().equals(ruleName))//
 				.findFirst();
+	}
+	
+	protected NAC getNac(String nacName) {
+		for (TGGRule r : options.tgg().getRules())
+			for (NAC n : r.getNacs())
+				if (n.getName().equals(nacName))
+					return n;
+		return null;
 	}
 	
 	protected void updateBlockedMatches() {

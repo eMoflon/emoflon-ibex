@@ -119,19 +119,19 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 		//usability-team
 		//get
 		
-		for (TGGRuleNode n : factory.getNegativeSrcNodesInRule()) {
+		for (TGGRuleNode n : factory.getNegativeSrcNodesInNac()) {
 			String refName = TGGModelUtils.getMarkerRefName(BindingType.NEGATIVE, DomainType.SRC, n.getName());
 			EReference ref = (EReference) type.getEStructuralFeature(refName);			
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		for (TGGRuleNode n : factory.getNegativeTrgNodesInRule()) {
+		for (TGGRuleNode n : factory.getNegativeTrgNodesInNac()) {
 			String refName = TGGModelUtils.getMarkerRefName(BindingType.NEGATIVE, DomainType.TRG, n.getName());
 			EReference ref = (EReference) type.getEStructuralFeature(refName);			
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		for (TGGRuleNode n : factory.getNegativeCorrNodesInRule()) {
+		for (TGGRuleNode n : factory.getNegativeCorrNodesInNac()) {
 			String refName = TGGModelUtils.getMarkerRefName(BindingType.NEGATIVE, DomainType.CORR, n.getName());
 			EReference ref = (EReference) type.getEStructuralFeature(refName);			
 			ra.eSet(ref, (EObject) match.get(n.getName()));			

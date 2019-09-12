@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -27,26 +27,16 @@ public abstract class BWD_OPT extends OPT {
 
 		EcoreUtil.resolveAll(rs);
 	}
-
+	
 	@Override
-	protected void wrapUp() {
-		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
-		for (int v : chooseTGGRuleApplications()) {
-			int id = v < 0 ? -v : v;
-			IMatch comatch = idToMatch.get(id);
-			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
-					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
+	protected void addObjectsToDelete(List<EObject> objectsToDelete, IMatch comatch, int id) {
+		for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+			objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
-				for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
-					objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
+		for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
+			objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
 
-				objectsToDelete.addAll(getRuleApplicationNodes(comatch));
-			}
-		}
-
-		EcoreUtil.deleteAll(objectsToDelete, true);
-		consistencyReporter.initTrg(this);
+		objectsToDelete.addAll(getRuleApplicationNodes(comatch));
 	}
 
 	@Override

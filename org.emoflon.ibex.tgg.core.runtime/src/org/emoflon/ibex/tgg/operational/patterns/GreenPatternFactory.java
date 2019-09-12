@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.BindingType;
@@ -52,49 +53,41 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	
 	//usability-team
 		//declaring -ve or nac src trg n corr nodes n src n trg edges
-	protected Collection<TGGRuleNode> negativeSrcNodesInRule = new ArrayList<>();
-	protected Collection<TGGRuleNode> negativeTrgNodesInRule = new ArrayList<>();
-	protected Collection<TGGRuleCorr> negativeCorrNodesInRule = new ArrayList<>();
-	protected Collection<TGGRuleEdge> negativeSrcEdgesInRule = new ArrayList<>();
-	protected Collection<TGGRuleEdge> negativeTrgEdgesInRule = new ArrayList<>();
+	protected Collection<TGGRuleNode> negativeSrcNodesInNac = new ArrayList<>();
+	protected Collection<TGGRuleNode> negativeTrgNodesInNac = new ArrayList<>();
+	protected Collection<TGGRuleCorr> negativeCorrNodesInNac = new ArrayList<>();
+	protected Collection<TGGRuleEdge> negativeSrcEdgesInNac = new ArrayList<>();
+	protected Collection<TGGRuleEdge> negativeTrgEdgesInNac = new ArrayList<>();
 	
 
 	public GreenPatternFactory(String ruleName, IbexOptions options, OperationalStrategy strategy) {
-		this(options, strategy);
+		this(options, strategy);  
 		
-		rule = null;
-		boolean isNac = false;
-		
-		for (TGGRule r : options.flattenedTGG().getRules())
-			if (r.getName().equals(ruleName))
-				rule = r;
-		
-		if (rule == null)
+		if (TGGUtil.isNac(ruleName, options)) {
 			for (TGGRule r : options.flattenedTGG().getRules())
 				for (NAC n : r.getNacs())
 					if (n.getName().contentEquals(ruleName)) {
 						rule = r;
 						nac = n;
-						isNac = true;
 						break;
 					}
-		
-		if (rule == null)
-			throw new IllegalStateException("Could not find " + ruleName + " in the TGG.");
-		
-		if (isNac) {
+			
 			 //usability-team
 			//defining -ve or nac nodes n edges for binding type NEGATIVE
-			negativeSrcNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.SRC));
-			negativeTrgNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.TRG));
-			negativeCorrNodesInRule.addAll(getNodes(BindingType.NEGATIVE, DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
+			negativeSrcNodesInNac.addAll(getNacNodes(DomainType.SRC));
+			negativeTrgNodesInNac.addAll(getNacNodes(DomainType.TRG));
+			negativeCorrNodesInNac.addAll(getNacNodes(DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
 					.collect(Collectors.toList()));
 
-			negativeSrcEdgesInRule.addAll(validate(getEdges(BindingType.NEGATIVE, DomainType.SRC)));
-			negativeTrgEdgesInRule.addAll(validate(getEdges(BindingType.NEGATIVE, DomainType.TRG)));
+			negativeSrcEdgesInNac.addAll(validate(getNacEdges(DomainType.SRC)));
+			negativeTrgEdgesInNac.addAll(validate(getNacEdges(DomainType.TRG)));
 			
 		}
 		else {
+			for (TGGRule r : options.flattenedTGG().getRules())
+				if (r.getName().equals(ruleName))
+					rule = r;
+			
 			greenSrcNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.SRC));
 			greenTrgNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.TRG));
 			greenCorrNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
@@ -113,7 +106,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 		blackSrcEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.SRC)));
 		blackTrgEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.TRG)));
-		blackCorrEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.CORR)));     
+		blackCorrEdgesInRule.addAll(validate(getEdges(BindingType.CONTEXT, DomainType.CORR)));   
 		
 		constraints.addAll(rule.getAttributeConditionLibrary().getTggAttributeConstraints());
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
@@ -141,6 +134,16 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 	private Collection<TGGRuleEdge> getEdges(BindingType bt, DomainType dt) {
 		return rule.getEdges().stream().filter(e -> e.getBindingType() == bt && e.getDomainType() == dt)
+				.collect(Collectors.toList());
+	}
+	
+	private Collection<TGGRuleNode> getNacNodes(DomainType dt) {
+		return nac.getNodes().stream().filter(n -> n.getBindingType() == BindingType.CONTEXT && n.getDomainType() == dt)
+				.collect(Collectors.toList());
+	}
+	
+	private Collection<TGGRuleEdge> getNacEdges(DomainType dt) {
+		return nac.getEdges().stream().filter(n -> n.getBindingType() == BindingType.CONTEXT && n.getDomainType() == dt)
 				.collect(Collectors.toList());
 	}
 
@@ -302,28 +305,28 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	//usability-team
 	//implementing -ve or nac src trg n corr nodes n src n trg edges
 	@Override
-	public Collection<TGGRuleNode> getNegativeSrcNodesInRule() {
-		return negativeSrcNodesInRule;
+	public Collection<TGGRuleNode> getNegativeSrcNodesInNac() {
+		return negativeSrcNodesInNac;
 	}
 
 	@Override
-	public Collection<TGGRuleNode> getNegativeTrgNodesInRule() {
-		return negativeTrgNodesInRule;
+	public Collection<TGGRuleNode> getNegativeTrgNodesInNac() {
+		return negativeTrgNodesInNac;
 	}
 
 	@Override
-	public Collection<TGGRuleCorr> getNegativeCorrNodesInRule() {
-		return negativeCorrNodesInRule;
+	public Collection<TGGRuleCorr> getNegativeCorrNodesInNac() {
+		return negativeCorrNodesInNac;
 	}
 
 	@Override
-	public Collection<TGGRuleEdge> getNegativeSrcEdgesInRule() {
-		return negativeSrcEdgesInRule;
+	public Collection<TGGRuleEdge> getNegativeSrcEdgesInNac() {
+		return negativeSrcEdgesInNac;
 	}
 
 	@Override
-	public Collection<TGGRuleEdge> getNegativeTrgEdgesInRule() {
-		return negativeTrgEdgesInRule;
+	public Collection<TGGRuleEdge> getNegativeTrgEdgesInNac() {
+		return negativeTrgEdgesInNac;
 	}
 
 	@Override

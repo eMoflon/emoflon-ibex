@@ -47,15 +47,15 @@ public interface IGreenPatternFactory {
 	
 	//usability-team
 	//declaring -ve or nac src trg n corr nodes n src n trg edges
-	public Collection<TGGRuleNode> getNegativeSrcNodesInRule();
+	public Collection<TGGRuleNode> getNegativeSrcNodesInNac();
 
-	public Collection<TGGRuleNode> getNegativeTrgNodesInRule();
+	public Collection<TGGRuleNode> getNegativeTrgNodesInNac();
 
-	public Collection<TGGRuleCorr> getNegativeCorrNodesInRule();
+	public Collection<TGGRuleCorr> getNegativeCorrNodesInNac();
 
-	public Collection<TGGRuleEdge> getNegativeSrcEdgesInRule();
+	public Collection<TGGRuleEdge> getNegativeSrcEdgesInNac();
 
-	public Collection<TGGRuleEdge> getNegativeTrgEdgesInRule();
+	public Collection<TGGRuleEdge> getNegativeTrgEdgesInNac();
 	
 	
 	

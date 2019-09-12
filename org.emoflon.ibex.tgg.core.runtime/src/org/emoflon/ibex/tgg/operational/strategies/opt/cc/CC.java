@@ -1,8 +1,8 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
@@ -18,8 +18,6 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import language.TGGRuleCorr;
 
 public abstract class CC extends OPT {
-
-	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 
 	public CC(IbexOptions options) throws IOException {
 		super(options);
@@ -82,26 +80,15 @@ public abstract class CC extends OPT {
 
 		return true;
 	}
-
+	
 	@Override
-	protected void wrapUp() {
-		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
-
-		for (int v : chooseTGGRuleApplications()) {
-			int id = v < 0 ? -v : v;
-			IMatch comatch = idToMatch.get(id);
-			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
-					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
-
-				objectsToDelete.add(getRuleApplicationNode(comatch));
-			}
-		}
-
-		EcoreUtil.deleteAll(objectsToDelete, true);
-		consistencyReporter.init(this);
+	protected void addObjectsToDelete(List<EObject> objectsToDelete, IMatch comatch, int id) {
+		for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+			objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
+	
+		objectsToDelete.add(getRuleApplicationNode(comatch));
 	}
-
+	
 	public boolean modelsAreConsistent() {
 		return getInconsistentSrcNodes().size() + //
 				getInconsistentTrgNodes().size() + //

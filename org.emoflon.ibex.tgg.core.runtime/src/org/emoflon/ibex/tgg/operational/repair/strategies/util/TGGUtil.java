@@ -1,10 +1,17 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies.util;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import language.BindingType;
 import language.DomainType;
+import language.NAC;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -54,5 +61,47 @@ public class TGGUtil {
 		return rule.getNodes().stream().noneMatch(n -> n.getBindingType() == BindingType.CONTEXT) && 
 				rule.getEdges().stream().noneMatch(e -> e.getBindingType() == BindingType.CONTEXT);
 	}
-
+	
+	public static boolean isNac(String ruleName, IbexOptions options) {
+		
+		for (TGGRule r : options.flattenedTGG().getRules())
+			if (r.getName().equals(ruleName))
+				return false;
+		
+		for (TGGRule r : options.flattenedTGG().getRules())
+			for (NAC n : r.getNacs())
+				if (n.getName().contentEquals(ruleName))
+					return true;
+		
+		throw new IllegalStateException("Could not find " + ruleName + " in the TGG.");
+	}
+	
+	public static EList<TGGRule> getRulesForNac(String nacName, IbexOptions options) {
+		
+		EList<TGGRule> result = new BasicEList<TGGRule>();
+		for (TGGRule r : options.flattenedTGG().getRules()) {
+			if (r.getNacs().stream().anyMatch(n -> n.getName().contentEquals(nacName))) {
+				result.add(r);
+			}
+		}
+		return result;
+	}
+	
+	public static <T> Set<T> intersect(Set<T> a, Set<T> b) {
+		Set<T> result = new HashSet<>();
+		
+		if (a.size() < b.size())
+			for (T elem : a) {
+				if (b.contains(elem))
+					result.add(elem);
+			}
+		else {
+			for (T elem : b) {
+				if (a.contains(elem))
+					result.add(elem);
+			}
+		}
+		
+		return result;
+	}
 }

@@ -40,13 +40,8 @@ public class ConsistencyReporter {
 				DomainType.SRC);
 		inconsistentTrgEdges = extractInconsistentEdges(strategy.getTargetResource(), strategy.getProtocolResource(),
 				DomainType.TRG);
-	}
-
-	public void initWithCorr(OperationalStrategy strategy) {
-		this.strategy = strategy;
-		init(strategy);
-		inconsistentCorrNodes = //
-				extractInconsistentNodes(strategy.getCorrResource(), strategy.getProtocolResource(), DomainType.CORR);
+		inconsistentCorrNodes = extractInconsistentNodes(strategy.getCorrResource(), strategy.getProtocolResource(), 
+				DomainType.CORR);
 	}
 
 	public void initSrc(OperationalStrategy strategy) {

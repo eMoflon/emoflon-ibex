@@ -1,8 +1,8 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -25,18 +25,8 @@ public abstract class CO extends CC {
 	}
 
 	@Override
-	protected void wrapUp() {
-		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
-
-		for (int v : chooseTGGRuleApplications()) {
-			int id = v < 0 ? -v : v;
-			IMatch comatch = idToMatch.get(id);
-			if (v < 0)
-				objectsToDelete.add(getRuleApplicationNode(comatch));
-		}
-
-		EcoreUtil.deleteAll(objectsToDelete, true);
-		consistencyReporter.initWithCorr(this);
+	protected void addObjectsToDelete(List<EObject> objectsToDelete, IMatch comatch, int id) {
+		objectsToDelete.add(getRuleApplicationNode(comatch));
 	}
 
 	@Override
