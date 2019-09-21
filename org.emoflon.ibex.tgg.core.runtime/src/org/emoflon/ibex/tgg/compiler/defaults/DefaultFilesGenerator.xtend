@@ -127,10 +127,7 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Logger;
 			import org.apache.log4j.BasicConfigurator;
 			
-			import org.emoflon.ibex.tgg.operational.monitoring.IVictoryDataProvider;
-			import org.emoflon.ibex.tgg.operational.monitoring.VictoryDataProvider;
-			import org.emoflon.ibex.tgg.ui.debug.core.IbexDebugUI;
-			import org.emoflon.ibex.tgg.ui.debug.options.IBeXOp;
+			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdpater.VictoryIBeXAdapter;
 			
 			«additionalImports»
 			
@@ -209,13 +206,12 @@ class DefaultFilesGenerator {
 				
 				    MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 				    generator.setStopCriterion(stop);
-				
-				    IVictoryDataProvider dataProvider = new VictoryDataProvider(generator);
-				    IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.MODELGEN);
+				    
+				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(generator);
 				
 				    Thread ibex = new Thread(() -> {
 				
-				        ui.getIbexController().register(generator);
+				        adapter.register(generator);
 				
 				        try {
 						    logger.info("Starting MODELGEN_Debug");
@@ -232,7 +228,7 @@ class DefaultFilesGenerator {
 				    }, "IBeX main thread");
 				    ibex.start();
 				
-				    restart = ui.run();
+				    restart = adapter.runUI();
 				        if (ibex.isAlive())
 				            try {
 				                ibex.join(500);
@@ -454,12 +450,11 @@ class DefaultFilesGenerator {
 				    long toc = System.currentTimeMillis();
 				    logger.info("Completed init for INITIAL_FWD_Debug in: " + (toc - tic) + " ms");
 				
-				    IVictoryDataProvider dataProvider = new VictoryDataProvider(init_fwd);
-				    IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_FWD);
+				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_fwd);
 
 				    Thread ibex = new Thread(() -> {
 				
-				        ui.getIbexController().register(init_fwd);
+				        adapter.register(init_fwd);
 				
 				        try {
 						    logger.info("Starting INITIAL_FWD_Debug");
@@ -476,7 +471,7 @@ class DefaultFilesGenerator {
 				    }, "IBeX main thread");
 				    ibex.start();
 
-				    restart = ui.run();
+				    restart = adapter.runUI();
 				        if (ibex.isAlive())
 				            try {
 				                ibex.join(500);
@@ -563,12 +558,11 @@ class DefaultFilesGenerator {
 				    long toc = System.currentTimeMillis();
 				    logger.info("Completed init for INITIAL_BWD_Debug in: " + (toc - tic) + " ms");
 				
-				    IVictoryDataProvider dataProvider = new VictoryDataProvider(init_bwd);
-				    IbexDebugUI ui = IbexDebugUI.create(dataProvider, IBeXOp.INITIAL_BWD);
+				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_bwd);
 
 				    Thread ibex = new Thread(() -> {
 				
-				        ui.getIbexController().register(init_bwd);
+				        adapter.register(init_bwd);
 				
 				        try {
 						    logger.info("Starting INITIAL_BWD_Debug");
@@ -585,7 +579,7 @@ class DefaultFilesGenerator {
 				    }, "IBeX main thread");
 				    ibex.start();
 
-				    restart = ui.run();
+				    restart = adapter.runUI();
 				        if (ibex.isAlive())
 				            try {
 				                ibex.join(500);

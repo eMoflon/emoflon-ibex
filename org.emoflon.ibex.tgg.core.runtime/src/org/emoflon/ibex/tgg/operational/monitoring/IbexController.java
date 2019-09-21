@@ -25,7 +25,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
     private OperationalStrategy operationalStrategy;
     private Set<EObject> resourceList = new HashSet<EObject>();
     private List<ProtocolStep> protocolsStepList = new ArrayList<ProtocolStep>();
-    private Map<IMatch, VictoryMatch> matchMapping = new HashMap<>();
+    private Map<IMatch, IbexMatch> matchMapping = new HashMap<>();
 
     public void register(OperationalStrategy pOperationalStrategy) {
 	operationalStrategy = pOperationalStrategy;
@@ -38,10 +38,10 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 	updateMatchMapping(matchContainer.getMatches());
 
-	return chooseOneMatch(new VictoryDataPackage(matchMapping.values(), getProtocols()));
+	return chooseOneMatch(new DataPackage(matchMapping.values(), getProtocols()));
     }
 
-    public Collection<VictoryMatch> getMoreMatches(int amount) {
+    public Collection<IbexMatch> getMoreMatches(int amount) {
 
 	/*
 	 * TODO implement This method needs to provide the specified number of
@@ -99,30 +99,32 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		iterator.remove();
 	}
 
-	VictoryMatch.startMatchCreation(step);
+	IbexMatch.startMatchCreation(step);
 
 	for (IMatch match : pMatches)
 	    if (matchMapping.containsKey(match))
 		matchMapping.get(match).setBlockingReason(null);
 	    else
-		matchMapping.put(match, VictoryMatch.newMatch(match));
+		matchMapping.put(match, IbexMatch.newMatch(match));
 
 	if (operationalStrategy.getBlockedMatches() != null)
 	    operationalStrategy.getBlockedMatches().forEach((match, reason) -> {
 		if (matchMapping.containsKey(match))
 		    matchMapping.get(match).setBlockingReason(reason);
 		else {
-		    VictoryMatch vMatch = VictoryMatch.newMatch(match);
+		    IbexMatch vMatch = IbexMatch.newMatch(match);
 		    vMatch.setBlockingReason(reason);
 		    matchMapping.put(match, vMatch);
 		}
 	    });
 
-	VictoryMatch.finishMatchCreation();
+	IbexMatch.finishMatchCreation();
 	step++;
     }
 
-    public abstract IMatch chooseOneMatch(VictoryDataPackage pDataPackage);
+    public void update(ObservableEvent pEventType, Object... pAdditionalInformation) {
+	// ignore by default
+    }
 
-    protected abstract int getRequestedMatchCount();
+    public abstract IMatch chooseOneMatch(DataPackage pDataPackage);
 }
