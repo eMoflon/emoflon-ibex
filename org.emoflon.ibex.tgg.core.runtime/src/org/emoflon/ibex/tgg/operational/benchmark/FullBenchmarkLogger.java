@@ -31,17 +31,17 @@ public class FullBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
-	public long getTotalTranslationTime() {
+	public long getTotalExecutionTime() {
 		long totalTime = 0;
 		for (BenchmarkRunLog runLog : runLogs) {
-			totalTime += runLog.getTranslationTime();
+			totalTime += runLog.getExecutionTime();
 		}
 		return totalTime;
 	}
 
 	@Override
-	public void addToTranslationTime(long time) {
-		runLogs.get(runCount).addToTranslationTime(time);
+	public void addToExecutionTime(long time) {
+		runLogs.get(runCount).addToExecutionTime(time);
 	}
 
 	@Override
@@ -104,6 +104,20 @@ public class FullBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
+	public long getTotalMatchesRevoked() {
+		long totalElem = 0;
+		for (BenchmarkRunLog runLog : runLogs) {
+			totalElem += runLog.getNumOfMatchesRevoked();
+		}
+		return totalElem;
+	}
+
+	@Override
+	public void addToNumOfMatchesRevoked(long numOfMatchesRevoked) {
+		runLogs.get(runCount).addToNumOfMatchesRevoked(numOfMatchesRevoked);
+	}
+
+	@Override
 	public long getTotalMatchesApplied() {
 		long totalElem = 0;
 		for (BenchmarkRunLog runLog : runLogs) {
@@ -128,8 +142,8 @@ public class FullBenchmarkLogger extends BenchmarkLogger {
 		builder.append("BenchmarkLogger\n[");
 		builder.append("\n  Initialisation time ..... ");
 		builder.append(initTime + "ms");
-		builder.append("\n  Total translation time .. ");
-		builder.append(getTotalTranslationTime() + "ms");
+		builder.append("\n  Total execution time .... ");
+		builder.append(getTotalExecutionTime() + "ms");
 		builder.append("\n  Total elements created .. ");
 		builder.append(getTotalElementsCreated());
 		builder.append("\n  Total elements deleted .. ");
@@ -138,6 +152,8 @@ public class FullBenchmarkLogger extends BenchmarkLogger {
 		builder.append(getTotalMatchesFound());
 		builder.append("\n  Total matches repaired .. ");
 		builder.append(getTotalMatchesRepaired());
+		builder.append("\n  Total matches revoked ... ");
+		builder.append(getTotalMatchesRevoked());
 		builder.append("\n  Total matches applied ... ");
 		builder.append(getTotalMatchesApplied());
 		builder.append("\n]");
