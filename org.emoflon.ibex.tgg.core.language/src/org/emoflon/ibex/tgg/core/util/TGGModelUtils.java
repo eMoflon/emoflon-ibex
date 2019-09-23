@@ -87,6 +87,14 @@ public class TGGModelUtils {
 				.filter(e -> e.getDomainType().equals(domain))//
 				.collect(Collectors.toList());
 	}
+	
+	public static Collection<? extends TGGRuleEdge> getEdgesByOperatorAndDomain(NAC nac, BindingType type,
+			DomainType domain) {
+		return getEdgesByOperator(nac, type)//
+				.stream()//
+				.filter(e -> e.getDomainType().equals(domain))//
+				.collect(Collectors.toList());
+	}
 
 	public static boolean isOfDomain(NAC nac, DomainType domain) {
 		return nac.getNodes().stream().anyMatch(n -> n.getDomainType().equals(domain));

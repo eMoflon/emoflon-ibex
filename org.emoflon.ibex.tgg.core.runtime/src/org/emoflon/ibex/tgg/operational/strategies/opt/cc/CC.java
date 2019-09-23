@@ -1,13 +1,9 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt.cc;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -89,49 +85,12 @@ public abstract class CC extends OPT {
 		objectsToDelete.add(getRuleApplicationNode(comatch));
 	}
 	
+	@Override
 	public boolean modelsAreConsistent() {
 		return getInconsistentSrcNodes().size() + //
 				getInconsistentTrgNodes().size() + //
 				getInconsistentSrcEdges().size() + //
 				getInconsistentTrgEdges().size() == 0;
-	}
-
-	public Collection<EObject> getInconsistentSrcNodes() {
-		return consistencyReporter.getInconsistentSrcNodes();
-	}
-
-	public Collection<EObject> getInconsistentTrgNodes() {
-		return consistencyReporter.getInconsistentTrgNodes();
-	}
-
-	public Collection<EMFEdge> getInconsistentSrcEdges() {
-		return consistencyReporter.getInconsistentSrcEdges();
-	}
-
-	public Collection<EMFEdge> getInconsistentTrgEdges() {
-		return consistencyReporter.getInconsistentTrgEdges();
-	}
-
-	public String generateConsistencyReport() {
-		String result = "";
-		if (modelsAreConsistent())
-			result += "Your models are consistent";
-		else {
-			result += "Your models are inconsistent. The following elements are not part of a consistent triple:";
-			result += "\n" + "Source nodes:" + "\n";
-			result += String.join("\n",
-					getInconsistentSrcNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
-			result += "\n" + "Source edges:" + "\n";
-			result += String.join("\n",
-					getInconsistentSrcEdges().stream().map(n -> n.toString()).collect(Collectors.toSet()));
-			result += "\n" + "Target nodes:" + "\n";
-			result += String.join("\n",
-					getInconsistentTrgNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
-			result += "\n" + "Target edges:" + "\n";
-			result += String.join("\n",
-					getInconsistentTrgEdges().stream().map(n -> n.toString()).collect(Collectors.toSet()));
-		}
-		return result;
 	}
 
 	/**

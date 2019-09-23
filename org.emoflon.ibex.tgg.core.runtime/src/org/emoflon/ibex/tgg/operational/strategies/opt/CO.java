@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.opt;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
@@ -61,10 +60,6 @@ public abstract class CO extends CC {
 	public boolean modelsAreConsistent() {
 		return getInconsistentSrcNodes().size() + getInconsistentTrgNodes().size() + getInconsistentSrcEdges().size()
 				+ getInconsistentTrgEdges().size() + getInconsistentCorrNodes().size() == 0;
-	}
-
-	public Collection<EObject> getInconsistentCorrNodes() {
-		return consistencyReporter.getInconsistentCorrNodes();
 	}
 
 	@Override

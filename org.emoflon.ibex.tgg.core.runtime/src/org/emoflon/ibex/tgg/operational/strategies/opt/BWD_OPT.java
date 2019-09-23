@@ -66,6 +66,11 @@ public abstract class BWD_OPT extends OPT {
 	}
 
 	@Override
+	public boolean modelsAreConsistent() {
+		return getInconsistentTrgNodes().size() + getInconsistentTrgEdges().size() == 0;
+	}
+	
+	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenTrgNodesInRule().size();

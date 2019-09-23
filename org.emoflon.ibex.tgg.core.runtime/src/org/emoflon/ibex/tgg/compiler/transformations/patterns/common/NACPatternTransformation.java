@@ -33,11 +33,17 @@ public class NACPatternTransformation extends OperationalPatternTransformation{
 	        return getNACPatternName(nac.getName());
 	    }
   
-    protected void transformNodes(IBeXContextPattern ibexPattern) {
+    protected void transformNodes(IBeXContextPattern ibexPattern) { 	
 	        List<TGGRuleNode> nodes = TGGModelUtils.getNodesByOperator(nac, BindingType.CONTEXT);
-	        nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(nac, BindingType.NEGATIVE, DomainType.SRC));
-	        nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(nac, BindingType.NEGATIVE, DomainType.TRG));
-	        //nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.NEGATIVE, DomainType.CORR));
+	        for (TGGRuleNode n : TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT)) {
+	        	if (nodes.stream().noneMatch(node -> node.getName().equals(n.getName())))
+	        		nodes.add(n);
+	        }
+	        	
+	        //nodes.addAll(TGGModelUtils.getNodesByOperator(rule, BindingType.CONTEXT));
+	        //nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(nac, BindingType.NEGATIVE, DomainType.SRC));
+	        //nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(nac, BindingType.NEGATIVE, DomainType.TRG));
+	        //nodes.addAll(TGGModelUtils.getNodesByOperatorAndDomain(nac, BindingType.NEGATIVE, DomainType.CORR));
 	        
 	        for (final TGGRuleNode node : nodes) {
 	            parent.transformNode(ibexPattern, node);
@@ -51,10 +57,17 @@ public class NACPatternTransformation extends OperationalPatternTransformation{
 	    }
 
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
-	        List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
-	        edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.NEGATIVE, DomainType.SRC));
-	        edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.NEGATIVE, DomainType.TRG));
-	        //edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.NEGATIVE, DomainType.CORR));
+	        List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(nac, BindingType.CONTEXT);
+	        edges.addAll(TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT));
+	        for (TGGRuleEdge e : TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT)) {
+	        	if (!edges.contains(e))
+	        		edges.add(e);
+	        }
+	        
+	        //edges.addAll(TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT));
+	        //edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(nac, BindingType.NEGATIVE, DomainType.SRC));
+	        //edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(nac, BindingType.NEGATIVE, DomainType.TRG));
+	        //edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(nac, BindingType.NEGATIVE, DomainType.CORR));
 	        
 	        for (TGGRuleEdge edge : edges)
 	            parent.transformEdge(edges, edge, ibexPattern);
@@ -62,15 +75,15 @@ public class NACPatternTransformation extends OperationalPatternTransformation{
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
-			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
-		}
-		
-		filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule, options);
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
-			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
-		}
+//		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
+//		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+//			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+//		}
+//		
+//		filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule, options);
+//		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+//			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+//		}
 		
 	}
 

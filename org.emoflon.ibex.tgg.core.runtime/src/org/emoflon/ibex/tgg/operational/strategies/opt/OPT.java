@@ -45,7 +45,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
-import language.NAC;
 import language.TGGRule;
 import language.TGGRuleNode;
 
@@ -134,7 +133,7 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected void wrapUp() {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
-
+		
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			IMatch comatch = idToMatch.get(id);
@@ -146,7 +145,7 @@ public abstract class OPT extends OperationalStrategy {
 		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.init(this);
 	}
-	
+
 	protected abstract void addObjectsToDelete(List<EObject> objectsToDelete, IMatch comatch, int id);
 
 	public void relaxReferences(final EList<EPackage> model) {
@@ -302,54 +301,39 @@ public abstract class OPT extends OperationalStrategy {
 
 	// usability-team
 	protected void defineNACImplications(final BinaryILPProblem ilpProblem) {
-//		IntSet creatingMatchIDs = CollectionFactory.cfactory.createIntSet();
-//		
-//		for (int nacMatchId : idToMatch.keySet()) {
-//			String nacName = idToMatch.get(nacMatchId).getRuleName();
-//			if (TGGUtil.isNac(nacName, options)) {
-//				for (EObject node : this.matchToNegativeNodes.get(nacMatchId)) {
-//					
-//				}
-//		
-//			}
-//		}
 		
-		// Context for nodes
-		for (EObject node : this.negativeNodeToNeedingMatches.keySet()) {
-			IntSet needingMatchIDs = this.negativeNodeToNeedingMatches.get(node);
-			IntSet creatingMatchIDs = this.nodeToMarkingMatches.get(node);
-
-			// only one or none of the creating matches can be chosen (defined by
-			// exclusions)
-			if (creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
-				for (int id : needingMatchIDs) {
-					ilpProblem.addImplication(creatingMatchIDs.stream().map(m -> "x" + m),
-							Stream.of("x" + id), "NAC_IMPL_" + node.eClass().getName() + this.nameCounter++);
+		// Context for nodes and edges
+		for (int nacMatchId : idToMatch.keySet()) {
+			String nacName = idToMatch.get(nacMatchId).getRuleName();
+			if (TGGUtil.isNac(nacName, options)) {
+				logger.debug("Processing NAC " + nacName + " with id " + nacMatchId + "...");
+				IntSet auxiliaryVariableIDs = CollectionFactory.cfactory.createIntSet();
+				
+				// Check that all negative nodes and edges are indeed matched, otherwise no constraint is created
+				if (!this.matchToNegativeNodes.get(nacMatchId).stream().findAny().map(n -> nodeToMarkingMatches.get(n)).isPresent())
+					continue;
+				
+				if (!this.matchToNegativeEdges.get(nacMatchId).stream().findAny().map(n -> edgeToMarkingMatches.get(n)).isPresent())
+					continue;
+				
+				for (EObject node : this.matchToNegativeNodes.get(nacMatchId)) {
+					logger.debug("Node: " + node.getClass() + " with ID " + idCounter);
+					auxiliaryVariableIDs.add(idCounter);
+					ilpProblem.addNegativeImplication(Stream.of("x" + idCounter++), 
+							this.nodeToMarkingMatches.get(node).stream().map(m -> "x" + m), 
+							"NAC_AUX_" + node.eClass().getName() + this.nameCounter++);
 				}
-			} else {
-				// there is no match creating this node -> forbid all matches needing it
-				needingMatchIDs.stream().forEach(m -> {
-					ilpProblem.fixVariable("x" + m, false);
-				});
-			}
-		}
-
-		// Context for edges
-		for (EMFEdge edge : this.negativeEdgeToNeedingMatches.keySet()) {
-			IntSet needingMatchIDs = this.negativeEdgeToNeedingMatches.get(edge);
-			IntSet creatingMatchIDs = this.edgeToMarkingMatches.get(edge);
-			// only one or none of the creating matches can be chosen (defined by
-			// exclusions)
-			if (creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
-				for (int id : needingMatchIDs) {
-					ilpProblem.addImplication(creatingMatchIDs.stream().map(m -> "x" + m),
-							Stream.of("x" + id), "NAC_IMPL_" + edge.getType().getName() + this.nameCounter++);
+				
+				for (EMFEdge edge : this.matchToNegativeEdges.get(nacMatchId)) {
+					logger.debug("Edge: " + edge.getType() + " with ID " + idCounter);
+					auxiliaryVariableIDs.add(idCounter);
+					ilpProblem.addNegativeImplication(Stream.of("x" + idCounter++), 
+							this.edgeToMarkingMatches.get(edge).stream().map(m -> "x" + m), 
+							"NAC_AUX_" + edge.getType().getName() + this.nameCounter++);
 				}
-			} else {
-				// there is no match creating this node -> forbid all matches needing it
-				needingMatchIDs.stream().forEach(m -> {
-					ilpProblem.fixVariable("x" + m, false);
-				});
+				
+				ilpProblem.addImplication(auxiliaryVariableIDs.stream().map(m -> "x" + m),
+						Stream.of("x" + nacMatchId), "NAC_IMPL_" + nacName + this.nameCounter++);
 			}
 		}
 
@@ -653,13 +637,60 @@ public abstract class OPT extends OperationalStrategy {
 			markingMatchToNodes.put(idCounter, cfactory.createObjectSet());
 			markingMatchToNodes.get(idCounter).addAll(getGreenNodes(comatch, ruleName));
 
-			markingMatchToEdges.put(idCounter, cfactory.createObjectSet());
+			markingMatchToEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
 			markingMatchToEdges.get(idCounter).addAll(getGreenEdges(comatch, ruleName));
 		}
 
 		handleBundles(comatch, ruleName);
 
 		idCounter++;
+	}
+	
+	public abstract boolean modelsAreConsistent();
+	
+	public Collection<EObject> getInconsistentSrcNodes() {
+		return consistencyReporter.getInconsistentSrcNodes();
+	}
+
+	public Collection<EObject> getInconsistentTrgNodes() {
+		return consistencyReporter.getInconsistentTrgNodes();
+	}
+	
+	public Collection<EObject> getInconsistentCorrNodes() {
+		return consistencyReporter.getInconsistentCorrNodes();
+	}
+
+	public Collection<EMFEdge> getInconsistentSrcEdges() {
+		return consistencyReporter.getInconsistentSrcEdges();
+	}
+
+	public Collection<EMFEdge> getInconsistentTrgEdges() {
+		return consistencyReporter.getInconsistentTrgEdges();
+	}
+
+	public String generateConsistencyReport() {
+		String result = "";
+		if (modelsAreConsistent())
+			result += "Your models are consistent";
+		else {
+			result += "Your models are inconsistent. The following elements are not part of a consistent triple:";
+			result += "\n" + "Source nodes:" + "\n";
+			result += String.join("\n",
+					getInconsistentSrcNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
+			result += "\n" + "Source edges:" + "\n";
+			result += String.join("\n",
+					getInconsistentSrcEdges().stream().map(n -> n.toString()).collect(Collectors.toSet()));
+			result += "\n" + "Correspondence nodes:" + "\n";
+			result += String.join("\n",
+					getInconsistentCorrNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
+			result += "\n" + "Target nodes:" + "\n";
+			result += String.join("\n",
+					getInconsistentTrgNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
+			result += "\n" + "Target edges:" + "\n";
+			result += String.join("\n",
+					getInconsistentTrgEdges().stream().map(n -> n.toString()).collect(Collectors.toSet()));
+		}
+		return result;
 	}
 
 }

@@ -69,6 +69,11 @@ public abstract class FWD_OPT extends OPT {
 	}
 
 	@Override
+	public boolean modelsAreConsistent() {
+		return getInconsistentSrcNodes().size() + getInconsistentSrcEdges().size() == 0;
+	}
+	
+	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
