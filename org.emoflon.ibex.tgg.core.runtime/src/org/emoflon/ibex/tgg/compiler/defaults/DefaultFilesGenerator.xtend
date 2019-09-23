@@ -127,6 +127,7 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Logger;
 			import org.apache.log4j.BasicConfigurator;
 			
+			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdpater.IBeXOperation;
 			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdpater.VictoryIBeXAdapter;
 			
 			«additionalImports»
@@ -207,7 +208,7 @@ class DefaultFilesGenerator {
 				    MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());
 				    generator.setStopCriterion(stop);
 				    
-				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(generator);
+				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(generator, IBeXOperation.MODELGEN);
 				
 				    Thread ibex = new Thread(() -> {
 				
@@ -450,7 +451,7 @@ class DefaultFilesGenerator {
 				    long toc = System.currentTimeMillis();
 				    logger.info("Completed init for INITIAL_FWD_Debug in: " + (toc - tic) + " ms");
 				
-				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_fwd);
+				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_fwd, IBeXOperation.FWD);
 
 				    Thread ibex = new Thread(() -> {
 				
@@ -558,7 +559,7 @@ class DefaultFilesGenerator {
 				    long toc = System.currentTimeMillis();
 				    logger.info("Completed init for INITIAL_BWD_Debug in: " + (toc - tic) + " ms");
 				
-				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_bwd);
+				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_bwd, IBeXOperation.FWD);
 
 				    Thread ibex = new Thread(() -> {
 				
