@@ -7,23 +7,23 @@ import java.util.Map;
 
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 
-public class VictoryMatch {
+public class IbexMatch {
 
     private static int currentStep;
-    private static Map<String, List<VictoryMatch>> ruleSets = new HashMap<>();
+    private static Map<String, List<IbexMatch>> ruleSets = new HashMap<>();
 
     public static void startMatchCreation(int pBirthStep) {
 	currentStep = pBirthStep;
 	ruleSets.clear();
     }
 
-    public static VictoryMatch newMatch(IMatch pMatch) {
+    public static IbexMatch newMatch(IMatch pMatch) {
 
-	VictoryMatch vMatch = new VictoryMatch(pMatch, currentStep);
+	IbexMatch vMatch = new IbexMatch(pMatch, currentStep);
 
-	List<VictoryMatch> ruleSet = ruleSets.get(pMatch.getRuleName());
+	List<IbexMatch> ruleSet = ruleSets.get(pMatch.getRuleName());
 	if (ruleSet == null) {
-	    ruleSet = new LinkedList<VictoryMatch>();
+	    ruleSet = new LinkedList<IbexMatch>();
 	    ruleSets.put(pMatch.getRuleName(), ruleSet);
 	}
 
@@ -44,7 +44,7 @@ public class VictoryMatch {
     private String matchName;
     private String blockingReason;
 
-    private VictoryMatch(IMatch pMatch, int pBirthStep) {
+    private IbexMatch(IMatch pMatch, int pBirthStep) {
 	match = pMatch;
 	matchName = match.getRuleName() + " #" + pBirthStep;
     }
