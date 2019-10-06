@@ -7,9 +7,13 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver.ObservableEvent;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
-
+/**
+ * Abstract class implementing methods of {@link IbexObservable}
+ */
 public abstract class AbstractIbexObservable implements IbexObservable {
-	
+	/**
+	 * Set of observers to be informed of changes in observable objects
+	 */
 	private Set<IbexObserver> observers = new HashSet<IbexObserver>(); 
 	
 	private IUpdatePolicy updatePolicy; 

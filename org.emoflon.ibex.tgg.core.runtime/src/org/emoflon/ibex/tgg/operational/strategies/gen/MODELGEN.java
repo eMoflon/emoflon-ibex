@@ -165,7 +165,10 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 		return true;
 	}
-	
+	/**
+	 * Matches blocked by Stop criterion will be removed from the 
+	 * operational match container containing the applicable matches
+	 */
 	@Override
 	protected void updateBlockedMatches() {
 		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {

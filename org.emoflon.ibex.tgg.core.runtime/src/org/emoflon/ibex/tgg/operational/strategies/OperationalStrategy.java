@@ -374,7 +374,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 				.filter(r -> r.getName().equals(ruleName))//
 				.findFirst();
 	}
-	
+	/**
+	 * Matches blocked by either Update Policy will be removed from
+	 * the operational match container containing the applicable matches 
+	 */
 	protected void updateBlockedMatches() {
 		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {
 			if(!this.getUpdatePolicy().matchShouldBeApplied(match, operationalMatchContainer.getRuleName(match))) {
@@ -384,7 +387,11 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			}
 		}
 	}
-
+	/**
+	 * Return list of blocked matches from the operational strategy that can be
+	 * accessed by the UI to display blocked matches
+	 * @return map of blockedMatches
+	 */
 	public Map<IMatch, String> getBlockedMatches() {
 	    return this.blockedMatches;
 	}

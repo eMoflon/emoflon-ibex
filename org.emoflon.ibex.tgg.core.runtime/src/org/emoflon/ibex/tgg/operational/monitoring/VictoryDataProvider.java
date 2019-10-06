@@ -149,7 +149,12 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		}
 
 	}
-
+/**
+ *  Saves each model at passed location
+ * @param r Resource to be saved
+ * @param time current time for unique model name
+ * @throws IOException 
+ */
 	private void saveModel(Resource r, String time) throws IOException {
 		String path = r.getURI().toString();
 

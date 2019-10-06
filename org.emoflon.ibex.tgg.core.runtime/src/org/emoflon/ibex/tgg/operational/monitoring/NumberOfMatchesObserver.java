@@ -13,7 +13,9 @@ public class NumberOfMatchesObserver extends AbstractIbexObserver{
     public NumberOfMatchesObserver(IbexObservable observable) {
 		super(observable);
 	}
-
+/**
+ *  Logs number of matches found for each patterns
+ */
 	@Override
 	public void update(ObservableEvent eventType, Object... additionalInformation) {
 		switch(eventType) {
