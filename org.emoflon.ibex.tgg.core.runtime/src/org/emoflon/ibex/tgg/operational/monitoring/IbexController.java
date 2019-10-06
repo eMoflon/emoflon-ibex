@@ -25,6 +25,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	private OperationalStrategy operationalStrategy;
 	private List<ProtocolStep> protocolsStepList = new ArrayList<ProtocolStep>();
 	private Map<IMatch, IbexMatch> matchMapping = new HashMap<>();
+	private String previouslyAppliedRule;
 
 	public void register(OperationalStrategy pOperationalStrategy) {
 		operationalStrategy = pOperationalStrategy;
@@ -36,11 +37,10 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
 
 		updateMatchMapping(matchContainer.getMatches());
+		updateProtocols(previouslyAppliedRule);
 
 		IMatch chosenMatch = chooseOneMatch(new DataPackage(matchMapping.values(), protocolsStepList));
-
-		updateProtocols(chosenMatch.getRuleName());
-
+		previouslyAppliedRule = chosenMatch.getRuleName();
 		return chosenMatch;
 	}
 
@@ -60,7 +60,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 		EList<EObject> protocols = operationalStrategy.getProtocolResource().getContents();
 		if (protocols.isEmpty())
-			throw new IllegalStateException("The protocol resource should not be empty.");
+			return;
 
 		int index = protocols.size() - 1;
 		EList<EObject> items = protocols.get(index).eCrossReferences();
