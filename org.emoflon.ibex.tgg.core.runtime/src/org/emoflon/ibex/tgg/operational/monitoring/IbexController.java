@@ -3,11 +3,11 @@ package org.emoflon.ibex.tgg.operational.monitoring;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -23,7 +23,6 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 	private int step = 0;
 	private OperationalStrategy operationalStrategy;
-	private Set<EObject> resourceList = new HashSet<EObject>();
 	private List<ProtocolStep> protocolsStepList = new ArrayList<ProtocolStep>();
 	private Map<IMatch, IbexMatch> matchMapping = new HashMap<>();
 
@@ -37,9 +36,12 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
 
 		updateMatchMapping(matchContainer.getMatches());
-		updateProtocols();
 
-		return chooseOneMatch(new DataPackage(matchMapping.values(), protocolsStepList));
+		IMatch chosenMatch = chooseOneMatch(new DataPackage(matchMapping.values(), protocolsStepList));
+
+		updateProtocols(chosenMatch.getRuleName());
+
+		return chosenMatch;
 	}
 
 	public Collection<IbexMatch> getMoreMatches(int amount) {
@@ -54,36 +56,25 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		return null;
 	}
 
-	private void updateProtocols() {
-		int index = protocolsStepList.size();
-		HashSet<EObject> srcResourceList = new HashSet<EObject>();
-		HashSet<EObject> trgResourceList = new HashSet<EObject>();
-		HashSet<EObject> corrResourceList = new HashSet<EObject>();
+	private void updateProtocols(String appliedRuleName) {
 
-		Resource p = operationalStrategy.getProtocolResource();
-		EList<EObject> protocols = p.getContents();
-		if (protocols.size() > 0) {
-			EList<EObject> items = protocols.get(protocols.size() - 1).eCrossReferences();
-			srcResourceList = getResourceItems(items, operationalStrategy.getSourceResource());
-			trgResourceList = getResourceItems(items, operationalStrategy.getTargetResource());
-			corrResourceList = getResourceItems(items, operationalStrategy.getCorrResource());
-			ProtocolStep protocolStep = new ProtocolStep(index,
-					new TGGObjectGraph(srcResourceList, trgResourceList, corrResourceList));
-			protocolsStepList.add(protocolStep);
-		}
+		EList<EObject> protocols = operationalStrategy.getProtocolResource().getContents();
+		if (protocols.isEmpty())
+			throw new IllegalStateException("The protocol resource should not be empty.");
+
+		int index = protocols.size() - 1;
+		EList<EObject> items = protocols.get(index).eCrossReferences();
+		ProtocolStep protocolStep = new ProtocolStep(index,
+				new TGGObjectGraph(filterResourceItems(items, operationalStrategy.getSourceResource()),
+						filterResourceItems(items, operationalStrategy.getTargetResource()),
+						filterResourceItems(items, operationalStrategy.getCorrResource())),
+				operationalStrategy.getTGG().getRules().stream().filter(rule -> rule.getName().equals(appliedRuleName))
+						.findFirst().orElse(null));
+		protocolsStepList.add(protocolStep);
 	}
 
-	private HashSet<EObject> getResourceItems(EList<EObject> items, Resource resource) {
-		HashSet<EObject> currentResourceList = new HashSet<EObject>();
-
-		for (EObject item : items) {
-			if (!resourceList.contains(item) && item.eResource().equals(resource)) {
-				currentResourceList.add(item);
-				resourceList.add(item);
-			}
-		}
-
-		return currentResourceList;
+	private Set<EObject> filterResourceItems(EList<EObject> items, Resource resource) {
+		return items.stream().filter(item -> item.eResource().equals(resource)).collect(Collectors.toSet());
 	}
 
 	private void updateMatchMapping(Collection<IMatch> pMatches) {
