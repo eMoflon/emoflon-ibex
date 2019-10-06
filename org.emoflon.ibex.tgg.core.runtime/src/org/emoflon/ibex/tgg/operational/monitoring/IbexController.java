@@ -241,6 +241,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			HashSet<EObject> corrResourceList = getCurrentResourceItems(items, operationalStrategy.getCorrResource());
 			HashSet<EObject> matchSrcResourceList = new HashSet<EObject>();
 			HashSet<EObject> matchTrgResourceList = new HashSet<EObject>();
+			HashSet<EObject> matchCorrResourceList = new HashSet<EObject>();
 
 			Collection<Node> srcNodes = generateNodes(srcResourceList, Domain.SRC, Action.CREATE);
 			Collection<Node> trgNodes = generateNodes(trgResourceList, Domain.TRG, Action.CREATE);
@@ -251,6 +252,8 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			nodeList.put(index, allNodes);
 
 			for (String pn : chosenMatch.getParameterNames()) {
+				
+				EObject test = (EObject) chosenMatch.get(pn);
 				for (TGGRuleNode n : rule.getNodes()) {
 					if (n.getName().equals(pn)) {
 						switch (n.getDomainType()) {
@@ -265,10 +268,15 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 						}
 					}
 				}
+				
+				if (chosenMatch.get(pn).getClass().getName().equals("org.eclipse.emf.ecore.impl.DynamicEObjectImpl")) {
+					matchCorrResourceList.add((EObject) chosenMatch.get(pn));					
+				}
+
 			}
 
 			ProtocolStep protocolStep = new ProtocolStep(index, srcResourceList, trgResourceList, corrResourceList,
-					matchSrcResourceList, matchTrgResourceList, rule.getName());
+					matchSrcResourceList, matchTrgResourceList,matchCorrResourceList, rule.getName());
 			protocolsStepList.add(protocolStep);
 		}
 

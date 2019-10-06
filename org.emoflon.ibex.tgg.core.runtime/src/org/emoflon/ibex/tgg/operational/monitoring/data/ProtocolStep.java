@@ -12,15 +12,17 @@ public class ProtocolStep {
 	private Collection<EObject> corrElements;
 	private Collection<EObject> matchSrcElements;
 	private Collection<EObject> matchTrgElements;
+	private Collection<EObject> matchCorrElements;
 
 	public ProtocolStep(int pIndex, Collection<EObject> pSrcElements, Collection<EObject> pTrgElements,
-			Collection<EObject> pCorrElements, Collection<EObject> matchSrcElements, Collection<EObject> matchTrgElements, String pRuleName) {
+			Collection<EObject> pCorrElements, Collection<EObject> matchSrcElements, Collection<EObject> matchTrgElements, Collection<EObject> matchCorrElements, String pRuleName) {
 		index = pIndex;
 		setSrcElements(pSrcElements);
 		setTrgElements(pTrgElements);
 		setCorrElements(pCorrElements);
 		setMatchSrcElements(matchSrcElements);
 		setMatchTrgElements(matchTrgElements);
+		setMatchCorrElements(matchCorrElements);
 		ruleName = pRuleName;
 	}
 
@@ -70,5 +72,13 @@ public class ProtocolStep {
 
 	public void setMatchSrcElements(Collection<EObject> matchSrcElements) {
 		this.matchSrcElements = matchSrcElements;
+	}
+
+	public Collection<EObject> getMatchCorrElements() {
+		return matchCorrElements;
+	}
+
+	public void setMatchCorrElements(Collection<EObject> matchCorrElements) {
+		this.matchCorrElements = matchCorrElements;
 	}
 }
