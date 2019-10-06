@@ -5,42 +5,31 @@ import java.io.IOException;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
-import org.eclipse.xtend.lib.Data;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-import com.sun.javafx.collections.MappingChange.Map;
 import language.TGGRule;
-import org.eclipse.emf.common.util.URI;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 
 public class VictoryDataProvider implements IVictoryDataProvider {
 
 	private final static Logger logger = Logger.getLogger(VictoryDataProvider.class);
 
 	String[][] defaultSaveData = new String[4][1];
-	
+
 	OperationalStrategy op;
 	String[] savedPLocations;
 
@@ -61,52 +50,52 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	}
 
 	@Override
-    public Collection<EObject> getMatchNeighbourhoods(Collection<EObject> nodes, int k) {
-        try {
-            Collection<EObject> neighbors = new HashSet<EObject>();
-            for (EObject node : nodes) {
-                neighbors.addAll(getMatchNeighbourhood(node, k));
-            }
-            return neighbors;
-        } catch (Exception e) {
-            logger.error(e);
-            return null;
-        }
-    }
+	public Collection<EObject> getMatchNeighbourhoods(Collection<EObject> nodes, int k) {
+		try {
+			Collection<EObject> neighbors = new HashSet<EObject>();
+			for (EObject node : nodes) {
+				neighbors.addAll(getMatchNeighbourhood(node, k));
+			}
+			return neighbors;
+		} catch (Exception e) {
+			logger.error(e);
+			return null;
+		}
+	}
 
-    @Override
-    public Collection<EObject> getMatchNeighbourhood(EObject node, int k) {
-        try {
-            Set<EObject> neighbors = new HashSet<EObject>();
-            if (k >= 0) {
-                neighbors.add(node);
+	@Override
+	public Collection<EObject> getMatchNeighbourhood(EObject node, int k) {
+		try {
+			Set<EObject> neighbors = new HashSet<EObject>();
+			if (k >= 0) {
+				neighbors.add(node);
 
-                if (k > 0) {
-                    calculateNeighbourhood(neighbors, node, 0, k);
-                }
-            }
+				if (k > 0) {
+					calculateNeighbourhood(neighbors, node, 0, k);
+				}
+			}
 
-            return neighbors;
-        } catch (Exception e) {
-            logger.error(e);
-            return null;
-        }
-    }
+			return neighbors;
+		} catch (Exception e) {
+			logger.error(e);
+			return null;
+		}
+	}
 
-    private void calculateNeighbourhood(Collection<EObject> neighbors, EObject node, int i, int k) {
+	private void calculateNeighbourhood(Collection<EObject> neighbors, EObject node, int i, int k) {
 
-        i++;
-        Set<EObject> currentNeighbors = new HashSet<EObject>();
-        currentNeighbors = node.eContents().stream().collect(Collectors.toSet());
-        neighbors.addAll(currentNeighbors);
-        Iterator<EObject> cn = currentNeighbors.iterator();
-        if (i < k) {
-            while (cn.hasNext()) {
-                calculateNeighbourhood(neighbors, cn.next(), i, k);
-            }
-        }
+		i++;
+		Set<EObject> currentNeighbors = new HashSet<EObject>();
+		currentNeighbors = node.eContents().stream().collect(Collectors.toSet());
+		neighbors.addAll(currentNeighbors);
+		Iterator<EObject> cn = currentNeighbors.iterator();
+		if (i < k) {
+			while (cn.hasNext()) {
+				calculateNeighbourhood(neighbors, cn.next(), i, k);
+			}
+		}
 
-    } 
+	}
 
 	@Override
 	public Set<IMatch> getMatches() {
@@ -142,7 +131,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	@Override
 	public Set<URI> saveModels(String[] pLocations) throws IOException {
 		this.savedPLocations = pLocations;
-		
+
 		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
 		Date date = new Date(System.currentTimeMillis());
 		String time = dateFormat.format(date).toString();
@@ -157,12 +146,12 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		resources.put("p", op.getProtocolResource());
 
 		System.out.println(Arrays.toString(pLocations));
-		
+
 		// save models
 		int count = 0;
 		for (Entry<String, Resource> e : resources.entrySet()) {
 			oldUri.put(e.getKey(), e.getValue().getURI());
-			
+
 			if (pLocations.length > 0) {
 				URI uri = saveModel(e.getValue(), time, pLocations[count]);
 				newUri.add(uri);
@@ -183,28 +172,28 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		String newPath;
 		URI newUri;
 		File file = new File(newLocation);
-		
+
 		if (file.isAbsolute()) {
-			newPath = "file:/" + FilenameUtils.getFullPath(newLocation);			
+			newPath = "file:/" + FilenameUtils.getFullPath(newLocation);
 		} else {
-			newPath = FilenameUtils.getFullPath("platform:" + newLocation);	
+			newPath = FilenameUtils.getFullPath("platform:" + newLocation);
 			System.out.println(newPath);
 		}
-		
+
 		newPath += FilenameUtils.getBaseName(newLocation) + "-";
-		newPath += time + "." + FilenameUtils.getExtension(newLocation);			
+		newPath += time + "." + FilenameUtils.getExtension(newLocation);
 		newUri = URI.createURI(newPath);
-		
+
 		r.setURI(newUri);
 		r.save(null);
-		
+
 		return newUri;
 	}
-	
+
 	public String[] getPLocations() {
 		return this.savedPLocations;
 	}
-	
+
 	public void getDefaultSaveLocation() {
 		int count = 0;
 		LinkedHashMap<String, Resource> resources = new LinkedHashMap<String, Resource>();
@@ -213,26 +202,25 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		resources.put("t", op.getTargetResource());
 		resources.put("c", op.getCorrResource());
 		resources.put("p", op.getProtocolResource());
-		
+
 		for (Entry<String, Resource> e : resources.entrySet()) {
 			Resource r = e.getValue();
 			String uri = r.getURI().toString();
-			
-			String path =  FilenameUtils.getFullPath(r.getURI().path());
+
+			String path = FilenameUtils.getFullPath(r.getURI().path());
 			String fileName = FilenameUtils.getBaseName(uri);
-			String extension = FilenameUtils.getExtension(uri);					
-			
+			String extension = FilenameUtils.getExtension(uri);
+
 			defaultSaveData[count] = new String[] { path, fileName, extension };
 			count++;
 		}
-		
-		
+
 	}
 
 	public String[][] getDefaultSaveData() {
 		return defaultSaveData;
 	}
-	
+
 	@Override
 	public Collection<TGGRule> getAllRules() {
 		return op.getOptions().flattenedTGG().getRules();

@@ -7,24 +7,24 @@ import org.eclipse.emf.ecore.EObject;
 
 public class TGGObjectGraphBuilder {
 
-    private Collection<EObject> srcElements;
-    private Collection<EObject> trgElements;
-    private Collection<EObject> corrElements;
+	private Collection<EObject> srcElements;
+	private Collection<EObject> trgElements;
+	private Collection<EObject> corrElements;
 
-    public TGGObjectGraphBuilder() {
-	srcElements = new HashSet<EObject>();
-	trgElements = new HashSet<EObject>();
-	corrElements = new HashSet<EObject>();
-    }
+	public TGGObjectGraphBuilder() {
+		srcElements = new HashSet<EObject>();
+		trgElements = new HashSet<EObject>();
+		corrElements = new HashSet<EObject>();
+	}
 
-    public TGGObjectGraphBuilder add(TGGObjectGraph pObjectGraph) {
-	srcElements.addAll(pObjectGraph.getSrcElements());
-	trgElements.addAll(pObjectGraph.getTrgElements());
-	corrElements.addAll(pObjectGraph.getCorrElements());
-	return this;
-    }
+	public TGGObjectGraphBuilder add(TGGObjectGraph pObjectGraph) {
+		srcElements.addAll(pObjectGraph.getSrcElements());
+		trgElements.addAll(pObjectGraph.getTrgElements());
+		corrElements.addAll(pObjectGraph.getCorrElements());
+		return this;
+	}
 
-    public TGGObjectGraph build() {
-	return new TGGObjectGraph(srcElements, trgElements, corrElements);
-    }
+	public TGGObjectGraph build() {
+		return new TGGObjectGraph(srcElements, trgElements, corrElements);
+	}
 }

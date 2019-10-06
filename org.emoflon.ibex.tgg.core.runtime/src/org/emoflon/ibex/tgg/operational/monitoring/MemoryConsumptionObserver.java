@@ -2,11 +2,11 @@ package org.emoflon.ibex.tgg.operational.monitoring;
 
 import org.apache.log4j.Logger;
 
-public class MemoryConsumptionObserver extends AbstractIbexObserver{
-	
+public class MemoryConsumptionObserver extends AbstractIbexObserver {
+
 	private final static Logger logger = Logger.getLogger(MemoryConsumptionObserver.class);
 	private long currentMemoryConsumption = 0;
-	
+
 	public MemoryConsumptionObserver(IbexObservable observable) {
 		super(observable);
 	}
