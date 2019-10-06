@@ -33,7 +33,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	private Set<EObject> resourceList = new HashSet<EObject>();
 	private List<ProtocolStep> protocolsStepList = new ArrayList<ProtocolStep>();
 	private Map<IMatch, IbexMatch> matchMapping = new HashMap<>();
-	private Collection<Node> nodeList = new HashSet<Node>();
+	HashMap <Integer, Collection<Node>> nodeList = new HashMap<>();
 	private IMatch chosenMatch;
 
 	public void register(OperationalStrategy pOperationalStrategy) {
@@ -61,11 +61,9 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		return null;
 	}
 
-	public TGGObjectGraph constructTGGObjectGraph(Collection<EObject> pSrcElements, Collection<EObject> pTrgElements,
-			Collection<EObject> pCorrElements) {
+	public TGGObjectGraph constructTGGObjectGraph(int index, Collection<EObject> pSrcElements, Collection<EObject> pTrgElements,
+			Collection<EObject> pCorrElements, String ruleName) {
 
-		System.out.println("i'm here");
-		String ruleName;
 
 		HashMap<String, HashSet<EObject>> resources = new HashMap<String, HashSet<EObject>>();
 
@@ -81,10 +79,15 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		Collection<Node> trgNodes = new HashSet<Node>();
 		
 		Collection<Node> currentNodes = new HashSet<Node>();
+		Collection<Node> nodeListUntilNow = new HashSet<Node>();
 		
+		for (int i=0; i<=index; i++) {
+			nodeListUntilNow.addAll(nodeList.get(i));
+		}
+
         for (Node sn : tSrcNodes) {
         	Node s = null;
-        	for (Node n: nodeList) {
+        	for (Node n: nodeListUntilNow) {
         		if (n.getName().equals(sn.getName()) && n.getType().equals(sn.getType()) && n.getDomain().equals(sn.getDomain())) {
         			s = n;
         			break;
@@ -99,7 +102,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
         
         for (Node tn : tTrgNodes) {
         	Node t = null;
-        	for (Node n: nodeList) {
+        	for (Node n: nodeListUntilNow) {
         		if (n.getName().equals(tn.getName()) && n.getType().equals(tn.getType()) && n.getDomain().equals(tn.getDomain())) {
         			t = n;
         			break;
@@ -114,18 +117,12 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		
 		currentNodes.addAll(srcNodes);
 		currentNodes.addAll(trgNodes);
-		nodeList.addAll(currentNodes);
 		
 		System.out.println("srcNodes: " + srcNodes.size());
 		System.out.println("trgNodes: " + trgNodes.size());
 		System.out.println("currentNodes: " + currentNodes.size());
-		System.out.println("nodeList: " + nodeList.size());
+		System.out.println("nodeList: " + nodeListUntilNow.size());
 		
-//		for (Node cn : currentNodes) {
-//        	if (!nodeList.contains(cn)) {
-//        		nodeList.add(cn);
-//        	}
-//		}
 
 		builder.addSrcNodes(srcNodes);
 		builder.addTrgNodes(trgNodes);
@@ -168,18 +165,17 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		}
 
 		Collection<Edge> currentEdges = new HashSet<Edge>();
-		ruleName = chosenMatch.getRuleName();
 		TGGRule rule = operationalStrategy.getOptions().flattenedTGG().getRules().stream()
 				.filter(r -> r.getName().equals(ruleName)).findFirst().orElseGet(null);
 		Set<TGGRuleEdge> edges = rule.getEdges().stream().filter(
 				e -> !e.getDomainType().equals(DomainType.CORR) && !e.getBindingType().equals(BindingType.CONTEXT))
 				.collect(Collectors.toSet());
 		for (TGGRuleEdge e : edges) {
-
+			
 			Node srcNode = null;
 			Node trgNode = null;
 
-			for (Node n : nodeList) {
+			for (Node n : nodeListUntilNow) {
 				if (n.getType().equals(e.getSrcNode().getType().getName())) {
 					srcNode = n;
 					break;
@@ -190,7 +186,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			}
 
 			if (srcNode != null || trgNode != null) {
-				for (Node n : nodeList) {
+				for (Node n : nodeListUntilNow) {
 
 					if (srcNode == null && n.getType().equals(e.getSrcNode().getType().getName())) {
 						srcNode = n;
@@ -201,13 +197,18 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 					if (srcNode != null && trgNode != null) {
 						Action eAction = Action.valueOf(e.getBindingType().toString());
 						Edge edge = new EdgeImpl(e.getTrgNode().getName(), srcNode, trgNode, EdgeType.NORMAL, eAction);
+						
 						if (!currentEdges.stream().anyMatch(ed -> ed.getLabel().equals(e.getName()))) {
 							currentEdges.add(edge);
 							if (!currentNodes.contains(srcNode)) {
 								srcNode.setAction(Action.CONTEXT);
+							} else {
+								srcNode.setAction(Action.CREATE);
 							}
 							if (!currentNodes.contains(trgNode)) {
 								trgNode.setAction(Action.CONTEXT);
+							} else {
+								trgNode.setAction(Action.CREATE);
 							}
 							builder.addNode(srcNode);
 							builder.addNode(trgNode);
@@ -237,6 +238,13 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 			HashSet<EObject> trgResourceList = getCurrentResourceItems(items, operationalStrategy.getTargetResource());
 			HashSet<EObject> corrResourceList = getCurrentResourceItems(items, operationalStrategy.getCorrResource());
 
+			Collection<Node> srcNodes = generateNodes(srcResourceList, Domain.SRC, Action.CREATE);
+			Collection<Node> trgNodes = generateNodes(trgResourceList, Domain.TRG, Action.CREATE);
+			Collection<Node> allNodes = new HashSet<Node>();;
+			allNodes.addAll(srcNodes);
+			allNodes.addAll(trgNodes);
+			nodeList.put(index, allNodes);
+			
 			ProtocolStep protocolStep = new ProtocolStep(index, srcResourceList, trgResourceList, corrResourceList, chosenMatch.getRuleName());
 			protocolsStepList.add(protocolStep);
 		}
