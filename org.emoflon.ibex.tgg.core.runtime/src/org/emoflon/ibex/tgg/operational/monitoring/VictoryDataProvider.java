@@ -81,6 +81,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
         i++;
         Set<EObject> currentNeighbors = new HashSet<EObject>();
         currentNeighbors = node.eContents().stream().collect(Collectors.toSet());
+        System.out.println("currentNeighbors: " + currentNeighbors.size());
         neighbors.addAll(currentNeighbors);
         Iterator<EObject> cn = currentNeighbors.iterator();
         if (i < k) {
