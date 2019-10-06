@@ -37,8 +37,9 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
     public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
 
 	updateMatchMapping(matchContainer.getMatches());
-
-	return chooseOneMatch(new DataPackage(matchMapping.values(), getProtocols()));
+	updateProtocols();
+	
+	return chooseOneMatch(new DataPackage(matchMapping.values(), protocolsStepList));
     }
 
     public Collection<IbexMatch> getMoreMatches(int amount) {
@@ -53,7 +54,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	return null;
     }
 
-    private List<ProtocolStep> getProtocols() {
+    private void updateProtocols() {
 	int index = protocolsStepList.size();
 	HashSet<EObject> srcResourceList = new HashSet<EObject>();
 	HashSet<EObject> trgResourceList = new HashSet<EObject>();
@@ -70,8 +71,6 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		    new TGGObjectGraph(srcResourceList, trgResourceList, corrResourceList));
 	    protocolsStepList.add(protocolStep);
 	}
-
-	return protocolsStepList;
     }
 
     private HashSet<EObject> getResourceItems(EList<EObject> items, Resource resource) {
