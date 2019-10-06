@@ -10,13 +10,17 @@ public class ProtocolStep {
 	private Collection<EObject> srcElements;
 	private Collection<EObject> trgElements;
 	private Collection<EObject> corrElements;
+	private Collection<EObject> matchSrcElements;
+	private Collection<EObject> matchTrgElements;
 
 	public ProtocolStep(int pIndex, Collection<EObject> pSrcElements, Collection<EObject> pTrgElements,
-			Collection<EObject> pCorrElements, String pRuleName) {
+			Collection<EObject> pCorrElements, Collection<EObject> matchSrcElements, Collection<EObject> matchTrgElements, String pRuleName) {
 		index = pIndex;
 		setSrcElements(pSrcElements);
 		setTrgElements(pTrgElements);
 		setCorrElements(pCorrElements);
+		setMatchSrcElements(matchSrcElements);
+		setMatchTrgElements(matchTrgElements);
 		ruleName = pRuleName;
 	}
 
@@ -50,5 +54,21 @@ public class ProtocolStep {
 
 	public void setSrcElements(Collection<EObject> srcElements) {
 		this.srcElements = srcElements;
+	}
+
+	public Collection<EObject> getMatchTrgElements() {
+		return matchTrgElements;
+	}
+
+	public void setMatchTrgElements(Collection<EObject> matchTrgElements) {
+		this.matchTrgElements = matchTrgElements;
+	}
+
+	public Collection<EObject> getMatchSrcElements() {
+		return matchSrcElements;
+	}
+
+	public void setMatchSrcElements(Collection<EObject> matchSrcElements) {
+		this.matchSrcElements = matchSrcElements;
 	}
 }
