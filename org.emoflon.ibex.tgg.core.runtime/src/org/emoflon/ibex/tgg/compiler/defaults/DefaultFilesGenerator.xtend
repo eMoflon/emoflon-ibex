@@ -138,7 +138,6 @@ class DefaultFilesGenerator {
 					super();
 				}
 			
-			    @SuppressWarnings("deprecation")
 				public static void main(String[] args) throws IOException {
 					BasicConfigurator.configure();
 					Logger.getRootLogger().setLevel(Level.INFO);
@@ -209,11 +208,8 @@ class DefaultFilesGenerator {
 				    generator.setStopCriterion(stop);
 				    
 				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(generator, IBeXOperation.MODELGEN);
-				
-				    Thread ibex = new Thread(() -> {
-				
+					restart = adapter.run(() -> {
 				        adapter.register(generator);
-				
 				        try {
 						    logger.info("Starting MODELGEN_Debug");
 						    long runTic = System.currentTimeMillis();
@@ -226,18 +222,7 @@ class DefaultFilesGenerator {
 				        } catch (IOException pIOE) {
 						    logger.error("MODELGEN_Debug threw an IOException", pIOE);
 				        }
-				    }, "IBeX main thread");
-				    ibex.start();
-				
-				    restart = adapter.runUI();
-				        if (ibex.isAlive())
-				            try {
-				                ibex.join(500);
-				            } catch (InterruptedException pIE) {
-				            } finally {
-				                if (ibex.isAlive())
-				                    ibex.stop();
-				            }
+				    });
 				}
 			''',
 			""
@@ -452,11 +437,8 @@ class DefaultFilesGenerator {
 				    logger.info("Completed init for INITIAL_FWD_Debug in: " + (toc - tic) + " ms");
 				
 				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_fwd, IBeXOperation.FWD);
-
-				    Thread ibex = new Thread(() -> {
-				
+				    restart = adapter.run(() -> {
 				        adapter.register(init_fwd);
-				
 				        try {
 						    logger.info("Starting INITIAL_FWD_Debug");
 						    long runTic = System.currentTimeMillis();
@@ -469,18 +451,7 @@ class DefaultFilesGenerator {
 					    } catch (IOException pIOE) {
 						    logger.error("INITIAL_FWD_Debug threw an IOException", pIOE);
 				        }
-				    }, "IBeX main thread");
-				    ibex.start();
-
-				    restart = adapter.runUI();
-				        if (ibex.isAlive())
-				            try {
-				                ibex.join(500);
-				            } catch (InterruptedException pIE) {
-				            } finally {
-				                if (ibex.isAlive())
-				                    ibex.stop();
-				            }
+				    });
 				}
 			''',
 			""
@@ -560,11 +531,8 @@ class DefaultFilesGenerator {
 				    logger.info("Completed init for INITIAL_BWD_Debug in: " + (toc - tic) + " ms");
 				
 				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_bwd, IBeXOperation.FWD);
-
-				    Thread ibex = new Thread(() -> {
-				
+				    restart = adapter.run(() -> {
 				        adapter.register(init_bwd);
-				
 				        try {
 						    logger.info("Starting INITIAL_BWD_Debug");
 						    long runTic = System.currentTimeMillis();
@@ -577,18 +545,7 @@ class DefaultFilesGenerator {
 					    } catch (IOException pIOE) {
 						    logger.error("INITIAL_BWD_Debug threw an IOException", pIOE);
 				        }
-				    }, "IBeX main thread");
-				    ibex.start();
-
-				    restart = adapter.runUI();
-				        if (ibex.isAlive())
-				            try {
-				                ibex.join(500);
-				            } catch (InterruptedException pIE) {
-				            } finally {
-				                if (ibex.isAlive())
-				                    ibex.stop();
-				            }
+				    });
 				}
 			''',
 			""
