@@ -28,6 +28,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ModelChangeProtocol;
 
 import precedencegraph.NodeContainer;
 
@@ -35,6 +36,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	private IntegrationPattern pattern;
 	private BrokenMatchAnalyser matchAnalyser;
+	private ModelChangeProtocol modelChangeProtocol;
 
 	protected Resource epg;
 
@@ -170,7 +172,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 		BenchmarkLogger.startTimer();
 
-		attachEltAddedDetector();
+		initModelChangeProtocol();
 		initMatchAnalyser();
 
 		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
@@ -231,33 +233,10 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 			matchAnalyser = new BrokenMatchAnalyser(this);
 	}
 
-	private void attachEltAddedDetector() {
-		EContentAdapter adapter = new EContentAdapter() {
-			@Override
-			public void notifyChanged(Notification notification) {
-				if (notification.getEventType() == Notification.ADD
-						|| notification.getEventType() == Notification.ADD_MANY)
-					handleAddedElts(notification);
-				super.notifyChanged(notification);
-			}
-		};
-		s.eAdapters().add(adapter);
-		t.eAdapters().add(adapter);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void handleAddedElts(Notification notf) {
-		EObject container = (EObject) notf.getNotifier();
-		addedElts.computeIfAbsent(container, k -> new ArrayList<EObject>());
-
-		switch (notf.getEventType()) {
-		case Notification.ADD:
-			addedElts.get(container).add((EObject) notf.getNewValue());
-			break;
-		case Notification.ADD_MANY:
-			addedElts.get(container).addAll((List<EObject>) notf.getNewValue());
-			break;
-		}
+	private void initModelChangeProtocol() {
+		modelChangeProtocol = new ModelChangeProtocol();
+		modelChangeProtocol.attachProtocolAdapterTo(s);
+		modelChangeProtocol.attachProtocolAdapterTo(t);
 	}
 
 	private ExtPrecedenceGraph getEPG() {
