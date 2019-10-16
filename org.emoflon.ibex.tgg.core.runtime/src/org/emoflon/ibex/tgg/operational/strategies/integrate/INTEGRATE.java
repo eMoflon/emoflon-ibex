@@ -1,19 +1,15 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
@@ -46,18 +42,16 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private Set<EObject> toBeDeleted;
 
 	private Set<IMatch> filterNacMatches;
-
-	private Map<EObject, List<EObject>> addedElts;
 	private Map<IMatch, AnalysedMatch> analysedMatches;
 
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
+		modelChangeProtocol = new ModelChangeProtocol();
 		undetermined = new HashSet<>();
 		toBeTranslated = new HashSet<>();
 		toBeDeleted = new HashSet<>();
 		filterNacMatches = new HashSet<>();
-		addedElts = new HashMap<>();
 		analysedMatches = new HashMap<>();
 	}
 
@@ -85,10 +79,10 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	protected void cleanUp() {
+		modelChangeProtocol = new ModelChangeProtocol();
 		undetermined = new HashSet<>();
 		toBeTranslated = new HashSet<>();
 		toBeDeleted = new HashSet<>();
-		addedElts = new HashMap<>();
 		analysedMatches = new HashMap<>();
 	}
 
@@ -172,7 +166,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 		BenchmarkLogger.startTimer();
 
-		initModelChangeProtocol();
 		initMatchAnalyser();
 
 		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
@@ -225,18 +218,14 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public void applyDelta(BiConsumer<EObject, EObject> delta) {
 		blackInterpreter.updateMatches();
 		getEPG().update();
+		modelChangeProtocol.attachAdapterTo(s, t);
 		delta.accept(s.getContents().get(0), t.getContents().get(0));
+		modelChangeProtocol.detachAdapterFrom(s, t);
 	}
 
 	private void initMatchAnalyser() {
 		if (matchAnalyser == null)
 			matchAnalyser = new BrokenMatchAnalyser(this);
-	}
-
-	private void initModelChangeProtocol() {
-		modelChangeProtocol = new ModelChangeProtocol();
-		modelChangeProtocol.attachProtocolAdapterTo(s);
-		modelChangeProtocol.attachProtocolAdapterTo(t);
 	}
 
 	private ExtPrecedenceGraph getEPG() {
