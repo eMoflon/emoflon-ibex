@@ -9,67 +9,67 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 
 public class IbexMatch {
 
-    private static int currentStep;
-    private static Map<String, List<IbexMatch>> ruleSets = new HashMap<>();
+	private static int currentStep;
+	private static Map<String, List<IbexMatch>> ruleSets = new HashMap<>();
 
-    public static void startMatchCreation(int pBirthStep) {
-	currentStep = pBirthStep;
-	ruleSets.clear();
-    }
-
-    public static IbexMatch newMatch(IMatch pMatch) {
-
-	IbexMatch vMatch = new IbexMatch(pMatch, currentStep);
-
-	List<IbexMatch> ruleSet = ruleSets.get(pMatch.getRuleName());
-	if (ruleSet == null) {
-	    ruleSet = new LinkedList<IbexMatch>();
-	    ruleSets.put(pMatch.getRuleName(), ruleSet);
+	public static void startMatchCreation(int pBirthStep) {
+		currentStep = pBirthStep;
+		ruleSets.clear();
 	}
 
-	ruleSet.add(vMatch);
+	public static IbexMatch newMatch(IMatch pMatch) {
 
-	return vMatch;
-    }
+		IbexMatch vMatch = new IbexMatch(pMatch, currentStep);
 
-    public static void finishMatchCreation() {
-	ruleSets.forEach((ruleName, matches) -> {
-	    if (matches.size() > 1)
-		for (int i = 0; i < matches.size(); i++)
-		    matches.get(i).setName(ruleName + " #" + currentStep + "." + i);
-	});
-    }
+		List<IbexMatch> ruleSet = ruleSets.get(pMatch.getRuleName());
+		if (ruleSet == null) {
+			ruleSet = new LinkedList<IbexMatch>();
+			ruleSets.put(pMatch.getRuleName(), ruleSet);
+		}
 
-    private IMatch match;
-    private String matchName;
-    private String blockingReason;
+		ruleSet.add(vMatch);
 
-    private IbexMatch(IMatch pMatch, int pBirthStep) {
-	match = pMatch;
-	matchName = match.getRuleName() + " #" + pBirthStep;
-    }
+		return vMatch;
+	}
 
-    public IMatch getIMatch() {
-	return match;
-    }
+	public static void finishMatchCreation() {
+		ruleSets.forEach((ruleName, matches) -> {
+			if (matches.size() > 1)
+				for (int i = 0; i < matches.size(); i++)
+					matches.get(i).setName(ruleName + " #" + currentStep + "." + i);
+		});
+	}
 
-    public String getName() {
-	return matchName;
-    }
+	private IMatch match;
+	private String matchName;
+	private String blockingReason;
 
-    private void setName(String pName) {
-	matchName = pName;
-    }
+	private IbexMatch(IMatch pMatch, int pBirthStep) {
+		match = pMatch;
+		matchName = match.getRuleName() + " #" + pBirthStep;
+	}
 
-    public void setBlockingReason(String pBlockingReason) {
-	blockingReason = pBlockingReason;
-    }
+	public IMatch getIMatch() {
+		return match;
+	}
 
-    public boolean isBlocked() {
-	return blockingReason != null;
-    }
+	public String getName() {
+		return matchName;
+	}
 
-    public String getBlockingReason() {
-	return blockingReason;
-    }
+	private void setName(String pName) {
+		matchName = pName;
+	}
+
+	public void setBlockingReason(String pBlockingReason) {
+		blockingReason = pBlockingReason;
+	}
+
+	public boolean isBlocked() {
+		return blockingReason != null;
+	}
+
+	public String getBlockingReason() {
+		return blockingReason;
+	}
 }
