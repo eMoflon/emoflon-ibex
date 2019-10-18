@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -20,19 +21,20 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ModelChangeProtocol;
 
-import precedencegraph.NodeContainer;
-
 public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	private IntegrationPattern pattern;
 	private BrokenMatchAnalyser matchAnalyser;
 	private ModelChangeProtocol modelChangeProtocol;
+	private ConflictDetector conflictDetector;
 
 	protected Resource epg;
 
@@ -66,16 +68,35 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 //		repair();
 		setup();
 		detectConflicts();
+		applyPattern();
 		cleanUp();
 	}
 
 	protected void setup() {
-		pattern.getComponents().forEach(c -> c.apply(this));
+		analyseBrokenMatches();
+		annotateEPG();
+	}
+
+	private void analyseBrokenMatches() {
+		blackInterpreter.updateMatches();
+		
+		for(IMatch brokenMatch : getBrokenMatches()) {
+			AnalysedMatch analysedMatch = matchAnalyser.analyse(brokenMatch);
+			analysedMatches.put(brokenMatch, analysedMatch);
+		}
+	}
+
+	private void annotateEPG() {
+		// TODO adrianm: implement
+
 	}
 
 	protected void detectConflicts() {
-		NodeContainer nodes = getEPG().getExtGraph();
-		// TODO Continue here...
+		// TODO adrianm: implement
+	}
+
+	protected void applyPattern() {
+//		pattern.getComponents().forEach(c -> c.apply(this));
 	}
 
 	protected void cleanUp() {
@@ -88,7 +109,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	@Override
 	protected void initializeRepairStrategy(IbexOptions options) {
-		// TODO Auto-generated method stub
+		// TODO adrianm: implement
 
 	}
 
@@ -130,7 +151,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 				|| patternName.endsWith(PatternSuffixes.BWD) //
 				|| patternName.endsWith(PatternSuffixes.CONSISTENCY) //
 				|| patternName.endsWith(PatternSuffixes.FILTER_NAC);
-		// TODO Add missing pattern suffixes
+		// TODO adrianm: Add missing pattern suffixes
 	}
 
 	@Override
@@ -140,7 +161,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	@Override
 	public IGreenPattern revokes(IMatch match) {
-		// TODO Auto-generated method stub
+		// TODO adrianm: implement
 		return super.revokes(match);
 	}
 
@@ -165,9 +186,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		super.registerBlackInterpreter(blackInterpreter);
 
 		BenchmarkLogger.startTimer();
-
-		initMatchAnalyser();
-
+		initIntegrateDependantTools();
 		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
 	}
 
@@ -218,14 +237,15 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public void applyDelta(BiConsumer<EObject, EObject> delta) {
 		blackInterpreter.updateMatches();
 		getEPG().update();
+
 		modelChangeProtocol.attachAdapterTo(s, t);
 		delta.accept(s.getContents().get(0), t.getContents().get(0));
 		modelChangeProtocol.detachAdapterFrom(s, t);
 	}
 
-	private void initMatchAnalyser() {
-		if (matchAnalyser == null)
+	private void initIntegrateDependantTools() {
 			matchAnalyser = new BrokenMatchAnalyser(this);
+			conflictDetector = new ConflictDetector(this);
 	}
 
 	private ExtPrecedenceGraph getEPG() {

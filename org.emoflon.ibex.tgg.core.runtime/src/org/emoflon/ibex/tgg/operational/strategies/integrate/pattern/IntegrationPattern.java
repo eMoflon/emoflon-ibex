@@ -21,7 +21,7 @@ public class IntegrationPattern {
 	public IntegrationPattern() {
 		List<IPComponent> defaultPattern = new ArrayList<>();
 
-		// TODO Complete: Set up default integration pattern
+		// TODO adrianm: Set up default integration pattern
 		IFContainer del = new IFContainer(new DefaultIFCStrategy());
 		del.add(new CREATE());
 		del.add(new DEL());
