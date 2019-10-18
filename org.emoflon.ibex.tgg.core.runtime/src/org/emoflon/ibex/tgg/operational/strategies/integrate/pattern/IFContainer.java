@@ -23,16 +23,18 @@ public class IFContainer extends LinkedList<MatchIntegrationFragment> implements
 		classifyElements(integrate);
 		return true;
 	}
-	
+
 	private void classifyElements(INTEGRATE integrate) {
 		integrate.getBlackInterpreter().updateMatches();
-		for(IMatch brokenMatch : integrate.getBrokenMatches()) {
-			AnalysedMatch analysedMatch = integrate.getMatchAnalyser().analyse(brokenMatch);
-			for(MatchIntegrationFragment iF : this) {
-				if(iF.softApply(analysedMatch, integrate))
+
+		for (IMatch brokenMatch : integrate.getBrokenMatches())
+			integrate.getAnalysedMatches().put(brokenMatch, integrate.getMatchAnalyser().analyse(brokenMatch));
+
+		for (AnalysedMatch am : integrate.getAnalysedMatches().values()) {
+			for (MatchIntegrationFragment iF : this) {
+				if (iF.softApply(am, integrate))
 					break;
 			}
-			integrate.getAnalysedMatches().put(brokenMatch, analysedMatch);
 		}
 	}
 }
