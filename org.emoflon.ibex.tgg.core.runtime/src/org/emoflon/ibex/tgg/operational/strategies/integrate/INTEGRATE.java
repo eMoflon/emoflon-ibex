@@ -45,6 +45,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	private Set<IMatch> filterNacMatches;
 	private Map<IMatch, AnalysedMatch> analysedMatches;
+	private Set<Mismatch> mismatches;
 
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
@@ -68,7 +69,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 //		repair();
 		setup();
 		detectConflicts();
-		applyPattern();
+		calculateIntegrationSolution();
 		cleanUp();
 	}
 
@@ -79,24 +80,25 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	private void analyseBrokenMatches() {
 		blackInterpreter.updateMatches();
-		
-		for(IMatch brokenMatch : getBrokenMatches()) {
+
+		for (IMatch brokenMatch : getBrokenMatches()) {
 			AnalysedMatch analysedMatch = matchAnalyser.analyse(brokenMatch);
 			analysedMatches.put(brokenMatch, analysedMatch);
 		}
+
+		pattern.getComponents().forEach(c -> c.apply(this)); // TODO adrianm: Only MatchIFs!
 	}
 
 	private void annotateEPG() {
 		// TODO adrianm: implement
-
 	}
 
 	protected void detectConflicts() {
 		// TODO adrianm: implement
 	}
 
-	protected void applyPattern() {
-//		pattern.getComponents().forEach(c -> c.apply(this));
+	protected void calculateIntegrationSolution() {
+		// TODO adrianm: implement
 	}
 
 	protected void cleanUp() {
@@ -226,6 +228,10 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		return analysedMatches;
 	}
 
+	public Set<Mismatch> getMismatches() {
+		return mismatches;
+	}
+
 	/**
 	 * Applies deltas to source and target models specified by a
 	 * <code>BiConsumer</code>. <br>
@@ -244,8 +250,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	private void initIntegrateDependantTools() {
-			matchAnalyser = new BrokenMatchAnalyser(this);
-			conflictDetector = new ConflictDetector(this);
+		matchAnalyser = new BrokenMatchAnalyser(this);
+		conflictDetector = new ConflictDetector(this);
 	}
 
 	private ExtPrecedenceGraph getEPG() {

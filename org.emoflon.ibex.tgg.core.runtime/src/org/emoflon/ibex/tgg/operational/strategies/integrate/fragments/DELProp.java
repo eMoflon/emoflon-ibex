@@ -9,6 +9,8 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.ProcessState;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.IFPattern;
 
@@ -34,6 +36,9 @@ public class DELProp extends MatchIntegrationFragment {
 			return false;
 		
 		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
+		
+		Mismatch mismatch = new Mismatch(analysedMatch.getMatch(), this);
+		integrate.getMismatches().add(mismatch);
 
 		// Classify elements to be deleted
 		List<TGGRuleElement> toBeDeleted = analysedMatch.getGroupedElements().get(domainToBeDel)
@@ -41,7 +46,7 @@ public class DELProp extends MatchIntegrationFragment {
 		toBeDeleted.stream() //
 				.filter(e -> e instanceof TGGRuleNode) //
 				.map(n -> (EObject) analysedMatch.getMatch().get(n.getName())) //
-				.forEach(o -> integrate.getToBeDeletedElements().add(o));
+				.forEach(o -> mismatch.addElement(o, ProcessState.TO_BE_DELETED));
 
 		return true;
 	}

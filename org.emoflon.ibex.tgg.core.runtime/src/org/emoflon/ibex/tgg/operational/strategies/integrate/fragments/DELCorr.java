@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.ProcessState;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.IFPattern;
 
@@ -23,6 +25,9 @@ public class DELCorr extends MatchIntegrationFragment {
 			return false;
 
 		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
+		
+		Mismatch mismatch = new Mismatch(analysedMatch.getMatch(), this);
+		integrate.getMismatches().add(mismatch);
 
 		// Classify green elements
 		List<TGGRuleElement> greenElements = new ArrayList<>();
@@ -32,7 +37,7 @@ public class DELCorr extends MatchIntegrationFragment {
 		greenElements.stream() //
 				.filter(e -> e instanceof TGGRuleNode) //
 				.map(e -> (EObject) analysedMatch.getMatch().get(e.getName())) //
-				.forEach(n -> integrate.getToBeTranslatedElements().add(n));
+				.forEach(n -> mismatch.addElement(n, ProcessState.TO_BE_TRANSLATED));
 
 		return true;
 	}
