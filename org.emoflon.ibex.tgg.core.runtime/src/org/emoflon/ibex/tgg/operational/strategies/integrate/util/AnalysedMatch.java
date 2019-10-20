@@ -5,28 +5,32 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 
 import language.BindingType;
 import language.DomainType;
 import language.TGGRuleElement;
+import language.TGGRuleNode;
 
 public class AnalysedMatch {
 
 	private MatchModPattern pattern = new MatchModPattern(Modification.UNCHANGED);
 	private IMatch match;
-	private Map<TGGRuleElement, Boolean> areElemsDel;
+	private Map<TGGRuleElement, Boolean> areRuleEltsDeleted;
 	private Map<IMatch, DomainType> filterNacViolations;
+	private Map<EObject, TGGRuleNode> eObjectToNode;
 	private Map<DomainType, Map<BindingType, List<TGGRuleElement>>> groupedElements;
 
-	public AnalysedMatch(IMatch match, Map<TGGRuleElement, Boolean> areElemsDel,
-			Map<IMatch, DomainType> filterNacViolations) {
+	public AnalysedMatch(IMatch match, Map<TGGRuleElement, Boolean> areRuleEltsDeleted,
+			Map<IMatch, DomainType> filterNacViolations, Map<EObject, TGGRuleNode> eObjectToNode) {
 		this.match = match;
-		this.areElemsDel = areElemsDel;
+		this.areRuleEltsDeleted = areRuleEltsDeleted;
 		this.filterNacViolations = filterNacViolations;
-		groupedElements = splitUp(areElemsDel);
-		Predicate<TGGRuleElement> delPred = el -> areElemsDel.get(el);
-
+		this.eObjectToNode = eObjectToNode;
+		this.groupedElements = splitUp(areRuleEltsDeleted);
+		
+		Predicate<TGGRuleElement> delPred = el -> areRuleEltsDeleted.get(el);
 		groupedElements.forEach((domain, bindingMap) -> {
 			bindingMap.forEach((binding, elements) -> {
 				Modification mod;
@@ -57,12 +61,16 @@ public class AnalysedMatch {
 		return match;
 	}
 
-	public Map<TGGRuleElement, Boolean> getAreElemsDel() {
-		return areElemsDel;
+	public Map<TGGRuleElement, Boolean> getAreRuleEltsDeleted() {
+		return areRuleEltsDeleted;
 	}
 
 	public Map<IMatch, DomainType> getFilterNacViolations() {
 		return filterNacViolations;
+	}
+
+	public Map<EObject, TGGRuleNode> getEObjectToNode() {
+		return eObjectToNode;
 	}
 
 	public Map<DomainType, Map<BindingType, List<TGGRuleElement>>> getGroupedElements() {

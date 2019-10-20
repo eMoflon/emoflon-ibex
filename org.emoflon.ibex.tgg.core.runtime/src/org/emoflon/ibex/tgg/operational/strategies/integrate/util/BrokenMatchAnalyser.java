@@ -31,35 +31,39 @@ public class BrokenMatchAnalyser {
 	public AnalysedMatch analyse(IMatch brokenMatch) {
 		TGGRule rule = rules.get(brokenMatch.getRuleName());
 
-		Map<TGGRuleNode, EObject> nodeElements = new HashMap<>();
+		Map<TGGRuleNode, EObject> nodeToEObject = new HashMap<>();
 		rule.getNodes().forEach(node -> {
-			nodeElements.put(node, (EObject) brokenMatch.get(node.getName()));
+			nodeToEObject.put(node, (EObject) brokenMatch.get(node.getName()));
+		});
+		Map<EObject, TGGRuleNode> eObjectToNode = new HashMap<>();
+		nodeToEObject.forEach((node, eObject) -> {
+			eObjectToNode.put(eObject, node);
 		});
 
 		// --- Deleted elements analysis ---
 
-		Map<TGGRuleElement, Boolean> areElementsDeleted = new HashMap<>();
-		nodeElements.forEach((node, el) -> {
+		Map<TGGRuleElement, Boolean> areRuleEltsDeleted = new HashMap<>();
+		nodeToEObject.forEach((node, el) -> {
 			boolean hasContainingRes = false;
 			if (el.eResource() != null)
 				hasContainingRes = isValidResource(el.eResource());
-			areElementsDeleted.put(node, !hasContainingRes);
+			areRuleEltsDeleted.put(node, !hasContainingRes);
 		});
 		rule.getEdges().forEach(edge -> {
 			boolean deletedEdge = true;
-			if (!areElementsDeleted.get(edge.getSrcNode())) {
-				Object featureValue = nodeElements.get(edge.getSrcNode()).eGet(edge.getType());
+			if (!areRuleEltsDeleted.get(edge.getSrcNode())) {
+				Object featureValue = nodeToEObject.get(edge.getSrcNode()).eGet(edge.getType());
 				if (featureValue != null) {
 					if (featureValue instanceof EObject)
 						deletedEdge = false;
 					else if (featureValue instanceof EObjectEList) {
 						EObjectEList<?> objects = (EObjectEList<?>) featureValue;
-						if (objects.contains(nodeElements.get(edge.getTrgNode())))
+						if (objects.contains(nodeToEObject.get(edge.getTrgNode())))
 							deletedEdge = false;
 					}
 				}
 			}
-			areElementsDeleted.put(edge, deletedEdge);
+			areRuleEltsDeleted.put(edge, deletedEdge);
 		});
 
 		// --- Filter NAC analysis ---
@@ -74,7 +78,7 @@ public class BrokenMatchAnalyser {
 						return DomainType.TRG;
 				}));
 
-		return new AnalysedMatch(brokenMatch, areElementsDeleted, filterNacViolations);
+		return new AnalysedMatch(brokenMatch, areRuleEltsDeleted, filterNacViolations, eObjectToNode);
 	}
 
 	private boolean isValidResource(Resource resource) {

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -21,7 +20,6 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
@@ -56,6 +54,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		toBeDeleted = new HashSet<>();
 		filterNacMatches = new HashSet<>();
 		analysedMatches = new HashMap<>();
+		mismatches = new HashSet<>();
 	}
 
 	public void integrate() throws IOException {
@@ -94,7 +93,10 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	protected void detectConflicts() {
-		// TODO adrianm: implement
+		conflictDetector.detectDeleteConflicts().forEach(c -> {
+			options.getConflictSolver().resolveConflict(c);
+			// TODO adrianm: apply conflict resolution strategy
+		});
 	}
 
 	protected void calculateIntegrationSolution() {
@@ -107,6 +109,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		toBeTranslated = new HashSet<>();
 		toBeDeleted = new HashSet<>();
 		analysedMatches = new HashMap<>();
+		mismatches = new HashSet<>();
 	}
 
 	@Override
@@ -196,6 +199,18 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		return matchAnalyser;
 	}
 
+	public ExtPrecedenceGraph getEPG() {
+		try {
+			return (ExtPrecedenceGraph) operationalMatchContainer;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public ModelChangeProtocol getModelChangeProtocol() {
+		return modelChangeProtocol;
+	}
+
 	public IBlackInterpreter getBlackInterpreter() {
 		return blackInterpreter;
 	}
@@ -252,14 +267,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private void initIntegrateDependantTools() {
 		matchAnalyser = new BrokenMatchAnalyser(this);
 		conflictDetector = new ConflictDetector(this);
-	}
-
-	private ExtPrecedenceGraph getEPG() {
-		try {
-			return (ExtPrecedenceGraph) operationalMatchContainer;
-		} catch (Exception e) {
-			return null;
-		}
 	}
 
 }
