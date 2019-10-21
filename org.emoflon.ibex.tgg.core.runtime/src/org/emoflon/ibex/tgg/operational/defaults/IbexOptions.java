@@ -12,8 +12,8 @@ import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictSolver;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DefaultConflictSolver;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictResolver;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DefaultConflictResolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 import language.TGG;
@@ -49,7 +49,7 @@ public class IbexOptions {
 	private BenchmarkLogger logger;
 	
 	// Model Integration
-	private ConflictSolver conflictSolver;
+	private ConflictResolver conflictSolver;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
@@ -64,7 +64,7 @@ public class IbexOptions {
 		ignoreDomainConformity = false;
 		optimizeSyncPattern = false;
 		logger = new EmptyBenchmarkLogger();
-		conflictSolver = new DefaultConflictSolver();
+		conflictSolver = new DefaultConflictResolver();
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -257,11 +257,11 @@ public class IbexOptions {
 		return this;
 	}
 
-	public ConflictSolver getConflictSolver() {
+	public ConflictResolver getConflictSolver() {
 		return conflictSolver;
 	}
 
-	public void setConflictSolver(ConflictSolver conflictSolver) {
+	public void setConflictSolver(ConflictResolver conflictSolver) {
 		this.conflictSolver = conflictSolver;
 	}
 }

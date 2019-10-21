@@ -60,9 +60,9 @@ public class AnalysedMatch {
 	public IMatch getMatch() {
 		return match;
 	}
-
-	public Map<TGGRuleElement, Boolean> getAreRuleEltsDeleted() {
-		return areRuleEltsDeleted;
+	
+	public Boolean isRuleEltDeleted(TGGRuleElement element) {
+		return areRuleEltsDeleted.get(element);
 	}
 
 	public Map<IMatch, DomainType> getFilterNacViolations() {

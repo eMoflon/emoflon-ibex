@@ -38,7 +38,7 @@ public class DELDelay extends MatchIntegrationFragment {
 		List<TGGRuleElement> elementsPartlyDel = analysedMatch.getGroupedElements().get(domainPartlyDel)
 				.get(BindingType.CREATE);
 		elementsPartlyDel.stream() //
-				.filter(e -> !analysedMatch.getAreRuleEltsDeleted().get(e)) //
+				.filter(e -> !analysedMatch.isRuleEltDeleted(e)) //
 				.filter(e -> e instanceof TGGRuleNode) //
 				.map(e -> (EObject) analysedMatch.getMatch().get(e.getName())) //
 				.forEach(n -> mismatch.addElement(n, ProcessState.UNDETERMINED));

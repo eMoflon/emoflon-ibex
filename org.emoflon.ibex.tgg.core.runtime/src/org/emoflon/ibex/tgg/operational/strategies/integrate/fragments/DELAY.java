@@ -35,7 +35,7 @@ public class DELAY extends MatchIntegrationFragment {
 		elementsPartlyDel.addAll(analysedMatch.getGroupedElements().get(DomainType.TRG).get(BindingType.CREATE));
 		
 		elementsPartlyDel.stream() //
-				.filter(e -> !analysedMatch.getAreRuleEltsDeleted().get(e)) //
+				.filter(e -> !analysedMatch.isRuleEltDeleted(e)) //
 				.filter(e -> e instanceof TGGRuleNode) //
 				.map(e -> (EObject) analysedMatch.getMatch().get(e.getName())) //
 				.forEach(n -> mismatch.addElement(n, ProcessState.UNDETERMINED));

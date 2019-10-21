@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
-public interface ConflictSolver {
+public interface ConflictResolver {
 	
 	ConflictResolutionStrategy resolveConflict(Conflict conflict);
 	

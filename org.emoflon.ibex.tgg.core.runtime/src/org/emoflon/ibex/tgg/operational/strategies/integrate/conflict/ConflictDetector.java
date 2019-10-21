@@ -5,8 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
@@ -15,8 +16,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.ProcessState;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 
-import language.TGGRuleNode;
-import precedencegraph.Node;
+import language.BindingType;
+import language.TGGRuleElement;
 
 public class ConflictDetector {
 
@@ -37,64 +38,36 @@ public class ConflictDetector {
 	}
 
 	private DeleteConflict detectDeleteConflict(Mismatch mismatch) {
-		List<ConflictingElement> conflictingElements = new ArrayList<>();
+		Set<ConflictingElement> conflictingElements = new HashSet<>();
 
 		mismatch.getClassifiedElts().forEach((element, state) -> {
 			if (state.equals(ProcessState.TO_BE_DELETED)) {
-				List<Notification> conflictingAdditions = getConflictingAdditions(element);
-				List<Notification> conflictingChanges = getConflictingChanges(element);
-				if (!conflictingAdditions.isEmpty() || !conflictingChanges.isEmpty())
-					conflictingElements.add(new ConflictingElement(element, conflictingAdditions, conflictingChanges));
+				List<Notification> conflAdditions = getConflictingAdditions(element);
+				List<Notification> conflChanges = getConflictingChanges(element);
+				List<Notification> conflCrossRefs = getConflictingCrossRefs(element);
+				if (!conflAdditions.isEmpty() || !conflChanges.isEmpty() || !conflCrossRefs.isEmpty())
+					conflictingElements
+							.add(new ConflictingElement(element, conflAdditions, conflChanges, conflCrossRefs));
 			}
 		});
 
 		if (conflictingElements.isEmpty())
 			return null;
 
-		Set<TreeMap<IMatch, EObject>> deletionChains = determineDeletionChains(mismatch.getBrokenMatch());
-		// TODO adrianm: continue here...
+		Set<DeletionChain> deletionChains = determineDeletionChains(mismatch.getBrokenMatch());
 
-		return null; // return conflict
+		return new DeleteConflict(mismatch.getBrokenMatch(), conflictingElements, deletionChains);
 	}
 
-	private Set<TreeMap<IMatch, EObject>> determineDeletionChains(IMatch match) {
-		Set<TreeMap<IMatch, EObject>> deletionChains = new HashSet<>();
-
+	private Set<DeletionChain> determineDeletionChains(IMatch match) {
 		AnalysedMatch analysedMatch = integrate.getAnalysedMatches().get(match);
-		analysedMatch.getEObjectToNode().keySet().stream() //
-				.filter(e -> analysedMatch.getAreRuleEltsDeleted().get(analysedMatch.getEObjectToNode().get(e))) //
-				.forEach(delElt -> {
-					TreeMap<IMatch, EObject> deletionChain = new TreeMap<>();
-					deletionChain.put(match, delElt);
-					deletionChains.add(concludeDeletionChain(deletionChain));
-				});
-
-		return deletionChains;
-	}
-
-	private TreeMap<IMatch, EObject> concludeDeletionChain(TreeMap<IMatch, EObject> deletionChain) {
-		EObject nextElement = deletionChain.lastEntry().getValue().eContainer();
-		if (nextElement == null)
-			return deletionChain;
-
-		Node lastNode = integrate.getEPG().getNode(deletionChain.lastKey());
-		for (Node subNode : lastNode.getBasedOn()) {
-			IMatch subMatch = integrate.getEPG().getMatch(subNode);
-			if (!integrate.getAnalysedMatches().containsKey(subMatch))
-				continue;
-
-			AnalysedMatch analysedMatch = integrate.getAnalysedMatches().get(subMatch);
-			TGGRuleNode ruleNode = analysedMatch.getEObjectToNode().get(nextElement);
-			if (ruleNode == null)
-				continue;
-
-			if (analysedMatch.getAreRuleEltsDeleted().get(ruleNode)) {
-				deletionChain.put(subMatch, nextElement);
-				return concludeDeletionChain(deletionChain);
-			}
-		}
-
-		return deletionChain;
+		return analysedMatch.getEObjectToNode().keySet().stream() //
+				.filter(e -> {
+					TGGRuleElement node = analysedMatch.getEObjectToNode().get(e);
+					return analysedMatch.isRuleEltDeleted(node) && node.getBindingType().equals(BindingType.CREATE);
+				}) //
+				.map(delElt -> new DeletionChain(integrate, new ImmutablePair<>(match, delElt))) //
+				.collect(Collectors.toSet());
 	}
 
 	private List<Notification> getConflictingAdditions(EObject element) {
@@ -109,6 +82,20 @@ public class ConflictDetector {
 		if (changed.containsKey(element))
 			return new ArrayList<>(changed.get(element));
 		return new ArrayList<>();
+	}
+
+	private List<Notification> getConflictingCrossRefs(EObject element) {
+		List<Notification> crossRefs = new ArrayList<>();
+		integrate.getModelChangeProtocol().getAdded().forEach((e, l) -> l.forEach(n -> {
+			if (element.equals(n.getNewValue()))
+				crossRefs.add(n);
+		}));
+		integrate.getModelChangeProtocol().getChanged().forEach((e, l) -> l.forEach(n -> {
+			if (element.equals(n.getNewValue()))
+				crossRefs.add(n);
+		}));
+		return crossRefs;
+		// TODO adrianm: include cross refs not captured by eContentAdapter
 	}
 
 }
