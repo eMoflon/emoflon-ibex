@@ -83,29 +83,29 @@ public class ModelChangeProtocol {
 		changed.get(notifier).add(notification);
 	}
 
-	public void revert(Notification notification) {
+	public void undo(Notification notification) {
 		Object notifier = notification.getNotifier();
 		switch (notification.getEventType()) {
 		case Notification.ADD:
-			revertAdd(notification, notifier);
+			undoAdd(notification, notifier);
 			break;
 		case Notification.ADD_MANY:
-			revertAddMany(notification, notifier);
+			undoAddMany(notification, notifier);
 			break;
 		case Notification.REMOVE:
-			revertRemove(notification, notifier);
+			undoRemove(notification, notifier);
 			break;
 		case Notification.REMOVE_MANY:
-			revertRemoveMany(notification, notifier);
+			undoRemoveMany(notification, notifier);
 			break;
 		case Notification.SET:
-			revertSet(notification, notifier);
+			undoSet(notification, notifier);
 			break;
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void revertAdd(Notification notification, Object notifier) {
+	private void undoAdd(Notification notification, Object notifier) {
 		if (notifier instanceof EObject) {
 			EObject eObjNotifier = (EObject) notifier;
 			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
@@ -117,7 +117,7 @@ public class ModelChangeProtocol {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void revertAddMany(Notification notification, Object notifier) {
+	private void undoAddMany(Notification notification, Object notifier) {
 		if (notifier instanceof EObject) {
 			EObject eObjNotifier = (EObject) notifier;
 			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
@@ -129,7 +129,7 @@ public class ModelChangeProtocol {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void revertRemove(Notification notification, Object notifier) {
+	private void undoRemove(Notification notification, Object notifier) {
 		if (notifier instanceof EObject) {
 			EObject eObjNotifier = (EObject) notifier;
 			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
@@ -141,7 +141,7 @@ public class ModelChangeProtocol {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void revertRemoveMany(Notification notification, Object notifier) {
+	private void undoRemoveMany(Notification notification, Object notifier) {
 		if (notifier instanceof EObject) {
 			EObject eObjNotifier = (EObject) notifier;
 			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
@@ -152,9 +152,83 @@ public class ModelChangeProtocol {
 		}
 	}
 
-	private void revertSet(Notification notification, Object notifier) {
+	private void undoSet(Notification notification, Object notifier) {
 		EObject eObjNotifier = (EObject) notifier;
 		eObjNotifier.eSet((EStructuralFeature) notification.getFeature(), notification.getOldValue());
+	}
+
+	public void redo(Notification notification) {
+		Object notifier = notification.getNotifier();
+		switch (notification.getEventType()) {
+		case Notification.ADD:
+			redoAdd(notification, notifier);
+			break;
+		case Notification.ADD_MANY:
+			redoAddMany(notification, notifier);
+			break;
+		case Notification.REMOVE:
+			redoRemove(notification, notifier);
+			break;
+		case Notification.REMOVE_MANY:
+			redoRemoveMany(notification, notifier);
+			break;
+		case Notification.SET:
+			redoSet(notification, notifier);
+			break;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void redoAdd(Notification notification, Object notifier) {
+		if (notifier instanceof EObject) {
+			EObject eObjNotifier = (EObject) notifier;
+			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
+			eList.add(notification.getPosition(), (EObject) notification.getNewValue());
+		} else if (notifier instanceof Resource) {
+			Resource resNotifier = (Resource) notifier;
+			resNotifier.getContents().add(notification.getPosition(), (EObject) notification.getNewValue());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void redoAddMany(Notification notification, Object notifier) {
+		if (notifier instanceof EObject) {
+			EObject eObjNotifier = (EObject) notifier;
+			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
+			eList.addAll((List<EObject>) notification.getNewValue());
+		} else if (notifier instanceof Resource) {
+			Resource resNotifier = (Resource) notifier;
+			resNotifier.getContents().addAll((List<EObject>) notification.getNewValue());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void redoRemove(Notification notification, Object notifier) {
+		if (notifier instanceof EObject) {
+			EObject eObjNotifier = (EObject) notifier;
+			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
+			eList.remove(notification.getOldValue());
+		} else if (notifier instanceof Resource) {
+			Resource resNotifier = (Resource) notifier;
+			resNotifier.getContents().remove(notification.getOldValue());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void redoRemoveMany(Notification notification, Object notifier) {
+		if (notifier instanceof EObject) {
+			EObject eObjNotifier = (EObject) notifier;
+			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
+			eList.removeAll((List<EObject>) notification.getOldValue());
+		} else if (notifier instanceof Resource) {
+			Resource resNotifier = (Resource) notifier;
+			resNotifier.getContents().removeAll((List<EObject>) notification.getOldValue());
+		}
+	}
+
+	private void redoSet(Notification notification, Object notifier) {
+		EObject eObjNotifier = (EObject) notifier;
+		eObjNotifier.eSet((EStructuralFeature) notification.getFeature(), notification.getNewValue());
 	}
 
 }
