@@ -1,11 +1,14 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.DeleteConflictResStrategy;
+
 public class DefaultConflictResolver implements ConflictResolver {
 
 	@Override
-	public ConflictResolutionStrategy resolveConflict(Conflict conflict) {
-		// TODO adrianm: implement
-		return null;
+	public DeleteConflictResStrategy resolveDeleteConflict(DeleteConflict conflict) {
+		return conflict.preserveConstructiveChanges();
 	}
+
+	
 
 }

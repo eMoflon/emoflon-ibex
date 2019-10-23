@@ -67,7 +67,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 //		repair();
 		setup();
-		detectConflicts();
+		detectAndResolveConflicts();
 		calculateIntegrationSolution();
 		cleanUp();
 	}
@@ -85,17 +85,16 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 			analysedMatches.put(brokenMatch, analysedMatch);
 		}
 
-		pattern.getComponents().forEach(c -> c.apply(this)); // TODO adrianm: Only MatchIFs!
+		pattern.getComponents().forEach(c -> c.apply(this)); // TODO adrianm: only MatchIFs!
 	}
 
 	private void annotateEPG() {
-		// TODO adrianm: implement
+		// TODO adrianm: still required?
 	}
 
-	protected void detectConflicts() {
-		conflictDetector.detectDeleteConflicts().forEach(c -> {
-			options.getConflictSolver().resolveConflict(c);
-			// TODO adrianm: apply conflict resolution strategy
+	protected void detectAndResolveConflicts() {
+		conflictDetector.detectDeleteConflicts().forEach(conflict -> {
+			options.getConflictSolver().resolveDeleteConflict(conflict).apply(this);
 		});
 	}
 

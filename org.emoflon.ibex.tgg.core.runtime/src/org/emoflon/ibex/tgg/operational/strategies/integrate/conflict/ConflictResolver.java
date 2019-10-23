@@ -1,7 +1,9 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.DeleteConflictResStrategy;
+
 public interface ConflictResolver {
 	
-	ConflictResolutionStrategy resolveConflict(Conflict conflict);
+	DeleteConflictResStrategy resolveDeleteConflict(DeleteConflict conflict);
 	
 }

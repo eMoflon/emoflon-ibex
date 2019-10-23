@@ -5,15 +5,15 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.DeleteConflictResStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.PreserveConstrChangesCRS;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.PreserveDeletionCRS;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.RevokeDeletionCRS;
 
 public class DeleteConflict extends Conflict {
 
 	private Set<ConflictingElement> subjects;
 	private Set<DeletionChain> deletionChains;
-
-	// Resolution strategies
-	private final int takeSrcDropTrg = 0;
-	private final int takeTrgDropSrc = 1;
 
 	DeleteConflict(IMatch match, Set<ConflictingElement> subjects,
 			Set<DeletionChain> deletionChains) {
@@ -38,12 +38,16 @@ public class DeleteConflict extends Conflict {
 	
 	/* RESOLUTION */
 
-	public ConflictResolutionStrategy takeSrcDropTrg() {
-		return new ConflictResolutionStrategy(takeSrcDropTrg);
+	public DeleteConflictResStrategy preserveDeletion() {
+		return new PreserveDeletionCRS(this, TOKEN);
 	}
 
-	public ConflictResolutionStrategy takeTrgDropSrc() {
-		return new ConflictResolutionStrategy(takeTrgDropSrc);
+	public DeleteConflictResStrategy revokeDeletion() {
+		return new PreserveConstrChangesCRS(this, TOKEN);
+	}
+
+	public DeleteConflictResStrategy preserveConstructiveChanges() {
+		return new RevokeDeletionCRS(this, TOKEN);
 	}
 
 }
