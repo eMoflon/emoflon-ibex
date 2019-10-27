@@ -34,6 +34,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private BrokenMatchAnalyser matchAnalyser;
 	private ModelChangeProtocol modelChangeProtocol;
 	private ConflictDetector conflictDetector;
+	private INTEGRATE_OPT integrate_optimizer;
 
 	protected Resource epg;
 
@@ -115,7 +116,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	@Override
 	protected void initializeRepairStrategy(IbexOptions options) {
 		// TODO adrianm: implement
-
 	}
 
 	@Override
@@ -264,28 +264,12 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	@Override
 	public void loadTGG() throws IOException {
 		super.loadTGG();
-		relaxReferences(options.tgg().getSrc());
-		relaxReferences(options.tgg().getTrg());
+		integrate_optimizer.unrelaxReferences();
 	}
 	
 	@Override
 	public void saveModels() throws IOException {
-		p.save(null);
-
-		// Unrelax the metamodel
-		unrelaxReferences(options.tgg().getSrc());
-		unrelaxReferences(options.tgg().getTrg());
-
-		// lfritsche: what's this code doing?
-		// Remove adapters to avoid problems with notifications
-		t.eAdapters().clear();
-		t.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
-		c.eAdapters().clear();
-		c.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
-
-		// Copy and fix the model in the process
-		FixingCopier.fixAll(s, c, "source");
-		FixingCopier.fixAll(t, c, "target");
+		integrate_optimizer.saveModels();
 
 		// Now save fixed models
 		s.save(null);

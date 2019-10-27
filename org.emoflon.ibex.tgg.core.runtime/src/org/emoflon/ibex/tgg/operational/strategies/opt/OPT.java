@@ -62,19 +62,6 @@ public abstract class OPT extends OperationalStrategy {
 	 */
 	protected IntToObjectMap<IntSet> sameComplementMatches = cfactory.createIntToObjectHashMap();
 
-	/**
-	 * Collection of constraints to guarantee maximality property; value: kernels
-	 * whose complement rules did not fulfill maximality property
-	 */
-	protected IntSet invalidKernels = cfactory.createIntSet();
-
-	/**
-	 * Collection of constraints to guarantee cyclic dependences are avoided; value:
-	 * correctly applied bundles (kernel match + its CRs matches)
-	 */
-	protected Set<Bundle> appliedBundles = cfactory.createObjectSet();
-	protected Bundle lastAppliedBundle;
-
 	protected IntToObjectMap<String> matchIdToRuleName = cfactory.createIntToObjectHashMap();
 	protected int idCounter = 1;
 
@@ -204,29 +191,6 @@ public abstract class OPT extends OperationalStrategy {
 			ilpProblem.addExclusion(variables.stream().map(v -> "x" + v),
 					"EXCL_edgeOnce_" + edge.getType().getName() + "_" + this.nameCounter++);
 		}
-
-		for (int match : this.sameComplementMatches.keySet()) {
-			IntSet variables = this.sameComplementMatches.get(match);
-			ilpProblem.addExclusion(variables.stream().map(v -> "x" + v), "EXCL_sameCompl" + this.nameCounter++);
-		}
-
-		if (!this.invalidKernels.isEmpty()) {
-			IntSet variables = this.invalidKernels;
-			variables.stream().forEach(v -> {
-				ilpProblem.fixVariable("x" + v, false);
-			});
-		}
-
-		HandleDependencies handleCycles = new HandleDependencies(this.appliedBundles, this.edgeToMarkingMatches,
-				this.nodeToMarkingMatches, this.matchToContextNodes, this.matchToContextEdges);
-
-		List<Set<List<Integer>>> cyclicConstraints = handleCycles.getCyclicConstraints();
-		for (Set<List<Integer>> constraints : cyclicConstraints) {
-			for (List<Integer> variables : constraints) {
-				ilpProblem.addExclusion(variables.stream().map(v -> "x" + v), "EXCL_cycle" + this.nameCounter++,
-						variables.size() - 1);
-			}
-		}
 	}
 
 	protected void defineILPImplications(final BinaryILPProblem ilpProblem) {
@@ -328,18 +292,6 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected void addUserDefinedConstraints(final BinaryILPProblem ilpProblem) {
 
-	}
-
-	protected void handleBundles(final IMatch comatch, final String ruleName) {
-		Bundle appliedBundle = new Bundle(this.idCounter);
-		this.appliedBundles.add(appliedBundle);
-		this.lastAppliedBundle = appliedBundle;
-		
-		this.lastAppliedBundle.addMatch(this.idCounter);
-
-		// add context nodes and edges of this concrete match to its bundle
-		this.lastAppliedBundle.addBundleContextNodes(this.getBlackNodes(comatch, ruleName));
-		this.lastAppliedBundle.addBundleContextEdges(this.getBlackEdges(comatch, ruleName));
 	}
 
 	protected Set<EObject> getGreenNodes(final IMatch comatch, final String ruleName) {

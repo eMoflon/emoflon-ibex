@@ -27,7 +27,7 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStr
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
-public abstract class ExtOperationalStrategy extends OPT {
+public abstract class ExtOperationalStrategy extends OperationalStrategy {
 
 	// Repair
 	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
