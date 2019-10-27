@@ -26,6 +26,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.Integration
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ModelChangeProtocol;
+import org.emoflon.ibex.tgg.operational.strategies.opt.FixingCopier;
 
 public abstract class INTEGRATE extends ExtOperationalStrategy {
 
@@ -127,15 +128,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	@Override
-	public void saveModels() throws IOException {
-		s.save(null);
-		t.save(null);
-		c.save(null);
-		p.save(null);
-		epg.save(null);
-	}
-
-	@Override
 	public void loadModels() throws IOException {
 		long tic = System.currentTimeMillis();
 		s = loadResource(options.projectPath() + "/instances/src.xmi");
@@ -154,6 +146,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		return patternName.endsWith(PatternSuffixes.FWD) //
 				|| patternName.endsWith(PatternSuffixes.BWD) //
 				|| patternName.endsWith(PatternSuffixes.CONSISTENCY) //
+				|| patternName.endsWith(PatternSuffixes.CC) //
 				|| patternName.endsWith(PatternSuffixes.FILTER_NAC);
 		// TODO adrianm: Add missing pattern suffixes
 	}
@@ -267,5 +260,38 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		matchAnalyser = new BrokenMatchAnalyser(this);
 		conflictDetector = new ConflictDetector(this);
 	}
+	
+	@Override
+	public void loadTGG() throws IOException {
+		super.loadTGG();
+		relaxReferences(options.tgg().getSrc());
+		relaxReferences(options.tgg().getTrg());
+	}
+	
+	@Override
+	public void saveModels() throws IOException {
+		p.save(null);
 
+		// Unrelax the metamodel
+		unrelaxReferences(options.tgg().getSrc());
+		unrelaxReferences(options.tgg().getTrg());
+
+		// lfritsche: what's this code doing?
+		// Remove adapters to avoid problems with notifications
+		t.eAdapters().clear();
+		t.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+		c.eAdapters().clear();
+		c.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+
+		// Copy and fix the model in the process
+		FixingCopier.fixAll(s, c, "source");
+		FixingCopier.fixAll(t, c, "target");
+
+		// Now save fixed models
+		s.save(null);
+		t.save(null);
+		c.save(null);
+		p.save(null);
+		epg.save(null);
+	}
 }
