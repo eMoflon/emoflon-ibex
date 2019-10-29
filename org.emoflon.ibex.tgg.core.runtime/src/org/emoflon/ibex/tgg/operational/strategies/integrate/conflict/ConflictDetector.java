@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,8 +41,8 @@ public class ConflictDetector {
 
 		mismatch.getClassifiedElts().forEach((element, state) -> {
 			if (state.equals(ProcessState.TO_BE_DELETED)) {
-				List<Notification> conflAdditions = getConflictingAdditions(element);
-				List<Notification> conflChanges = getConflictingChanges(element);
+				List<Notification> conflAdditions = integrate.getModelChangeProtocol().getAdditions(element);
+				List<Notification> conflChanges = integrate.getModelChangeProtocol().getChanges(element);
 				List<Notification> conflCrossRefs = getConflictingCrossRefs(element);
 				if (!conflAdditions.isEmpty() || !conflChanges.isEmpty() || !conflCrossRefs.isEmpty())
 					conflictingElements
@@ -70,30 +69,10 @@ public class ConflictDetector {
 				.collect(Collectors.toSet());
 	}
 
-	private List<Notification> getConflictingAdditions(EObject element) {
-		Map<Object, List<Notification>> added = integrate.getModelChangeProtocol().getAdded();
-		if (added.containsKey(element))
-			return new ArrayList<>(added.get(element));
-		return new ArrayList<>();
-	}
-
-	private List<Notification> getConflictingChanges(EObject element) {
-		Map<Object, List<Notification>> changed = integrate.getModelChangeProtocol().getChanged();
-		if (changed.containsKey(element))
-			return new ArrayList<>(changed.get(element));
-		return new ArrayList<>();
-	}
-
 	private List<Notification> getConflictingCrossRefs(EObject element) {
 		List<Notification> crossRefs = new ArrayList<>();
-		integrate.getModelChangeProtocol().getAdded().forEach((e, l) -> l.forEach(n -> {
-			if (element.equals(n.getNewValue()))
-				crossRefs.add(n);
-		}));
-		integrate.getModelChangeProtocol().getChanged().forEach((e, l) -> l.forEach(n -> {
-			if (element.equals(n.getNewValue()))
-				crossRefs.add(n);
-		}));
+		crossRefs.addAll(integrate.getModelChangeProtocol().getReverseAdditions(element));
+		crossRefs.addAll(integrate.getModelChangeProtocol().getReverseChanges(element));
 		return crossRefs;
 		// TODO adrianm: include cross refs not captured by eContentAdapter
 	}

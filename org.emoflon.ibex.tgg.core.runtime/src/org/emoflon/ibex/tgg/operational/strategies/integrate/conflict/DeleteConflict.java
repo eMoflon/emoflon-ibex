@@ -43,11 +43,11 @@ public class DeleteConflict extends Conflict {
 	}
 
 	public DeleteConflictResStrategy revokeDeletion() {
-		return new PreserveConstrChangesCRS(this, TOKEN);
+		return new RevokeDeletionCRS(this, TOKEN);
 	}
 
 	public DeleteConflictResStrategy preserveConstructiveChanges() {
-		return new RevokeDeletionCRS(this, TOKEN);
+		return new PreserveConstrChangesCRS(this, TOKEN);
 	}
 
 }

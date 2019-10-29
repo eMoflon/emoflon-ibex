@@ -13,7 +13,7 @@ import language.BindingType;
 import language.DomainType;
 import language.TGGRuleCorr;
 
-public abstract class MatchIntegrationFragment {
+public abstract class MatchIntegrationFragment { // TODO adrianm: rename to MatchClassificationComponent
 
 	abstract public boolean softApply(AnalysedMatch analysedMatch, INTEGRATE integrate);
 

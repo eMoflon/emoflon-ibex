@@ -1,29 +1,41 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 
 public class ModelChangeProtocol {
+	
+	public final ModelChangeUtil util;
 
-	private Map<Object, List<Notification>> added;
-	private Map<Object, List<Notification>> removed;
-	private Map<Object, List<Notification>> changed;
+	private Map<Object, List<Notification>> additions;
+	private Map<Object, List<Notification>> removals;
+	private Map<Object, List<Notification>> changes;
+
+	private Map<Object, List<Notification>> reverseAdditions;
+	private Map<Object, List<Notification>> reverseRemovals;
+	private Map<Object, List<Notification>> reverseChanges;
 
 	private EContentAdapter adapter;
 
 	public ModelChangeProtocol() {
-		added = new HashMap<>();
-		removed = new HashMap<>();
-		changed = new HashMap<>();
+		this.util = new ModelChangeUtil(this);
+		
+		additions = new HashMap<>();
+		removals = new HashMap<>();
+		changes = new HashMap<>();
+
+		reverseAdditions = new HashMap<>();
+		reverseRemovals = new HashMap<>();
+		reverseChanges = new HashMap<>();
 
 		adapter = new EContentAdapter() {
 			@Override
@@ -31,14 +43,14 @@ public class ModelChangeProtocol {
 				switch (notification.getEventType()) {
 				case Notification.ADD:
 				case Notification.ADD_MANY:
-					addToAdded(notification.getNotifier(), notification);
+					addToAdditions(notification.getNotifier(), notification);
 					break;
 				case Notification.REMOVE:
 				case Notification.REMOVE_MANY:
-					addToRemoved(notification.getNotifier(), notification);
+					addToRemovals(notification.getNotifier(), notification);
 					break;
 				case Notification.SET:
-					addToChanged(notification.getNotifier(), notification);
+					addToChanges(notification.getNotifier(), notification);
 					break;
 				}
 				super.notifyChanged(notification);
@@ -56,179 +68,98 @@ public class ModelChangeProtocol {
 			resources[i].eAdapters().remove(adapter);
 	}
 
-	public Map<Object, List<Notification>> getAdded() {
-		return added;
+	public Map<Object, List<Notification>> getAdditions() {
+		return additions;
 	}
 
-	public Map<Object, List<Notification>> getRemoved() {
-		return removed;
+	public Map<Object, List<Notification>> getRemovals() {
+		return removals;
 	}
 
-	public Map<Object, List<Notification>> getChanged() {
-		return changed;
+	public Map<Object, List<Notification>> getChanges() {
+		return changes;
 	}
 
-	public void addToAdded(Object notifier, Notification notification) {
-		added.computeIfAbsent(notifier, k -> new ArrayList<>());
-		added.get(notifier).add(notification);
+	public Map<Object, List<Notification>> getReverseAdditions() {
+		return reverseAdditions;
 	}
 
-	public void addToRemoved(Object notifier, Notification notification) {
-		removed.computeIfAbsent(notifier, k -> new ArrayList<>());
-		removed.get(notifier).add(notification);
+	public Map<Object, List<Notification>> getReverseRemovals() {
+		return reverseRemovals;
 	}
 
-	public void addToChanged(Object notifier, Notification notification) {
-		changed.computeIfAbsent(notifier, k -> new ArrayList<>());
-		changed.get(notifier).add(notification);
+	public Map<Object, List<Notification>> getReverseChanges() {
+		return reverseChanges;
 	}
 
-	public void undo(Notification notification) {
-		Object notifier = notification.getNotifier();
-		switch (notification.getEventType()) {
-		case Notification.ADD:
-			undoAdd(notification, notifier);
-			break;
-		case Notification.ADD_MANY:
-			undoAddMany(notification, notifier);
-			break;
-		case Notification.REMOVE:
-			undoRemove(notification, notifier);
-			break;
-		case Notification.REMOVE_MANY:
-			undoRemoveMany(notification, notifier);
-			break;
-		case Notification.SET:
-			undoSet(notification, notifier);
-			break;
+	public List<Notification> getAdditions(Object element) {
+		return additions.getOrDefault(element, new ArrayList<>());
+	}
+
+	public List<Notification> getRemovals(Object element) {
+		return removals.getOrDefault(element, new ArrayList<>());
+	}
+
+	public List<Notification> getChanges(Object element) {
+		return changes.getOrDefault(element, new ArrayList<>());
+	}
+
+	public List<Notification> getReverseAdditions(Object element) {
+		return reverseAdditions.getOrDefault(element, new ArrayList<>());
+	}
+
+	public List<Notification> getReverseRemovals(Object element) {
+		return reverseRemovals.getOrDefault(element, new ArrayList<>());
+	}
+
+	public List<Notification> getReverseChanges(Object element) {
+		return reverseChanges.getOrDefault(element, new ArrayList<>());
+	}
+
+	private void addToAdditions(Object notifier, Notification notification) {
+		additions.computeIfAbsent(notifier, k -> new ArrayList<>());
+		additions.get(notifier).add(notification);
+
+		if (notification.getNewValue() instanceof EObject) {
+			reverseAdditions.computeIfAbsent(notification.getNewValue(), k -> new ArrayList<>());
+			reverseAdditions.get(notification.getNewValue()).add(notification);
+		} else if (notification.getNewValue() instanceof Collection) {
+			for (Object newValue : (Collection<?>) notification.getNewValue()) {
+				reverseAdditions.computeIfAbsent(newValue, k -> new ArrayList<>());
+				reverseAdditions.get(newValue).add(notification);
+			}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void undoAdd(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.remove(notification.getNewValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().remove(notification.getNewValue());
+	private void addToRemovals(Object notifier, Notification notification) {
+		removals.computeIfAbsent(notifier, k -> new ArrayList<>());
+		removals.get(notifier).add(notification);
+
+		if (notification.getOldValue() instanceof EObject) {
+			reverseRemovals.computeIfAbsent(notification.getOldValue(), k -> new ArrayList<>());
+			reverseRemovals.get(notification.getOldValue()).add(notification);
+		} else if (notification.getOldValue() instanceof Collection) {
+			for (Object oldValue : (Collection<?>) notification.getOldValue()) {
+				reverseRemovals.computeIfAbsent(oldValue, k -> new ArrayList<>());
+				reverseRemovals.get(oldValue).add(notification);
+			}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void undoAddMany(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.removeAll((List<EObject>) notification.getNewValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().removeAll((List<EObject>) notification.getNewValue());
+	private void addToChanges(Object notifier, Notification notification) {
+		changes.computeIfAbsent(notifier, k -> new ArrayList<>());
+		changes.get(notifier).add(notification);
+
+		if (notification.getFeature() instanceof EReference) {
+			if (notification.getOldValue() != null) {
+				reverseChanges.computeIfAbsent(notification.getOldValue(), k -> new ArrayList<>());
+				reverseChanges.get(notification.getOldValue()).add(notification);
+			}
+			if (notification.getNewValue() != null) {
+				reverseChanges.computeIfAbsent(notification.getNewValue(), k -> new ArrayList<>());
+				reverseChanges.get(notification.getNewValue()).add(notification);
+			}
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void undoRemove(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.add(notification.getPosition(), (EObject) notification.getOldValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().add(notification.getPosition(), (EObject) notification.getOldValue());
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void undoRemoveMany(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.addAll((List<EObject>) notification.getOldValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().addAll((List<EObject>) notification.getOldValue());
-		}
-	}
-
-	private void undoSet(Notification notification, Object notifier) {
-		EObject eObjNotifier = (EObject) notifier;
-		eObjNotifier.eSet((EStructuralFeature) notification.getFeature(), notification.getOldValue());
-	}
-
-	public void redo(Notification notification) {
-		Object notifier = notification.getNotifier();
-		switch (notification.getEventType()) {
-		case Notification.ADD:
-			redoAdd(notification, notifier);
-			break;
-		case Notification.ADD_MANY:
-			redoAddMany(notification, notifier);
-			break;
-		case Notification.REMOVE:
-			redoRemove(notification, notifier);
-			break;
-		case Notification.REMOVE_MANY:
-			redoRemoveMany(notification, notifier);
-			break;
-		case Notification.SET:
-			redoSet(notification, notifier);
-			break;
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void redoAdd(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.add(notification.getPosition(), (EObject) notification.getNewValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().add(notification.getPosition(), (EObject) notification.getNewValue());
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void redoAddMany(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.addAll((List<EObject>) notification.getNewValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().addAll((List<EObject>) notification.getNewValue());
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void redoRemove(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.remove(notification.getOldValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().remove(notification.getOldValue());
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void redoRemoveMany(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.removeAll((List<EObject>) notification.getOldValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().removeAll((List<EObject>) notification.getOldValue());
-		}
-	}
-
-	private void redoSet(Notification notification, Object notifier) {
-		EObject eObjNotifier = (EObject) notifier;
-		eObjNotifier.eSet((EStructuralFeature) notification.getFeature(), notification.getNewValue());
 	}
 
 }
