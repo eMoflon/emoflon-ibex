@@ -13,6 +13,8 @@ public class SimpleMatch implements IMatch {
 	 * The name of the pattern.
 	 */
 	private String patternName;
+	
+	protected int hash;
 
 	/**
 	 * The mapping between parameter names and objects.
@@ -68,10 +70,18 @@ public class SimpleMatch implements IMatch {
 	public Collection<String> getParameterNames() {
 		return parameters.keySet();
 	}
+	
+	@Override
+	public int getHashCode() {
+		if(hash == 0) {
+			hash = parameters.hashCode();
+		}
+		return hash;
+	}
 
 	@Override
 	public int hashCode() {
-		return parameters.hashCode();
+		return getHashCode();
 	}
 
 	@Override
