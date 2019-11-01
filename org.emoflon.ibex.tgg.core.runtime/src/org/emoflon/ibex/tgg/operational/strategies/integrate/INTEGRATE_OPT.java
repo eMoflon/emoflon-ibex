@@ -48,7 +48,8 @@ public class INTEGRATE_OPT extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		return 0;
+		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
+				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
 	}
 
 	@Override
