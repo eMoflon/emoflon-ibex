@@ -15,6 +15,7 @@ public class SimpleMatch implements IMatch {
 	private String patternName;
 	
 	protected int hash;
+	protected boolean hashInit = false;
 
 	/**
 	 * The mapping between parameter names and objects.
@@ -73,8 +74,13 @@ public class SimpleMatch implements IMatch {
 	
 	@Override
 	public int getHashCode() {
-		if(hash == 0) {
-			hash = parameters.hashCode();
+		if(!hashInit) {
+			//hash = parameters.hashCode();
+			//hash = parameters.keySet().hashCode();
+			//hash = Objects.hash(parameters.values());
+			//hash = parameters.values().hashCode();
+			hash = (int) parameters.values().stream().reduce(0, (a, b) -> a.hashCode() + b.hashCode());
+			hashInit = true;
 		}
 		return hash;
 	}
