@@ -139,20 +139,20 @@ public abstract class SYNC extends OperationalStrategy {
 	}
 
 	protected void translate() {
-		do {
-			blackInterpreter.updateMatches();
-		}while (processOneOperationalRuleMatch());
-		
-//		blackInterpreter.updateMatches();
-//		
-//		while(true) {
-//			while (processOneOperationalRuleMatch()) {
-//				
-//			}
+//		do {
 //			blackInterpreter.updateMatches();
-//			if(!processOneOperationalRuleMatch())
-//				return;
-//		}
+//		}while (processOneOperationalRuleMatch());
+		
+		blackInterpreter.updateMatches();
+		
+		while(true) {
+			while (processOneOperationalRuleMatch()) {
+				
+			}
+			blackInterpreter.updateMatches();
+			if(!processOneOperationalRuleMatch())
+				return;
+		}
 	}
 
 	protected void rollBack() {
