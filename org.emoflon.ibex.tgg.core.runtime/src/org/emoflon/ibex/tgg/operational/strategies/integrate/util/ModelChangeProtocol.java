@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.util.EContentAdapter;
 
 public class ModelChangeProtocol {
 	
+	private final Resource[] observedRes;
 	public final ModelChangeUtil util;
 
 	private Map<Object, List<Notification>> additions;
@@ -26,8 +27,9 @@ public class ModelChangeProtocol {
 
 	private EContentAdapter adapter;
 
-	public ModelChangeProtocol() {
-		this.util = new ModelChangeUtil(this);
+	public ModelChangeProtocol(Resource... observedRes) {
+		this.observedRes = observedRes;
+		this.util = new ModelChangeUtil(observedRes, this);
 		
 		additions = new HashMap<>();
 		removals = new HashMap<>();
@@ -58,14 +60,14 @@ public class ModelChangeProtocol {
 		};
 	}
 
-	public void attachAdapterTo(Resource... resources) {
-		for (int i = 0; i < resources.length; i++)
-			resources[i].eAdapters().add(adapter);
+	public void attachAdapter() {
+		for (int i = 0; i < observedRes.length; i++)
+			observedRes[i].eAdapters().add(adapter);
 	}
 
-	public void detachAdapterFrom(Resource... resources) {
-		for (int i = 0; i < resources.length; i++)
-			resources[i].eAdapters().remove(adapter);
+	public void detachAdapter() {
+		for (int i = 0; i < observedRes.length; i++)
+			observedRes[i].eAdapters().remove(adapter);
 	}
 
 	public Map<Object, List<Notification>> getAdditions() {

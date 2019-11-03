@@ -35,7 +35,7 @@ public class DELProp extends MatchIntegrationFragment {
 		} else
 			return false;
 		
-		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
+//		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
 		
 		Mismatch mismatch = new Mismatch(analysedMatch.getMatch(), this);
 		integrate.getMismatches().add(mismatch);

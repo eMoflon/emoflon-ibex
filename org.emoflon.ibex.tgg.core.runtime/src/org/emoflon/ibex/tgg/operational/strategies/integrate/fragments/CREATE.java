@@ -21,7 +21,7 @@ public class CREATE extends MatchIntegrationFragment {
 		if (!isApplicable(analysedMatch))
 			return false;
 
-		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
+//		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
 
 		Mismatch mismatch = new Mismatch(analysedMatch.getMatch(), this);
 		integrate.getMismatches().add(mismatch);

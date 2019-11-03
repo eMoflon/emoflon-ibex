@@ -98,5 +98,9 @@ public class BrokenMatchAnalyser {
 		}
 		return true;
 	}
+	
+	public TGGRule getRule(String name) {
+		return rules.get(name);
+	}
 
 }

@@ -48,7 +48,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
-		modelChangeProtocol = new ModelChangeProtocol();
 		undetermined = new HashSet<>();
 		toBeTranslated = new HashSet<>();
 		toBeDeleted = new HashSet<>();
@@ -74,7 +73,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	protected void setup() {
 		analyseBrokenMatches();
-		annotateEPG();
 	}
 
 	private void analyseBrokenMatches() {
@@ -88,10 +86,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		pattern.getComponents().forEach(c -> c.apply(this)); // TODO adrianm: only MatchIFs!
 	}
 
-	private void annotateEPG() {
-		// TODO adrianm: still required?
-	}
-
 	protected void detectAndResolveConflicts() {
 		conflictDetector.detectDeleteConflicts().forEach(conflict -> {
 			options.getConflictSolver().resolveDeleteConflict(conflict).apply(this);
@@ -103,7 +97,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	protected void cleanUp() {
-		modelChangeProtocol = new ModelChangeProtocol();
+		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
 		undetermined = new HashSet<>();
 		toBeTranslated = new HashSet<>();
 		toBeDeleted = new HashSet<>();
@@ -155,7 +149,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 				|| patternName.endsWith(PatternSuffixes.BWD) //
 				|| patternName.endsWith(PatternSuffixes.CONSISTENCY) //
 				|| patternName.endsWith(PatternSuffixes.FILTER_NAC);
-		// TODO adrianm: Add missing pattern suffixes
+		// TODO adrianm: add missing pattern suffixes
 	}
 
 	@Override
@@ -258,13 +252,14 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		blackInterpreter.updateMatches();
 		getEPG().update();
 
-		modelChangeProtocol.attachAdapterTo(s, t);
+		modelChangeProtocol.attachAdapter();
 		delta.accept(s.getContents().get(0), t.getContents().get(0));
-		modelChangeProtocol.detachAdapterFrom(s, t);
+		modelChangeProtocol.detachAdapter();
 	}
 
 	private void initIntegrateDependantTools() {
 		matchAnalyser = new BrokenMatchAnalyser(this);
+		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
 		conflictDetector = new ConflictDetector(this);
 	}
 

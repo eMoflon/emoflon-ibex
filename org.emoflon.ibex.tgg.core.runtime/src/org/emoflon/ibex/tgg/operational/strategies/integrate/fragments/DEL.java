@@ -13,7 +13,7 @@ public class DEL extends MatchIntegrationFragment {
 		if (!pattern.matches(analysedMatch.getModPattern()))
 			return false;
 	
-		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
+//		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
 		return true;
 	}
 
