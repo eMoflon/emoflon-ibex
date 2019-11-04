@@ -40,8 +40,6 @@ public abstract class ConflictResolutionStrategy {
 			}
 		});
 
-		AnalysedMatch am = integrate.getMatchAnalyser().analyse(match);
-
 		return undos;
 	}
 

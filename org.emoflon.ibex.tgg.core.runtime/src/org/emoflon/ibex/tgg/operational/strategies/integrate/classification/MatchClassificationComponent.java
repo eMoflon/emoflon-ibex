@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.fragments;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,17 +7,16 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 
 import language.BindingType;
 import language.DomainType;
 import language.TGGRuleCorr;
 
-public abstract class MatchIntegrationFragment { // TODO adrianm: rename to MatchClassificationComponent
+public abstract class MatchClassificationComponent {
 
-	abstract public boolean softApply(AnalysedMatch analysedMatch, INTEGRATE integrate);
-
-	abstract public boolean hardApply(AnalysedMatch analysedMatch, INTEGRATE integrate);
+	abstract public Mismatch classify(AnalysedMatch analysedMatch);
 	
 	abstract public boolean isApplicable(AnalysedMatch analysedMatch);
 
@@ -39,7 +38,7 @@ public abstract class MatchIntegrationFragment { // TODO adrianm: rename to Matc
 	 * {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
 	 * </p>
 	 * 
-	 * @param analysedMatch Analyzed IMatch
+	 * @param analysedMatch Analysed IMatch
 	 * @param interpreter
 	 * @param nodesToRevoke
 	 * @param edgesToRevoke
@@ -55,7 +54,7 @@ public abstract class MatchIntegrationFragment { // TODO adrianm: rename to Matc
 	/**
 	 * Deletes all green correspondence elements.
 	 * 
-	 * @param analysedMatch Analyzed IMatch
+	 * @param analysedMatch Analysed IMatch
 	 * @param interpreter   RedInterpreter that performs the deletion
 	 */
 	protected void delGreenCorr(AnalysedMatch analysedMatch, IbexRedInterpreter interpreter) {

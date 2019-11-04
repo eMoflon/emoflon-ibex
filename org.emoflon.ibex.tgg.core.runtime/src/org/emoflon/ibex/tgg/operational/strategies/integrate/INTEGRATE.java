@@ -20,6 +20,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
@@ -64,18 +65,18 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public void run() throws IOException {
 		blackInterpreter.updateMatches();
 
-//		repair();
-		setup();
+		integRepair();
+		analyseAndClassifyMatches();
 		detectAndResolveConflicts();
 		calculateIntegrationSolution();
 		cleanUp();
 	}
 
-	protected void setup() {
-		analyseBrokenMatches();
+	protected void integRepair() {
+		// TODO adrianm: implement
 	}
 
-	private void analyseBrokenMatches() {
+	protected void analyseAndClassifyMatches() {
 		blackInterpreter.updateMatches();
 
 		for (IMatch brokenMatch : getBrokenMatches()) {
@@ -83,7 +84,14 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 			analysedMatches.put(brokenMatch, analysedMatch);
 		}
 
-		pattern.getComponents().forEach(c -> c.apply(this)); // TODO adrianm: only MatchIFs!
+		for (AnalysedMatch am : getAnalysedMatches().values()) {
+			for (MatchClassificationComponent mcc : pattern.getMCComponents()) {
+				if (mcc.isApplicable(am)) {
+					getMismatches().add(mcc.classify(am));
+					break;
+				}
+			}
+		}
 	}
 
 	protected void detectAndResolveConflicts() {

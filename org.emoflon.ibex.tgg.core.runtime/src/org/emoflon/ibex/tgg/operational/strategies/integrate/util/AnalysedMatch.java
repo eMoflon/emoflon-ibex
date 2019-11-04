@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchModPattern;
 
 import language.BindingType;
 import language.DomainType;

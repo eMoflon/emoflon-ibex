@@ -1,34 +1,26 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.fragments;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.ProcessState;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.IFPattern;
 
 import language.BindingType;
 import language.DomainType;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class DELCorr extends MatchIntegrationFragment {
+public class CREATE_FilterNac extends MatchClassificationComponent {
 
-	private final IFPattern pattern = IFPattern.DEL_CORR;
+	CREATE_FilterNac() {
+	}
 
 	@Override
-	public boolean softApply(AnalysedMatch analysedMatch, INTEGRATE integrate) {
-		if (!pattern.matches(analysedMatch.getModPattern()))
-			return false;
-
-//		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
-		
+	public Mismatch classify(AnalysedMatch analysedMatch) {
 		Mismatch mismatch = new Mismatch(analysedMatch.getMatch(), this);
-		integrate.getMismatches().add(mismatch);
-
+		
 		// Classify green elements
 		List<TGGRuleElement> greenElements = new ArrayList<>();
 		greenElements.addAll(analysedMatch.getGroupedElements().get(DomainType.SRC).get(BindingType.CREATE));
@@ -37,19 +29,14 @@ public class DELCorr extends MatchIntegrationFragment {
 		greenElements.stream() //
 				.filter(e -> e instanceof TGGRuleNode) //
 				.map(e -> (EObject) analysedMatch.getMatch().get(e.getName())) //
-				.forEach(n -> mismatch.addElement(n, ProcessState.TO_BE_TRANSLATED));
+				.forEach(n -> mismatch.addElement(n, EltClassifier.TO_BE_TRANSLATED));
 
-		return true;
-	}
-
-	@Override
-	public boolean hardApply(AnalysedMatch analysedMatch, INTEGRATE integrate) {
-		return softApply(analysedMatch, integrate);
+		return mismatch;
 	}
 
 	@Override
 	public boolean isApplicable(AnalysedMatch analysedMatch) {
-		return pattern.matches(analysedMatch.getModPattern());
+		return !analysedMatch.getFilterNacViolations().isEmpty();
 	}
 
 }

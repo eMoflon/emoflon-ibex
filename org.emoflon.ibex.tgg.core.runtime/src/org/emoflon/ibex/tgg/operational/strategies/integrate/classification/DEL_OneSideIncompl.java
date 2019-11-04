@@ -1,38 +1,35 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.fragments;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.ProcessState;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.IFPattern;
 
 import language.BindingType;
 import language.DomainType;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class DELDelay extends MatchIntegrationFragment {
+public class DEL_OneSideIncompl extends MatchClassificationComponent {
 
-	private final IFPattern fwd = IFPattern.DEL_DELAY_FWD;
-	private final IFPattern bwd = IFPattern.DEL_DELAY_BWD;
+	DEL_OneSideIncompl() {
+	}
+
+	private final MCPattern fwd = MCPattern.DEL_ONESIDEINCOMPL_FWD;
+	private final MCPattern bwd = MCPattern.DEL_ONESIDEINCOMPL_BWD;
 
 	@Override
-	public boolean softApply(AnalysedMatch analysedMatch, INTEGRATE integrate) {
+	public Mismatch classify(AnalysedMatch analysedMatch) {
 		DomainType domainPartlyDel;
 		if (fwd.matches(analysedMatch.getModPattern())) {
 			domainPartlyDel = DomainType.TRG;
 		} else if (bwd.matches(analysedMatch.getModPattern())) {
 			domainPartlyDel = DomainType.SRC;
 		} else
-			return false;
-
-//		delGreenCorr(analysedMatch, getIbexRedInterpreter(integrate));
+			return null;
 		
 		Mismatch mismatch = new Mismatch(analysedMatch.getMatch(), this);
-		integrate.getMismatches().add(mismatch);
 
 		// Classify not deleted green elements
 		List<TGGRuleElement> elementsPartlyDel = analysedMatch.getGroupedElements().get(domainPartlyDel)
@@ -41,14 +38,9 @@ public class DELDelay extends MatchIntegrationFragment {
 				.filter(e -> !analysedMatch.isRuleEltDeleted(e)) //
 				.filter(e -> e instanceof TGGRuleNode) //
 				.map(e -> (EObject) analysedMatch.getMatch().get(e.getName())) //
-				.forEach(n -> mismatch.addElement(n, ProcessState.UNDETERMINED));
+				.forEach(n -> mismatch.addElement(n, EltClassifier.UNDETERMINED));
 
-		return true;
-	}
-
-	@Override
-	public boolean hardApply(AnalysedMatch analysedMatch, INTEGRATE integrate) {
-		return softApply(analysedMatch, integrate);
+		return mismatch;
 	}
 
 	@Override

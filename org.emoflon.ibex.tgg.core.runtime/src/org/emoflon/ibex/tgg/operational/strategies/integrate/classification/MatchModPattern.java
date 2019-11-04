@@ -1,10 +1,12 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification;
 
 import language.BindingType;
 import language.DomainType;
