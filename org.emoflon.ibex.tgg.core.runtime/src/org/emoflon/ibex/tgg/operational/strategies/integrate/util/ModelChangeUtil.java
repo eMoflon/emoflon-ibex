@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.common.notify.Notification;
@@ -134,10 +135,13 @@ public class ModelChangeUtil {
 	private void undoRemove(Notification notification, Object notifier, boolean enhanced) {
 		if (notifier instanceof EObject) {
 			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.add(notification.getPosition(), (EObject) notification.getOldValue());
 			if (enhanced)
 				hookInResource(eObjNotifier);
+			else {
+				EList<EObject> eList = (EList<EObject>) eObjNotifier
+						.eGet((EStructuralFeature) notification.getFeature());
+				eList.add(notification.getPosition(), (EObject) notification.getOldValue());
+			}
 		} else if (notifier instanceof Resource) {
 			Resource resNotifier = (Resource) notifier;
 			resNotifier.getContents().add(notification.getPosition(), (EObject) notification.getOldValue());
@@ -150,13 +154,16 @@ public class ModelChangeUtil {
 
 		if (notifier instanceof EObject) {
 			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			if (undoOne)
-				eList.add(element);
-			else
-				eList.addAll((List<EObject>) notification.getOldValue());
 			if (enhanced)
 				hookInResource(eObjNotifier);
+			else {
+				EList<EObject> eList = (EList<EObject>) eObjNotifier
+						.eGet((EStructuralFeature) notification.getFeature());
+				if (undoOne)
+					eList.add(element);
+				else
+					eList.addAll((List<EObject>) notification.getOldValue());
+			}
 		} else if (notifier instanceof Resource) {
 			Resource resNotifier = (Resource) notifier;
 			if (undoOne)
@@ -172,19 +179,32 @@ public class ModelChangeUtil {
 		eObjNotifier.eSet((EStructuralFeature) notification.getFeature(), notification.getOldValue());
 	}
 
-	private void hookInResource(EObject element) { // TODO adrianm: FIX dangling node issue
-		if (element.eResource() == null) {
-			EObject lastElement = element;
+	private void hookInResource(EObject element) {
+		LinkedList<Runnable> operations = new LinkedList<>();
+		collectOperations(element, operations);
+		operations.forEach(operation -> operation.run());
+	}
+
+	private void collectOperations(Object element, LinkedList<Runnable> ops) {
+		if (element instanceof Resource)
+			return;
+
+		EObject eObjElt = (EObject) element;
+		if (eObjElt.eResource() == null) {
+			EObject lastElement = eObjElt;
 			while (lastElement.eContainer() != null)
 				lastElement = lastElement.eContainer();
 			for (Notification n : protocol.getReverseRemovals(lastElement)) {
 				if (((EReference) n.getFeature()).isContainment()) {
 					switch (n.getEventType()) {
 					case Notification.REMOVE:
-						undoRemove(n, n.getNotifier(), true);
+						ops.addFirst(() -> undoRemove(n, n.getNotifier(), false));
+						collectOperations(n.getNotifier(), ops);
 						return;
 					case Notification.REMOVE_MANY:
-						undoRemoveMany(n, n.getNotifier(), lastElement, true);
+						final EObject effLastElt = lastElement;
+						ops.addFirst(() -> undoRemoveMany(n, n.getNotifier(), effLastElt, false));
+						collectOperations(n.getNotifier(), ops);
 						return;
 					}
 				}
