@@ -14,21 +14,22 @@ public class ModelSizeObserver extends AbstractIbexObserver {
 	public ModelSizeObserver(IbexObservable observable) {
 		super(observable);
 	}
-	
+
 	@Override
 	public void update(ObservableEvent eventType, Object... additionalInformation) {
-		switch(eventType) {
-			case DONEINIT: 
-			case MATCHAPPLIED:
-				if(this.getObservable() instanceof OperationalStrategy) {
-					OperationalStrategy op = (OperationalStrategy) this.getObservable();
-					this.currentSize = this.getNumberOfObjectsInModels(op.getSourceResource(), op.getCorrResource(), op.getTargetResource());
-					logger.info("Size of input models is " + this.currentSize + " elements");
-					logger.info("***********************");
-					break;
-				}
+		switch (eventType) {
+		case DONEINIT:
+		case MATCHAPPLIED:
+			if (this.getObservable() instanceof OperationalStrategy) {
+				OperationalStrategy op = (OperationalStrategy) this.getObservable();
+				this.currentSize = this.getNumberOfObjectsInModels(op.getSourceResource(), op.getCorrResource(),
+						op.getTargetResource());
+				logger.info("Size of input models is " + this.currentSize + " elements");
+				logger.info("***********************");
+				break;
+			}
 		default:
-			break;	
+			break;
 		}
 	}
 
@@ -53,7 +54,7 @@ public class ModelSizeObserver extends AbstractIbexObserver {
 		}
 		return sizeS + sizeC + sizeT;
 	}
-	
+
 	public int getCurrentSize() {
 		return currentSize;
 	}

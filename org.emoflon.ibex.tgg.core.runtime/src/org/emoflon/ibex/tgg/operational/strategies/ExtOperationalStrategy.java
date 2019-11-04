@@ -15,11 +15,13 @@ import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
 
@@ -119,8 +121,10 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 			}
 			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);
+
+			options.getBenchmarkLogger().addToNumOfMatchesRevoked(revoked.size());
 		}
-	}	
+	}
 
 	/***** Marker Handling *******/
 
@@ -134,7 +138,7 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 	}
 
 	/***** Match and pattern management *****/
-	
+
 	@Override
 	protected IMatchContainer createMatchContainer() {
 		return new PrecedenceGraph(this);
@@ -184,9 +188,22 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 
 	@Override
 	protected void collectDataToBeLogged() {
+		if (options.getBenchmarkLogger() instanceof EmptyBenchmarkLogger)
+			return;
+
 		super.collectDataToBeLogged();
 
+		int repStratDeletions = 0;
+		if (!(options.getBenchmarkLogger() instanceof EmptyBenchmarkLogger))
+			repStratDeletions = repairStrategies.stream() //
+					.filter(rStr -> rStr instanceof ShortcutRepairStrategy) //
+					.map(rStr -> (ShortcutRepairStrategy) rStr) //
+					.findFirst() //
+					.map(srStr -> srStr.countDeletedElements()) //
+					.orElse(0);
+
 		options.getBenchmarkLogger().setNumOfElementsCreated(greenInterpreter.getNumOfCreatedElements());
-		options.getBenchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedElements());
+		options.getBenchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedElements() + //
+				repStratDeletions);
 	}
 }

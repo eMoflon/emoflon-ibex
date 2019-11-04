@@ -62,7 +62,7 @@ public abstract class SYNC extends ExtOperationalStrategy {
 		logCreatedAndDeletedNumbers();
 
 		collectDataToBeLogged();
-		options.getBenchmarkLogger().addToTranslationTime(BenchmarkLogger.stopTimer());
+		options.getBenchmarkLogger().addToExecutionTime(BenchmarkLogger.stopTimer());
 	}
 
 	@Override
