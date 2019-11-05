@@ -33,9 +33,9 @@ public abstract class BenchmarkLogger {
 
 	public abstract void addToInitTime(long time);
 
-	public abstract long getTotalTranslationTime();
+	public abstract long getTotalExecutionTime();
 
-	public abstract void addToTranslationTime(long time);
+	public abstract void addToExecutionTime(long time);
 
 	public abstract long getTotalElementsCreated();
 
@@ -52,6 +52,10 @@ public abstract class BenchmarkLogger {
 	public abstract long getTotalMatchesRepaired();
 
 	public abstract void addToNumOfMatchesRepaired(long numOfMatches);
+	
+	public abstract long getTotalMatchesRevoked();
+	
+	public abstract void addToNumOfMatchesRevoked(long numOfMatches);
 
 	public abstract long getTotalMatchesApplied();
 

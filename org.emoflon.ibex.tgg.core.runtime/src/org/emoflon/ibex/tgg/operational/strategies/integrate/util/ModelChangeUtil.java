@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.common.notify.Notification;
@@ -12,12 +13,15 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.emf.EMFEdge;
 
 public class ModelChangeUtil {
 
+	private final Resource[] observedRes;
 	private final ModelChangeProtocol protocol;
 
-	public ModelChangeUtil(ModelChangeProtocol protocol) {
+	public ModelChangeUtil(Resource[] observedRes, ModelChangeProtocol protocol) {
+		this.observedRes = observedRes;
 		this.protocol = protocol;
 	}
 
@@ -38,6 +42,16 @@ public class ModelChangeUtil {
 			super.notifyChanged(notification);
 		}
 
+		private void attach() {
+			for (int i = 0; i < observedRes.length; i++)
+				observedRes[i].eAdapters().add(this);
+		}
+
+		private void detach() {
+			for (int i = 0; i < observedRes.length; i++)
+				observedRes[i].eAdapters().remove(this);
+		}
+
 	}
 
 	public List<Notification> undo(Notification notification, boolean enhanced) {
@@ -51,12 +65,7 @@ public class ModelChangeUtil {
 
 		Object notifier = notification.getNotifier();
 		NotificationLogger logger = new NotificationLogger();
-		Resource resource = null;
-		if (notifier instanceof EObject)
-			resource = ((EObject) notifier).eResource();
-		else if (notifier instanceof Resource)
-			resource = (Resource) notifier;
-		resource.eAdapters().add(logger);
+		logger.attach();
 
 		switch (notification.getEventType()) {
 		case Notification.ADD:
@@ -76,7 +85,7 @@ public class ModelChangeUtil {
 			break;
 		}
 
-		resource.eAdapters().remove(logger);
+		logger.detach();
 		return logger.notifications;
 	}
 
@@ -126,10 +135,13 @@ public class ModelChangeUtil {
 	private void undoRemove(Notification notification, Object notifier, boolean enhanced) {
 		if (notifier instanceof EObject) {
 			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.add(notification.getPosition(), (EObject) notification.getOldValue());
 			if (enhanced)
 				hookInResource(eObjNotifier);
+			else {
+				EList<EObject> eList = (EList<EObject>) eObjNotifier
+						.eGet((EStructuralFeature) notification.getFeature());
+				eList.add(notification.getPosition(), (EObject) notification.getOldValue());
+			}
 		} else if (notifier instanceof Resource) {
 			Resource resNotifier = (Resource) notifier;
 			resNotifier.getContents().add(notification.getPosition(), (EObject) notification.getOldValue());
@@ -142,13 +154,16 @@ public class ModelChangeUtil {
 
 		if (notifier instanceof EObject) {
 			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			if (undoOne)
-				eList.add(element);
-			else
-				eList.addAll((List<EObject>) notification.getOldValue());
 			if (enhanced)
 				hookInResource(eObjNotifier);
+			else {
+				EList<EObject> eList = (EList<EObject>) eObjNotifier
+						.eGet((EStructuralFeature) notification.getFeature());
+				if (undoOne)
+					eList.add(element);
+				else
+					eList.addAll((List<EObject>) notification.getOldValue());
+			}
 		} else if (notifier instanceof Resource) {
 			Resource resNotifier = (Resource) notifier;
 			if (undoOne)
@@ -158,19 +173,38 @@ public class ModelChangeUtil {
 		}
 	}
 
+	private void undoSet(Notification notification, Object notifier, boolean enhanced) {
+		// TODO adrianm: add enhanced mode
+		EObject eObjNotifier = (EObject) notifier;
+		eObjNotifier.eSet((EStructuralFeature) notification.getFeature(), notification.getOldValue());
+	}
+
 	private void hookInResource(EObject element) {
-		if (element.eResource() == null) {
-			EObject lastElement = element;
+		LinkedList<Runnable> operations = new LinkedList<>();
+		collectOperations(element, operations);
+		operations.forEach(operation -> operation.run());
+	}
+
+	private void collectOperations(Object element, LinkedList<Runnable> ops) {
+		if (element instanceof Resource)
+			return;
+
+		EObject eObjElt = (EObject) element;
+		if (eObjElt.eResource() == null) {
+			EObject lastElement = eObjElt;
 			while (lastElement.eContainer() != null)
 				lastElement = lastElement.eContainer();
 			for (Notification n : protocol.getReverseRemovals(lastElement)) {
 				if (((EReference) n.getFeature()).isContainment()) {
 					switch (n.getEventType()) {
 					case Notification.REMOVE:
-						undoRemove(n, n.getNotifier(), true);
+						ops.addFirst(() -> undoRemove(n, n.getNotifier(), false));
+						collectOperations(n.getNotifier(), ops);
 						return;
 					case Notification.REMOVE_MANY:
-						undoRemoveMany(n, n.getNotifier(), lastElement, true);
+						final EObject effLastElt = lastElement;
+						ops.addFirst(() -> undoRemoveMany(n, n.getNotifier(), effLastElt, false));
+						collectOperations(n.getNotifier(), ops);
 						return;
 					}
 				}
@@ -178,86 +212,49 @@ public class ModelChangeUtil {
 		}
 	}
 
-	private void undoSet(Notification notification, Object notifier, boolean enhanced) {
-		// TODO adrianm: enhanced mode
-		EObject eObjNotifier = (EObject) notifier;
-		eObjNotifier.eSet((EStructuralFeature) notification.getFeature(), notification.getOldValue());
+	public List<Notification> undoDeleteNode(EObject node) {
+		NotificationLogger logger = new NotificationLogger();
+		logger.attach();
+		this.hookInResource(node);
+		logger.detach();
+		return logger.notifications;
 	}
 
-	// TODO adrianm: remove if not needed any longer
-	@Deprecated
-	public static void redo(Notification notification) {
-		Object notifier = notification.getNotifier();
-		switch (notification.getEventType()) {
-		case Notification.ADD:
-			redoAdd(notification, notifier);
-			break;
-		case Notification.ADD_MANY:
-			redoAddMany(notification, notifier);
-			break;
-		case Notification.REMOVE:
-			redoRemove(notification, notifier);
-			break;
-		case Notification.REMOVE_MANY:
-			redoRemoveMany(notification, notifier);
-			break;
-		case Notification.SET:
-			redoSet(notification, notifier);
-			break;
+	public List<Notification> undoDeleteEdge(EMFEdge edge) {
+		NotificationLogger logger = new NotificationLogger();
+		logger.attach();
+
+		for (Notification n : protocol.getRemovals(edge.getSource())) {
+			if (edge.getType().equals(n.getFeature())) {
+				undoOne(n, edge.getTarget(), false);
+				logger.detach();
+				return logger.notifications;
+			}
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static void redoAdd(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.add(notification.getPosition(), (EObject) notification.getNewValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().add(notification.getPosition(), (EObject) notification.getNewValue());
+		for (Notification n : protocol.getChanges(edge.getSource())) {
+			if (edge.getType().equals(n.getFeature())) {
+				undoOne(n, edge.getTarget(), false);
+				logger.detach();
+				return logger.notifications;
+			}
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static void redoAddMany(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.addAll((List<EObject>) notification.getNewValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().addAll((List<EObject>) notification.getNewValue());
+		for (Notification n : protocol.getRemovals(edge.getTarget())) {
+			if (edge.getType().equals(n.getFeature())) {
+				undoOne(n, edge.getSource(), false);
+				logger.detach();
+				return logger.notifications;
+			}
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static void redoRemove(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.remove(notification.getOldValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().remove(notification.getOldValue());
+		for (Notification n : protocol.getChanges(edge.getTarget())) {
+			if (edge.getType().equals(n.getFeature())) {
+				undoOne(n, edge.getSource(), false);
+				logger.detach();
+				return logger.notifications;
+			}
 		}
-	}
 
-	@SuppressWarnings("unchecked")
-	private static void redoRemoveMany(Notification notification, Object notifier) {
-		if (notifier instanceof EObject) {
-			EObject eObjNotifier = (EObject) notifier;
-			EList<EObject> eList = (EList<EObject>) eObjNotifier.eGet((EStructuralFeature) notification.getFeature());
-			eList.removeAll((List<EObject>) notification.getOldValue());
-		} else if (notifier instanceof Resource) {
-			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().removeAll((List<EObject>) notification.getOldValue());
-		}
-	}
-
-	private static void redoSet(Notification notification, Object notifier) {
-		EObject eObjNotifier = (EObject) notifier;
-		eObjNotifier.eSet((EStructuralFeature) notification.getFeature(), notification.getNewValue());
+		logger.detach();
+		return logger.notifications;
 	}
 
 }

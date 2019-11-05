@@ -4,19 +4,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.ProcessState;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
-
-import language.BindingType;
-import language.TGGRuleElement;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 
 public class ConflictDetector {
 
@@ -40,7 +33,7 @@ public class ConflictDetector {
 		Set<ConflictingElement> conflictingElements = new HashSet<>();
 
 		mismatch.getClassifiedElts().forEach((element, state) -> {
-			if (state.equals(ProcessState.TO_BE_DELETED)) {
+			if (state.equals(EltClassifier.TO_BE_DELETED)) {
 				List<Notification> conflAdditions = integrate.getModelChangeProtocol().getAdditions(element);
 				List<Notification> conflChanges = integrate.getModelChangeProtocol().getChanges(element);
 				List<Notification> conflCrossRefs = getConflictingCrossRefs(element);
@@ -53,20 +46,7 @@ public class ConflictDetector {
 		if (conflictingElements.isEmpty())
 			return null;
 
-		Set<DeletionChain> deletionChains = determineDeletionChains(mismatch.getBrokenMatch());
-
-		return new DeleteConflict(mismatch.getBrokenMatch(), conflictingElements, deletionChains);
-	}
-
-	private Set<DeletionChain> determineDeletionChains(IMatch match) {
-		AnalysedMatch analysedMatch = integrate.getAnalysedMatches().get(match);
-		return analysedMatch.getEObjectToNode().keySet().stream() //
-				.filter(e -> {
-					TGGRuleElement node = analysedMatch.getEObjectToNode().get(e);
-					return analysedMatch.isRuleEltDeleted(node) && node.getBindingType().equals(BindingType.CREATE);
-				}) //
-				.map(delElt -> new DeletionChain(integrate, new ImmutablePair<>(match, delElt))) //
-				.collect(Collectors.toSet());
+		return new DeleteConflict(integrate, mismatch.getBrokenMatch(), conflictingElements);
 	}
 
 	private List<Notification> getConflictingCrossRefs(EObject element) {

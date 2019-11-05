@@ -9,23 +9,22 @@ import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver.ObservableEvent;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 public abstract class AbstractIbexObservable implements IbexObservable {
-	
-	private Set<IbexObserver> observers = new HashSet<IbexObserver>(); 
-	
-	private IUpdatePolicy updatePolicy; 
-	
+
+	private Set<IbexObserver> observers = new HashSet<IbexObserver>();
+
+	private IUpdatePolicy updatePolicy;
+
 	@Override
-	public void registerObserver(IbexObserver observer) { 
-		if(observer!= null) {
+	public void registerObserver(IbexObserver observer) {
+		if (observer != null) {
 			getObservers().add(observer);
 		}
-		
+
 	}
-	
+
 	@Override
 	public void unregisterObserver(IbexObserver observer) {
-		if(observer!= null)
-		{
+		if (observer != null) {
 			getObservers().remove(observer);
 		}
 	}
@@ -34,20 +33,17 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	public void notifyStartLoading() {
 		getObservers().forEach(o -> o.update(ObservableEvent.STARTLOADING));
 	}
-	
-	
+
 	@Override
 	public void notifyLoadingFinished() {
 		getObservers().forEach(o -> o.update(ObservableEvent.LOADINGFINISHED));
 	}
-	
 
 	@Override
 	public void notifyStartInit() {
 		getObservers().forEach(o -> o.update(ObservableEvent.STARTINIT));
 	}
-	
-	
+
 	@Override
 	public void notifyDoneInit() {
 		getObservers().forEach(o -> o.update(ObservableEvent.DONEINIT));
@@ -56,7 +52,7 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	@Override
 	public void notifyMatchApplied(IMatch match, String ruleName) {
 		getObservers().forEach(o -> o.update(ObservableEvent.MATCHAPPLIED, match));
-		this.getUpdatePolicy().notifyMatchHasBeenApplied(match, ruleName); //TODO JaneJ update the way this is called
+		this.getUpdatePolicy().notifyMatchHasBeenApplied(match, ruleName); // TODO JaneJ update the way this is called
 	}
 
 	/**
@@ -67,7 +63,8 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	}
 
 	/**
-	 * @param updatePolicy the updatePolicy to set
+	 * @param updatePolicy
+	 *            the updatePolicy to set
 	 */
 	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
 		if (updatePolicy == null)
@@ -77,9 +74,11 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	}
 
 	@Override
-	public IMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) { //tells observer a match needs to be chosen and choses a match by using the update policy
+	public IMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) { // tells observer a match needs to be
+																				// chosen and choses a match by using
+																				// the update policy
 		getObservers().forEach(o -> o.update(ObservableEvent.CHOOSEMATCH, matchContainer));
-		if(this.updatePolicy == null) {
+		if (this.updatePolicy == null) {
 			throw new RuntimeException("No update strategy configured");
 		} else {
 			return this.updatePolicy.chooseOneMatch(matchContainer);

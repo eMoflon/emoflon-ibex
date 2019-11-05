@@ -20,6 +20,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
@@ -50,7 +51,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
-		modelChangeProtocol = new ModelChangeProtocol();
 		undetermined = new HashSet<>();
 		toBeTranslated = new HashSet<>();
 		toBeDeleted = new HashSet<>();
@@ -67,19 +67,18 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public void run() throws IOException {
 		blackInterpreter.updateMatches();
 
-//		repair();
-		setup();
+		integRepair();
+		analyseAndClassifyMatches();
 		detectAndResolveConflicts();
 		calculateIntegrationSolution();
 		cleanUp();
 	}
 
-	protected void setup() {
-		analyseBrokenMatches();
-		annotateEPG();
+	protected void integRepair() {
+		// TODO adrianm: implement
 	}
 
-	private void analyseBrokenMatches() {
+	protected void analyseAndClassifyMatches() {
 		blackInterpreter.updateMatches();
 
 		for (IMatch brokenMatch : getBrokenMatches()) {
@@ -87,11 +86,14 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 			analysedMatches.put(brokenMatch, analysedMatch);
 		}
 
-		pattern.getComponents().forEach(c -> c.apply(this)); // TODO adrianm: only MatchIFs!
-	}
-
-	private void annotateEPG() {
-		// TODO adrianm: still required?
+		for (AnalysedMatch am : getAnalysedMatches().values()) {
+			for (MatchClassificationComponent mcc : pattern.getMCComponents()) {
+				if (mcc.isApplicable(am)) {
+					getMismatches().add(mcc.classify(am));
+					break;
+				}
+			}
+		}
 	}
 
 	protected void detectAndResolveConflicts() {
@@ -105,7 +107,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	protected void cleanUp() {
-		modelChangeProtocol = new ModelChangeProtocol();
+		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
 		undetermined = new HashSet<>();
 		toBeTranslated = new HashSet<>();
 		toBeDeleted = new HashSet<>();
@@ -148,7 +150,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 				|| patternName.endsWith(PatternSuffixes.CONSISTENCY) //
 				|| patternName.endsWith(PatternSuffixes.CC) //
 				|| patternName.endsWith(PatternSuffixes.FILTER_NAC);
-		// TODO adrianm: Add missing pattern suffixes
+		// TODO adrianm: add missing pattern suffixes
 	}
 
 	@Override
@@ -251,13 +253,14 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		blackInterpreter.updateMatches();
 		getEPG().update();
 
-		modelChangeProtocol.attachAdapterTo(s, t);
+		modelChangeProtocol.attachAdapter();
 		delta.accept(s.getContents().get(0), t.getContents().get(0));
-		modelChangeProtocol.detachAdapterFrom(s, t);
+		modelChangeProtocol.detachAdapter();
 	}
 
 	private void initIntegrateDependantTools() {
 		matchAnalyser = new BrokenMatchAnalyser(this);
+		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
 		conflictDetector = new ConflictDetector(this);
 	}
 	

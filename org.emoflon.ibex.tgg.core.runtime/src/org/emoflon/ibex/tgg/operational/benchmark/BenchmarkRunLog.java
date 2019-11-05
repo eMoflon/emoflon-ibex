@@ -5,7 +5,7 @@ public class BenchmarkRunLog {
 	private final int runNum;
 
 	// Timing in milliseconds
-	protected long translationTime = 0;
+	protected long executionTime = 0;
 
 	// Elements
 	protected long numOfCreatedElements = 0;
@@ -14,18 +14,19 @@ public class BenchmarkRunLog {
 	// Matches
 	protected long numOfMatchesFound = 0;
 	protected long numOfMatchesRepaired = 0;
+	protected long numOfMatchesRevoked = 0;
 	protected long numOfMatchesApplied = 0;
 	
 	protected BenchmarkRunLog(int runNum) {
 		this.runNum = runNum;
 	}
 
-	public long getTranslationTime() {
-		return translationTime;
+	public long getExecutionTime() {
+		return executionTime;
 	}
 
-	public void addToTranslationTime(long time) {
-		translationTime += time;
+	public void addToExecutionTime(long time) {
+		executionTime += time;
 	}
 
 	public long getNumOfElementsCreated() {
@@ -59,6 +60,14 @@ public class BenchmarkRunLog {
 	public void addToNumOfMatchesRepaired(long numOfMatches) {
 		this.numOfMatchesRepaired += numOfMatches;
 	}
+	
+	public long getNumOfMatchesRevoked() {
+		return numOfMatchesRevoked;
+	}
+	
+	public void addToNumOfMatchesRevoked(long numOfMatches) {
+		this.numOfMatchesRevoked += numOfMatches;
+	}
 
 	public long getNumOfMatchesApplied() {
 		return numOfMatchesApplied;
@@ -72,8 +81,8 @@ public class BenchmarkRunLog {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("BenchmarkRunLog #" + runNum + "\n[");
-		builder.append("\n  Translation time .. ");
-		builder.append(getTranslationTime() + "ms");
+		builder.append("\n  Execution time .... ");
+		builder.append(getExecutionTime() + "ms");
 		builder.append("\n  Created elements .. ");
 		builder.append(getNumOfElementsCreated());
 		builder.append("\n  Deleted elements .. ");
@@ -82,6 +91,8 @@ public class BenchmarkRunLog {
 		builder.append(getNumOfMatchesFound());
 		builder.append("\n  Matches repaired .. ");
 		builder.append(getNumOfMatchesRepaired());
+		builder.append("\n  Matches revoked ... ");
+		builder.append(getNumOfMatchesRevoked());
 		builder.append("\n  Matches applied ... ");
 		builder.append(getNumOfMatchesApplied());
 		builder.append("\n]");

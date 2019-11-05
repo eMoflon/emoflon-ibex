@@ -1,52 +1,65 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 
-import language.TGGRuleNode;
 import precedencegraph.Node;
 
-public class DeletionChain extends LinkedList<Pair<IMatch, EObject>>  {
-	private static final long serialVersionUID = 1L;
+public class DeletionChain {
+
+	private ExtPrecedenceGraph epg;
 	
-	private INTEGRATE integrate;
-	
-	DeletionChain(INTEGRATE integrate, ImmutablePair<IMatch, EObject> startingPoint) {
-		super();
-		this.integrate = integrate;
-		this.add(startingPoint);
-		while(!concludeDeletionChain());
+	private Map<IMatch, Set<IMatch>> chain;
+	private IMatch first;
+	private Set<IMatch> last;
+
+	DeletionChain(INTEGRATE integrate, IMatch brokenMatch) {
+		this.epg = integrate.getEPG();
+		this.chain = new LinkedHashMap<>();
+		this.first = brokenMatch;
+		this.last = new HashSet<>();
+		concludeDeletionChain(brokenMatch);
+		chain.forEach((m, s) -> {
+			if(s.isEmpty())
+				last.add(m);
+		});
 	}
 
-	private boolean concludeDeletionChain() {
-		EObject nextElement = this.getLast().getValue().eContainer();
-		if (nextElement == null)
-			return true;
+	private void concludeDeletionChain(IMatch currentMatch) {
+		chain.computeIfAbsent(currentMatch, m -> {
+			Set<IMatch> set = new HashSet<>();
+			Node currentNode = epg.getNode(currentMatch);
+			currentNode.getBasedOn().forEach(n -> {
+				if (n.isBroken())
+					set.add(epg.getMatch(n));
+			});
+			return set;
+		});
 
-		Node lastNode = integrate.getEPG().getNode(this.getLast().getKey());
-		for (Node subNode : lastNode.getBasedOn()) {
-			IMatch subMatch = integrate.getEPG().getMatch(subNode);
-			if (!integrate.getAnalysedMatches().containsKey(subMatch))
-				continue;
+		chain.get(currentMatch).forEach(m -> concludeDeletionChain(m));
+	}
 
-			AnalysedMatch analysedMatch = integrate.getAnalysedMatches().get(subMatch);
-			TGGRuleNode ruleNode = analysedMatch.getEObjectToNode().get(nextElement);
-			if (ruleNode == null)
-				continue;
+	public IMatch getFirst() {
+		return first;
+	}
 
-			if (analysedMatch.isRuleEltDeleted(ruleNode)) {
-				this.add(new ImmutablePair<>(subMatch, nextElement));
-				return false;
-			}
-		}
-
-		return true;
+	public Set<IMatch> getLast() {
+		return last;
 	}
 	
+	public Set<IMatch> getNext(IMatch match) {
+		return chain.get(match);
+	}
+	
+	public void foreach(Consumer<? super IMatch> action) {
+		chain.keySet().forEach(action);
+	}
+ 
 }
