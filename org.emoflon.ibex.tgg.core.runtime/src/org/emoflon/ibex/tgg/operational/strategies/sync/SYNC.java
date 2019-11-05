@@ -17,9 +17,6 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.Attrib
 
 public abstract class SYNC extends ExtOperationalStrategy {
 
-	// Forward or backward sync
-	protected SYNC_Strategy strategy;
-
 	/***** Constructors *****/
 
 	public SYNC(IbexOptions options) throws IOException {
@@ -65,19 +62,6 @@ public abstract class SYNC extends ExtOperationalStrategy {
 		options.getBenchmarkLogger().addToExecutionTime(BenchmarkLogger.stopTimer());
 	}
 
-	@Override
-	protected void initializeRepairStrategy(IbexOptions options) {
-		if (!repairStrategies.isEmpty())
-			return;
-
-		if (options.repairUsingShortcutRules()) {
-			repairStrategies.add(new ShortcutRepairStrategy(this));
-		}
-		if (options.repairAttributes()) {
-			repairStrategies.add(new AttributeRepairStrategy(this));
-		}
-	}
-
 	public void forward() throws IOException {
 		strategy = new FWD_Strategy();
 		run();
@@ -105,14 +89,6 @@ public abstract class SYNC extends ExtOperationalStrategy {
 	@Override
 	public IGreenPattern revokes(ITGGMatch match) {
 		return strategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
-	}
-
-	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, ITGGMatch m) {
-		return strategy.determineCSP(factory, m);
-	}
-
-	public SYNC_Strategy getStrategy() {
-		return strategy;
 	}
 
 	private void logCreatedAndDeletedNumbers() {

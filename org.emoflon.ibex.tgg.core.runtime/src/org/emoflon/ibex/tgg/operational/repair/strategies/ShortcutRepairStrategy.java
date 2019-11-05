@@ -11,6 +11,7 @@ import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.ShortcutPatternTool;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.OverlapUtil;
+import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
@@ -30,11 +31,11 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 	protected final static Logger logger = Logger.getLogger(AbstractRepairStrategy.class);
 	
-	private SYNC operationalStrategy;
+	private ExtOperationalStrategy operationalStrategy;
 	private ShortcutPatternTool scTool;
 	private SyncDirection syncDirection;
 	
-	public ShortcutRepairStrategy(SYNC operationalStrategy) {
+	public ShortcutRepairStrategy(ExtOperationalStrategy operationalStrategy) {
 		this.operationalStrategy = operationalStrategy;
 		operationalStrategy.getResourceSet().eAdapters().add(new ECrossReferenceAdapter());		
 		initialize();

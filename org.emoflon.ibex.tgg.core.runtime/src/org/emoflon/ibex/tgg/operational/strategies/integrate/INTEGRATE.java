@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
@@ -28,6 +29,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.opt.FixingCopier;
+import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 
 public abstract class INTEGRATE extends ExtOperationalStrategy {
 
@@ -118,6 +120,15 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	@Override
 	protected void initializeRepairStrategy(IbexOptions options) {
 		// TODO adrianm: implement
+		if (!repairStrategies.isEmpty())
+			return;
+
+		if (options.repairUsingShortcutRules()) {
+			repairStrategies.add(new ShortcutRepairStrategy(this));
+		}
+		if (options.repairAttributes()) {
+			repairStrategies.add(new AttributeRepairStrategy(this));
+		}
 	}
 
 	@Override

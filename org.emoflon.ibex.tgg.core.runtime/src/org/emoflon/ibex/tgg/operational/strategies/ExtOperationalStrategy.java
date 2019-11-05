@@ -16,21 +16,28 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.opt.OPT;
 import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
 public abstract class ExtOperationalStrategy extends OperationalStrategy {
 
+	// Forward or backward sync
+	protected SYNC_Strategy strategy;
+	
 	// Repair
 	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
 	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = CollectionFactory.cfactory
@@ -58,7 +65,17 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 		repairBrokenMatches();
 	}
 
-	protected abstract void initializeRepairStrategy(IbexOptions options);
+	protected void initializeRepairStrategy(IbexOptions options) {
+		if (!repairStrategies.isEmpty())
+			return;
+
+		if (options.repairUsingShortcutRules()) {
+			repairStrategies.add(new ShortcutRepairStrategy(this));
+		}
+		if (options.repairAttributes()) {
+			repairStrategies.add(new AttributeRepairStrategy(this));
+		}
+	}
 
 	protected boolean repairBrokenMatches() {
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
@@ -125,6 +142,14 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 
 			options.getBenchmarkLogger().addToNumOfMatchesRevoked(revoked.size());
 		}
+	}
+	
+	public SYNC_Strategy getStrategy() {
+		return strategy;
+	}
+	
+	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, ITGGMatch m) {
+		return strategy.determineCSP(factory, m);
 	}
 
 	/***** Marker Handling *******/
