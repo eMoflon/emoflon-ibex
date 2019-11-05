@@ -10,7 +10,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 
-import precedencegraph.Node;
+import precedencegraph.PrecedenceNode;
 
 public class DeletionChain {
 
@@ -35,7 +35,7 @@ public class DeletionChain {
 	private void concludeDeletionChain(IMatch currentMatch) {
 		chain.computeIfAbsent(currentMatch, m -> {
 			Set<IMatch> set = new HashSet<>();
-			Node currentNode = epg.getNode(currentMatch);
+			PrecedenceNode currentNode = epg.getNode(currentMatch);
 			currentNode.getBasedOn().forEach(n -> {
 				if (n.isBroken())
 					set.add(epg.getMatch(n));

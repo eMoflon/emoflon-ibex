@@ -13,7 +13,7 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
 
-import precedencegraph.Node;
+import precedencegraph.PrecedenceNode;
 import precedencegraph.NodeContainer;
 import precedencegraph.PrecedencegraphFactory;
 
@@ -22,8 +22,8 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	private INTEGRATE strategy;
 
 	private NodeContainer nodes;
-	private Map<IMatch, Node> matchToNode = new HashMap<>();
-	private Map<Node, IMatch> nodeToMatch = new HashMap<>();
+	private Map<IMatch, PrecedenceNode> matchToNode = new HashMap<>();
+	private Map<PrecedenceNode, IMatch> nodeToMatch = new HashMap<>();
 
 	public ExtPrecedenceGraph(INTEGRATE strategy) {
 		super(strategy);
@@ -59,16 +59,16 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		matches.forEach(m -> updateNode(m));
 	}
 
-	public IMatch getMatch(Node node) {
+	public IMatch getMatch(PrecedenceNode node) {
 		return nodeToMatch.get(node);
 	}
 
-	public Node getNode(IMatch match) {
+	public PrecedenceNode getNode(IMatch match) {
 		return matchToNode.get(match);
 	}
 
 	private void updateNode(IMatch match) {
-		Node node = matchToNode.get(match);
+		PrecedenceNode node = matchToNode.get(match);
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 
 		Set<Object> eltsBasedOn = new HashSet<>();
@@ -80,7 +80,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		for (Object elt : eltsBasedOn) {
 			raToTranslated.forEach((ra, objs) -> {
 				if (objs.contains(elt)) {
-					Node nodeBasedOn = matchToNode.get(raToMatch.get(ra));
+					PrecedenceNode nodeBasedOn = matchToNode.get(raToMatch.get(ra));
 					if (nodeBasedOn != null)
 						node.getBasedOn().add(nodeBasedOn);
 				}
@@ -93,7 +93,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 				Collection<IMatch> requiredMatches = translatedBy.get(reqObj);
 				if (requiredMatches != null && !requiredMatches.isEmpty()) {
 					for (IMatch reqMatch : requiredMatches) {
-						Node nodeReq = matchToNode.get(reqMatch);
+						PrecedenceNode nodeReq = matchToNode.get(reqMatch);
 						if (nodeReq != null) {
 							node.getRequires().add(nodeReq);
 						}
@@ -104,7 +104,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	}
 
 	private void createNode(IMatch match) {
-		Node node = PrecedencegraphFactory.eINSTANCE.createNode();
+		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createNode();
 		node.setBroken(false);
 		nodes.getNodes().add(node);
 		node.setMatchAsString(match.getPatternName());
@@ -114,13 +114,13 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	}
 
 	private void handleBrokenConsistencyMatch(IMatch match) {
-		Node node = matchToNode.get(match);
+		PrecedenceNode node = matchToNode.get(match);
 		if (node != null)
 			node.setBroken(true);
 	}
 
 	private void deleteNode(IMatch match) {
-		Node node = matchToNode.get(match);
+		PrecedenceNode node = matchToNode.get(match);
 		if (node != null) {
 			EcoreUtil.delete(node, true);
 			matchToNode.remove(match);
