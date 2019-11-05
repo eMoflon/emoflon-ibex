@@ -14,21 +14,21 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
 
 import precedencegraph.PrecedenceNode;
-import precedencegraph.NodeContainer;
+import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphFactory;
 
 public class ExtPrecedenceGraph extends PrecedenceGraph {
 
 	private INTEGRATE strategy;
 
-	private NodeContainer nodes;
+	private PrecedenceNodeContainer nodes;
 	private Map<IMatch, PrecedenceNode> matchToNode = new HashMap<>();
 	private Map<PrecedenceNode, IMatch> nodeToMatch = new HashMap<>();
 
 	public ExtPrecedenceGraph(INTEGRATE strategy) {
 		super(strategy);
 		this.strategy = strategy;
-		nodes = PrecedencegraphFactory.eINSTANCE.createNodeContainer();
+		nodes = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		return super.removeMatch(match);
 	}
 
-	public NodeContainer getExtGraph() {
+	public PrecedenceNodeContainer getExtGraph() {
 		update();
 		return nodes;
 	}
@@ -104,7 +104,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	}
 
 	private void createNode(IMatch match) {
-		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createNode();
+		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createPrecedenceNode();
 		node.setBroken(false);
 		nodes.getNodes().add(node);
 		node.setMatchAsString(match.getPatternName());

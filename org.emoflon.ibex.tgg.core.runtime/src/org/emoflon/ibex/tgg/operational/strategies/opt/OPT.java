@@ -4,7 +4,6 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,9 +27,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.opt.cc.Bundle;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.ConsistencyReporter;
-import org.emoflon.ibex.tgg.operational.strategies.opt.cc.HandleDependencies;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;

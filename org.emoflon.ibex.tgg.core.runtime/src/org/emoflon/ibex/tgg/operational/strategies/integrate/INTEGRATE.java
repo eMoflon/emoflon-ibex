@@ -27,7 +27,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.Integration
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ModelChangeProtocol;
-import org.emoflon.ibex.tgg.operational.strategies.opt.FixingCopier;
 
 public abstract class INTEGRATE extends ExtOperationalStrategy {
 
