@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational.patterns;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -41,7 +41,7 @@ public class BWDOptGreenPattern extends IbexGreenPattern {
 	}
 	
 	@Override
-	public boolean isToBeIgnored(IMatch match) {
+	public boolean isToBeIgnored(ITGGMatch match) {
 		return factory.getGreenTrgNodesInRule().isEmpty() && factory.getGreenTrgEdgesInRule().isEmpty();
 	}
 

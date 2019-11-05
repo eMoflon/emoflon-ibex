@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
 import org.emoflon.ibex.tgg.operational.monitoring.data.TGGObjectGraph;
@@ -24,7 +24,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	private int step = 0;
 	private OperationalStrategy operationalStrategy;
 	private List<ProtocolStep> protocolsStepList = new ArrayList<ProtocolStep>();
-	private Map<IMatch, IbexMatch> matchMapping = new HashMap<>();
+	private Map<ITGGMatch, IbexMatch> matchMapping = new HashMap<>();
 	private String previouslyAppliedRule;
 
 	public void register(OperationalStrategy pOperationalStrategy) {
@@ -34,12 +34,12 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	}
 
 	@Override
-	public final IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
+	public final ITGGMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
 
 		updateMatchMapping(matchContainer.getMatches());
 		updateProtocols(previouslyAppliedRule);
 
-		IMatch chosenMatch = chooseOneMatch(new DataPackage(matchMapping.values(), protocolsStepList));
+		ITGGMatch chosenMatch = chooseOneMatch(new DataPackage(matchMapping.values(), protocolsStepList));
 		previouslyAppliedRule = chosenMatch.getRuleName();
 		return chosenMatch;
 	}
@@ -77,10 +77,10 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		return items.stream().filter(item -> item.eResource().equals(resource)).collect(Collectors.toSet());
 	}
 
-	private void updateMatchMapping(Collection<IMatch> pMatches) {
+	private void updateMatchMapping(Collection<ITGGMatch> pMatches) {
 
-		for (Iterator<IMatch> iterator = matchMapping.keySet().iterator(); iterator.hasNext();) {
-			IMatch match = iterator.next();
+		for (Iterator<ITGGMatch> iterator = matchMapping.keySet().iterator(); iterator.hasNext();) {
+			ITGGMatch match = iterator.next();
 			if (pMatches.contains(match))
 				continue;
 			else if (operationalStrategy.getBlockedMatches().containsKey(match))
@@ -91,7 +91,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 		IbexMatch.startMatchCreation(step);
 
-		for (IMatch match : pMatches)
+		for (ITGGMatch match : pMatches)
 			if (matchMapping.containsKey(match))
 				matchMapping.get(match).setBlockingReason(null);
 			else
@@ -116,5 +116,5 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		// ignore by default
 	}
 
-	public abstract IMatch chooseOneMatch(DataPackage pDataPackage);
+	public abstract ITGGMatch chooseOneMatch(DataPackage pDataPackage);
 }

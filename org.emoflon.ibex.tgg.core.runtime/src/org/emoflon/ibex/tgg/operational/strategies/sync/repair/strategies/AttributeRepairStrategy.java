@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
@@ -26,7 +26,7 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 	}
 
 	@Override
-	public IMatch repair(IMatch repairCandidate) {
+	public ITGGMatch repair(ITGGMatch repairCandidate) {
 		IGreenPatternFactory factory = sync.getGreenFactory(PatternSuffixes.removeSuffix(repairCandidate.getPatternName()));		
 		IRuntimeTGGAttrConstrContainer csp = sync.determineCSP(factory, repairCandidate);
 		if (csp.solve()) {
@@ -38,7 +38,7 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 	}
 
 	@Override
-	public Collection<IMatch> chooseMatches(Map<TGGRuleApplication, IMatch> brokenRuleApplications) {
+	public Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
 		return brokenRuleApplications.keySet()//
 				.stream()//
 				.filter(this::noMissingNodes)//

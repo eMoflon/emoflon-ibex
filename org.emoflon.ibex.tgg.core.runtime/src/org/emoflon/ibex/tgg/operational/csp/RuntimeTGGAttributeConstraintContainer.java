@@ -17,7 +17,7 @@ import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.EcoreUtils;
 
@@ -34,11 +34,11 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	protected Map<TGGParamValue, RuntimeTGGAttributeConstraintVariable> params2runtimeVariable = new HashMap<>();
 
-	private IMatch match;
+	private ITGGMatch match;
 	private Collection<String> boundObjectNames;
 
 	public RuntimeTGGAttributeConstraintContainer(List<TGGParamValue> variables,
-			List<TGGAttributeConstraint> sortedConstraints, IMatch match,
+			List<TGGAttributeConstraint> sortedConstraints, ITGGMatch match,
 			RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
 		this.boundObjectNames = match.getParameterNames();
@@ -131,7 +131,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 
 	@Override
 	// FIXME: Code is hard to read, avoid pairs
-	public void applyCSPValues(IMatch comatch) {
+	public void applyCSPValues(ITGGMatch comatch) {
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = getBoundAttributeExpValues();
 
 		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {

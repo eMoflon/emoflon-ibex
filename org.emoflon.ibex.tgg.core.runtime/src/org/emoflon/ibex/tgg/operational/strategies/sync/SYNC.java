@@ -8,7 +8,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
@@ -103,11 +103,11 @@ public abstract class SYNC extends ExtOperationalStrategy {
 	}
 
 	@Override
-	public IGreenPattern revokes(IMatch match) {
+	public IGreenPattern revokes(ITGGMatch match) {
 		return strategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
 	}
 
-	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, IMatch m) {
+	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, ITGGMatch m) {
 		return strategy.determineCSP(factory, m);
 	}
 

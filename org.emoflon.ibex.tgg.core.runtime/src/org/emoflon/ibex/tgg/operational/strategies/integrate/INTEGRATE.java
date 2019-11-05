@@ -16,7 +16,7 @@ import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
@@ -44,8 +44,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private Set<EObject> toBeTranslated;
 	private Set<EObject> toBeDeleted;
 
-	private Set<IMatch> filterNacMatches;
-	private Map<IMatch, AnalysedMatch> analysedMatches;
+	private Set<ITGGMatch> filterNacMatches;
+	private Map<ITGGMatch, AnalysedMatch> analysedMatches;
 	private Set<Mismatch> mismatches;
 
 	public INTEGRATE(IbexOptions options) throws IOException {
@@ -81,7 +81,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	protected void analyseAndClassifyMatches() {
 		blackInterpreter.updateMatches();
 
-		for (IMatch brokenMatch : getBrokenMatches()) {
+		for (ITGGMatch brokenMatch : getBrokenMatches()) {
 			AnalysedMatch analysedMatch = matchAnalyser.analyse(brokenMatch);
 			analysedMatches.put(brokenMatch, analysedMatch);
 		}
@@ -159,7 +159,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	@Override
-	public IGreenPattern revokes(IMatch match) {
+	public IGreenPattern revokes(ITGGMatch match) {
 		// TODO adrianm: implement
 		return super.revokes(match);
 	}
@@ -167,7 +167,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	@Override
 	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
 		if (match.getPatternName().endsWith(PatternSuffixes.FILTER_NAC))
-			filterNacMatches.add((IMatch) match);
+			filterNacMatches.add((ITGGMatch) match);
 		else
 			super.addMatch(match);
 	}
@@ -213,7 +213,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		return redInterpreter;
 	}
 
-	public Collection<IMatch> getBrokenMatches() {
+	public Collection<ITGGMatch> getBrokenMatches() {
 		return brokenRuleApplications.values();
 	}
 
@@ -229,11 +229,11 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		return toBeDeleted;
 	}
 
-	public Set<IMatch> getFilterNacMatches() {
+	public Set<ITGGMatch> getFilterNacMatches() {
 		return filterNacMatches;
 	}
 
-	public Map<IMatch, AnalysedMatch> getAnalysedMatches() {
+	public Map<ITGGMatch, AnalysedMatch> getAnalysedMatches() {
 		return analysedMatches;
 	}
 

@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SearchKey;
@@ -184,7 +184,7 @@ public abstract class OperationalShortcutRule {
 		}
 		
 		cspCheck = (name2candidates) -> {
-			IMatch match = new SCMatch(scRule.getName(), name2candidates);
+			ITGGMatch match = new SCMatch(scRule.getName(), name2candidates);
 			IRuntimeTGGAttrConstrContainer cspContainer = getGreenPattern().getAttributeConstraintContainer(match);
 			if (!cspContainer.solve()) {
 				return false;

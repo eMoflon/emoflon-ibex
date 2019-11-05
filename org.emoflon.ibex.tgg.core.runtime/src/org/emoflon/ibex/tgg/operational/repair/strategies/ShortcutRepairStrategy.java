@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.ShortcutPatternTool;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
@@ -48,7 +48,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	}
 	
 	@Override
-	public Collection<IMatch> chooseMatches(Map<TGGRuleApplication, IMatch> brokenRuleApplications) {
+	public Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
 		return brokenRuleApplications.keySet()//
 				.stream()//
 				.filter(this::noMissingNodes)//
@@ -62,9 +62,9 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	}
 
 	@Override
-	public IMatch repair(IMatch repairCandiate) {
+	public ITGGMatch repair(ITGGMatch repairCandiate) {
 		updateDirection();
-		IMatch repairedMatch = scTool.processBrokenMatch(syncDirection, repairCandiate);
+		ITGGMatch repairedMatch = scTool.processBrokenMatch(syncDirection, repairCandiate);
 		if(repairedMatch != null)
 			logger.info("Repaired: " + repairCandiate.getPatternName() + "->" + repairedMatch.getPatternName() + " (" + repairCandiate.hashCode() + "->" + repairedMatch.hashCode() + ")");
 		return repairedMatch;

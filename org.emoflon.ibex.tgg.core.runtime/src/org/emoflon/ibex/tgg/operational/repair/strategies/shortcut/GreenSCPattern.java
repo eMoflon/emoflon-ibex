@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IbexGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil;
@@ -85,7 +85,7 @@ public class GreenSCPattern extends IbexGreenPattern {
 	}
 
 	@Override
-	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
+	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match) {
 //		try {
 			TGGAttributeConstraintLibrary newLibrary = EcoreUtil.copy(factory.getAttributeLibrary());
 			
@@ -107,7 +107,7 @@ public class GreenSCPattern extends IbexGreenPattern {
 	}
 
 	@Override
-	public boolean isToBeIgnored(IMatch match) {
+	public boolean isToBeIgnored(ITGGMatch match) {
 		return false;
 	}
 

@@ -15,7 +15,7 @@ import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
@@ -81,7 +81,7 @@ public class ShortcutPatternTool {
 		persistence.saveOperationalBWDSCRules(tggRule2trgSCRule.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
 	}
 
-	public IMatch processBrokenMatch(SyncDirection direction, IMatch brokenMatch) {
+	public ITGGMatch processBrokenMatch(SyncDirection direction, ITGGMatch brokenMatch) {
 		String ruleName = PatternSuffixes.removeSuffix(brokenMatch.getPatternName());
 		switch(direction) {
 		case FORWARD:
@@ -93,7 +93,7 @@ public class ShortcutPatternTool {
 		}
 	}
 
-	private IMatch processBrokenMatch(Collection<OperationalShortcutRule> rules, IMatch brokenMatch) {
+	private ITGGMatch processBrokenMatch(Collection<OperationalShortcutRule> rules, ITGGMatch brokenMatch) {
 		if(rules == null)
 			return null;
 		
@@ -104,11 +104,11 @@ public class ShortcutPatternTool {
 			
 			logger.debug("Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");
 			
-			IMatch newMatch = processBrokenMatch(osr, brokenMatch);
+			ITGGMatch newMatch = processBrokenMatch(osr, brokenMatch);
 			if(newMatch == null)
 				continue;
 
-			Optional<IMatch> newCoMatch = processCreations(osr, newMatch);
+			Optional<ITGGMatch> newCoMatch = processCreations(osr, newMatch);
 			if(!newCoMatch.isPresent())
 				continue;
 
@@ -125,8 +125,8 @@ public class ShortcutPatternTool {
 	 * @param scMatch
 	 * @return
 	 */
-	private IMatch transformToTargetMatch(OperationalShortcutRule osr, IMatch scMatch) {
-		IMatch newMatch = new SimpleMatch(osr.getScRule().getTargetRule().getName() + PatternSuffixes.CONSISTENCY);
+	private ITGGMatch transformToTargetMatch(OperationalShortcutRule osr, ITGGMatch scMatch) {
+		ITGGMatch newMatch = new SimpleMatch(osr.getScRule().getTargetRule().getName() + PatternSuffixes.CONSISTENCY);
 		
 		osr.getScRule().getTargetRule().getNodes().forEach(n -> 
 			newMatch.put(n.getName(), scMatch.get(osr.getScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET).getName()))
@@ -139,7 +139,7 @@ public class ShortcutPatternTool {
 		return newMatch;
 	}
 
-	private IMatch processBrokenMatch(OperationalShortcutRule osr, IMatch brokenMatch) {
+	private ITGGMatch processBrokenMatch(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
 		Map<String, EObject> name2entryNodeElem = new HashMap<>();	
 		for(String param : brokenMatch.getParameterNames()) {
 			TGGRuleNode scNode = osr.getScRule().mapSrcToSCNodeNode(param);
@@ -163,7 +163,7 @@ public class ShortcutPatternTool {
 		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> strategy.addToTrash(node));
 	}
 	
-	private void processDeletions(OperationalShortcutRule osc, IMatch brokenMatch) {
+	private void processDeletions(OperationalShortcutRule osc, ITGGMatch brokenMatch) {
 		Collection<TGGRuleNode> deletedRuleNodes = TGGUtil.filterNodes(osc.getScRule().getNodes(), BindingType.DELETE);
 		Collection<TGGRuleEdge> deletedRuleEdges = TGGUtil.filterEdges(osc.getScRule().getEdges(), BindingType.DELETE);
 		
@@ -192,7 +192,7 @@ public class ShortcutPatternTool {
 		}
 	}
 	
-	private Optional<IMatch> processCreations(OperationalShortcutRule osc, IMatch brokenMatch) {
+	private Optional<ITGGMatch> processCreations(OperationalShortcutRule osc, ITGGMatch brokenMatch) {
 		return greenInterpreter.apply(osc.getGreenPattern(), osc.getScRule().getTargetRule().getName(), brokenMatch);
 	}
 

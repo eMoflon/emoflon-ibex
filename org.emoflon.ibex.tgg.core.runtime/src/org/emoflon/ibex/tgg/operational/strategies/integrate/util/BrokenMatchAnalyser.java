@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EObjectEList;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 
 import language.DomainType;
@@ -28,7 +28,7 @@ public class BrokenMatchAnalyser {
 				.collect(Collectors.toMap(rule -> rule.getName(), rule -> rule));
 	}
 
-	public AnalysedMatch analyse(IMatch brokenMatch) {
+	public AnalysedMatch analyse(ITGGMatch brokenMatch) {
 		TGGRule rule = rules.get(brokenMatch.getRuleName());
 
 		Map<TGGRuleNode, EObject> nodeToEObject = new HashMap<>();
@@ -68,7 +68,7 @@ public class BrokenMatchAnalyser {
 
 		// --- Filter NAC analysis ---
 
-		Map<IMatch, DomainType> filterNacViolations = integrate.getFilterNacMatches().stream() //
+		Map<ITGGMatch, DomainType> filterNacViolations = integrate.getFilterNacMatches().stream() //
 				.filter(fnm -> fnm.getRuleName().startsWith(brokenMatch.getRuleName())) //
 				.filter(fnm -> belongsToBrokenMatch(fnm, brokenMatch)) //
 				.collect(Collectors.toMap(fnm -> fnm, fnm -> {
@@ -91,7 +91,7 @@ public class BrokenMatchAnalyser {
 		return false;
 	}
 
-	private boolean belongsToBrokenMatch(IMatch filterNacMatch, IMatch brokenMatch) {
+	private boolean belongsToBrokenMatch(ITGGMatch filterNacMatch, ITGGMatch brokenMatch) {
 		for (String n : filterNacMatch.getParameterNames()) {
 			if (!filterNacMatch.get(n).equals(brokenMatch.get(n)))
 				return false;

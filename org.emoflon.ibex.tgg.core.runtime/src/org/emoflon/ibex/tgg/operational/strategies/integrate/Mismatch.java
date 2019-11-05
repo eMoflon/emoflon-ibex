@@ -4,23 +4,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 
 public class Mismatch {
 	
-	private final IMatch brokenMatch;
+	private final ITGGMatch brokenMatch;
 	private final MatchClassificationComponent integrationFragment;
 	private final Map<EObject, EltClassifier> classifiedElts;
 
-	public Mismatch(IMatch brokenMatch, MatchClassificationComponent integrationFragment) {
+	public Mismatch(ITGGMatch brokenMatch, MatchClassificationComponent integrationFragment) {
 		this.brokenMatch = brokenMatch;
 		this.integrationFragment = integrationFragment;
 		classifiedElts = new HashMap<>();
 	}
 	
-	public IMatch getBrokenMatch() {
+	public ITGGMatch getBrokenMatch() {
 		return brokenMatch;
 	}
 

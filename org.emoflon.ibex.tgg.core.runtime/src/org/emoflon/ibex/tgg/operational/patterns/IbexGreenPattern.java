@@ -14,7 +14,7 @@ import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.BindingType;
@@ -34,7 +34,7 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	}
 	
 	@Override
-	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
+	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match) {
 		try {			
 			return new RuntimeTGGAttributeConstraintContainer(
 					factory.getAttributeCSPVariables(), 
@@ -67,12 +67,12 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	}
 	
 	@Override
-	public boolean isToBeIgnored(IMatch match) {
+	public boolean isToBeIgnored(ITGGMatch match) {
 		return false;
 	}
 	
 	@Override
-	public void createMarkers(String ruleName, IMatch match) {
+	public void createMarkers(String ruleName, ITGGMatch match) {
 		EPackage corrPackage = strategy.getOptions().getCorrMetamodel();
 		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(ruleName));
 		

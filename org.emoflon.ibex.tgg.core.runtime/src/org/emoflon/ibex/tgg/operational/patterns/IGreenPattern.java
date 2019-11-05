@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -44,13 +44,13 @@ public interface IGreenPattern {
 	Collection<TGGRuleEdge> getMarkedContextEdges();
 	
 	/** The set of attribute constraints to be solved when applying this pattern **/
-	IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match);
+	IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match);
 
 	/** Decide at runtime if the match is to be ignored for this pattern **/
-	boolean isToBeIgnored(IMatch match);
+	boolean isToBeIgnored(ITGGMatch match);
 
 	/** Decide how to create markers for match **/
-	void createMarkers(String ruleName, IMatch match);
+	void createMarkers(String ruleName, ITGGMatch match);
 	
 	default Collection<TGGRuleEdge> getSrcTrgEdgesCreatedByPattern(){
 		ArrayList<TGGRuleEdge> allCreatedEdges = new ArrayList<>();

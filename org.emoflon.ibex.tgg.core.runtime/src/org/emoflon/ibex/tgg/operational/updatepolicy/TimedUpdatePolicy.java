@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.operational.updatepolicy;
 
 import java.util.concurrent.TimeUnit;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 
 /**
@@ -32,7 +32,7 @@ public class TimedUpdatePolicy implements IUpdatePolicy {
 	}
 	
 	@Override
-	public IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
+	public ITGGMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
 		long currentTime = System.nanoTime();
 		long deadline = startTime + timeout;
 		if (currentTime >= deadline)

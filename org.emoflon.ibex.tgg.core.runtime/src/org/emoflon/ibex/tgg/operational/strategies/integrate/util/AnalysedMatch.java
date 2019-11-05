@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchModPattern;
 
 import language.BindingType;
@@ -17,14 +17,14 @@ import language.TGGRuleNode;
 public class AnalysedMatch {
 
 	private MatchModPattern pattern = new MatchModPattern(Modification.UNCHANGED);
-	private IMatch match;
+	private ITGGMatch match;
 	private Map<TGGRuleElement, Boolean> areRuleEltsDeleted;
-	private Map<IMatch, DomainType> filterNacViolations;
+	private Map<ITGGMatch, DomainType> filterNacViolations;
 	private Map<EObject, TGGRuleNode> eObjectToNode;
 	private Map<DomainType, Map<BindingType, List<TGGRuleElement>>> groupedElements;
 
-	public AnalysedMatch(IMatch match, Map<TGGRuleElement, Boolean> areRuleEltsDeleted,
-			Map<IMatch, DomainType> filterNacViolations, Map<EObject, TGGRuleNode> eObjectToNode) {
+	public AnalysedMatch(ITGGMatch match, Map<TGGRuleElement, Boolean> areRuleEltsDeleted,
+			Map<ITGGMatch, DomainType> filterNacViolations, Map<EObject, TGGRuleNode> eObjectToNode) {
 		this.match = match;
 		this.areRuleEltsDeleted = areRuleEltsDeleted;
 		this.filterNacViolations = filterNacViolations;
@@ -58,7 +58,7 @@ public class AnalysedMatch {
 		return pattern;
 	}
 
-	public IMatch getMatch() {
+	public ITGGMatch getMatch() {
 		return match;
 	}
 	
@@ -66,7 +66,7 @@ public class AnalysedMatch {
 		return areRuleEltsDeleted.get(element);
 	}
 
-	public Map<IMatch, DomainType> getFilterNacViolations() {
+	public Map<ITGGMatch, DomainType> getFilterNacViolations() {
 		return filterNacViolations;
 	}
 
@@ -101,7 +101,7 @@ public class AnalysedMatch {
 
 	private String printFilterNacViolations() {
 		StringBuilder builder = new StringBuilder();
-		for (IMatch fnm : filterNacViolations.keySet()) {
+		for (ITGGMatch fnm : filterNacViolations.keySet()) {
 			builder.append(fnm.getRuleName() + "\n");
 		}
 		return builder.length() == 0 ? builder.toString() : builder.substring(0, builder.length() - 1);
