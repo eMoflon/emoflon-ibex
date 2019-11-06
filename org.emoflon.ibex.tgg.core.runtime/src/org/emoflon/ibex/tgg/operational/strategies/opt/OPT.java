@@ -55,13 +55,6 @@ public abstract class OPT extends OperationalStrategy {
 	protected IntToDoubleMap matchToWeight = cfactory.createIntToDoubleMap();
 	private IWeightCalculationStrategy userDefinedWeightCalculationStrategy = null;
 
-	/**
-	 * Collection of constraints to guarantee uniqueness property; key: Complement
-	 * rule (CR) match ID; value: other CR matches of the same CR using the same
-	 * context as CR match
-	 */
-	protected IntToObjectMap<IntSet> sameComplementMatches = cfactory.createIntToObjectHashMap();
-
 	protected IntToObjectMap<String> matchIdToRuleName = cfactory.createIntToObjectHashMap();
 	protected int idCounter = 1;
 
