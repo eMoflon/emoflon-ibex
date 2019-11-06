@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -48,7 +49,7 @@ public abstract class CC extends OPT {
 	}
 
 	@Override
-	public double getDefaultWeightForMatch(ITGGMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size()
 				+ getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()

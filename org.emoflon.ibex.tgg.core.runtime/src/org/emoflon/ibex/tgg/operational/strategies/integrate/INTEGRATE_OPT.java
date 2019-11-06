@@ -7,6 +7,7 @@ import java.util.HashSet;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -70,7 +71,7 @@ public class INTEGRATE_OPT extends OPT {
 	}
 
 	@Override
-	public double getDefaultWeightForMatch(ITGGMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
 	}

@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -61,7 +62,7 @@ public abstract class CO extends CC {
 	 * .ibex.tgg.operational.matches.IMatch, java.lang.String)
 	 */
 	@Override
-	public double getDefaultWeightForMatch(ITGGMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return super.getDefaultWeightForMatch(comatch, ruleName)
 				+ getGreenFactory(ruleName).getGreenCorrNodesInRule().size();
 	}

@@ -21,6 +21,7 @@ import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.collections.ObjectToIntMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -340,7 +341,7 @@ public abstract class OPT extends OperationalStrategy {
 	 * @param ruleName The name of the rule
 	 * @return The calculated weight
 	 */
-	public final double getWeightForMatch(final ITGGMatch comatch, final String ruleName) {
+	public final double getWeightForMatch(final IMatch comatch, final String ruleName) {
 		if (this.userDefinedWeightCalculationStrategy != null)
 			return this.userDefinedWeightCalculationStrategy.calculateWeight(ruleName, comatch);
 		return this.getDefaultWeightForMatch(comatch, ruleName);
@@ -355,7 +356,7 @@ public abstract class OPT extends OperationalStrategy {
 	 * @param ruleName The name of the rule
 	 * @return The calculated weight
 	 */
-	public abstract double getDefaultWeightForMatch(ITGGMatch comatch, String ruleName);
+	public abstract double getDefaultWeightForMatch(IMatch comatch, String ruleName);
 
 	@Override
 	public Resource loadResource(final String workspaceRelativePath) throws IOException {
