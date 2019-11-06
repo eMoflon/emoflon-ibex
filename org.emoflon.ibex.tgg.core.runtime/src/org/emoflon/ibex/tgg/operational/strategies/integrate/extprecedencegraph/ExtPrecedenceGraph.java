@@ -53,10 +53,20 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		Set<IMatch> matches = new HashSet<>();
 		matches.addAll(readySet);
 		matches.addAll(requires.keySet());
+		matches.removeIf(m -> m.getPatternName().endsWith(PatternSuffixes.CC));
 
-		matches.removeIf(m -> matchToNode.containsKey(m));
+		Set<IMatch> restoredMatches = new HashSet<>();
+		matches.removeIf(m -> {
+			PrecedenceNode n = matchToNode.get(m);
+			if (n == null)
+				return false;
+			if (n.isBroken())
+				restoredMatches.add(m);
+			return true;
+		});
 		matches.forEach(m -> createNode(m));
 		matches.forEach(m -> updateNode(m));
+		restoredMatches.forEach(m -> getNode(m).setBroken(false));
 	}
 
 	public IMatch getMatch(PrecedenceNode node) {
@@ -65,6 +75,13 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 
 	public PrecedenceNode getNode(IMatch match) {
 		return matchToNode.get(match);
+	}
+
+	public void removeAllBrokenNodes() {
+		nodes.getNodes().forEach(n -> {
+			if (n.isBroken())
+				deleteNode(getMatch(n));
+		});
 	}
 
 	private void updateNode(IMatch match) {
@@ -117,6 +134,8 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		PrecedenceNode node = matchToNode.get(match);
 		if (node != null)
 			node.setBroken(true);
+		
+		readySet.remove(match);
 	}
 
 	private void deleteNode(IMatch match) {

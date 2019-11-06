@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,9 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltC
 public class ConflictDetector {
 
 	private INTEGRATE integrate;
+
+	private final Set<EltClassifier> deleteConflictCandidates = new HashSet<EltClassifier>(
+			Arrays.asList(EltClassifier.NO_USE, EltClassifier.PENAL_USE));
 
 	public ConflictDetector(INTEGRATE integrate) {
 		this.integrate = integrate;
@@ -32,8 +36,8 @@ public class ConflictDetector {
 	private DeleteConflict detectDeleteConflict(Mismatch mismatch) {
 		Set<ConflictingElement> conflictingElements = new HashSet<>();
 
-		mismatch.getClassifiedElts().forEach((element, state) -> {
-			if (state.equals(EltClassifier.TO_BE_DELETED)) {
+		mismatch.getClassifiedNodes().forEach((element, classifier) -> {
+			if (deleteConflictCandidates.contains(classifier)) {
 				List<Notification> conflAdditions = integrate.getModelChangeProtocol().getAdditions(element);
 				List<Notification> conflChanges = integrate.getModelChangeProtocol().getChanges(element);
 				List<Notification> conflCrossRefs = getConflictingCrossRefs(element);
@@ -46,7 +50,7 @@ public class ConflictDetector {
 		if (conflictingElements.isEmpty())
 			return null;
 
-		return new DeleteConflict(integrate, mismatch.getBrokenMatch(), conflictingElements);
+		return new DeleteConflict(integrate, mismatch.getMatch(), conflictingElements);
 	}
 
 	private List<Notification> getConflictingCrossRefs(EObject element) {

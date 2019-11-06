@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
 public enum EltClassifier {
-	UNDETERMINED, TO_BE_TRANSLATED, TO_BE_DELETED;
+//	 +		  ?+			  ?-			?x		  -
+	USE, POTENTIAL_USE, REWARDLESS_USE, PENAL_USE, NO_USE;
 }
