@@ -141,7 +141,8 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	private void handlePlacementInResource(TGGRuleNode node, Resource resource, EObject newObj) {
 		try {
-			resource.getContents().add(newObj);
+			if(newObj.eContainer() == null)
+				resource.getContents().add(newObj);
 		} catch (Exception e) {
 			logger.warn("I had problems placing " + newObj + " in a resource: " + e);
 		}
@@ -178,10 +179,9 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 		createNonCorrNodes(comatch, greenPattern.getSrcNodes(), operationalStrategy.getSourceResource());
 		createNonCorrNodes(comatch, greenPattern.getTrgNodes(), operationalStrategy.getTargetResource());
+		createCorrs(comatch, greenPattern.getCorrNodes(), operationalStrategy.getCorrResource());
 
 		cspContainer.applyCSPValues(comatch);
-
-		createCorrs(comatch, greenPattern.getCorrNodes(), operationalStrategy.getCorrResource());
 
 		createEdges(comatch, greenPattern.getSrcEdges(), true);
 		createEdges(comatch, greenPattern.getTrgEdges(), true);
