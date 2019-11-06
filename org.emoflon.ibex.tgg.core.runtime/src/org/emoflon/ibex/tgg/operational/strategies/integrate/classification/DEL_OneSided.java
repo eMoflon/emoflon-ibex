@@ -1,15 +1,11 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import java.util.List;
-
-import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch.EltFilter;
 
-import language.BindingType;
 import language.DomainType;
-import language.TGGRuleElement;
-import language.TGGRuleNode;
 
 public class DEL_OneSided extends MatchClassificationComponent {
 
@@ -20,24 +16,21 @@ public class DEL_OneSided extends MatchClassificationComponent {
 	private final MCPattern bwd = MCPattern.DEL_ONESIDED_BWD;
 
 	@Override
-	public Mismatch classify(AnalysedMatch analysedMatch) {
-		DomainType notDelDomain;
+	public Mismatch classify(INTEGRATE integrate, AnalysedMatch analysedMatch) {
+		DomainType delSide;
 		if (fwd.matches(analysedMatch.getModPattern())) {
-			notDelDomain = DomainType.TRG;
+			delSide = DomainType.SRC;
 		} else if (bwd.matches(analysedMatch.getModPattern())) {
-			notDelDomain = DomainType.SRC;
+			delSide = DomainType.TRG;
 		} else
 			return null;
-		
-		Mismatch mismatch = new Mismatch(analysedMatch.getMatch(), this);
 
-		// Classify not deleted green elements
-		List<TGGRuleElement> toBeDeleted = analysedMatch.getGroupedElements().get(notDelDomain)
-				.get(BindingType.CREATE);
-		toBeDeleted.stream() //
-				.filter(e -> e instanceof TGGRuleNode) //
-				.map(n -> (EObject) analysedMatch.getMatch().get(n.getName())) //
-				.forEach(o -> mismatch.addElement(o, EltClassifier.TO_BE_DELETED));
+		Mismatch mismatch = new Mismatch(analysedMatch, this);
+
+		EltFilter ef = new EltFilter().create();
+		classifyElts(integrate, mismatch, analysedMatch.getElts(ef.domains(oppositeOf(delSide))),
+				EltClassifier.PENAL_USE);
+		classifyElts(integrate, mismatch, analysedMatch.getElts(ef.domains(delSide)), EltClassifier.NO_USE);
 
 		return mismatch;
 	}

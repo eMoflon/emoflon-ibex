@@ -14,21 +14,21 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
 
 import precedencegraph.PrecedenceNode;
-import precedencegraph.NodeContainer;
+import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphFactory;
 
 public class ExtPrecedenceGraph extends PrecedenceGraph {
 
 	private INTEGRATE strategy;
 
-	private NodeContainer nodes;
+	private PrecedenceNodeContainer nodes;
 	private Map<ITGGMatch, PrecedenceNode> matchToNode = new HashMap<>();
 	private Map<PrecedenceNode, ITGGMatch> nodeToMatch = new HashMap<>();
 
 	public ExtPrecedenceGraph(INTEGRATE strategy) {
 		super(strategy);
 		this.strategy = strategy;
-		nodes = PrecedencegraphFactory.eINSTANCE.createNodeContainer();
+		nodes = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		return super.removeMatch(match);
 	}
 
-	public NodeContainer getExtGraph() {
+	public PrecedenceNodeContainer getExtGraph() {
 		update();
 		return nodes;
 	}
@@ -53,10 +53,20 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		Set<ITGGMatch> matches = new HashSet<>();
 		matches.addAll(readySet);
 		matches.addAll(requires.keySet());
+		matches.removeIf(m -> m.getPatternName().endsWith(PatternSuffixes.CC));
 
-		matches.removeIf(m -> matchToNode.containsKey(m));
+		Set<ITGGMatch> restoredMatches = new HashSet<>();
+		matches.removeIf(m -> {
+			PrecedenceNode n = matchToNode.get(m);
+			if (n == null)
+				return false;
+			if (n.isBroken())
+				restoredMatches.add(m);
+			return true;
+		});
 		matches.forEach(m -> createNode(m));
 		matches.forEach(m -> updateNode(m));
+		restoredMatches.forEach(m -> getNode(m).setBroken(false));
 	}
 
 	public ITGGMatch getMatch(PrecedenceNode node) {
@@ -65,6 +75,13 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 
 	public PrecedenceNode getNode(ITGGMatch match) {
 		return matchToNode.get(match);
+	}
+
+	public void removeAllBrokenNodes() {
+		nodes.getNodes().forEach(n -> {
+			if (n.isBroken())
+				deleteNode(getMatch(n));
+		});
 	}
 
 	private void updateNode(ITGGMatch match) {
@@ -104,7 +121,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	}
 
 	private void createNode(ITGGMatch match) {
-		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createNode();
+		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createPrecedenceNode();
 		node.setBroken(false);
 		nodes.getNodes().add(node);
 		node.setMatchAsString(match.getPatternName());
@@ -117,6 +134,8 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		PrecedenceNode node = matchToNode.get(match);
 		if (node != null)
 			node.setBroken(true);
+		
+		readySet.remove(match);
 	}
 
 	private void deleteNode(ITGGMatch match) {

@@ -1,15 +1,11 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import java.util.List;
-
-import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch.EltFilter;
 
-import language.BindingType;
 import language.DomainType;
-import language.TGGRuleElement;
-import language.TGGRuleNode;
 
 public class DEL_PartlyOneSided extends MatchClassificationComponent {
 
@@ -20,36 +16,25 @@ public class DEL_PartlyOneSided extends MatchClassificationComponent {
 	private final MCPattern bwd = MCPattern.DEL_PARTLYONESIDED_FWD;
 
 	@Override
-	public Mismatch classify(AnalysedMatch analysedMatch) {
-		DomainType partlyDelDomain;
-		DomainType notDelDomain;
+	public Mismatch classify(INTEGRATE integrate, AnalysedMatch analysedMatch) {
+		DomainType delSide;
 		if (fwd.matches(analysedMatch.getModPattern())) {
-			partlyDelDomain = DomainType.SRC;
-			notDelDomain = DomainType.TRG;
+			delSide = DomainType.SRC;
 		} else if (bwd.matches(analysedMatch.getModPattern())) {
-			partlyDelDomain = DomainType.TRG;
-			notDelDomain = DomainType.SRC;
+			delSide = DomainType.TRG;
 		} else
 			return null;
 
-		Mismatch mismatch = new Mismatch(analysedMatch.getMatch(), this);
+		Mismatch mismatch = new Mismatch(analysedMatch, this);
 
-		// Classify not deleted green elements
-		List<TGGRuleElement> eltsPartlyDel = analysedMatch.getGroupedElements().get(partlyDelDomain)
-				.get(BindingType.CREATE);
-		List<TGGRuleElement> eltsNotDel = analysedMatch.getGroupedElements().get(notDelDomain).get(BindingType.CREATE);
-		eltsPartlyDel.stream() //
-				.filter(e -> !analysedMatch.isRuleEltDeleted(e)) //
-				.filter(e -> e instanceof TGGRuleNode) //
-				.map(e -> (EObject) analysedMatch.getMatch().get(e.getName())) //
-				.forEach(n -> mismatch.addElement(n, EltClassifier.UNDETERMINED));
-		eltsNotDel.stream() //
-				.filter(e -> e instanceof TGGRuleNode) //
-				.map(e -> (EObject) analysedMatch.getMatch().get(e.getName())) //
-				.forEach(n -> mismatch.addElement(n, EltClassifier.UNDETERMINED));
-		
+		EltFilter ef = new EltFilter().create();
+		classifyElts(integrate, mismatch, analysedMatch.getElts(ef.domains(oppositeOf(delSide))),
+				EltClassifier.POTENTIAL_USE);
+		classifyElts(integrate, mismatch, analysedMatch.getElts(ef.domains(delSide).deleted()),
+				EltClassifier.REWARDLESS_USE);
+		classifyElts(integrate, mismatch, analysedMatch.getElts(ef.notDeleted()), EltClassifier.POTENTIAL_USE);
+
 		return mismatch;
-
 	}
 
 	@Override

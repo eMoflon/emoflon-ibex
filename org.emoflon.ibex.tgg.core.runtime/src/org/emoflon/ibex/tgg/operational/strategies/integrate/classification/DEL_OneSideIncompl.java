@@ -1,15 +1,11 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import java.util.List;
-
-import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch.EltFilter;
 
-import language.BindingType;
 import language.DomainType;
-import language.TGGRuleElement;
-import language.TGGRuleNode;
 
 public class DEL_OneSideIncompl extends MatchClassificationComponent {
 
@@ -20,25 +16,23 @@ public class DEL_OneSideIncompl extends MatchClassificationComponent {
 	private final MCPattern bwd = MCPattern.DEL_ONESIDEINCOMPL_BWD;
 
 	@Override
-	public Mismatch classify(AnalysedMatch analysedMatch) {
-		DomainType domainPartlyDel;
+	public Mismatch classify(INTEGRATE integrate, AnalysedMatch analysedMatch) {
+		DomainType partlySide;
 		if (fwd.matches(analysedMatch.getModPattern())) {
-			domainPartlyDel = DomainType.TRG;
+			partlySide = DomainType.TRG;
 		} else if (bwd.matches(analysedMatch.getModPattern())) {
-			domainPartlyDel = DomainType.SRC;
+			partlySide = DomainType.SRC;
 		} else
 			return null;
-		
-		Mismatch mismatch = new Mismatch(analysedMatch.getMatch(), this);
 
-		// Classify not deleted green elements
-		List<TGGRuleElement> elementsPartlyDel = analysedMatch.getGroupedElements().get(domainPartlyDel)
-				.get(BindingType.CREATE);
-		elementsPartlyDel.stream() //
-				.filter(e -> !analysedMatch.isRuleEltDeleted(e)) //
-				.filter(e -> e instanceof TGGRuleNode) //
-				.map(e -> (EObject) analysedMatch.getMatch().get(e.getName())) //
-				.forEach(n -> mismatch.addElement(n, EltClassifier.UNDETERMINED));
+		Mismatch mismatch = new Mismatch(analysedMatch, this);
+
+		EltFilter ef = new EltFilter().create();
+		classifyElts(integrate, mismatch, analysedMatch.getElts(ef.domains(oppositeOf(partlySide))),
+				EltClassifier.PENAL_USE);
+		classifyElts(integrate, mismatch, analysedMatch.getElts(ef.domains(partlySide).deleted()),
+				EltClassifier.PENAL_USE);
+		classifyElts(integrate, mismatch, analysedMatch.getElts(ef.notDeleted()), EltClassifier.REWARDLESS_USE);
 
 		return mismatch;
 	}

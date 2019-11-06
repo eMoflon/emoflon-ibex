@@ -11,16 +11,19 @@ import java.util.function.BiConsumer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
@@ -28,8 +31,11 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.Integration
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ModelChangeProtocol;
-import org.emoflon.ibex.tgg.operational.strategies.opt.FixingCopier;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
+
+import language.BindingType;
+import language.TGGRuleCorr;
+import runtime.TGGRuleApplication;
 
 public abstract class INTEGRATE extends ExtOperationalStrategy {
 
@@ -42,9 +48,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	protected Resource epg;
 
 	// Element classification
-	private Set<EObject> undetermined;
-	private Set<EObject> toBeTranslated;
-	private Set<EObject> toBeDeleted;
+	private Map<EObject, EltClassifier> classifiedNodes;
+	private Map<EMFEdge, EltClassifier> classifiedEdges;
 
 	private Set<ITGGMatch> filterNacMatches;
 	private Map<ITGGMatch, AnalysedMatch> analysedMatches;
@@ -53,9 +58,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
-		undetermined = new HashSet<>();
-		toBeTranslated = new HashSet<>();
-		toBeDeleted = new HashSet<>();
+		classifiedNodes = new HashMap<>();
+		classifiedEdges = new HashMap<>();
 		filterNacMatches = new HashSet<>();
 		analysedMatches = new HashMap<>();
 		mismatches = new HashSet<>();
@@ -70,8 +74,11 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		blackInterpreter.updateMatches();
 
 		integRepair();
+		deleteCorrsOfBrokenMatches();
 		analyseAndClassifyMatches();
 		detectAndResolveConflicts();
+		analyseAndClassifyMatches();
+		fillClassificationMaps();
 		calculateIntegrationSolution();
 		cleanUp();
 	}
@@ -80,18 +87,29 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		// TODO adrianm: implement
 	}
 
+	protected void deleteCorrsOfBrokenMatches() {
+		Map<TGGRuleApplication, ITGGMatch> processed = new HashMap<>();
+		do {
+			blackInterpreter.updateMatches();
+		} while (deleteCorrs(processed));
+		brokenRuleApplications.putAll(processed);
+	}
+
 	protected void analyseAndClassifyMatches() {
 		blackInterpreter.updateMatches();
+		getEPG().update();
 
+		analysedMatches.clear();
 		for (ITGGMatch brokenMatch : getBrokenMatches()) {
 			AnalysedMatch analysedMatch = matchAnalyser.analyse(brokenMatch);
 			analysedMatches.put(brokenMatch, analysedMatch);
 		}
 
+		mismatches.clear();
 		for (AnalysedMatch am : getAnalysedMatches().values()) {
 			for (MatchClassificationComponent mcc : pattern.getMCComponents()) {
 				if (mcc.isApplicable(am)) {
-					getMismatches().add(mcc.classify(am));
+					getMismatches().add(mcc.classify(this, am));
 					break;
 				}
 			}
@@ -104,22 +122,69 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		});
 	}
 
+	protected void fillClassificationMaps() {
+		mismatches.forEach(mm -> {
+			classifiedNodes.putAll(mm.getClassifiedNodes());
+			classifiedEdges.putAll(mm.getClassifiedEdges());
+		});
+	}
+
 	protected void calculateIntegrationSolution() {
 		// TODO adrianm: implement
 	}
 
+	private boolean deleteCorrs(Map<TGGRuleApplication, ITGGMatch> processed) {
+		if (brokenRuleApplications.isEmpty())
+			return false;
+		getBrokenMatches().forEach(m -> deleteGreenCorr(m));
+		processed.putAll(brokenRuleApplications);
+		brokenRuleApplications.clear();
+		return true;
+	}
+
+	/**
+	 * Deletes all green correspondence elements.
+	 * 
+	 * @param match
+	 */
+	private void deleteGreenCorr(ITGGMatch match) {
+		Set<EObject> nodesToRevoke = new HashSet<EObject>();
+		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
+		prepareGreenCorrDeletion(match, nodesToRevoke, edgesToRevoke);
+		getIbexRedInterpreter().revoke(nodesToRevoke, edgesToRevoke);
+	}
+
+	/**
+	 * <p>
+	 * Determines green correspondence elements and adds them to the passed sets
+	 * (nodesToRevoke & edgesToRevoke).
+	 * </p>
+	 * <p>
+	 * To delete this elements call
+	 * {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
+	 * </p>
+	 * 
+	 * @param match
+	 * @param nodesToRevoke
+	 * @param edgesToRevoke
+	 */
+	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
+		matchAnalyser.getRule(match.getRuleName()).getNodes().stream() //
+				.filter(n -> (n instanceof TGGRuleCorr) && n.getBindingType().equals(BindingType.CREATE)) //
+				.map(c -> (EObject) match.get(c.getName())) //
+				.forEach(c -> getIbexRedInterpreter().revokeCorr(c, nodesToRevoke, edgesToRevoke));
+	}
+
 	protected void cleanUp() {
 		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
-		undetermined = new HashSet<>();
-		toBeTranslated = new HashSet<>();
-		toBeDeleted = new HashSet<>();
+		classifiedNodes = new HashMap<>();
+		classifiedEdges = new HashMap<>();
 		analysedMatches = new HashMap<>();
 		mismatches = new HashSet<>();
 	}
 
 	@Override
 	protected void initializeRepairStrategy(IbexOptions options) {
-		// TODO adrianm: implement
 		if (!repairStrategies.isEmpty())
 			return;
 
@@ -161,7 +226,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 				|| patternName.endsWith(PatternSuffixes.CONSISTENCY) //
 				|| patternName.endsWith(PatternSuffixes.CC) //
 				|| patternName.endsWith(PatternSuffixes.FILTER_NAC);
-		// TODO adrianm: add missing pattern suffixes
 	}
 
 	@Override
@@ -208,7 +272,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		try {
 			return (ExtPrecedenceGraph) operationalMatchContainer;
 		} catch (Exception e) {
-			return null;
+			throw new RuntimeException("ExtPrecedenceGraph implementation is needed", e);
 		}
 	}
 
@@ -224,20 +288,24 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		return redInterpreter;
 	}
 
+	public IbexRedInterpreter getIbexRedInterpreter() {
+		try {
+			return (IbexRedInterpreter) getRedInterpreter();
+		} catch (Exception e) {
+			throw new RuntimeException("IbexRedInterpreter implementation is needed", e);
+		}
+	}
+
 	public Collection<ITGGMatch> getBrokenMatches() {
 		return brokenRuleApplications.values();
 	}
 
-	public Set<EObject> getUndeterminedElements() {
-		return undetermined;
+	public Map<EObject, EltClassifier> getClassifiedNodes() {
+		return classifiedNodes;
 	}
 
-	public Set<EObject> getToBeTranslatedElements() {
-		return toBeTranslated;
-	}
-
-	public Set<EObject> getToBeDeletedElements() {
-		return toBeDeleted;
+	public Map<EMFEdge, EltClassifier> getClassifiedEdges() {
+		return classifiedEdges;
 	}
 
 	public Set<ITGGMatch> getFilterNacMatches() {
@@ -274,13 +342,13 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
 		conflictDetector = new ConflictDetector(this);
 	}
-	
+
 	@Override
 	public void loadTGG() throws IOException {
 		super.loadTGG();
 		integrate_optimizer.unrelaxReferences();
 	}
-	
+
 	@Override
 	public void saveModels() throws IOException {
 		integrate_optimizer.saveModels();
