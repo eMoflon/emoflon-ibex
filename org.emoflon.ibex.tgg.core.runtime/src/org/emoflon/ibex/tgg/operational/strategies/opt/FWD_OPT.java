@@ -38,9 +38,6 @@ public abstract class FWD_OPT extends OPT {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
-				for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
-					objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
-
 				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
