@@ -16,23 +16,30 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 
 import language.TGGRuleEdge;
 import runtime.TGGRuleApplication;
 
 public abstract class ExtOperationalStrategy extends OperationalStrategy {
 
+	// Forward or backward sync
+	protected SYNC_Strategy strategy;
+	
 	// Repair
 	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
-	protected Map<TGGRuleApplication, IMatch> brokenRuleApplications = CollectionFactory.cfactory
+	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = CollectionFactory.cfactory
 			.createObjectToObjectHashMap();
 	protected IRedInterpreter redInterpreter;
 
@@ -57,16 +64,26 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 		repairBrokenMatches();
 	}
 
-	protected abstract void initializeRepairStrategy(IbexOptions options);
+	protected void initializeRepairStrategy(IbexOptions options) {
+		if (!repairStrategies.isEmpty())
+			return;
+
+		if (options.repairUsingShortcutRules()) {
+			repairStrategies.add(new ShortcutRepairStrategy(this));
+		}
+		if (options.repairAttributes()) {
+			repairStrategies.add(new AttributeRepairStrategy(this));
+		}
+	}
 
 	protected boolean repairBrokenMatches() {
-		Collection<IMatch> alreadyProcessed = cfactory.createObjectSet();
+		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
 		for (AbstractRepairStrategy rStrategy : repairStrategies) {
-			for (IMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
+			for (ITGGMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
 				if (alreadyProcessed.contains(repairCandidate))
 					continue;
 
-				IMatch repairedMatch = rStrategy.repair(repairCandidate);
+				ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
 				if (repairedMatch != null) {
 					alreadyProcessed.add(repairCandidate);
 
@@ -125,6 +142,14 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 			options.getBenchmarkLogger().addToNumOfMatchesRevoked(revoked.size());
 		}
 	}
+	
+	public SYNC_Strategy getStrategy() {
+		return strategy;
+	}
+	
+	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, ITGGMatch m) {
+		return strategy.determineCSP(factory, m);
+	}
 
 	/***** Marker Handling *******/
 
@@ -133,7 +158,7 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 	 * up the translation process).
 	 */
 	@Override
-	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
+	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, IGreenPattern greenPattern) {
 		createMarkers(greenPattern, cm, ruleName);
 	}
 
@@ -144,7 +169,7 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 		return new PrecedenceGraph(this);
 	}
 
-	public EMFEdge getRuntimeEdge(IMatch match, TGGRuleEdge specificationEdge) {
+	public EMFEdge getRuntimeEdge(ITGGMatch match, TGGRuleEdge specificationEdge) {
 		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
 		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
 		EReference ref = specificationEdge.getType();
@@ -152,7 +177,7 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 	}
 
 	@Override
-	protected void addConsistencyMatch(IMatch match) {
+	protected void addConsistencyMatch(ITGGMatch match) {
 		super.addConsistencyMatch(match);
 
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
@@ -169,10 +194,10 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 		super.removeMatch(match);
 
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY))
-			addConsistencyBrokenMatch((IMatch) match);
+			addConsistencyBrokenMatch((ITGGMatch) match);
 	}
 
-	protected void addConsistencyBrokenMatch(IMatch match) {
+	protected void addConsistencyBrokenMatch(ITGGMatch match) {
 		TGGRuleApplication ra = getRuleApplicationNode(match);
 		brokenRuleApplications.put(ra, match);
 
@@ -181,8 +206,8 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 	}
 
 	@Override
-	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
-		Optional<IMatch> comatch = super.processOperationalRuleMatch(ruleName, match);
+	protected Optional<ITGGMatch> processOperationalRuleMatch(String ruleName, ITGGMatch match) {
+		Optional<ITGGMatch> comatch = super.processOperationalRuleMatch(ruleName, match);
 		return comatch;
 	}
 

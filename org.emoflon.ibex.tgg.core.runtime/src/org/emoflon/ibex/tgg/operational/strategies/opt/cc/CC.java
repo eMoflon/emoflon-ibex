@@ -12,7 +12,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.opt.OPT;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
@@ -48,7 +48,7 @@ public abstract class CC extends OPT {
 	}
 
 	@Override
-	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(ITGGMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size()
 				+ getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
@@ -70,7 +70,7 @@ public abstract class CC extends OPT {
 			return false;
 		}
 
-		IMatch match = chooseOneMatch();
+		ITGGMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 
 		if (ruleName == null) {
@@ -90,7 +90,7 @@ public abstract class CC extends OPT {
 
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
-			IMatch comatch = idToMatch.get(id);
+			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
 				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
@@ -104,7 +104,7 @@ public abstract class CC extends OPT {
 	}
 
 	@Override
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);
 		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
 		matchIdToRuleName.put(idCounter, ruleName);

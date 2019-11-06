@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -149,10 +149,10 @@ public abstract class MODELGEN extends OperationalStrategy {
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
-		IMatch match = chooseOneMatch();
+		ITGGMatch match = chooseOneMatch();
 		String ruleName = operationalMatchContainer.getRuleName(match);
 
-		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+		Optional<ITGGMatch> comatch = processOperationalRuleMatch(ruleName, match);
 		comatch.ifPresent(cm -> {
 			updateStopCriterion(ruleName);
 		});
@@ -168,7 +168,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	
 	@Override
 	protected void updateBlockedMatches() {
-		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {
+		for(ITGGMatch match : operationalMatchContainer.getMatches().toArray(new ITGGMatch[0])) {
 			String ruleName = operationalMatchContainer.getRuleName(match);
 			if(stopCriterion.dont()) {
 				if(!blockedMatches.containsKey(match))
@@ -185,8 +185,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 	
 	@Override
-	protected IMatch chooseOneMatch() {
-		IMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
+	protected ITGGMatch chooseOneMatch() {
+		ITGGMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
 		
 		if (match == null)
 			throw new IllegalStateException("Update policies should never return null!");
@@ -199,7 +199,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * up the generation process).
 	 */
 	@Override
-	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
+	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, IGreenPattern greenPattern) {
 		createMarkers(greenPattern, cm, ruleName);
 	}
 
@@ -210,7 +210,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * @param match the match of a NAC for an Axiom
 	 */
 	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
-		Set<IMatch> matchesToRemove = new HashSet<>();
+		Set<ITGGMatch> matchesToRemove = new HashSet<>();
 
 		String axiomName = TGGPatternUtil.getGENBlackPatternName(//
 				TGGPatternUtil.extractGENAxiomNacName(match.getPatternName()));

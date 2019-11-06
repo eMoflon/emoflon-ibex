@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
 
-public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements IMatch {
+public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements ITGGMatch {
 	private final Collection<EMFEdge> edges;
 
 	public SimpleMatch(String patternName) {
@@ -13,13 +13,13 @@ public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch
 		edges = new ArrayList<>();
 	}
 
-	public SimpleMatch(IMatch match) {
+	public SimpleMatch(ITGGMatch match) {
 		super(match);
 		edges = new ArrayList<>(match.getCreatedEdges());
 	}
 
 	@Override
-	public IMatch copy() {
+	public ITGGMatch copy() {
 		SimpleMatch copy = new SimpleMatch(this);
 		return copy;
 	}

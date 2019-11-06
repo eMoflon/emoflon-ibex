@@ -3,12 +3,12 @@ package org.emoflon.ibex.tgg.operational.strategies.sync.repair;
 import java.util.Collection;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 import runtime.TGGRuleApplication;
 
 public interface AbstractRepairStrategy {
-	IMatch repair(IMatch iMatch);
+	ITGGMatch repair(ITGGMatch iMatch);
 
-	Collection<IMatch> chooseMatches(Map<TGGRuleApplication, IMatch> brokenRuleApplications);
+	Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications);
 }

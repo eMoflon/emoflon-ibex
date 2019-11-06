@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational.monitoring;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.IbexObserver.ObservableEvent;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
@@ -50,7 +50,7 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	}
 
 	@Override
-	public void notifyMatchApplied(IMatch match, String ruleName) {
+	public void notifyMatchApplied(ITGGMatch match, String ruleName) {
 		getObservers().forEach(o -> o.update(ObservableEvent.MATCHAPPLIED, match));
 		this.getUpdatePolicy().notifyMatchHasBeenApplied(match, ruleName); // TODO JaneJ update the way this is called
 	}
@@ -74,7 +74,7 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	}
 
 	@Override
-	public IMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) { // tells observer a match needs to be
+	public ITGGMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) { // tells observer a match needs to be
 																				// chosen and choses a match by using
 																				// the update policy
 		getObservers().forEach(o -> o.update(ObservableEvent.CHOOSEMATCH, matchContainer));

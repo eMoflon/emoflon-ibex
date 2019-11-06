@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 
 import language.TGGRuleCorr;
@@ -36,7 +36,7 @@ public abstract class FWD_OPT extends OPT {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
-			IMatch comatch = idToMatch.get(id);
+			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
 				for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
@@ -66,7 +66,7 @@ public abstract class FWD_OPT extends OPT {
 	}
 
 	@Override
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
@@ -128,7 +128,7 @@ public abstract class FWD_OPT extends OPT {
 	}
 
 	@Override
-	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(ITGGMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
 	}

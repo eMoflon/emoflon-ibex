@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.TGGRule;
@@ -98,7 +98,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	}
 
 	@Override
-	public Set<IMatch> getMatches() {
+	public Set<ITGGMatch> getMatches() {
 		try {
 			return op.getMatchContainer().getMatches();
 		} catch (Exception e) {
@@ -108,7 +108,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	}
 
 	@Override
-	public Set<IMatch> getMatches(String pRuleName) {
+	public Set<ITGGMatch> getMatches(String pRuleName) {
 		try {
 			return this.getMatches().stream().filter(r -> r.getRuleName().equals(pRuleName))
 					.collect(Collectors.toSet());
@@ -119,7 +119,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	}
 
 	@Override
-	public Set<IMatch> getMatches(IMatch match) {
+	public Set<ITGGMatch> getMatches(ITGGMatch match) {
 		try {
 			return this.getMatches(match.getRuleName());
 		} catch (Exception e) {

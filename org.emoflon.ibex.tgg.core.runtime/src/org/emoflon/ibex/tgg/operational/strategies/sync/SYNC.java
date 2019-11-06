@@ -8,7 +8,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
@@ -16,9 +16,6 @@ import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 
 public abstract class SYNC extends ExtOperationalStrategy {
-
-	// Forward or backward sync
-	protected SYNC_Strategy strategy;
 
 	/***** Constructors *****/
 
@@ -65,19 +62,6 @@ public abstract class SYNC extends ExtOperationalStrategy {
 		options.getBenchmarkLogger().addToExecutionTime(BenchmarkLogger.stopTimer());
 	}
 
-	@Override
-	protected void initializeRepairStrategy(IbexOptions options) {
-		if (!repairStrategies.isEmpty())
-			return;
-
-		if (options.repairUsingShortcutRules()) {
-			repairStrategies.add(new ShortcutRepairStrategy(this));
-		}
-		if (options.repairAttributes()) {
-			repairStrategies.add(new AttributeRepairStrategy(this));
-		}
-	}
-
 	public void forward() throws IOException {
 		strategy = new FWD_Strategy();
 		run();
@@ -103,16 +87,8 @@ public abstract class SYNC extends ExtOperationalStrategy {
 	}
 
 	@Override
-	public IGreenPattern revokes(IMatch match) {
+	public IGreenPattern revokes(ITGGMatch match) {
 		return strategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
-	}
-
-	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, IMatch m) {
-		return strategy.determineCSP(factory, m);
-	}
-
-	public SYNC_Strategy getStrategy() {
-		return strategy;
 	}
 
 	private void logCreatedAndDeletedNumbers() {

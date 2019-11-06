@@ -2,11 +2,14 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.opt.FixingCopier;
 import org.emoflon.ibex.tgg.operational.strategies.opt.OPT;
 
@@ -16,6 +19,10 @@ import language.TGGRuleNode;
 public class INTEGRATE_OPT extends OPT {
 
 	private INTEGRATE integrate;
+	
+	private Collection<ITGGMatch> fwdMatches = new HashSet<>();
+	private Collection<ITGGMatch> bwdMatches = new HashSet<>();
+	private Collection<ITGGMatch> ccMatches = new HashSet<>();
 	
 	public INTEGRATE_OPT(INTEGRATE integrate, IbexOptions options) throws IOException {
 		super(options);
@@ -27,7 +34,7 @@ public class INTEGRATE_OPT extends OPT {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
-			IMatch comatch = idToMatch.get(id);
+			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
 				for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
@@ -45,9 +52,25 @@ public class INTEGRATE_OPT extends OPT {
 		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.initSrc(this);
 	}
+	
+	@Override
+	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
+		if(!(match instanceof ITGGMatch))
+			return;
+		
+		if(match.getPatternName().endsWith(PatternSuffixes.FWD_OPT)) {
+			fwdMatches.add((ITGGMatch) match);
+		} else 
+		if(match.getPatternName().endsWith(PatternSuffixes.BWD_OPT)) {
+			bwdMatches.add((ITGGMatch) match);
+		} else
+		if(match.getPatternName().endsWith(PatternSuffixes.CC)) {
+			ccMatches.add((ITGGMatch) match);
+		}
+	}
 
 	@Override
-	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
+	public double getDefaultWeightForMatch(ITGGMatch comatch, String ruleName) {
 		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
 	}

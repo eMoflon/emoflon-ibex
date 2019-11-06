@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
@@ -22,8 +22,8 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	private INTEGRATE strategy;
 
 	private PrecedenceNodeContainer nodes;
-	private Map<IMatch, PrecedenceNode> matchToNode = new HashMap<>();
-	private Map<PrecedenceNode, IMatch> nodeToMatch = new HashMap<>();
+	private Map<ITGGMatch, PrecedenceNode> matchToNode = new HashMap<>();
+	private Map<PrecedenceNode, ITGGMatch> nodeToMatch = new HashMap<>();
 
 	public ExtPrecedenceGraph(INTEGRATE strategy) {
 		super(strategy);
@@ -32,7 +32,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	}
 
 	@Override
-	public boolean removeMatch(IMatch match) {
+	public boolean removeMatch(ITGGMatch match) {
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY))
 			handleBrokenConsistencyMatch(match);
 		else
@@ -50,12 +50,12 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 
 		getMatches();
 
-		Set<IMatch> matches = new HashSet<>();
+		Set<ITGGMatch> matches = new HashSet<>();
 		matches.addAll(readySet);
 		matches.addAll(requires.keySet());
 		matches.removeIf(m -> m.getPatternName().endsWith(PatternSuffixes.CC));
 
-		Set<IMatch> restoredMatches = new HashSet<>();
+		Set<ITGGMatch> restoredMatches = new HashSet<>();
 		matches.removeIf(m -> {
 			PrecedenceNode n = matchToNode.get(m);
 			if (n == null)
@@ -69,11 +69,11 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		restoredMatches.forEach(m -> getNode(m).setBroken(false));
 	}
 
-	public IMatch getMatch(PrecedenceNode node) {
+	public ITGGMatch getMatch(PrecedenceNode node) {
 		return nodeToMatch.get(node);
 	}
 
-	public PrecedenceNode getNode(IMatch match) {
+	public PrecedenceNode getNode(ITGGMatch match) {
 		return matchToNode.get(match);
 	}
 
@@ -84,7 +84,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		});
 	}
 
-	private void updateNode(IMatch match) {
+	private void updateNode(ITGGMatch match) {
 		PrecedenceNode node = matchToNode.get(match);
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 
@@ -107,9 +107,9 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		Collection<Object> requiredObjs = requires.get(match);
 		if (requiredObjs != null && !requiredObjs.isEmpty()) {
 			for (Object reqObj : requiredObjs) {
-				Collection<IMatch> requiredMatches = translatedBy.get(reqObj);
+				Collection<ITGGMatch> requiredMatches = translatedBy.get(reqObj);
 				if (requiredMatches != null && !requiredMatches.isEmpty()) {
-					for (IMatch reqMatch : requiredMatches) {
+					for (ITGGMatch reqMatch : requiredMatches) {
 						PrecedenceNode nodeReq = matchToNode.get(reqMatch);
 						if (nodeReq != null) {
 							node.getRequires().add(nodeReq);
@@ -120,7 +120,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		}
 	}
 
-	private void createNode(IMatch match) {
+	private void createNode(ITGGMatch match) {
 		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createPrecedenceNode();
 		node.setBroken(false);
 		nodes.getNodes().add(node);
@@ -130,7 +130,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		nodeToMatch.put(node, match);
 	}
 
-	private void handleBrokenConsistencyMatch(IMatch match) {
+	private void handleBrokenConsistencyMatch(ITGGMatch match) {
 		PrecedenceNode node = matchToNode.get(match);
 		if (node != null)
 			node.setBroken(true);
@@ -138,7 +138,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 		readySet.remove(match);
 	}
 
-	private void deleteNode(IMatch match) {
+	private void deleteNode(ITGGMatch match) {
 		PrecedenceNode node = matchToNode.get(match);
 		if (node != null) {
 			EcoreUtil.delete(node, true);

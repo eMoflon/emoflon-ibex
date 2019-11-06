@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
@@ -20,7 +20,7 @@ public abstract class ConflictResolutionStrategy {
 	public ConflictResolutionStrategy(ConflResStratToken token) {
 	}
 
-	protected List<Notification> restoreMatch(INTEGRATE integrate, IMatch match) {
+	protected List<Notification> restoreMatch(INTEGRATE integrate, ITGGMatch match) {
 		List<Notification> undos = new ArrayList<>();
 
 		ModelChangeProtocol mcp = integrate.getModelChangeProtocol();

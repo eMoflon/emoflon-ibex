@@ -8,9 +8,9 @@ import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
 
 import runtime.TGGRuleApplication;
@@ -19,16 +19,16 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 
 	protected final static Logger logger = Logger.getLogger(AbstractRepairStrategy.class);
 
-	private SYNC sync;
+	private ExtOperationalStrategy operationalStrategy;
 	
-	public AttributeRepairStrategy(SYNC sync) {
-		this.sync = sync;
+	public AttributeRepairStrategy(ExtOperationalStrategy sync) {
+		this.operationalStrategy = sync;
 	}
 
 	@Override
-	public IMatch repair(IMatch repairCandidate) {
-		IGreenPatternFactory factory = sync.getGreenFactory(PatternSuffixes.removeSuffix(repairCandidate.getPatternName()));		
-		IRuntimeTGGAttrConstrContainer csp = sync.determineCSP(factory, repairCandidate);
+	public ITGGMatch repair(ITGGMatch repairCandidate) {
+		IGreenPatternFactory factory = operationalStrategy.getGreenFactory(PatternSuffixes.removeSuffix(repairCandidate.getPatternName()));		
+		IRuntimeTGGAttrConstrContainer csp = operationalStrategy.determineCSP(factory, repairCandidate);
 		if (csp.solve()) {
 			csp.applyCSPValues(repairCandidate);
 			logger.info("Repaired: " + repairCandidate.getPatternName() + " (" + repairCandidate.hashCode() + ")");
@@ -38,7 +38,7 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 	}
 
 	@Override
-	public Collection<IMatch> chooseMatches(Map<TGGRuleApplication, IMatch> brokenRuleApplications) {
+	public Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
 		return brokenRuleApplications.keySet()//
 				.stream()//
 				.filter(this::noMissingNodes)//

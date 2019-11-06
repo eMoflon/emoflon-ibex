@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.csp;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 public class EmptyRuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrConstrContainer {
 
@@ -10,7 +10,7 @@ public class EmptyRuntimeTGGAttributeConstraintContainer implements IRuntimeTGGA
 	}
 
 	@Override
-	public void applyCSPValues(IMatch comatch) {
+	public void applyCSPValues(ITGGMatch comatch) {
 		
 	}
 

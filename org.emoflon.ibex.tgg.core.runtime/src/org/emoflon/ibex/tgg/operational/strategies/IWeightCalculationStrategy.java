@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 /**
  * Interface for WeightCalculation strategies. A strategy can be used to assign
@@ -17,5 +17,5 @@ public interface IWeightCalculationStrategy {
 	 * @param comatch  The match to weight
 	 * @return the calculated weight
 	 */
-	double calculateWeight(String ruleName, IMatch comatch);
+	double calculateWeight(String ruleName, ITGGMatch comatch);
 }

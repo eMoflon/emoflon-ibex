@@ -18,9 +18,10 @@ import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
@@ -30,6 +31,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.Integration
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ModelChangeProtocol;
+import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 
 import language.BindingType;
 import language.TGGRuleCorr;
@@ -49,8 +51,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private Map<EObject, EltClassifier> classifiedNodes;
 	private Map<EMFEdge, EltClassifier> classifiedEdges;
 
-	private Set<IMatch> filterNacMatches;
-	private Map<IMatch, AnalysedMatch> analysedMatches;
+	private Set<ITGGMatch> filterNacMatches;
+	private Map<ITGGMatch, AnalysedMatch> analysedMatches;
 	private Set<Mismatch> mismatches;
 
 	public INTEGRATE(IbexOptions options) throws IOException {
@@ -86,7 +88,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	protected void deleteCorrsOfBrokenMatches() {
-		Map<TGGRuleApplication, IMatch> processed = new HashMap<>();
+		Map<TGGRuleApplication, ITGGMatch> processed = new HashMap<>();
 		do {
 			blackInterpreter.updateMatches();
 		} while (deleteCorrs(processed));
@@ -98,7 +100,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		getEPG().update();
 
 		analysedMatches.clear();
-		for (IMatch brokenMatch : getBrokenMatches()) {
+		for (ITGGMatch brokenMatch : getBrokenMatches()) {
 			AnalysedMatch analysedMatch = matchAnalyser.analyse(brokenMatch);
 			analysedMatches.put(brokenMatch, analysedMatch);
 		}
@@ -131,7 +133,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		// TODO adrianm: implement
 	}
 
-	private boolean deleteCorrs(Map<TGGRuleApplication, IMatch> processed) {
+	private boolean deleteCorrs(Map<TGGRuleApplication, ITGGMatch> processed) {
 		if (brokenRuleApplications.isEmpty())
 			return false;
 		getBrokenMatches().forEach(m -> deleteGreenCorr(m));
@@ -145,7 +147,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	 * 
 	 * @param match
 	 */
-	private void deleteGreenCorr(IMatch match) {
+	private void deleteGreenCorr(ITGGMatch match) {
 		Set<EObject> nodesToRevoke = new HashSet<EObject>();
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 		prepareGreenCorrDeletion(match, nodesToRevoke, edgesToRevoke);
@@ -166,7 +168,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	 * @param nodesToRevoke
 	 * @param edgesToRevoke
 	 */
-	private void prepareGreenCorrDeletion(IMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
+	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
 		matchAnalyser.getRule(match.getRuleName()).getNodes().stream() //
 				.filter(n -> (n instanceof TGGRuleCorr) && n.getBindingType().equals(BindingType.CREATE)) //
 				.map(c -> (EObject) match.get(c.getName())) //
@@ -183,7 +185,15 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	@Override
 	protected void initializeRepairStrategy(IbexOptions options) {
-		// TODO adrianm: implement
+		if (!repairStrategies.isEmpty())
+			return;
+
+		if (options.repairUsingShortcutRules()) {
+			repairStrategies.add(new ShortcutRepairStrategy(this));
+		}
+		if (options.repairAttributes()) {
+			repairStrategies.add(new AttributeRepairStrategy(this));
+		}
 	}
 
 	@Override
@@ -224,7 +234,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	@Override
-	public IGreenPattern revokes(IMatch match) {
+	public IGreenPattern revokes(ITGGMatch match) {
 		// TODO adrianm: implement
 		return super.revokes(match);
 	}
@@ -232,7 +242,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	@Override
 	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
 		if (match.getPatternName().endsWith(PatternSuffixes.FILTER_NAC))
-			filterNacMatches.add((IMatch) match);
+			filterNacMatches.add((ITGGMatch) match);
 		else
 			super.addMatch(match);
 	}
@@ -286,7 +296,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		}
 	}
 
-	public Collection<IMatch> getBrokenMatches() {
+	public Collection<ITGGMatch> getBrokenMatches() {
 		return brokenRuleApplications.values();
 	}
 
@@ -298,11 +308,11 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		return classifiedEdges;
 	}
 
-	public Set<IMatch> getFilterNacMatches() {
+	public Set<ITGGMatch> getFilterNacMatches() {
 		return filterNacMatches;
 	}
 
-	public Map<IMatch, AnalysedMatch> getAnalysedMatches() {
+	public Map<ITGGMatch, AnalysedMatch> getAnalysedMatches() {
 		return analysedMatches;
 	}
 

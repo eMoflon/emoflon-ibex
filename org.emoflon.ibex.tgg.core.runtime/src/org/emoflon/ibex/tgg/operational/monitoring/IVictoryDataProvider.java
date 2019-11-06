@@ -6,18 +6,18 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 import language.TGGRule;
 
 public interface IVictoryDataProvider {
 	public TGGRule getRule(String pRuleName);
 
-	public Set<IMatch> getMatches();
+	public Set<ITGGMatch> getMatches();
 
-	public Set<IMatch> getMatches(IMatch match);
+	public Set<ITGGMatch> getMatches(ITGGMatch match);
 
-	public Set<IMatch> getMatches(String pRuleName);
+	public Set<ITGGMatch> getMatches(String pRuleName);
 
 	public Collection<EObject> getMatchNeighbourhoods(Collection<EObject> nodes, int k);
 

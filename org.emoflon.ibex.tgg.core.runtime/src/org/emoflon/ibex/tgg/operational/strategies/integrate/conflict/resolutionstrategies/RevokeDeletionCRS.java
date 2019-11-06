@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
@@ -14,7 +14,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.
 
 public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 
-	protected Set<IMatch> restored;
+	protected Set<ITGGMatch> restored;
 
 	public RevokeDeletionCRS(DeleteConflict conflict, ConflResStratToken token) {
 		super(conflict, token);
@@ -34,13 +34,13 @@ public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 		return undos;
 	}
 
-	protected List<Notification> restoreMatchesBasedOn(INTEGRATE integrate, IMatch match) {
+	protected List<Notification> restoreMatchesBasedOn(INTEGRATE integrate, ITGGMatch match) {
 		List<Notification> undos = new ArrayList<>();
 
 		ExtPrecedenceGraph epg = integrate.getEPG();
 		epg.getNode(match).getBaseFor().forEach(n -> {
 			if (n.isBroken()) {
-				IMatch m = epg.getMatch(n);
+				ITGGMatch m = epg.getMatch(n);
 				if (!restored.contains(m)) {
 					undos.addAll(restoreMatch(integrate, m));
 					restored.add(m);

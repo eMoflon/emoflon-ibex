@@ -10,7 +10,7 @@ import language.TGG;
 
 public class MatchContainer implements IMatchContainer {
 	private TGG tgg;
-	private Map<IMatch, String> matchToRuleName;
+	private Map<ITGGMatch, String> matchToRuleName;
 
 	private MatchContainer(MatchContainer old) {
 		this.matchToRuleName = cfactory.createObjectToObjectLinkedHashMap();
@@ -23,11 +23,11 @@ public class MatchContainer implements IMatchContainer {
 		this.tgg = tgg;
 	}
 
-	public void addMatch(IMatch match) {
+	public void addMatch(ITGGMatch match) {
 		matchToRuleName.put(match, match.getRuleName());
 	}
 
-	public boolean removeMatch(IMatch match) {
+	public boolean removeMatch(ITGGMatch match) {
 		if (matchToRuleName.containsKey(match)) {
 			matchToRuleName.remove(match);
 			return true;
@@ -36,15 +36,15 @@ public class MatchContainer implements IMatchContainer {
 		return false;
 	}
 
-	public void removeMatches(Collection<IMatch> matches) {
+	public void removeMatches(Collection<ITGGMatch> matches) {
 		matchToRuleName.keySet().removeAll(matches);
 	}
 
-	public Set<IMatch> getMatches() {
+	public Set<ITGGMatch> getMatches() {
 		return matchToRuleName.keySet();
 	}
 
-	public String getRuleName(IMatch match) {
+	public String getRuleName(ITGGMatch match) {
 		return matchToRuleName.get(match);
 	}
 
@@ -52,7 +52,7 @@ public class MatchContainer implements IMatchContainer {
 		matchToRuleName.clear();
 	}
 
-	public void matchApplied(IMatch m) {
+	public void matchApplied(ITGGMatch m) {
 		// Default: do nothing
 	}
 

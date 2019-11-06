@@ -1,8 +1,8 @@
 package org.emoflon.ibex.tgg.operational.csp;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 public interface IRuntimeTGGAttrConstrContainer {
 	boolean solve();
-	void applyCSPValues(IMatch comatch);
+	void applyCSPValues(ITGGMatch comatch);
 }

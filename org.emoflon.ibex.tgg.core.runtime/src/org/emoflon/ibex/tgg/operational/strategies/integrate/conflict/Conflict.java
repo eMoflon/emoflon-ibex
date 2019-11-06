@@ -1,10 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 public abstract class Conflict {
 
-	private IMatch match;
+	private ITGGMatch match;
 	
 	public class ConflResStratToken {
 		private ConflResStratToken() {
@@ -12,11 +12,11 @@ public abstract class Conflict {
 	}
 	protected final ConflResStratToken TOKEN = new ConflResStratToken();
 	
-	public Conflict(IMatch match) {
+	public Conflict(ITGGMatch match) {
 		this.match = match;
 	}
 
-	public IMatch getMatch() {
+	public ITGGMatch getMatch() {
 		return match;
 	}
 
