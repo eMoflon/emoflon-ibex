@@ -212,6 +212,11 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	/***** Match and pattern management *****/
+	
+	@Override
+	public void notifySubscriptions() {
+		// TODO Auto-generated method stub	
+	}
 
 	@Override
 	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {

@@ -75,10 +75,6 @@ public class SimpleMatch implements IMatch {
 	@Override
 	public int getHashCode() {
 		if(!hashInit) {
-			//hash = parameters.hashCode();
-			//hash = parameters.keySet().hashCode();
-			//hash = Objects.hash(parameters.values());
-			//hash = parameters.values().hashCode();
 			hash = (int) parameters.values().stream().reduce(0, (a, b) -> a.hashCode() + b.hashCode());
 			hashInit = true;
 		}
