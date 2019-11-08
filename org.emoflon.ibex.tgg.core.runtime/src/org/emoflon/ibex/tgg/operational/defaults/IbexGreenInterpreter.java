@@ -183,13 +183,24 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 		cspContainer.applyCSPValues(comatch);
 
-		createEdges(comatch, greenPattern.getSrcEdges(), true);
-		createEdges(comatch, greenPattern.getTrgEdges(), true);
-		createEdges(comatch, greenPattern.getCorrEdges(), true);
+		if(operationalStrategy.getOptions().getBlackInterpreter().getClass().getName().contains("Democles")) {
+			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getSourceResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getCorrResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getTargetResource(), (EObject) comatch.get(n.getName())));	
 
-		greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getSourceResource(), (EObject) comatch.get(n.getName())));	
-		greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getCorrResource(), (EObject) comatch.get(n.getName())));	
-		greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getTargetResource(), (EObject) comatch.get(n.getName())));	
+			createEdges(comatch, greenPattern.getSrcEdges(), true);
+			createEdges(comatch, greenPattern.getTrgEdges(), true);
+			createEdges(comatch, greenPattern.getCorrEdges(), true);
+		}
+		else {
+			createEdges(comatch, greenPattern.getSrcEdges(), true);
+			createEdges(comatch, greenPattern.getTrgEdges(), true);
+			createEdges(comatch, greenPattern.getCorrEdges(), true);
+			
+			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getSourceResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getCorrResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getTargetResource(), (EObject) comatch.get(n.getName())));	
+		}
 		
 		return Optional.of(comatch);
 	}

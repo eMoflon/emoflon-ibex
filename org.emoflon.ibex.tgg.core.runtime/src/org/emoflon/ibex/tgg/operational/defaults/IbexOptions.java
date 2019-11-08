@@ -36,6 +36,7 @@ public class IbexOptions {
 	private boolean ignoreDomainConformity;
 	private boolean useShortcutRules;
 	private boolean optimizeSyncPattern;
+	private boolean applyConcurrently;
 
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
@@ -62,6 +63,8 @@ public class IbexOptions {
 
 		repairAttributes = true;
 		useShortcutRules = false;
+		
+		applyConcurrently = false;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -90,7 +93,16 @@ public class IbexOptions {
 		this.repairAttributes = repairAttributes;
 		return this;
 	}
+	
+	public boolean applyConcurrently() {
+		return applyConcurrently;
+	}
 
+	public IbexOptions applyConcurrently(boolean applyConcurrently) {
+		this.applyConcurrently = applyConcurrently;
+		return this;
+	}
+	
 	public IbexOptions workspacePath(String workspacePath) {
 		this.workspacePath = workspacePath;
 		return this;
