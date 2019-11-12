@@ -55,8 +55,9 @@ public class ConflictDetector {
 
 	private List<Notification> getConflictingCrossRefs(EObject element) {
 		List<Notification> crossRefs = new ArrayList<>();
-		crossRefs.addAll(integrate.getModelChangeProtocol().getReverseAdditions(element));
 		crossRefs.addAll(integrate.getModelChangeProtocol().getReverseChanges(element));
+		crossRefs.removeIf(n -> n.getNewValue() == null);
+		crossRefs.addAll(integrate.getModelChangeProtocol().getReverseAdditions(element));
 		return crossRefs;
 		// TODO adrianm: include cross refs not captured by eContentAdapter
 	}

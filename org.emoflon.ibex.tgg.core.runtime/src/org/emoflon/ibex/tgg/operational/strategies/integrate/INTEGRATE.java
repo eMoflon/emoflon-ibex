@@ -88,11 +88,13 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	protected void deleteCorrsOfBrokenMatches() {
+		modelChangeProtocol.attachAdapter();
 		Map<TGGRuleApplication, ITGGMatch> processed = new HashMap<>();
 		do {
 			blackInterpreter.updateMatches();
 		} while (deleteCorrs(processed));
 		brokenRuleApplications.putAll(processed);
+		modelChangeProtocol.detachAdapter();
 	}
 
 	protected void analyseAndClassifyMatches() {

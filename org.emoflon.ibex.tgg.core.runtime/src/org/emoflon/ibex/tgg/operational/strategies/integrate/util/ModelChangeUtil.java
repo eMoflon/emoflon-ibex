@@ -60,7 +60,9 @@ public class ModelChangeUtil {
 
 	public List<Notification> undoOne(Notification notification, EObject element, boolean enhanced) {
 		boolean containment = false;
-		if (notification.getFeature() instanceof EReference)
+		if(notification.getFeature() == null)
+			containment = true;
+		else if (notification.getFeature() instanceof EReference)
 			containment = ((EReference) notification.getFeature()).isContainment();
 
 		Object notifier = notification.getNotifier();
@@ -195,7 +197,7 @@ public class ModelChangeUtil {
 			while (lastElement.eContainer() != null)
 				lastElement = lastElement.eContainer();
 			for (Notification n : protocol.getReverseRemovals(lastElement)) {
-				if (((EReference) n.getFeature()).isContainment()) {
+				if (n.getFeature() == null || ((EReference) n.getFeature()).isContainment()) {
 					switch (n.getEventType()) {
 					case Notification.REMOVE:
 						ops.addFirst(() -> undoRemove(n, n.getNotifier(), false));
@@ -253,6 +255,14 @@ public class ModelChangeUtil {
 			}
 		}
 
+		logger.detach();
+		return logger.notifications;
+	}
+	
+	public List<Notification> deleteNode(EObject node) {
+		NotificationLogger logger = new NotificationLogger();
+		logger.attach();
+		EcoreUtil.delete(node, true);
 		logger.detach();
 		return logger.notifications;
 	}
