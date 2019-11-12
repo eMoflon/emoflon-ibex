@@ -60,7 +60,7 @@ public class ModelChangeUtil {
 
 	public List<Notification> undoOne(Notification notification, EObject element, boolean enhanced) {
 		boolean containment = false;
-		if(notification.getFeature() == null)
+		if (notification.getFeature() == null)
 			containment = true;
 		else if (notification.getFeature() instanceof EReference)
 			containment = ((EReference) notification.getFeature()).isContainment();
@@ -146,7 +146,10 @@ public class ModelChangeUtil {
 			}
 		} else if (notifier instanceof Resource) {
 			Resource resNotifier = (Resource) notifier;
-			resNotifier.getContents().add(notification.getPosition(), (EObject) notification.getOldValue());
+			if (notification.getPosition() > resNotifier.getContents().size())
+				resNotifier.getContents().add((EObject) notification.getOldValue());
+			else
+				resNotifier.getContents().add(notification.getPosition(), (EObject) notification.getOldValue());
 		}
 	}
 
@@ -258,7 +261,7 @@ public class ModelChangeUtil {
 		logger.detach();
 		return logger.notifications;
 	}
-	
+
 	public List<Notification> deleteNode(EObject node) {
 		NotificationLogger logger = new NotificationLogger();
 		logger.attach();
