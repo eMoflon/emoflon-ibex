@@ -43,7 +43,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private BrokenMatchAnalyser matchAnalyser;
 	private ModelChangeProtocol modelChangeProtocol;
 	private ConflictDetector conflictDetector;
-	private INTEGRATE_OPT integrate_optimizer;
 
 	protected Resource epg;
 
@@ -73,18 +72,13 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public void run() throws IOException {
 		blackInterpreter.updateMatches();
 
-		integRepair();
+//		repair();
 		deleteCorrsOfBrokenMatches();
 		analyseAndClassifyMatches();
 		detectAndResolveConflicts();
-		analyseAndClassifyMatches();
 		fillClassificationMaps();
 		calculateIntegrationSolution();
 		cleanUp();
-	}
-
-	protected void integRepair() {
-		// TODO adrianm: implement
 	}
 
 	protected void deleteCorrsOfBrokenMatches() {
@@ -348,14 +342,10 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	@Override
 	public void loadTGG() throws IOException {
 		super.loadTGG();
-		integrate_optimizer.unrelaxReferences();
 	}
 
 	@Override
 	public void saveModels() throws IOException {
-		integrate_optimizer.saveModels();
-
-		// Now save fixed models
 		s.save(null);
 		t.save(null);
 		c.save(null);
