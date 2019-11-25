@@ -73,10 +73,10 @@ public class LocalPatternSearch {
 		}
 		
 		for(SearchKey key : searchPlan.key2edgeCheck.keySet()) {
-			Component nacNodeCheckComp = new EdgeCheckComponent(searchPlan.key2edgeCheck.get(key), key);
-			lastComponent.setNextComponent(nacNodeCheckComp);
+			Component edgeNodeCheckComp = new EdgeCheckComponent(searchPlan.key2edgeCheck.get(key), key);
+			lastComponent.setNextComponent(edgeNodeCheckComp);
 			
-			lastComponent = nacNodeCheckComp;
+			lastComponent = edgeNodeCheckComp;
 		}
 		
 		Component cspCheckComp = new CSPCheckComponent(searchPlan.cspCheck);

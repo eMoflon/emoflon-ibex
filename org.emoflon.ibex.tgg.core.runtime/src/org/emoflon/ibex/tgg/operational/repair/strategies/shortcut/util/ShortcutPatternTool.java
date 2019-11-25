@@ -19,7 +19,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.InterfaceSCFactory;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalSCFactory;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule.SCInputRule;
@@ -59,12 +59,16 @@ public class ShortcutPatternTool {
 	}
 	
 	private void initialize() {
-		InterfaceSCFactory factory = new InterfaceSCFactory(strategy, scRules);
+		OperationalSCFactory factory = new OperationalSCFactory(strategy, scRules);
+		
 		tggRule2srcSCRule = factory.createOperationalRules(SyncDirection.FORWARD);
 		tggRule2trgSCRule = factory.createOperationalRules(SyncDirection.BACKWARD);
+		
 		rule2matcher = new HashMap<>();
+		
 		tggRule2srcSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
 		tggRule2trgSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
+		
 		greenInterpreter = strategy.getGreenInterpreter();
 		
 		logger.info("Generated " + scRules.size() + "Short-Cut Rules...");
