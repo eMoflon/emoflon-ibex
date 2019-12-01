@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda;
+package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda;
 
 import java.util.Map;
 

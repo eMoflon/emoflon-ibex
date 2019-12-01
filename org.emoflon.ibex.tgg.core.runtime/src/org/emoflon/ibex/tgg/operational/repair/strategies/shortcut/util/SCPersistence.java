@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 import language.TGGRuleElement;

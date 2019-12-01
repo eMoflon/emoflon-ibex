@@ -16,7 +16,7 @@ import language.TGGRuleNode;
  * @author lfritsche
  *
  */
-public class TGGUtil {
+public class TGGFilterUtil {
 	
 	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleElement> elements) {
 		return elements.stream().filter(e -> e instanceof TGGRuleNode).map(e -> (TGGRuleNode) e).collect(Collectors.toList());

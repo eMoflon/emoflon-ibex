@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
+package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,12 +7,13 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.CSPCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.Lookup;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.NACNodeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.NodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.CSPCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.EdgeCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.Lookup;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.NACNodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.NodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SCMatch;
 
 import language.BindingType;
 import language.TGGRuleNode;
@@ -36,7 +37,7 @@ public class LocalPatternSearch {
 	
 	private Component firstComponent;
 	
-	protected LocalPatternSearch(OperationalShortcutRule osr) {
+	public LocalPatternSearch(OperationalShortcutRule osr) {
 		this.osr = osr;
 		this.searchPlan = osr.createSearchPlan();
 		
@@ -84,7 +85,7 @@ public class LocalPatternSearch {
 		lastComponent = cspCheckComp;
 	}
 	
-	protected SCMatch findMatch(Map<String, EObject> name2entryNodeElem) {
+	public SCMatch findMatch(Map<String, EObject> name2entryNodeElem) {
 		if(firstComponent == null)
 			throw new RuntimeException("No components found for pattern matching!");
 		

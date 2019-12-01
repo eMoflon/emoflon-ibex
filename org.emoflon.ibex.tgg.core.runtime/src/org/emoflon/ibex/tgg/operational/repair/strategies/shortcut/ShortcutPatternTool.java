@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
+package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,11 +19,14 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalSCFactory;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule.SCInputRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.OperationalSCFactory;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.ShortcutRule.SCInputRule;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.LocalPatternSearch;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SCPersistence;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.BindingType;
@@ -168,8 +171,8 @@ public class ShortcutPatternTool {
 	}
 	
 	private void processDeletions(OperationalShortcutRule osc, IMatch brokenMatch) {
-		Collection<TGGRuleNode> deletedRuleNodes = TGGUtil.filterNodes(osc.getScRule().getNodes(), BindingType.DELETE);
-		Collection<TGGRuleEdge> deletedRuleEdges = TGGUtil.filterEdges(osc.getScRule().getEdges(), BindingType.DELETE);
+		Collection<TGGRuleNode> deletedRuleNodes = TGGFilterUtil.filterNodes(osc.getScRule().getNodes(), BindingType.DELETE);
+		Collection<TGGRuleEdge> deletedRuleEdges = TGGFilterUtil.filterEdges(osc.getScRule().getEdges(), BindingType.DELETE);
 		
 		Set<EMFEdge> edgesToRevoke = new HashSet<>();
 		// Collect edges to revoke.
@@ -184,7 +187,7 @@ public class ShortcutPatternTool {
 		numOfDeletedNodes += nodesToRevoke.size();
 		revokeElements(nodesToRevoke, edgesToRevoke);
 		
-		Collection<TGGRuleNode> contextRuleNodes = TGGUtil.filterNodes(osc.getScRule().getNodes(), BindingType.CONTEXT);
+		Collection<TGGRuleNode> contextRuleNodes = TGGFilterUtil.filterNodes(osc.getScRule().getNodes(), BindingType.CONTEXT);
 		for(TGGRuleNode n : contextRuleNodes) {
 			EObject e = (EObject) brokenMatch.get(n.getName());
 			if(e.eContainer() == null && e.eResource() == null || e.eResource() != null && e.eResource().getContents().get(0) instanceof TempContainer) {

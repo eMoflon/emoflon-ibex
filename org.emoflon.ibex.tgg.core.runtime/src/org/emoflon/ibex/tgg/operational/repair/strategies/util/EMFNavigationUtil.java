@@ -21,7 +21,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  * @author lfritsche
  *
  */
-public class SCEMFUtil {
+public class EMFNavigationUtil {
 	
 	public static List<?> getOppositeReference(final EObject target, final EClass sourceType,
 			final String targetRoleName) {

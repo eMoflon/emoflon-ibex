@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
+package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search;
 
 import java.util.Objects;
 

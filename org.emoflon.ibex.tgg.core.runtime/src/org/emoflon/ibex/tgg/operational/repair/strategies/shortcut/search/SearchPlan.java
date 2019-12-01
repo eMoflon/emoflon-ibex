@@ -1,14 +1,14 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
+package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search;
 
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.CSPCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.Lookup;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.NACNodeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.lambda.NodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.CSPCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.EdgeCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.Lookup;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.NACNodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.NodeCheck;
 
 import language.TGGRuleNode;
 

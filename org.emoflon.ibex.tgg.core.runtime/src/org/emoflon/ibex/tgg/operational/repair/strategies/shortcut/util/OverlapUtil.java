@@ -1,7 +1,7 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.util;
+package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-import static org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil.isAxiomatic;
+import static org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil.isAxiomatic;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
@@ -130,17 +131,17 @@ public class OverlapUtil {
 	private TGGOverlap createOverlapFromILPSolution(TGGRule sourceRule, TGGRule targetRule, int[] solution) {
 		TGGOverlap overlap = new TGGOverlap(sourceRule, targetRule);
 		
-		overlap.deletions.addAll(TGGUtil.filterNodes(sourceRule.getNodes(), BindingType.CREATE));
-		overlap.deletions.addAll(TGGUtil.filterEdges(sourceEdgeMap.values(), BindingType.CREATE));
+		overlap.deletions.addAll(TGGFilterUtil.filterNodes(sourceRule.getNodes(), BindingType.CREATE));
+		overlap.deletions.addAll(TGGFilterUtil.filterEdges(sourceEdgeMap.values(), BindingType.CREATE));
 
-		overlap.creations.addAll(TGGUtil.filterNodes(targetRule.getNodes(), BindingType.CREATE));
-		overlap.creations.addAll(TGGUtil.filterEdges(targetEdgeMap.values(), BindingType.CREATE));
+		overlap.creations.addAll(TGGFilterUtil.filterNodes(targetRule.getNodes(), BindingType.CREATE));
+		overlap.creations.addAll(TGGFilterUtil.filterEdges(targetEdgeMap.values(), BindingType.CREATE));
 
-		overlap.unboundSrcContext.addAll(TGGUtil.filterNodes(sourceRule.getNodes(), BindingType.CONTEXT));
-		overlap.unboundSrcContext.addAll(TGGUtil.filterEdges(sourceEdgeMap.values(), BindingType.CONTEXT));
+		overlap.unboundSrcContext.addAll(TGGFilterUtil.filterNodes(sourceRule.getNodes(), BindingType.CONTEXT));
+		overlap.unboundSrcContext.addAll(TGGFilterUtil.filterEdges(sourceEdgeMap.values(), BindingType.CONTEXT));
 		
-		overlap.unboundTrgContext.addAll(TGGUtil.filterNodes(targetRule.getNodes(), BindingType.CONTEXT));
-		overlap.unboundTrgContext.addAll(TGGUtil.filterEdges(targetEdgeMap.values(), BindingType.CONTEXT));
+		overlap.unboundTrgContext.addAll(TGGFilterUtil.filterNodes(targetRule.getNodes(), BindingType.CONTEXT));
+		overlap.unboundTrgContext.addAll(TGGFilterUtil.filterEdges(targetEdgeMap.values(), BindingType.CONTEXT));
 
 		for (int i = 0; i < solution.length; i++) {
 			boolean useCandidate = solution[i] == 1;
@@ -339,8 +340,8 @@ public class OverlapUtil {
 		// TODO adrianM, lfritsche : extend inheritance concept
 		Set<EClass> classes = cfactory.createObjectSet();
 		// TODO lfritsche : insert operationalisation (FWD BWD) splitting
-		classes.addAll(TGGUtil.filterNodes(sourceRule.getNodes(), BindingType.CREATE).stream().map(c -> c.getType()).collect(Collectors.toSet()));
-		for (TGGRuleNode targetNode : TGGUtil.filterNodes(targetRule.getNodes(), BindingType.CREATE)) {
+		classes.addAll(TGGFilterUtil.filterNodes(sourceRule.getNodes(), BindingType.CREATE).stream().map(c -> c.getType()).collect(Collectors.toSet()));
+		for (TGGRuleNode targetNode : TGGFilterUtil.filterNodes(targetRule.getNodes(), BindingType.CREATE)) {
 			if (classes.contains(targetNode.getType()))
 				return true;
 		}

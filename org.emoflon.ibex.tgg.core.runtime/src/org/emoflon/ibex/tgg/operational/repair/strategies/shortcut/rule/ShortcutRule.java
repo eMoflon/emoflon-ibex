@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut;
+package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule;
 
 import java.util.Collection;
 import java.util.Map;
@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGOverlap;
+import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.TGGOverlap;
+import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;
@@ -177,7 +177,7 @@ public class ShortcutRule {
 	
 	public Collection<TGGRuleNode> getTargetRuleMappings(DomainType dType, BindingType bType) {
 		Collection<TGGRuleNode> nodes = targetRule.getNodes().stream().filter(n -> trg2newNodes.containsKey(n)).map(n -> trg2newNodes.get(n)).collect(Collectors.toList());
-		return TGGUtil.filterNodes(nodes, dType, bType);
+		return TGGFilterUtil.filterNodes(nodes, dType, bType);
 	}
 	
 	// This method is only used for mapped edges so we do not have to care about source or target rule
