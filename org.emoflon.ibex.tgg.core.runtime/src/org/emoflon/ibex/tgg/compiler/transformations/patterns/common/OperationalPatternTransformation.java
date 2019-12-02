@@ -6,6 +6,7 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFilterNAC
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
@@ -18,10 +19,22 @@ import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
+import IBeXLanguage.IBeXAttributeConstraint;
+import IBeXLanguage.IBeXAttributeExpression;
+import IBeXLanguage.IBeXCSP;
+import IBeXLanguage.IBeXConstant;
 import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
+import IBeXLanguage.IBeXRelation;
+import language.TGG;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeExpression;
+import language.TGGEnumExpression;
+import language.TGGInplaceAttributeExpression;
+import language.TGGLiteralExpression;
+import language.TGGParamValue;
 import language.TGGRule;
 import language.TGGRuleNode;
 
@@ -92,8 +105,56 @@ public abstract class OperationalPatternTransformation {
 
 		// Transform NACs
 		transformNACs(ibexPattern);
+		
+		// Transform CEPs
+		transformCEPs(ibexPattern);
 
 		return ibexPattern;
+	}
+
+	private void transformCEPs(IBeXContextPattern ibexPattern) {
+		for(TGGAttributeConstraint csp : rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
+			IBeXCSP iCSP = IBeXLanguageFactory.eINSTANCE.createIBeXCSP();
+			iCSP.setName(csp.getDefinition().getName());
+			if(csp.getDefinition().isUserDefined()) {
+				iCSP.setName("UserDefined_" + iCSP.getName());
+				iCSP.setPackage("org.emoflon.ibex.tgg.operational.csp.constraints.custom." + ((TGG) rule.eContainer()).getName().toLowerCase());
+			}
+			else {
+				iCSP.setPackage("org.emoflon.ibex.tgg.operational.csp.constraints");
+			}
+			
+			for(TGGParamValue param : csp.getParameters()) {
+				if(param instanceof TGGAttributeExpression) {
+					TGGAttributeExpression tggAttrExpr = (TGGAttributeExpression) param;
+					IBeXAttributeExpression attrExpr = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeExpression();
+					Optional<IBeXNode> iBeXNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, tggAttrExpr.getObjectVar().getName());
+					if(iBeXNode.isPresent())
+						attrExpr.setNode(iBeXNode.get());
+					else
+						break;
+					attrExpr.setAttribute(tggAttrExpr.getAttribute());
+					iCSP.getValues().add(attrExpr);
+				}
+				else if(param instanceof TGGEnumExpression) {
+					TGGEnumExpression tggEnumExpr = (TGGEnumExpression) param;
+					IBeXConstant constant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
+					iCSP.getValues().add(constant);
+					constant.setValue(tggEnumExpr.getLiteral());
+					constant.setStringValue(tggEnumExpr.getEenum().getEPackage().getNsPrefix() + "." + tggEnumExpr.getEenum().getName() + "." + tggEnumExpr.getLiteral().getName());
+				}
+				else if(param instanceof TGGLiteralExpression) {
+					TGGLiteralExpression tggLiteralExpr = (TGGLiteralExpression) param;
+					IBeXConstant constant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
+					iCSP.getValues().add(constant);
+					constant.setValue(tggLiteralExpr.getValue());
+					constant.setStringValue("\"" + tggLiteralExpr.getValue() + "\"");
+				}
+			}
+			
+			if(iCSP.getValues().size() == csp.getParameters().size())
+				ibexPattern.getCsps().add(iCSP);
+		}
 	}
 
 	protected IBeXContextPattern createFilterNAC(IBeXContextPattern ibexPattern, FilterNACCandidate candidate) {

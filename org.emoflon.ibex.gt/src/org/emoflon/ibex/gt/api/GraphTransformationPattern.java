@@ -13,6 +13,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
+import IBeXLanguage.IBeXPatternSet;
+
 /**
  * This is the abstraction for all patterns.
  * 
@@ -268,6 +270,10 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 		Consumer<IMatch> consumer = m -> action.accept(convertMatch(m));
 		consumers.put(action, consumer);
 		return consumer;
+	}
+	
+	public IBeXPatternSet getPatternSet() {
+		return interpreter.getPatternSet();
 	}
 
 	/**

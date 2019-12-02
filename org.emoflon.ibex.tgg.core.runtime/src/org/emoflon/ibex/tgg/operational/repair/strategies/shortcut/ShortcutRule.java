@@ -30,17 +30,22 @@ import language.impl.LanguageFactoryImpl;
 public class ShortcutRule {
 	private TGGRule sourceRule;
 	private TGGRule targetRule;
+	
 	private Map<String, TGGRuleNode> name2node;
+	
 	private Collection<TGGRuleNode> nodes;
 	private Collection<TGGRuleEdge> edges;
 	private Collection<TGGRuleNode> mergedNodes;
 	private Collection<TGGRuleNode> preservedNodes;
+	
 	private TGGOverlap overlap;
 
 	private Collection<String> nodeNames;
 	private Collection<String> edgeNames;
+	
 	private Map<TGGRuleNode, TGGRuleNode> src2newNodes;
 	private Map<TGGRuleNode, TGGRuleNode> trg2newNodes;
+	
 	private Map<String, TGGRuleNode> sourceName2oldNodes;
 	private Map<String, TGGRuleNode> targetName2oldNodes;
 
@@ -135,7 +140,8 @@ public class ShortcutRule {
 		TGGRuleNode newNode = node instanceof TGGRuleCorr ? LanguageFactoryImpl.eINSTANCE.createTGGRuleCorr() : LanguageFactoryImpl.eINSTANCE.createTGGRuleNode();
 		registerNewNode(node, newNode, scInput);
 		if(overlap.mappings.containsKey(node)) {
-			// Target is hardcoded since we go for mappings first over the source elements
+			// TODO larsF, adrianM
+			// Target is hardcoded -> we iterate first over the source elements for mappings -> source should already be registered (DIRTY)
 			registerNewNode((TGGRuleNode) overlap.mappings.get(node), newNode, SCInputRule.TARGET);
 			sourceName2oldNodes.put(node.getName(), node);
 			targetName2oldNodes.put(overlap.mappings.get(node).getName(), (TGGRuleNode) overlap.mappings.get(node));

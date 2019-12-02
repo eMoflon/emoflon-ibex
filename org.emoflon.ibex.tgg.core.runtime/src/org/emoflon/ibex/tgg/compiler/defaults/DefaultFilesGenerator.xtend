@@ -1,5 +1,5 @@
 package org.emoflon.ibex.tgg.compiler.defaults
-
+ 
 import java.util.Collection
 import language.TGGAttributeConstraintDefinition
 import org.moflon.core.utilities.MoflonUtil
@@ -77,7 +77,7 @@ class DefaultFilesGenerator {
 		'''
 	}
 
-	static def String generateBasicStructure(String additionalImports, String fileName, String strategy, String engine,
+	static def String generateBasicStructure(String additionalImports, String fileName, String strategy, 
 		String projectName, String setUpRoutine, String body) {
 		'''
 			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
@@ -95,7 +95,7 @@ class DefaultFilesGenerator {
 			
 				public «fileName»() throws IOException {
 					super(createIbexOptions());
-					registerBlackInterpreter(new «engine»());
+					registerBlackInterpreter(options.getBlackInterpreter());
 				}
 			
 				public static void main(String[] args) throws IOException {
@@ -135,7 +135,7 @@ class DefaultFilesGenerator {
 			public class «fileName» extends «strategy» {
 			
 				public «fileName»() throws IOException {
-					super();
+					super(createIbexOptions());
 				}
 			
 				public static void main(String[] args) throws IOException {
@@ -150,7 +150,7 @@ class DefaultFilesGenerator {
 		'''
 	}
 
-	static def generateModelGenFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateModelGenFile(String projectName, String fileName, String additionalImports) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
@@ -159,7 +159,6 @@ class DefaultFilesGenerator {
 			''',
 			fileName,
 			"MODELGEN",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting MODELGEN");
@@ -191,7 +190,7 @@ class DefaultFilesGenerator {
 				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».MODELGEN_App;
 			''',
 			fileName,
-			"MODELGEN_App",
+			"MODELGEN",
 			projectName,
 			'''
 				boolean restart = true;
@@ -229,7 +228,7 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateSyncAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateSyncAppFile(String projectName, String fileName, String additionalImports) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
@@ -237,7 +236,6 @@ class DefaultFilesGenerator {
 			''',
 			fileName,
 			"SYNC",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting SYNC");
@@ -258,7 +256,7 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateCCAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateCCAppFile(String projectName, String fileName, String additionalImports) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
@@ -266,7 +264,6 @@ class DefaultFilesGenerator {
 			''',
 			fileName,
 			"CC",
-			engine,
 			projectName,
 			'''
 				«fileName» cc = new «fileName»();
@@ -285,7 +282,7 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateCOAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateCOAppFile(String projectName, String fileName, String additionalImports) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.CO;
@@ -293,7 +290,6 @@ class DefaultFilesGenerator {
 			''',
 			fileName,
 			"CO",
-			engine,
 			projectName,
 			'''
 				«fileName» co = new «fileName»();
@@ -312,7 +308,7 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateFWDOptAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateFWDOptAppFile(String projectName, String fileName, String additionalImports) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.FWD_OPT;
@@ -320,7 +316,6 @@ class DefaultFilesGenerator {
 			''',
 			fileName,
 			"FWD_OPT",
-			engine,
 			projectName,
 			'''
 				«fileName» fwd_opt = new «fileName»();
@@ -338,7 +333,7 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateBWDOptAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateBWDOptAppFile(String projectName, String fileName, String additionalImports) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.BWD_OPT;
@@ -346,7 +341,6 @@ class DefaultFilesGenerator {
 			''',
 			fileName,
 			"BWD_OPT",
-			engine,
 			projectName,
 			'''
 				«fileName» bwd_opt = new «fileName»();
@@ -364,7 +358,7 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateInitialFwdAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateInitialFwdAppFile(String projectName, String fileName, String additionalImports) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
@@ -374,7 +368,6 @@ class DefaultFilesGenerator {
 			''',
 			fileName,
 			"SYNC",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting INITIAL FWD");
@@ -468,7 +461,6 @@ class DefaultFilesGenerator {
 			''',
 			fileName,
 			"SYNC",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting INITIAL BWD");

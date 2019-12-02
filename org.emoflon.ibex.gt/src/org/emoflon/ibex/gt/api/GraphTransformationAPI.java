@@ -6,6 +6,8 @@ import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
+import IBeXLanguage.IBeXPatternSet;
+
 /**
  * This abstract API is the super class for all concrete APIs generated for a
  * set of model resources.
@@ -112,5 +114,9 @@ public abstract class GraphTransformationAPI {
 	 */
 	public final PushoutApproach getDefaultPushoutApproach() {
 		return defaultPushoutApproach;
+	}
+	
+	public IBeXPatternSet getPatternSet() {
+		return interpreter.getPatternSet();
 	}
 }

@@ -27,7 +27,7 @@ public abstract class CC extends OPT {
 		super(options);
 	}
 
-	public CC(IbexOptions options, IUpdatePolicy policy) {
+	public CC(IbexOptions options, IUpdatePolicy policy) throws IOException {
 		super(options, policy);
 	}
 

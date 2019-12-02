@@ -18,7 +18,6 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStr
 import runtime.TGGRuleApplication;
 
 /**
- * 
  * This class attempts to repair broken matches by using operationalized shortcut rules (OSR).
  * These OSRs detect specific situations (like certain deltas) and try to repair the broken match to be either a valid match of its rule again
  * or by transforming the match to that of another rule.
@@ -36,6 +35,8 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	
 	public ShortcutRepairStrategy(SYNC operationalStrategy) {
 		this.operationalStrategy = operationalStrategy;
+		
+		// enable backward navigation for emf edges
 		operationalStrategy.getResourceSet().eAdapters().add(new ECrossReferenceAdapter());		
 		initialize();
 	}
