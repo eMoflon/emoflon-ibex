@@ -150,12 +150,11 @@ class DefaultFilesGenerator {
 		'''
 	}
 
-	static def generateModelGenFile(String projectName, String fileName, String additionalImports) {
+	static def generateModelGenFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
-				«additionalImports»
 			''',
 			fileName,
 			"MODELGEN",
@@ -228,11 +227,10 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateSyncAppFile(String projectName, String fileName, String additionalImports) {
+	static def generateSyncAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
-				«additionalImports»
 			''',
 			fileName,
 			"SYNC",
@@ -256,11 +254,10 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateCCAppFile(String projectName, String fileName, String additionalImports) {
+	static def generateCCAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
-				«additionalImports»
 			''',
 			fileName,
 			"CC",
@@ -282,11 +279,10 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateCOAppFile(String projectName, String fileName, String additionalImports) {
+	static def generateCOAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.CO;
-				«additionalImports»
 			''',
 			fileName,
 			"CO",
@@ -308,11 +304,10 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateFWDOptAppFile(String projectName, String fileName, String additionalImports) {
+	static def generateFWDOptAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.FWD_OPT;
-				«additionalImports»
 			''',
 			fileName,
 			"FWD_OPT",
@@ -333,11 +328,10 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateBWDOptAppFile(String projectName, String fileName, String additionalImports) {
+	static def generateBWDOptAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.BWD_OPT;
-				«additionalImports»
 			''',
 			fileName,
 			"BWD_OPT",
@@ -358,13 +352,12 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateInitialFwdAppFile(String projectName, String fileName, String additionalImports) {
+	static def generateInitialFwdAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
 				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-				«additionalImports»
 			''',
 			fileName,
 			"SYNC",
@@ -451,13 +444,12 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateInitialBwdAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateInitialBwdAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
 				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-				«additionalImports»
 			''',
 			fileName,
 			"SYNC",

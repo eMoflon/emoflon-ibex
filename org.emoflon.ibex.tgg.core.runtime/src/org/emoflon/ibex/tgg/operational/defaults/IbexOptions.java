@@ -10,7 +10,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
-import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -37,15 +36,13 @@ public class IbexOptions {
 	private boolean ignoreDomainConformity;
 	private boolean useShortcutRules;
 	private boolean optimizeSyncPattern;
-	private boolean applyConcurrently;
 
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
 	 * If this is false (disabled), then edge patterns are never used.
 	 */
 	private boolean useEdgePatterns;
-	private IBlackInterpreter blackInterpreter;
-
+	
 	// Benchmark Logging
 	private BenchmarkLogger logger;
 
@@ -53,7 +50,8 @@ public class IbexOptions {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
 		projectPath = "/";
 		workspacePath = "./../";
-		
+		repairAttributes = true;
+		useShortcutRules = false;
 		setIlpSolver(SupportedILPSolver.Sat4J);
 		useEdgePatterns = false;
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
@@ -61,10 +59,6 @@ public class IbexOptions {
 		ignoreDomainConformity = false;
 		optimizeSyncPattern = false;
 		logger = new EmptyBenchmarkLogger();
-		repairAttributes = true;
-		useShortcutRules = false;
-		
-		applyConcurrently = false;
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -93,16 +87,7 @@ public class IbexOptions {
 		this.repairAttributes = repairAttributes;
 		return this;
 	}
-	
-	public boolean applyConcurrently() {
-		return applyConcurrently;
-	}
 
-	public IbexOptions applyConcurrently(boolean applyConcurrently) {
-		this.applyConcurrently = applyConcurrently;
-		return this;
-	}
-	
 	public IbexOptions workspacePath(String workspacePath) {
 		this.workspacePath = workspacePath;
 		return this;
@@ -186,15 +171,6 @@ public class IbexOptions {
 
 	public IbexOptions blackInterpSupportsAttrConstrs(boolean value) {
 		blackInterpSupportsAttrConstrs = value;
-		return this;
-	}
-	
-	public IBlackInterpreter getBlackInterpreter() {
-		return blackInterpreter;
-	}
-	
-	public IbexOptions setBlackInterpreter(IBlackInterpreter blackInterpreter) {
-		this.blackInterpreter = blackInterpreter;
 		return this;
 	}
 
