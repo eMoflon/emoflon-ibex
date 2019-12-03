@@ -127,7 +127,7 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Logger;
 			import org.apache.log4j.BasicConfigurator;
 			
-			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdpater.IBeXOperation;
+			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdpater.IBeXOp;
 			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdpater.VictoryIBeXAdapter;
 			
 			«additionalImports»
@@ -136,6 +136,7 @@ class DefaultFilesGenerator {
 			
 				public «fileName»() throws IOException {
 					super(createIbexOptions());
+					registerBlackInterpreter(options.getBlackInterpreter());
 				}
 			
 				public static void main(String[] args) throws IOException {
@@ -146,6 +147,8 @@ class DefaultFilesGenerator {
 				}
 				
 				«body»
+				
+				«generateMetamodelRegistration()»
 			}
 		'''
 	}
@@ -185,6 +188,7 @@ class DefaultFilesGenerator {
 	static def generateModelGenDebugFile(String projectName, String fileName) {
 		return generateDebugStructure(
 			'''
+				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
 				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».MODELGEN_App;
 			''',
