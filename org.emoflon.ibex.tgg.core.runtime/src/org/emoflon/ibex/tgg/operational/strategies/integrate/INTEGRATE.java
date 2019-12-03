@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
+import delta.DeltaContainer;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +12,8 @@ import java.util.function.BiConsumer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.delta.validation.DeltaValidator;
+import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
@@ -45,6 +48,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private ConflictDetector conflictDetector;
 
 	protected Resource epg;
+	protected DeltaContainer deltas;
 
 	// Element classification
 	private Map<EObject, EltClassifier> classifiedNodes;
@@ -324,6 +328,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	 * 
 	 * @param delta delta to be applied
 	 */
+	@Deprecated
 	public void applyDelta(BiConsumer<EObject, EObject> delta) {
 		blackInterpreter.updateMatches();
 		getEPG().update();
@@ -331,6 +336,11 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		modelChangeProtocol.attachAdapter();
 		delta.accept(s.getContents().get(0), t.getContents().get(0));
 		modelChangeProtocol.detachAdapter();
+	}
+
+	public void applyDeltas(DeltaContainer deltas) throws InvalidDeltaException {
+		DeltaValidator.validate(deltas);
+		this.deltas = deltas;
 	}
 
 	private void initIntegrateDependantTools() {
