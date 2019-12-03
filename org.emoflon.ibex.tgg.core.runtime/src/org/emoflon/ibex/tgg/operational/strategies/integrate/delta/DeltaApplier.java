@@ -1,11 +1,12 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.delta;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import delta.AttributeDelta;
 import delta.Delta;
@@ -16,14 +17,10 @@ import delta.StructuralDelta;
 
 public class DeltaApplier {
 
-	private OperationalStrategy opStrategy;
+	private Set<AttributeDelta> inverseAttributeDeltas;
 
-	private Set<AttributeDelta> invertAttributeDeltas;
-
-	public DeltaApplier(OperationalStrategy opStrategy) {
-		this.opStrategy = opStrategy;
-
-		invertAttributeDeltas = new HashSet<>();
+	public DeltaApplier() {
+		inverseAttributeDeltas = new HashSet<>();
 	}
 
 	public void apply(DeltaContainer deltas) {
@@ -33,7 +30,7 @@ public class DeltaApplier {
 	private void apply(Delta delta) {
 		delta.getAttributeDeltas().forEach(attrDelta -> applyAttributeDelta(attrDelta));
 		StructuralDelta strDelta = delta.getStructuralDelta();
-		if(strDelta != null)
+		if (strDelta != null)
 			applyStructuralDelta(strDelta);
 	}
 
@@ -47,7 +44,7 @@ public class DeltaApplier {
 		invAttrDelta.setAttribute(attrDelta.getAttribute());
 		invAttrDelta.setObject(attrDelta.getObject());
 		invAttrDelta.setNewValue(attrDelta.getObject().eGet(attrDelta.getAttribute()));
-		invertAttributeDeltas.add(invAttrDelta);
+		inverseAttributeDeltas.add(invAttrDelta);
 	}
 
 	private void applyStructuralDelta(StructuralDelta strDelta) {
@@ -55,14 +52,30 @@ public class DeltaApplier {
 		applyDeletions(strDelta.getDeletedObjects(), strDelta.getDeletedLinks());
 	}
 
-	private void applyDeletions(List<EObject> deletedObjects, List<Link> deletedLinks) {
-		// TODO adrianm: implement
-		
+	@SuppressWarnings("unchecked")
+	private void applyCreations(List<EObject> createdObjects, List<Link> createdLinks) {
+		createdLinks.forEach(link -> {
+			if (link.getType().isMany()) {
+				Collection<EObject> feature = (Collection<EObject>) link.getSrc().eGet(link.getType());
+				feature.add(link.getTrg());
+			} else
+				link.getSrc().eSet(link.getType(), link.getTrg());
+		});
 	}
 
-	private void applyCreations(List<EObject> createdObjects, List<Link> createdLinks) {
-		// TODO adrianm: implement
+	@SuppressWarnings("unchecked")
+	private void applyDeletions(List<EObject> deletedObjects, List<Link> deletedLinks) {
+		deletedLinks.forEach(link -> {
+			if (link.getType().isMany()) {
+				Collection<EObject> feature = (Collection<EObject>) link.getSrc().eGet(link.getType());
+				feature.remove(link.getTrg());
+			} else
+				link.getSrc().eSet(link.getType(), null);
+		});
 		
+		deletedObjects.forEach(obj -> {
+			EcoreUtil.delete(obj, true);
+		});
 	}
 
 }
