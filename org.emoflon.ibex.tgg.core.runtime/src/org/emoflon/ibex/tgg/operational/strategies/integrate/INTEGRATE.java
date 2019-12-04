@@ -29,7 +29,7 @@ import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.delta.DeltaApplier;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.delta.ModelChangeInterface;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
@@ -47,7 +47,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private BrokenMatchAnalyser matchAnalyser;
 	private ModelChangeProtocol modelChangeProtocol;
 	private ConflictDetector conflictDetector;
-	private DeltaApplier deltaApplier;
+	private ModelChangeInterface deltaApplier;
 
 	protected Resource epg;
 	protected DeltaContainer deltas;
@@ -63,7 +63,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
-		deltaApplier = new DeltaApplier();
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
 		filterNacMatches = new HashSet<>();
@@ -92,7 +91,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	protected void applyDeltas() {
 		if(deltas != null)
-			deltaApplier.apply(deltas);
+			deltaApplier.applyUserDelta(deltas);
 	}
 
 	protected void deleteCorrsOfBrokenMatches() {
@@ -187,7 +186,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	protected void cleanUp() {
 		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
-		deltaApplier = new DeltaApplier();
+		deltaApplier = new ModelChangeInterface(this);
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
 		analysedMatches = new HashMap<>();
@@ -358,6 +357,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		matchAnalyser = new BrokenMatchAnalyser(this);
 		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
 		conflictDetector = new ConflictDetector(this);
+		deltaApplier = new ModelChangeInterface(this);
 	}
 
 	@Override
