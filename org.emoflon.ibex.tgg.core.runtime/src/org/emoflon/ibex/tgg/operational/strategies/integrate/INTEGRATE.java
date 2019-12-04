@@ -29,6 +29,7 @@ import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.delta.DeltaApplier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
@@ -46,6 +47,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private BrokenMatchAnalyser matchAnalyser;
 	private ModelChangeProtocol modelChangeProtocol;
 	private ConflictDetector conflictDetector;
+	private DeltaApplier deltaApplier;
 
 	protected Resource epg;
 	protected DeltaContainer deltas;
@@ -61,6 +63,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
+		deltaApplier = new DeltaApplier();
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
 		filterNacMatches = new HashSet<>();
@@ -74,6 +77,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
+		applyDeltas();
+		
 		blackInterpreter.updateMatches();
 
 //		repair();
@@ -83,6 +88,11 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		fillClassificationMaps();
 		calculateIntegrationSolution();
 		cleanUp();
+	}
+
+	protected void applyDeltas() {
+		if(deltas != null)
+			deltaApplier.apply(deltas);
 	}
 
 	protected void deleteCorrsOfBrokenMatches() {
@@ -177,6 +187,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	protected void cleanUp() {
 		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
+		deltaApplier = new DeltaApplier();
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
 		analysedMatches = new HashMap<>();
@@ -338,7 +349,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		modelChangeProtocol.detachAdapter();
 	}
 
-	public void applyDeltas(DeltaContainer deltas) throws InvalidDeltaException {
+	public void setDeltas(DeltaContainer deltas) throws InvalidDeltaException {
 		DeltaValidator.validate(deltas);
 		this.deltas = deltas;
 	}
