@@ -88,6 +88,8 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Logger;
 			import org.apache.log4j.BasicConfigurator;
 			
+			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
+			
 			import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».config.*;
 			
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -95,8 +97,10 @@ class DefaultFilesGenerator {
 			
 			public class «fileName» extends «strategy» {
 			
+				public static IRegistrationHelper registrationHelper = new _DefaultRegistrationHelper();
+			
 				public «fileName»() throws IOException {
-					super(createIbexOptions());
+					super(registrationHelper.createIbexOptions());
 					registerBlackInterpreter(options.getBlackInterpreter());
 				}
 			
@@ -111,9 +115,6 @@ class DefaultFilesGenerator {
 				
 				«generateMetamodelRegistration()»
 				
-				private static IbexOptions createIbexOptions() {
-					return _DefaultRegistrationHelper.createIbexOptions();
-				}
 			}
 		'''
 	}
@@ -131,6 +132,8 @@ class DefaultFilesGenerator {
 			
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			
+			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
+			
 			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.IBeXOperation;
 			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.VictoryIBeXAdapter;
 			
@@ -139,6 +142,8 @@ class DefaultFilesGenerator {
 			«additionalImports»
 			
 			public class «fileName» extends «strategy» {
+			
+				private static IRegistrationHelper registrationHelper = new _DefaultRegistrationHelper();
 			
 				public «fileName»() throws IOException {
 					super(createIbexOptions());
@@ -155,10 +160,6 @@ class DefaultFilesGenerator {
 				«body»
 				
 				«generateMetamodelRegistration()»
-				
-				private static IbexOptions createIbexOptions() {
-					return _DefaultRegistrationHelper.createIbexOptions();
-				}
 			}
 		'''
 	}
@@ -553,7 +554,7 @@ class DefaultFilesGenerator {
 		'''
 			@Override
 			protected void registerUserMetamodels() throws IOException {
-				_DefaultRegistrationHelper.registerMetamodels(rs, this);
+				registrationHelper.registerMetamodels(rs, this);
 					
 				// Register correspondence metamodel last
 				loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectName() + ".ecore");
@@ -568,20 +569,21 @@ class DefaultFilesGenerator {
 			import java.io.IOException;
 				
 			import org.eclipse.emf.ecore.resource.ResourceSet;
+			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 			
-			public class _DefaultRegistrationHelper {
+			public class _DefaultRegistrationHelper implements IRegistrationHelper{
 			
 				/** Load and register source and target metamodels */
-				public static void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) throws IOException {
+				public void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) throws IOException {
 					// Replace to register generated code or handle other URI-related requirements
-					DemoclesRegistrationHelper.registerMetamodels(rs, strategy);
+					new DemoclesRegistrationHelper().registerMetamodels(rs, strategy);
 				}
 			
 				/** Create default options **/
-				public static IbexOptions createIbexOptions() {
-					return DemoclesRegistrationHelper.createIbexOptions();
+				public IbexOptions createIbexOptions() {
+					return new DemoclesRegistrationHelper().createIbexOptions();
 				}
 			}
 		'''
@@ -596,13 +598,14 @@ class DefaultFilesGenerator {
 			import org.eclipse.emf.ecore.resource.ResourceSet;
 			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».UserDefinedRuntimeTGGAttrConstraintFactory;
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
 			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 			import org.emoflon.ibex.tgg.runtime.democles.DemoclesTGGEngine;
 			
-			public class DemoclesRegistrationHelper {
+			public class DemoclesRegistrationHelper implements IRegistrationHelper {
 			
 				/** Load and register source and target metamodels */
-				public static void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) throws IOException {
+				public void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) throws IOException {
 					// Replace to register generated code or handle other URI-related requirements
 					«FOR imp : tgg.imports»
 					strategy.loadAndRegisterMetamodel("«imp.name»");
@@ -610,7 +613,7 @@ class DefaultFilesGenerator {
 				}
 			
 				/** Create default options **/
-				public static IbexOptions createIbexOptions() {
+				public IbexOptions createIbexOptions() {
 					IbexOptions options = new IbexOptions();
 					options.setBlackInterpreter(new DemoclesTGGEngine());
 					options.projectName("«MoflonUtil.lastCapitalizedSegmentOf(projectName)»");
