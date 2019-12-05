@@ -85,7 +85,8 @@ public class IBeXAttributeConstraintImpl extends IBeXAttributeImpl implements IB
 		IBeXRelation oldRelation = relation;
 		relation = newRelation == null ? RELATION_EDEFAULT : newRelation;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE_CONSTRAINT__RELATION, oldRelation, relation));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXLanguagePackage.IBE_XATTRIBUTE_CONSTRAINT__RELATION, oldRelation, relation));
 	}
 
 	/**

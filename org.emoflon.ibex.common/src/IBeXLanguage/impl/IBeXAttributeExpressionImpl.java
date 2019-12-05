@@ -80,7 +80,8 @@ public class IBeXAttributeExpressionImpl extends IBeXAttributeValueImpl implemen
 			attribute = (EAttribute) eResolveProxy(oldAttribute);
 			if (attribute != oldAttribute) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXLanguagePackage.IBE_XATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
 			}
 		}
 		return attribute;
@@ -105,7 +106,8 @@ public class IBeXAttributeExpressionImpl extends IBeXAttributeValueImpl implemen
 		EAttribute oldAttribute = attribute;
 		attribute = newAttribute;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXLanguagePackage.IBE_XATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
 	}
 
 	/**
@@ -120,7 +122,8 @@ public class IBeXAttributeExpressionImpl extends IBeXAttributeValueImpl implemen
 			node = (IBeXNode) eResolveProxy(oldNode);
 			if (node != oldNode) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XATTRIBUTE_EXPRESSION__NODE, oldNode, node));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXLanguagePackage.IBE_XATTRIBUTE_EXPRESSION__NODE, oldNode, node));
 			}
 		}
 		return node;
@@ -145,7 +148,8 @@ public class IBeXAttributeExpressionImpl extends IBeXAttributeValueImpl implemen
 		IBeXNode oldNode = node;
 		node = newNode;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE_EXPRESSION__NODE, oldNode, node));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE_EXPRESSION__NODE,
+					oldNode, node));
 	}
 
 	/**

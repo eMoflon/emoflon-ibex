@@ -68,7 +68,8 @@ public class IBeXEnumLiteralImpl extends IBeXAttributeValueImpl implements IBeXE
 			literal = (EEnumLiteral) eResolveProxy(oldLiteral);
 			if (literal != oldLiteral) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XENUM_LITERAL__LITERAL, oldLiteral, literal));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXLanguagePackage.IBE_XENUM_LITERAL__LITERAL, oldLiteral, literal));
 			}
 		}
 		return literal;
@@ -93,7 +94,8 @@ public class IBeXEnumLiteralImpl extends IBeXAttributeValueImpl implements IBeXE
 		EEnumLiteral oldLiteral = literal;
 		literal = newLiteral;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XENUM_LITERAL__LITERAL, oldLiteral, literal));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XENUM_LITERAL__LITERAL,
+					oldLiteral, literal));
 	}
 
 	/**

@@ -67,7 +67,8 @@ public class IBeXNodePairImpl extends EObjectImpl implements IBeXNodePair {
 	@Override
 	public EList<IBeXNode> getValues() {
 		if (values == null) {
-			values = new EObjectResolvingEList<IBeXNode>(IBeXNode.class, this, IBeXLanguagePackage.IBE_XNODE_PAIR__VALUES);
+			values = new EObjectResolvingEList<IBeXNode>(IBeXNode.class, this,
+					IBeXLanguagePackage.IBE_XNODE_PAIR__VALUES);
 		}
 		return values;
 	}

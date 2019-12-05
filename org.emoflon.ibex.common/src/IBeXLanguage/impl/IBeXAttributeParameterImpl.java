@@ -85,7 +85,8 @@ public class IBeXAttributeParameterImpl extends IBeXAttributeValueImpl implement
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE_PARAMETER__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE_PARAMETER__NAME,
+					oldName, name));
 	}
 
 	/**

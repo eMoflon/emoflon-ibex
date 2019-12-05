@@ -104,7 +104,8 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	@Override
 	public EList<IBeXAttributeAssignment> getAttributeAssignments() {
 		if (attributeAssignments == null) {
-			attributeAssignments = new EObjectContainmentEList<IBeXAttributeAssignment>(IBeXAttributeAssignment.class, this, IBeXLanguagePackage.IBE_XCREATE_PATTERN__ATTRIBUTE_ASSIGNMENTS);
+			attributeAssignments = new EObjectContainmentEList<IBeXAttributeAssignment>(IBeXAttributeAssignment.class,
+					this, IBeXLanguagePackage.IBE_XCREATE_PATTERN__ATTRIBUTE_ASSIGNMENTS);
 		}
 		return attributeAssignments;
 	}
@@ -117,7 +118,8 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	@Override
 	public EList<IBeXNode> getContextNodes() {
 		if (contextNodes == null) {
-			contextNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this, IBeXLanguagePackage.IBE_XCREATE_PATTERN__CONTEXT_NODES);
+			contextNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+					IBeXLanguagePackage.IBE_XCREATE_PATTERN__CONTEXT_NODES);
 		}
 		return contextNodes;
 	}
@@ -130,7 +132,8 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	@Override
 	public EList<IBeXEdge> getCreatedEdges() {
 		if (createdEdges == null) {
-			createdEdges = new EObjectContainmentEList<IBeXEdge>(IBeXEdge.class, this, IBeXLanguagePackage.IBE_XCREATE_PATTERN__CREATED_EDGES);
+			createdEdges = new EObjectContainmentEList<IBeXEdge>(IBeXEdge.class, this,
+					IBeXLanguagePackage.IBE_XCREATE_PATTERN__CREATED_EDGES);
 		}
 		return createdEdges;
 	}
@@ -143,7 +146,8 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	@Override
 	public EList<IBeXNode> getCreatedNodes() {
 		if (createdNodes == null) {
-			createdNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this, IBeXLanguagePackage.IBE_XCREATE_PATTERN__CREATED_NODES);
+			createdNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+					IBeXLanguagePackage.IBE_XCREATE_PATTERN__CREATED_NODES);
 		}
 		return createdNodes;
 	}

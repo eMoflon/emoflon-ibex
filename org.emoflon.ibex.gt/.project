@@ -5,7 +5,7 @@
 	<projects>
 	</projects>
 	<buildSpec>
-	<buildCommand>
+		<buildCommand>
 			<name>org.moflon.emf.build.MoflonEmfBuilder</name>
 			<arguments>
 			</arguments>
@@ -32,6 +32,7 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
+		<nature>org.eclipse.sirius.nature.modelingproject</nature>
 		<nature>org.moflon.emf.build.MoflonEmfNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.pde.PluginNature</nature>

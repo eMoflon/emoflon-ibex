@@ -93,7 +93,8 @@ public class IBeXEdgeImpl extends EObjectImpl implements IBeXEdge {
 			sourceNode = (IBeXNode) eResolveProxy(oldSourceNode);
 			if (sourceNode != oldSourceNode) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XEDGE__SOURCE_NODE, oldSourceNode, sourceNode));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXLanguagePackage.IBE_XEDGE__SOURCE_NODE, oldSourceNode, sourceNode));
 			}
 		}
 		return sourceNode;
@@ -117,7 +118,8 @@ public class IBeXEdgeImpl extends EObjectImpl implements IBeXEdge {
 		IBeXNode oldSourceNode = sourceNode;
 		sourceNode = newSourceNode;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XEDGE__SOURCE_NODE, oldSourceNode, newSourceNode);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXLanguagePackage.IBE_XEDGE__SOURCE_NODE, oldSourceNode, newSourceNode);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -136,14 +138,17 @@ public class IBeXEdgeImpl extends EObjectImpl implements IBeXEdge {
 		if (newSourceNode != sourceNode) {
 			NotificationChain msgs = null;
 			if (sourceNode != null)
-				msgs = ((InternalEObject) sourceNode).eInverseRemove(this, IBeXLanguagePackage.IBE_XNODE__OUTGOING_EDGES, IBeXNode.class, msgs);
+				msgs = ((InternalEObject) sourceNode).eInverseRemove(this,
+						IBeXLanguagePackage.IBE_XNODE__OUTGOING_EDGES, IBeXNode.class, msgs);
 			if (newSourceNode != null)
-				msgs = ((InternalEObject) newSourceNode).eInverseAdd(this, IBeXLanguagePackage.IBE_XNODE__OUTGOING_EDGES, IBeXNode.class, msgs);
+				msgs = ((InternalEObject) newSourceNode).eInverseAdd(this,
+						IBeXLanguagePackage.IBE_XNODE__OUTGOING_EDGES, IBeXNode.class, msgs);
 			msgs = basicSetSourceNode(newSourceNode, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XEDGE__SOURCE_NODE, newSourceNode, newSourceNode));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XEDGE__SOURCE_NODE,
+					newSourceNode, newSourceNode));
 	}
 
 	/**
@@ -158,7 +163,8 @@ public class IBeXEdgeImpl extends EObjectImpl implements IBeXEdge {
 			targetNode = (IBeXNode) eResolveProxy(oldTargetNode);
 			if (targetNode != oldTargetNode) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XEDGE__TARGET_NODE, oldTargetNode, targetNode));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXLanguagePackage.IBE_XEDGE__TARGET_NODE, oldTargetNode, targetNode));
 			}
 		}
 		return targetNode;
@@ -182,7 +188,8 @@ public class IBeXEdgeImpl extends EObjectImpl implements IBeXEdge {
 		IBeXNode oldTargetNode = targetNode;
 		targetNode = newTargetNode;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XEDGE__TARGET_NODE, oldTargetNode, newTargetNode);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXLanguagePackage.IBE_XEDGE__TARGET_NODE, oldTargetNode, newTargetNode);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -201,14 +208,17 @@ public class IBeXEdgeImpl extends EObjectImpl implements IBeXEdge {
 		if (newTargetNode != targetNode) {
 			NotificationChain msgs = null;
 			if (targetNode != null)
-				msgs = ((InternalEObject) targetNode).eInverseRemove(this, IBeXLanguagePackage.IBE_XNODE__INCOMING_EDGES, IBeXNode.class, msgs);
+				msgs = ((InternalEObject) targetNode).eInverseRemove(this,
+						IBeXLanguagePackage.IBE_XNODE__INCOMING_EDGES, IBeXNode.class, msgs);
 			if (newTargetNode != null)
-				msgs = ((InternalEObject) newTargetNode).eInverseAdd(this, IBeXLanguagePackage.IBE_XNODE__INCOMING_EDGES, IBeXNode.class, msgs);
+				msgs = ((InternalEObject) newTargetNode).eInverseAdd(this,
+						IBeXLanguagePackage.IBE_XNODE__INCOMING_EDGES, IBeXNode.class, msgs);
 			msgs = basicSetTargetNode(newTargetNode, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XEDGE__TARGET_NODE, newTargetNode, newTargetNode));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XEDGE__TARGET_NODE,
+					newTargetNode, newTargetNode));
 	}
 
 	/**
@@ -223,7 +233,8 @@ public class IBeXEdgeImpl extends EObjectImpl implements IBeXEdge {
 			type = (EReference) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XEDGE__TYPE, oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XEDGE__TYPE,
+							oldType, type));
 			}
 		}
 		return type;
@@ -261,11 +272,13 @@ public class IBeXEdgeImpl extends EObjectImpl implements IBeXEdge {
 		switch (featureID) {
 		case IBeXLanguagePackage.IBE_XEDGE__SOURCE_NODE:
 			if (sourceNode != null)
-				msgs = ((InternalEObject) sourceNode).eInverseRemove(this, IBeXLanguagePackage.IBE_XNODE__OUTGOING_EDGES, IBeXNode.class, msgs);
+				msgs = ((InternalEObject) sourceNode).eInverseRemove(this,
+						IBeXLanguagePackage.IBE_XNODE__OUTGOING_EDGES, IBeXNode.class, msgs);
 			return basicSetSourceNode((IBeXNode) otherEnd, msgs);
 		case IBeXLanguagePackage.IBE_XEDGE__TARGET_NODE:
 			if (targetNode != null)
-				msgs = ((InternalEObject) targetNode).eInverseRemove(this, IBeXLanguagePackage.IBE_XNODE__INCOMING_EDGES, IBeXNode.class, msgs);
+				msgs = ((InternalEObject) targetNode).eInverseRemove(this,
+						IBeXLanguagePackage.IBE_XNODE__INCOMING_EDGES, IBeXNode.class, msgs);
 			return basicSetTargetNode((IBeXNode) otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);

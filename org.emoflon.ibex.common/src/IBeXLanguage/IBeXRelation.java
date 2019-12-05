@@ -153,7 +153,8 @@ public enum IBeXRelation implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final IBeXRelation[] VALUES_ARRAY = new IBeXRelation[] { GREATER_OR_EQUAL, GREATER, EQUAL, UNEQUAL, SMALLER_OR_EQUAL, SMALLER, };
+	private static final IBeXRelation[] VALUES_ARRAY = new IBeXRelation[] { GREATER_OR_EQUAL, GREATER, EQUAL, UNEQUAL,
+			SMALLER_OR_EQUAL, SMALLER, };
 
 	/**
 	 * A public read-only list of all the '<em><b>IBe XRelation</b></em>' enumerators.

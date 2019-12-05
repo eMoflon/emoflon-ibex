@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.emoflon.ibex.tgg.core.language/gen" modelPluginID="org.emoflon.ibex.tgg.core.language"
+    modelName="Language" updateClasspath="false" codeFormatting="true" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" operationReflection="true">
+  <foreignModel>Language.ecore</foreignModel>
+  <genPackages prefix="Language" disposableProviderFactory="true" ecorePackage="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//DomainType">
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//DomainType/SRC"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//DomainType/TRG"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//DomainType/CORR"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//BindingType">
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//BindingType/CONTEXT"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//BindingType/CREATE"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//BindingType/DELETE"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//BindingType/NEGATIVE"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintOperators">
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintOperators/EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintOperators/UNEQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintOperators/GR_EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintOperators/LE_EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintOperators/GREATER"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintOperators/LESSER"/>
+    </genEnums>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/src"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/trg"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/corr"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/rules"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGG/attributeConstraintDefinitionLibrary"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/refines"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/nacs"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/nodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/edges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/attributeConditionLibrary"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRule/abstract"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleElement/domainType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleElement/bindingType"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleNode">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleNode/incomingEdges"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleNode/outgoingEdges"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleNode/type"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleNode/incomingCorrsSource"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleNode/incomingCorrsTarget"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleNode/attrExpr"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleCorr">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleCorr/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleCorr/target"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleEdge">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleEdge/srcNode"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleEdge/trgNode"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGRuleEdge/type"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/nodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/edges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//NAC/attributeConditionLibrary"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGComplementRule">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGComplementRule/bounded"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGComplementRule/kernel"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGInplaceAttributeExpression">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGInplaceAttributeExpression/attribute"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGInplaceAttributeExpression/valueExpr"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGInplaceAttributeExpression/operator"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintLibrary">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintLibrary/tggAttributeConstraints"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintLibrary/parameterValues"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraint">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraint/definition"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraint/parameters"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeVariable">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeVariable/name"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintDefinitionLibrary">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintDefinitionLibrary/tggAttributeConstraintDefinitions"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintDefinition">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintDefinition/userDefined"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintDefinition/parameterDefinitions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintDefinition/syncAdornments"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintDefinition/genAdornments"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintParameterDefinition">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintParameterDefinition/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintParameterDefinition/name"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintAdornment">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeConstraintAdornment/value"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGNamedElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGNamedElement/name"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGParamValue">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGParamValue/parameterDefinition"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGExpression"/>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGLiteralExpression">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGLiteralExpression/value"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeExpression">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeExpression/objectVar"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGAttributeExpression/attribute"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGEnumExpression">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGEnumExpression/eenum"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//TGGEnumExpression/literal"/>
+    </genClasses>
+    <nestedGenPackages prefix="Repair" disposableProviderFactory="true" ecorePackage="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair">
+      <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/ExternalShortcutRule">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/ExternalShortcutRule/sourceRule"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/ExternalShortcutRule/targetRule"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/ExternalShortcutRule/deletions"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/ExternalShortcutRule/creations"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/ExternalShortcutRule/unboundSrcContext"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/ExternalShortcutRule/unboundTrgContext"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/ExternalShortcutRule/mapping"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/ExternalShortcutRule/name"/>
+      </genClasses>
+      <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/TGGRuleElementMapping">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/TGGRuleElementMapping/sourceRuleElement"/>
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#//repair/TGGRuleElementMapping/targetRuleElement"/>
+      </genClasses>
+    </nestedGenPackages>
+  </genPackages>
+</genmodel:GenModel>

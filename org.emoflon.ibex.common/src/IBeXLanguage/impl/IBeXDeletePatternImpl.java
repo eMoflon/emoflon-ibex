@@ -92,7 +92,8 @@ public class IBeXDeletePatternImpl extends IBeXPatternImpl implements IBeXDelete
 	@Override
 	public EList<IBeXNode> getContextNodes() {
 		if (contextNodes == null) {
-			contextNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this, IBeXLanguagePackage.IBE_XDELETE_PATTERN__CONTEXT_NODES);
+			contextNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+					IBeXLanguagePackage.IBE_XDELETE_PATTERN__CONTEXT_NODES);
 		}
 		return contextNodes;
 	}
@@ -105,7 +106,8 @@ public class IBeXDeletePatternImpl extends IBeXPatternImpl implements IBeXDelete
 	@Override
 	public EList<IBeXEdge> getDeletedEdges() {
 		if (deletedEdges == null) {
-			deletedEdges = new EObjectContainmentEList<IBeXEdge>(IBeXEdge.class, this, IBeXLanguagePackage.IBE_XDELETE_PATTERN__DELETED_EDGES);
+			deletedEdges = new EObjectContainmentEList<IBeXEdge>(IBeXEdge.class, this,
+					IBeXLanguagePackage.IBE_XDELETE_PATTERN__DELETED_EDGES);
 		}
 		return deletedEdges;
 	}
@@ -118,7 +120,8 @@ public class IBeXDeletePatternImpl extends IBeXPatternImpl implements IBeXDelete
 	@Override
 	public EList<IBeXNode> getDeletedNodes() {
 		if (deletedNodes == null) {
-			deletedNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this, IBeXLanguagePackage.IBE_XDELETE_PATTERN__DELETED_NODES);
+			deletedNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+					IBeXLanguagePackage.IBE_XDELETE_PATTERN__DELETED_NODES);
 		}
 		return deletedNodes;
 	}

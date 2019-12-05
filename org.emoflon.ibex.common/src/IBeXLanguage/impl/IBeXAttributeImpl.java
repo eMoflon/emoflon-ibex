@@ -94,7 +94,8 @@ public abstract class IBeXAttributeImpl extends EObjectImpl implements IBeXAttri
 			type = (EAttribute) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XATTRIBUTE__TYPE, oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XATTRIBUTE__TYPE,
+							oldType, type));
 			}
 		}
 		return type;
@@ -119,7 +120,8 @@ public abstract class IBeXAttributeImpl extends EObjectImpl implements IBeXAttri
 		EAttribute oldType = type;
 		type = newType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE__TYPE, oldType, type));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE__TYPE, oldType,
+					type));
 	}
 
 	/**
@@ -134,7 +136,8 @@ public abstract class IBeXAttributeImpl extends EObjectImpl implements IBeXAttri
 			node = (IBeXNode) eResolveProxy(oldNode);
 			if (node != oldNode) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XATTRIBUTE__NODE, oldNode, node));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XATTRIBUTE__NODE,
+							oldNode, node));
 			}
 		}
 		return node;
@@ -159,7 +162,8 @@ public abstract class IBeXAttributeImpl extends EObjectImpl implements IBeXAttri
 		IBeXNode oldNode = node;
 		node = newNode;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE__NODE, oldNode, node));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE__NODE, oldNode,
+					node));
 	}
 
 	/**
@@ -181,7 +185,8 @@ public abstract class IBeXAttributeImpl extends EObjectImpl implements IBeXAttri
 		IBeXAttributeValue oldValue = value;
 		value = newValue;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE__VALUE, oldValue, newValue);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXLanguagePackage.IBE_XATTRIBUTE__VALUE, oldValue, newValue);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -200,14 +205,17 @@ public abstract class IBeXAttributeImpl extends EObjectImpl implements IBeXAttri
 		if (newValue != value) {
 			NotificationChain msgs = null;
 			if (value != null)
-				msgs = ((InternalEObject) value).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXLanguagePackage.IBE_XATTRIBUTE__VALUE, null, msgs);
+				msgs = ((InternalEObject) value).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXLanguagePackage.IBE_XATTRIBUTE__VALUE, null, msgs);
 			if (newValue != null)
-				msgs = ((InternalEObject) newValue).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXLanguagePackage.IBE_XATTRIBUTE__VALUE, null, msgs);
+				msgs = ((InternalEObject) newValue).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXLanguagePackage.IBE_XATTRIBUTE__VALUE, null, msgs);
 			msgs = basicSetValue(newValue, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE__VALUE, newValue, newValue));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XATTRIBUTE__VALUE, newValue,
+					newValue));
 	}
 
 	/**

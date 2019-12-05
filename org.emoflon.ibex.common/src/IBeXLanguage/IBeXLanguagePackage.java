@@ -2107,7 +2107,8 @@ public interface IBeXLanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference IBE_XCONTEXT_ALTERNATIVES__ALTERNATIVE_PATTERNS = eINSTANCE.getIBeXContextAlternatives_AlternativePatterns();
+		EReference IBE_XCONTEXT_ALTERNATIVES__ALTERNATIVE_PATTERNS = eINSTANCE
+				.getIBeXContextAlternatives_AlternativePatterns();
 
 		/**
 		 * The meta object literal for the '{@link IBeXLanguage.impl.IBeXContextPatternImpl <em>IBe XContext Pattern</em>}' class.
@@ -2133,7 +2134,8 @@ public interface IBeXLanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS = eINSTANCE.getIBeXContextPattern_InjectivityConstraints();
+		EReference IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS = eINSTANCE
+				.getIBeXContextPattern_InjectivityConstraints();
 
 		/**
 		 * The meta object literal for the '<em><b>Invocations</b></em>' containment reference list feature.

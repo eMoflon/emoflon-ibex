@@ -85,7 +85,8 @@ public abstract class IBeXNamedElementImpl extends EObjectImpl implements IBeXNa
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XNAMED_ELEMENT__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XNAMED_ELEMENT__NAME, oldName,
+					name));
 	}
 
 	/**

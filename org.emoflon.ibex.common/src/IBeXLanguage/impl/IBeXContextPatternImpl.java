@@ -141,7 +141,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXAttributeConstraint> getAttributeConstraint() {
 		if (attributeConstraint == null) {
-			attributeConstraint = new EObjectContainmentEList<IBeXAttributeConstraint>(IBeXAttributeConstraint.class, this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__ATTRIBUTE_CONSTRAINT);
+			attributeConstraint = new EObjectContainmentEList<IBeXAttributeConstraint>(IBeXAttributeConstraint.class,
+					this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__ATTRIBUTE_CONSTRAINT);
 		}
 		return attributeConstraint;
 	}
@@ -154,7 +155,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXNodePair> getInjectivityConstraints() {
 		if (injectivityConstraints == null) {
-			injectivityConstraints = new EObjectContainmentEList<IBeXNodePair>(IBeXNodePair.class, this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS);
+			injectivityConstraints = new EObjectContainmentEList<IBeXNodePair>(IBeXNodePair.class, this,
+					IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS);
 		}
 		return injectivityConstraints;
 	}
@@ -167,7 +169,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXPatternInvocation> getInvocations() {
 		if (invocations == null) {
-			invocations = new EObjectContainmentWithInverseEList<IBeXPatternInvocation>(IBeXPatternInvocation.class, this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__INVOCATIONS,
+			invocations = new EObjectContainmentWithInverseEList<IBeXPatternInvocation>(IBeXPatternInvocation.class,
+					this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__INVOCATIONS,
 					IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_BY);
 		}
 		return invocations;
@@ -181,7 +184,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXEdge> getLocalEdges() {
 		if (localEdges == null) {
-			localEdges = new EObjectContainmentEList<IBeXEdge>(IBeXEdge.class, this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__LOCAL_EDGES);
+			localEdges = new EObjectContainmentEList<IBeXEdge>(IBeXEdge.class, this,
+					IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__LOCAL_EDGES);
 		}
 		return localEdges;
 	}
@@ -194,7 +198,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXNode> getLocalNodes() {
 		if (localNodes == null) {
-			localNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__LOCAL_NODES);
+			localNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+					IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__LOCAL_NODES);
 		}
 		return localNodes;
 	}
@@ -207,7 +212,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXNode> getSignatureNodes() {
 		if (signatureNodes == null) {
-			signatureNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__SIGNATURE_NODES);
+			signatureNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+					IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__SIGNATURE_NODES);
 		}
 		return signatureNodes;
 	}
@@ -220,7 +226,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXCSP> getCsps() {
 		if (csps == null) {
-			csps = new EObjectContainmentEList<IBeXCSP>(IBeXCSP.class, this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__CSPS);
+			csps = new EObjectContainmentEList<IBeXCSP>(IBeXCSP.class, this,
+					IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__CSPS);
 		}
 		return csps;
 	}

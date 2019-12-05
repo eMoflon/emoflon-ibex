@@ -69,7 +69,8 @@ public class IBeXContextAlternativesImpl extends IBeXContextImpl implements IBeX
 	@Override
 	public EList<IBeXContextPattern> getAlternativePatterns() {
 		if (alternativePatterns == null) {
-			alternativePatterns = new EObjectContainmentEList<IBeXContextPattern>(IBeXContextPattern.class, this, IBeXLanguagePackage.IBE_XCONTEXT_ALTERNATIVES__ALTERNATIVE_PATTERNS);
+			alternativePatterns = new EObjectContainmentEList<IBeXContextPattern>(IBeXContextPattern.class, this,
+					IBeXLanguagePackage.IBE_XCONTEXT_ALTERNATIVES__ALTERNATIVE_PATTERNS);
 		}
 		return alternativePatterns;
 	}

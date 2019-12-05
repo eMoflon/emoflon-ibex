@@ -82,7 +82,8 @@ public class IBeXNodeToNodeMappingImpl extends EObjectImpl implements BasicEMap.
 			key = (IBeXNode) eResolveProxy(oldKey);
 			if (key != oldKey) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XNODE_TO_NODE_MAPPING__KEY, oldKey, key));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXLanguagePackage.IBE_XNODE_TO_NODE_MAPPING__KEY, oldKey, key));
 			}
 		}
 		return key;
@@ -106,7 +107,8 @@ public class IBeXNodeToNodeMappingImpl extends EObjectImpl implements BasicEMap.
 		IBeXNode oldKey = key;
 		key = newKey;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XNODE_TO_NODE_MAPPING__KEY, oldKey, key));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XNODE_TO_NODE_MAPPING__KEY,
+					oldKey, key));
 	}
 
 	/**
@@ -120,7 +122,8 @@ public class IBeXNodeToNodeMappingImpl extends EObjectImpl implements BasicEMap.
 			value = (IBeXNode) eResolveProxy(oldValue);
 			if (value != oldValue) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XNODE_TO_NODE_MAPPING__VALUE, oldValue, value));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXLanguagePackage.IBE_XNODE_TO_NODE_MAPPING__VALUE, oldValue, value));
 			}
 		}
 		return value;
@@ -144,7 +147,8 @@ public class IBeXNodeToNodeMappingImpl extends EObjectImpl implements BasicEMap.
 		IBeXNode oldValue = value;
 		value = newValue;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XNODE_TO_NODE_MAPPING__VALUE, oldValue, value));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XNODE_TO_NODE_MAPPING__VALUE,
+					oldValue, value));
 	}
 
 	/**

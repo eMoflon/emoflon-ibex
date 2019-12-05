@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.emoflon.ibex.common/src" modelPluginID="org.emoflon.ibex.common"
+    modelName="Common" updateClasspath="false" codeFormatting="true" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" operationReflection="true">
+  <foreignModel>Common.ecore</foreignModel>
+  <genPackages prefix="IBeXLanguage" disposableProviderFactory="true" ecorePackage="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXRelation">
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXRelation/GREATER_OR_EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXRelation/GREATER"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXRelation/EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXRelation/UNEQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXRelation/SMALLER_OR_EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXRelation/SMALLER"/>
+    </genEnums>
+    <genClasses image="false" ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttribute">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttribute/type"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttribute/node"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttribute/value"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttributeAssignment"/>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttributeConstraint">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttributeConstraint/relation"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttributeParameter"/>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttributeValue"/>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttributeExpression">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttributeExpression/attribute"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXAttributeExpression/node"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXConstant">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXConstant/value"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXConstant/stringValue"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContext"/>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextAlternatives">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextAlternatives/alternativePatterns"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextPattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextPattern/attributeConstraint"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextPattern/injectivityConstraints"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextPattern/invocations"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextPattern/localEdges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextPattern/localNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextPattern/signatureNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXContextPattern/csps"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXCreatePattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXCreatePattern/attributeAssignments"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXCreatePattern/contextNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXCreatePattern/createdEdges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXCreatePattern/createdNodes"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXDeletePattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXDeletePattern/contextNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXDeletePattern/deletedEdges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXDeletePattern/deletedNodes"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXEdge">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXEdge/sourceNode"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXEdge/targetNode"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXEdge/type"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXEnumLiteral">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXEnumLiteral/literal"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNamedElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNamedElement/name"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNode">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNode/incomingEdges"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNode/outgoingEdges"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNode/type"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNodePair">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNodePair/values"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNodeToNodeMapping">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNodeToNodeMapping/key"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXNodeToNodeMapping/value"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPattern"/>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPatternInvocation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPatternInvocation/positive"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPatternInvocation/invokedBy"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPatternInvocation/invokedPattern"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPatternInvocation/mapping"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPatternSet">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPatternSet/contextPatterns"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPatternSet/createPatterns"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXPatternSet/deletePatterns"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXCSP">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXCSP/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXCSP/package"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/Common.ecore#//IBeXCSP/values"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

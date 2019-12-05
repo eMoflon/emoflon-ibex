@@ -95,7 +95,8 @@ public class IBeXPatternSetImpl extends EObjectImpl implements IBeXPatternSet {
 	@Override
 	public EList<IBeXContext> getContextPatterns() {
 		if (contextPatterns == null) {
-			contextPatterns = new EObjectContainmentEList<IBeXContext>(IBeXContext.class, this, IBeXLanguagePackage.IBE_XPATTERN_SET__CONTEXT_PATTERNS);
+			contextPatterns = new EObjectContainmentEList<IBeXContext>(IBeXContext.class, this,
+					IBeXLanguagePackage.IBE_XPATTERN_SET__CONTEXT_PATTERNS);
 		}
 		return contextPatterns;
 	}
@@ -108,7 +109,8 @@ public class IBeXPatternSetImpl extends EObjectImpl implements IBeXPatternSet {
 	@Override
 	public EList<IBeXCreatePattern> getCreatePatterns() {
 		if (createPatterns == null) {
-			createPatterns = new EObjectContainmentEList<IBeXCreatePattern>(IBeXCreatePattern.class, this, IBeXLanguagePackage.IBE_XPATTERN_SET__CREATE_PATTERNS);
+			createPatterns = new EObjectContainmentEList<IBeXCreatePattern>(IBeXCreatePattern.class, this,
+					IBeXLanguagePackage.IBE_XPATTERN_SET__CREATE_PATTERNS);
 		}
 		return createPatterns;
 	}
@@ -121,7 +123,8 @@ public class IBeXPatternSetImpl extends EObjectImpl implements IBeXPatternSet {
 	@Override
 	public EList<IBeXDeletePattern> getDeletePatterns() {
 		if (deletePatterns == null) {
-			deletePatterns = new EObjectContainmentEList<IBeXDeletePattern>(IBeXDeletePattern.class, this, IBeXLanguagePackage.IBE_XPATTERN_SET__DELETE_PATTERNS);
+			deletePatterns = new EObjectContainmentEList<IBeXDeletePattern>(IBeXDeletePattern.class, this,
+					IBeXLanguagePackage.IBE_XPATTERN_SET__DELETE_PATTERNS);
 		}
 		return deletePatterns;
 	}

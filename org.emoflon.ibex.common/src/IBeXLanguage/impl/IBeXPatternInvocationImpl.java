@@ -119,7 +119,8 @@ public class IBeXPatternInvocationImpl extends EObjectImpl implements IBeXPatter
 		boolean oldPositive = positive;
 		positive = newPositive;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__POSITIVE, oldPositive, positive));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__POSITIVE,
+					oldPositive, positive));
 	}
 
 	/**
@@ -140,7 +141,8 @@ public class IBeXPatternInvocationImpl extends EObjectImpl implements IBeXPatter
 	 * @generated
 	 */
 	public NotificationChain basicSetInvokedBy(IBeXContextPattern newInvokedBy, NotificationChain msgs) {
-		msgs = eBasicSetContainer((InternalEObject) newInvokedBy, IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_BY, msgs);
+		msgs = eBasicSetContainer((InternalEObject) newInvokedBy,
+				IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_BY, msgs);
 		return msgs;
 	}
 
@@ -151,19 +153,23 @@ public class IBeXPatternInvocationImpl extends EObjectImpl implements IBeXPatter
 	 */
 	@Override
 	public void setInvokedBy(IBeXContextPattern newInvokedBy) {
-		if (newInvokedBy != eInternalContainer() || (eContainerFeatureID() != IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_BY && newInvokedBy != null)) {
+		if (newInvokedBy != eInternalContainer()
+				|| (eContainerFeatureID() != IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_BY
+						&& newInvokedBy != null)) {
 			if (EcoreUtil.isAncestor(this, newInvokedBy))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
 			NotificationChain msgs = null;
 			if (eInternalContainer() != null)
 				msgs = eBasicRemoveFromContainer(msgs);
 			if (newInvokedBy != null)
-				msgs = ((InternalEObject) newInvokedBy).eInverseAdd(this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__INVOCATIONS, IBeXContextPattern.class, msgs);
+				msgs = ((InternalEObject) newInvokedBy).eInverseAdd(this,
+						IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__INVOCATIONS, IBeXContextPattern.class, msgs);
 			msgs = basicSetInvokedBy(newInvokedBy, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_BY, newInvokedBy, newInvokedBy));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_BY, newInvokedBy, newInvokedBy));
 	}
 
 	/**
@@ -178,7 +184,9 @@ public class IBeXPatternInvocationImpl extends EObjectImpl implements IBeXPatter
 			invokedPattern = (IBeXContextPattern) eResolveProxy(oldInvokedPattern);
 			if (invokedPattern != oldInvokedPattern) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_PATTERN, oldInvokedPattern, invokedPattern));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_PATTERN, oldInvokedPattern,
+							invokedPattern));
 			}
 		}
 		return invokedPattern;
@@ -203,7 +211,8 @@ public class IBeXPatternInvocationImpl extends EObjectImpl implements IBeXPatter
 		IBeXContextPattern oldInvokedPattern = invokedPattern;
 		invokedPattern = newInvokedPattern;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_PATTERN, oldInvokedPattern, invokedPattern));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_PATTERN, oldInvokedPattern, invokedPattern));
 	}
 
 	/**
@@ -214,7 +223,8 @@ public class IBeXPatternInvocationImpl extends EObjectImpl implements IBeXPatter
 	@Override
 	public EMap<IBeXNode, IBeXNode> getMapping() {
 		if (mapping == null) {
-			mapping = new EcoreEMap<IBeXNode, IBeXNode>(IBeXLanguagePackage.Literals.IBE_XNODE_TO_NODE_MAPPING, IBeXNodeToNodeMappingImpl.class, this, IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__MAPPING);
+			mapping = new EcoreEMap<IBeXNode, IBeXNode>(IBeXLanguagePackage.Literals.IBE_XNODE_TO_NODE_MAPPING,
+					IBeXNodeToNodeMappingImpl.class, this, IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__MAPPING);
 		}
 		return mapping;
 	}
@@ -260,7 +270,8 @@ public class IBeXPatternInvocationImpl extends EObjectImpl implements IBeXPatter
 	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
 		switch (eContainerFeatureID()) {
 		case IBeXLanguagePackage.IBE_XPATTERN_INVOCATION__INVOKED_BY:
-			return eInternalContainer().eInverseRemove(this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__INVOCATIONS, IBeXContextPattern.class, msgs);
+			return eInternalContainer().eInverseRemove(this, IBeXLanguagePackage.IBE_XCONTEXT_PATTERN__INVOCATIONS,
+					IBeXContextPattern.class, msgs);
 		}
 		return super.eBasicRemoveFromContainerFeature(msgs);
 	}

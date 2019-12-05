@@ -94,7 +94,8 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 	@Override
 	public EList<IBeXEdge> getIncomingEdges() {
 		if (incomingEdges == null) {
-			incomingEdges = new EObjectWithInverseResolvingEList<IBeXEdge>(IBeXEdge.class, this, IBeXLanguagePackage.IBE_XNODE__INCOMING_EDGES, IBeXLanguagePackage.IBE_XEDGE__TARGET_NODE);
+			incomingEdges = new EObjectWithInverseResolvingEList<IBeXEdge>(IBeXEdge.class, this,
+					IBeXLanguagePackage.IBE_XNODE__INCOMING_EDGES, IBeXLanguagePackage.IBE_XEDGE__TARGET_NODE);
 		}
 		return incomingEdges;
 	}
@@ -107,7 +108,8 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 	@Override
 	public EList<IBeXEdge> getOutgoingEdges() {
 		if (outgoingEdges == null) {
-			outgoingEdges = new EObjectWithInverseResolvingEList<IBeXEdge>(IBeXEdge.class, this, IBeXLanguagePackage.IBE_XNODE__OUTGOING_EDGES, IBeXLanguagePackage.IBE_XEDGE__SOURCE_NODE);
+			outgoingEdges = new EObjectWithInverseResolvingEList<IBeXEdge>(IBeXEdge.class, this,
+					IBeXLanguagePackage.IBE_XNODE__OUTGOING_EDGES, IBeXLanguagePackage.IBE_XEDGE__SOURCE_NODE);
 		}
 		return outgoingEdges;
 	}
@@ -124,7 +126,8 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 			type = (EClass) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XNODE__TYPE, oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXLanguagePackage.IBE_XNODE__TYPE,
+							oldType, type));
 			}
 		}
 		return type;

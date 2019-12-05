@@ -30,7 +30,8 @@ public class IBeXLanguageFactoryImpl extends EFactoryImpl implements IBeXLanguag
 	 */
 	public static IBeXLanguageFactory init() {
 		try {
-			IBeXLanguageFactory theIBeXLanguageFactory = (IBeXLanguageFactory) EPackage.Registry.INSTANCE.getEFactory(IBeXLanguagePackage.eNS_URI);
+			IBeXLanguageFactory theIBeXLanguageFactory = (IBeXLanguageFactory) EPackage.Registry.INSTANCE
+					.getEFactory(IBeXLanguagePackage.eNS_URI);
 			if (theIBeXLanguageFactory != null) {
 				return theIBeXLanguageFactory;
 			}
@@ -334,7 +335,8 @@ public class IBeXLanguageFactoryImpl extends EFactoryImpl implements IBeXLanguag
 	public IBeXRelation createIBeXRelationFromString(EDataType eDataType, String initialValue) {
 		IBeXRelation result = IBeXRelation.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException(
+					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 

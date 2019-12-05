@@ -105,7 +105,8 @@ public class IBeXConstantImpl extends IBeXAttributeValueImpl implements IBeXCons
 		Object oldValue = value;
 		value = newValue;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XCONSTANT__VALUE, oldValue, value));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XCONSTANT__VALUE, oldValue,
+					value));
 	}
 
 	/**
@@ -128,7 +129,8 @@ public class IBeXConstantImpl extends IBeXAttributeValueImpl implements IBeXCons
 		String oldStringValue = stringValue;
 		stringValue = newStringValue;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XCONSTANT__STRING_VALUE, oldStringValue, stringValue));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XCONSTANT__STRING_VALUE,
+					oldStringValue, stringValue));
 	}
 
 	/**

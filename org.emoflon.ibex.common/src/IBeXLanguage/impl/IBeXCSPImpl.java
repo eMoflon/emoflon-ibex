@@ -150,7 +150,8 @@ public class IBeXCSPImpl extends EObjectImpl implements IBeXCSP {
 		String oldPackage = package_;
 		package_ = newPackage;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XCSP__PACKAGE, oldPackage, package_));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XCSP__PACKAGE, oldPackage,
+					package_));
 	}
 
 	/**
@@ -161,7 +162,8 @@ public class IBeXCSPImpl extends EObjectImpl implements IBeXCSP {
 	@Override
 	public EList<IBeXAttributeValue> getValues() {
 		if (values == null) {
-			values = new EObjectContainmentEList<IBeXAttributeValue>(IBeXAttributeValue.class, this, IBeXLanguagePackage.IBE_XCSP__VALUES);
+			values = new EObjectContainmentEList<IBeXAttributeValue>(IBeXAttributeValue.class, this,
+					IBeXLanguagePackage.IBE_XCSP__VALUES);
 		}
 		return values;
 	}

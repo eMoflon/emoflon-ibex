@@ -9,6 +9,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="src" path="xtend-gen"/>
-	<classpathentry kind="src" path="injection"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
