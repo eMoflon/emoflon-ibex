@@ -7,7 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry excluding="org/emoflon/ibex/common/collections/fastutil/|org/emoflon/ibex/common/emf/EMFEdgeHashingStrategy.java" kind="src" path="src"/>
-	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="src" path="xtend-gen"/>
 	<classpathentry kind="src" path="injection"/>
 	<classpathentry kind="output" path="bin"/>
