@@ -6,7 +6,6 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFilterNAC
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
@@ -19,7 +18,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
-import IBeXLanguage.IBeXAttributeConstraint;
 import IBeXLanguage.IBeXAttributeExpression;
 import IBeXLanguage.IBeXCSP;
 import IBeXLanguage.IBeXConstant;
@@ -27,12 +25,10 @@ import IBeXLanguage.IBeXContextPattern;
 import IBeXLanguage.IBeXLanguageFactory;
 import IBeXLanguage.IBeXNode;
 import IBeXLanguage.IBeXPatternInvocation;
-import IBeXLanguage.IBeXRelation;
 import language.TGG;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
 import language.TGGEnumExpression;
-import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGParamValue;
 import language.TGGRule;
