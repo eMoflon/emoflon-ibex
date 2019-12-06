@@ -41,7 +41,7 @@ public class ModelChangeInterface {
 	}
 
 	private void applyAttributeDelta(AttributeDelta attrDelta) {
-		userDeltas.getAttributeChanges().add(new AttributeChange( //
+		userDeltas.addAttributeChange(new AttributeChange( //
 				attrDelta.getObject(), //
 				attrDelta.getAttribute(), //
 				attrDelta.getObject().eGet(attrDelta.getAttribute()), //
@@ -51,36 +51,35 @@ public class ModelChangeInterface {
 	}
 
 	private void applyStructuralDelta(StructuralDelta strDelta) {
-		applyCreations(strDelta.getCreatedObjects(), strDelta.getCreatedLinks());
 		applyDeletions(strDelta.getDeletedObjects(), strDelta.getDeletedLinks());
-	}
-
-	@SuppressWarnings("unchecked")
-	private void applyCreations(List<EObject> createdObjects, List<Link> createdLinks) {
-		userDeltas.getCreatedElements().addAll(createdObjects);
-
-		createdLinks.forEach(link -> {
-			userDeltas.getDeletedEdges().add(createEMFEdgeFromLink(link));
-			if (link.getType().isMany()) {
-				Collection<EObject> feature = (Collection<EObject>) link.getSrc().eGet(link.getType());
-				feature.add(link.getTrg());
-			} else
-				link.getSrc().eSet(link.getType(), link.getTrg());
-		});
+		applyCreations(strDelta.getCreatedObjects(), strDelta.getCreatedLinks());
 	}
 
 	@SuppressWarnings("unchecked")
 	private void applyDeletions(List<EObject> deletedObjects, List<Link> deletedLinks) {
 		deletedObjects.forEach(obj -> {
-			userDeltas.getDeletedElements().add(obj);
+			userDeltas.addDeletedElement(obj);
+
+			obj.eClass().getEAllContainments().forEach(feature -> {
+				Object content = obj.eGet(feature);
+				if (content instanceof Collection) {
+					Collection<EObject> contentList = (Collection<EObject>) content;
+					obj.eResource().getContents().addAll(contentList);
+					contentList.clear();
+				} else if (content instanceof EObject) {
+					obj.eResource().getContents().add((EObject) content);
+					obj.eSet(feature, null);
+				}
+			});
+
 			integrate.getModelChangeProtocol().util.deleteNode(obj).forEach(
-					notification -> userDeltas.getDeletedEdges().addAll(getDeletedEdgesFromNotification(notification)));
+					notification -> userDeltas.addAllDeletedEdges(getDeletedEdgesFromNotification(notification)));
 		});
 
 		deletedLinks.forEach(link -> {
 			EMFEdge edge = createEMFEdgeFromLink(link);
-			if (!userDeltas.getDeletedEdges().contains(edge)) {
-				userDeltas.getDeletedEdges().add(edge);
+			if (!userDeltas.isDeleted(edge)) {
+				userDeltas.addDeletedEdge(edge);
 				if (link.getType().isMany()) {
 					Collection<EObject> feature = (Collection<EObject>) link.getSrc().eGet(link.getType());
 					feature.remove(link.getTrg());
@@ -88,6 +87,20 @@ public class ModelChangeInterface {
 					link.getSrc().eSet(link.getType(), null);
 			}
 
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	private void applyCreations(List<EObject> createdObjects, List<Link> createdLinks) {
+		userDeltas.addAllCreatedElements(createdObjects);
+
+		createdLinks.forEach(link -> {
+			userDeltas.addCreatedEdge(createEMFEdgeFromLink(link));
+			if (link.getType().isMany()) {
+				Collection<EObject> feature = (Collection<EObject>) link.getSrc().eGet(link.getType());
+				feature.add(link.getTrg());
+			} else
+				link.getSrc().eSet(link.getType(), link.getTrg());
 		});
 	}
 
