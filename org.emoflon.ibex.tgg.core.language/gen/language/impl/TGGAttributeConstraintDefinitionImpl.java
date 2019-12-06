@@ -21,6 +21,8 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -28,18 +30,17 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.impl.TGGAttributeConstraintDefinitionImpl#isUserDefined <em>User Defined</em>}</li>
  *   <li>{@link language.impl.TGGAttributeConstraintDefinitionImpl#getParameterDefinitions <em>Parameter Definitions</em>}</li>
  *   <li>{@link language.impl.TGGAttributeConstraintDefinitionImpl#getSyncAdornments <em>Sync Adornments</em>}</li>
  *   <li>{@link language.impl.TGGAttributeConstraintDefinitionImpl#getGenAdornments <em>Gen Adornments</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
-public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
-		implements TGGAttributeConstraintDefinition {
+public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl implements TGGAttributeConstraintDefinition {
 	/**
 	 * The default value of the '{@link #isUserDefined() <em>User Defined</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -114,7 +115,6 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public boolean isUserDefined() {
 		return userDefined;
 	}
@@ -124,13 +124,11 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setUserDefined(boolean newUserDefined) {
 		boolean oldUserDefined = userDefined;
 		userDefined = newUserDefined;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED, oldUserDefined, userDefined));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED, oldUserDefined, userDefined));
 	}
 
 	/**
@@ -138,11 +136,9 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGAttributeConstraintParameterDefinition> getParameterDefinitions() {
 		if (parameterDefinitions == null) {
-			parameterDefinitions = new EObjectContainmentEList<TGGAttributeConstraintParameterDefinition>(
-					TGGAttributeConstraintParameterDefinition.class, this,
+			parameterDefinitions = new EObjectContainmentEList<TGGAttributeConstraintParameterDefinition>(TGGAttributeConstraintParameterDefinition.class, this,
 					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
 		}
 		return parameterDefinitions;
@@ -153,12 +149,9 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGAttributeConstraintAdornment> getSyncAdornments() {
 		if (syncAdornments == null) {
-			syncAdornments = new EObjectContainmentEList<TGGAttributeConstraintAdornment>(
-					TGGAttributeConstraintAdornment.class, this,
-					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS);
+			syncAdornments = new EObjectContainmentEList<TGGAttributeConstraintAdornment>(TGGAttributeConstraintAdornment.class, this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS);
 		}
 		return syncAdornments;
 	}
@@ -168,12 +161,9 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGAttributeConstraintAdornment> getGenAdornments() {
 		if (genAdornments == null) {
-			genAdornments = new EObjectContainmentEList<TGGAttributeConstraintAdornment>(
-					TGGAttributeConstraintAdornment.class, this,
-					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS);
+			genAdornments = new EObjectContainmentEList<TGGAttributeConstraintAdornment>(TGGAttributeConstraintAdornment.class, this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS);
 		}
 		return genAdornments;
 	}
@@ -230,8 +220,7 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
 			return;
 		case LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
 			getParameterDefinitions().clear();
-			getParameterDefinitions()
-					.addAll((Collection<? extends TGGAttributeConstraintParameterDefinition>) newValue);
+			getParameterDefinitions().addAll((Collection<? extends TGGAttributeConstraintParameterDefinition>) newValue);
 			return;
 		case LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS:
 			getSyncAdornments().clear();
@@ -299,11 +288,13 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuilder result = new StringBuilder(super.toString());
+		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (userDefined: ");
 		result.append(userDefined);
 		result.append(')');
 		return result.toString();
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TGGAttributeConstraintDefinitionImpl

@@ -14,6 +14,8 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EDataTypeEList;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -21,10 +23,10 @@ import org.eclipse.emf.ecore.util.EDataTypeEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.impl.TGGAttributeConstraintAdornmentImpl#getValue <em>Value</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -63,11 +65,9 @@ public class TGGAttributeConstraintAdornmentImpl extends EObjectImpl implements 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<String> getValue() {
 		if (value == null) {
-			value = new EDataTypeEList<String>(String.class, this,
-					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_ADORNMENT__VALUE);
+			value = new EDataTypeEList<String>(String.class, this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_ADORNMENT__VALUE);
 		}
 		return value;
 	}
@@ -142,11 +142,13 @@ public class TGGAttributeConstraintAdornmentImpl extends EObjectImpl implements 
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuilder result = new StringBuilder(super.toString());
+		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (value: ");
 		result.append(value);
 		result.append(')');
 		return result.toString();
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TGGAttributeConstraintAdornmentImpl

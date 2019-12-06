@@ -68,8 +68,7 @@ public class GTParameterImpl extends GTNamedElementImpl implements GTParameter {
 			type = (EDataType) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, GTLanguagePackage.GT_PARAMETER__TYPE,
-							oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, GTLanguagePackage.GT_PARAMETER__TYPE, oldType, type));
 			}
 		}
 		return type;

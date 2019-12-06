@@ -20,6 +20,9 @@ import org.eclipse.emf.ecore.EReference;
  *   <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
+ * <!-- begin-model-doc -->
+ * Internal, IBeX-specific, TGG Metamodel for defining TGG Rules
+ * <!-- end-model-doc -->
  * @see language.LanguageFactory
  * @model kind="package"
  * @generated
@@ -65,7 +68,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGNamedElement()
 	 * @generated
 	 */
-	int TGG_NAMED_ELEMENT = 16;
+	int TGG_NAMED_ELEMENT = 15;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -705,115 +708,6 @@ public interface LanguagePackage extends EPackage {
 	int NAC_OPERATION_COUNT = TGG_NAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
-	 * The meta object id for the '{@link language.impl.TGGComplementRuleImpl <em>TGG Complement Rule</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see language.impl.TGGComplementRuleImpl
-	 * @see language.impl.LanguagePackageImpl#getTGGComplementRule()
-	 * @generated
-	 */
-	int TGG_COMPLEMENT_RULE = 7;
-
-	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__NAME = TGG_RULE__NAME;
-
-	/**
-	 * The feature id for the '<em><b>Refines</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__REFINES = TGG_RULE__REFINES;
-
-	/**
-	 * The feature id for the '<em><b>Nacs</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__NACS = TGG_RULE__NACS;
-
-	/**
-	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__NODES = TGG_RULE__NODES;
-
-	/**
-	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__EDGES = TGG_RULE__EDGES;
-
-	/**
-	 * The feature id for the '<em><b>Attribute Condition Library</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__ATTRIBUTE_CONDITION_LIBRARY = TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY;
-
-	/**
-	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__ABSTRACT = TGG_RULE__ABSTRACT;
-
-	/**
-	 * The feature id for the '<em><b>Bounded</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__BOUNDED = TGG_RULE_FEATURE_COUNT + 0;
-
-	/**
-	 * The feature id for the '<em><b>Kernel</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE__KERNEL = TGG_RULE_FEATURE_COUNT + 1;
-
-	/**
-	 * The number of structural features of the '<em>TGG Complement Rule</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE_FEATURE_COUNT = TGG_RULE_FEATURE_COUNT + 2;
-
-	/**
-	 * The number of operations of the '<em>TGG Complement Rule</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_COMPLEMENT_RULE_OPERATION_COUNT = TGG_RULE_OPERATION_COUNT + 0;
-
-	/**
 	 * The meta object id for the '{@link language.impl.TGGInplaceAttributeExpressionImpl <em>TGG Inplace Attribute Expression</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -821,7 +715,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGInplaceAttributeExpression()
 	 * @generated
 	 */
-	int TGG_INPLACE_ATTRIBUTE_EXPRESSION = 8;
+	int TGG_INPLACE_ATTRIBUTE_EXPRESSION = 7;
 
 	/**
 	 * The feature id for the '<em><b>Attribute</b></em>' reference.
@@ -876,7 +770,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGAttributeConstraintLibrary()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY = 9;
+	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY = 8;
 
 	/**
 	 * The feature id for the '<em><b>Tgg Attribute Constraints</b></em>' containment reference list.
@@ -922,7 +816,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGAttributeConstraint()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT = 10;
+	int TGG_ATTRIBUTE_CONSTRAINT = 9;
 
 	/**
 	 * The feature id for the '<em><b>Definition</b></em>' reference.
@@ -968,7 +862,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGParamValue()
 	 * @generated
 	 */
-	int TGG_PARAM_VALUE = 17;
+	int TGG_PARAM_VALUE = 16;
 
 	/**
 	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
@@ -1005,7 +899,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGAttributeVariable()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_VARIABLE = 11;
+	int TGG_ATTRIBUTE_VARIABLE = 10;
 
 	/**
 	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
@@ -1051,7 +945,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGAttributeConstraintDefinitionLibrary()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = 12;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = 11;
 
 	/**
 	 * The feature id for the '<em><b>Tgg Attribute Constraint Definitions</b></em>' containment reference list.
@@ -1088,7 +982,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGAttributeConstraintDefinition()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION = 13;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION = 12;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1161,7 +1055,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGAttributeConstraintParameterDefinition()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION = 14;
+	int TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION = 13;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -1207,7 +1101,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGAttributeConstraintAdornment()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_ADORNMENT = 15;
+	int TGG_ATTRIBUTE_CONSTRAINT_ADORNMENT = 14;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' attribute list.
@@ -1244,7 +1138,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGExpression()
 	 * @generated
 	 */
-	int TGG_EXPRESSION = 18;
+	int TGG_EXPRESSION = 17;
 
 	/**
 	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
@@ -1281,7 +1175,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGLiteralExpression()
 	 * @generated
 	 */
-	int TGG_LITERAL_EXPRESSION = 19;
+	int TGG_LITERAL_EXPRESSION = 18;
 
 	/**
 	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
@@ -1327,7 +1221,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGAttributeExpression()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_EXPRESSION = 20;
+	int TGG_ATTRIBUTE_EXPRESSION = 19;
 
 	/**
 	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
@@ -1382,7 +1276,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGEnumExpression()
 	 * @generated
 	 */
-	int TGG_ENUM_EXPRESSION = 21;
+	int TGG_ENUM_EXPRESSION = 20;
 
 	/**
 	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
@@ -1437,7 +1331,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getDomainType()
 	 * @generated
 	 */
-	int DOMAIN_TYPE = 22;
+	int DOMAIN_TYPE = 21;
 
 	/**
 	 * The meta object id for the '{@link language.BindingType <em>Binding Type</em>}' enum.
@@ -1447,7 +1341,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getBindingType()
 	 * @generated
 	 */
-	int BINDING_TYPE = 23;
+	int BINDING_TYPE = 22;
 
 	/**
 	 * The meta object id for the '{@link language.TGGAttributeConstraintOperators <em>TGG Attribute Constraint Operators</em>}' enum.
@@ -1457,7 +1351,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGAttributeConstraintOperators()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_OPERATORS = 24;
+	int TGG_ATTRIBUTE_CONSTRAINT_OPERATORS = 23;
 
 	/**
 	 * Returns the meta object for class '{@link language.TGG <em>TGG</em>}'.
@@ -1825,38 +1719,6 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 */
 	EReference getNAC_AttributeConditionLibrary();
-
-	/**
-	 * Returns the meta object for class '{@link language.TGGComplementRule <em>TGG Complement Rule</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>TGG Complement Rule</em>'.
-	 * @see language.TGGComplementRule
-	 * @generated
-	 */
-	EClass getTGGComplementRule();
-
-	/**
-	 * Returns the meta object for the attribute '{@link language.TGGComplementRule#isBounded <em>Bounded</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Bounded</em>'.
-	 * @see language.TGGComplementRule#isBounded()
-	 * @see #getTGGComplementRule()
-	 * @generated
-	 */
-	EAttribute getTGGComplementRule_Bounded();
-
-	/**
-	 * Returns the meta object for the reference '{@link language.TGGComplementRule#getKernel <em>Kernel</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Kernel</em>'.
-	 * @see language.TGGComplementRule#getKernel()
-	 * @see #getTGGComplementRule()
-	 * @generated
-	 */
-	EReference getTGGComplementRule_Kernel();
 
 	/**
 	 * Returns the meta object for class '{@link language.TGGInplaceAttributeExpression <em>TGG Inplace Attribute Expression</em>}'.
@@ -2352,8 +2214,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = eINSTANCE
-				.getTGG_AttributeConstraintDefinitionLibrary();
+		EReference TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = eINSTANCE.getTGG_AttributeConstraintDefinitionLibrary();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGRuleImpl <em>TGG Rule</em>}' class.
@@ -2592,32 +2453,6 @@ public interface LanguagePackage extends EPackage {
 		EReference NAC__ATTRIBUTE_CONDITION_LIBRARY = eINSTANCE.getNAC_AttributeConditionLibrary();
 
 		/**
-		 * The meta object literal for the '{@link language.impl.TGGComplementRuleImpl <em>TGG Complement Rule</em>}' class.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @see language.impl.TGGComplementRuleImpl
-		 * @see language.impl.LanguagePackageImpl#getTGGComplementRule()
-		 * @generated
-		 */
-		EClass TGG_COMPLEMENT_RULE = eINSTANCE.getTGGComplementRule();
-
-		/**
-		 * The meta object literal for the '<em><b>Bounded</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute TGG_COMPLEMENT_RULE__BOUNDED = eINSTANCE.getTGGComplementRule_Bounded();
-
-		/**
-		 * The meta object literal for the '<em><b>Kernel</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_COMPLEMENT_RULE__KERNEL = eINSTANCE.getTGGComplementRule_Kernel();
-
-		/**
 		 * The meta object literal for the '{@link language.impl.TGGInplaceAttributeExpressionImpl <em>TGG Inplace Attribute Expression</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2641,8 +2476,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR = eINSTANCE
-				.getTGGInplaceAttributeExpression_ValueExpr();
+		EReference TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR = eINSTANCE.getTGGInplaceAttributeExpression_ValueExpr();
 
 		/**
 		 * The meta object literal for the '<em><b>Operator</b></em>' attribute feature.
@@ -2668,8 +2502,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE
-				.getTGGAttributeConstraintLibrary_TggAttributeConstraints();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE.getTGGAttributeConstraintLibrary_TggAttributeConstraints();
 
 		/**
 		 * The meta object literal for the '<em><b>Parameter Values</b></em>' containment reference list feature.
@@ -2677,8 +2510,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES = eINSTANCE
-				.getTGGAttributeConstraintLibrary_ParameterValues();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES = eINSTANCE.getTGGAttributeConstraintLibrary_ParameterValues();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGAttributeConstraintImpl <em>TGG Attribute Constraint</em>}' class.
@@ -2740,8 +2572,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS = eINSTANCE
-				.getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS = eINSTANCE.getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGAttributeConstraintDefinitionImpl <em>TGG Attribute Constraint Definition</em>}' class.
@@ -2759,8 +2590,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED = eINSTANCE
-				.getTGGAttributeConstraintDefinition_UserDefined();
+		EAttribute TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED = eINSTANCE.getTGGAttributeConstraintDefinition_UserDefined();
 
 		/**
 		 * The meta object literal for the '<em><b>Parameter Definitions</b></em>' containment reference list feature.
@@ -2768,8 +2598,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = eINSTANCE
-				.getTGGAttributeConstraintDefinition_ParameterDefinitions();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = eINSTANCE.getTGGAttributeConstraintDefinition_ParameterDefinitions();
 
 		/**
 		 * The meta object literal for the '<em><b>Sync Adornments</b></em>' containment reference list feature.
@@ -2777,8 +2606,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS = eINSTANCE
-				.getTGGAttributeConstraintDefinition_SyncAdornments();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS = eINSTANCE.getTGGAttributeConstraintDefinition_SyncAdornments();
 
 		/**
 		 * The meta object literal for the '<em><b>Gen Adornments</b></em>' containment reference list feature.
@@ -2786,8 +2614,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS = eINSTANCE
-				.getTGGAttributeConstraintDefinition_GenAdornments();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS = eINSTANCE.getTGGAttributeConstraintDefinition_GenAdornments();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGAttributeConstraintParameterDefinitionImpl <em>TGG Attribute Constraint Parameter Definition</em>}' class.
@@ -2805,8 +2632,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE = eINSTANCE
-				.getTGGAttributeConstraintParameterDefinition_Type();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE = eINSTANCE.getTGGAttributeConstraintParameterDefinition_Type();
 
 		/**
 		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -2814,8 +2640,7 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME = eINSTANCE
-				.getTGGAttributeConstraintParameterDefinition_Name();
+		EAttribute TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME = eINSTANCE.getTGGAttributeConstraintParameterDefinition_Name();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGAttributeConstraintAdornmentImpl <em>TGG Attribute Constraint Adornment</em>}' class.

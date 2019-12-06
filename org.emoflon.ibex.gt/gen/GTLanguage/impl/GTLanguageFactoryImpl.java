@@ -27,8 +27,7 @@ public class GTLanguageFactoryImpl extends EFactoryImpl implements GTLanguageFac
 	 */
 	public static GTLanguageFactory init() {
 		try {
-			GTLanguageFactory theGTLanguageFactory = (GTLanguageFactory) EPackage.Registry.INSTANCE
-					.getEFactory(GTLanguagePackage.eNS_URI);
+			GTLanguageFactory theGTLanguageFactory = (GTLanguageFactory) EPackage.Registry.INSTANCE.getEFactory(GTLanguagePackage.eNS_URI);
 			if (theGTLanguageFactory != null) {
 				return theGTLanguageFactory;
 			}

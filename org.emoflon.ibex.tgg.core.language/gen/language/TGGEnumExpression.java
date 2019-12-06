@@ -4,7 +4,8 @@ package language;
 
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
-import org.eclipse.emf.ecore.EObject;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -13,20 +14,24 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link language.TGGEnumExpression#getEenum <em>Eenum</em>}</li>
  *   <li>{@link language.TGGEnumExpression#getLiteral <em>Literal</em>}</li>
  * </ul>
+ * </p>
  *
  * @see language.LanguagePackage#getTGGEnumExpression()
  * @model
  * @generated
  */
-public interface TGGEnumExpression extends EObject, TGGExpression {
+public interface TGGEnumExpression extends TGGExpression {
 	/**
 	 * Returns the value of the '<em><b>Eenum</b></em>' reference.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Eenum</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Eenum</em>' reference.
 	 * @see #setEenum(EEnum)
@@ -49,6 +54,10 @@ public interface TGGEnumExpression extends EObject, TGGExpression {
 	/**
 	 * Returns the value of the '<em><b>Literal</b></em>' reference.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Literal</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Literal</em>' reference.
 	 * @see #setLiteral(EEnumLiteral)
@@ -67,5 +76,7 @@ public interface TGGEnumExpression extends EObject, TGGExpression {
 	 * @generated
 	 */
 	void setLiteral(EEnumLiteral value);
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } // TGGEnumExpression

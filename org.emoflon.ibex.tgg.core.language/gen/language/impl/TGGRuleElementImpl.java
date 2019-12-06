@@ -12,6 +12,8 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -19,11 +21,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.impl.TGGRuleElementImpl#getDomainType <em>Domain Type</em>}</li>
  *   <li>{@link language.impl.TGGRuleElementImpl#getBindingType <em>Binding Type</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -92,7 +94,6 @@ public abstract class TGGRuleElementImpl extends TGGNamedElementImpl implements 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public DomainType getDomainType() {
 		return domainType;
 	}
@@ -102,13 +103,11 @@ public abstract class TGGRuleElementImpl extends TGGNamedElementImpl implements 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setDomainType(DomainType newDomainType) {
 		DomainType oldDomainType = domainType;
 		domainType = newDomainType == null ? DOMAIN_TYPE_EDEFAULT : newDomainType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_ELEMENT__DOMAIN_TYPE,
-					oldDomainType, domainType));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_ELEMENT__DOMAIN_TYPE, oldDomainType, domainType));
 	}
 
 	/**
@@ -116,7 +115,6 @@ public abstract class TGGRuleElementImpl extends TGGNamedElementImpl implements 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public BindingType getBindingType() {
 		return bindingType;
 	}
@@ -126,13 +124,11 @@ public abstract class TGGRuleElementImpl extends TGGNamedElementImpl implements 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setBindingType(BindingType newBindingType) {
 		BindingType oldBindingType = bindingType;
 		bindingType = newBindingType == null ? BINDING_TYPE_EDEFAULT : newBindingType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_ELEMENT__BINDING_TYPE,
-					oldBindingType, bindingType));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_ELEMENT__BINDING_TYPE, oldBindingType, bindingType));
 	}
 
 	/**
@@ -213,7 +209,7 @@ public abstract class TGGRuleElementImpl extends TGGNamedElementImpl implements 
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuilder result = new StringBuilder(super.toString());
+		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (domainType: ");
 		result.append(domainType);
 		result.append(", bindingType: ");
@@ -221,5 +217,7 @@ public abstract class TGGRuleElementImpl extends TGGNamedElementImpl implements 
 		result.append(')');
 		return result.toString();
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TGGRuleElementImpl

@@ -2,7 +2,8 @@
  */
 package language;
 
-import org.eclipse.emf.ecore.EObject;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -11,21 +12,25 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link language.TGGRuleCorr#getSource <em>Source</em>}</li>
  *   <li>{@link language.TGGRuleCorr#getTarget <em>Target</em>}</li>
  * </ul>
+ * </p>
  *
  * @see language.LanguagePackage#getTGGRuleCorr()
  * @model
  * @generated
  */
-public interface TGGRuleCorr extends EObject, TGGRuleNode {
+public interface TGGRuleCorr extends TGGRuleNode {
 	/**
 	 * Returns the value of the '<em><b>Source</b></em>' reference.
 	 * It is bidirectional and its opposite is '{@link language.TGGRuleNode#getIncomingCorrsSource <em>Incoming Corrs Source</em>}'.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Source</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Source</em>' reference.
 	 * @see #setSource(TGGRuleNode)
@@ -50,6 +55,10 @@ public interface TGGRuleCorr extends EObject, TGGRuleNode {
 	 * Returns the value of the '<em><b>Target</b></em>' reference.
 	 * It is bidirectional and its opposite is '{@link language.TGGRuleNode#getIncomingCorrsTarget <em>Incoming Corrs Target</em>}'.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Target</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Target</em>' reference.
 	 * @see #setTarget(TGGRuleNode)
@@ -69,5 +78,7 @@ public interface TGGRuleCorr extends EObject, TGGRuleNode {
 	 * @generated
 	 */
 	void setTarget(TGGRuleNode value);
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } // TGGRuleCorr

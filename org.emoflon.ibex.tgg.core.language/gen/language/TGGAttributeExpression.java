@@ -3,7 +3,8 @@
 package language;
 
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EObject;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -12,20 +13,24 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link language.TGGAttributeExpression#getObjectVar <em>Object Var</em>}</li>
  *   <li>{@link language.TGGAttributeExpression#getAttribute <em>Attribute</em>}</li>
  * </ul>
+ * </p>
  *
  * @see language.LanguagePackage#getTGGAttributeExpression()
  * @model
  * @generated
  */
-public interface TGGAttributeExpression extends EObject, TGGExpression {
+public interface TGGAttributeExpression extends TGGExpression {
 	/**
 	 * Returns the value of the '<em><b>Object Var</b></em>' reference.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Object Var</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Object Var</em>' reference.
 	 * @see #setObjectVar(TGGRuleNode)
@@ -48,6 +53,10 @@ public interface TGGAttributeExpression extends EObject, TGGExpression {
 	/**
 	 * Returns the value of the '<em><b>Attribute</b></em>' reference.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Attribute</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Attribute</em>' reference.
 	 * @see #setAttribute(EAttribute)
@@ -66,5 +75,7 @@ public interface TGGAttributeExpression extends EObject, TGGExpression {
 	 * @generated
 	 */
 	void setAttribute(EAttribute value);
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } // TGGAttributeExpression

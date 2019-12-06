@@ -19,6 +19,8 @@ import org.eclipse.emf.ecore.util.InternalEList;
 
 import runtime.RuntimePackage;
 import runtime.TempContainer;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -26,10 +28,10 @@ import runtime.TempContainer;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link runtime.impl.TempContainerImpl#getObjects <em>Objects</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -68,7 +70,6 @@ public class TempContainerImpl extends EObjectImpl implements TempContainer {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<EObject> getObjects() {
 		if (objects == null) {
 			objects = new EObjectContainmentEList<EObject>(EObject.class, this, RuntimePackage.TEMP_CONTAINER__OBJECTS);
@@ -149,5 +150,7 @@ public class TempContainerImpl extends EObjectImpl implements TempContainer {
 		}
 		return super.eIsSet(featureID);
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TempContainerImpl

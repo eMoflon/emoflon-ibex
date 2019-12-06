@@ -25,6 +25,8 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -32,7 +34,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.repair.impl.ExternalShortcutRuleImpl#getSourceRule <em>Source Rule</em>}</li>
  *   <li>{@link language.repair.impl.ExternalShortcutRuleImpl#getTargetRule <em>Target Rule</em>}</li>
@@ -43,6 +44,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link language.repair.impl.ExternalShortcutRuleImpl#getMapping <em>Mapping</em>}</li>
  *   <li>{@link language.repair.impl.ExternalShortcutRuleImpl#getName <em>Name</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -161,15 +163,13 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public TGGRule getSourceRule() {
 		if (sourceRule != null && sourceRule.eIsProxy()) {
 			InternalEObject oldSourceRule = (InternalEObject) sourceRule;
 			sourceRule = (TGGRule) eResolveProxy(oldSourceRule);
 			if (sourceRule != oldSourceRule) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							RepairPackage.EXTERNAL_SHORTCUT_RULE__SOURCE_RULE, oldSourceRule, sourceRule));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, RepairPackage.EXTERNAL_SHORTCUT_RULE__SOURCE_RULE, oldSourceRule, sourceRule));
 			}
 		}
 		return sourceRule;
@@ -189,13 +189,11 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setSourceRule(TGGRule newSourceRule) {
 		TGGRule oldSourceRule = sourceRule;
 		sourceRule = newSourceRule;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__SOURCE_RULE,
-					oldSourceRule, sourceRule));
+			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__SOURCE_RULE, oldSourceRule, sourceRule));
 	}
 
 	/**
@@ -203,15 +201,13 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public TGGRule getTargetRule() {
 		if (targetRule != null && targetRule.eIsProxy()) {
 			InternalEObject oldTargetRule = (InternalEObject) targetRule;
 			targetRule = (TGGRule) eResolveProxy(oldTargetRule);
 			if (targetRule != oldTargetRule) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							RepairPackage.EXTERNAL_SHORTCUT_RULE__TARGET_RULE, oldTargetRule, targetRule));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, RepairPackage.EXTERNAL_SHORTCUT_RULE__TARGET_RULE, oldTargetRule, targetRule));
 			}
 		}
 		return targetRule;
@@ -231,13 +227,11 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setTargetRule(TGGRule newTargetRule) {
 		TGGRule oldTargetRule = targetRule;
 		targetRule = newTargetRule;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__TARGET_RULE,
-					oldTargetRule, targetRule));
+			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__TARGET_RULE, oldTargetRule, targetRule));
 	}
 
 	/**
@@ -245,11 +239,9 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGRuleElement> getDeletions() {
 		if (deletions == null) {
-			deletions = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this,
-					RepairPackage.EXTERNAL_SHORTCUT_RULE__DELETIONS);
+			deletions = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this, RepairPackage.EXTERNAL_SHORTCUT_RULE__DELETIONS);
 		}
 		return deletions;
 	}
@@ -259,11 +251,9 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGRuleElement> getCreations() {
 		if (creations == null) {
-			creations = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this,
-					RepairPackage.EXTERNAL_SHORTCUT_RULE__CREATIONS);
+			creations = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this, RepairPackage.EXTERNAL_SHORTCUT_RULE__CREATIONS);
 		}
 		return creations;
 	}
@@ -273,11 +263,9 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGRuleElement> getUnboundSrcContext() {
 		if (unboundSrcContext == null) {
-			unboundSrcContext = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this,
-					RepairPackage.EXTERNAL_SHORTCUT_RULE__UNBOUND_SRC_CONTEXT);
+			unboundSrcContext = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this, RepairPackage.EXTERNAL_SHORTCUT_RULE__UNBOUND_SRC_CONTEXT);
 		}
 		return unboundSrcContext;
 	}
@@ -287,11 +275,9 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGRuleElement> getUnboundTrgContext() {
 		if (unboundTrgContext == null) {
-			unboundTrgContext = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this,
-					RepairPackage.EXTERNAL_SHORTCUT_RULE__UNBOUND_TRG_CONTEXT);
+			unboundTrgContext = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this, RepairPackage.EXTERNAL_SHORTCUT_RULE__UNBOUND_TRG_CONTEXT);
 		}
 		return unboundTrgContext;
 	}
@@ -301,11 +287,9 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGRuleElementMapping> getMapping() {
 		if (mapping == null) {
-			mapping = new EObjectContainmentEList<TGGRuleElementMapping>(TGGRuleElementMapping.class, this,
-					RepairPackage.EXTERNAL_SHORTCUT_RULE__MAPPING);
+			mapping = new EObjectContainmentEList<TGGRuleElementMapping>(TGGRuleElementMapping.class, this, RepairPackage.EXTERNAL_SHORTCUT_RULE__MAPPING);
 		}
 		return mapping;
 	}
@@ -315,7 +299,6 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getName() {
 		return name;
 	}
@@ -325,13 +308,11 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__NAME, oldName,
-					name));
+			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__NAME, oldName, name));
 	}
 
 	/**
@@ -496,11 +477,13 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuilder result = new StringBuilder(super.toString());
+		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");
 		result.append(name);
 		result.append(')');
 		return result.toString();
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //ExternalShortcutRuleImpl

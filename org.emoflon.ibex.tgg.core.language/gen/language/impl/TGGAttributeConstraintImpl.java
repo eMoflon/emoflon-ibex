@@ -20,6 +20,8 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -27,11 +29,11 @@ import org.eclipse.emf.ecore.util.EObjectResolvingEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.impl.TGGAttributeConstraintImpl#getDefinition <em>Definition</em>}</li>
  *   <li>{@link language.impl.TGGAttributeConstraintImpl#getParameters <em>Parameters</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -80,15 +82,13 @@ public class TGGAttributeConstraintImpl extends EObjectImpl implements TGGAttrib
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public TGGAttributeConstraintDefinition getDefinition() {
 		if (definition != null && definition.eIsProxy()) {
 			InternalEObject oldDefinition = (InternalEObject) definition;
 			definition = (TGGAttributeConstraintDefinition) eResolveProxy(oldDefinition);
 			if (definition != oldDefinition) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition, definition));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition, definition));
 			}
 		}
 		return definition;
@@ -108,13 +108,11 @@ public class TGGAttributeConstraintImpl extends EObjectImpl implements TGGAttrib
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setDefinition(TGGAttributeConstraintDefinition newDefinition) {
 		TGGAttributeConstraintDefinition oldDefinition = definition;
 		definition = newDefinition;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION,
-					oldDefinition, definition));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition, definition));
 	}
 
 	/**
@@ -122,11 +120,9 @@ public class TGGAttributeConstraintImpl extends EObjectImpl implements TGGAttrib
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGParamValue> getParameters() {
 		if (parameters == null) {
-			parameters = new EObjectResolvingEList<TGGParamValue>(TGGParamValue.class, this,
-					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS);
+			parameters = new EObjectResolvingEList<TGGParamValue>(TGGParamValue.class, this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS);
 		}
 		return parameters;
 	}
@@ -202,5 +198,7 @@ public class TGGAttributeConstraintImpl extends EObjectImpl implements TGGAttrib
 		}
 		return super.eIsSet(featureID);
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TGGAttributeConstraintImpl

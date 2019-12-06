@@ -19,6 +19,8 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import runtime.Protocol;
 import runtime.RuntimePackage;
 import runtime.TGGRuleApplication;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -26,10 +28,10 @@ import runtime.TGGRuleApplication;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link runtime.impl.ProtocolImpl#getSteps <em>Steps</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -68,11 +70,9 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGRuleApplication> getSteps() {
 		if (steps == null) {
-			steps = new EObjectContainmentWithInverseEList<TGGRuleApplication>(TGGRuleApplication.class, this,
-					RuntimePackage.PROTOCOL__STEPS, RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL);
+			steps = new EObjectContainmentWithInverseEList<TGGRuleApplication>(TGGRuleApplication.class, this, RuntimePackage.PROTOCOL__STEPS, RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL);
 		}
 		return steps;
 	}
@@ -165,5 +165,7 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 		}
 		return super.eIsSet(featureID);
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //ProtocolImpl

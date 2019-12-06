@@ -3,6 +3,8 @@
 package runtime;
 
 import org.eclipse.emf.ecore.EObject;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -11,10 +13,10 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link runtime.TGGRuleApplication#getProtocol <em>Protocol</em>}</li>
  * </ul>
+ * </p>
  *
  * @see runtime.RuntimePackage#getTGGRuleApplication()
  * @model
@@ -25,6 +27,10 @@ public interface TGGRuleApplication extends EObject {
 	 * Returns the value of the '<em><b>Protocol</b></em>' container reference.
 	 * It is bidirectional and its opposite is '{@link runtime.Protocol#getSteps <em>Steps</em>}'.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Protocol</em>' container reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Protocol</em>' container reference.
 	 * @see #setProtocol(Protocol)
@@ -44,5 +50,7 @@ public interface TGGRuleApplication extends EObject {
 	 * @generated
 	 */
 	void setProtocol(Protocol value);
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } // TGGRuleApplication

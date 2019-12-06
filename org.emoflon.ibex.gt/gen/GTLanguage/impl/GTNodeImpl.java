@@ -67,8 +67,7 @@ public class GTNodeImpl extends GTNamedElementImpl implements GTNode {
 			type = (EClass) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, GTLanguagePackage.GT_NODE__TYPE, oldType,
-							type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, GTLanguagePackage.GT_NODE__TYPE, oldType, type));
 			}
 		}
 		return type;

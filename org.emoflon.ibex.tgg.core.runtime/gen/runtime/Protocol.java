@@ -5,6 +5,8 @@ package runtime;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -13,10 +15,10 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link runtime.Protocol#getSteps <em>Steps</em>}</li>
  * </ul>
+ * </p>
  *
  * @see runtime.RuntimePackage#getProtocol()
  * @model
@@ -28,6 +30,10 @@ public interface Protocol extends EObject {
 	 * The list contents are of type {@link runtime.TGGRuleApplication}.
 	 * It is bidirectional and its opposite is '{@link runtime.TGGRuleApplication#getProtocol <em>Protocol</em>}'.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Steps</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Steps</em>' containment reference list.
 	 * @see runtime.RuntimePackage#getProtocol_Steps()
@@ -36,5 +42,7 @@ public interface Protocol extends EObject {
 	 * @generated
 	 */
 	EList<TGGRuleApplication> getSteps();
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } // Protocol

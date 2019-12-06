@@ -27,8 +27,7 @@ public class RuntimeFactoryImpl extends EFactoryImpl implements RuntimeFactory {
 	 */
 	public static RuntimeFactory init() {
 		try {
-			RuntimeFactory theRuntimeFactory = (RuntimeFactory) EPackage.Registry.INSTANCE
-					.getEFactory(RuntimePackage.eNS_URI);
+			RuntimeFactory theRuntimeFactory = (RuntimeFactory) EPackage.Registry.INSTANCE.getEFactory(RuntimePackage.eNS_URI);
 			if (theRuntimeFactory != null) {
 				return theRuntimeFactory;
 			}

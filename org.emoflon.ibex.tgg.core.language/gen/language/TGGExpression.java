@@ -2,7 +2,8 @@
  */
 package language;
 
-import org.eclipse.emf.ecore.EObject;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -14,5 +15,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model abstract="true"
  * @generated
  */
-public interface TGGExpression extends EObject, TGGParamValue {
+public interface TGGExpression extends TGGParamValue { // <-- [user code injected with eMoflon]
+
+	// [user code injected with eMoflon] -->
 } // TGGExpression

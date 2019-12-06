@@ -10,6 +10,8 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -17,10 +19,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.impl.TGGAttributeVariableImpl#getName <em>Name</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -69,7 +71,6 @@ public class TGGAttributeVariableImpl extends TGGParamValueImpl implements TGGAt
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public String getName() {
 		return name;
 	}
@@ -79,13 +80,11 @@ public class TGGAttributeVariableImpl extends TGGParamValueImpl implements TGGAt
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_VARIABLE__NAME, oldName,
-					name));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_VARIABLE__NAME, oldName, name));
 	}
 
 	/**
@@ -156,11 +155,13 @@ public class TGGAttributeVariableImpl extends TGGParamValueImpl implements TGGAt
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuilder result = new StringBuilder(super.toString());
+		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");
 		result.append(name);
 		result.append(')');
 		return result.toString();
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TGGAttributeVariableImpl

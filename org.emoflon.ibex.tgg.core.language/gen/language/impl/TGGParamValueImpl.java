@@ -13,6 +13,8 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -20,10 +22,10 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.impl.TGGParamValueImpl#getParameterDefinition <em>Parameter Definition</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -62,16 +64,13 @@ public class TGGParamValueImpl extends EObjectImpl implements TGGParamValue {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public TGGAttributeConstraintParameterDefinition getParameterDefinition() {
 		if (parameterDefinition != null && parameterDefinition.eIsProxy()) {
 			InternalEObject oldParameterDefinition = (InternalEObject) parameterDefinition;
 			parameterDefinition = (TGGAttributeConstraintParameterDefinition) eResolveProxy(oldParameterDefinition);
 			if (parameterDefinition != oldParameterDefinition) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							LanguagePackage.TGG_PARAM_VALUE__PARAMETER_DEFINITION, oldParameterDefinition,
-							parameterDefinition));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_PARAM_VALUE__PARAMETER_DEFINITION, oldParameterDefinition, parameterDefinition));
 			}
 		}
 		return parameterDefinition;
@@ -91,13 +90,11 @@ public class TGGParamValueImpl extends EObjectImpl implements TGGParamValue {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setParameterDefinition(TGGAttributeConstraintParameterDefinition newParameterDefinition) {
 		TGGAttributeConstraintParameterDefinition oldParameterDefinition = parameterDefinition;
 		parameterDefinition = newParameterDefinition;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_PARAM_VALUE__PARAMETER_DEFINITION,
-					oldParameterDefinition, parameterDefinition));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_PARAM_VALUE__PARAMETER_DEFINITION, oldParameterDefinition, parameterDefinition));
 	}
 
 	/**
@@ -159,5 +156,7 @@ public class TGGParamValueImpl extends EObjectImpl implements TGGParamValue {
 		}
 		return super.eIsSet(featureID);
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TGGParamValueImpl

@@ -13,6 +13,8 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -20,11 +22,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.impl.TGGAttributeExpressionImpl#getObjectVar <em>Object Var</em>}</li>
  *   <li>{@link language.impl.TGGAttributeExpressionImpl#getAttribute <em>Attribute</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -73,15 +75,13 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public TGGRuleNode getObjectVar() {
 		if (objectVar != null && objectVar.eIsProxy()) {
 			InternalEObject oldObjectVar = (InternalEObject) objectVar;
 			objectVar = (TGGRuleNode) eResolveProxy(oldObjectVar);
 			if (objectVar != oldObjectVar) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR, oldObjectVar, objectVar));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR, oldObjectVar, objectVar));
 			}
 		}
 		return objectVar;
@@ -101,13 +101,11 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setObjectVar(TGGRuleNode newObjectVar) {
 		TGGRuleNode oldObjectVar = objectVar;
 		objectVar = newObjectVar;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR,
-					oldObjectVar, objectVar));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR, oldObjectVar, objectVar));
 	}
 
 	/**
@@ -115,15 +113,13 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EAttribute getAttribute() {
 		if (attribute != null && attribute.eIsProxy()) {
 			InternalEObject oldAttribute = (InternalEObject) attribute;
 			attribute = (EAttribute) eResolveProxy(oldAttribute);
 			if (attribute != oldAttribute) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
 			}
 		}
 		return attribute;
@@ -143,13 +139,11 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setAttribute(EAttribute newAttribute) {
 		EAttribute oldAttribute = attribute;
 		attribute = newAttribute;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE,
-					oldAttribute, attribute));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
 	}
 
 	/**
@@ -223,5 +217,7 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 		}
 		return super.eIsSet(featureID);
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TGGAttributeExpressionImpl

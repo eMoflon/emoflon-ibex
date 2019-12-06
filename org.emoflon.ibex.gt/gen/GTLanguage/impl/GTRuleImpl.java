@@ -150,8 +150,7 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 		String oldDocumentation = documentation;
 		documentation = newDocumentation;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__DOCUMENTATION,
-					oldDocumentation, documentation));
+			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__DOCUMENTATION, oldDocumentation, documentation));
 	}
 
 	/**
@@ -174,8 +173,7 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 		boolean oldExecutable = executable;
 		executable = newExecutable;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__EXECUTABLE, oldExecutable,
-					executable));
+			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__EXECUTABLE, oldExecutable, executable));
 	}
 
 	/**
@@ -199,8 +197,7 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 	@Override
 	public EList<GTParameter> getParameters() {
 		if (parameters == null) {
-			parameters = new EObjectContainmentEList<GTParameter>(GTParameter.class, this,
-					GTLanguagePackage.GT_RULE__PARAMETERS);
+			parameters = new EObjectContainmentEList<GTParameter>(GTParameter.class, this, GTLanguagePackage.GT_RULE__PARAMETERS);
 		}
 		return parameters;
 	}
@@ -323,8 +320,7 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 		case GTLanguagePackage.GT_RULE__DOCUMENTATION:
-			return DOCUMENTATION_EDEFAULT == null ? documentation != null
-					: !DOCUMENTATION_EDEFAULT.equals(documentation);
+			return DOCUMENTATION_EDEFAULT == null ? documentation != null : !DOCUMENTATION_EDEFAULT.equals(documentation);
 		case GTLanguagePackage.GT_RULE__EXECUTABLE:
 			return executable != EXECUTABLE_EDEFAULT;
 		case GTLanguagePackage.GT_RULE__NODES:

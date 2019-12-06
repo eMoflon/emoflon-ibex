@@ -103,9 +103,7 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 
 		// Obtain or create and register package
 		Object registeredGTLanguagePackage = EPackage.Registry.INSTANCE.get(eNS_URI);
-		GTLanguagePackageImpl theGTLanguagePackage = registeredGTLanguagePackage instanceof GTLanguagePackageImpl
-				? (GTLanguagePackageImpl) registeredGTLanguagePackage
-				: new GTLanguagePackageImpl();
+		GTLanguagePackageImpl theGTLanguagePackage = registeredGTLanguagePackage instanceof GTLanguagePackageImpl ? (GTLanguagePackageImpl) registeredGTLanguagePackage : new GTLanguagePackageImpl();
 
 		isInited = true;
 
@@ -347,42 +345,32 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 		gtRuleEClass.getESuperTypes().add(this.getGTNamedElement());
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(gtNamedElementEClass, GTNamedElement.class, "GTNamedElement", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getGTNamedElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, GTNamedElement.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(gtNamedElementEClass, GTNamedElement.class, "GTNamedElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getGTNamedElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, GTNamedElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 
 		initEClass(gtNodeEClass, GTNode.class, "GTNode", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGTNode_Type(), ecorePackage.getEClass(), null, "type", null, 0, 1, GTNode.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTNode_Type(), ecorePackage.getEClass(), null, "type", null, 0, 1, GTNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
-		initEClass(gtParameterEClass, GTParameter.class, "GTParameter", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGTParameter_Type(), ecorePackage.getEDataType(), null, "type", null, 0, 1, GTParameter.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+		initEClass(gtParameterEClass, GTParameter.class, "GTParameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTParameter_Type(), ecorePackage.getEDataType(), null, "type", null, 0, 1, GTParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(gtRuleEClass, GTRule.class, "GTRule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getGTRule_Documentation(), ecorePackage.getEString(), "documentation", null, 0, 1, GTRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getGTRule_Executable(), ecorePackage.getEBoolean(), "executable", null, 0, 1, GTRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTRule_Nodes(), this.getGTNode(), null, "nodes", null, 0, -1, GTRule.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+		initEAttribute(getGTRule_Documentation(), ecorePackage.getEString(), "documentation", null, 0, 1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
-		initEReference(getGTRule_Parameters(), this.getGTParameter(), null, "parameters", null, 0, -1, GTRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+		initEAttribute(getGTRule_Executable(), ecorePackage.getEBoolean(), "executable", null, 0, 1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTRule_Nodes(), this.getGTNode(), null, "nodes", null, 0, -1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getGTRule_Parameters(), this.getGTParameter(), null, "parameters", null, 0, -1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTRule_RuleNodes(), this.getGTNode(), null, "ruleNodes", null, 0, -1, GTRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTRule_RuleNodes(), this.getGTNode(), null, "ruleNodes", null, 0, -1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
-		initEClass(gtRuleSetEClass, GTRuleSet.class, "GTRuleSet", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGTRuleSet_Rules(), this.getGTRule(), null, "rules", null, 0, -1, GTRuleSet.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(gtRuleSetEClass, GTRuleSet.class, "GTRuleSet", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTRuleSet_Rules(), this.getGTRule(), null, "rules", null, 0, -1, GTRuleSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

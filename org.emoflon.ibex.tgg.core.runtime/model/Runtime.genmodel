@@ -4,15 +4,15 @@
     modelName="Runtime" updateClasspath="false" codeFormatting="true" importerID="org.eclipse.emf.importer.ecore"
     complianceLevel="8.0" copyrightFields="false" operationReflection="true">
   <foreignModel>Runtime.ecore</foreignModel>
-  <genPackages prefix="Runtime" disposableProviderFactory="true" ecorePackage="platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#/">
-    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//Protocol">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//Protocol/steps"/>
+  <genPackages prefix="Runtime" disposableProviderFactory="true" ecorePackage="Runtime.ecore#/">
+    <genClasses ecoreClass="Runtime.ecore#//Protocol">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Runtime.ecore#//Protocol/steps"/>
     </genClasses>
-    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication">
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TGGRuleApplication/protocol"/>
+    <genClasses ecoreClass="Runtime.ecore#//TGGRuleApplication">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference Runtime.ecore#//TGGRuleApplication/protocol"/>
     </genClasses>
-    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TempContainer">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore#//TempContainer/objects"/>
+    <genClasses ecoreClass="Runtime.ecore#//TempContainer">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Runtime.ecore#//TempContainer/objects"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

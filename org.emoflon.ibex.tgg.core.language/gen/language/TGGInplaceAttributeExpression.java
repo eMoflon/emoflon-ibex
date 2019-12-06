@@ -4,6 +4,8 @@ package language;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -12,12 +14,12 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link language.TGGInplaceAttributeExpression#getAttribute <em>Attribute</em>}</li>
  *   <li>{@link language.TGGInplaceAttributeExpression#getValueExpr <em>Value Expr</em>}</li>
  *   <li>{@link language.TGGInplaceAttributeExpression#getOperator <em>Operator</em>}</li>
  * </ul>
+ * </p>
  *
  * @see language.LanguagePackage#getTGGInplaceAttributeExpression()
  * @model
@@ -27,6 +29,10 @@ public interface TGGInplaceAttributeExpression extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Attribute</b></em>' reference.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Attribute</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Attribute</em>' reference.
 	 * @see #setAttribute(EAttribute)
@@ -49,6 +55,10 @@ public interface TGGInplaceAttributeExpression extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Value Expr</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Value Expr</em>' containment reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Value Expr</em>' containment reference.
 	 * @see #setValueExpr(TGGExpression)
@@ -73,6 +83,10 @@ public interface TGGInplaceAttributeExpression extends EObject {
 	 * The default value is <code>"EQUAL"</code>.
 	 * The literals are from the enumeration {@link language.TGGAttributeConstraintOperators}.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Operator</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Operator</em>' attribute.
 	 * @see language.TGGAttributeConstraintOperators
@@ -93,5 +107,7 @@ public interface TGGInplaceAttributeExpression extends EObject {
 	 * @generated
 	 */
 	void setOperator(TGGAttributeConstraintOperators value);
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } // TGGInplaceAttributeExpression

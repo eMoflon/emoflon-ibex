@@ -23,6 +23,8 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -30,7 +32,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.impl.TGGImpl#getSrc <em>Src</em>}</li>
  *   <li>{@link language.impl.TGGImpl#getTrg <em>Trg</em>}</li>
@@ -38,6 +39,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link language.impl.TGGImpl#getRules <em>Rules</em>}</li>
  *   <li>{@link language.impl.TGGImpl#getAttributeConstraintDefinitionLibrary <em>Attribute Constraint Definition Library</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -116,7 +118,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<EPackage> getSrc() {
 		if (src == null) {
 			src = new EObjectResolvingEList<EPackage>(EPackage.class, this, LanguagePackage.TGG__SRC);
@@ -129,7 +130,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<EPackage> getTrg() {
 		if (trg == null) {
 			trg = new EObjectResolvingEList<EPackage>(EPackage.class, this, LanguagePackage.TGG__TRG);
@@ -142,15 +142,13 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EPackage getCorr() {
 		if (corr != null && corr.eIsProxy()) {
 			InternalEObject oldCorr = (InternalEObject) corr;
 			corr = (EPackage) eResolveProxy(oldCorr);
 			if (corr != oldCorr) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG__CORR, oldCorr,
-							corr));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG__CORR, oldCorr, corr));
 			}
 		}
 		return corr;
@@ -170,7 +168,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public void setCorr(EPackage newCorr) {
 		EPackage oldCorr = corr;
 		corr = newCorr;
@@ -183,7 +180,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGRule> getRules() {
 		if (rules == null) {
 			rules = new EObjectContainmentEList<TGGRule>(TGGRule.class, this, LanguagePackage.TGG__RULES);
@@ -196,7 +192,6 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public TGGAttributeConstraintDefinitionLibrary getAttributeConstraintDefinitionLibrary() {
 		return attributeConstraintDefinitionLibrary;
 	}
@@ -206,14 +201,12 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetAttributeConstraintDefinitionLibrary(
-			TGGAttributeConstraintDefinitionLibrary newAttributeConstraintDefinitionLibrary, NotificationChain msgs) {
+	public NotificationChain basicSetAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary newAttributeConstraintDefinitionLibrary, NotificationChain msgs) {
 		TGGAttributeConstraintDefinitionLibrary oldAttributeConstraintDefinitionLibrary = attributeConstraintDefinitionLibrary;
 		attributeConstraintDefinitionLibrary = newAttributeConstraintDefinitionLibrary;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY,
-					oldAttributeConstraintDefinitionLibrary, newAttributeConstraintDefinitionLibrary);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, oldAttributeConstraintDefinitionLibrary,
+					newAttributeConstraintDefinitionLibrary);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -227,26 +220,18 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
-	public void setAttributeConstraintDefinitionLibrary(
-			TGGAttributeConstraintDefinitionLibrary newAttributeConstraintDefinitionLibrary) {
+	public void setAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary newAttributeConstraintDefinitionLibrary) {
 		if (newAttributeConstraintDefinitionLibrary != attributeConstraintDefinitionLibrary) {
 			NotificationChain msgs = null;
 			if (attributeConstraintDefinitionLibrary != null)
-				msgs = ((InternalEObject) attributeConstraintDefinitionLibrary).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, null,
-						msgs);
+				msgs = ((InternalEObject) attributeConstraintDefinitionLibrary).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, null, msgs);
 			if (newAttributeConstraintDefinitionLibrary != null)
-				msgs = ((InternalEObject) newAttributeConstraintDefinitionLibrary).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, null,
-						msgs);
+				msgs = ((InternalEObject) newAttributeConstraintDefinitionLibrary).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, null, msgs);
 			msgs = basicSetAttributeConstraintDefinitionLibrary(newAttributeConstraintDefinitionLibrary, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY,
-					newAttributeConstraintDefinitionLibrary, newAttributeConstraintDefinitionLibrary));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, newAttributeConstraintDefinitionLibrary, newAttributeConstraintDefinitionLibrary));
 	}
 
 	/**
@@ -368,5 +353,7 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 		}
 		return super.eIsSet(featureID);
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TGGImpl

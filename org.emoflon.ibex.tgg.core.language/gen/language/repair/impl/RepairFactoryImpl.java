@@ -27,8 +27,7 @@ public class RepairFactoryImpl extends EFactoryImpl implements RepairFactory {
 	 */
 	public static RepairFactory init() {
 		try {
-			RepairFactory theRepairFactory = (RepairFactory) EPackage.Registry.INSTANCE
-					.getEFactory(RepairPackage.eNS_URI);
+			RepairFactory theRepairFactory = (RepairFactory) EPackage.Registry.INSTANCE.getEFactory(RepairPackage.eNS_URI);
 			if (theRepairFactory != null) {
 				return theRepairFactory;
 			}

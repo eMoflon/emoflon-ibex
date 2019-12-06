@@ -28,8 +28,7 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	 */
 	public static LanguageFactory init() {
 		try {
-			LanguageFactory theLanguageFactory = (LanguageFactory) EPackage.Registry.INSTANCE
-					.getEFactory(LanguagePackage.eNS_URI);
+			LanguageFactory theLanguageFactory = (LanguageFactory) EPackage.Registry.INSTANCE.getEFactory(LanguagePackage.eNS_URI);
 			if (theLanguageFactory != null) {
 				return theLanguageFactory;
 			}
@@ -69,8 +68,6 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 			return createTGGRuleEdge();
 		case LanguagePackage.NAC:
 			return createNAC();
-		case LanguagePackage.TGG_COMPLEMENT_RULE:
-			return createTGGComplementRule();
 		case LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION:
 			return createTGGInplaceAttributeExpression();
 		case LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY:
@@ -204,17 +201,6 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	public NAC createNAC() {
 		NACImpl nac = new NACImpl();
 		return nac;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public TGGComplementRule createTGGComplementRule() {
-		TGGComplementRuleImpl tggComplementRule = new TGGComplementRuleImpl();
-		return tggComplementRule;
 	}
 
 	/**
@@ -368,8 +354,7 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	public DomainType createDomainTypeFromString(EDataType eDataType, String initialValue) {
 		DomainType result = DomainType.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException(
-					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
@@ -390,8 +375,7 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	public BindingType createBindingTypeFromString(EDataType eDataType, String initialValue) {
 		BindingType result = BindingType.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException(
-					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
@@ -409,12 +393,10 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TGGAttributeConstraintOperators createTGGAttributeConstraintOperatorsFromString(EDataType eDataType,
-			String initialValue) {
+	public TGGAttributeConstraintOperators createTGGAttributeConstraintOperatorsFromString(EDataType eDataType, String initialValue) {
 		TGGAttributeConstraintOperators result = TGGAttributeConstraintOperators.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException(
-					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 

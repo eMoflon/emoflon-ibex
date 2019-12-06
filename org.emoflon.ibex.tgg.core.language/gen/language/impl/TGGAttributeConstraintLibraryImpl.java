@@ -20,6 +20,8 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -27,11 +29,11 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * </p>
  * <ul>
  *   <li>{@link language.impl.TGGAttributeConstraintLibraryImpl#getTggAttributeConstraints <em>Tgg Attribute Constraints</em>}</li>
  *   <li>{@link language.impl.TGGAttributeConstraintLibraryImpl#getParameterValues <em>Parameter Values</em>}</li>
  * </ul>
+ * </p>
  *
  * @generated
  */
@@ -80,11 +82,9 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGAttributeConstraint> getTggAttributeConstraints() {
 		if (tggAttributeConstraints == null) {
-			tggAttributeConstraints = new EObjectContainmentEList<TGGAttributeConstraint>(TGGAttributeConstraint.class,
-					this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
+			tggAttributeConstraints = new EObjectContainmentEList<TGGAttributeConstraint>(TGGAttributeConstraint.class, this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
 		}
 		return tggAttributeConstraints;
 	}
@@ -94,11 +94,9 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
 	public EList<TGGParamValue> getParameterValues() {
 		if (parameterValues == null) {
-			parameterValues = new EObjectContainmentEList<TGGParamValue>(TGGParamValue.class, this,
-					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES);
+			parameterValues = new EObjectContainmentEList<TGGParamValue>(TGGParamValue.class, this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES);
 		}
 		return parameterValues;
 	}
@@ -189,5 +187,7 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 		}
 		return super.eIsSet(featureID);
 	}
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } //TGGAttributeConstraintLibraryImpl

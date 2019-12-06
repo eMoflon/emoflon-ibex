@@ -5,7 +5,8 @@ package language;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
+// <-- [user defined imports]
+// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -14,7 +15,6 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link language.TGGRuleNode#getIncomingEdges <em>Incoming Edges</em>}</li>
  *   <li>{@link language.TGGRuleNode#getOutgoingEdges <em>Outgoing Edges</em>}</li>
@@ -23,17 +23,22 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link language.TGGRuleNode#getIncomingCorrsTarget <em>Incoming Corrs Target</em>}</li>
  *   <li>{@link language.TGGRuleNode#getAttrExpr <em>Attr Expr</em>}</li>
  * </ul>
+ * </p>
  *
  * @see language.LanguagePackage#getTGGRuleNode()
  * @model
  * @generated
  */
-public interface TGGRuleNode extends EObject, TGGRuleElement {
+public interface TGGRuleNode extends TGGRuleElement {
 	/**
 	 * Returns the value of the '<em><b>Incoming Edges</b></em>' reference list.
 	 * The list contents are of type {@link language.TGGRuleEdge}.
 	 * It is bidirectional and its opposite is '{@link language.TGGRuleEdge#getTrgNode <em>Trg Node</em>}'.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Incoming Edges</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Incoming Edges</em>' reference list.
 	 * @see language.LanguagePackage#getTGGRuleNode_IncomingEdges()
@@ -48,6 +53,10 @@ public interface TGGRuleNode extends EObject, TGGRuleElement {
 	 * The list contents are of type {@link language.TGGRuleEdge}.
 	 * It is bidirectional and its opposite is '{@link language.TGGRuleEdge#getSrcNode <em>Src Node</em>}'.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Outgoing Edges</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Outgoing Edges</em>' reference list.
 	 * @see language.LanguagePackage#getTGGRuleNode_OutgoingEdges()
@@ -60,6 +69,10 @@ public interface TGGRuleNode extends EObject, TGGRuleElement {
 	/**
 	 * Returns the value of the '<em><b>Type</b></em>' reference.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Type</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Type</em>' reference.
 	 * @see #setType(EClass)
@@ -84,6 +97,10 @@ public interface TGGRuleNode extends EObject, TGGRuleElement {
 	 * The list contents are of type {@link language.TGGRuleCorr}.
 	 * It is bidirectional and its opposite is '{@link language.TGGRuleCorr#getSource <em>Source</em>}'.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Incoming Corrs Source</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Incoming Corrs Source</em>' reference list.
 	 * @see language.LanguagePackage#getTGGRuleNode_IncomingCorrsSource()
@@ -98,6 +115,10 @@ public interface TGGRuleNode extends EObject, TGGRuleElement {
 	 * The list contents are of type {@link language.TGGRuleCorr}.
 	 * It is bidirectional and its opposite is '{@link language.TGGRuleCorr#getTarget <em>Target</em>}'.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Incoming Corrs Target</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Incoming Corrs Target</em>' reference list.
 	 * @see language.LanguagePackage#getTGGRuleNode_IncomingCorrsTarget()
@@ -111,6 +132,10 @@ public interface TGGRuleNode extends EObject, TGGRuleElement {
 	 * Returns the value of the '<em><b>Attr Expr</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGInplaceAttributeExpression}.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Attr Expr</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Attr Expr</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGGRuleNode_AttrExpr()
@@ -118,5 +143,7 @@ public interface TGGRuleNode extends EObject, TGGRuleElement {
 	 * @generated
 	 */
 	EList<TGGInplaceAttributeExpression> getAttrExpr();
+	// <-- [user code injected with eMoflon]
 
+	// [user code injected with eMoflon] -->
 } // TGGRuleNode
