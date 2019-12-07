@@ -14,6 +14,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ModelChangeProtocol.GroupKey;
+
+import delta.AttributeDelta;
+import delta.Delta;
+import delta.DeltaContainer;
+import delta.Link;
+import delta.StructuralDelta;
 
 public class ModelChangeUtil {
 
@@ -275,7 +282,6 @@ public class ModelChangeUtil {
 		return logger.notifications;
 	}
 
-
 	@SuppressWarnings("unchecked")
 	public void deleteElement(EObject element, boolean deleteContainedChildren) {
 		if (deleteContainedChildren) {
@@ -312,6 +318,40 @@ public class ModelChangeUtil {
 			value.remove(edge.getTarget());
 		} else
 			edge.getSource().eSet(edge.getType(), null);
+	}
+
+	public GroupKey applyUserDelta(DeltaContainer deltas) {
+		GroupKey key = protocol.new GroupKey();
+		protocol.setGroupKey(key);
+		deltas.getDeltas().forEach(delta -> apply(delta));
+		protocol.unsetGroupKey();
+		return key;
+	}
+
+	private void apply(Delta delta) {
+		delta.getAttributeDeltas().forEach(attrDelta -> applyAttributeDelta(attrDelta));
+		StructuralDelta strDelta = delta.getStructuralDelta();
+		if (strDelta != null)
+			applyStructuralDelta(strDelta);
+	}
+
+	private void applyAttributeDelta(AttributeDelta attrDelta) {
+		attrDelta.getObject().eSet(attrDelta.getAttribute(), attrDelta.getNewValue());
+	}
+
+	private void applyStructuralDelta(StructuralDelta strDelta) {
+		strDelta.getDeletedObjects().forEach(obj -> this.deleteElement(obj, false));
+		strDelta.getDeletedLinks().forEach(link -> {
+			EMFEdge edge = createEMFEdgeFromLink(link);
+			if (!protocol.getCurrentModelChanges().isDeleted(edge))
+				this.deleteEdge(edge);
+		});
+
+		strDelta.getCreatedLinks().forEach(link -> this.createEdge(createEMFEdgeFromLink(link)));
+	}
+
+	private EMFEdge createEMFEdgeFromLink(Link link) {
+		return new EMFEdge(link.getSrc(), link.getTrg(), link.getType());
 	}
 
 }
