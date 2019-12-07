@@ -54,10 +54,12 @@ public class ModelChangeUtil {
 
 	}
 
+	@Deprecated
 	public List<Notification> undo(Notification notification, boolean enhanced) {
 		return undoOne(notification, null, enhanced);
 	}
 
+	@Deprecated
 	public List<Notification> undoOne(Notification notification, EObject element, boolean enhanced) {
 		boolean containment = false;
 		if (notification.getFeature() == null)
@@ -217,6 +219,7 @@ public class ModelChangeUtil {
 		}
 	}
 
+	@Deprecated
 	public List<Notification> undoDeleteNode(EObject node) {
 		NotificationLogger logger = new NotificationLogger();
 		logger.attach();
@@ -225,6 +228,7 @@ public class ModelChangeUtil {
 		return logger.notifications;
 	}
 
+	@Deprecated
 	public List<Notification> undoDeleteEdge(EMFEdge edge) {
 		NotificationLogger logger = new NotificationLogger();
 		logger.attach();
@@ -262,12 +266,52 @@ public class ModelChangeUtil {
 		return logger.notifications;
 	}
 
+	@Deprecated
 	public List<Notification> deleteNode(EObject node) {
 		NotificationLogger logger = new NotificationLogger();
 		logger.attach();
 		EcoreUtil.delete(node, true);
 		logger.detach();
 		return logger.notifications;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public void deleteElement(EObject element, boolean deleteContainedChildren) {
+		if (deleteContainedChildren) {
+			// TODO adrianm: implement
+		} else {
+			element.eClass().getEAllContainments().forEach(feature -> {
+				Object content = element.eGet(feature);
+				if (content instanceof Collection) {
+					Collection<EObject> contentList = (Collection<EObject>) content;
+					element.eResource().getContents().addAll(contentList);
+					contentList.clear();
+				} else if (content instanceof EObject) {
+					element.eResource().getContents().add((EObject) content);
+					element.eSet(feature, null);
+				}
+			});
+			EcoreUtil.delete(element, false);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void createEdge(EMFEdge edge) {
+		if (edge.getType().isMany()) {
+			Collection<EObject> feature = (Collection<EObject>) edge.getSource().eGet(edge.getType());
+			feature.add(edge.getTarget());
+		} else
+			edge.getSource().eSet(edge.getType(), edge.getTarget());
+	}
+
+	@SuppressWarnings("unchecked")
+	public void deleteEdge(EMFEdge edge) {
+		if (edge.getType().isMany()) {
+			Collection<EObject> value = (Collection<EObject>) edge.getSource().eGet(edge.getType());
+			value.remove(edge.getTarget());
+		} else
+			edge.getSource().eSet(edge.getType(), null);
 	}
 
 }
