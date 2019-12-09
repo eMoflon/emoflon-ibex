@@ -1,5 +1,5 @@
 package org.emoflon.ibex.tgg.compiler.defaults
-
+ 
 import java.util.Collection
 import language.TGGAttributeConstraintDefinition
 import org.moflon.core.utilities.MoflonUtil
@@ -77,7 +77,7 @@ class DefaultFilesGenerator {
 		'''
 	}
 
-	static def String generateBasicStructure(String additionalImports, String fileName, String strategy, String engine,
+	static def String generateBasicStructure(String additionalImports, String fileName, String strategy, 
 		String projectName, String setUpRoutine, String body) {
 		'''
 			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
@@ -88,14 +88,20 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Logger;
 			import org.apache.log4j.BasicConfigurator;
 			
+			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
+			
+			import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».config.*;
+			
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			«additionalImports»
 			
 			public class «fileName» extends «strategy» {
 			
+				public static IRegistrationHelper registrationHelper = new _DefaultRegistrationHelper();
+			
 				public «fileName»() throws IOException {
-					super(createIbexOptions());
-					registerBlackInterpreter(new «engine»());
+					super(registrationHelper.createIbexOptions());
+					registerBlackInterpreter(options.getBlackInterpreter());
 				}
 			
 				public static void main(String[] args) throws IOException {
@@ -109,9 +115,6 @@ class DefaultFilesGenerator {
 				
 				«generateMetamodelRegistration()»
 				
-				private static IbexOptions createIbexOptions() {
-					return _RegistrationHelper.createIbexOptions();
-				}
 			}
 		'''
 	}
@@ -127,15 +130,24 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Logger;
 			import org.apache.log4j.BasicConfigurator;
 			
-			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdpater.IBeXOperation;
-			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdpater.VictoryIBeXAdapter;
+			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+			
+			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
+			
+			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.IBeXOperation;
+			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.VictoryIBeXAdapter;
+			
+			import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».config.*;
 			
 			«additionalImports»
 			
 			public class «fileName» extends «strategy» {
 			
+				private static IRegistrationHelper registrationHelper = new _DefaultRegistrationHelper();
+			
 				public «fileName»() throws IOException {
-					super();
+					super(createIbexOptions());
+					registerBlackInterpreter(options.getBlackInterpreter());
 				}
 			
 				public static void main(String[] args) throws IOException {
@@ -146,20 +158,20 @@ class DefaultFilesGenerator {
 				}
 				
 				«body»
+				
+				«generateMetamodelRegistration()»
 			}
 		'''
 	}
 
-	static def generateModelGenFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateModelGenFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
-				«additionalImports»
 			''',
 			fileName,
 			"MODELGEN",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting MODELGEN");
@@ -187,11 +199,11 @@ class DefaultFilesGenerator {
 	static def generateModelGenDebugFile(String projectName, String fileName) {
 		return generateDebugStructure(
 			'''
+				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 				import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
-				import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».MODELGEN_App;
 			''',
 			fileName,
-			"MODELGEN_App",
+			"MODELGEN",
 			projectName,
 			'''
 				boolean restart = true;
@@ -229,15 +241,13 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateSyncAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateSyncAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
-				«additionalImports»
 			''',
 			fileName,
 			"SYNC",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting SYNC");
@@ -258,15 +268,13 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateCCAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateCCAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
-				«additionalImports»
 			''',
 			fileName,
 			"CC",
-			engine,
 			projectName,
 			'''
 				«fileName» cc = new «fileName»();
@@ -285,15 +293,13 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateCOAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateCOAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.CO;
-				«additionalImports»
 			''',
 			fileName,
 			"CO",
-			engine,
 			projectName,
 			'''
 				«fileName» co = new «fileName»();
@@ -312,15 +318,13 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateFWDOptAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateFWDOptAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.FWD_OPT;
-				«additionalImports»
 			''',
 			fileName,
 			"FWD_OPT",
-			engine,
 			projectName,
 			'''
 				«fileName» fwd_opt = new «fileName»();
@@ -338,15 +342,13 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateBWDOptAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateBWDOptAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.opt.BWD_OPT;
-				«additionalImports»
 			''',
 			fileName,
 			"BWD_OPT",
-			engine,
 			projectName,
 			'''
 				«fileName» bwd_opt = new «fileName»();
@@ -364,17 +366,15 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateInitialFwdAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateInitialFwdAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
 				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-				«additionalImports»
 			''',
 			fileName,
 			"SYNC",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting INITIAL FWD");
@@ -458,17 +458,15 @@ class DefaultFilesGenerator {
 		)
 	}
 
-	static def generateInitialBwdAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateInitialBwdAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
 				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-				«additionalImports»
 			''',
 			fileName,
 			"SYNC",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting INITIAL BWD");
@@ -556,68 +554,74 @@ class DefaultFilesGenerator {
 		'''
 			@Override
 			protected void registerUserMetamodels() throws IOException {
-				_RegistrationHelper.registerMetamodels(rs, this);
+				registrationHelper.registerMetamodels(rs, this);
 					
 				// Register correspondence metamodel last
 				loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectName() + ".ecore");
 			}
 		'''
 	}
-
-	def static String generateRegHelperFile(String projectName) {
+	
+	def static String generateDefaultRegHelperFile(String projectName) {
 		'''
-			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
+			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».config;
+			
+			import java.io.IOException;
+				
+			import org.eclipse.emf.ecore.resource.ResourceSet;
+			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
+			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+			
+			public class _DefaultRegistrationHelper implements IRegistrationHelper{
+			
+				/** Load and register source and target metamodels */
+				public void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) throws IOException {
+					// Replace to register generated code or handle other URI-related requirements
+					new DemoclesRegistrationHelper().registerMetamodels(rs, strategy);
+				}
+			
+				/** Create default options **/
+				public IbexOptions createIbexOptions() {
+					return new DemoclesRegistrationHelper().createIbexOptions();
+				}
+			}
+		'''
+	}
+
+	def static String generateRegHelperFile(String projectName, TripleGraphGrammarFile tgg) {
+		'''
+			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».config;
 			
 			import java.io.IOException;
 			
 			import org.eclipse.emf.ecore.resource.ResourceSet;
 			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».UserDefinedRuntimeTGGAttrConstraintFactory;
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
 			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+			import org.emoflon.ibex.tgg.runtime.democles.DemoclesTGGEngine;
 			
-			public class _RegistrationHelper {
+			public class DemoclesRegistrationHelper implements IRegistrationHelper {
 			
 				/** Load and register source and target metamodels */
-				public static void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) throws IOException {
+				public void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) throws IOException {
 					// Replace to register generated code or handle other URI-related requirements
-					_SchemaBasedAutoRegistration.register(strategy);
+					«FOR imp : tgg.imports»
+					strategy.loadAndRegisterMetamodel("«imp.name»");
+					«ENDFOR»
 				}
 			
 				/** Create default options **/
-				public static IbexOptions createIbexOptions() {
+				public IbexOptions createIbexOptions() {
 					IbexOptions options = new IbexOptions();
+					options.setBlackInterpreter(new DemoclesTGGEngine());
 					options.projectName("«MoflonUtil.lastCapitalizedSegmentOf(projectName)»");
 					options.projectPath("«projectName»");
 					options.debug(false);
 					options.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
 					return options;
 				}
-			}
-		'''
-	}
-	
-	def static String generateSchemaAutoRegFile(String projectName, TripleGraphGrammarFile tgg) {
-		'''
-			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
-			
-			import java.io.IOException;
-			
-			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-			
-			/**
-			 * Generated by eMoflon::IBeX.
-			 * 
-			 * Do not edit this class. It is automatically generated and is kept in sync
-			 * with the imports in your Schema.tgg file.
-			 */
-			public class _SchemaBasedAutoRegistration {
-				
-				public static void register(OperationalStrategy strategy) throws IOException {
-					«FOR imp : tgg.imports»
-					strategy.loadAndRegisterMetamodel("«imp.name»");
-					«ENDFOR»
-				}
-				
 			}
 		'''
 	}
