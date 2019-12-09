@@ -1,39 +1,33 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
-import java.util.List;
+import java.util.Set;
 
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 
 public class ConflictingElement {
 
 	private EObject element;
-	private List<Notification> additions;
-	private List<Notification> changes;
-	private List<Notification> crossRefs;
+	private Set<EMFEdge> createdEdges;
+	private Set<AttributeChange> attributeChanges;
 
-	ConflictingElement(EObject element, List<Notification> additions, List<Notification> changes,
-			List<Notification> crossRefs) {
+	public ConflictingElement(EObject element, Set<EMFEdge> createdEdges, Set<AttributeChange> attributeChanges) {
 		this.element = element;
-		this.additions = additions;
-		this.changes = changes;
-		this.crossRefs = crossRefs;
+		this.createdEdges = createdEdges;
+		this.attributeChanges = attributeChanges;
 	}
 
 	public EObject getElement() {
 		return element;
 	}
 
-	public List<Notification> getAdditions() {
-		return additions;
+	public Set<EMFEdge> getCreatedEdges() {
+		return createdEdges;
 	}
 
-	public List<Notification> getChanges() {
-		return changes;
-	}
-
-	public List<Notification> getCrossRefs() {
-		return crossRefs;
+	public Set<AttributeChange> getAttributeChanges() {
+		return attributeChanges;
 	}
 
 }

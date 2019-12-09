@@ -6,7 +6,7 @@ public class DefaultConflictResolver implements ConflictResolver {
 
 	@Override
 	public DeleteConflictResStrategy resolveDeleteConflict(DeleteConflict conflict) {
-		return conflict.preserveConstructiveChanges();
+		return conflict.makeCompromise();
 	}
 
 	

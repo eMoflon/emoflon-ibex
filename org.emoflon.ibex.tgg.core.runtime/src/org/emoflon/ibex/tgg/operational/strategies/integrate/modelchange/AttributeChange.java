@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.delta;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;

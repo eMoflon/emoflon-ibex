@@ -1,8 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -15,8 +17,8 @@ import precedencegraph.PrecedenceNode;
 public class DeletionChain {
 
 	private ExtPrecedenceGraph epg;
-	
-	private Map<ITGGMatch, Set<ITGGMatch>> chain;
+
+	private LinkedHashMap<ITGGMatch, Set<ITGGMatch>> chain;
 	private ITGGMatch first;
 	private Set<ITGGMatch> last;
 
@@ -27,7 +29,7 @@ public class DeletionChain {
 		this.last = new HashSet<>();
 		concludeDeletionChain(brokenMatch);
 		chain.forEach((m, s) -> {
-			if(s.isEmpty())
+			if (s.isEmpty())
 				last.add(m);
 		});
 	}
@@ -53,13 +55,19 @@ public class DeletionChain {
 	public Set<ITGGMatch> getLast() {
 		return last;
 	}
-	
+
 	public Set<ITGGMatch> getNext(ITGGMatch match) {
 		return chain.get(match);
 	}
-	
+
 	public void foreach(Consumer<? super ITGGMatch> action) {
 		chain.keySet().forEach(action);
 	}
- 
+
+	public void foreachReverse(Consumer<? super ITGGMatch> action) {
+		List<ITGGMatch> copiedKeySet = new ArrayList<ITGGMatch>(chain.keySet());
+		Collections.reverse(copiedKeySet);
+		copiedKeySet.forEach(action);
+	}
+
 }

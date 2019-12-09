@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
-import delta.DeltaContainer;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,14 +28,16 @@ import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.delta.ModelChangeInterface;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.GroupKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 
+import delta.DeltaContainer;
 import language.BindingType;
 import language.TGGRuleCorr;
 import runtime.TGGRuleApplication;
@@ -47,10 +48,12 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	private BrokenMatchAnalyser matchAnalyser;
 	private ModelChangeProtocol modelChangeProtocol;
 	private ConflictDetector conflictDetector;
-	private ModelChangeInterface deltaApplier;
 
 	protected Resource epg;
-	protected DeltaContainer deltas;
+
+	protected DeltaContainer userDeltaContainer;
+	protected BiConsumer<EObject, EObject> userDeltaBiConsumer;
+	protected GroupKey userDeltaKey;
 
 	// Element classification
 	private Map<EObject, EltClassifier> classifiedNodes;
@@ -76,32 +79,45 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
-		applyDeltas();
-		
+		blackInterpreter.updateMatches();
+		getEPG().update();
+		modelChangeProtocol.attachAdapter();
+		userDeltaKey = modelChangeProtocol.new GroupKey();
+		modelChangeProtocol.setGroupKey(userDeltaKey);
+
+		applyUserDelta();
+
 		blackInterpreter.updateMatches();
 
 //		repair();
 		deleteCorrsOfBrokenMatches();
 		analyseAndClassifyMatches();
 		detectAndResolveConflicts();
+		
+		modelChangeProtocol.unsetGroupKey();
+		
 		fillClassificationMaps();
 		calculateIntegrationSolution();
 		cleanUp();
 	}
 
-	protected void applyDeltas() {
-		if(deltas != null)
-			deltaApplier.applyUserDelta(deltas);
+	protected void applyUserDelta() {
+		if (userDeltaContainer != null) {
+			modelChangeProtocol.util.applyUserDelta(userDeltaContainer);
+			userDeltaContainer = null;
+		} else if (userDeltaBiConsumer != null) {
+			userDeltaBiConsumer.accept(s.getContents().get(0), t.getContents().get(0));
+			userDeltaBiConsumer = null;
+		}
+
 	}
 
 	protected void deleteCorrsOfBrokenMatches() {
-		modelChangeProtocol.attachAdapter();
 		Map<TGGRuleApplication, ITGGMatch> processed = new HashMap<>();
 		do {
 			blackInterpreter.updateMatches();
 		} while (deleteCorrs(processed));
 		brokenRuleApplications.putAll(processed);
-		modelChangeProtocol.detachAdapter();
 	}
 
 	protected void analyseAndClassifyMatches() {
@@ -185,8 +201,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	protected void cleanUp() {
+		modelChangeProtocol.detachAdapter();
 		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
-		deltaApplier = new ModelChangeInterface(this);
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
 		analysedMatches = new HashMap<>();
@@ -329,35 +345,45 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public Set<Mismatch> getMismatches() {
 		return mismatches;
 	}
+	
+	public ModelChanges getUserModelChanges() {
+		return modelChangeProtocol.getModelChanges(userDeltaKey);
+	}
 
 	/**
-	 * Applies deltas to source and target models specified by a
-	 * <code>BiConsumer</code>. <br>
-	 * <br>
-	 * BiConsumer's parameters: Root elements (src, trg)
+	 * Applies a given delta to source and target models specified by a
+	 * {@link BiConsumer} providing the source and target root elements.
+	 * <p>
+	 * Alternatively use {@link INTEGRATE#applyDelta(DeltaContainer)}.
+	 * </p>
 	 * 
 	 * @param delta delta to be applied
 	 */
-	@Deprecated
 	public void applyDelta(BiConsumer<EObject, EObject> delta) {
-		blackInterpreter.updateMatches();
-		getEPG().update();
-
-		modelChangeProtocol.attachAdapter();
-		delta.accept(s.getContents().get(0), t.getContents().get(0));
-		modelChangeProtocol.detachAdapter();
+		this.userDeltaBiConsumer = delta;
 	}
 
-	public void setDeltas(DeltaContainer deltas) throws InvalidDeltaException {
-		DeltaValidator.validate(deltas);
-		this.deltas = deltas;
+	/**
+	 * Applies a given delta to source and target models specified by a
+	 * {@link delta.DeltaContainer DeltaContainer}.
+	 * <p>
+	 * Alternatively use {@link INTEGRATE#applyDelta(BiConsumer)}.
+	 * </p>
+	 * 
+	 * @param delta delta to be applied
+	 * @throws InvalidDeltaException if a <code>Delta</code> of the given
+	 *                               <code>DeltaContainer</code> has an invalid
+	 *                               structure or invalid components
+	 */
+	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
+		DeltaValidator.validate(delta);
+		this.userDeltaContainer = delta;
 	}
 
 	private void initIntegrateDependantTools() {
 		matchAnalyser = new BrokenMatchAnalyser(this);
 		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
 		conflictDetector = new ConflictDetector(this);
-		deltaApplier = new ModelChangeInterface(this);
 	}
 
 	@Override
