@@ -13,23 +13,28 @@ This repository contains only the part which is independent from a concrete patt
 	uses eMoflon::IBeX with our new HiPE parallel pattern matching engine.
 
 ## How to develop
-1. Perform Steps (1) through (4) of the "How to install"-Section. An eMoflon::IBeX installation is not required to develop for eMoflon::IBeX
-2. Check the encoding for Xtend files.
+1. Install [GraphViz](http://www.graphviz.org/download/).
+2. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/).
+3. Install Xtext from this update site (or use the Eclipse Marketplace):
+	http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/
+4. Install PlantUML from this update site (or use the Eclipse Marketplace):
+	http://hallvard.github.io/plantuml/
+5. Check the encoding for Xtend files.
     - In Eclipse: Go to ```Window->Preferences->General->Workspace```.
     - Change the text file encoding to 'Other: UTF-8'.
-3. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
+6. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
    For eMoflon including everything:	<br/>
 	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf <br/>
-4. Execute MWE2
+7. Execute MWE2
     - Open packages ```org.emoflon.ibex.gt.editor/src/org.emoflon.ibex.gt.editor``` and ```org.emoflon.ibex.tgg.editor/src/org.moflon.tgg.mosl```
     - Right-click on ```GenerateGT.mwe2``` in the first package and ```GenerateTGG.mwe2``` in the second.
     - Press ```Run As -> MWE2 Workflow```.
-5. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and build all projects (*Project &rarr; Build All*) to trigger code generation (and get rid of errors).
-6. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
+8. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and build all projects (*Project &rarr; Build All*) to trigger code generation (and get rid of errors).
+9. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
 	from your development workspace, and importing this PSF file:<br/>
 	https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
-7. Inside the runtime workspace, build all projects (*Project &rarr; Build All*) to trigger code generation.
-8. Run the JUnit tests to ensure that all is well by right-clicking
+10. Inside the runtime workspace, build all projects (*Project &rarr; Build All*) to trigger code generation.
+11. Run the JUnit tests to ensure that all is well by right-clicking
 	one of the ```Testsuite_*.launch``` in the ```Testsuite``` project
 	and ```TestsuiteGT.launch``` in the ```TestsuiteGT``` project
 	and start the tests by selecting ```Run As/JUnit```.
