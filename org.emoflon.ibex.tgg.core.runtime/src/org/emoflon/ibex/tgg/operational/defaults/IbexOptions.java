@@ -62,7 +62,7 @@ public class IbexOptions {
 		optimizeSyncPattern = false;
 		logger = new EmptyBenchmarkLogger();
 		repairAttributes = true;
-		useShortcutRules = false;
+		useShortcutRules = true;
 		
 		applyConcurrently = false;
 	}
