@@ -341,23 +341,22 @@ public class OverlapUtil {
 	}
 
 	private boolean ruleMatches(TGGRule sourceRule, TGGRule targetRule) {
-		// TODO adrianM, lfritsche : extend inheritance concept
-		Set<EClass> classes = cfactory.createObjectSet();
+		Set<EClass> srcRuleClasses = cfactory.createObjectSet();
 		// TODO lfritsche : insert operationalisation (FWD BWD) splitting
-		classes.addAll(TGGFilterUtil.filterNodes(sourceRule.getNodes(), BindingType.CREATE).stream() //
+		srcRuleClasses.addAll(TGGFilterUtil.filterNodes(sourceRule.getNodes(), BindingType.CREATE).stream() //
 				.map(c -> c.getType()) //
 				.collect(Collectors.toSet()));
 		for (TGGRuleNode targetNode : TGGFilterUtil.filterNodes(targetRule.getNodes(), BindingType.CREATE)) {
-			if (classes.contains(targetNode.getType()))
-				return true;
+			for (EClass eClass : srcRuleClasses)
+				if (checkInheritance(eClass, targetNode.getType()))
+					return true;
 		}
 		return false;
 	}
 
 	private boolean typeMatches(TGGRuleNode sourceNode, TGGRuleNode targetNode, boolean mapContext) {
-		// TODO adrianM, lfritsche : extend inheritance concept
 		boolean domainMatches = sourceNode.getDomainType().equals(targetNode.getDomainType());
-		boolean typeMatches = sourceNode.getType().equals(targetNode.getType());
+		boolean typeMatches = checkInheritance(sourceNode.getType(), targetNode.getType());
 		boolean bindingMatches = sourceNode.getBindingType().equals(targetNode.getBindingType()) //
 				&& (mapContext ? true : !sourceNode.getBindingType().equals(BindingType.CONTEXT));
 		return domainMatches && typeMatches && bindingMatches;
@@ -369,6 +368,10 @@ public class OverlapUtil {
 		boolean bindingMatches = sourceEdge.getBindingType().equals(targetEdge.getBindingType()) //
 				&& (mapContext ? true : !sourceEdge.getBindingType().equals(BindingType.CONTEXT));
 		return domainMatches && typeMatches && bindingMatches;
+	}
+
+	private boolean checkInheritance(EClass srcType, EClass trgType) {
+		return srcType.isSuperTypeOf(trgType) || trgType.isSuperTypeOf(srcType);
 	}
 
 	private void addNode2CandidateMapping(TGGRuleNode node, NodeCandidate candidate) {

@@ -1,18 +1,19 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-
+import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;
+import language.LanguageFactory;
 import language.TGGRule;
-import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -34,7 +35,7 @@ public class ShortcutRule {
 	private TGGRule sourceRule;
 	private TGGRule targetRule;
 
-	private Map<String, TGGRuleNode> name2node;
+	private Map<String, TGGRuleNode> name2newNode;
 
 	private Collection<TGGRuleNode> nodes;
 	private Collection<TGGRuleEdge> edges;
@@ -49,8 +50,8 @@ public class ShortcutRule {
 	private Map<TGGRuleNode, TGGRuleNode> src2newNodes;
 	private Map<TGGRuleNode, TGGRuleNode> trg2newNodes;
 
-	private Map<String, TGGRuleNode> sourceName2oldNodes;
-	private Map<String, TGGRuleNode> targetName2oldNodes;
+	private Map<String, TGGRuleNode> srcName2oldNodes;
+	private Map<String, TGGRuleNode> trgName2oldNodes;
 
 	public ShortcutRule(TGGOverlap overlap) {
 		this.overlap = overlap;
@@ -58,12 +59,12 @@ public class ShortcutRule {
 		src2newNodes = cfactory.createObjectToObjectHashMap();
 		trg2newNodes = cfactory.createObjectToObjectHashMap();
 
-		sourceName2oldNodes = cfactory.createObjectToObjectHashMap();
-		targetName2oldNodes = cfactory.createObjectToObjectHashMap();
+		srcName2oldNodes = cfactory.createObjectToObjectHashMap();
+		trgName2oldNodes = cfactory.createObjectToObjectHashMap();
 		nodeNames = cfactory.createObjectSet();
 		edgeNames = cfactory.createObjectSet();
 
-		name2node = cfactory.createObjectToObjectHashMap();
+		name2newNode = cfactory.createObjectToObjectHashMap();
 		nodes = cfactory.createObjectSet();
 		edges = cfactory.createObjectSet();
 		mergedNodes = cfactory.createObjectSet();
@@ -80,103 +81,97 @@ public class ShortcutRule {
 	}
 
 	private void initialize(TGGOverlap overlap) {
-		// TODO lfritsche : implement inheritance concept
 		initializeContext(overlap);
 		initializeCreate(overlap);
-		initializeDeletions(overlap);
+		initializeDelete(overlap);
 	}
 
-	private void initializeDeletions(TGGOverlap overlap) {
-		for (TGGRuleNode node : extractNodes(overlap.deletions)) {
+	private void initializeDelete(TGGOverlap overlap) {
+		for (TGGRuleNode node : extractNodes(overlap.deletions))
 			createNewNode(node, BindingType.DELETE, SCInputRule.SOURCE);
-		}
-		for (TGGRuleEdge edge : extractEdges(overlap.deletions)) {
+		for (TGGRuleEdge edge : extractEdges(overlap.deletions))
 			createNewEdge(edge, BindingType.DELETE, SCInputRule.SOURCE);
-		}
 	}
 
 	private void initializeCreate(TGGOverlap overlap) {
-		for (TGGRuleNode node : extractNodes(overlap.creations)) {
+		for (TGGRuleNode node : extractNodes(overlap.creations))
 			createNewNode(node, BindingType.CREATE, SCInputRule.TARGET);
-		}
-		for (TGGRuleEdge edge : extractEdges(overlap.creations)) {
+		for (TGGRuleEdge edge : extractEdges(overlap.creations))
 			createNewEdge(edge, BindingType.CREATE, SCInputRule.TARGET);
-		}
 	}
 
 	private void initializeContext(TGGOverlap overlap) {
-		for (TGGRuleNode node : extractNodes(overlap.unboundSrcContext)) {
+		for (TGGRuleNode node : extractNodes(overlap.unboundSrcContext))
 			createNewNode(node, BindingType.CONTEXT, SCInputRule.SOURCE);
-		}
-		for (TGGRuleNode node : extractNodes(overlap.unboundTrgContext)) {
+		for (TGGRuleNode node : extractNodes(overlap.unboundTrgContext))
 			createNewNode(node, BindingType.CONTEXT, SCInputRule.TARGET);
-		}
-		for (TGGRuleNode node : extractNodes(overlap.mappings.keySet())) {
-			TGGRuleNode newNode = createNewNode(node, BindingType.CONTEXT);
-			mergedNodes.add(newNode);
-			if (node.getBindingType() == BindingType.CREATE)
-				preservedNodes.add(newNode);
-		}
+		for (TGGRuleNode node : extractNodes(overlap.mappings.keySet()))
+			createNewMergedNode(node, (TGGRuleNode) overlap.mappings.get(node));
 
-		for (TGGRuleEdge edge : extractEdges(overlap.unboundSrcContext)) {
+		for (TGGRuleEdge edge : extractEdges(overlap.unboundSrcContext))
 			createNewEdge(edge, BindingType.CONTEXT, SCInputRule.SOURCE);
-		}
-		for (TGGRuleEdge edge : extractEdges(overlap.unboundTrgContext)) {
+		for (TGGRuleEdge edge : extractEdges(overlap.unboundTrgContext))
 			createNewEdge(edge, BindingType.CONTEXT, SCInputRule.TARGET);
-		}
-		for (TGGRuleEdge edge : extractEdges(overlap.mappings.keySet())) {
+		for (TGGRuleEdge edge : extractEdges(overlap.mappings.keySet()))
 			createNewEdge(edge, BindingType.CONTEXT);
-		}
+	}
+
+	private void createNewNode(TGGRuleNode oldNode, BindingType binding, SCInputRule scInput) {
+		TGGRuleNode newNode = //
+				createNode(oldNode.eClass(), oldNode.getName(), binding, oldNode.getDomainType(), oldNode.getType());
+		registerNewNode(oldNode, newNode, scInput);
+	}
+
+	private void createNewMergedNode(TGGRuleNode srcNode, TGGRuleNode trgNode) {
+		EClass newType = srcNode.getType().isSuperTypeOf(trgNode.getType()) ? trgNode.getType() : srcNode.getType();
+		TGGRuleNode newNode = //
+				createNode(srcNode.eClass(), srcNode.getName(), BindingType.CONTEXT, srcNode.getDomainType(), newType);
+		registerNewMergedNode(srcNode, trgNode, newNode);
 	}
 
 	private void registerNewNode(TGGRuleNode oldNode, TGGRuleNode newNode, SCInputRule scInput) {
-		if (scInput == SCInputRule.SOURCE)
+		if (scInput == SCInputRule.SOURCE) {
 			src2newNodes.put(oldNode, newNode);
-		trg2newNodes.put(oldNode, newNode);
-	}
-
-	private TGGRuleNode createNewNode(TGGRuleNode node, BindingType binding) {
-		return createNewNode(node, binding, SCInputRule.SOURCE);
-	}
-
-	private TGGRuleNode createNewNode(TGGRuleNode node, BindingType binding, SCInputRule scInput) {
-		TGGRuleNode newNode = node instanceof TGGRuleCorr ? LanguageFactoryImpl.eINSTANCE.createTGGRuleCorr()
-				: LanguageFactoryImpl.eINSTANCE.createTGGRuleNode();
-		registerNewNode(node, newNode, scInput);
-		if (overlap.mappings.containsKey(node)) {
-			// TODO larsF, adrianM
-			// Target is hardcoded -> we iterate first over the source elements for mappings
-			// -> source should already be registered (DIRTY)
-			registerNewNode((TGGRuleNode) overlap.mappings.get(node), newNode, SCInputRule.TARGET);
-			sourceName2oldNodes.put(node.getName(), node);
-			targetName2oldNodes.put(overlap.mappings.get(node).getName(), (TGGRuleNode) overlap.mappings.get(node));
+			srcName2oldNodes.put(oldNode.getName(), oldNode);
 		} else {
-			if (sourceRule.getNodes().contains(node))
-				sourceName2oldNodes.put(node.getName(), node);
-			if (targetRule.getNodes().contains(node))
-				targetName2oldNodes.put(node.getName(), node);
+			trg2newNodes.put(oldNode, newNode);
+			trgName2oldNodes.put(oldNode.getName(), oldNode);
 		}
+		nodes.add(newNode);
+		name2newNode.put(newNode.getName(), newNode);
+	}
 
-		String name = node.getName();
-		if (nodeNames.contains(name)) {
+	private void registerNewMergedNode(TGGRuleNode srcNode, TGGRuleNode trgNode, TGGRuleNode newNode) {
+		src2newNodes.put(srcNode, newNode);
+		srcName2oldNodes.put(srcNode.getName(), srcNode);
+		trg2newNodes.put(trgNode, newNode);
+		trgName2oldNodes.put(trgNode.getName(), trgNode);
+
+		nodes.add(newNode);
+		name2newNode.put(newNode.getName(), newNode);
+		mergedNodes.add(newNode);
+		if (srcNode.getBindingType() == BindingType.CREATE)
+			preservedNodes.add(newNode);
+	}
+
+	private TGGRuleNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type) {
+		TGGRuleNode node = (TGGRuleNode) LanguageFactory.eINSTANCE.create(nodeType);
+
+		String adjustedName = name;
+		if (nodeNames.contains(adjustedName)) {
 			int i = 2;
-			while (nodeNames.contains(name + i)) {
+			while (nodeNames.contains(adjustedName + i)) {
 				i++;
 			}
-			name += i;
+			adjustedName += i;
 		}
+		nodeNames.add(adjustedName);
+		node.setName(adjustedName);
+		node.setBindingType(binding);
+		node.setDomainType(domain);
+		node.setType(type);
 
-		newNode.setBindingType(binding);
-		newNode.setDomainType(node.getDomainType());
-		newNode.setName(name);
-		newNode.setType(node.getType());
-		nodes.add(newNode);
-		name2node.put(newNode.getName(), newNode);
-		if (nodeNames.contains(name)) {
-			throw new RuntimeException("Shortcutrules are not allowed to have multiple nodes with the same name");
-		}
-		nodeNames.add(name);
-		return newNode;
+		return node;
 	}
 
 	public Collection<TGGRuleNode> getTargetRuleMappings(DomainType dType, BindingType bType) {
@@ -203,7 +198,7 @@ public class ShortcutRule {
 		if (newEdge.getSrcNode() == null || newEdge.getTrgNode() == null) {
 			throw new RuntimeException("Shortcutrules - new edge must have src and trg unequals null");
 		}
-		
+
 		String name = newEdge.getSrcNode().getName() + "__" + edge.getType().getName() + "__"
 				+ newEdge.getTrgNode().getName();
 		if (edgeNames.contains(name)) {
@@ -214,7 +209,7 @@ public class ShortcutRule {
 			name += "_" + i;
 		}
 		newEdge.setName(name);
-		
+
 		edges.add(newEdge);
 		if (edgeNames.contains(newEdge.getName())) {
 			throw new RuntimeException("Shortcutrules are not allowed to have duplicate edges");
@@ -238,7 +233,7 @@ public class ShortcutRule {
 	}
 
 	public TGGRuleNode getNode(String name) {
-		return name2node.getOrDefault(name, null);
+		return name2newNode.getOrDefault(name, null);
 	}
 
 	public Collection<TGGRuleNode> getNodes() {
@@ -276,11 +271,11 @@ public class ShortcutRule {
 	}
 
 	public TGGRuleNode mapSrcToSCNodeNode(String name) {
-		return src2newNodes.getOrDefault(sourceName2oldNodes.getOrDefault(name, null), null);
+		return src2newNodes.getOrDefault(srcName2oldNodes.getOrDefault(name, null), null);
 	}
 
 	public TGGRuleNode mapTrgToSCNodeNode(String name) {
-		return trg2newNodes.getOrDefault(targetName2oldNodes.getOrDefault(name, null), null);
+		return trg2newNodes.getOrDefault(trgName2oldNodes.getOrDefault(name, null), null);
 	}
 
 	public TGGOverlap getOverlap() {
