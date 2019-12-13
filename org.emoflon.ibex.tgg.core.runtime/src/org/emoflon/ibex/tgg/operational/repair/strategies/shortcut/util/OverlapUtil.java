@@ -295,15 +295,14 @@ public class OverlapUtil {
 	}
 
 	private void defineILPImplications(BinaryILPProblem ilpProblem) {
-		// TODO larsF, adrianM: make sure that only those edges are mapped onto another
-		// where the src and trg nodes are also mapped onto
-		// Also: split up src and trg nodes!
 		for (TGGRuleEdge edge : edge2candidate.keySet()) {
-			Set<Integer> nodeIDs = cfactory.createIntSet();
-			nodeIDs.addAll(node2candidate.getOrDefault(edge.getSrcNode(), cfactory.createIntSet()));
-			nodeIDs.addAll(node2candidate.getOrDefault(edge.getTrgNode(), cfactory.createIntSet()));
+			Set<Integer> srcNodeIDs = node2candidate.getOrDefault(edge.getSrcNode(), cfactory.createIntSet());
+			ilpProblem.addNegativeImplication(srcNodeIDs.stream().map(m -> "x" + m),
+					edge2candidate.get(edge).stream().map(m -> "x" + m),
+					"IMPL" + edge.getType().getName() + nameCounter++);
 
-			ilpProblem.addNegativeImplication(nodeIDs.stream().map(m -> "x" + m),
+			Set<Integer> trgNodeIDs = node2candidate.getOrDefault(edge.getTrgNode(), cfactory.createIntSet());
+			ilpProblem.addNegativeImplication(trgNodeIDs.stream().map(m -> "x" + m),
 					edge2candidate.get(edge).stream().map(m -> "x" + m),
 					"IMPL" + edge.getType().getName() + nameCounter++);
 		}
