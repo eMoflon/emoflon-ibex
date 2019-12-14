@@ -509,15 +509,13 @@ class DefaultFilesGenerator {
 		)
 	}
 	
-	static def generateIntegrateAppFile(String projectName, String fileName, String engine, String additionalImports) {
+	static def generateIntegrateAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-				«additionalImports»
 			''',
 			fileName,
 			"INTEGRATE",
-			engine,
 			projectName,
 			'''
 				logger.info("Starting INTEGRATE");
