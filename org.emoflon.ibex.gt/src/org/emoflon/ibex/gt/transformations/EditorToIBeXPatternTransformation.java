@@ -34,7 +34,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	/**
 	 * Setting: usage of invocations for references.
 	 */
-	static final boolean USE_INVOCATIONS_FOR_REFERENCES = true;
+	static final boolean USE_INVOCATIONS_FOR_REFERENCES = false;
 
 	/**
 	 * All context patterns.
@@ -82,7 +82,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		return ibexPatternSet;
 	}
 
-	/**
+	/**chrome
 	 * Transforms the given pattern to a context, a create and a delete pattern.
 	 * 
 	 * @param editorPattern

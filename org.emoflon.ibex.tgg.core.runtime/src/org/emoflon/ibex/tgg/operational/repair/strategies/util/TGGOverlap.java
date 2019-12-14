@@ -22,7 +22,9 @@ public class TGGOverlap {
 	public TGGRule targetRule;
 	public Map<TGGRuleElement, TGGRuleElement> mappings;
 	public Map<TGGRuleElement, TGGRuleElement> revertMappings;
+	
 	public Map<String, String> nameMappings;
+	
 	public Collection<TGGRuleElement> unboundSrcContext; 
 	public Collection<TGGRuleElement> unboundTrgContext; 
 	public Collection<TGGRuleElement> deletions;
@@ -42,7 +44,9 @@ public class TGGOverlap {
 	public TGGOverlap(TGGRule sourceRule, TGGRule targetRule) {
 		this.sourceRule = sourceRule;
 		this.targetRule = targetRule;
+		
 		this.mappings = cfactory.createObjectToObjectHashMap();
+		
 		this.revertMappings = cfactory.createObjectToObjectHashMap();
 		this.nameMappings = cfactory.createObjectToObjectHashMap();
 		this.unboundSrcContext = cfactory.createObjectSet();

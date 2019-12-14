@@ -55,7 +55,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 //		removeNodes(TGGCollectionUtil.filterNodes(scRule.getNodes(), DomainType.CORR, BindingType.CONTEXT));
 		switch(direction) {
 		case FORWARD:
-			createDECNacs(scRule.getTargetRule(), DomainType.SRC);
+			createFilterNacs(scRule.getTargetRule(), DomainType.SRC);
 
 			transformEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
 			transformInterfaceEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE), BindingType.NEGATIVE);
@@ -68,7 +68,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 			addNACforCreatedInterface(TGGUtil.filterEdges(scRule.getEdges(), DomainType.TRG));
 			break;
 		case BACKWARD:
-			createDECNacs(scRule.getTargetRule(), DomainType.TRG);
+			createFilterNacs(scRule.getTargetRule(), DomainType.TRG);
 
 			transformEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
 			transformInterfaceEdges(TGGUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE), BindingType.NEGATIVE);
@@ -144,7 +144,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 		scRule.getEdges().add(edge);
 	}
 
-	private void createDECNacs(TGGRule targetRule, DomainType domain) {
+	private void createFilterNacs(TGGRule targetRule, DomainType domain) {
 		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(domain, targetRule, strategy.getOptions());
 
 		Collection<FilterNACCandidate> decCandidates = filterNACAnalysis.computeFilterNACCandidates();

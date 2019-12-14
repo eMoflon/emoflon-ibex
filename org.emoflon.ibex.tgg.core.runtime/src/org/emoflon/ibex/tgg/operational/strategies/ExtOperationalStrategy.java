@@ -102,9 +102,24 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 	}
 
 	protected void translate() {
-		do
+		if(options.applyConcurrently()) {
 			blackInterpreter.updateMatches();
-		while (processOneOperationalRuleMatch());
+			
+			while(true) {
+				while (processOneOperationalRuleMatch()) {
+					
+				}
+				blackInterpreter.updateMatches();
+				if(!processOneOperationalRuleMatch())
+					return;
+			}
+		}
+		else {
+			do {
+				blackInterpreter.updateMatches();
+			}while (processOneOperationalRuleMatch());
+		}
+		
 	}
 
 	protected void rollBack() {

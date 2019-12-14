@@ -49,7 +49,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
 		for (TGGRuleNode n : greenNodes)
-			comatch.put(n.getName(), createNode(comatch, n, nodeResource));
+			comatch.put(n.getName(), createNode(comatch, n));
 	}
 
 	public Collection<EMFEdge> createEdges(ITGGMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
@@ -71,15 +71,14 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	public void createCorrs(ITGGMatch comatch, Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		for (TGGRuleCorr c : greenCorrs) {
 			comatch.put(c.getName(), createCorr(comatch, c, comatch.get(c.getSource().getName()),
-					comatch.get(c.getTarget().getName()), corrR));
+					comatch.get(c.getTarget().getName())));
 		}
 	}
 
-	private EObject createNode(ITGGMatch match, TGGRuleNode node, Resource resource) {
+	private EObject createNode(ITGGMatch match, TGGRuleNode node) {
 		numOfCreatedNodes++;
 
 		EObject newObj = EcoreUtil.create(node.getType());
-		handlePlacementInResource(node, resource, newObj);
 
 		applyInPlaceAttributeAssignments(match, node, newObj);
 		applyAttributeAssignments(match, node, newObj);
@@ -142,14 +141,15 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	private void handlePlacementInResource(TGGRuleNode node, Resource resource, EObject newObj) {
 		try {
-			resource.getContents().add(newObj);
+			if(newObj.eContainer() == null)
+				resource.getContents().add(newObj);
 		} catch (Exception e) {
 			logger.warn("I had problems placing " + newObj + " in a resource: " + e);
 		}
 	}
 
-	private EObject createCorr(ITGGMatch comatch, TGGRuleNode node, Object src, Object trg, Resource corrR) {
-		EObject corr = createNode(comatch, node, corrR);
+	private EObject createCorr(ITGGMatch comatch, TGGRuleNode node, Object src, Object trg) {
+		EObject corr = createNode(comatch, node);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
 		return corr;
@@ -178,16 +178,30 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		ITGGMatch comatch = match.copy();
 
 		createNonCorrNodes(comatch, greenPattern.getSrcNodes(), operationalStrategy.getSourceResource());
-		createEdges(comatch, greenPattern.getSrcEdges(), true);
-
 		createNonCorrNodes(comatch, greenPattern.getTrgNodes(), operationalStrategy.getTargetResource());
-		createEdges(comatch, greenPattern.getTrgEdges(), true);
+		createCorrs(comatch, greenPattern.getCorrNodes(), operationalStrategy.getCorrResource());
 
 		cspContainer.applyCSPValues(comatch);
 
-		createCorrs(comatch, greenPattern.getCorrNodes(), operationalStrategy.getCorrResource());
-		createEdges(comatch, greenPattern.getCorrEdges(), true);
+		if(operationalStrategy.getOptions().getBlackInterpreter().getClass().getName().contains("Democles")) {
+			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getSourceResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getCorrResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getTargetResource(), (EObject) comatch.get(n.getName())));	
 
+			createEdges(comatch, greenPattern.getSrcEdges(), true);
+			createEdges(comatch, greenPattern.getTrgEdges(), true);
+			createEdges(comatch, greenPattern.getCorrEdges(), true);
+		}
+		else {
+			createEdges(comatch, greenPattern.getSrcEdges(), true);
+			createEdges(comatch, greenPattern.getTrgEdges(), true);
+			createEdges(comatch, greenPattern.getCorrEdges(), true);
+			
+			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getSourceResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getCorrResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getTargetResource(), (EObject) comatch.get(n.getName())));	
+		}
+		
 		return Optional.of(comatch);
 	}
 

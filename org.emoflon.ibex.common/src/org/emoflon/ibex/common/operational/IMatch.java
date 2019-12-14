@@ -63,6 +63,11 @@ public interface IMatch {
 	default boolean isInMatch(String name) {
 		return getParameterNames().contains(name);
 	}
+	
+	int getHashCode();
+	
+	@Override
+	int hashCode();
 
 	/**
 	 * Checks whether this match is equal to the given match.
@@ -73,11 +78,15 @@ public interface IMatch {
 	 *         pattern and map all parameters to the same name
 	 */
 	default boolean isEqual(final IMatch match) {
+		if (getParameterNames().size() != match.getParameterNames().size()) {
+			return false;
+		}
+		
 		if (!getPatternName().equals(match.getPatternName())) {
 			return false;
 		}
-
-		if (getParameterNames().size() != match.getParameterNames().size()) {
+		
+		if(getHashCode() != match.getHashCode()) {
 			return false;
 		}
 

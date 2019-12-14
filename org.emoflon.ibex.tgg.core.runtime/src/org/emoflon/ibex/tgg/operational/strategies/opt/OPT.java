@@ -66,7 +66,7 @@ public abstract class OPT extends OperationalStrategy {
 		super(options);
 	}
 
-	public OPT(final IbexOptions options, final IUpdatePolicy policy) {
+	public OPT(final IbexOptions options, final IUpdatePolicy policy) throws IOException {
 		super(options, policy);
 	}
 

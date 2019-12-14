@@ -1,5 +1,6 @@
 package org.emoflon.ibex.gt.engine;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +37,9 @@ public class MatchFilter {
 	 * @return a stream containing matches
 	 */
 	public static Stream<IMatch> getFilteredMatchStream(final IBeXContext pattern, final Map<String, Object> parameters,
-			final Map<String, List<IMatch>> matches) {
+			final Map<String, Collection<IMatch>> matches) {
 		if (pattern instanceof IBeXContextPattern) {
-			return getFilteredMatchStream((IBeXContextPattern) pattern, parameters, matches);
+			return MatchFilter.getFilteredMatchStream((IBeXContextPattern) pattern, parameters, matches);
 		} else if (pattern instanceof IBeXContextAlternatives) {
 			IBeXContextAlternatives alternatives = (IBeXContextAlternatives) pattern;
 			Function<IMatch, IMatch> renameMatchToAlternativePattern = m -> {
@@ -48,7 +49,7 @@ public class MatchFilter {
 
 			Stream<IMatch> matchStream = Stream.empty();
 			for (IBeXContextPattern alternativePattern : alternatives.getAlternativePatterns()) {
-				Stream<IMatch> matchesForAlterative = getFilteredMatchStream(alternativePattern, parameters, matches)
+				Stream<IMatch> matchesForAlterative = MatchFilter.getFilteredMatchStream(alternativePattern, parameters, matches)
 						.map(renameMatchToAlternativePattern);
 				matchStream = Stream.concat(matchStream, matchesForAlterative);
 			}
@@ -70,7 +71,7 @@ public class MatchFilter {
 	 * @return a stream containing matches
 	 */
 	private static Stream<IMatch> getFilteredMatchStream(final IBeXContextPattern pattern,
-			final Map<String, Object> parameters, final Map<String, List<IMatch>> matches) {
+			final Map<String, Object> parameters, final Map<String, Collection<IMatch>> matches) {
 		if (!matches.containsKey(pattern.getName())) {
 			return Stream.empty();
 		}
