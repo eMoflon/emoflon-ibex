@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime.precedencegra
+ ph
+Bundle-SymbolicName: org.emoflon.ibex.tgg.core.runtime.precedencegraph
+ ;singleton:=true
+Export-Package: precedencegraph,
+ precedencegraph.impl,
+ precedencegraph.util
+Bundle-Name: eMoflon::IBeX Bidirectional Model Transformation via Triple Graph Grammars - PrecedenceGraph
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xmi
+Bundle-ManifestVersion: 2
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: 
+ eMoflon::IBeX Developers
+Bundle-ClassPath: .

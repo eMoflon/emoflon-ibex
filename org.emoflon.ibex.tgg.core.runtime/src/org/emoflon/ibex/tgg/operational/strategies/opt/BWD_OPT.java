@@ -7,9 +7,10 @@ import java.util.ArrayList;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 
 import language.TGGRuleCorr;
@@ -36,7 +37,7 @@ public abstract class BWD_OPT extends OPT {
 		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
-			IMatch comatch = idToMatch.get(id);
+			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
 				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
@@ -63,7 +64,7 @@ public abstract class BWD_OPT extends OPT {
 	}
 	
 	@Override
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, IMatch comatch, String ruleName) {
+	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));

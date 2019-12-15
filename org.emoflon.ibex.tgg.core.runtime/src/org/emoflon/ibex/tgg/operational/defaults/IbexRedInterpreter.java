@@ -10,24 +10,24 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 public class IbexRedInterpreter implements IRedInterpreter {
-	private final SYNC strategy;
+	private final ExtOperationalStrategy strategy;
 	
 	private int numOfDeletedNodes = 0;
 
-	public IbexRedInterpreter(final SYNC operationalStrategy) {
-		this.strategy = operationalStrategy;
+	public IbexRedInterpreter(final ExtOperationalStrategy extOperationalStrategy) {
+		this.strategy = extOperationalStrategy;
 	}
 
 	@Override
-	public void revokeOperationalRule(final IMatch match) {
+	public void revokeOperationalRule(final ITGGMatch match) {
 		TGGRuleApplication ra = strategy.getRuleApplicationNode(match);
 		IGreenPattern pattern = strategy.revokes(match);
 
@@ -49,7 +49,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 *            the create pattern
 	 * @return the edges to revoke
 	 */
-	private Set<EMFEdge> getEdgesToRevoke(final IMatch match, final IGreenPattern pattern) {
+	private Set<EMFEdge> getEdgesToRevoke(final ITGGMatch match, final IGreenPattern pattern) {
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 
 		// Collect created edges to revoke.
@@ -70,7 +70,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 *            the create pattern
 	 * @return the nodes to revoke
 	 */
-	private Set<EObject> getNodesToRevoke(final IMatch match, final IGreenPattern pattern) {
+	private Set<EObject> getNodesToRevoke(final ITGGMatch match, final IGreenPattern pattern) {
 		Set<EObject> nodesToRevoke = new HashSet<EObject>();
 
 		pattern.getSrcTrgNodesCreatedByPattern().stream() //
@@ -90,7 +90,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 * @param pattern
 	 *            the pattern
 	 */
-	private void revokeCorrs(final IMatch match, final IGreenPattern pattern) {
+	private void revokeCorrs(final ITGGMatch match, final IGreenPattern pattern) {
 		Set<EObject> nodesToRevoke = new HashSet<EObject>();
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 
@@ -103,7 +103,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		revoke(nodesToRevoke, edgesToRevoke);
 	}
 
-	private void revokeCorr(EObject corr, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
+	public void revokeCorr(EObject corr, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
 		EReference srcFeature = (EReference) corr.eClass().getEStructuralFeature("source");
 		EReference trgFeature = (EReference) corr.eClass().getEStructuralFeature("target");
 
@@ -134,7 +134,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 * @param edgesToRevoke
 	 *            the edges to revoke
 	 */
-	private void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
+	public void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
 		numOfDeletedNodes += nodesToRevoke.size();
 		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> strategy.addToTrash(node));
 	}

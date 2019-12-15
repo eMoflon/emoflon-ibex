@@ -17,7 +17,7 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.GreenSCPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -47,12 +47,12 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		this.operationalStrategy = operationalStrategy;
 	}
 
-	public void createNonCorrNodes(IMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
+	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
 		for (TGGRuleNode n : greenNodes)
 			comatch.put(n.getName(), createNode(comatch, n));
 	}
 
-	public Collection<EMFEdge> createEdges(IMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
+	public Collection<EMFEdge> createEdges(ITGGMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
 		Collection<EMFEdge> result = new ArrayList<>();
 		for (TGGRuleEdge e : greenEdges) {
 			EObject src = (EObject) comatch.get(e.getSrcNode().getName());
@@ -68,14 +68,14 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return result;
 	}
 
-	public void createCorrs(IMatch comatch, Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
+	public void createCorrs(ITGGMatch comatch, Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		for (TGGRuleCorr c : greenCorrs) {
 			comatch.put(c.getName(), createCorr(comatch, c, comatch.get(c.getSource().getName()),
 					comatch.get(c.getTarget().getName())));
 		}
 	}
 
-	private EObject createNode(IMatch match, TGGRuleNode node) {
+	private EObject createNode(ITGGMatch match, TGGRuleNode node) {
 		numOfCreatedNodes++;
 
 		EObject newObj = EcoreUtil.create(node.getType());
@@ -95,7 +95,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return Optional.of(Pair.of(node_attr[1], node_attr[2]));
 	}
 
-	private void applyAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
+	private void applyAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject newObj) {
 		Collection<String> attributeNames = match.getParameterNames().stream() //
 				.filter(pname -> {
 					Optional<Pair<String, String>> o = getNodeAndAttrFromVarName(pname);
@@ -114,7 +114,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 	}
 
-	private void applyInPlaceAttributeAssignments(IMatch match, TGGRuleNode node, EObject newObj) {
+	private void applyInPlaceAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject newObj) {
 		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
 			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
@@ -148,7 +148,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 	}
 
-	private EObject createCorr(IMatch comatch, TGGRuleNode node, Object src, Object trg) {
+	private EObject createCorr(ITGGMatch comatch, TGGRuleNode node, Object src, Object trg) {
 		EObject corr = createNode(comatch, node);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
@@ -156,7 +156,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	@Override
-	public Optional<IMatch> apply(IGreenPattern greenPattern, String ruleName, IMatch match) {
+	public Optional<ITGGMatch> apply(IGreenPattern greenPattern, String ruleName, ITGGMatch match) {
 		// Check if match is valid
 		if (matchIsInvalid(ruleName, greenPattern, match)) {
 			logger.debug("Blocking application as match is invalid.");
@@ -175,7 +175,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			return Optional.empty();
 		}
 
-		IMatch comatch = match.copy();
+		ITGGMatch comatch = match.copy();
 
 		createNonCorrNodes(comatch, greenPattern.getSrcNodes(), operationalStrategy.getSourceResource());
 		createNonCorrNodes(comatch, greenPattern.getTrgNodes(), operationalStrategy.getTargetResource());
@@ -205,7 +205,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return Optional.of(comatch);
 	}
 
-	private boolean matchIsInvalid(String ruleName, IGreenPattern greenPattern, IMatch match) {
+	private boolean matchIsInvalid(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
 		return violatesConformTypesOfGreenNodes(match, greenPattern, ruleName)
 				|| violatesUpperBounds(ruleName, greenPattern, match)
 				|| violatesContainerSemantics(ruleName, greenPattern, match)
@@ -213,7 +213,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				|| createsCyclicContainment(ruleName, greenPattern, match);
 	}
 
-	private boolean createsCyclicContainment(String ruleName, IGreenPattern greenPattern, IMatch match) {
+	private boolean createsCyclicContainment(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
 		for (TGGRuleEdge edge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
 			if (canCreateCyclicContainment(greenPattern, edge)) {
 				EObject src = (EObject) match.get(edge.getSrcNode().getName());
@@ -235,7 +235,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				&& edge.getType().isContainment();
 	}
 
-	private boolean createsDoubleEdge(String ruleName, IGreenPattern greenPattern, IMatch match) {
+	private boolean createsDoubleEdge(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
 		for (TGGRuleEdge edge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
 			if (canCreateDoubleEdge(greenPattern, edge)) {
 				EObject src = (EObject) match.get(edge.getSrcNode().getName());
@@ -265,7 +265,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return !containsByName(greenPattern.getSrcTrgNodesCreatedByPattern(), srcNode);
 	}
 
-	private boolean violatesContainerSemantics(String ruleName, IGreenPattern greenPattern, IMatch match) {
+	private boolean violatesContainerSemantics(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
 		// GreenSCPattern do not need this check since it is allowed in order to repair
 		// a model
 		if (greenPattern instanceof GreenSCPattern)
@@ -287,7 +287,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				&& !containsByName(greenPattern.getSrcTrgNodesCreatedByPattern(), greenEdge.getTrgNode());
 	}
 
-	private boolean violatesUpperBounds(String ruleName, IGreenPattern greenPattern, IMatch match) {
+	private boolean violatesUpperBounds(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
 		for (TGGRuleEdge greenEdge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
 			if (violationIsPossible(greenPattern, greenEdge)) {
 				if (violatesUpperBounds(ruleName, greenEdge, match, greenPattern))
@@ -315,7 +315,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return elts.stream().anyMatch(x -> x.getName().equals(elt.getName()));
 	}
 
-	private boolean violatesUpperBounds(String ruleName, TGGRuleEdge greenEdge, IMatch match,
+	private boolean violatesUpperBounds(String ruleName, TGGRuleEdge greenEdge, ITGGMatch match,
 			IGreenPattern greenPattern) {
 		EObject matchedSrcNode = (EObject) match.get(greenEdge.getSrcNode().getName());
 		int upperBound = greenEdge.getType().getUpperBound();
@@ -349,7 +349,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	 * @param ruleName
 	 * @return
 	 */
-	protected boolean violatesConformTypesOfGreenNodes(IMatch match, IGreenPattern greenPattern, String ruleName) {
+	protected boolean violatesConformTypesOfGreenNodes(ITGGMatch match, IGreenPattern greenPattern, String ruleName) {
 		for (TGGRuleNode gsn : greenPattern.getNodesMarkedByPattern()) {
 			if (gsn.getType() != ((EObject) match.get(gsn.getName())).eClass())
 				return true;

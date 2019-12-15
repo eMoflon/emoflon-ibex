@@ -4,7 +4,6 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,10 +21,11 @@ import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.collections.ObjectToIntMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.ConsistencyReporter;
@@ -36,13 +36,12 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
-import org.osgi.framework.Bundle;
 
 import language.TGGRuleNode;
 
 public abstract class OPT extends OperationalStrategy {
 
-	protected IntToObjectMap<IMatch> idToMatch = cfactory.createIntToObjectHashMap();
+	protected IntToObjectMap<ITGGMatch> idToMatch = cfactory.createIntToObjectHashMap();
 	protected Map<EMFEdge, IntSet> edgeToMarkingMatches = cfactory.createEMFEdgeHashMap();
 	protected Map<EObject, IntSet> nodeToMarkingMatches = cfactory.createObjectToObjectHashMap();
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
@@ -286,7 +285,7 @@ public abstract class OPT extends OperationalStrategy {
 
 	}
 
-	protected Set<EObject> getGreenNodes(final IMatch comatch, final String ruleName) {
+	protected Set<EObject> getGreenNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
 		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getGreenSrcNodesInRule()));
 		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getGreenTrgNodesInRule()));
@@ -294,7 +293,7 @@ public abstract class OPT extends OperationalStrategy {
 		return result;
 	}
 
-	protected Set<EObject> getBlackNodes(final IMatch comatch, final String ruleName) {
+	protected Set<EObject> getBlackNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
 		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getBlackSrcNodesInRule()));
 		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getBlackTrgNodesInRule()));
@@ -302,7 +301,7 @@ public abstract class OPT extends OperationalStrategy {
 		return result;
 	}
 
-	protected Set<EObject> getNodes(final IMatch comatch, final Collection<? extends TGGRuleNode> specNodes) {
+	protected Set<EObject> getNodes(final ITGGMatch comatch, final Collection<? extends TGGRuleNode> specNodes) {
 		Set<EObject> result = cfactory.createObjectSet();
 		specNodes.forEach(n -> {
 			result.add((EObject) comatch.get(n.getName()));
@@ -310,7 +309,7 @@ public abstract class OPT extends OperationalStrategy {
 		return result;
 	}
 
-	protected Set<EMFEdge> getGreenEdges(final IMatch comatch, final String ruleName) {
+	protected Set<EMFEdge> getGreenEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
 		result.addAll(((IbexGreenInterpreter) this.greenInterpreter).createEdges(comatch,
 				this.getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
@@ -319,7 +318,7 @@ public abstract class OPT extends OperationalStrategy {
 		return result;
 	}
 
-	protected Set<EMFEdge> getBlackEdges(final IMatch comatch, final String ruleName) {
+	protected Set<EMFEdge> getBlackEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
 		result.addAll(((IbexGreenInterpreter) this.greenInterpreter).createEdges(comatch,
 				this.getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
@@ -328,7 +327,7 @@ public abstract class OPT extends OperationalStrategy {
 		return result;
 	}
 
-	protected Collection<EObject> getRuleApplicationNodes(final IMatch comatch) {
+	protected Collection<EObject> getRuleApplicationNodes(final ITGGMatch comatch) {
 		return comatch.getParameterNames().stream().filter(p -> p.endsWith(TGGPatternUtil.protocolNodeSuffix))
 				.map(comatch::get).map(EObject.class::cast).collect(Collectors.toList());
 	}
@@ -367,7 +366,7 @@ public abstract class OPT extends OperationalStrategy {
 	@Override
 	protected void removeBlackInterpreter() {
 		super.removeBlackInterpreter();
-		for (IMatch m : this.idToMatch.values()) {
+		for (ITGGMatch m : this.idToMatch.values()) {
 			for (String parameter : m.getParameterNames()) {
 				EObject object = (EObject) m.get(parameter);
 				object.eAdapters().clear();

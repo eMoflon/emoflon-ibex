@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.monitoring;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 
 /**
@@ -34,12 +34,12 @@ public interface IbexObservable {
 	/**
 	 * Called when a match has been successfully applied
 	 */
-	public void notifyMatchApplied(IMatch match, String ruleName);
+	public void notifyMatchApplied(ITGGMatch match, String ruleName);
 
 	/**
 	 * Called when a match needs to be chosen. Notifies observers of this event.
 	 */
-	public IMatch notifyChooseMatch(ImmutableMatchContainer matchContainer);
+	public ITGGMatch notifyChooseMatch(ImmutableMatchContainer matchContainer);
 
 	/**
 	 * Registers the Observer at the Observable.

@@ -4,25 +4,25 @@ import java.util.Collection;
 import java.util.Set;
 
 public interface IMatchContainer {
-	public void addMatch(IMatch match);
+	public void addMatch(ITGGMatch match);
 	
-	public boolean removeMatch(IMatch match);
+	public boolean removeMatch(ITGGMatch match);
 	
-	public void removeMatches(Collection<IMatch> matches);
+	public void removeMatches(Collection<ITGGMatch> matches);
 	
-	default IMatch getNext() {
+	default ITGGMatch getNext() {
 		return getMatches().iterator().next();
 	}
 	
-	public Set<IMatch> getMatches();
+	public Set<ITGGMatch> getMatches();
 	
 	default boolean isEmpty() {
 		return getMatches().isEmpty();
 	}
 	
-	public String getRuleName(IMatch match);
+	public String getRuleName(ITGGMatch match);
 	
 	public void removeAllMatches();
 	
-	public void matchApplied(IMatch m);
+	public void matchApplied(ITGGMatch m);
 }
