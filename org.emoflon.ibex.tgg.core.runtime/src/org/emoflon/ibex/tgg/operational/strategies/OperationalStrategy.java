@@ -46,10 +46,6 @@ import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
 public abstract class OperationalStrategy extends AbstractIbexObservable implements IMatchObserver {
-	private long currentIntervalStart = -1;
-	private final long INTERVAL_LENGTH = 5000;
-	private long matchCounter = 0;
-
 	protected final static Logger logger = Logger.getLogger(OperationalStrategy.class);
 
 	// Resource management
@@ -67,8 +63,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	private boolean domainsHaveNoSharedTypes;
 	private Map<String, IGreenPatternFactory> factories;
 	
-	protected Map<IMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
-
 	// Configuration
 	protected final IbexOptions options;
 
@@ -221,20 +215,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		// TODO Auto-generated method stub	
 	}
 
-	@Override
-	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		matchCounter++;
-		if (currentIntervalStart == -1) {
-			logger.info("Now collecting matches...");
-			currentIntervalStart = System.currentTimeMillis();
-		} else if (System.currentTimeMillis() - currentIntervalStart > INTERVAL_LENGTH) {
-			logger.info("Collected " + matchCounter + " matches...");
-			currentIntervalStart = System.currentTimeMillis();
-		}
-
-		addOperationalRuleMatch((IMatch) match);
-	}
-
 	protected void addOperationalRuleMatch(IMatch match) {
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY))
 			addConsistencyMatch(match);
@@ -250,14 +230,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		consistencyMatches.put(ruleAppNode, match);
 		logger.debug("Received and added consistency match: " + match.getPatternName() + "(" + match.hashCode() + ")");
-	}
-
-	@Override
-	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if (removeOperationalRuleMatch((IMatch) match)) {
-			logger.debug("Removed due to delete event from pattern matcher: ");
-			logger.debug(match.getPatternName());
-		}
 	}
 
 	protected boolean removeOperationalRuleMatch(IMatch match) {
@@ -335,7 +307,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected Optional<IMatch> processOperationalRuleMatch(String ruleName, IMatch match) {
 		//generatedPatternsSizeObserver.setNodes(match);
-		if (this.getBlockedMatches().containsKey(match)) { 
+		if (getBlockedMatches().containsKey(match)) { 
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}
@@ -508,11 +480,5 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	
 	public IMatchContainer getMatchContainer() {
 		return operationalMatchContainer;
-	}
-	
-	/***** Benchmark Logging *****/
-	
-	protected void collectDataToBeLogged() {
-		options.getBenchmarkLogger().setNumOfMatchesFound(matchCounter);
 	}
 }

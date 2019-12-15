@@ -100,8 +100,6 @@ public abstract class FWD_OPT extends OPT {
 		matchToContextEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 
-		handleBundles(comatch, ruleName);
-
 		idCounter++;
 	}
 

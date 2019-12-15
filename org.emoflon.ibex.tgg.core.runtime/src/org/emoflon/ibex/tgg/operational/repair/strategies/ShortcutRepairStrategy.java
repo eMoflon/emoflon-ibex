@@ -13,7 +13,6 @@ import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDire
 import org.emoflon.ibex.tgg.operational.repair.strategies.util.OverlapUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
-import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
 
 import runtime.TGGRuleApplication;
 
