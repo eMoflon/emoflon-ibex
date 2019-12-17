@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.rule;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.TGGOverlap;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
+import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;

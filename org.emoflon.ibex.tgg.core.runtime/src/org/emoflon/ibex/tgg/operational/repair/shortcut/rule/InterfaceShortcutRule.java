@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.rule;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getMarkerRefName;
@@ -15,10 +15,10 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.ShortcutRule.SCInputRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.TGGOverlap;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
+import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.BindingType;

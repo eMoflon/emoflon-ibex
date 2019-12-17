@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
 
 import java.util.Map;
 

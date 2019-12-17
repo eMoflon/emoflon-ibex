@@ -27,10 +27,10 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AttributeRepairStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.sync.repair.ShortcutRepairStrategy;
 
 import language.BindingType;
 import language.DomainType;

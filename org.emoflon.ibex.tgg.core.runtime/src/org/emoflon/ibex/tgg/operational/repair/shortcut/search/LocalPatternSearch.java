@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.search;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,13 +7,13 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.CSPCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.Lookup;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.NACNodeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.NodeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SCMatch;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 
 import language.BindingType;
 import language.TGGRuleNode;

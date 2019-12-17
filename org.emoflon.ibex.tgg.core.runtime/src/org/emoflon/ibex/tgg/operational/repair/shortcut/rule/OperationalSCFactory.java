@@ -1,12 +1,12 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.rule;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
+import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.BindingType;

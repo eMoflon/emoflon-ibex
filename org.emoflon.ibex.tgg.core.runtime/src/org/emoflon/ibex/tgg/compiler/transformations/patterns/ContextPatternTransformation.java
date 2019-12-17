@@ -7,7 +7,7 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFWDBlackP
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
-import static org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil.isAxiomatic;
+import static org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil.isAxiomatic;
 
 import java.util.ArrayList;
 import java.util.Collection;

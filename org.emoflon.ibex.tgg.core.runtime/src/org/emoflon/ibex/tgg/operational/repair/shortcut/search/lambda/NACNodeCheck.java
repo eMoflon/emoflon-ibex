@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda;
 
 import java.util.Set;
 

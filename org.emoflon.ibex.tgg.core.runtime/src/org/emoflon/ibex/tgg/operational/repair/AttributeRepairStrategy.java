@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.sync.repair;
+package org.emoflon.ibex.tgg.operational.repair;
 
 import java.util.Collection;
 import java.util.Map;

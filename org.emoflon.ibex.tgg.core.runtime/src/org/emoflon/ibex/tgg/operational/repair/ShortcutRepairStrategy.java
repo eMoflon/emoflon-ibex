@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.sync.repair;
+package org.emoflon.ibex.tgg.operational.repair;
 
 import java.util.Collection;
 import java.util.Map;
@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.ShortcutPatternTool;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.OverlapUtil;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 

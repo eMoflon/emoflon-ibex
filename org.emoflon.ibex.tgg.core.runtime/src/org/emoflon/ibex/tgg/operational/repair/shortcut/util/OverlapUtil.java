@@ -1,7 +1,7 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-import static org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil.isAxiomatic;
+import static org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil.isAxiomatic;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;

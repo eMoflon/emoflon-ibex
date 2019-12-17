@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.rule;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
@@ -17,16 +17,16 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.SearchKey;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.SearchPlan;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.CSPCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.Lookup;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.NACNodeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.lambda.NodeCheck;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.EMFNavigationUtil;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchKey;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
+import org.emoflon.ibex.tgg.operational.repair.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 

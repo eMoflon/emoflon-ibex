@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut;
+package org.emoflon.ibex.tgg.operational.repair.shortcut;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,14 +19,14 @@ import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.OperationalSCFactory;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule.ShortcutRule.SCInputRule;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.search.LocalPatternSearch;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SCPersistence;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.util.SyncDirection;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalSCFactory;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearch;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
+import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.BindingType;

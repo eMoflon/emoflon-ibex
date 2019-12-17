@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.rule;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.rule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.operational.matches.IMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IbexGreenPattern;
-import org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;
