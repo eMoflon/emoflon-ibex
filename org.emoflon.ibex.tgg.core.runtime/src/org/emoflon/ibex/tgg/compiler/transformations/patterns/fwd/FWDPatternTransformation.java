@@ -17,7 +17,7 @@ public class FWDPatternTransformation extends FWD_OPTPatternTransformation {
 
 	@Override
 	protected String getPatternName() {
-		return TGGPatternUtil.getFWDBlackPatternName(rule.getName());
+		return TGGPatternUtil.generateFWDBlackPatternName(rule.getName());
 	}
 
 	@Override

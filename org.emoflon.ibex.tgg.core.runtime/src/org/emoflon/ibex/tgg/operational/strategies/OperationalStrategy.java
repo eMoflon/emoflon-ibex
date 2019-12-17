@@ -16,8 +16,8 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
@@ -25,8 +25,8 @@ import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
@@ -45,7 +45,7 @@ import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
-public abstract class OperationalStrategy extends AbstractIbexObservable implements IMatchObserver {
+public abstract class OperationalStrategy extends AbstractIbexObservable {
 	private long currentIntervalStart = -1;
 	private final long INTERVAL_LENGTH = 5000;
 	private long matchCounter = 0;
@@ -215,12 +215,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	/***** Match and pattern management *****/
-	
-	@Override
-	public void notifySubscriptions() {
-		// TODO Auto-generated method stub	
-	}
-
 	@Override
 	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
 		matchCounter++;
@@ -264,8 +258,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		return operationalMatchContainer.removeMatch(match);
 	}
 
-	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return isPatternRelevantForCompiler(patternName);
+	public boolean isPatternRelevantForInterpreter(PatternType patternType) {
+		return isPatternRelevantForCompiler(patternType);
 	}
 	
 	private boolean matchIsDomainConform(ITGGMatch match) {

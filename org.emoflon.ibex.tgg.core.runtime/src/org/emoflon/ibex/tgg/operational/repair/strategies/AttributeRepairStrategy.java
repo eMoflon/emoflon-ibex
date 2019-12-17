@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies;
+package org.emoflon.ibex.tgg.operational.repair.strategies;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,7 +11,6 @@ import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.sync.repair.AbstractRepairStrategy;
 
 import runtime.TGGRuleApplication;
 

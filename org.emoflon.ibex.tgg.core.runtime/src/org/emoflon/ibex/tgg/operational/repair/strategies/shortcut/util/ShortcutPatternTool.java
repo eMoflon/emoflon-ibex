@@ -137,7 +137,7 @@ public class ShortcutPatternTool {
 		);
 		
 		IGreenPatternFactory greenFactory = strategy.getGreenFactory(osr.getScRule().getTargetRule().getName());
-		IGreenPattern greenPattern = greenFactory.create(TGGPatternUtil.getFWDBlackPatternName(osr.getScRule().getTargetRule().getName()));
+		IGreenPattern greenPattern = greenFactory.create(TGGPatternUtil.generateFWDBlackPatternName(osr.getScRule().getTargetRule().getName()));
 		greenPattern.createMarkers(osr.getScRule().getTargetRule().getName(), newMatch);
 		
 		return newMatch;

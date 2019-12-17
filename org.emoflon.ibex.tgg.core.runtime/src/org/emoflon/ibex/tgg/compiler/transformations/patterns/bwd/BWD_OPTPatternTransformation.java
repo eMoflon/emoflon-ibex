@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getBWDOptBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWDOptBlackPatternName;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 
 	@Override
 	protected String getPatternName() {
-		return getBWDOptBlackPatternName(rule.getName());
+		return generateBWDOptBlackPatternName(rule.getName());
 	}
 	
 	@Override

@@ -129,31 +129,31 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	}
 
 	private boolean isBWDBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getBWDBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.generateBWDBlackPatternName(ruleName));
 	}
 
 	private boolean isFWDBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getFWDBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.generateFWDBlackPatternName(ruleName));
 	}
 
 	private boolean isCOBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getCOBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.generateCOBlackPatternName(ruleName));
 	}
 
 	private boolean isCCBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getCCBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.generateCCBlackPatternName(ruleName));
 	}
 
 	private boolean isGENBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getGENBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.generateGENBlackPatternName(ruleName));
 	}
 
 	private boolean isFWDOptBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getFWDOptBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.generateFWDOptBlackPatternName(ruleName));
 	}
 
 	private boolean isBWDOptBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getBWDOptBlackPatternName(ruleName));
+		return patternName.equals(TGGPatternUtil.generateBWDOptBlackPatternName(ruleName));
 	}
  
 	public IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {

@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -121,8 +121,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 	}
 
 	@Override
-	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.GEN) || patternName.endsWith(PatternSuffixes.GEN_AXIOM_NAC);
+	public boolean isPatternRelevantForCompiler(PatternType patternType) {
+		return patternType == PatternType.GEN || patternType == PatternType.GEN_AXIOM_NAC;
 	}
 
 	/********************** Internal Interface *********************/
@@ -137,11 +137,6 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * In contrast to other TGG ops, MODELGEN (i) does not automatically remove
 	 * successful matches (but can use them repeatedly), (ii) updates the state of
 	 * its stop criterion after every rule application.
-	 * 
-	 * <br/>
-	 * 
-	 * For TGGs with multi-amalgamation, all complement matches are handled
-	 * immediately after the corresponding kernel match.
 	 */
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
@@ -212,7 +207,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
 		Set<ITGGMatch> matchesToRemove = new HashSet<>();
 
-		String axiomName = TGGPatternUtil.getGENBlackPatternName(//
+		String axiomName = TGGPatternUtil.generateGENBlackPatternName(//
 				TGGPatternUtil.extractGENAxiomNacName(match.getPatternName()));
 
 		operationalMatchContainer.getMatches()//
@@ -246,7 +241,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	private void collectMatchesForAxioms() {
 		options.getFlattenedConcreteTGGRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom())
 				.forEach(r -> {
-					addOperationalRuleMatch(new SimpleMatch(TGGPatternUtil.getGENBlackPatternName(r.getName())));
+					addOperationalRuleMatch(new SimpleMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
 				});
 	}
 }

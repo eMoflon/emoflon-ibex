@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.gen;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getGENBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateGENBlackPatternName;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected String getPatternName() {
-		return getGENBlackPatternName(rule.getName());
+		return generateGENBlackPatternName(rule.getName());
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.opt;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getCCBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateCCBlackPatternName;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected String getPatternName() {
-		return getCCBlackPatternName(rule.getName());
+		return generateCCBlackPatternName(rule.getName());
 	}
 
 	@Override
