@@ -3,19 +3,19 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.ShortCutRuleCRS;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.DeleteConflictResStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.CompromiseCRS;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.DeleteConflictResStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.PreserveDeletionCRS;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.RevokeDeletionCRS;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.ShortCutRuleCRS;
 
 public class DeleteConflict extends Conflict {
 
 	private final Set<ConflictingElement> subjects;
 	private final DeletionChain deletionChain;
 
-	DeleteConflict(INTEGRATE integrate, ITGGMatch match, Set<ConflictingElement> subjects) {
+	DeleteConflict(INTEGRATE_Op integrate, ITGGMatch match, Set<ConflictingElement> subjects) {
 		super(match);
 		this.subjects = subjects;
 		this.deletionChain = new DeletionChain(integrate, match);

@@ -12,23 +12,29 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
 import org.emoflon.ibex.tgg.operational.monitoring.data.TGGObjectGraph;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 	private int step = 0;
+	private IbexOptions options;
 	private OperationalStrategy operationalStrategy;
 	private List<ProtocolStep> protocolsStepList = new ArrayList<ProtocolStep>();
 	private Map<ITGGMatch, IbexMatch> matchMapping = new HashMap<>();
 	private String previouslyAppliedRule;
+	private TGGResourceHandler resourceHandler;
 
 	public void register(OperationalStrategy pOperationalStrategy) {
 		operationalStrategy = pOperationalStrategy;
+		options = operationalStrategy.getOptions();
+		resourceHandler = options.getResourceHandler();
 		pOperationalStrategy.registerObserver(this);
 		pOperationalStrategy.setUpdatePolicy(this);
 	}
@@ -58,17 +64,17 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
 	private void updateProtocols(String appliedRuleName) {
 
-		EList<EObject> protocols = operationalStrategy.getProtocolResource().getContents();
+		EList<EObject> protocols = resourceHandler.getProtocolResource().getContents();
 		if (protocols.isEmpty())
 			return;
 
 		int index = protocols.size() - 1;
 		EList<EObject> items = protocols.get(index).eCrossReferences();
 		ProtocolStep protocolStep = new ProtocolStep(index,
-				new TGGObjectGraph(filterResourceItems(items, operationalStrategy.getSourceResource()),
-						filterResourceItems(items, operationalStrategy.getTargetResource()),
-						filterResourceItems(items, operationalStrategy.getCorrResource())),
-				operationalStrategy.getTGG().getRules().stream().filter(rule -> rule.getName().equals(appliedRuleName))
+				new TGGObjectGraph(filterResourceItems(items, resourceHandler.getSourceResource()),
+						filterResourceItems(items, resourceHandler.getTargetResource()),
+						filterResourceItems(items, resourceHandler.getCorrResource())),
+				options.tgg().getRules().stream().filter(rule -> rule.getName().equals(appliedRuleName))
 						.findFirst().orElse(null));
 		protocolsStepList.add(protocolStep);
 	}

@@ -1,46 +1,33 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 
-public abstract class SYNC extends ExtOperationalStrategy {
-
-	/***** Constructors *****/
+public final class SYNC extends IbexExecutable {
 
 	public SYNC(IbexOptions options) throws IOException {
-		super(options);
+		strategy = new SYNC_Op(this, options);
 	}
+}
 
-	/***** Resource management *****/
+class SYNC_Op extends ExtOperationalStrategy {
 
-	@Override
-	public void saveModels() throws IOException {
-		s.save(null);
-		t.save(null);
-		c.save(null);
-		p.save(null);
-	}
+	/***** Constructors 
+	 * @param sync *****/
 
-	@Override
-	public void loadModels() throws IOException {
-		long tic = System.currentTimeMillis();
-		s = loadResource(options.projectPath() + "/instances/src.xmi");
-		t = loadResource(options.projectPath() + "/instances/trg.xmi");
-		c = loadResource(options.projectPath() + "/instances/corr.xmi");
-		p = loadResource(options.projectPath() + "/instances/protocol.xmi");
-		EcoreUtil.resolveAll(rs);
-		long toc = System.currentTimeMillis();
-
-		logger.info("Loaded all models in: " + (toc - tic) / 1000.0 + "s");
+	protected SYNC_Op(SYNC sync, IbexOptions options) throws IOException {
+		super(sync, options);
 	}
 
 	/***** Sync algorithm *****/
@@ -60,32 +47,34 @@ public abstract class SYNC extends ExtOperationalStrategy {
 	}
 
 	public void forward() throws IOException {
-		strategy = new FWD_Strategy();
+		syncStrategy = new FWD_Strategy();
 		run();
 	}
 
 	public void backward() throws IOException {
-		strategy = new BWD_Strategy();
+		syncStrategy = new BWD_Strategy();
 		run();
 	}
 
 	/***** Match and pattern management *****/
 
 	@Override
-	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.BWD)//
-				|| patternName.endsWith(PatternSuffixes.FWD)//
-				|| patternName.endsWith(PatternSuffixes.CONSISTENCY);
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		Collection<PatternType> types = new LinkedList<>();
+		types.add(PatternType.BWD);
+		types.add(PatternType.FWD);
+		types.add(PatternType.CONSISTENCY);
+		return types;
 	}
 
 	@Override
-	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return strategy.isPatternRelevantForInterpreter(patternName);
+	public boolean isPatternRelevantForInterpreter(PatternType type) {
+		return syncStrategy.isPatternRelevantForInterpreter(type);
 	}
 
 	@Override
 	public IGreenPattern revokes(ITGGMatch match) {
-		return strategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
+		return syncStrategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
 	}
 
 	private void logCreatedAndDeletedNumbers() {

@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.defaults;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
@@ -7,14 +8,18 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.xmi.XMLResource.ResourceHandler;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
-import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictResolver;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DefaultConflictResolver;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 import language.TGG;
@@ -22,13 +27,13 @@ import language.TGGRule;
 import language.TGGRuleNode;
 
 public class IbexOptions {
-	private boolean blackInterpSupportsAttrConstrs = true;
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
 	private String projectName;
 	private TGG tgg;
 	private TGG flattenedTGG;
+	private TGGResourceHandler resourceHandler;
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private SupportedILPSolver ilpSolver;
@@ -53,6 +58,8 @@ public class IbexOptions {
 	
 	// Model Integration
 	private ConflictResolver conflictSolver;
+	private MatchDistributor matchDistributor;
+	private OperationalStrategy strategy;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
@@ -71,6 +78,13 @@ public class IbexOptions {
 		conflictSolver = new DefaultConflictResolver();
 		
 		applyConcurrently = false;
+
+		try {
+			resourceHandler = new TGGResourceHandler(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		matchDistributor = new MatchDistributor(this);
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -186,15 +200,6 @@ public class IbexOptions {
 		return userDefinedConstraints;
 	}
 
-	public boolean blackInterpSupportsAttrConstrs() {
-		return blackInterpSupportsAttrConstrs;
-	}
-
-	public IbexOptions blackInterpSupportsAttrConstrs(boolean value) {
-		blackInterpSupportsAttrConstrs = value;
-		return this;
-	}
-	
 	public IBlackInterpreter getBlackInterpreter() {
 		return blackInterpreter;
 	}
@@ -287,5 +292,17 @@ public class IbexOptions {
 
 	public void setConflictSolver(ConflictResolver conflictSolver) {
 		this.conflictSolver = conflictSolver;
+	}
+	
+	public TGGResourceHandler getResourceHandler() {
+		return resourceHandler;
+	}
+
+	public void setResourceHandler(TGGResourceHandler resourceHandler) {
+		this.resourceHandler = resourceHandler;
+	}
+	
+	public MatchDistributor getMatchDistributor() {
+		return matchDistributor;
 	}
 }

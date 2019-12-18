@@ -9,6 +9,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 
 public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements ITGGMatch {
 	private final Collection<EMFEdge> edges;
+	private PatternType type;
 
 	public SimpleMatch(String patternName) {
 		super(patternName);

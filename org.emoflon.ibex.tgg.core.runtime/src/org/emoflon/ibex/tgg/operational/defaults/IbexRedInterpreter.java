@@ -13,17 +13,23 @@ import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 public class IbexRedInterpreter implements IRedInterpreter {
-	private final ExtOperationalStrategy strategy;
+	private final OperationalStrategy strategy;
+	private IbexOptions options;
 	
 	private int numOfDeletedNodes = 0;
+	private TGGResourceHandler resourceHandler;
 
-	public IbexRedInterpreter(final ExtOperationalStrategy extOperationalStrategy) {
-		this.strategy = extOperationalStrategy;
+	public IbexRedInterpreter(OperationalStrategy operationalStrategy) {
+		this.strategy = operationalStrategy;
+		options = strategy.getOptions();
+		resourceHandler = options.getResourceHandler();
 	}
 
 	@Override
@@ -111,7 +117,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		if (sourceObject != null) {
 			edgesToRevoke.add(new EMFEdge(corr, sourceObject, srcFeature));
 			if (EMFManipulationUtils.isDanglingNode(Optional.of(sourceObject))) {
-				strategy.addToTrash(sourceObject);
+				resourceHandler.addToTrash(sourceObject);
 			}
 		}
 
@@ -119,7 +125,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		if (targetObject != null) {
 			edgesToRevoke.add(new EMFEdge(corr, targetObject, trgFeature));
 			if (EMFManipulationUtils.isDanglingNode(Optional.of(targetObject))) {
-				strategy.addToTrash(targetObject);
+				resourceHandler.addToTrash(targetObject);
 			}
 		}
 
@@ -136,7 +142,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 */
 	public void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
 		numOfDeletedNodes += nodesToRevoke.size();
-		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> strategy.addToTrash(node));
+		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> resourceHandler.addToTrash(node));
 	}
 
 	@Override

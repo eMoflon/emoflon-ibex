@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
@@ -16,7 +16,7 @@ public class CompromiseCRS extends DeleteConflictResStrategy {
 	}
 
 	@Override
-	public void apply(INTEGRATE integrate) {
+	public void apply(INTEGRATE_Op integrate) {
 		AnalysedMatch analysedMatch = integrate.getAnalysedMatches().get(conflict.getMatch());
 
 		conflict.getDeletionChain().foreachReverse(m -> {

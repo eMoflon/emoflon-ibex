@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -15,6 +16,7 @@ import org.emoflon.delta.validation.DeltaValidator;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
@@ -23,8 +25,8 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
-import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
@@ -36,367 +38,349 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
+import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 
 import delta.DeltaContainer;
 import language.BindingType;
 import language.TGGRuleCorr;
 import runtime.TGGRuleApplication;
 
-public abstract class INTEGRATE extends ExtOperationalStrategy {
-
-	private IntegrationPattern pattern;
-	private BrokenMatchAnalyser matchAnalyser;
-	private ModelChangeProtocol modelChangeProtocol;
-	private ConflictDetector conflictDetector;
-
-	protected Resource epg;
-
-	protected DeltaContainer userDeltaContainer;
-	protected BiConsumer<EObject, EObject> userDeltaBiConsumer;
-	protected GroupKey userDeltaKey;
-
-	// Element classification
-	private Map<EObject, EltClassifier> classifiedNodes;
-	private Map<EMFEdge, EltClassifier> classifiedEdges;
-
-	private Set<ITGGMatch> filterNacMatches;
-	private Map<ITGGMatch, AnalysedMatch> analysedMatches;
-	private Set<Mismatch> mismatches;
-
+public final class INTEGRATE extends IbexExecutable {
 	public INTEGRATE(IbexOptions options) throws IOException {
-		super(options);
-		pattern = new IntegrationPattern();
-		classifiedNodes = new HashMap<>();
-		classifiedEdges = new HashMap<>();
-		filterNacMatches = new HashSet<>();
-		analysedMatches = new HashMap<>();
-		mismatches = new HashSet<>();
+		strategy = new INTEGRATE_Op(this, options);
 	}
+	
+	public class INTEGRATE_Op extends ExtOperationalStrategy {
+		private IntegrationPattern pattern;
+		private BrokenMatchAnalyser matchAnalyser;
+		private ModelChangeProtocol modelChangeProtocol;
+		private ConflictDetector conflictDetector;
 
-	public void integrate() throws IOException {
-		run();
-	}
+		protected Resource epg;
 
-	@Override
-	public void run() throws IOException {
-		blackInterpreter.updateMatches();
-		getEPG().update();
-		modelChangeProtocol.attachAdapter();
-		userDeltaKey = modelChangeProtocol.new GroupKey();
-		modelChangeProtocol.setGroupKey(userDeltaKey);
+		protected DeltaContainer userDeltaContainer;
+		protected BiConsumer<EObject, EObject> userDeltaBiConsumer;
+		protected GroupKey userDeltaKey;
 
-		applyUserDelta();
+		// Element classification
+		private Map<EObject, EltClassifier> classifiedNodes;
+		private Map<EMFEdge, EltClassifier> classifiedEdges;
 
-		blackInterpreter.updateMatches();
+		private Set<ITGGMatch> filterNacMatches;
+		private Map<ITGGMatch, AnalysedMatch> analysedMatches;
+		private Set<Mismatch> mismatches;
 
-//		repair();
-		deleteCorrsOfBrokenMatches();
-		analyseAndClassifyMatches();
-		detectAndResolveConflicts();
-		
-		modelChangeProtocol.unsetGroupKey();
-		
-		fillClassificationMaps();
-		calculateIntegrationSolution();
-		cleanUp();
-	}
-
-	protected void applyUserDelta() {
-		if (userDeltaContainer != null) {
-			modelChangeProtocol.util.applyUserDelta(userDeltaContainer);
-			userDeltaContainer = null;
-		} else if (userDeltaBiConsumer != null) {
-			userDeltaBiConsumer.accept(s.getContents().get(0), t.getContents().get(0));
-			userDeltaBiConsumer = null;
+		public INTEGRATE_Op(IbexExecutable integrate, IbexOptions options) throws IOException {
+			super(integrate, options);
+			pattern = new IntegrationPattern();
+			classifiedNodes = new HashMap<>();
+			classifiedEdges = new HashMap<>();
+			filterNacMatches = new HashSet<>();
+			analysedMatches = new HashMap<>();
+			mismatches = new HashSet<>();
+			
+			initIntegrateDependantTools();
 		}
 
-	}
-
-	protected void deleteCorrsOfBrokenMatches() {
-		Map<TGGRuleApplication, ITGGMatch> processed = new HashMap<>();
-		do {
-			blackInterpreter.updateMatches();
-		} while (deleteCorrs(processed));
-		brokenRuleApplications.putAll(processed);
-	}
-
-	protected void analyseAndClassifyMatches() {
-		blackInterpreter.updateMatches();
-		getEPG().update();
-
-		analysedMatches.clear();
-		for (ITGGMatch brokenMatch : getBrokenMatches()) {
-			AnalysedMatch analysedMatch = matchAnalyser.analyse(brokenMatch);
-			analysedMatches.put(brokenMatch, analysedMatch);
+		public void integrate() throws IOException {
+			run();
 		}
 
-		mismatches.clear();
-		for (AnalysedMatch am : getAnalysedMatches().values()) {
-			for (MatchClassificationComponent mcc : pattern.getMCComponents()) {
-				if (mcc.isApplicable(am)) {
-					getMismatches().add(mcc.classify(this, am));
-					break;
+		@Override
+		public void run() throws IOException {
+			matchDistributor.updateMatches();
+			getEPG().update();
+			modelChangeProtocol.attachAdapter();
+			userDeltaKey = modelChangeProtocol.new GroupKey();
+			modelChangeProtocol.setGroupKey(userDeltaKey);
+
+			applyUserDelta();
+
+			matchDistributor.updateMatches();
+
+//			repair();
+			deleteCorrsOfBrokenMatches();
+			analyseAndClassifyMatches();
+			detectAndResolveConflicts();
+
+			modelChangeProtocol.unsetGroupKey();
+
+			fillClassificationMaps();
+			calculateIntegrationSolution();
+			cleanUp();
+		}
+
+		protected void applyUserDelta() {
+			if (userDeltaContainer != null) {
+				modelChangeProtocol.util.applyUserDelta(userDeltaContainer);
+				userDeltaContainer = null;
+			} else if (userDeltaBiConsumer != null) {
+				userDeltaBiConsumer.accept(resourceHandler.getSourceResource().getContents().get(0),
+						resourceHandler.getTargetResource().getContents().get(0));
+				userDeltaBiConsumer = null;
+			}
+
+		}
+
+		protected void deleteCorrsOfBrokenMatches() {
+			Map<TGGRuleApplication, ITGGMatch> processed = new HashMap<>();
+			do {
+				matchDistributor.updateMatches();
+			} while (deleteCorrs(processed));
+			brokenRuleApplications.putAll(processed);
+		}
+
+		protected void analyseAndClassifyMatches() {
+			matchDistributor.updateMatches();
+			getEPG().update();
+
+			analysedMatches.clear();
+			for (ITGGMatch brokenMatch : getBrokenMatches()) {
+				AnalysedMatch analysedMatch = matchAnalyser.analyse(brokenMatch);
+				analysedMatches.put(brokenMatch, analysedMatch);
+			}
+
+			mismatches.clear();
+			for (AnalysedMatch am : getAnalysedMatches().values()) {
+				for (MatchClassificationComponent mcc : pattern.getMCComponents()) {
+					if (mcc.isApplicable(am)) {
+						getMismatches().add(mcc.classify(this, am));
+						break;
+					}
 				}
 			}
 		}
-	}
 
-	protected void detectAndResolveConflicts() {
-		conflictDetector.detectDeleteConflicts().forEach(conflict -> {
-			options.getConflictSolver().resolveDeleteConflict(conflict).apply(this);
-		});
-	}
-
-	protected void fillClassificationMaps() {
-		mismatches.forEach(mm -> {
-			classifiedNodes.putAll(mm.getClassifiedNodes());
-			classifiedEdges.putAll(mm.getClassifiedEdges());
-		});
-	}
-
-	protected void calculateIntegrationSolution() {
-		// TODO adrianm: implement
-	}
-
-	private boolean deleteCorrs(Map<TGGRuleApplication, ITGGMatch> processed) {
-		if (brokenRuleApplications.isEmpty())
-			return false;
-		getBrokenMatches().forEach(m -> deleteGreenCorr(m));
-		processed.putAll(brokenRuleApplications);
-		brokenRuleApplications.clear();
-		return true;
-	}
-
-	/**
-	 * Deletes all green correspondence elements.
-	 * 
-	 * @param match
-	 */
-	private void deleteGreenCorr(ITGGMatch match) {
-		Set<EObject> nodesToRevoke = new HashSet<EObject>();
-		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
-		prepareGreenCorrDeletion(match, nodesToRevoke, edgesToRevoke);
-		getIbexRedInterpreter().revoke(nodesToRevoke, edgesToRevoke);
-	}
-
-	/**
-	 * <p>
-	 * Determines green correspondence elements and adds them to the passed sets
-	 * (nodesToRevoke & edgesToRevoke).
-	 * </p>
-	 * <p>
-	 * To delete this elements call
-	 * {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
-	 * </p>
-	 * 
-	 * @param match
-	 * @param nodesToRevoke
-	 * @param edgesToRevoke
-	 */
-	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		matchAnalyser.getRule(match.getRuleName()).getNodes().stream() //
-				.filter(n -> (n instanceof TGGRuleCorr) && n.getBindingType().equals(BindingType.CREATE)) //
-				.map(c -> (EObject) match.get(c.getName())) //
-				.forEach(c -> getIbexRedInterpreter().revokeCorr(c, nodesToRevoke, edgesToRevoke));
-	}
-
-	protected void cleanUp() {
-		modelChangeProtocol.detachAdapter();
-		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
-		classifiedNodes = new HashMap<>();
-		classifiedEdges = new HashMap<>();
-		analysedMatches = new HashMap<>();
-		mismatches = new HashSet<>();
-	}
-
-	@Override
-	protected void initializeRepairStrategy(IbexOptions options) {
-		if (!repairStrategies.isEmpty())
-			return;
-
-		if (options.repairUsingShortcutRules()) {
-			repairStrategies.add(new ShortcutRepairStrategy(this));
+		protected void detectAndResolveConflicts() {
+			conflictDetector.detectDeleteConflicts().forEach(conflict -> {
+				options.getConflictSolver().resolveDeleteConflict(conflict).apply(this);
+			});
 		}
-		if (options.repairAttributes()) {
-			repairStrategies.add(new AttributeRepairStrategy(this));
+
+		protected void fillClassificationMaps() {
+			mismatches.forEach(mm -> {
+				classifiedNodes.putAll(mm.getClassifiedNodes());
+				classifiedEdges.putAll(mm.getClassifiedEdges());
+			});
 		}
-	}
 
-	@Override
-	protected IMatchContainer createMatchContainer() {
-		return new ExtPrecedenceGraph(this);
-	}
-
-	public Resource getEPGResource() {
-		return epg;
-	}
-
-	@Override
-	public void loadModels() throws IOException {
-		long tic = System.currentTimeMillis();
-		s = loadResource(options.projectPath() + "/instances/src.xmi");
-		t = loadResource(options.projectPath() + "/instances/trg.xmi");
-		c = loadResource(options.projectPath() + "/instances/corr.xmi");
-		p = loadResource(options.projectPath() + "/instances/protocol.xmi");
-		epg = createResource(options.projectPath() + "/instances/epg.xmi");
-		EcoreUtil.resolveAll(rs);
-		long toc = System.currentTimeMillis();
-
-		logger.info("Loaded all models in: " + (toc - tic) / 1000.0 + "s");
-	}
-
-	@Override
-	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD) //
-				|| patternName.endsWith(PatternSuffixes.BWD) //
-				|| patternName.endsWith(PatternSuffixes.CONSISTENCY) //
-				|| patternName.endsWith(PatternSuffixes.CC) //
-				|| patternName.endsWith(PatternSuffixes.FILTER_NAC);
-	}
-
-	@Override
-	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return super.isPatternRelevantForInterpreter(patternName);
-	}
-
-	@Override
-	public IGreenPattern revokes(ITGGMatch match) {
-		// TODO adrianm: implement
-		return super.revokes(match);
-	}
-
-	@Override
-	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.FILTER_NAC))
-			filterNacMatches.add((ITGGMatch) match);
-		else
-			super.addMatch(match);
-	}
-
-	@Override
-	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.FILTER_NAC))
-			filterNacMatches.remove(match);
-		else
-			super.removeMatch(match);
-	}
-
-	@Override
-	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
-		super.registerBlackInterpreter(blackInterpreter);
-
-		BenchmarkLogger.startTimer();
-		initIntegrateDependantTools();
-		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
-	}
-
-	public BrokenMatchAnalyser getMatchAnalyser() {
-		return matchAnalyser;
-	}
-
-	public ExtPrecedenceGraph getEPG() {
-		try {
-			return (ExtPrecedenceGraph) operationalMatchContainer;
-		} catch (Exception e) {
-			throw new RuntimeException("ExtPrecedenceGraph implementation is needed", e);
+		protected void calculateIntegrationSolution() {
+			// TODO adrianm: implement
 		}
-	}
 
-	public ModelChangeProtocol getModelChangeProtocol() {
-		return modelChangeProtocol;
-	}
-
-	public IBlackInterpreter getBlackInterpreter() {
-		return blackInterpreter;
-	}
-
-	public IRedInterpreter getRedInterpreter() {
-		return redInterpreter;
-	}
-
-	public IbexRedInterpreter getIbexRedInterpreter() {
-		try {
-			return (IbexRedInterpreter) getRedInterpreter();
-		} catch (Exception e) {
-			throw new RuntimeException("IbexRedInterpreter implementation is needed", e);
+		private boolean deleteCorrs(Map<TGGRuleApplication, ITGGMatch> processed) {
+			if (brokenRuleApplications.isEmpty())
+				return false;
+			getBrokenMatches().forEach(m -> deleteGreenCorr(m));
+			processed.putAll(brokenRuleApplications);
+			brokenRuleApplications.clear();
+			return true;
 		}
-	}
 
-	public Collection<ITGGMatch> getBrokenMatches() {
-		return brokenRuleApplications.values();
-	}
+		/**
+		 * Deletes all green correspondence elements.
+		 * 
+		 * @param match
+		 */
+		private void deleteGreenCorr(ITGGMatch match) {
+			Set<EObject> nodesToRevoke = new HashSet<EObject>();
+			Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
+			prepareGreenCorrDeletion(match, nodesToRevoke, edgesToRevoke);
+			getIbexRedInterpreter().revoke(nodesToRevoke, edgesToRevoke);
+		}
 
-	public Map<EObject, EltClassifier> getClassifiedNodes() {
-		return classifiedNodes;
-	}
+		/**
+		 * <p>
+		 * Determines green correspondence elements and adds them to the passed sets
+		 * (nodesToRevoke & edgesToRevoke).
+		 * </p>
+		 * <p>
+		 * To delete this elements call
+		 * {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
+		 * </p>
+		 * 
+		 * @param match
+		 * @param nodesToRevoke
+		 * @param edgesToRevoke
+		 */
+		private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
+			matchAnalyser.getRule(match.getRuleName()).getNodes().stream() //
+					.filter(n -> (n instanceof TGGRuleCorr) && n.getBindingType().equals(BindingType.CREATE)) //
+					.map(c -> (EObject) match.get(c.getName())) //
+					.forEach(c -> getIbexRedInterpreter().revokeCorr(c, nodesToRevoke, edgesToRevoke));
+		}
 
-	public Map<EMFEdge, EltClassifier> getClassifiedEdges() {
-		return classifiedEdges;
-	}
+		protected void cleanUp() {
+			modelChangeProtocol.detachAdapter();
+			modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
+					resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
+			classifiedNodes = new HashMap<>();
+			classifiedEdges = new HashMap<>();
+			analysedMatches = new HashMap<>();
+			mismatches = new HashSet<>();
+		}
 
-	public Set<ITGGMatch> getFilterNacMatches() {
-		return filterNacMatches;
-	}
+		@Override
+		protected void initializeRepairStrategy(IbexOptions options) {
+			if (!repairStrategies.isEmpty())
+				return;
 
-	public Map<ITGGMatch, AnalysedMatch> getAnalysedMatches() {
-		return analysedMatches;
-	}
+			if (options.repairUsingShortcutRules()) {
+				repairStrategies.add(new ShortcutRepairStrategy(this));
+			}
+			if (options.repairAttributes()) {
+				repairStrategies.add(new AttributeRepairStrategy(this));
+			}
+		}
 
-	public Set<Mismatch> getMismatches() {
-		return mismatches;
-	}
-	
-	public ModelChanges getUserModelChanges() {
-		return modelChangeProtocol.getModelChanges(userDeltaKey);
-	}
+		@Override
+		protected IMatchContainer createMatchContainer() {
+			return new ExtPrecedenceGraph(this);
+		}
 
-	/**
-	 * Applies a given delta to source and target models specified by a
-	 * {@link BiConsumer} providing the source and target root elements.
-	 * <p>
-	 * Alternatively use {@link INTEGRATE#applyDelta(DeltaContainer)}.
-	 * </p>
-	 * 
-	 * @param delta delta to be applied
-	 */
-	public void applyDelta(BiConsumer<EObject, EObject> delta) {
-		this.userDeltaBiConsumer = delta;
-	}
+		@Override
+		public Collection<PatternType> getPatternRelevantForCompiler() {
+			Collection<PatternType> types = new LinkedList<>();
+			types.add(PatternType.FWD);
+			types.add(PatternType.BWD);
+			types.add(PatternType.CONSISTENCY);
+			types.add(PatternType.CC);
+			types.add(PatternType.FILTER_NAC);
+			return types;
+		}
 
-	/**
-	 * Applies a given delta to source and target models specified by a
-	 * {@link delta.DeltaContainer DeltaContainer}.
-	 * <p>
-	 * Alternatively use {@link INTEGRATE#applyDelta(BiConsumer)}.
-	 * </p>
-	 * 
-	 * @param delta delta to be applied
-	 * @throws InvalidDeltaException if a <code>Delta</code> of the given
-	 *                               <code>DeltaContainer</code> has an invalid
-	 *                               structure or invalid components
-	 */
-	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
-		DeltaValidator.validate(delta);
-		this.userDeltaContainer = delta;
-	}
+		@Override
+		public boolean isPatternRelevantForInterpreter(PatternType type) {
+			switch (type) {
+			case FWD:
+				return true;
+			case BWD:
+				return true;
+			case CONSISTENCY:
+				return true;
+			case CC:
+				return true;
+			case FILTER_NAC:
+				return true;
+			default:
+				return false;
+			}
+		}
 
-	private void initIntegrateDependantTools() {
-		matchAnalyser = new BrokenMatchAnalyser(this);
-		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
-		conflictDetector = new ConflictDetector(this);
-	}
+		@Override
+		public IGreenPattern revokes(ITGGMatch match) {
+			// TODO adrianm: implement
+			return super.revokes(match);
+		}
 
-	@Override
-	public void loadTGG() throws IOException {
-		super.loadTGG();
-	}
+		@Override
+		public void addOperationalRuleMatch(ITGGMatch match) {
+			if (match.getType() == PatternType.FILTER_NAC)
+				filterNacMatches.add((ITGGMatch) match);
+			else
+				super.addOperationalRuleMatch(match);
+		}
 
-	@Override
-	public void saveModels() throws IOException {
-		s.save(null);
-		t.save(null);
-		c.save(null);
-		p.save(null);
-		epg.save(null);
+		@Override
+		public boolean removeOperationalRuleMatch(ITGGMatch match) {
+			if (match.getType() == PatternType.FILTER_NAC)
+				return filterNacMatches.remove(match);
+			else
+				return super.removeOperationalRuleMatch(match);
+		}
+
+		public BrokenMatchAnalyser getMatchAnalyser() {
+			return matchAnalyser;
+		}
+
+		public ExtPrecedenceGraph getEPG() {
+			try {
+				return (ExtPrecedenceGraph) operationalMatchContainer;
+			} catch (Exception e) {
+				throw new RuntimeException("ExtPrecedenceGraph implementation is needed", e);
+			}
+		}
+
+		public ModelChangeProtocol getModelChangeProtocol() {
+			return modelChangeProtocol;
+		}
+
+		public IRedInterpreter getRedInterpreter() {
+			return redInterpreter;
+		}
+
+		public IbexRedInterpreter getIbexRedInterpreter() {
+			try {
+				return (IbexRedInterpreter) getRedInterpreter();
+			} catch (Exception e) {
+				throw new RuntimeException("IbexRedInterpreter implementation is needed", e);
+			}
+		}
+
+		public Collection<ITGGMatch> getBrokenMatches() {
+			return brokenRuleApplications.values();
+		}
+
+		public Map<EObject, EltClassifier> getClassifiedNodes() {
+			return classifiedNodes;
+		}
+
+		public Map<EMFEdge, EltClassifier> getClassifiedEdges() {
+			return classifiedEdges;
+		}
+
+		public Set<ITGGMatch> getFilterNacMatches() {
+			return filterNacMatches;
+		}
+
+		public Map<ITGGMatch, AnalysedMatch> getAnalysedMatches() {
+			return analysedMatches;
+		}
+
+		public Set<Mismatch> getMismatches() {
+			return mismatches;
+		}
+
+		public ModelChanges getUserModelChanges() {
+			return modelChangeProtocol.getModelChanges(userDeltaKey);
+		}
+
+		/**
+		 * Applies a given delta to source and target models specified by a
+		 * {@link BiConsumer} providing the source and target root elements.
+		 * <p>
+		 * Alternatively use {@link INTEGRATE#applyDelta(DeltaContainer)}.
+		 * </p>
+		 * 
+		 * @param delta delta to be applied
+		 */
+		public void applyDelta(BiConsumer<EObject, EObject> delta) {
+			this.userDeltaBiConsumer = delta;
+		}
+
+		/**
+		 * Applies a given delta to source and target models specified by a
+		 * {@link delta.DeltaContainer DeltaContainer}.
+		 * <p>
+		 * Alternatively use {@link INTEGRATE#applyDelta(BiConsumer)}.
+		 * </p>
+		 * 
+		 * @param delta delta to be applied
+		 * @throws InvalidDeltaException if a <code>Delta</code> of the given
+		 *                               <code>DeltaContainer</code> has an invalid
+		 *                               structure or invalid components
+		 */
+		public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
+			DeltaValidator.validate(delta);
+			this.userDeltaContainer = delta;
+		}
+
+		private void initIntegrateDependantTools() {
+			matchAnalyser = new BrokenMatchAnalyser(this);
+			modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(), resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
+			conflictDetector = new ConflictDetector(this);
+		}
 	}
 }
+
+

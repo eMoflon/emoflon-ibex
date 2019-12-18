@@ -15,7 +15,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.collections.IntSet;
 import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
@@ -28,7 +27,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.opt.cc.ConsistencyReporter;
+import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
@@ -62,12 +61,12 @@ public abstract class OPT extends OperationalStrategy {
 	protected Map<EReference, EReference> referenceToEOpposite = cfactory.createObjectToObjectHashMap();
 	protected Map<EReference, Boolean> referenceToContainment = cfactory.createObjectToObjectHashMap();
 
-	public OPT(final IbexOptions options) throws IOException {
-		super(options);
+	public OPT(IbexExecutable executable, final IbexOptions options) throws IOException {
+		super(executable, options);
 	}
 
-	public OPT(final IbexOptions options, final IUpdatePolicy policy) throws IOException {
-		super(options, policy);
+	public OPT(IbexExecutable executable, final IbexOptions options, final IUpdatePolicy policy) throws IOException {
+		super(executable, options, policy);
 	}
 
 	/**
@@ -84,7 +83,7 @@ public abstract class OPT extends OperationalStrategy {
 	@Override
 	public void run() throws IOException {
 		do
-			this.blackInterpreter.updateMatches();
+			this.matchDistributor.updateMatches();
 		while (this.processOneOperationalRuleMatch());
 
 		this.wrapUp();
@@ -359,13 +358,8 @@ public abstract class OPT extends OperationalStrategy {
 	public abstract double getDefaultWeightForMatch(IMatch comatch, String ruleName);
 
 	@Override
-	public Resource loadResource(final String workspaceRelativePath) throws IOException {
-		return super.loadResource(workspaceRelativePath);
-	}
-
-	@Override
-	protected void removeBlackInterpreter() {
-		super.removeBlackInterpreter();
+	public void terminate() {
+		matchDistributor.removeBlackInterpreter();
 		for (ITGGMatch m : this.idToMatch.values()) {
 			for (String parameter : m.getParameterNames()) {
 				EObject object = (EObject) m.get(parameter);

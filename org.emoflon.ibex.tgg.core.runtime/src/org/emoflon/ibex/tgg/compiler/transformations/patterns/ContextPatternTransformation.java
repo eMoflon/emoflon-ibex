@@ -7,7 +7,7 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDB
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
-import static org.emoflon.ibex.tgg.operational.repair.strategies.util.TGGUtil.isAxiomatic;
+import static org.emoflon.ibex.tgg.operational.repair.util.TGGUtil.isAxiomatic;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -120,7 +120,7 @@ public class ContextPatternTransformation {
 	}
 
 	private void createPatternIfRelevant(TGGRule rule, Consumer<TGGRule> transformer, PatternType type) {
-		if (strategy.isPatternRelevantForCompiler(type)) {
+		if (strategy.getPatternRelevantForCompiler().contains(type)) {
 			transformer.accept(rule);
 		}
 	}

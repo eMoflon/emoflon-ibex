@@ -9,7 +9,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EObjectEList;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 import language.DomainType;
 import language.TGGRule;
@@ -18,10 +19,10 @@ import language.TGGRuleNode;
 
 public class BrokenMatchAnalyser {
 
-	private final INTEGRATE integrate;
+	private final INTEGRATE_Op integrate;
 	private final Map<String, TGGRule> rules;
 
-	public BrokenMatchAnalyser(INTEGRATE integrate) {
+	public BrokenMatchAnalyser(INTEGRATE_Op integrate) {
 		this.integrate = integrate;
 		List<TGGRule> rules = integrate.getOptions().flattenedTGG().getRules();
 		this.rules = rules.stream() //
@@ -82,11 +83,12 @@ public class BrokenMatchAnalyser {
 	}
 
 	private boolean isValidResource(Resource resource) {
-		if (resource.equals(integrate.getSourceResource()))
+		TGGResourceHandler resourceHandler = integrate.getOptions().getResourceHandler();
+		if (resource.equals(resourceHandler.getSourceResource()))
 			return true;
-		if (resource.equals(integrate.getTargetResource()))
+		if (resource.equals(resourceHandler.getTargetResource()))
 			return true;
-		if (resource.equals(integrate.getCorrResource()))
+		if (resource.equals(resourceHandler.getCorrResource()))
 			return true;
 		return false;
 	}

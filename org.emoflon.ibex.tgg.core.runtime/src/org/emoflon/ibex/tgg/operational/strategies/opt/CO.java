@@ -3,25 +3,36 @@ package org.emoflon.ibex.tgg.operational.strategies.opt;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
+import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
-public abstract class CO extends CC {
+public final class CO extends IbexExecutable {
 
 	public CO(IbexOptions options) throws IOException {
-		super(options, new NextMatchUpdatePolicy());
+		strategy = new CO_Op(this, options);
+	}
+}
+
+class CO_Op extends CC_Op {
+	
+	protected CO_Op(CO co, IbexOptions options) throws IOException {
+		super(co, options, new NextMatchUpdatePolicy());
 	}
 
 	@Override
-	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.CO) || patternName.endsWith(PatternSuffixes.GENForCO);
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		Collection<PatternType> types = new LinkedList<>();
+		types.add(PatternType.CO);
+		types.add(PatternType.GENForCO);
+		return types;
 	}
 
 	@Override
@@ -39,21 +50,6 @@ public abstract class CO extends CC {
 		consistencyReporter.initWithCorr(this);
 	}
 
-	@Override
-	public void loadModels() throws IOException {
-		s = loadResource(options.projectPath() + "/instances/src.xmi");
-		t = loadResource(options.projectPath() + "/instances/trg.xmi");
-		c = loadResource(options.projectPath() + "/instances/corr.xmi");
-		p = createResource(options.projectPath() + "/instances/protocol.xmi");
-
-		EcoreUtil.resolveAll(rs);
-	}
-
-	@Override
-	public void saveModels() throws IOException {
-		p.save(null);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -69,16 +65,12 @@ public abstract class CO extends CC {
 
 	@Override
 	public boolean modelsAreConsistent() {
-		return getInconsistentSrcNodes().size() + getInconsistentTrgNodes().size() + getInconsistentSrcEdges().size()
-				+ getInconsistentTrgEdges().size() + getInconsistentCorrNodes().size() == 0;
+		return getInconsistentSrcNodes().size() + getInconsistentTrgNodes().size()
+				+ getInconsistentSrcEdges().size() + getInconsistentTrgEdges().size()
+				+ getInconsistentCorrNodes().size() == 0;
 	}
 
 	public Collection<EObject> getInconsistentCorrNodes() {
 		return consistencyReporter.getInconsistentCorrNodes();
-	}
-
-	@Override
-	public String getGENPatternForMaximality() {
-		return PatternSuffixes.GENForCO;
 	}
 }

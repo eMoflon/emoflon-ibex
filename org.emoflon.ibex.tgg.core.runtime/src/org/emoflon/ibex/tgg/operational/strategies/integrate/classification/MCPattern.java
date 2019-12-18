@@ -1,6 +1,9 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import static org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification.*;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification.COMPL_DEL;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification.PART_DEL;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification.UNCHANGED;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification.UNSPECIFIED;
 
 import java.util.List;
 

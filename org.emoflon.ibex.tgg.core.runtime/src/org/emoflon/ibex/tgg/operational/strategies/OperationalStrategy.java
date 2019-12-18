@@ -9,20 +9,15 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.resource.ContentHandler;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
-import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
-import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
@@ -33,33 +28,19 @@ import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 import language.TGG;
-import language.TGGRule;
+import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.impl.LanguagePackageImpl;
-import runtime.RuntimeFactory;
 import runtime.TGGRuleApplication;
-import runtime.TempContainer;
-import runtime.impl.RuntimePackageImpl;
 
 public abstract class OperationalStrategy extends AbstractIbexObservable {
-	private long currentIntervalStart = -1;
-	private final long INTERVAL_LENGTH = 5000;
-	private long matchCounter = 0;
-
 	protected final static Logger logger = Logger.getLogger(OperationalStrategy.class);
-
-	// Resource management
-	protected final URI base;
-	protected ResourceSet rs;
-	protected Resource trash;
-	protected Resource s;
-	protected Resource t;
-	protected Resource c;
-	protected Resource p;
 
 	// Match and pattern management
 	protected IMatchContainer operationalMatchContainer;
@@ -73,167 +54,74 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 	protected final IbexOptions options;
 
 	// Model manipulation
-	private RuntimeTGGAttrConstraintProvider runtimeConstraintProvider;
-	protected IBlackInterpreter blackInterpreter;
 	protected IGreenInterpreter greenInterpreter;
+	
+	protected TGGResourceHandler resourceHandler;
+
+	protected MatchDistributor matchDistributor;
+
+	private IbexExecutable executable;
 
 	/***** Constructors *****/
 
-	public OperationalStrategy(IbexOptions options) {
-		this(options, new NextMatchUpdatePolicy());
+	public OperationalStrategy(IbexExecutable executable, IbexOptions options) {
+		this(executable, options, new NextMatchUpdatePolicy());
 	}
 
-	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
-		BenchmarkLogger.startTimer();
-		
+	protected OperationalStrategy(IbexExecutable executable, IbexOptions options, IUpdatePolicy policy) {
 		this.options = options;
+		this.executable = executable;
+		initialize(options, policy);
+	}
+	
+	private void initialize(IbexOptions options, IUpdatePolicy policy) {
+		BenchmarkLogger.startTimer();
+		this.notifyStartInit();
+		
 		this.setUpdatePolicy(policy);
 
-		base = URI.createPlatformResourceURI("/", true);
+		resourceHandler = options.getResourceHandler();
+		matchDistributor = options.getMatchDistributor();
 		factories = new HashMap<>();
+
+		matchDistributor.register(getPatternRelevantForCompiler(), this::addOperationalRuleMatch, this::removeOperationalRuleMatch);
+		
+		this.notifyStartLoading();
+		resourceHandler.initialize();
+		this.notifyLoadingFinished();
+		matchDistributor.initialize();
 
 		greenInterpreter = new IbexGreenInterpreter(this);
 
 		consistencyMatches = cfactory.createObjectToObjectHashMap();
 		
 		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
+		
+		this.operationalMatchContainer = createMatchContainer();
+		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
+		
+		
+		this.notifyDoneInit();
+		
+		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
 	}
 
 	/***** Resource management *****/
 
-	public ResourceSet getResourceSet() {
-		return rs;
-	}
-
-	public Resource getSourceResource() {
-		return s;
-	}
-
-	public Resource getTargetResource() {
-		return t;
-	}
-
-	public Resource getCorrResource() {
-		return c;
-	}
-
-	public Resource getProtocolResource() {
-		return p;
-	}
-
 	public TGG getTGG() {
 		return options.tgg();
-	}
-
-	abstract public void saveModels() throws IOException;
-
-	abstract public void loadModels() throws IOException;
-
-	protected void createAndPrepareResourceSet() {
-		rs = blackInterpreter.createAndPrepareResourceSet(options.workspacePath());
-	}
-
-	protected void registerInternalMetamodels() {
-		// Register internals for Ibex
-		LanguagePackageImpl.init();
-		RuntimePackageImpl.init();
-	}
-
-	public EPackage loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
-		String uri = URI.createURI(workspaceRelativePath).toString();
-		if(rs.getPackageRegistry().containsKey(uri)) {
-			return rs.getPackageRegistry().getEPackage(uri);
-		}
-		Resource res = loadResource(workspaceRelativePath);
-		EPackage pack = (EPackage) res.getContents().get(0);
-		pack = (EPackage) rs.getPackageRegistry().getOrDefault(res.getURI().toString(), pack);
-		rs.getPackageRegistry().put(res.getURI().toString(), pack);
-		rs.getPackageRegistry().put(pack.getNsURI(), pack);
-		rs.getResources().remove(res);
-		return pack;
-	}
-
-	public EPackage loadAndRegisterCorrMetamodel(String workspaceRelativePath) throws IOException {
-		EPackage pack = loadAndRegisterMetamodel(workspaceRelativePath);
-		options.setCorrMetamodel(pack);
-		return pack;
-	}
-
-	public Resource loadResource(String workspaceRelativePath) throws IOException {
-		Resource res = createResource(workspaceRelativePath);
-		res.load(null);
-		EcoreUtil.resolveAll(res);
-		return res;
-	}
-
-	public Resource createResource(String workspaceRelativePath) {
-		URI uri = URI.createURI(workspaceRelativePath);
-		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
-		return res;
-	}
-
-	protected void loadTGG() throws IOException {
-		Resource res = loadTGGResource();
-		Resource flattenedRes = loadFlattenedTGGResource();
-
-		EcoreUtil.resolveAll(rs);
-		EcoreUtil.UnresolvedProxyCrossReferencer//
-				.find(rs)//
-				.forEach((eob, settings) -> logger.error("Problems resolving: " + eob));
-
-		options.tgg((TGG) res.getContents().get(0));
-		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
-
-		runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
-				options.tgg().getAttributeConstraintDefinitionLibrary());
-		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
-		options.setConstraintProvider(runtimeConstraintProvider);
-
-		rs.getResources().remove(res);
-		rs.getResources().remove(flattenedRes);
-
-		this.operationalMatchContainer = createMatchContainer();
-
-		domainsHaveNoSharedTypes = options.tgg().getSrc().stream().noneMatch(options.tgg().getTrg()::contains);
 	}
 
 	protected IMatchContainer createMatchContainer() {
 		return new MatchContainer(options.flattenedTGG());
 	}
 
-	protected Resource loadFlattenedTGGResource() throws IOException {
-		return loadResource(options.projectPath() + "/model/" + options.projectName() + "_flattened.tgg.xmi");
-	}
-
-	protected Resource loadTGGResource() throws IOException {
-		return loadResource(options.projectPath() + "/model/" + options.projectName() + ".tgg.xmi");
-	}
-
-	public void addToTrash(EObject o) {
-		TempContainer c = (TempContainer) trash.getContents().get(0);
-		c.getObjects().add(EcoreUtil.getRootContainer(o));
-	}
-
 	/***** Match and pattern management *****/
-	@Override
-	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		matchCounter++;
-		if (currentIntervalStart == -1) {
-			logger.info("Now collecting matches...");
-			currentIntervalStart = System.currentTimeMillis();
-		} else if (System.currentTimeMillis() - currentIntervalStart > INTERVAL_LENGTH) {
-			logger.info("Collected " + matchCounter + " matches...");
-			currentIntervalStart = System.currentTimeMillis();
-		}
-
-		addOperationalRuleMatch((ITGGMatch) match);
-	}
-
 	protected void addOperationalRuleMatch(ITGGMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY))
+		if (match.getType() == PatternType.CONSISTENCY)
 			addConsistencyMatch(match);
 
-		if (isPatternRelevantForInterpreter(match.getPatternName()) && matchIsDomainConform(match)) {
+		if (isPatternRelevantForInterpreter(match.getType()) && matchIsDomainConform(match)) {
 			operationalMatchContainer.addMatch(match);
 			logger.debug("Received and added " + match.getPatternName());
 		} else
@@ -246,33 +134,28 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 		logger.debug("Received and added consistency match: " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
-	@Override
-	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if (removeOperationalRuleMatch((ITGGMatch) match)) {
-			logger.debug("Removed due to delete event from pattern matcher: ");
-			logger.debug(match.getPatternName());
-		}
-	}
-
 	protected boolean removeOperationalRuleMatch(ITGGMatch match) {
 		return operationalMatchContainer.removeMatch(match);
 	}
 
+	
 	public boolean isPatternRelevantForInterpreter(PatternType patternType) {
-		return isPatternRelevantForCompiler(patternType);
+		return getPatternRelevantForCompiler().contains(patternType);
 	}
+	
+	public abstract Collection<PatternType> getPatternRelevantForCompiler();
 	
 	private boolean matchIsDomainConform(ITGGMatch match) {
 		if (domainsHaveNoSharedTypes || options.ignoreDomainConformity())
 			return true;
 
-		return matchedNodesAreInCorrectResource(s, //
+		return matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
 				getGreenFactory(match.getRuleName()).getBlackSrcNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(s, //
+				&& matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
 						getGreenFactory(match.getRuleName()).getGreenSrcNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(t, //
+				&& matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
 						getGreenFactory(match.getRuleName()).getBlackTrgNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(t, //
+				&& matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
 						getGreenFactory(match.getRuleName()).getGreenTrgNodesInRule(), match);
 	}
 
@@ -296,6 +179,13 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 
 	public abstract void run() throws IOException;
 
+	public EMFEdge getRuntimeEdge(ITGGMatch match, TGGRuleEdge specificationEdge) {
+		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
+		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
+		EReference ref = specificationEdge.getType();
+		return new EMFEdge(src, trg, ref);
+	}
+	
 	protected boolean processOneOperationalRuleMatch() {
 		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty())
@@ -355,30 +245,11 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 		createMarkers(greenPattern, cm, ruleName);
 	}
 
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
-
-	}
-
-	protected void createMarkers(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
-		prepareMarkerCreation(greenPattern, comatch, ruleName);
-		greenPattern.createMarkers(ruleName, comatch);
-	}
-
 	public TGGRuleApplication getRuleApplicationNode(ITGGMatch match) {
 		return (TGGRuleApplication) match.get(TGGPatternUtil.getProtocolNodeName(//
 				PatternSuffixes.removeSuffix(match.getPatternName())));
 	}
 
-	public RuntimeTGGAttrConstraintProvider getCSPProvider() {
-		return runtimeConstraintProvider;
-	}
-
-	protected Optional<TGGRule> getRule(String ruleName) {
-		return options.tgg().getRules().stream()//
-				.filter(r -> r.getName().equals(ruleName))//
-				.findFirst();
-	}
-	
 	protected void updateBlockedMatches() {
 		for(ITGGMatch match : operationalMatchContainer.getMatches().toArray(new ITGGMatch[0])) {
 			if(!this.getUpdatePolicy().matchShouldBeApplied(match, operationalMatchContainer.getRuleName(match))) {
@@ -393,92 +264,14 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 	    return this.blockedMatches;
 	}
 	
-	/****** Initialisation, termination *****/
-
-	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
-		BenchmarkLogger.startTimer();
-		
-		this.notifyStartInit();
-		this.blackInterpreter = blackInterpreter;
-
-		createAndPrepareResourceSet();
-		registerInternalMetamodels();
-		registerUserMetamodels();
-		
-		this.notifyStartLoading();
-		loadTGG();
-		loadModels();
-		this.notifyLoadingFinished();
-		
-		initialiseBlackInterpreter();
-
-		this.trash = createResource("instances/trash.xmi");
-		this.trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
-		
-		this.notifyDoneInit();
-		
-		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
-	}
-
-	public void registerGreenInterpeter(IGreenInterpreter greenInterpreter) {
-		this.greenInterpreter = greenInterpreter;
-	}
-
 	public IGreenInterpreter getGreenInterpreter() {
 		return greenInterpreter;
 	}
 
-	protected abstract void registerUserMetamodels() throws IOException;
-
-	protected void initialiseBlackInterpreter() throws IOException {		
-		Optional<RuntimeException> initExcep = Optional.empty();
-		try {
-			blackInterpreter.initialise(options, rs.getPackageRegistry(), this);
-		} catch (RuntimeException e) {
-			initExcep = Optional.of(e);
-		}
-
-		try {
-			blackInterpreter.monitor(rs);
-		} finally {
-			if (initExcep.isPresent())
-				throw initExcep.get();
-		}
-	}
-
 	public void terminate() throws IOException {
-		removeBlackInterpreter();
-	}
-
-	/**
-	 * Removes the black interpreter and all references to the black interpreter
-	 * from the strategy and its resources
-	 */
-	protected void removeBlackInterpreter() {
-		if (blackInterpreter == null)
-			return;
-
-		blackInterpreter.terminate();
-		blackInterpreter = null;
-		rs.getAllContents().forEachRemaining(c -> c.eAdapters().clear());
-		rs.eAdapters().clear();
+		matchDistributor.removeBlackInterpreter();
 		operationalMatchContainer.removeAllMatches();
 		cacheObjectToResource.clear();
-
-		logger.debug("Removed black interpreter");
-	}
-
-	/**
-	 * Replaces the black interpreter and initialises the new black interpreter
-	 * 
-	 * @param newBlackInterpreter The black interpreter to replace the existing
-	 *                            black interpreter
-	 */
-	protected void reinitializeBlackInterpreter(IBlackInterpreter newBlackInterpreter) {
-		this.removeBlackInterpreter();
-		this.blackInterpreter = newBlackInterpreter;
-		this.blackInterpreter.initialise(options, rs.getPackageRegistry(), this);
-		this.blackInterpreter.monitor(rs);
 	}
 
 	public IGreenPatternFactory getGreenFactory(String ruleName) {
@@ -489,9 +282,22 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 
 		return factories.get(ruleName);
 	}
+	
+	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
+
+	}
+
+	protected void createMarkers(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
+		prepareMarkerCreation(greenPattern, comatch, ruleName);
+		greenPattern.createMarkers(ruleName, comatch);
+	}
 
 	/***** Configuration *****/
 
+	public IbexExecutable getExecutable() {
+		return executable;
+	}
+	
 	public Map<String, IGreenPatternFactory> getFactories() {
 		return factories;
 	}
@@ -504,9 +310,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 		return operationalMatchContainer;
 	}
 	
-	/***** Benchmark Logging *****/
-	
 	protected void collectDataToBeLogged() {
-		options.getBenchmarkLogger().setNumOfMatchesFound(matchCounter);
+		matchDistributor.collectDataToBeLogged();
 	}
 }

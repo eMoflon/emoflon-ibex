@@ -11,7 +11,7 @@ public class Pattern2Type {
 		patternName2type.put(patternName, type);
 	}
 
-	public static PatternType getType(String patternName) {
+	public static PatternType resolve(String patternName) {
 		return patternName2type.get(patternName);
 	}
 }

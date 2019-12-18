@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
@@ -18,7 +18,7 @@ public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 	}
 
 	@Override
-	public void apply(INTEGRATE integrate) {
+	public void apply(INTEGRATE_Op integrate) {
 		restored = new HashSet<>();
 		conflict.getDeletionChain().foreachReverse(match -> {
 			if (!restored.contains(match)) {
@@ -29,7 +29,7 @@ public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 		});
 	}
 
-	protected void restoreMatchesBasedOn(INTEGRATE integrate, ITGGMatch match) {
+	protected void restoreMatchesBasedOn(INTEGRATE_Op integrate, ITGGMatch match) {
 		ExtPrecedenceGraph epg = integrate.getEPG();
 		epg.getNode(match).getBaseFor().forEach(n -> {
 			if (n.isBroken()) {

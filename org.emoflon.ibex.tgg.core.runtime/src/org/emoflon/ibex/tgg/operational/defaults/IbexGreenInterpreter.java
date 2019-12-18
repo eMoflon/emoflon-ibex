@@ -19,8 +19,9 @@ import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.repair.strategies.shortcut.GreenSCPattern;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.GreenSCPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import language.TGGAttributeConstraintOperators;
@@ -42,9 +43,14 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	private int numOfCreatedNodes = 0;
 	private OperationalStrategy operationalStrategy;
+	private IbexOptions options;
+
+	private TGGResourceHandler resourceHandler;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
 		this.operationalStrategy = operationalStrategy;
+		options = operationalStrategy.getOptions();
+		resourceHandler = options.getResourceHandler();
 	}
 
 	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
@@ -177,16 +183,16 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 		ITGGMatch comatch = match.copy();
 
-		createNonCorrNodes(comatch, greenPattern.getSrcNodes(), operationalStrategy.getSourceResource());
-		createNonCorrNodes(comatch, greenPattern.getTrgNodes(), operationalStrategy.getTargetResource());
-		createCorrs(comatch, greenPattern.getCorrNodes(), operationalStrategy.getCorrResource());
+		createNonCorrNodes(comatch, greenPattern.getSrcNodes(), resourceHandler.getSourceResource());
+		createNonCorrNodes(comatch, greenPattern.getTrgNodes(), resourceHandler.getTargetResource());
+		createCorrs(comatch, greenPattern.getCorrNodes(), resourceHandler.getCorrResource());
 
 		cspContainer.applyCSPValues(comatch);
 
 		if(operationalStrategy.getOptions().getBlackInterpreter().getClass().getName().contains("Democles")) {
-			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getSourceResource(), (EObject) comatch.get(n.getName())));	
-			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getCorrResource(), (EObject) comatch.get(n.getName())));	
-			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getTargetResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getSourceResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));	
 
 			createEdges(comatch, greenPattern.getSrcEdges(), true);
 			createEdges(comatch, greenPattern.getTrgEdges(), true);
@@ -197,9 +203,9 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			createEdges(comatch, greenPattern.getTrgEdges(), true);
 			createEdges(comatch, greenPattern.getCorrEdges(), true);
 			
-			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getSourceResource(), (EObject) comatch.get(n.getName())));	
-			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getCorrResource(), (EObject) comatch.get(n.getName())));	
-			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, operationalStrategy.getTargetResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getSourceResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));	
+			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));	
 		}
 		
 		return Optional.of(comatch);
