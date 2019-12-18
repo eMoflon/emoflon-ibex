@@ -17,6 +17,7 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 public final class CO extends IbexExecutable {
 
 	public CO(IbexOptions options) throws IOException {
+		super(options);
 		strategy = new CO_Op(this, options);
 	}
 }
@@ -25,14 +26,6 @@ class CO_Op extends CC_Op {
 	
 	protected CO_Op(CO co, IbexOptions options) throws IOException {
 		super(co, options, new NextMatchUpdatePolicy());
-	}
-
-	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		Collection<PatternType> types = new LinkedList<>();
-		types.add(PatternType.CO);
-		types.add(PatternType.GENForCO);
-		return types;
 	}
 
 	@Override
@@ -72,5 +65,10 @@ class CO_Op extends CC_Op {
 
 	public Collection<EObject> getInconsistentCorrNodes() {
 		return consistencyReporter.getInconsistentCorrNodes();
+	}
+	
+	@Override
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getCOTypes();
 	}
 }

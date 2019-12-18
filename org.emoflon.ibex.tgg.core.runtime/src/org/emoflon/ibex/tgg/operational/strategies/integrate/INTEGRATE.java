@@ -47,6 +47,7 @@ import runtime.TGGRuleApplication;
 
 public final class INTEGRATE extends IbexExecutable {
 	public INTEGRATE(IbexOptions options) throws IOException {
+		super(options);
 		strategy = new INTEGRATE_Op(this, options);
 	}
 	
@@ -239,17 +240,6 @@ public final class INTEGRATE extends IbexExecutable {
 		}
 
 		@Override
-		public Collection<PatternType> getPatternRelevantForCompiler() {
-			Collection<PatternType> types = new LinkedList<>();
-			types.add(PatternType.FWD);
-			types.add(PatternType.BWD);
-			types.add(PatternType.CONSISTENCY);
-			types.add(PatternType.CC);
-			types.add(PatternType.FILTER_NAC);
-			return types;
-		}
-
-		@Override
 		public boolean isPatternRelevantForInterpreter(PatternType type) {
 			switch (type) {
 			case FWD:
@@ -379,6 +369,11 @@ public final class INTEGRATE extends IbexExecutable {
 			matchAnalyser = new BrokenMatchAnalyser(this);
 			modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(), resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
 			conflictDetector = new ConflictDetector(this);
+		}
+
+		@Override
+		public Collection<PatternType> getPatternRelevantForCompiler() {
+			return PatternType.getIntegrateTypes();
 		}
 	}
 }

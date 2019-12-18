@@ -109,7 +109,7 @@ public class TGGResourceHandler {
 		EcoreUtil.resolveAll(rs);
 	}
 	
-	private void createAndPrepareResourceSet() {
+	protected void createAndPrepareResourceSet() {
 		rs = options.getBlackInterpreter().createAndPrepareResourceSet(options.workspacePath());
 	}
 

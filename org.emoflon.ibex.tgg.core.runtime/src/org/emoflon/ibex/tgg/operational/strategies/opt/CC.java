@@ -24,6 +24,7 @@ import language.TGGRuleCorr;
 public final class CC extends IbexExecutable {
 
 	public CC(IbexOptions options) throws IOException {
+		super(options);
 		strategy = new CC_Op(this, options);
 	}
 }
@@ -46,14 +47,6 @@ class CC_Op extends OPT {
 				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size()
 				+ getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
 				+ getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
-	}
-
-	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		Collection<PatternType> types = new LinkedList<>();
-		types.add(PatternType.CC);
-		types.add(PatternType.GENForCC);
-		return types;
 	}
 
 	@Override
@@ -178,5 +171,10 @@ class CC_Op extends OPT {
 					getInconsistentTrgEdges().stream().map(n -> n.toString()).collect(Collectors.toSet()));
 		}
 		return result;
+	}
+
+	@Override
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getCCTypes();
 	}
 }

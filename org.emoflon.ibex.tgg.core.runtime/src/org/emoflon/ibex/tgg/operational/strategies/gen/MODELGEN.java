@@ -53,6 +53,7 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.UpdatePolicy;
 public final class MODELGEN extends IbexExecutable {
 
 	public MODELGEN(IbexOptions options) throws IOException {
+		super(options);
 		strategy = new MODELGEN_Op(this, options);
 	}
 }
@@ -104,14 +105,6 @@ class MODELGEN_Op extends OperationalStrategy {
 		} else {
 			super.addOperationalRuleMatch(match);
 		}
-	}
-
-	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		Collection<PatternType> patternTypes = new LinkedList<>();
-		patternTypes.add(PatternType.GEN);
-		patternTypes.add(PatternType.GEN_AXIOM_NAC);
-		return patternTypes;
 	}
 
 	/********************** Internal Interface *********************/
@@ -226,5 +219,10 @@ class MODELGEN_Op extends OperationalStrategy {
 				.forEach(r -> {
 					addOperationalRuleMatch(new SimpleMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
 				});
+	}
+
+	@Override
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getModelGENTypes();
 	}
 }

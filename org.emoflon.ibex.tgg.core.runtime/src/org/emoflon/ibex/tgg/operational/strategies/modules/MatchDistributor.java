@@ -65,10 +65,10 @@ public class MatchDistributor implements IMatchObserver {
 	
 	}
 	
-	protected void initialiseBlackInterpreter() throws IOException {		
+	protected void initialiseBlackInterpreter(IbexExecutable executable) throws IOException {		
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
-			blackInterpreter.initialise(options, rs.getPackageRegistry(), this);
+			blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
 		} catch (RuntimeException e) {
 			initExcep = Optional.of(e);
 		}
@@ -87,10 +87,10 @@ public class MatchDistributor implements IMatchObserver {
 	 * @param newBlackInterpreter The black interpreter to replace the existing
 	 *                            black interpreter
 	 */
-	protected void reinitializeBlackInterpreter(IBlackInterpreter newBlackInterpreter) {
+	protected void reinitializeBlackInterpreter(IbexExecutable executable, IBlackInterpreter newBlackInterpreter) {
 		this.removeBlackInterpreter();
 		this.blackInterpreter = newBlackInterpreter;
-		this.blackInterpreter.initialise(options, rs.getPackageRegistry(), this);
+		this.blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
 		this.blackInterpreter.monitor(rs);
 	}
 	

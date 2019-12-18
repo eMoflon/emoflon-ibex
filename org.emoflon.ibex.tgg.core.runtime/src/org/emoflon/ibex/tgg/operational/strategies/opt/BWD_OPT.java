@@ -22,6 +22,7 @@ import language.TGGRuleNode;
 public final class BWD_OPT extends IbexExecutable {
 	
 	public BWD_OPT(IbexOptions options) throws IOException {
+		super(options);
 		strategy = new BWD_OPT_Op(this, options);
 	}
 	
@@ -52,13 +53,6 @@ public final class BWD_OPT extends IbexExecutable {
 
 			EcoreUtil.deleteAll(objectsToDelete, true);
 			consistencyReporter.initTrg(this);
-		}
-
-		@Override
-		public Collection<PatternType> getPatternRelevantForCompiler() {
-			Collection<PatternType> types = new LinkedList<>();
-			types.add(PatternType.BWD_OPT);
-			return types;
 		}
 
 		@Override
@@ -139,6 +133,11 @@ public final class BWD_OPT extends IbexExecutable {
 
 		public void backward() throws IOException {
 			run();
+		}
+
+		@Override
+		public Collection<PatternType> getPatternRelevantForCompiler() {
+			return PatternType.getBWD_Op();
 		}
 	}
 }

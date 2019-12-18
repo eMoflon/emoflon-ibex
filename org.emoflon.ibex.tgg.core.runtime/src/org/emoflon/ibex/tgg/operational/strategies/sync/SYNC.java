@@ -17,6 +17,7 @@ import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 public final class SYNC extends IbexExecutable {
 
 	public SYNC(IbexOptions options) throws IOException {
+		super(options);
 		strategy = new SYNC_Op(this, options);
 	}
 }
@@ -59,15 +60,6 @@ class SYNC_Op extends ExtOperationalStrategy {
 	/***** Match and pattern management *****/
 
 	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		Collection<PatternType> types = new LinkedList<>();
-		types.add(PatternType.BWD);
-		types.add(PatternType.FWD);
-		types.add(PatternType.CONSISTENCY);
-		return types;
-	}
-
-	@Override
 	public boolean isPatternRelevantForInterpreter(PatternType type) {
 		return syncStrategy.isPatternRelevantForInterpreter(type);
 	}
@@ -87,5 +79,10 @@ class SYNC_Op extends ExtOperationalStrategy {
 			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedElements()
 					+ (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
 		}
+	}
+
+	@Override
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getSYNCTypes();
 	}
 }
