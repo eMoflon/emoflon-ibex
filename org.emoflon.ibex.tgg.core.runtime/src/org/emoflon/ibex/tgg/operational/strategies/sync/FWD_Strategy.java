@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.util.Collection;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.patterns.EmptyGreenPattern;

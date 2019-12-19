@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.operational.strategies.gen;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Set;
 
@@ -15,7 +14,6 @@ import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.UpdatePolicy;
 
@@ -50,15 +48,7 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.UpdatePolicy;
  * 
  * @author Anthony Anjorin, Lars Fritsche
  */
-public final class MODELGEN extends IbexExecutable {
-
-	public MODELGEN(IbexOptions options) throws IOException {
-		super(options);
-		strategy = new MODELGEN_Op(this, options);
-	}
-}
-
-class MODELGEN_Op extends OperationalStrategy {
+public class MODELGEN extends OperationalStrategy {
 
 	/********************** Attributes *********************/
 
@@ -71,8 +61,8 @@ class MODELGEN_Op extends OperationalStrategy {
 	/** Constructors 
 	 * @param modelgen **/
 
-	public MODELGEN_Op(MODELGEN modelgen, IbexOptions options) throws IOException {
-		super(modelgen, options, new RandomMatchUpdatePolicy(50));
+	public MODELGEN(IbexOptions options) throws IOException {
+		super(options, new RandomMatchUpdatePolicy(50));
 	}
 
 	/********************** Public Interface *********************/

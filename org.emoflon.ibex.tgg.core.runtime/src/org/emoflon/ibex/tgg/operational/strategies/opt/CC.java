@@ -5,7 +5,6 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
@@ -21,24 +20,16 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 import language.TGGRuleCorr;
 
-public final class CC extends IbexExecutable {
-
-	public CC(IbexOptions options) throws IOException {
-		super(options);
-		strategy = new CC_Op(this, options);
-	}
-}
-
-class CC_Op extends OPT {
+public class CC extends OPT {
 
 	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
 
-	protected CC_Op(IbexExecutable cc, IbexOptions options) throws IOException {
-		super(cc, options);
+	public CC(IbexOptions options) throws IOException {
+		super(options);
 	}
 
-	protected CC_Op(IbexExecutable cc, IbexOptions options, IUpdatePolicy policy) throws IOException {
-		super(cc, options, policy);
+	protected CC(IbexOptions options, IUpdatePolicy policy) throws IOException {
+		super(options, policy);
 	}
 
 	@Override

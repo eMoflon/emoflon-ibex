@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 
 import precedencegraph.PrecedenceNode;
@@ -22,7 +22,7 @@ public class DeletionChain {
 	private ITGGMatch first;
 	private Set<ITGGMatch> last;
 
-	DeletionChain(INTEGRATE_Op integrate, ITGGMatch brokenMatch) {
+	DeletionChain(INTEGRATE integrate, ITGGMatch brokenMatch) {
 		this.epg = integrate.getEPG();
 		this.chain = new LinkedHashMap<>();
 		this.first = brokenMatch;

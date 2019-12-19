@@ -8,7 +8,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
@@ -23,7 +23,7 @@ public abstract class ConflictResolutionStrategy {
 	public ConflictResolutionStrategy(ConflResStratToken token) {
 	}
 
-	protected void restoreMatch(INTEGRATE_Op integrate, ITGGMatch match) {
+	protected void restoreMatch(INTEGRATE integrate, ITGGMatch match) {
 		ModelChangeProtocol mcp = integrate.getModelChangeProtocol();
 		// TODO adrianm: avoid using AnalysedMatch
 		AnalysedMatch analysedMatch = integrate.getAnalysedMatches().get(match);
@@ -61,6 +61,6 @@ public abstract class ConflictResolutionStrategy {
 	 * 
 	 * @param integrate INTEGRATE
 	 */
-	public abstract void apply(INTEGRATE_Op integrate);
+	public abstract void apply(INTEGRATE integrate);
 
 }

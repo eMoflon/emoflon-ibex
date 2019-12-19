@@ -3,9 +3,14 @@ package org.emoflon.ibex.tgg.operational.strategies.modules;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.impl.EClassImpl;
+import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -16,6 +21,14 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.opt.BWD_OPT;
+import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
+import org.emoflon.ibex.tgg.operational.strategies.opt.CO;
+import org.emoflon.ibex.tgg.operational.strategies.opt.FWD_OPT;
+import org.emoflon.ibex.tgg.operational.strategies.opt.FixingCopier;
+import org.emoflon.ibex.tgg.operational.strategies.opt.MetamodelRelaxer;
+import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;
+import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import language.TGG;
@@ -28,11 +41,11 @@ public class TGGResourceHandler {
 	
 	private final static Logger logger = Logger.getLogger(OperationalStrategy.class);
 
-	private IbexOptions options;
-	private IbexExecutable executable;
-	private IRegistrationHelper registrationHelper;
+	protected IbexOptions options;
+	protected IbexExecutable executable;
+	protected IRegistrationHelper registrationHelper;
 
-	private final URI base;
+	protected final URI base;
 	protected ResourceSet rs;
 	
 	protected Resource source;
@@ -41,13 +54,18 @@ public class TGGResourceHandler {
 	protected Resource protocol;
 	protected Resource precedence;
 	
+	private MetamodelRelaxer relaxer = new MetamodelRelaxer();
+	
 	private boolean initialized = false;
 	
 	private Resource trash;
 	
-	public TGGResourceHandler(IbexOptions options) throws IOException {
-		this.options = options;
+	public TGGResourceHandler() throws IOException {
 		base = URI.createPlatformResourceURI("/", true);
+	}
+	
+	public void setOptions(IbexOptions options) {
+		this.options = options;
 	}
 	
 	public void setExecutable(IbexExecutable executable) {
@@ -59,10 +77,11 @@ public class TGGResourceHandler {
 			return;
 		
 		try {
-			registerInternalMetamodels();
 			createAndPrepareResourceSet();
+			registerInternalMetamodels();
+			registerUserMetamodels();
 			loadTGG();
-			loadModels();
+			loadRelevantModels();
 			
 			trash = createResource("instances/trash.xmi");
 			trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
@@ -73,11 +92,85 @@ public class TGGResourceHandler {
 		initialized = true;
 	}
 	
+	public void saveRelevantModels() throws IOException {
+		if(executable instanceof FWD_OPT) {
+			// Unrelax the metamodel
+			relaxer.unrelaxReferences(options.tgg().getTrg());
+		}
+		
+		if(executable instanceof BWD_OPT) {
+			// Unrelax the metamodel
+			relaxer.unrelaxReferences(options.tgg().getSrc());
+		}
+		
+		saveModels();
+	}
+	
 	public void saveModels() throws IOException {
-		if(executable == null || executable instanceof MODELGEN || executable instanceof SYNC) {
+		if(executable == null || executable instanceof MODELGEN) {
 			source.save(null);
 			target.save(null);
 			corr.save(null);
+			protocol.save(null);
+		}
+		
+		if(executable instanceof FWD_OPT) {
+			// Remove adapters to avoid problems with notifications
+			target.eAdapters().clear();
+			target.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+			corr.eAdapters().clear();
+			corr.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+
+			// Copy and fix the model in the process
+			FixingCopier.fixAll(target, corr, "target");
+
+			// Now save fixed models
+			target.save(null);
+			corr.save(null);
+			protocol.save(null);
+		}
+		
+		if(executable instanceof BWD_OPT) {
+			// Remove adapters to avoid problems with notifications
+			source.eAdapters().clear();
+			source.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+			corr.eAdapters().clear();
+			corr.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
+
+			// Copy and fix the model in the process
+			FixingCopier.fixAll(source, corr, "source");
+
+			// Now save fixed models
+			source.save(null);
+			corr.save(null);
+			protocol.save(null);
+		}
+		
+		if(executable instanceof SYNC) {
+			if(executable instanceof INITIAL_FWD) {
+				target.save(null);
+				corr.save(null);
+				protocol.save(null);
+			} else
+			if(executable instanceof INITIAL_BWD) {
+				source.save(null);
+				corr.save(null);
+				protocol.save(null);
+			}
+			else {
+				source.save(null);
+				target.save(null);
+				corr.save(null);
+				protocol.save(null);
+			}
+		}
+		
+		if(executable instanceof CC) {
+			corr.save(null);
+			protocol.save(null);
+		}
+		
+		if(executable instanceof CO) {
 			protocol.save(null);
 		}
 		
@@ -89,20 +182,83 @@ public class TGGResourceHandler {
 			precedence.save(null);
 		}
 	}
+	
+	public void loadRelevantModels() throws IOException {
+		if(executable instanceof FWD_OPT) {
+			relaxer.relaxReferences(options.tgg().getTrg());
+		}
+		
+		if(executable instanceof BWD_OPT) {
+			relaxer.relaxReferences(options.tgg().getSrc());
+		}
+		
+		loadModels();
+		EcoreUtil.resolveAll(rs);
+	}
 
 	public void loadModels() throws IOException {
-		if(executable == null || executable instanceof MODELGEN || executable instanceof SYNC) {
+		if(executable == null || executable instanceof MODELGEN) {
 			source = createResource(options.projectPath() + "/instances/src.xmi");
+			target = createResource(options.projectPath() + "/instances/trg.xmi");
+			corr = createResource(options.projectPath() + "/instances/corr.xmi");
+			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+			return;
+		}
+		
+		if(executable instanceof FWD_OPT) {
+			source = loadResource(options.projectPath() + "/instances/src.xmi");
 			target = createResource(options.projectPath() + "/instances/trg.xmi");
 			corr = createResource(options.projectPath() + "/instances/corr.xmi");
 			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
 		}
 		
-		if(executable instanceof INTEGRATE) {
+		if(executable instanceof BWD_OPT) {
 			source = createResource(options.projectPath() + "/instances/src.xmi");
-			target = createResource(options.projectPath() + "/instances/trg.xmi");
+			target = loadResource(options.projectPath() + "/instances/trg.xmi");
 			corr = createResource(options.projectPath() + "/instances/corr.xmi");
 			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+		}
+		
+		if(executable instanceof SYNC) {
+			if(executable instanceof INITIAL_FWD) {
+				source = loadResource(options.projectPath() + "/instances/src.xmi");
+				target = createResource(options.projectPath() + "/instances/trg.xmi");
+				corr = createResource(options.projectPath() + "/instances/corr.xmi");
+				protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+			} else
+			if(executable instanceof INITIAL_BWD) {
+				source = createResource(options.projectPath() + "/instances/src.xmi");
+				target = loadResource(options.projectPath() + "/instances/trg.xmi");
+				corr = createResource(options.projectPath() + "/instances/corr.xmi");
+				protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+			}
+			else {
+				source = loadResource(options.projectPath() + "/instances/src.xmi");
+				target = loadResource(options.projectPath() + "/instances/trg.xmi");
+				corr = loadResource(options.projectPath() + "/instances/corr.xmi");
+				protocol = loadResource(options.projectPath() + "/instances/protocol.xmi");
+			}
+		}
+		
+		if(executable instanceof CC) {
+			source = loadResource(options.projectPath() + "/instances/src.xmi");
+			target = loadResource(options.projectPath() + "/instances/trg.xmi");
+			corr = createResource(options.projectPath() + "/instances/corr.xmi");
+			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+		}
+		
+		if(executable instanceof CO) {
+			source = loadResource(options.projectPath() + "/instances/src.xmi");
+			target = loadResource(options.projectPath() + "/instances/trg.xmi");
+			corr = loadResource(options.projectPath() + "/instances/corr.xmi");
+			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+		}
+		
+		if(executable instanceof INTEGRATE) {
+			source = loadResource(options.projectPath() + "/instances/src.xmi");
+			target = loadResource(options.projectPath() + "/instances/trg.xmi");
+			corr = loadResource(options.projectPath() + "/instances/corr.xmi");
+			protocol = loadResource(options.projectPath() + "/instances/protocol.xmi");
 			precedence = createResource(options.projectPath() + "/instances/epg.xmi");
 		}
 
@@ -200,9 +356,9 @@ public class TGGResourceHandler {
 		LanguagePackageImpl.init();
 		RuntimePackageImpl.init();
 	}
-
+	
 	protected void registerUserMetamodels() throws IOException {
-		registrationHelper.registerMetamodels(rs, this);
+		options.registrationHelper().registerMetamodels(rs, options.getExecutable());
 		
 		// Register correspondence metamodel last
 		loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectName() + ".ecore");

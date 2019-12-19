@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -20,6 +21,8 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
+import IBeXLanguage.IBeXContext;
+
 public class MatchDistributor implements IMatchObserver {
 
 	private final long INTERVAL_LENGTH = 5000;
@@ -29,8 +32,8 @@ public class MatchDistributor implements IMatchObserver {
 
 	protected Map<IMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
-	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2addMatch;
-	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2removeMatch;
+	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2addMatch = new HashMap<>();;
+	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2removeMatch = new HashMap<>();
 	
 	private IbexOptions options;
 	
@@ -50,8 +53,6 @@ public class MatchDistributor implements IMatchObserver {
 		
 		blackInterpreter = options.getBlackInterpreter();
 		rs = options.getResourceHandler().getResourceSet();
-		type2addMatch = new HashMap<>();
-		type2removeMatch = new HashMap<>();
 		
 		initialized = true;
 	}
@@ -147,19 +148,23 @@ public class MatchDistributor implements IMatchObserver {
 	
 	public void register(Collection<PatternType> types, Consumer<ITGGMatch> addMatch, Consumer<ITGGMatch> removeMatch) {
 		for(PatternType type : types) {
-			Collection<Consumer<ITGGMatch>> addConsumers = type2addMatch.get(types);
+			Collection<Consumer<ITGGMatch>> addConsumers = type2addMatch.get(type);
 			if(addConsumers == null) {
 				addConsumers = new LinkedList<>();
 				type2addMatch.put(type, addConsumers);
 			}
 			addConsumers.add(addMatch);
 			
-			Collection<Consumer<ITGGMatch>> removeConsumers = type2removeMatch.get(types);
+			Collection<Consumer<ITGGMatch>> removeConsumers = type2removeMatch.get(type);
 			if(removeConsumers == null) {
 				removeConsumers = new LinkedList<>();
 				type2removeMatch.put(type, removeConsumers);
 			}
 			removeConsumers.add(addMatch);
 		}
+	}
+
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return type2addMatch.keySet();
 	}
 }

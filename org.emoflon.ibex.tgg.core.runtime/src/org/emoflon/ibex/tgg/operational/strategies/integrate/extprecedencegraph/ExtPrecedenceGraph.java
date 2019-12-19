@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
 
 import precedencegraph.PrecedenceNode;
@@ -20,14 +20,14 @@ import precedencegraph.PrecedencegraphFactory;
 
 public class ExtPrecedenceGraph extends PrecedenceGraph {
 
-	private INTEGRATE_Op strategy;
+	private INTEGRATE strategy;
 	private Resource precedenceGraph;
 
 	private PrecedenceNodeContainer nodes;
 	private Map<ITGGMatch, PrecedenceNode> matchToNode = new HashMap<>();
 	private Map<PrecedenceNode, ITGGMatch> nodeToMatch = new HashMap<>();
 
-	public ExtPrecedenceGraph(INTEGRATE_Op strategy) {
+	public ExtPrecedenceGraph(INTEGRATE strategy) {
 		super(strategy);
 		this.strategy = strategy;
 		strategy.getOptions().getResourceHandler().getPrecedenceResource();

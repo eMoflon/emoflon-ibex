@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch.EltFilter;
@@ -13,7 +13,7 @@ public class DEL_Partly extends MatchClassificationComponent {
 	private final MCPattern pattern = MCPattern.DEL_PARTLY;
 
 	@Override
-	public Mismatch classify(INTEGRATE_Op integrate, AnalysedMatch analysedMatch) {
+	public Mismatch classify(INTEGRATE integrate, AnalysedMatch analysedMatch) {
 		Mismatch mismatch = new Mismatch(analysedMatch, this);
 
 		EltFilter ef = new EltFilter().srcAndTrg().create();

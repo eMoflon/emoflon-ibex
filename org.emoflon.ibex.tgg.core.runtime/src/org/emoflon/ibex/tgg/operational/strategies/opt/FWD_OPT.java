@@ -5,7 +5,6 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -14,132 +13,95 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 
 import language.TGGRuleCorr;
 import language.TGGRuleNode;
 
-public final class FWD_OPT extends IbexExecutable {
+public class FWD_OPT extends OPT {
+
 	public FWD_OPT(IbexOptions options) throws IOException {
 		super(options);
-		strategy = new FWD_OPT_Op(this, options);
 	}
-	
-	class FWD_OPT_Op extends OPT {
 
-		public FWD_OPT_Op(FWD_OPT fwd, IbexOptions options) throws IOException {
-			super(fwd, options);
-			relaxReferences(options.tgg().getTrg());
-		}
+	@Override
+	protected void wrapUp() {
+		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
+		for (int v : chooseTGGRuleApplications()) {
+			int id = v < 0 ? -v : v;
+			ITGGMatch comatch = idToMatch.get(id);
+			if (v < 0) {
+				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
-		@Override
-		protected void wrapUp() {
-			ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
-			for (int v : chooseTGGRuleApplications()) {
-				int id = v < 0 ? -v : v;
-				ITGGMatch comatch = idToMatch.get(id);
-				if (v < 0) {
-					for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
-						objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
+				for (TGGRuleNode createdTrgNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
+					objectsToDelete.add((EObject) comatch.get(createdTrgNode.getName()));
 
-					for (TGGRuleNode createdTrgNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
-						objectsToDelete.add((EObject) comatch.get(createdTrgNode.getName()));
-
-					objectsToDelete.addAll(getRuleApplicationNodes(comatch));
-				}
+				objectsToDelete.addAll(getRuleApplicationNodes(comatch));
 			}
-
-			EcoreUtil.deleteAll(objectsToDelete, true);
-			consistencyReporter.initSrc(this);
 		}
 
-		@Override
-		public boolean isPatternRelevantForInterpreter(PatternType type) {
-			return type == PatternType.FWD_OPT;
-		}
+		EcoreUtil.deleteAll(objectsToDelete, true);
+		consistencyReporter.initSrc(this);
+	}
 
-		@Override
-		protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
-			idToMatch.put(idCounter, comatch);
-			matchIdToRuleName.put(idCounter, ruleName);
-			matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
+	@Override
+	public boolean isPatternRelevantForInterpreter(PatternType type) {
+		return type == PatternType.FWD_OPT;
+	}
 
-			getGreenNodes(comatch, ruleName).forEach(e -> {
-				if (!nodeToMarkingMatches.containsKey(e))
-					nodeToMarkingMatches.put(e, cfactory.createIntSet());
-				nodeToMarkingMatches.get(e).add(idCounter);
-			});
+	@Override
+	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
+		idToMatch.put(idCounter, comatch);
+		matchIdToRuleName.put(idCounter, ruleName);
+		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
 
-			getGreenEdges(comatch, ruleName).forEach(e -> {
-				if (!edgeToMarkingMatches.containsKey(e)) {
-					edgeToMarkingMatches.put(e, cfactory.createIntSet());
-				}
-				edgeToMarkingMatches.get(e).add(idCounter);
-			});
+		getGreenNodes(comatch, ruleName).forEach(e -> {
+			if (!nodeToMarkingMatches.containsKey(e))
+				nodeToMarkingMatches.put(e, cfactory.createIntSet());
+			nodeToMarkingMatches.get(e).add(idCounter);
+		});
 
-			getBlackNodes(comatch, ruleName).forEach(e -> {
-				if (!contextNodeToNeedingMatches.containsKey(e))
-					contextNodeToNeedingMatches.put(e, cfactory.createIntSet());
-				contextNodeToNeedingMatches.get(e).add(idCounter);
-			});
-
-			getBlackEdges(comatch, ruleName).forEach(e -> {
-				if (!contextEdgeToNeedingMatches.containsKey(e)) {
-					contextEdgeToNeedingMatches.put(e, cfactory.createIntSet());
-				}
-				contextEdgeToNeedingMatches.get(e).add(idCounter);
-			});
-
-			matchToContextNodes.put(idCounter,cfactory.createObjectSet());
-			matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
-
-			matchToContextEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
-			matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
-
-			idCounter++;
-		}
-
-		@Override
-		public void terminate() {
-			// Unrelax the metamodel
-			unrelaxReferences(options.tgg().getTrg());
-
-			// Remove adapters to avoid problems with notifications
-			resourceHandler.getTargetResource().eAdapters().clear();
-			resourceHandler.getTargetResource().getAllContents().forEachRemaining(o -> o.eAdapters().clear());
-			resourceHandler.getCorrResource().eAdapters().clear();
-			resourceHandler.getCorrResource().getAllContents().forEachRemaining(o -> o.eAdapters().clear());
-
-			// Copy and fix the model in the process
-			FixingCopier.fixAll(resourceHandler.getTargetResource(), resourceHandler.getCorrResource(), "target");
-
-			// Now save fixed models
-			try {
-				resourceHandler.saveModels();
-			} catch (IOException e) {
-				e.printStackTrace();
+		getGreenEdges(comatch, ruleName).forEach(e -> {
+			if (!edgeToMarkingMatches.containsKey(e)) {
+				edgeToMarkingMatches.put(e, cfactory.createIntSet());
 			}
-			
-			super.terminate();
-		}
-		
-		@Override
-		public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-			return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
-					+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
-		}
+			edgeToMarkingMatches.get(e).add(idCounter);
+		});
 
-		public void forward() throws IOException {
-			run();
-		}
+		getBlackNodes(comatch, ruleName).forEach(e -> {
+			if (!contextNodeToNeedingMatches.containsKey(e))
+				contextNodeToNeedingMatches.put(e, cfactory.createIntSet());
+			contextNodeToNeedingMatches.get(e).add(idCounter);
+		});
 
-		@Override
-		public Collection<PatternType> getPatternRelevantForCompiler() {
-			return PatternType.getFWD_Op();
-		}
+		getBlackEdges(comatch, ruleName).forEach(e -> {
+			if (!contextEdgeToNeedingMatches.containsKey(e)) {
+				contextEdgeToNeedingMatches.put(e, cfactory.createIntSet());
+			}
+			contextEdgeToNeedingMatches.get(e).add(idCounter);
+		});
+
+		matchToContextNodes.put(idCounter, cfactory.createObjectSet());
+		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
+
+		matchToContextEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
+		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
+
+		idCounter++;
+	}
+
+	@Override
+	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
+		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
+				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
+	}
+
+	public void forward() throws IOException {
+		run();
+	}
+
+	@Override
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getFWD_Op();
 	}
 }
-
-
-
- 

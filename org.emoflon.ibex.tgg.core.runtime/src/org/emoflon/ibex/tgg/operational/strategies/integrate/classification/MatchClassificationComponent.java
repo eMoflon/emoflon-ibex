@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 
@@ -15,7 +15,7 @@ import language.TGGRuleNode;
 
 public abstract class MatchClassificationComponent {
 
-	abstract public Mismatch classify(INTEGRATE_Op integrate, AnalysedMatch analysedMatch);
+	abstract public Mismatch classify(INTEGRATE integrate, AnalysedMatch analysedMatch);
 
 	abstract public boolean isApplicable(AnalysedMatch analysedMatch);
 
@@ -32,7 +32,7 @@ public abstract class MatchClassificationComponent {
 		}
 	}
 
-	protected void classifyElts(INTEGRATE_Op integrate, Mismatch mismatch, List<TGGRuleElement> elements,
+	protected void classifyElts(INTEGRATE integrate, Mismatch mismatch, List<TGGRuleElement> elements,
 			EltClassifier classifier) {
 		elements.forEach(elt -> {
 			if (elt instanceof TGGRuleNode) {

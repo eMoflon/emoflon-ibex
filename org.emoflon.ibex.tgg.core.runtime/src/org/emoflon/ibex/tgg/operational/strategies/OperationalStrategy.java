@@ -39,7 +39,7 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
-public abstract class OperationalStrategy extends AbstractIbexObservable {
+public abstract class OperationalStrategy extends AbstractIbexObservable implements IbexExecutable {
 	protected final static Logger logger = Logger.getLogger(OperationalStrategy.class);
 
 	// Match and pattern management
@@ -60,17 +60,14 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 
 	protected MatchDistributor matchDistributor;
 
-	private IbexExecutable executable;
-
 	/***** Constructors *****/
 
-	public OperationalStrategy(IbexExecutable executable, IbexOptions options) {
-		this(executable, options, new NextMatchUpdatePolicy());
+	public OperationalStrategy(IbexOptions options) {
+		this(options, new NextMatchUpdatePolicy());
 	}
 
-	protected OperationalStrategy(IbexExecutable executable, IbexOptions options, IUpdatePolicy policy) {
+	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
 		this.options = options;
-		this.executable = executable;
 		initialize(options, policy);
 	}
 	
@@ -114,6 +111,11 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 
 	protected IMatchContainer createMatchContainer() {
 		return new MatchContainer(options.flattenedTGG());
+	}
+
+	@Override
+	public void saveModels() throws IOException {
+		resourceHandler.saveRelevantModels();
 	}
 
 	/***** Match and pattern management *****/
@@ -294,10 +296,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 
 	/***** Configuration *****/
 
-	public IbexExecutable getExecutable() {
-		return executable;
-	}
-	
 	public Map<String, IGreenPatternFactory> getFactories() {
 		return factories;
 	}
@@ -312,5 +310,13 @@ public abstract class OperationalStrategy extends AbstractIbexObservable {
 	
 	protected void collectDataToBeLogged() {
 		matchDistributor.collectDataToBeLogged();
+	}
+	
+	public TGGResourceHandler getResourceHandler() {
+		return resourceHandler;
+	}
+	
+	public void setResourceHandler(TGGResourceHandler resourceHandler) {
+		this.resourceHandler = resourceHandler;
 	}
 }

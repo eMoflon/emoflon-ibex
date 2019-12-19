@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
@@ -15,12 +15,12 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 
 public class ConflictDetector {
 
-	private INTEGRATE_Op integrate;
+	private INTEGRATE integrate;
 
 	private final Set<EltClassifier> deleteConflictCandidates = new HashSet<EltClassifier>(
 			Arrays.asList(EltClassifier.NO_USE, EltClassifier.PENAL_USE));
 
-	public ConflictDetector(INTEGRATE_Op integrate) {
+	public ConflictDetector(INTEGRATE integrate) {
 		this.integrate = integrate;
 	}
 

@@ -72,7 +72,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	}
 
 	private void updateDirection() {
-		if(operationalStrategy.getExecutable() instanceof SYNC) 
+		if(operationalStrategy instanceof SYNC) 
 			syncDirection = operationalStrategy.getSyncStrategy() instanceof FWD_Strategy ? SyncDirection.FORWARD : SyncDirection.BACKWARD;
 		else
 			syncDirection = SyncDirection.UNDEFINED;

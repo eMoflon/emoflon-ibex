@@ -55,18 +55,12 @@ public abstract class OPT extends OperationalStrategy {
 	protected IntToObjectMap<String> matchIdToRuleName = cfactory.createIntToObjectHashMap();
 	protected int idCounter = 1;
 
-	// Hash maps to save the old metamodel state
-	protected ObjectToIntMap<EReference> referenceToUpperBound = cfactory.createObjectToIntHashMap();
-	protected ObjectToIntMap<EReference> referenceToLowerBound = cfactory.createObjectToIntHashMap();
-	protected Map<EReference, EReference> referenceToEOpposite = cfactory.createObjectToObjectHashMap();
-	protected Map<EReference, Boolean> referenceToContainment = cfactory.createObjectToObjectHashMap();
-
-	public OPT(IbexExecutable executable, final IbexOptions options) throws IOException {
-		super(executable, options);
+	public OPT(final IbexOptions options) throws IOException {
+		super(options);
 	}
 
-	public OPT(IbexExecutable executable, final IbexOptions options, final IUpdatePolicy policy) throws IOException {
-		super(executable, options, policy);
+	public OPT(final IbexOptions options, final IUpdatePolicy policy) throws IOException {
+		super(options, policy);
 	}
 
 	/**
@@ -90,76 +84,6 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected abstract void wrapUp();
-
-	public void relaxReferences(final EList<EPackage> model) {
-		EPackage[] packages = (EPackage[]) model.toArray();
-
-		for (EPackage p : packages) {
-			TreeIterator<EObject> it = p.eAllContents();
-
-			while (it.hasNext()) {
-				EObject next = it.next();
-				if (next instanceof EClassImpl) {
-					EClassImpl nextEClassImpl = (EClassImpl) next;
-
-					for (EReference reference : nextEClassImpl.getEAllReferences()) {
-						if (this.referenceToUpperBound.containsKey(reference)
-								&& this.referenceToLowerBound.containsKey(reference)
-								&& this.referenceToContainment.containsKey(reference)
-								&& this.referenceToEOpposite.containsKey(reference)) {
-							// Reference already exists, values must not be overwritten
-							continue;
-						}
-
-						// Save metamodel values
-						this.referenceToUpperBound.put(reference, reference.getUpperBound());
-						this.referenceToLowerBound.put(reference, reference.getLowerBound());
-						this.referenceToContainment.put(reference, reference.isContainment());
-						this.referenceToEOpposite.put(reference, reference.getEOpposite());
-
-						// Change metamodel values
-						reference.setUpperBound(-1);
-						reference.setLowerBound(0);
-						reference.setContainment(false);
-						reference.setEOpposite(null);
-					}
-				}
-			}
-		}
-	}
-
-	public void unrelaxReferences(final EList<EPackage> model) {
-
-		EPackage[] packages = (EPackage[]) model.toArray();
-
-		for (EPackage p : packages) {
-			TreeIterator<EObject> it = p.eAllContents();
-
-			while (it.hasNext()) {
-				EObject next = it.next();
-				if (next instanceof EClassImpl) {
-					EClassImpl nextEClassImpl = (EClassImpl) next;
-
-					for (EReference reference : nextEClassImpl.getEAllReferences()) {
-						// Get old metamodel values
-						int upperBound = this.referenceToUpperBound.getInt(reference);
-						int lowerBound = this.referenceToLowerBound.getInt(reference);
-						boolean containment = this.referenceToContainment.get(reference);
-						EReference eOpposite = this.referenceToEOpposite.get(reference);
-
-						// Change metamodel values
-						reference.setUpperBound(upperBound);
-						reference.setLowerBound(lowerBound);
-						reference.setContainment(containment);
-						reference.setEOpposite(eOpposite);
-
-						// Reset setting for reference
-						((EStructuralFeatureImpl) reference).setSettingDelegate(null);
-					}
-				}
-			}
-		}
-	}
 
 	protected void defineILPExclusions(final BinaryILPProblem ilpProblem) {
 		for (EObject node : this.nodeToMarkingMatches.keySet()) {

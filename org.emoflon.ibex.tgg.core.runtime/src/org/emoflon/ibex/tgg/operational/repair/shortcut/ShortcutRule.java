@@ -1,13 +1,13 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.operational.repair.util.TGGOverlap;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGUtil;
-
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import language.BindingType;
 import language.DomainType;

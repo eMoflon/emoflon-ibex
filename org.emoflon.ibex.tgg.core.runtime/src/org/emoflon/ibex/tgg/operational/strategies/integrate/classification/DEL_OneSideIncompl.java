@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch.EltFilter;
@@ -16,7 +16,7 @@ public class DEL_OneSideIncompl extends MatchClassificationComponent {
 	private final MCPattern bwd = MCPattern.DEL_ONESIDEINCOMPL_BWD;
 
 	@Override
-	public Mismatch classify(INTEGRATE_Op integrate, AnalysedMatch analysedMatch) {
+	public Mismatch classify(INTEGRATE integrate, AnalysedMatch analysedMatch) {
 		DomainType partlySide;
 		if (fwd.matches(analysedMatch.getModPattern())) {
 			partlySide = DomainType.TRG;

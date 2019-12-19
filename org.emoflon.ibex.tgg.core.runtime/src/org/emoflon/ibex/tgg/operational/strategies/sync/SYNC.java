@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
@@ -12,23 +11,15 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 
-public final class SYNC extends IbexExecutable {
 
-	public SYNC(IbexOptions options) throws IOException {
-		super(options);
-		strategy = new SYNC_Op(this, options);
-	}
-}
-
-class SYNC_Op extends ExtOperationalStrategy {
+public class SYNC extends ExtOperationalStrategy {
 
 	/***** Constructors 
 	 * @param sync *****/
 
-	protected SYNC_Op(SYNC sync, IbexOptions options) throws IOException {
-		super(sync, options);
+	public SYNC(IbexOptions options) throws IOException {
+		super(options);
 	}
 
 	/***** Sync algorithm *****/

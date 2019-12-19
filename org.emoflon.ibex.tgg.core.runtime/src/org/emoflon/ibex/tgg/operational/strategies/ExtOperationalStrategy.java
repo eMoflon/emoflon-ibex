@@ -23,7 +23,6 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC_Strategy;
 
@@ -42,8 +41,8 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 
 	/***** Constructors *****/
 
-	public ExtOperationalStrategy(IbexExecutable executable, IbexOptions options) throws IOException {
-		super(executable, options);
+	public ExtOperationalStrategy(IbexOptions options) throws IOException {
+		super(options);
 		redInterpreter = new IbexRedInterpreter(this);
 	}
 

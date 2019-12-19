@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
 
@@ -11,7 +11,7 @@ public class ShortCutRuleCRS extends DeleteConflictResStrategy {
 	}
 
 	@Override
-	public void apply(INTEGRATE_Op integrate) {
+	public void apply(INTEGRATE integrate) {
 		// TODO adrianm: implement
 	}
 

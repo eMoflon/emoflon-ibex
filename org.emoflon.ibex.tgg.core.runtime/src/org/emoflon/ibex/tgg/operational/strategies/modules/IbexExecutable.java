@@ -3,27 +3,18 @@ package org.emoflon.ibex.tgg.operational.strategies.modules;
 import java.io.IOException;
 
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-public abstract class IbexExecutable {
+public interface IbexExecutable {
 
-	protected OperationalStrategy strategy;
-	protected IbexOptions options;
+	public void run() throws IOException;
 	
-	public IbexExecutable(IbexOptions options) {
-		this.options = options;
-	}
+	public void saveModels() throws IOException;
 	
-	public void run() throws IOException {
-		initializeBlackInterpreter();
-		strategy.run();
-	}
+	public IbexOptions getOptions();
 	
-	public OperationalStrategy getStrategy() {
-		return strategy;
-	}
+	public void terminate() throws IOException;
 	
-	private void initializeBlackInterpreter() throws IOException {
-		options.getMatchDistributor().initialiseBlackInterpreter(this);
-	}
+	public TGGResourceHandler getResourceHandler();
+	
+	public void setResourceHandler(TGGResourceHandler resourceHandler);
 }

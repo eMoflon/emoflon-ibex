@@ -2,8 +2,8 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser.optimizeIBeXPattern;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWDBlackPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
@@ -26,7 +26,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWDPatternTransformation;
@@ -43,6 +42,7 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolP
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import IBeXLanguage.IBeXAttributeConstraint;
@@ -83,11 +83,11 @@ public class ContextPatternTransformation {
 	 */
 	private HashMap<String, IBeXContextPattern> nameToPattern = new HashMap<>();
 	private Map<IBeXContextPattern, TGGNamedElement> patternToRuleMap = new HashMap<>();
-	private OperationalStrategy strategy;
+	private MatchDistributor distributor;
 
-	public ContextPatternTransformation(IbexOptions options, OperationalStrategy strategy) {
+	public ContextPatternTransformation(IbexOptions options, MatchDistributor distributor) {
 		this.options = options;
-		this.strategy = strategy;
+		this.distributor = distributor;
 		this.USE_INVOCATIONS_FOR_REFERENCES = options.getUseEdgePatterns();
 	}
 
@@ -120,7 +120,7 @@ public class ContextPatternTransformation {
 	}
 
 	private void createPatternIfRelevant(TGGRule rule, Consumer<TGGRule> transformer, PatternType type) {
-		if (strategy.getPatternRelevantForCompiler().contains(type)) {
+		if (distributor.getPatternRelevantForCompiler().contains(type)) {
 			transformer.accept(rule);
 		}
 	}

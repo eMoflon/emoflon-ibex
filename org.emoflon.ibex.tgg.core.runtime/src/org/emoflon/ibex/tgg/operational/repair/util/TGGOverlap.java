@@ -1,9 +1,9 @@
 package org.emoflon.ibex.tgg.operational.repair.util;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.util.Collection;
 import java.util.Map;
-
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import language.TGGRule;
 import language.TGGRuleElement;

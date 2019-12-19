@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EObjectEList;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE.INTEGRATE_Op;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 import language.DomainType;
@@ -19,10 +19,10 @@ import language.TGGRuleNode;
 
 public class BrokenMatchAnalyser {
 
-	private final INTEGRATE_Op integrate;
+	private final INTEGRATE integrate;
 	private final Map<String, TGGRule> rules;
 
-	public BrokenMatchAnalyser(INTEGRATE_Op integrate) {
+	public BrokenMatchAnalyser(INTEGRATE integrate) {
 		this.integrate = integrate;
 		List<TGGRule> rules = integrate.getOptions().flattenedTGG().getRules();
 		this.rules = rules.stream() //
