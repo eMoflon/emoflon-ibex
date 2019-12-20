@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.collections.IntToIntMap;
+import org.emoflon.ibex.tgg.util.ConsoleUtil;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
@@ -102,7 +103,7 @@ final class Sat4JWrapper extends ILPSolver {
 		OptToPBSATAdapter optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(this.solver));
 		optimizer.setTimeout(timeout);
 		optimizer.setVerbose(true);
-		if (optimizer.isSatisfiable()) {
+		if (ConsoleUtil.suppressUnwantedPrints(() -> optimizer.isSatisfiable())) {
 			int[] model = this.solver.model();
 			IntToIntMap variableSolutions = CollectionFactory.cfactory.createIntToIntMap();
 			for (int i : model) {
