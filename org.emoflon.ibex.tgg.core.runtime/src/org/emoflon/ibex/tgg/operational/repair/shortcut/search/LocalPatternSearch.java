@@ -20,10 +20,13 @@ import language.TGGRuleNode;
 
 /**
  * 
- * This class handles the pattern search by using the operationalized shortcut rule search plan.
- * This SearchPlan is used to created Component structure consisting of Lookup-, NACNodeCheck-, NodeCheck- and EdgeCheckComponents.
- * A call to the first component with the elements that are to be preserved (a priori knowledge) returns a match if such exists
- * conforming to the underlying pattern. The operations used by each component are generated in OperationalShortcutRule.
+ * This class handles the pattern search by using the operationalized shortcut
+ * rule search plan. This SearchPlan is used to created Component structure
+ * consisting of Lookup-, NACNodeCheck-, NodeCheck- and EdgeCheckComponents. A
+ * call to the first component with the elements that are to be preserved (a
+ * priori knowledge) returns a match if such exists conforming to the underlying
+ * pattern. The operations used by each component are generated in
+ * OperationalShortcutRule.
  * 
  * @author lfritsche
  *

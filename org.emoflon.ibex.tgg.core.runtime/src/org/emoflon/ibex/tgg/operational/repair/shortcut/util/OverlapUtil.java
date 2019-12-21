@@ -54,10 +54,6 @@ public class OverlapUtil {
 	private Map<TGGRuleNode, Set<Integer>> node2candidate;
 	private Map<TGGRuleEdge, Set<Integer>> edge2candidate;
 
-	// TODO larsF, adrianM: probably not necessary and can be deleted
-	private Map<String, TGGRuleEdge> sourceEdgeMap = new HashMap<>();
-	private Map<String, TGGRuleEdge> targetEdgeMap = new HashMap<>();
-
 	private int idCounter;
 	private int nameCounter;
 
@@ -133,16 +129,16 @@ public class OverlapUtil {
 		TGGOverlap overlap = new TGGOverlap(sourceRule, targetRule);
 
 		overlap.deletions.addAll(TGGFilterUtil.filterNodes(sourceRule.getNodes(), BindingType.CREATE));
-		overlap.deletions.addAll(TGGFilterUtil.filterEdges(sourceEdgeMap.values(), BindingType.CREATE));
+		overlap.deletions.addAll(TGGFilterUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE));
 
 		overlap.creations.addAll(TGGFilterUtil.filterNodes(targetRule.getNodes(), BindingType.CREATE));
-		overlap.creations.addAll(TGGFilterUtil.filterEdges(targetEdgeMap.values(), BindingType.CREATE));
+		overlap.creations.addAll(TGGFilterUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE));
 
 		overlap.unboundSrcContext.addAll(TGGFilterUtil.filterNodes(sourceRule.getNodes(), BindingType.CONTEXT));
-		overlap.unboundSrcContext.addAll(TGGFilterUtil.filterEdges(sourceEdgeMap.values(), BindingType.CONTEXT));
+		overlap.unboundSrcContext.addAll(TGGFilterUtil.filterEdges(sourceRule.getEdges(), BindingType.CONTEXT));
 
 		overlap.unboundTrgContext.addAll(TGGFilterUtil.filterNodes(targetRule.getNodes(), BindingType.CONTEXT));
-		overlap.unboundTrgContext.addAll(TGGFilterUtil.filterEdges(targetEdgeMap.values(), BindingType.CONTEXT));
+		overlap.unboundTrgContext.addAll(TGGFilterUtil.filterEdges(targetRule.getEdges(), BindingType.CONTEXT));
 
 		for (int i = 0; i < solution.length; i++) {
 			boolean useCandidate = solution[i] == 1;
@@ -168,7 +164,7 @@ public class OverlapUtil {
 
 		switch (sourceElement.getBindingType()) {
 		case CONTEXT:
-			// TODO lfritsche : implement attributes
+			// TODO lfritsche, adrianM: implement attributes
 			overlap.unboundSrcContext.remove(sourceElement);
 			overlap.unboundTrgContext.remove(targetElement);
 			break;
@@ -209,13 +205,8 @@ public class OverlapUtil {
 //		createAndRegisterCorrEdges(sourceRule);
 //		createAndRegisterCorrEdges(targetRule);
 
-		sourceRule.getEdges().forEach(e -> sourceEdgeMap
-				.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__" + e.getTrgNode().getName(), e));
-		targetRule.getEdges().forEach(e -> targetEdgeMap
-				.put(e.getSrcNode().getName() + "__" + e.getType().getName() + "__" + e.getTrgNode().getName(), e));
-
-		for (TGGRuleEdge sourceEdge : sourceEdgeMap.values()) {
-			for (TGGRuleEdge targetEdge : targetEdgeMap.values()) {
+		for (TGGRuleEdge sourceEdge : sourceRule.getEdges()) {
+			for (TGGRuleEdge targetEdge : targetRule.getEdges()) {
 				if (typeMatches(sourceEdge, targetEdge, mapContext)) {
 					if (!node2candidate.containsKey(sourceEdge.getSrcNode()))
 						continue;
@@ -276,8 +267,6 @@ public class OverlapUtil {
 		edgeCandidate2id.clear();
 		node2candidate.clear();
 		edge2candidate.clear();
-		sourceEdgeMap.clear();
-		targetEdgeMap.clear();
 		id2node.clear();
 		id2edge.clear();
 	}

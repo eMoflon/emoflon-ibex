@@ -29,12 +29,13 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 /**
- * This class implements a special type of operationalized shortcut rules.
- * It focusses on interface edges, i.e. edges between created and context nodes.
- * These edges get deleted when the context is deleted and often trigger an avalanche of invalidated rule applications
- * when a rule application is removed.
- * To circumvent this, InterfaceShortcutRules do not simply revoke a rule application with broken interface edges but try to 
- * restore consistency by fixing them. 
+ * This class implements a special type of operationalized shortcut rules. It
+ * focuses on interface edges, i.e. edges between created and context nodes.
+ * These edges get deleted when the context is deleted and often trigger an
+ * avalanche of invalidated rule applications when a rule application is
+ * removed. To circumvent this, InterfaceShortcutRules do not simply revoke a
+ * rule application with broken interface edges but try to restore consistency
+ * by fixing them.
  * 
  * @author lfritsche
  *
@@ -80,7 +81,8 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 			
 			addNACforCreatedInterface(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC));
 			break;
-		default: throw new RuntimeException("Shortcut Rules can only be operationalized for FORWARD and BACKWARD operations");
+		default:
+			throw new RuntimeException("Shortcut Rules can only be operationalized for FORWARD and BACKWARD operations");
 		}
 		createRuleApplicationNode();
 	}

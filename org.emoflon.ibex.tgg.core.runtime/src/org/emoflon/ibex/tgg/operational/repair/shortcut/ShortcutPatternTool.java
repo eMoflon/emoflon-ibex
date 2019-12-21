@@ -36,7 +36,8 @@ import language.TGGRuleNode;
 import runtime.TempContainer;
 
 /**
- * This class handles all operationalized shortcut rules and their application to fix a broken match.
+ * This class handles all operationalized shortcut rules and their application
+ * to fix a broken match.
  * 
  * @author lfritsche
  *
@@ -127,7 +128,9 @@ public class ShortcutPatternTool {
 	}
 	
 	/**
-	 * transforms the given operationalized shortcut rule match into a match conforming to a target rule match
+	 * transforms the given operationalized shortcut rule match into a match
+	 * conforming to a target rule match
+	 * 
 	 * @param osr
 	 * @param scMatch
 	 * @return

@@ -37,13 +37,15 @@ import language.TGGRuleNode;
 
 /**
  * 
- * This class represents an operationalized shortcut rule.
- * The pattern information are stored in the shortcut rule (copied instance).
- * Operationalizion means that these rules are applicable in a certain translation direction (FORWARD, BACKWARD).
- * However, the operationalize() method has to be implemented by sub classes.
- * This class also creates a SearchPlan for the operationalized pattern and created Lookup und *Check Operations which 
- * are used by LocalPatternSearch to execute the SearchPlan.
- * The interfaces used to implement these operations are EdgeCheck, Lookup, NACNodeCheck and NodeCheck.
+ * This class represents an operationalized shortcut rule. The pattern
+ * information are stored in the shortcut rule (copied instance).
+ * Operationalization means that these rules are applicable in a certain
+ * translation direction (FORWARD, BACKWARD). However, the operationalize()
+ * method has to be implemented by sub classes. This class also creates a
+ * SearchPlan for the operationalized pattern and created Lookup and Check
+ * Operations which are used by LocalPatternSearch to execute the SearchPlan.
+ * The interfaces used to implement these operations are EdgeCheck, Lookup,
+ * NACNodeCheck and NodeCheck.
  * 
  * @author lfritsche
  *
@@ -64,7 +66,7 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-	public OperationalShortcutRule(SYNC stragey, SyncDirection direction, ShortcutRule scRule) {
+	public OperationalShortcutRule(SYNC strategy, SyncDirection direction, ShortcutRule scRule) {
 		this.scRule = scRule;
 		this.direction = direction;
 
@@ -89,7 +91,7 @@ public abstract class OperationalShortcutRule {
 		Collection<SearchKey> uncheckedSearchKeys = key2lookup.keySet();
 		
 		// first calculate the lookups to find all elements + their corresponding node checks
-		// TODO lfritsche: add inplace attributes
+		// TODO lfritsche, adrianM: add inplace attributes
 		List<Pair<SearchKey, Lookup>> searchPlan = new ArrayList<>();
 		while(!uncheckedNodes.isEmpty()) {
 			Collection<SearchKey> checkedSearchKeys = filterAndSortKeys(uncheckedSearchKeys, uncheckedNodes);
@@ -186,10 +188,7 @@ public abstract class OperationalShortcutRule {
 		cspCheck = (name2candidates) -> {
 			IMatch match = new SCMatch(scRule.getName(), name2candidates);
 			IRuntimeTGGAttrConstrContainer cspContainer = getGreenPattern().getAttributeConstraintContainer(match);
-			if (!cspContainer.solve()) {
-				return false;
-			}
-			return true;
+			return cspContainer.solve();
 		};
 	}
 
@@ -277,8 +276,8 @@ public abstract class OperationalShortcutRule {
 	}
 
 	private void createNodeCheck(TGGRuleNode key) {
-		// TODO lfritsche : implement attribute handling (also in TGGOverlap)
-		// TODO lfritsche : implement inheritance concept
+		// TODO lfritsche, adrianM: implement attribute handling (also in TGGOverlap)
+		// TODO lfritsche, adrianM: implement inheritance concept
 		element2nodeCheck.put(key, n -> {
 			if (n == null)
 				return false;

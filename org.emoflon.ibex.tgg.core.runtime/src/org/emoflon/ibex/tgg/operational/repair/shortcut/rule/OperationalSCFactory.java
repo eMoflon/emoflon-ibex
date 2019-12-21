@@ -22,28 +22,27 @@ public class OperationalSCFactory {
 		this.strategy = strategy;
 		this.scRules = scRules;
 	}
-	
+
 	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(SyncDirection direction) {
 		Map<String, Collection<OperationalShortcutRule>> operationalRules = new HashMap<>();
-		for(ShortcutRule scRule : scRules) {
+		for (ShortcutRule scRule : scRules) {
 			TGGRule sourceRule = scRule.getSourceRule();
 			TGGRule targetRule = scRule.getTargetRule();
 
 			// TODO larsF, adrianM: does this make sense?
 			// we do not want rules that do not preserve elements or contain no interface edges
-			if(TGGFilterUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE).size() + TGGFilterUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE).size() == 0)
+			if (TGGFilterUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE).size()
+					+ TGGFilterUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
-			
-			if(TGGFilterUtil.filterNodes(scRule.getMergedNodes(), DomainType.SRC).size() == 0)
+
+			if (TGGFilterUtil.filterNodes(scRule.getMergedNodes(), DomainType.SRC).size() == 0)
 				continue;
-			
-			if(TGGFilterUtil.filterNodes(scRule.getMergedNodes(), DomainType.TRG).size() == 0)
+
+			if (TGGFilterUtil.filterNodes(scRule.getMergedNodes(), DomainType.TRG).size() == 0)
 				continue;
-			
+
 			InterfaceShortcutRule isr = new InterfaceShortcutRule(strategy, direction, scRule);
-			Collection<OperationalShortcutRule> osRules = operationalRules.getOrDefault(sourceRule.getName(), new LinkedList<>()) ;
-			osRules.add(isr);
-			operationalRules.put(sourceRule.getName(), osRules);
+			operationalRules.computeIfAbsent(sourceRule.getName(), k -> new LinkedList<>()).add(isr);
 		}
 		return operationalRules;
 	}
