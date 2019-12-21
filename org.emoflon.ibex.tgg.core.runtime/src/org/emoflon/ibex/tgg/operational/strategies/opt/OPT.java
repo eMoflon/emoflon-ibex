@@ -43,7 +43,7 @@ public abstract class OPT extends OperationalStrategy {
 	protected IntToObjectMap<ITGGMatch> idToMatch = cfactory.createIntToObjectHashMap();
 	protected Map<EMFEdge, IntSet> edgeToMarkingMatches = cfactory.createEMFEdgeHashMap();
 	protected Map<EObject, IntSet> nodeToMarkingMatches = cfactory.createObjectToObjectHashMap();
-	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
+	protected ConsistencyReporter consistencyReporter;
 	protected int nameCounter = 0;
 	protected IntToObjectMap<Set<EObject>> matchToContextNodes = cfactory.createIntToObjectHashMap();
 	protected Map<EObject, IntSet> contextNodeToNeedingMatches = cfactory.createObjectToObjectHashMap();
@@ -57,10 +57,12 @@ public abstract class OPT extends OperationalStrategy {
 
 	public OPT(final IbexOptions options) throws IOException {
 		super(options);
+		consistencyReporter = new ConsistencyReporter(this);
 	}
 
 	public OPT(final IbexOptions options, final IUpdatePolicy policy) throws IOException {
 		super(options, policy);
+		consistencyReporter = new ConsistencyReporter(this);
 	}
 
 	/**

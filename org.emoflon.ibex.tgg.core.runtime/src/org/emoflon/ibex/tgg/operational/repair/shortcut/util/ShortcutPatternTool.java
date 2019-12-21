@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -140,7 +141,7 @@ public class ShortcutPatternTool {
 		);
 		
 		IGreenPatternFactory greenFactory = strategy.getGreenFactory(osr.getScRule().getTargetRule().getName());
-		IGreenPattern greenPattern = greenFactory.create(TGGPatternUtil.generateFWDBlackPatternName(osr.getScRule().getTargetRule().getName()));
+		IGreenPattern greenPattern = greenFactory.create(PatternType.FWD);
 		greenPattern.createMarkers(osr.getScRule().getTargetRule().getName(), newMatch);
 		
 		return newMatch;

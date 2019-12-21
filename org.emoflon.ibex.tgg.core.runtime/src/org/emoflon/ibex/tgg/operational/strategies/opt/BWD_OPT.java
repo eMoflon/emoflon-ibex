@@ -41,7 +41,7 @@ public class BWD_OPT extends OPT {
 		}
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
-		consistencyReporter.initTrg(this);
+		consistencyReporter.initTrg();
 	}
 
 	@Override

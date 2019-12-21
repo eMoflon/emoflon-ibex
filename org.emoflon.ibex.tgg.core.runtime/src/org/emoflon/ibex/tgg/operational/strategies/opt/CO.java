@@ -30,7 +30,7 @@ public class CO extends CC {
 		}
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
-		consistencyReporter.initWithCorr(this);
+		consistencyReporter.initWithCorr();
 	}
 
 	/*

@@ -47,12 +47,15 @@ public class MatchDistributor implements IMatchObserver {
 		this.options = options;
 	}
 	
-	public void initialize() {
+	public void initialize() throws IOException {
 		if(initialized)
 			return;
 		
-		blackInterpreter = options.getBlackInterpreter();
 		rs = options.getResourceHandler().getResourceSet();
+		if(options.getBlackInterpreter() == null)
+			logger.warn("No pattern matcher is registered!");
+		else	
+			initialiseBlackInterpreter(options.getExecutable());
 		
 		initialized = true;
 	}
@@ -67,6 +70,7 @@ public class MatchDistributor implements IMatchObserver {
 	}
 	
 	protected void initialiseBlackInterpreter(IbexExecutable executable) throws IOException {		
+		blackInterpreter = options.getBlackInterpreter();
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
 			blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
@@ -160,7 +164,7 @@ public class MatchDistributor implements IMatchObserver {
 				removeConsumers = new LinkedList<>();
 				type2removeMatch.put(type, removeConsumers);
 			}
-			removeConsumers.add(addMatch);
+			removeConsumers.add(removeMatch);
 		}
 	}
 

@@ -75,6 +75,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		BenchmarkLogger.startTimer();
 		this.notifyStartInit();
 		
+		options.setExecutable(this);
+		
 		this.setUpdatePolicy(policy);
 
 		resourceHandler = options.getResourceHandler();
@@ -86,7 +88,11 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		this.notifyStartLoading();
 		resourceHandler.initialize();
 		this.notifyLoadingFinished();
-		matchDistributor.initialize();
+		try {
+			matchDistributor.initialize();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		greenInterpreter = new IbexGreenInterpreter(this);
 
@@ -227,7 +233,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		}
 
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
-		IGreenPattern greenPattern = factory.create(match.getPatternName());
+		IGreenPattern greenPattern = factory.create(match.getType());
 
 		logger.debug("Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
 
@@ -253,7 +259,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	protected void updateBlockedMatches() {
-		for(ITGGMatch match : operationalMatchContainer.getMatches().toArray(new ITGGMatch[0])) {
+		for(ITGGMatch match : operationalMatchContainer.getMatches()) {
 			if(!this.getUpdatePolicy().matchShouldBeApplied(match, operationalMatchContainer.getRuleName(match))) {
 				if(!blockedMatches.containsKey(match))
 					blockedMatches.put(match, "Match is blocked by the update policy");

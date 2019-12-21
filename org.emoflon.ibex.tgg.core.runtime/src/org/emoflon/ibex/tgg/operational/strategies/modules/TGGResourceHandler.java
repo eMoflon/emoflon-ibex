@@ -115,6 +115,8 @@ public class TGGResourceHandler {
 		}
 		
 		if(executable instanceof FWD_OPT) {
+			protocol.save(null);
+
 			// Remove adapters to avoid problems with notifications
 			target.eAdapters().clear();
 			target.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
@@ -127,10 +129,11 @@ public class TGGResourceHandler {
 			// Now save fixed models
 			target.save(null);
 			corr.save(null);
-			protocol.save(null);
 		}
 		
 		if(executable instanceof BWD_OPT) {
+			protocol.save(null);
+
 			// Remove adapters to avoid problems with notifications
 			source.eAdapters().clear();
 			source.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
@@ -143,7 +146,6 @@ public class TGGResourceHandler {
 			// Now save fixed models
 			source.save(null);
 			corr.save(null);
-			protocol.save(null);
 		}
 		
 		if(executable instanceof SYNC) {

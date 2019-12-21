@@ -33,9 +33,12 @@ public class ConsistencyReporter {
 
 	private TGGResourceHandler resourceHandler;
 
-	public void init(OperationalStrategy strategy) {
+	public ConsistencyReporter(OperationalStrategy strategy) {
 		this.strategy = strategy;
 		resourceHandler = strategy.getOptions().getResourceHandler();
+	}
+	
+	public void init(OperationalStrategy strategy) {
 		inconsistentSrcNodes = extractInconsistentNodes(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(),
 				DomainType.SRC);
 		inconsistentTrgNodes = extractInconsistentNodes(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(),
@@ -46,23 +49,20 @@ public class ConsistencyReporter {
 				DomainType.TRG);
 	}
 
-	public void initWithCorr(OperationalStrategy strategy) {
-		this.strategy = strategy;
+	public void initWithCorr() {
 		init(strategy);
 		inconsistentCorrNodes = //
 				extractInconsistentNodes(resourceHandler.getCorrResource(), resourceHandler.getProtocolResource(), DomainType.CORR);
 	}
 
-	public void initSrc(OperationalStrategy strategy) {
-		this.strategy = strategy;
+	public void initSrc() {
 		inconsistentSrcNodes = extractInconsistentNodes(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(),
 				DomainType.SRC);
 		inconsistentSrcEdges = extractInconsistentEdges(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(),
 				DomainType.SRC);
 	}
 
-	public void initTrg(OperationalStrategy strategy) {
-		this.strategy = strategy;
+	public void initTrg() {
 		inconsistentTrgNodes = extractInconsistentNodes(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(),
 				DomainType.TRG);
 		inconsistentTrgEdges = extractInconsistentEdges(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(),

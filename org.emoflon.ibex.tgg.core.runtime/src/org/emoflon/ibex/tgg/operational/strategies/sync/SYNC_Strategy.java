@@ -23,7 +23,7 @@ public abstract class SYNC_Strategy {
 	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory greenFactory, ITGGMatch m) {
 		ITGGMatch copy = m.copy();
 
-		IGreenPattern greenPattern = greenFactory.create(m.getRuleName());
+		IGreenPattern greenPattern = greenFactory.create(getType());
 
 		copy.getParameterNames().removeAll(//
 				getNodesInOutputDomain(greenPattern).stream()//

@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.emoflon.ibex.common.collections.CollectionFactory;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
@@ -195,7 +195,7 @@ public abstract class ExtOperationalStrategy extends OperationalStrategy {
 
 	@Override
 	public boolean removeOperationalRuleMatch(ITGGMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY))
+		if (match.getType() == PatternType.CONSISTENCY)
 			addConsistencyBrokenMatch((ITGGMatch) match);
 
 		return super.removeOperationalRuleMatch(match);

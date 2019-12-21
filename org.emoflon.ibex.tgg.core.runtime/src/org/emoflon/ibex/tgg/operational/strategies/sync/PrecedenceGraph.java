@@ -46,7 +46,7 @@ public class PrecedenceGraph implements IMatchContainer {
 
 	private void handleMatch(ITGGMatch m) {
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
-		IGreenPattern gPattern = gFactory.create(m.getPatternName());
+		IGreenPattern gPattern = gFactory.create(m.getType());
 
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
 			return;
@@ -117,7 +117,7 @@ public class PrecedenceGraph implements IMatchContainer {
 	
 	private boolean noElementIsPending(ITGGMatch m) {
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
-		IGreenPattern gPattern = gFactory.create(m.getPatternName());
+		IGreenPattern gPattern = gFactory.create(m.getType());
 		
 		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
 			Object createdObj = m.get(createdNode.getName());

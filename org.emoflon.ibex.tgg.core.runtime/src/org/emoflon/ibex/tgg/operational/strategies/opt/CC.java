@@ -22,8 +22,6 @@ import language.TGGRuleCorr;
 
 public class CC extends OPT {
 
-	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
-
 	public CC(IbexOptions options) throws IOException {
 		super(options);
 	}

@@ -41,7 +41,7 @@ public class FWD_OPT extends OPT {
 		}
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
-		consistencyReporter.initSrc(this);
+		consistencyReporter.initSrc();
 	}
 
 	@Override
