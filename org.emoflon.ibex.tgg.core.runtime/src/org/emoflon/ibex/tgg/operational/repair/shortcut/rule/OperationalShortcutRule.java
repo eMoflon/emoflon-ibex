@@ -277,11 +277,10 @@ public abstract class OperationalShortcutRule {
 
 	private void createNodeCheck(TGGRuleNode key) {
 		// TODO lfritsche, adrianM: implement attribute handling (also in TGGOverlap)
-		// TODO lfritsche, adrianM: implement inheritance concept
 		element2nodeCheck.put(key, n -> {
 			if (n == null)
 				return false;
-			return n.eClass().equals(key.getType());
+			return key.getType().isSuperTypeOf(n.eClass());
 		});
 	}
 
