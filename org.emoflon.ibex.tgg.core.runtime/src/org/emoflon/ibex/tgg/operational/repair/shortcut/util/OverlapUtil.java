@@ -5,7 +5,6 @@ import static org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil.isAxiom
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -164,7 +163,6 @@ public class OverlapUtil {
 
 		switch (sourceElement.getBindingType()) {
 		case CONTEXT:
-			// TODO lfritsche, adrianM: implement attributes
 			overlap.unboundSrcContext.remove(sourceElement);
 			overlap.unboundTrgContext.remove(targetElement);
 			break;

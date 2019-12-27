@@ -3,16 +3,19 @@ package org.emoflon.ibex.tgg.operational.repair.shortcut.rule;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
+import language.TGGInplaceAttributeExpression;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -117,15 +120,15 @@ public class ShortcutRule {
 	}
 
 	private void createNewNode(TGGRuleNode oldNode, BindingType binding, SCInputRule scInput) {
-		TGGRuleNode newNode = //
-				createNode(oldNode.eClass(), oldNode.getName(), binding, oldNode.getDomainType(), oldNode.getType());
+		TGGRuleNode newNode = createNode(oldNode.eClass(), oldNode.getName(), binding, oldNode.getDomainType(),
+				oldNode.getType(), oldNode.getAttrExpr());
 		registerNewNode(oldNode, newNode, scInput);
 	}
 
 	private void createNewMergedNode(TGGRuleNode srcNode, TGGRuleNode trgNode) {
 		EClass newType = srcNode.getType().isSuperTypeOf(trgNode.getType()) ? trgNode.getType() : srcNode.getType();
-		TGGRuleNode newNode = //
-				createNode(srcNode.eClass(), srcNode.getName(), BindingType.CONTEXT, srcNode.getDomainType(), newType);
+		TGGRuleNode newNode = createNode(srcNode.eClass(), srcNode.getName(), BindingType.CONTEXT,
+				srcNode.getDomainType(), newType, trgNode.getAttrExpr());
 		registerNewMergedNode(srcNode, trgNode, newNode);
 	}
 
@@ -154,7 +157,8 @@ public class ShortcutRule {
 			preservedNodes.add(newNode);
 	}
 
-	private TGGRuleNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type) {
+	private TGGRuleNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type,
+			List<TGGInplaceAttributeExpression> attrExprs) {
 		TGGRuleNode node = (TGGRuleNode) LanguageFactory.eINSTANCE.create(nodeType);
 
 		String adjustedName = name;
@@ -170,6 +174,7 @@ public class ShortcutRule {
 		node.setBindingType(binding);
 		node.setDomainType(domain);
 		node.setType(type);
+		node.getAttrExpr().addAll(EcoreUtil.copyAll(attrExprs));
 
 		return node;
 	}
@@ -288,11 +293,15 @@ public class ShortcutRule {
 				+ "\n";
 		name += "nodes: \n";
 		for (TGGRuleNode node : nodes) {
+			if (node.getName().contains("eMoflon_ProtocolNode"))
+				continue;
 			name += "    " + node.getName() + " : " + node.getType().getName() + " - " + node.getBindingType().getName()
 					+ "\n";
 		}
 		name += "edges: \n";
 		for (TGGRuleEdge edge : edges) {
+			if (edge.getName().contains("eMoflon_ProtocolNode"))
+				continue;
 			name += "    " + edge.getName() + " : " + edge.getType().getName() + " - " + edge.getBindingType().getName()
 					+ "\n";
 		}

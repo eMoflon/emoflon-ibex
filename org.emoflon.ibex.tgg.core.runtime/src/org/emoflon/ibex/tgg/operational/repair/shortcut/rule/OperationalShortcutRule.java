@@ -28,9 +28,14 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.BindingType;
+import language.TGGAttributeExpression;
+import language.TGGEnumExpression;
+import language.TGGInplaceAttributeExpression;
+import language.TGGLiteralExpression;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -56,7 +61,7 @@ public abstract class OperationalShortcutRule {
 	protected SYNC strategy;
 	protected SyncDirection direction;
 	protected ShortcutRule scRule;
-	
+
 	protected Collection<TGGRuleElement> markedElements;
 	protected Map<SearchKey, Lookup> key2lookup;
 	protected Map<TGGRuleNode, NodeCheck> element2nodeCheck;
@@ -74,7 +79,7 @@ public abstract class OperationalShortcutRule {
 		this.key2lookup = cfactory.createObjectToObjectHashMap();
 		this.element2nodeCheck = cfactory.createObjectToObjectHashMap();
 		this.key2edgeCheck = cfactory.createObjectToObjectHashMap();
-		this.key2nacNodeCheck= cfactory.createObjectToObjectHashMap();
+		this.key2nacNodeCheck = cfactory.createObjectToObjectHashMap();
 	}
 
 	abstract protected void operationalize();
@@ -87,58 +92,59 @@ public abstract class OperationalShortcutRule {
 				&& n.getBindingType() != BindingType.CREATE)
 				.collect(Collectors.toList());
 		Collection<TGGRuleEdge> uncheckedEdges = scRule.getEdges().stream().collect(Collectors.toList());
-		
+
 		Collection<SearchKey> uncheckedSearchKeys = key2lookup.keySet();
-		
+
 		// first calculate the lookups to find all elements + their corresponding node checks
-		// TODO lfritsche, adrianM: add inplace attributes
 		List<Pair<SearchKey, Lookup>> searchPlan = new ArrayList<>();
-		while(!uncheckedNodes.isEmpty()) {
+		while (!uncheckedNodes.isEmpty()) {
 			Collection<SearchKey> checkedSearchKeys = filterAndSortKeys(uncheckedSearchKeys, uncheckedNodes);
-			if(checkedSearchKeys.isEmpty()) {
+			if (checkedSearchKeys.isEmpty()) {
 				// TODO lfritsche: clear this up
 //				throw new RuntimeException("Searchplan could not be generated for OperationalShortcutRule - " + scRule);
 				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + scRule.getName());
 				return null;
 			}
-			
+
 			SearchKey key = checkedSearchKeys.iterator().next();
 			searchPlan.add(Pair.of(key, key2lookup.get(key)));
-			
+
 			uncheckedNodes.remove(key.reverse ? key.sourceNode : key.targetNode);
 			uncheckedEdges.remove(key.edge);
-			
+
 			uncheckedSearchKeys.remove(key);
 			checkedSearchKeys.add(key);
 		}
-		
+
 		// now add edge checks to check all unchecked edges
 		Map<SearchKey, EdgeCheck> key2uncheckedEdgeCheck = new HashMap<>();
-		for(TGGRuleEdge edge : uncheckedEdges) {
-			if(edge.getBindingType() == BindingType.CREATE)
+		for (TGGRuleEdge edge : uncheckedEdges) {
+			if (edge.getBindingType() == BindingType.CREATE)
 				continue;
-			
-			if(edge.getSrcNode().getBindingType() == BindingType.NEGATIVE || edge.getTrgNode().getBindingType() == BindingType.NEGATIVE)
+
+			if (edge.getSrcNode().getBindingType() == BindingType.NEGATIVE
+					|| edge.getTrgNode().getBindingType() == BindingType.NEGATIVE)
 				continue;
-			
+
 			SearchKey key = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
 			key2uncheckedEdgeCheck.put(key, key2edgeCheck.get(key));
 		}
-		
+
 		// add NAC checks as the last constraints that are evaluated
 		Map<SearchKey, NACNodeCheck> key2nacNodeCheck = new HashMap<>();
-		for(TGGRuleEdge edge : uncheckedEdges) {
-			if(edge.getBindingType() != BindingType.NEGATIVE)
+		for (TGGRuleEdge edge : uncheckedEdges) {
+			if (edge.getBindingType() != BindingType.NEGATIVE)
 				continue;
-			
-			if(edge.getSrcNode().getBindingType() != BindingType.NEGATIVE && edge.getTrgNode().getBindingType() != BindingType.NEGATIVE)
+
+			if (edge.getSrcNode().getBindingType() != BindingType.NEGATIVE
+					&& edge.getTrgNode().getBindingType() != BindingType.NEGATIVE)
 				continue;
-			
+
 			boolean reverse = edge.getSrcNode().getBindingType() != BindingType.CONTEXT;
 			SearchKey key = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, reverse);
 			key2nacNodeCheck.put(key, this.key2nacNodeCheck.get(key));
 		}
-		
+
 		return new SearchPlan(searchPlan, element2nodeCheck, key2uncheckedEdgeCheck, key2nacNodeCheck, cspCheck);
 	}
 	
@@ -152,14 +158,14 @@ public abstract class OperationalShortcutRule {
 //					uncheckedNodes.contains(k.targetNode) && k.reverse)
 				.collect(Collectors.toList());
 	}
-	
+
 	// a valid lookup key is a key where source xor target has already been checked
 	private boolean validLookupKey(Collection<TGGRuleNode> uncheckedNodes, SearchKey key) {
 		boolean first  =  uncheckedNodes.contains(key.sourceNode) && !uncheckedNodes.contains(key.targetNode) &&  key.reverse;
 		boolean second = !uncheckedNodes.contains(key.sourceNode) &&  uncheckedNodes.contains(key.targetNode) && !key.reverse;
 		return first || second;
 	}
-	
+
 	protected void createConstraintChecks() {
 		for (TGGRuleNode node : scRule.getNodes()) {
 			createNodeCheck(node);
@@ -168,23 +174,23 @@ public abstract class OperationalShortcutRule {
 		for (TGGRuleEdge edge : scRule.getEdges()) {
 			SearchKey forwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
 			SearchKey backwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, true);
-			
+
 			createEdgeCheck(forwardKey);
-			
+
 			createLookup(forwardKey);
 			createOppositeLookup(backwardKey);
 
-			if(edge.getBindingType() != BindingType.NEGATIVE)
+			if (edge.getBindingType() != BindingType.NEGATIVE)
 				continue;
-			
-			if(edge.getSrcNode().getBindingType() == BindingType.NEGATIVE) {
+
+			if (edge.getSrcNode().getBindingType() == BindingType.NEGATIVE) {
 				createNACNodeCheck(backwardKey);
 			}
-			if(edge.getTrgNode().getBindingType() == BindingType.NEGATIVE) {
+			if (edge.getTrgNode().getBindingType() == BindingType.NEGATIVE) {
 				createNACNodeCheck(forwardKey);
 			}
 		}
-		
+
 		cspCheck = (name2candidates) -> {
 			IMatch match = new SCMatch(scRule.getName(), name2candidates);
 			IRuntimeTGGAttrConstrContainer cspContainer = getGreenPattern().getAttributeConstraintContainer(match);
@@ -198,7 +204,7 @@ public abstract class OperationalShortcutRule {
 			return n.eGet(edgeRef);
 		});
 	}
-	
+
 	private void createOppositeLookup(SearchKey key) {
 		EReference edgeRef = key.edge.getType();
 		// create opposite ref
@@ -210,7 +216,7 @@ public abstract class OperationalShortcutRule {
 			// TODO lfritsche : implement reverse navigation
 			key2lookup.put(key, n -> {
 				Class<?> instanceClass = key.sourceNode.getType().getInstanceClass();
-				if(instanceClass != null) 
+				if (instanceClass != null)
 					return eMoflonEMFUtil.getOppositeReference(n, instanceClass, key.edge.getType().getName());
 				return EMFNavigationUtil.getOppositeReference(n, key.sourceNode.getType(), key.edge.getType().getName());
 			});
@@ -221,9 +227,10 @@ public abstract class OperationalShortcutRule {
 	private void createEdgeCheck(SearchKey key) {
 		boolean negative = key.edge.getBindingType() == BindingType.NEGATIVE;
 		if (negative) {
-			if(key.edge.getSrcNode().getBindingType().equals(BindingType.NEGATIVE) || key.edge.getTrgNode().getBindingType().equals(BindingType.NEGATIVE))
+			if (key.edge.getSrcNode().getBindingType().equals(BindingType.NEGATIVE)
+					|| key.edge.getTrgNode().getBindingType().equals(BindingType.NEGATIVE))
 				return;
-				
+
 			key2edgeCheck.put(key, (s, t) -> {
 				Object refTarget = s.eGet(key.edge.getType());
 				if (refTarget == null) {
@@ -236,8 +243,7 @@ public abstract class OperationalShortcutRule {
 				}
 				return !refTarget.equals(t);
 			});
-		}
-		else {
+		} else {
 			key2edgeCheck.put(key, (s, t) -> {
 				Object refTarget = s.eGet(key.edge.getType());
 				if (refTarget == null) {
@@ -252,7 +258,7 @@ public abstract class OperationalShortcutRule {
 			});
 		}
 	}
-	
+
 	private void createNACNodeCheck(SearchKey key) {
 		NodeCheck nodeCheck = key.reverse ? element2nodeCheck.get(key.sourceNode) : element2nodeCheck.get(key.targetNode);
 		SearchKey lookupKey = new SearchKey(key.sourceNode, key.targetNode, key.edge, key.reverse);
@@ -265,8 +271,8 @@ public abstract class OperationalShortcutRule {
 			if (refTarget instanceof List<?>) {
 				@SuppressWarnings("unchecked")
 				List<EObject> list = (List<EObject>) refTarget;
-				for(EObject obj : list) {
-					if(!candidates.contains(refTarget) && nodeCheck.checkConstraint(obj))
+				for (EObject obj : list) {
+					if (!candidates.contains(refTarget) && nodeCheck.checkConstraint(obj))
 						return false;
 				}
 				return true;
@@ -276,12 +282,31 @@ public abstract class OperationalShortcutRule {
 	}
 
 	private void createNodeCheck(TGGRuleNode key) {
-		// TODO lfritsche, adrianM: implement attribute handling (also in TGGOverlap)
 		element2nodeCheck.put(key, n -> {
 			if (n == null)
 				return false;
-			return key.getType().isSuperTypeOf(n.eClass());
+			return key.getType().isSuperTypeOf(n.eClass()) && checkInplaceAttributes(key, n);
 		});
+	}
+
+	private boolean checkInplaceAttributes(TGGRuleNode key, EObject node) {
+		for (TGGInplaceAttributeExpression inplAttrExpr : key.getAttrExpr()) {
+			if (inplAttrExpr.getValueExpr() instanceof TGGLiteralExpression) {
+				TGGLiteralExpression litExpr = (TGGLiteralExpression) inplAttrExpr.getValueExpr();
+				Object literal = String2EPrimitive.convertLiteral( //
+						litExpr.getValue(), inplAttrExpr.getAttribute().getEAttributeType());
+				if (!literal.equals(node.eGet(inplAttrExpr.getAttribute())))
+					return false;
+			} else if (inplAttrExpr.getValueExpr() instanceof TGGEnumExpression) {
+				TGGEnumExpression enumExpr = (TGGEnumExpression) inplAttrExpr.getValueExpr();
+				if (!enumExpr.getLiteral().getInstance().equals(node.eGet(inplAttrExpr.getAttribute())))
+					return false;
+			} else if (inplAttrExpr.getValueExpr() instanceof TGGAttributeExpression) {
+				TGGAttributeExpression attrExpr = (TGGAttributeExpression) inplAttrExpr.getValueExpr();
+				// FIXME adrianm: attribute expression check (missing Match access)
+			}
+		}
+		return true;
 	}
 
 	public ShortcutRule getScRule() {
@@ -299,13 +324,13 @@ public abstract class OperationalShortcutRule {
 	public Map<SearchKey, Lookup> getKey2singLookup() {
 		return key2lookup;
 	}
-	
+
 	public String getName() {
 		return scRule.getSourceRule().getName() + "_OSC_" + scRule.getTargetRule().getName();
 	}
-	
+
 	public IGreenPattern getGreenPattern() {
-		if(greenPattern == null) {
+		if (greenPattern == null) {
 			greenPattern = createGreenPattern();
 		}
 		return greenPattern;

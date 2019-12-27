@@ -28,9 +28,15 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import language.BindingType;
 import language.DomainType;
+import language.TGGAttributeConstraintOperators;
+import language.TGGAttributeExpression;
+import language.TGGEnumExpression;
+import language.TGGInplaceAttributeExpression;
+import language.TGGLiteralExpression;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TempContainer;
@@ -93,15 +99,15 @@ public class ShortcutPatternTool {
 		String ruleName = PatternSuffixes.removeSuffix(brokenMatch.getPatternName());
 		switch(direction) {
 		case FORWARD:
-			return processBrokenMatch(tggRule2srcSCRule.get(ruleName), brokenMatch);
+			return processBrokenMatch(tggRule2srcSCRule.get(ruleName), DomainType.TRG, brokenMatch);
 		case BACKWARD:
-			return processBrokenMatch(tggRule2trgSCRule.get(ruleName), brokenMatch);
+			return processBrokenMatch(tggRule2trgSCRule.get(ruleName), DomainType.SRC, brokenMatch);
 		default:
 			return null;
 		}
 	}
 
-	private IMatch processBrokenMatch(Collection<OperationalShortcutRule> rules, IMatch brokenMatch) {
+	private IMatch processBrokenMatch(Collection<OperationalShortcutRule> rules, DomainType objDomain, IMatch brokenMatch) {
 		if(rules == null)
 			return null;
 		
@@ -121,6 +127,8 @@ public class ShortcutPatternTool {
 				continue;
 
 			processDeletions(osr, newMatch);
+			
+			processAttributes(osr, newMatch, objDomain);
 			
 			return transformToTargetMatch(osr, newCoMatch.get());
 		}
@@ -204,6 +212,32 @@ public class ShortcutPatternTool {
 	
 	private Optional<IMatch> processCreations(OperationalShortcutRule osc, IMatch brokenMatch) {
 		return greenInterpreter.apply(osc.getGreenPattern(), osc.getScRule().getTargetRule().getName(), brokenMatch);
+	}
+
+	private void processAttributes(OperationalShortcutRule osr, IMatch match, DomainType objDomain) {
+		TGGFilterUtil.filterNodes(osr.getScRule().getNodes(), objDomain).stream() //
+				.filter(n -> osr.getScRule().getPreservedNodes().contains(n)) //
+				.forEach(n -> applyInPlaceAttributeAssignments(match, n, (EObject) match.get(n.getName())));
+	}
+	
+	// TODO adrianm: copied from IbexGreenInterpreter's private method -> refactor this
+	private void applyInPlaceAttributeAssignments(IMatch match, TGGRuleNode node, EObject obj) {
+		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
+			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
+				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
+					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
+					obj.eSet(attrExpr.getAttribute(), String2EPrimitive.convertLiteral(tle.getValue(),
+							attrExpr.getAttribute().getEAttributeType()));
+				} else if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
+					TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
+					obj.eSet(attrExpr.getAttribute(), tee.getLiteral().getInstance());
+				} else if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
+					TGGAttributeExpression tae = (TGGAttributeExpression) attrExpr.getValueExpr();
+					EObject objVar = (EObject) match.get(tae.getObjectVar().getName());
+					obj.eSet(attrExpr.getAttribute(), objVar.eGet(tae.getAttribute()));
+				}
+			}
+		}
 	}
 
 	public int countDeletedElements() {
