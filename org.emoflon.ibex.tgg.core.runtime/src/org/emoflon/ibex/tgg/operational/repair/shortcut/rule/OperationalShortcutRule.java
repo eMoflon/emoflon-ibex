@@ -85,11 +85,10 @@ public abstract class OperationalShortcutRule {
 	abstract protected void operationalize();
 
 	public SearchPlan createSearchPlan() {
-		Collection<TGGRuleNode> uncheckedNodes = scRule.getNodes()
-				.stream()
-				.filter(n -> !scRule.getMergedNodes().contains(n) 
-				&& n.getBindingType() != BindingType.NEGATIVE 
-				&& n.getBindingType() != BindingType.CREATE)
+		Collection<TGGRuleNode> uncheckedNodes = scRule.getNodes().stream() //
+				.filter(n -> !scRule.getMergedNodes().contains(n) //
+						&& n.getBindingType() != BindingType.NEGATIVE //
+						&& n.getBindingType() != BindingType.CREATE) //
 				.collect(Collectors.toList());
 		Collection<TGGRuleEdge> uncheckedEdges = scRule.getEdges().stream().collect(Collectors.toList());
 
@@ -98,22 +97,20 @@ public abstract class OperationalShortcutRule {
 		// first calculate the lookups to find all elements + their corresponding node checks
 		List<Pair<SearchKey, Lookup>> searchPlan = new ArrayList<>();
 		while (!uncheckedNodes.isEmpty()) {
-			Collection<SearchKey> checkedSearchKeys = filterAndSortKeys(uncheckedSearchKeys, uncheckedNodes);
-			if (checkedSearchKeys.isEmpty()) {
+			Collection<SearchKey> nextSearchKeys = filterKeys(uncheckedSearchKeys, uncheckedNodes);
+			if (nextSearchKeys.isEmpty()) {
 				// TODO lfritsche: clear this up
 //				throw new RuntimeException("Searchplan could not be generated for OperationalShortcutRule - " + scRule);
 				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + scRule.getName());
 				return null;
 			}
 
-			SearchKey key = checkedSearchKeys.iterator().next();
-			searchPlan.add(Pair.of(key, key2lookup.get(key)));
+			SearchKey nextKey = nextSearchKeys.iterator().next();
+			searchPlan.add(Pair.of(nextKey, key2lookup.get(nextKey)));
 
-			uncheckedNodes.remove(key.reverse ? key.sourceNode : key.targetNode);
-			uncheckedEdges.remove(key.edge);
-
-			uncheckedSearchKeys.remove(key);
-			checkedSearchKeys.add(key);
+			uncheckedNodes.remove(nextKey.reverse ? nextKey.sourceNode : nextKey.targetNode);
+			uncheckedEdges.remove(nextKey.edge);
+			uncheckedSearchKeys.remove(nextKey);
 		}
 
 		// now add edge checks to check all unchecked edges
@@ -140,7 +137,7 @@ public abstract class OperationalShortcutRule {
 					&& edge.getTrgNode().getBindingType() != BindingType.NEGATIVE)
 				continue;
 
-			boolean reverse = edge.getSrcNode().getBindingType() != BindingType.CONTEXT;
+			boolean reverse = edge.getSrcNode().getBindingType() == BindingType.NEGATIVE;
 			SearchKey key = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, reverse);
 			key2nacNodeCheck.put(key, this.key2nacNodeCheck.get(key));
 		}
@@ -148,14 +145,11 @@ public abstract class OperationalShortcutRule {
 		return new SearchPlan(searchPlan, element2nodeCheck, key2uncheckedEdgeCheck, key2nacNodeCheck, cspCheck);
 	}
 	
-	private Collection<SearchKey> filterAndSortKeys(Collection<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes) {
-		return keys.stream()
-				.filter(k -> validLookupKey(uncheckedNodes, k))
-				.filter(k -> k.edge.getBindingType() != BindingType.NEGATIVE)
-				.filter(k -> k.edge.getBindingType() != BindingType.CREATE)
-//				.filter(k -> 
-//					uncheckedNodes.contains(k.sourceNode) && !k.reverse || 
-//					uncheckedNodes.contains(k.targetNode) && k.reverse)
+	private Collection<SearchKey> filterKeys(Collection<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes) {
+		return keys.stream() //
+				.filter(key -> validLookupKey(uncheckedNodes, key)) //
+				.filter(key -> key.edge.getBindingType() != BindingType.NEGATIVE) //
+				.filter(key -> key.edge.getBindingType() != BindingType.CREATE) //
 				.collect(Collectors.toList());
 	}
 

@@ -13,8 +13,9 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import language.TGGRuleNode;
 
 /**
- * This class is a container for a search plan consisting of an ordered list of lookup operation and
- * maps for node checks, edge checks and nac checks
+ * This class is a container for a search plan consisting of an ordered list of
+ * lookup operation and maps for node checks, edge checks and nac checks
+ * 
  * @author lfritsche
  *
  */
@@ -37,4 +38,5 @@ public class SearchPlan {
 		this.key2nacNodeCheck = key2nacNodeCheck;
 		this.cspCheck = cspCheck;
 	}
+	
 }
