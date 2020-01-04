@@ -13,6 +13,7 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRule#getRefines <em>Refines</em>}</li>
  *   <li>{@link language.TGGRule#getNacs <em>Nacs</em>}</li>
@@ -21,7 +22,6 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link language.TGGRule#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  *   <li>{@link language.TGGRule#isAbstract <em>Abstract</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRule()
  * @model

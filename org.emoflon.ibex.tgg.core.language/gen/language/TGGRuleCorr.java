@@ -12,11 +12,11 @@ package language;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRuleCorr#getSource <em>Source</em>}</li>
  *   <li>{@link language.TGGRuleCorr#getTarget <em>Target</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRuleCorr()
  * @model

@@ -14,12 +14,12 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGInplaceAttributeExpression#getAttribute <em>Attribute</em>}</li>
  *   <li>{@link language.TGGInplaceAttributeExpression#getValueExpr <em>Value Expr</em>}</li>
  *   <li>{@link language.TGGInplaceAttributeExpression#getOperator <em>Operator</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGInplaceAttributeExpression()
  * @model

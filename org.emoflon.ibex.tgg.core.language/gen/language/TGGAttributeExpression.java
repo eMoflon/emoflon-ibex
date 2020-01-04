@@ -13,11 +13,11 @@ import org.eclipse.emf.ecore.EAttribute;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGAttributeExpression#getObjectVar <em>Object Var</em>}</li>
  *   <li>{@link language.TGGAttributeExpression#getAttribute <em>Attribute</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGAttributeExpression()
  * @model

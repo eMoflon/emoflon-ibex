@@ -33,6 +33,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGRuleImpl#getRefines <em>Refines</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#getNacs <em>Nacs</em>}</li>
@@ -41,7 +42,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link language.impl.TGGRuleImpl#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  *   <li>{@link language.impl.TGGRuleImpl#isAbstract <em>Abstract</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -140,6 +140,7 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRule> getRefines() {
 		if (refines == null) {
 			refines = new EObjectResolvingEList<TGGRule>(TGGRule.class, this, LanguagePackage.TGG_RULE__REFINES);
@@ -152,6 +153,7 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<NAC> getNacs() {
 		if (nacs == null) {
 			nacs = new EObjectContainmentEList<NAC>(NAC.class, this, LanguagePackage.TGG_RULE__NACS);
@@ -164,6 +166,7 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRuleNode> getNodes() {
 		if (nodes == null) {
 			nodes = new EObjectContainmentEList<TGGRuleNode>(TGGRuleNode.class, this, LanguagePackage.TGG_RULE__NODES);
@@ -176,6 +179,7 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRuleEdge> getEdges() {
 		if (edges == null) {
 			edges = new EObjectContainmentEList<TGGRuleEdge>(TGGRuleEdge.class, this, LanguagePackage.TGG_RULE__EDGES);
@@ -188,6 +192,7 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public TGGAttributeConstraintLibrary getAttributeConditionLibrary() {
 		return attributeConditionLibrary;
 	}
@@ -197,11 +202,14 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetAttributeConditionLibrary(TGGAttributeConstraintLibrary newAttributeConditionLibrary, NotificationChain msgs) {
+	public NotificationChain basicSetAttributeConditionLibrary(
+			TGGAttributeConstraintLibrary newAttributeConditionLibrary, NotificationChain msgs) {
 		TGGAttributeConstraintLibrary oldAttributeConditionLibrary = attributeConditionLibrary;
 		attributeConditionLibrary = newAttributeConditionLibrary;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, oldAttributeConditionLibrary, newAttributeConditionLibrary);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, oldAttributeConditionLibrary,
+					newAttributeConditionLibrary);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -215,18 +223,22 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setAttributeConditionLibrary(TGGAttributeConstraintLibrary newAttributeConditionLibrary) {
 		if (newAttributeConditionLibrary != attributeConditionLibrary) {
 			NotificationChain msgs = null;
 			if (attributeConditionLibrary != null)
-				msgs = ((InternalEObject) attributeConditionLibrary).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
+				msgs = ((InternalEObject) attributeConditionLibrary).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
 			if (newAttributeConditionLibrary != null)
-				msgs = ((InternalEObject) newAttributeConditionLibrary).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
+				msgs = ((InternalEObject) newAttributeConditionLibrary).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
 			msgs = basicSetAttributeConditionLibrary(newAttributeConditionLibrary, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY, newAttributeConditionLibrary, newAttributeConditionLibrary));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ATTRIBUTE_CONDITION_LIBRARY,
+					newAttributeConditionLibrary, newAttributeConditionLibrary));
 	}
 
 	/**
@@ -234,6 +246,7 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isAbstract() {
 		return abstract_;
 	}
@@ -243,11 +256,13 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setAbstract(boolean newAbstract) {
 		boolean oldAbstract = abstract_;
 		abstract_ = newAbstract;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ABSTRACT, oldAbstract, abstract_));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE__ABSTRACT, oldAbstract,
+					abstract_));
 	}
 
 	/**
@@ -393,7 +408,7 @@ public class TGGRuleImpl extends TGGNamedElementImpl implements TGGRule {
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (abstract: ");
 		result.append(abstract_);
 		result.append(')');

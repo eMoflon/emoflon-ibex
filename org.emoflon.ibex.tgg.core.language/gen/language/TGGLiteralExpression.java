@@ -12,10 +12,10 @@ package language;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGLiteralExpression#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGLiteralExpression()
  * @model

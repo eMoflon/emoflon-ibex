@@ -22,11 +22,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGRuleCorrImpl#getSource <em>Source</em>}</li>
  *   <li>{@link language.impl.TGGRuleCorrImpl#getTarget <em>Target</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -75,13 +75,15 @@ public class TGGRuleCorrImpl extends TGGRuleNodeImpl implements TGGRuleCorr {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public TGGRuleNode getSource() {
 		if (source != null && source.eIsProxy()) {
 			InternalEObject oldSource = (InternalEObject) source;
 			source = (TGGRuleNode) eResolveProxy(oldSource);
 			if (source != oldSource) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_CORR__SOURCE, oldSource, source));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_CORR__SOURCE,
+							oldSource, source));
 			}
 		}
 		return source;
@@ -105,7 +107,8 @@ public class TGGRuleCorrImpl extends TGGRuleNodeImpl implements TGGRuleCorr {
 		TGGRuleNode oldSource = source;
 		source = newSource;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_CORR__SOURCE, oldSource, newSource);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_RULE_CORR__SOURCE, oldSource, newSource);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -119,18 +122,22 @@ public class TGGRuleCorrImpl extends TGGRuleNodeImpl implements TGGRuleCorr {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setSource(TGGRuleNode newSource) {
 		if (newSource != source) {
 			NotificationChain msgs = null;
 			if (source != null)
-				msgs = ((InternalEObject) source).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE, TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) source).eInverseRemove(this,
+						LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE, TGGRuleNode.class, msgs);
 			if (newSource != null)
-				msgs = ((InternalEObject) newSource).eInverseAdd(this, LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE, TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) newSource).eInverseAdd(this,
+						LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE, TGGRuleNode.class, msgs);
 			msgs = basicSetSource(newSource, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_CORR__SOURCE, newSource, newSource));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_CORR__SOURCE, newSource,
+					newSource));
 	}
 
 	/**
@@ -138,13 +145,15 @@ public class TGGRuleCorrImpl extends TGGRuleNodeImpl implements TGGRuleCorr {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public TGGRuleNode getTarget() {
 		if (target != null && target.eIsProxy()) {
 			InternalEObject oldTarget = (InternalEObject) target;
 			target = (TGGRuleNode) eResolveProxy(oldTarget);
 			if (target != oldTarget) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_CORR__TARGET, oldTarget, target));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_CORR__TARGET,
+							oldTarget, target));
 			}
 		}
 		return target;
@@ -168,7 +177,8 @@ public class TGGRuleCorrImpl extends TGGRuleNodeImpl implements TGGRuleCorr {
 		TGGRuleNode oldTarget = target;
 		target = newTarget;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_CORR__TARGET, oldTarget, newTarget);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_RULE_CORR__TARGET, oldTarget, newTarget);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -182,18 +192,22 @@ public class TGGRuleCorrImpl extends TGGRuleNodeImpl implements TGGRuleCorr {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setTarget(TGGRuleNode newTarget) {
 		if (newTarget != target) {
 			NotificationChain msgs = null;
 			if (target != null)
-				msgs = ((InternalEObject) target).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET, TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) target).eInverseRemove(this,
+						LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET, TGGRuleNode.class, msgs);
 			if (newTarget != null)
-				msgs = ((InternalEObject) newTarget).eInverseAdd(this, LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET, TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) newTarget).eInverseAdd(this,
+						LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET, TGGRuleNode.class, msgs);
 			msgs = basicSetTarget(newTarget, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_CORR__TARGET, newTarget, newTarget));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_CORR__TARGET, newTarget,
+					newTarget));
 	}
 
 	/**
@@ -206,11 +220,13 @@ public class TGGRuleCorrImpl extends TGGRuleNodeImpl implements TGGRuleCorr {
 		switch (featureID) {
 		case LanguagePackage.TGG_RULE_CORR__SOURCE:
 			if (source != null)
-				msgs = ((InternalEObject) source).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE, TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) source).eInverseRemove(this,
+						LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE, TGGRuleNode.class, msgs);
 			return basicSetSource((TGGRuleNode) otherEnd, msgs);
 		case LanguagePackage.TGG_RULE_CORR__TARGET:
 			if (target != null)
-				msgs = ((InternalEObject) target).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET, TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) target).eInverseRemove(this,
+						LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET, TGGRuleNode.class, msgs);
 			return basicSetTarget((TGGRuleNode) otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);

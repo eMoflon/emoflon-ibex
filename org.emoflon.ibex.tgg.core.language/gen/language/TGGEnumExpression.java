@@ -14,11 +14,11 @@ import org.eclipse.emf.ecore.EEnumLiteral;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGEnumExpression#getEenum <em>Eenum</em>}</li>
  *   <li>{@link language.TGGEnumExpression#getLiteral <em>Literal</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGEnumExpression()
  * @model

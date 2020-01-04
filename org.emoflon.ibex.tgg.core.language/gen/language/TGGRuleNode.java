@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.EClass;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRuleNode#getIncomingEdges <em>Incoming Edges</em>}</li>
  *   <li>{@link language.TGGRuleNode#getOutgoingEdges <em>Outgoing Edges</em>}</li>
@@ -23,7 +24,6 @@ import org.eclipse.emf.ecore.EClass;
  *   <li>{@link language.TGGRuleNode#getIncomingCorrsTarget <em>Incoming Corrs Target</em>}</li>
  *   <li>{@link language.TGGRuleNode#getAttrExpr <em>Attr Expr</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRuleNode()
  * @model

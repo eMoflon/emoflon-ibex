@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.repair.ExternalShortcutRule#getSourceRule <em>Source Rule</em>}</li>
  *   <li>{@link language.repair.ExternalShortcutRule#getTargetRule <em>Target Rule</em>}</li>
@@ -28,7 +29,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link language.repair.ExternalShortcutRule#getMapping <em>Mapping</em>}</li>
  *   <li>{@link language.repair.ExternalShortcutRule#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.repair.RepairPackage#getExternalShortcutRule()
  * @model

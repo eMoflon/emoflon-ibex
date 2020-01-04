@@ -31,12 +31,12 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.NACImpl#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.impl.NACImpl#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.impl.NACImpl#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -95,6 +95,7 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRuleNode> getNodes() {
 		if (nodes == null) {
 			nodes = new EObjectContainmentEList<TGGRuleNode>(TGGRuleNode.class, this, LanguagePackage.NAC__NODES);
@@ -107,6 +108,7 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRuleEdge> getEdges() {
 		if (edges == null) {
 			edges = new EObjectContainmentEList<TGGRuleEdge>(TGGRuleEdge.class, this, LanguagePackage.NAC__EDGES);
@@ -119,6 +121,7 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public TGGAttributeConstraintLibrary getAttributeConditionLibrary() {
 		return attributeConditionLibrary;
 	}
@@ -128,11 +131,14 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetAttributeConditionLibrary(TGGAttributeConstraintLibrary newAttributeConditionLibrary, NotificationChain msgs) {
+	public NotificationChain basicSetAttributeConditionLibrary(
+			TGGAttributeConstraintLibrary newAttributeConditionLibrary, NotificationChain msgs) {
 		TGGAttributeConstraintLibrary oldAttributeConditionLibrary = attributeConditionLibrary;
 		attributeConditionLibrary = newAttributeConditionLibrary;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY, oldAttributeConditionLibrary, newAttributeConditionLibrary);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY, oldAttributeConditionLibrary,
+					newAttributeConditionLibrary);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -146,18 +152,22 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setAttributeConditionLibrary(TGGAttributeConstraintLibrary newAttributeConditionLibrary) {
 		if (newAttributeConditionLibrary != attributeConditionLibrary) {
 			NotificationChain msgs = null;
 			if (attributeConditionLibrary != null)
-				msgs = ((InternalEObject) attributeConditionLibrary).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
+				msgs = ((InternalEObject) attributeConditionLibrary).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
 			if (newAttributeConditionLibrary != null)
-				msgs = ((InternalEObject) newAttributeConditionLibrary).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
+				msgs = ((InternalEObject) newAttributeConditionLibrary).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY, null, msgs);
 			msgs = basicSetAttributeConditionLibrary(newAttributeConditionLibrary, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY, newAttributeConditionLibrary, newAttributeConditionLibrary));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY,
+					newAttributeConditionLibrary, newAttributeConditionLibrary));
 	}
 
 	/**

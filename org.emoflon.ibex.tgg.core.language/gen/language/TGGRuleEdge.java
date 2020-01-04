@@ -13,12 +13,12 @@ import org.eclipse.emf.ecore.EReference;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRuleEdge#getSrcNode <em>Src Node</em>}</li>
  *   <li>{@link language.TGGRuleEdge#getTrgNode <em>Trg Node</em>}</li>
  *   <li>{@link language.TGGRuleEdge#getType <em>Type</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRuleEdge()
  * @model

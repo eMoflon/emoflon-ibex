@@ -13,12 +13,12 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.NAC#getNodes <em>Nodes</em>}</li>
  *   <li>{@link language.NAC#getEdges <em>Edges</em>}</li>
  *   <li>{@link language.NAC#getAttributeConditionLibrary <em>Attribute Condition Library</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getNAC()
  * @model

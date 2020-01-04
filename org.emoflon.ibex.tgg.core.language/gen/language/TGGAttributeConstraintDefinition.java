@@ -13,13 +13,13 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGAttributeConstraintDefinition#isUserDefined <em>User Defined</em>}</li>
  *   <li>{@link language.TGGAttributeConstraintDefinition#getParameterDefinitions <em>Parameter Definitions</em>}</li>
  *   <li>{@link language.TGGAttributeConstraintDefinition#getSyncAdornments <em>Sync Adornments</em>}</li>
  *   <li>{@link language.TGGAttributeConstraintDefinition#getGenAdornments <em>Gen Adornments</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGAttributeConstraintDefinition()
  * @model

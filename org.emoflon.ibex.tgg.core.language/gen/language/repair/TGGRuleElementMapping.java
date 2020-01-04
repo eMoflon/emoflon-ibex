@@ -15,11 +15,11 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.repair.TGGRuleElementMapping#getSourceRuleElement <em>Source Rule Element</em>}</li>
  *   <li>{@link language.repair.TGGRuleElementMapping#getTargetRuleElement <em>Target Rule Element</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.repair.RepairPackage#getTGGRuleElementMapping()
  * @model

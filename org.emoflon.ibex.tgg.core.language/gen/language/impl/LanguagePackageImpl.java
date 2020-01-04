@@ -258,13 +258,17 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 
 		// Obtain or create and register package
 		Object registeredLanguagePackage = EPackage.Registry.INSTANCE.get(eNS_URI);
-		LanguagePackageImpl theLanguagePackage = registeredLanguagePackage instanceof LanguagePackageImpl ? (LanguagePackageImpl) registeredLanguagePackage : new LanguagePackageImpl();
+		LanguagePackageImpl theLanguagePackage = registeredLanguagePackage instanceof LanguagePackageImpl
+				? (LanguagePackageImpl) registeredLanguagePackage
+				: new LanguagePackageImpl();
 
 		isInited = true;
 
 		// Obtain or create and register interdependencies
 		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(RepairPackage.eNS_URI);
-		RepairPackageImpl theRepairPackage = (RepairPackageImpl) (registeredPackage instanceof RepairPackageImpl ? registeredPackage : RepairPackage.eINSTANCE);
+		RepairPackageImpl theRepairPackage = (RepairPackageImpl) (registeredPackage instanceof RepairPackageImpl
+				? registeredPackage
+				: RepairPackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theLanguagePackage.createPackageContents();
@@ -1099,7 +1103,8 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		createEAttribute(tggInplaceAttributeExpressionEClass, TGG_INPLACE_ATTRIBUTE_EXPRESSION__OPERATOR);
 
 		tggAttributeConstraintLibraryEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_LIBRARY);
-		createEReference(tggAttributeConstraintLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
+		createEReference(tggAttributeConstraintLibraryEClass,
+				TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
 		createEReference(tggAttributeConstraintLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES);
 
 		tggAttributeConstraintEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT);
@@ -1110,17 +1115,21 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		createEAttribute(tggAttributeVariableEClass, TGG_ATTRIBUTE_VARIABLE__NAME);
 
 		tggAttributeConstraintDefinitionLibraryEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY);
-		createEReference(tggAttributeConstraintDefinitionLibraryEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS);
+		createEReference(tggAttributeConstraintDefinitionLibraryEClass,
+				TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS);
 
 		tggAttributeConstraintDefinitionEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_DEFINITION);
 		createEAttribute(tggAttributeConstraintDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED);
-		createEReference(tggAttributeConstraintDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
+		createEReference(tggAttributeConstraintDefinitionEClass,
+				TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
 		createEReference(tggAttributeConstraintDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS);
 		createEReference(tggAttributeConstraintDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS);
 
 		tggAttributeConstraintParameterDefinitionEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION);
-		createEReference(tggAttributeConstraintParameterDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE);
-		createEAttribute(tggAttributeConstraintParameterDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME);
+		createEReference(tggAttributeConstraintParameterDefinitionEClass,
+				TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE);
+		createEAttribute(tggAttributeConstraintParameterDefinitionEClass,
+				TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME);
 
 		tggAttributeConstraintAdornmentEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_ADORNMENT);
 		createEAttribute(tggAttributeConstraintAdornmentEClass, TGG_ATTRIBUTE_CONSTRAINT_ADORNMENT__VALUE);
@@ -1201,144 +1210,216 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(tggEClass, language.TGG.class, "TGG", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGG_Src(), ecorePackage.getEPackage(), null, "src", null, 0, -1, language.TGG.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getTGG_Trg(), ecorePackage.getEPackage(), null, "trg", null, 0, -1, language.TGG.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getTGG_Corr(), ecorePackage.getEPackage(), null, "corr", null, 0, 1, language.TGG.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getTGG_Rules(), this.getTGGRule(), null, "rules", null, 0, -1, language.TGG.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getTGG_AttributeConstraintDefinitionLibrary(), this.getTGGAttributeConstraintDefinitionLibrary(), null, "attributeConstraintDefinitionLibrary", null, 1, 1, language.TGG.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGG_Src(), ecorePackage.getEPackage(), null, "src", null, 0, -1, language.TGG.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGG_Trg(), ecorePackage.getEPackage(), null, "trg", null, 0, -1, language.TGG.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGG_Corr(), ecorePackage.getEPackage(), null, "corr", null, 0, 1, language.TGG.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGG_Rules(), this.getTGGRule(), null, "rules", null, 0, -1, language.TGG.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getTGG_AttributeConstraintDefinitionLibrary(), this.getTGGAttributeConstraintDefinitionLibrary(),
+				null, "attributeConstraintDefinitionLibrary", null, 1, 1, language.TGG.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 
 		initEClass(tggRuleEClass, TGGRule.class, "TGGRule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGRule_Refines(), this.getTGGRule(), null, "refines", null, 0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRule_Nacs(), this.getNAC(), null, "nacs", null, 0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getTGGRule_Nodes(), this.getTGGRuleNode(), null, "nodes", null, 0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRule_Edges(), this.getTGGRuleEdge(), null, "edges", null, 0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRule_AttributeConditionLibrary(), this.getTGGAttributeConstraintLibrary(), null, "attributeConditionLibrary", null, 1, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGRule_Abstract(), ecorePackage.getEBoolean(), "abstract", null, 0, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-		initEClass(tggRuleElementEClass, TGGRuleElement.class, "TGGRuleElement", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGRuleElement_DomainType(), this.getDomainType(), "domainType", null, 0, 1, TGGRuleElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEAttribute(getTGGRuleElement_BindingType(), this.getBindingType(), "bindingType", null, 0, 1, TGGRuleElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-
-		initEClass(tggRuleNodeEClass, TGGRuleNode.class, "TGGRuleNode", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGRuleNode_IncomingEdges(), this.getTGGRuleEdge(), this.getTGGRuleEdge_TrgNode(), "incomingEdges", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleNode_OutgoingEdges(), this.getTGGRuleEdge(), this.getTGGRuleEdge_SrcNode(), "outgoingEdges", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleNode_Type(), ecorePackage.getEClass(), null, "type", null, 0, 1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+		initEReference(getTGGRule_Refines(), this.getTGGRule(), null, "refines", null, 0, -1, TGGRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleNode_IncomingCorrsSource(), this.getTGGRuleCorr(), this.getTGGRuleCorr_Source(), "incomingCorrsSource", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEReference(getTGGRule_Nacs(), this.getNAC(), null, "nacs", null, 0, -1, TGGRule.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getTGGRule_Nodes(), this.getTGGRuleNode(), null, "nodes", null, 0, -1, TGGRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Edges(), this.getTGGRuleEdge(), null, "edges", null, 0, -1, TGGRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_AttributeConditionLibrary(), this.getTGGAttributeConstraintLibrary(), null,
+				"attributeConditionLibrary", null, 1, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGRule_Abstract(), ecorePackage.getEBoolean(), "abstract", null, 0, 1, TGGRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(tggRuleElementEClass, TGGRuleElement.class, "TGGRuleElement", IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGRuleElement_DomainType(), this.getDomainType(), "domainType", null, 0, 1,
+				TGGRuleElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGRuleElement_BindingType(), this.getBindingType(), "bindingType", null, 0, 1,
+				TGGRuleElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+
+		initEClass(tggRuleNodeEClass, TGGRuleNode.class, "TGGRuleNode", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGRuleNode_IncomingEdges(), this.getTGGRuleEdge(), this.getTGGRuleEdge_TrgNode(),
+				"incomingEdges", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleNode_IncomingCorrsTarget(), this.getTGGRuleCorr(), this.getTGGRuleCorr_Target(), "incomingCorrsTarget", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEReference(getTGGRuleNode_OutgoingEdges(), this.getTGGRuleEdge(), this.getTGGRuleEdge_SrcNode(),
+				"outgoingEdges", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleNode_AttrExpr(), this.getTGGInplaceAttributeExpression(), null, "attrExpr", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+		initEReference(getTGGRuleNode_Type(), ecorePackage.getEClass(), null, "type", null, 0, 1, TGGRuleNode.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRuleNode_IncomingCorrsSource(), this.getTGGRuleCorr(), this.getTGGRuleCorr_Source(),
+				"incomingCorrsSource", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRuleNode_IncomingCorrsTarget(), this.getTGGRuleCorr(), this.getTGGRuleCorr_Target(),
+				"incomingCorrsTarget", null, 0, -1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRuleNode_AttrExpr(), this.getTGGInplaceAttributeExpression(), null, "attrExpr", null, 0,
+				-1, TGGRuleNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggRuleCorrEClass, TGGRuleCorr.class, "TGGRuleCorr", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGRuleCorr_Source(), this.getTGGRuleNode(), this.getTGGRuleNode_IncomingCorrsSource(), "source", null, 0, 1, TGGRuleCorr.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+		initEClass(tggRuleCorrEClass, TGGRuleCorr.class, "TGGRuleCorr", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGRuleCorr_Source(), this.getTGGRuleNode(), this.getTGGRuleNode_IncomingCorrsSource(),
+				"source", null, 0, 1, TGGRuleCorr.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleCorr_Target(), this.getTGGRuleNode(), this.getTGGRuleNode_IncomingCorrsTarget(), "target", null, 0, 1, TGGRuleCorr.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+		initEReference(getTGGRuleCorr_Target(), this.getTGGRuleNode(), this.getTGGRuleNode_IncomingCorrsTarget(),
+				"target", null, 0, 1, TGGRuleCorr.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggRuleEdgeEClass, TGGRuleEdge.class, "TGGRuleEdge", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGRuleEdge_SrcNode(), this.getTGGRuleNode(), this.getTGGRuleNode_OutgoingEdges(), "srcNode", null, 0, 1, TGGRuleEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+		initEClass(tggRuleEdgeEClass, TGGRuleEdge.class, "TGGRuleEdge", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGRuleEdge_SrcNode(), this.getTGGRuleNode(), this.getTGGRuleNode_OutgoingEdges(), "srcNode",
+				null, 0, 1, TGGRuleEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleEdge_TrgNode(), this.getTGGRuleNode(), this.getTGGRuleNode_IncomingEdges(), "trgNode", null, 0, 1, TGGRuleEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+		initEReference(getTGGRuleEdge_TrgNode(), this.getTGGRuleNode(), this.getTGGRuleNode_IncomingEdges(), "trgNode",
+				null, 0, 1, TGGRuleEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleEdge_Type(), ecorePackage.getEReference(), null, "type", null, 0, 1, TGGRuleEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+		initEReference(getTGGRuleEdge_Type(), ecorePackage.getEReference(), null, "type", null, 0, 1, TGGRuleEdge.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(nacEClass, language.NAC.class, "NAC", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getNAC_Nodes(), this.getTGGRuleNode(), null, "nodes", null, 0, -1, language.NAC.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getNAC_Edges(), this.getTGGRuleEdge(), null, "edges", null, 0, -1, language.NAC.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getNAC_AttributeConditionLibrary(), this.getTGGAttributeConstraintLibrary(), null, "attributeConditionLibrary", null, 1, 1, language.NAC.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEReference(getNAC_Nodes(), this.getTGGRuleNode(), null, "nodes", null, 0, -1, language.NAC.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getNAC_Edges(), this.getTGGRuleEdge(), null, "edges", null, 0, -1, language.NAC.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getNAC_AttributeConditionLibrary(), this.getTGGAttributeConstraintLibrary(), null,
+				"attributeConditionLibrary", null, 1, 1, language.NAC.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggInplaceAttributeExpressionEClass, TGGInplaceAttributeExpression.class, "TGGInplaceAttributeExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGInplaceAttributeExpression_Attribute(), ecorePackage.getEAttribute(), null, "attribute", null, 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEClass(tggInplaceAttributeExpressionEClass, TGGInplaceAttributeExpression.class,
+				"TGGInplaceAttributeExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGInplaceAttributeExpression_Attribute(), ecorePackage.getEAttribute(), null, "attribute",
+				null, 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGInplaceAttributeExpression_ValueExpr(), this.getTGGExpression(), null, "valueExpr", null, 0, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+		initEReference(getTGGInplaceAttributeExpression_ValueExpr(), this.getTGGExpression(), null, "valueExpr", null,
+				0, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGInplaceAttributeExpression_Operator(), this.getTGGAttributeConstraintOperators(), "operator", "EQUAL", 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGInplaceAttributeExpression_Operator(), this.getTGGAttributeConstraintOperators(),
+				"operator", "EQUAL", 1, 1, TGGInplaceAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeConstraintLibraryEClass, TGGAttributeConstraintLibrary.class, "TGGAttributeConstraintLibrary", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeConstraintLibrary_TggAttributeConstraints(), this.getTGGAttributeConstraint(), null, "tggAttributeConstraints", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraintLibrary_ParameterValues(), this.getTGGParamValue(), null, "parameterValues", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(tggAttributeConstraintLibraryEClass, TGGAttributeConstraintLibrary.class,
+				"TGGAttributeConstraintLibrary", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGAttributeConstraintLibrary_TggAttributeConstraints(), this.getTGGAttributeConstraint(),
+				null, "tggAttributeConstraints", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getTGGAttributeConstraintLibrary_ParameterValues(), this.getTGGParamValue(), null,
+				"parameterValues", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeConstraintEClass, TGGAttributeConstraint.class, "TGGAttributeConstraint", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeConstraint_Definition(), this.getTGGAttributeConstraintDefinition(), null, "definition", null, 0, 1, TGGAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEClass(tggAttributeConstraintEClass, TGGAttributeConstraint.class, "TGGAttributeConstraint", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGAttributeConstraint_Definition(), this.getTGGAttributeConstraintDefinition(), null,
+				"definition", null, 0, 1, TGGAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraint_Parameters(), this.getTGGParamValue(), null, "parameters", null, 0, -1, TGGAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+		initEReference(getTGGAttributeConstraint_Parameters(), this.getTGGParamValue(), null, "parameters", null, 0, -1,
+				TGGAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeVariableEClass, TGGAttributeVariable.class, "TGGAttributeVariable", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGAttributeVariable_Name(), ecorePackage.getEString(), "name", null, 0, 1, TGGAttributeVariable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		initEClass(tggAttributeVariableEClass, TGGAttributeVariable.class, "TGGAttributeVariable", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGAttributeVariable_Name(), ecorePackage.getEString(), "name", null, 0, 1,
+				TGGAttributeVariable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeConstraintDefinitionLibraryEClass, TGGAttributeConstraintDefinitionLibrary.class, "TGGAttributeConstraintDefinitionLibrary", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions(), this.getTGGAttributeConstraintDefinition(), null, "tggAttributeConstraintDefinitions", null, 0, -1,
-				TGGAttributeConstraintDefinitionLibrary.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(tggAttributeConstraintDefinitionLibraryEClass, TGGAttributeConstraintDefinitionLibrary.class,
+				"TGGAttributeConstraintDefinitionLibrary", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions(),
+				this.getTGGAttributeConstraintDefinition(), null, "tggAttributeConstraintDefinitions", null, 0, -1,
+				TGGAttributeConstraintDefinitionLibrary.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeConstraintDefinitionEClass, TGGAttributeConstraintDefinition.class, "TGGAttributeConstraintDefinition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGAttributeConstraintDefinition_UserDefined(), ecorePackage.getEBoolean(), "userDefined", "true", 0, 1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEClass(tggAttributeConstraintDefinitionEClass, TGGAttributeConstraintDefinition.class,
+				"TGGAttributeConstraintDefinition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGAttributeConstraintDefinition_UserDefined(), ecorePackage.getEBoolean(), "userDefined",
+				"true", 0, 1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraintDefinition_ParameterDefinitions(), this.getTGGAttributeConstraintParameterDefinition(), null, "parameterDefinitions", null, 0, -1, TGGAttributeConstraintDefinition.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraintDefinition_SyncAdornments(), this.getTGGAttributeConstraintAdornment(), null, "syncAdornments", null, 0, -1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeConstraintDefinition_GenAdornments(), this.getTGGAttributeConstraintAdornment(), null, "genAdornments", null, 0, -1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGAttributeConstraintDefinition_ParameterDefinitions(),
+				this.getTGGAttributeConstraintParameterDefinition(), null, "parameterDefinitions", null, 0, -1,
+				TGGAttributeConstraintDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGAttributeConstraintDefinition_SyncAdornments(), this.getTGGAttributeConstraintAdornment(),
+				null, "syncAdornments", null, 0, -1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getTGGAttributeConstraintDefinition_GenAdornments(), this.getTGGAttributeConstraintAdornment(),
+				null, "genAdornments", null, 0, -1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeConstraintParameterDefinitionEClass, TGGAttributeConstraintParameterDefinition.class, "TGGAttributeConstraintParameterDefinition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeConstraintParameterDefinition_Type(), ecorePackage.getEDataType(), null, "type", null, 0, 1, TGGAttributeConstraintParameterDefinition.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGAttributeConstraintParameterDefinition_Name(), ecorePackage.getEString(), "name", null, 0, 1, TGGAttributeConstraintParameterDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEClass(tggAttributeConstraintParameterDefinitionEClass, TGGAttributeConstraintParameterDefinition.class,
+				"TGGAttributeConstraintParameterDefinition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGAttributeConstraintParameterDefinition_Type(), ecorePackage.getEDataType(), null, "type",
+				null, 0, 1, TGGAttributeConstraintParameterDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGAttributeConstraintParameterDefinition_Name(), ecorePackage.getEString(), "name", null, 0,
+				1, TGGAttributeConstraintParameterDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeConstraintAdornmentEClass, TGGAttributeConstraintAdornment.class, "TGGAttributeConstraintAdornment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGAttributeConstraintAdornment_Value(), ecorePackage.getEString(), "value", null, 0, -1, TGGAttributeConstraintAdornment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE,
+		initEClass(tggAttributeConstraintAdornmentEClass, TGGAttributeConstraintAdornment.class,
+				"TGGAttributeConstraintAdornment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGAttributeConstraintAdornment_Value(), ecorePackage.getEString(), "value", null, 0, -1,
+				TGGAttributeConstraintAdornment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE,
 				!IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggNamedElementEClass, TGGNamedElement.class, "TGGNamedElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGNamedElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, TGGNamedElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
+		initEClass(tggNamedElementEClass, TGGNamedElement.class, "TGGNamedElement", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGNamedElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, TGGNamedElement.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggParamValueEClass, TGGParamValue.class, "TGGParamValue", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGParamValue_ParameterDefinition(), this.getTGGAttributeConstraintParameterDefinition(), null, "parameterDefinition", null, 0, 1, TGGParamValue.class, !IS_TRANSIENT, !IS_VOLATILE,
+		initEClass(tggParamValueEClass, TGGParamValue.class, "TGGParamValue", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGParamValue_ParameterDefinition(), this.getTGGAttributeConstraintParameterDefinition(),
+				null, "parameterDefinition", null, 0, 1, TGGParamValue.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggExpressionEClass, TGGExpression.class, "TGGExpression", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEClass(tggExpressionEClass, TGGExpression.class, "TGGExpression", IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
 
-		initEClass(tggLiteralExpressionEClass, TGGLiteralExpression.class, "TGGLiteralExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGLiteralExpression_Value(), ecorePackage.getEString(), "value", null, 0, 1, TGGLiteralExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		initEClass(tggLiteralExpressionEClass, TGGLiteralExpression.class, "TGGLiteralExpression", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGLiteralExpression_Value(), ecorePackage.getEString(), "value", null, 0, 1,
+				TGGLiteralExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeExpressionEClass, TGGAttributeExpression.class, "TGGAttributeExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeExpression_ObjectVar(), this.getTGGRuleNode(), null, "objectVar", null, 0, 1, TGGAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+		initEClass(tggAttributeExpressionEClass, TGGAttributeExpression.class, "TGGAttributeExpression", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGAttributeExpression_ObjectVar(), this.getTGGRuleNode(), null, "objectVar", null, 0, 1,
+				TGGAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeExpression_Attribute(), ecorePackage.getEAttribute(), null, "attribute", null, 0, 1, TGGAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+		initEReference(getTGGAttributeExpression_Attribute(), ecorePackage.getEAttribute(), null, "attribute", null, 0,
+				1, TGGAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggEnumExpressionEClass, TGGEnumExpression.class, "TGGEnumExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGEnumExpression_Eenum(), ecorePackage.getEEnum(), null, "eenum", null, 0, 1, TGGEnumExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+		initEClass(tggEnumExpressionEClass, TGGEnumExpression.class, "TGGEnumExpression", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGEnumExpression_Eenum(), ecorePackage.getEEnum(), null, "eenum", null, 0, 1,
+				TGGEnumExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGEnumExpression_Literal(), ecorePackage.getEEnumLiteral(), null, "literal", null, 0, 1, TGGEnumExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+		initEReference(getTGGEnumExpression_Literal(), ecorePackage.getEEnumLiteral(), null, "literal", null, 0, 1,
+				TGGEnumExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
@@ -1352,8 +1433,10 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		addEEnumLiteral(bindingTypeEEnum, BindingType.CREATE);
 		addEEnumLiteral(bindingTypeEEnum, BindingType.DELETE);
 		addEEnumLiteral(bindingTypeEEnum, BindingType.NEGATIVE);
+		addEEnumLiteral(bindingTypeEEnum, BindingType.RELAXED);
 
-		initEEnum(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.class, "TGGAttributeConstraintOperators");
+		initEEnum(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.class,
+				"TGGAttributeConstraintOperators");
 		addEEnumLiteral(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.EQUAL);
 		addEEnumLiteral(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.UNEQUAL);
 		addEEnumLiteral(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.GR_EQUAL);

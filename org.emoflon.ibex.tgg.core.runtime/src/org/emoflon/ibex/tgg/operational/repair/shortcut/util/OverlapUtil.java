@@ -17,6 +17,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
+import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
@@ -238,7 +239,7 @@ public class OverlapUtil {
 		try {
 			logger.debug(
 					"Attempting to solve ILP for SC-Rule: " + sourceRule.getName() + " -> " + targetRule.getName());
-			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, this.options.getIlpSolver());
+			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, SupportedILPSolver.Sat4J);
 			if (!ilpProblem.checkValidity(ilpSolution)) {
 				throw new AssertionError("Invalid solution");
 			}

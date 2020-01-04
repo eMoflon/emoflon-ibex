@@ -22,15 +22,16 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGAttributeConstraintParameterDefinitionImpl#getType <em>Type</em>}</li>
  *   <li>{@link language.impl.TGGAttributeConstraintParameterDefinitionImpl#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
-public class TGGAttributeConstraintParameterDefinitionImpl extends EObjectImpl implements TGGAttributeConstraintParameterDefinition {
+public class TGGAttributeConstraintParameterDefinitionImpl extends EObjectImpl
+		implements TGGAttributeConstraintParameterDefinition {
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -85,13 +86,15 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends EObjectImpl i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EDataType getType() {
 		if (type != null && type.eIsProxy()) {
 			InternalEObject oldType = (InternalEObject) type;
 			type = (EDataType) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE, oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE, oldType, type));
 			}
 		}
 		return type;
@@ -111,11 +114,13 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends EObjectImpl i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setType(EDataType newType) {
 		EDataType oldType = type;
 		type = newType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE, oldType, type));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE, oldType, type));
 	}
 
 	/**
@@ -123,6 +128,7 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends EObjectImpl i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -132,11 +138,13 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends EObjectImpl i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME, oldName, name));
 	}
 
 	/**
@@ -219,7 +227,7 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends EObjectImpl i
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (name: ");
 		result.append(name);
 		result.append(')');

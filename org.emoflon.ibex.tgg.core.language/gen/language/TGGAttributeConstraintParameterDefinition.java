@@ -14,11 +14,11 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGAttributeConstraintParameterDefinition#getType <em>Type</em>}</li>
  *   <li>{@link language.TGGAttributeConstraintParameterDefinition#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGAttributeConstraintParameterDefinition()
  * @model

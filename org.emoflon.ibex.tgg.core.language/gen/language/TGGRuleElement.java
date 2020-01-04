@@ -12,11 +12,11 @@ package language;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRuleElement#getDomainType <em>Domain Type</em>}</li>
  *   <li>{@link language.TGGRuleElement#getBindingType <em>Binding Type</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRuleElement()
  * @model abstract="true"
