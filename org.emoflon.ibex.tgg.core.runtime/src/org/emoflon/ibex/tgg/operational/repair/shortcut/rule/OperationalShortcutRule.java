@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -85,19 +86,29 @@ public abstract class OperationalShortcutRule {
 	abstract protected void operationalize();
 
 	public SearchPlan createSearchPlan() {
-		Collection<TGGRuleNode> uncheckedNodes = scRule.getNodes().stream() //
-				.filter(n -> !scRule.getMergedNodes().contains(n) //
-						&& n.getBindingType() != BindingType.NEGATIVE //
-						&& n.getBindingType() != BindingType.CREATE) //
+		Collection<TGGRuleNode> uncheckedNodes = new ArrayList<>();
+		Collection<TGGRuleNode> uncheckedRelaxedNodes = new ArrayList<>();
+		scRule.getNodes().stream() //
+				.filter(n -> !scRule.getMergedNodes().contains(n)) //
+				.filter(n -> n.getBindingType() != BindingType.NEGATIVE) //
+				.filter(n -> n.getBindingType() != BindingType.CREATE) //
+				.forEach(n -> //
+				(n.getBindingType() == BindingType.RELAXED ? uncheckedRelaxedNodes : uncheckedNodes).add(n));
+
+		Collection<TGGRuleEdge> uncheckedEdges = scRule.getEdges().stream() //
 				.collect(Collectors.toList());
-		Collection<TGGRuleEdge> uncheckedEdges = scRule.getEdges().stream().collect(Collectors.toList());
 
-		Collection<SearchKey> uncheckedSearchKeys = key2lookup.keySet();
+		Collection<SearchKey> uncheckedSearchKeys = key2lookup.keySet().stream() //
+				.filter(key -> key.edge.getBindingType() != BindingType.NEGATIVE) //
+				.filter(key -> key.edge.getBindingType() != BindingType.CREATE) //
+				.collect(Collectors.toList());
 
-		// first calculate the lookups to find all elements + their corresponding node checks
 		List<Pair<SearchKey, Lookup>> searchPlan = new ArrayList<>();
+		
+		// first calculate the lookups to find all elements + their corresponding node checks		
 		while (!uncheckedNodes.isEmpty()) {
-			Collection<SearchKey> nextSearchKeys = filterKeys(uncheckedSearchKeys, uncheckedNodes);
+			Collection<SearchKey> nextSearchKeys = //
+					filterKeys(uncheckedSearchKeys, uncheckedNodes, uncheckedRelaxedNodes, false);
 			if (nextSearchKeys.isEmpty()) {
 				// TODO lfritsche: clear this up
 //				throw new RuntimeException("Searchplan could not be generated for OperationalShortcutRule - " + scRule);
@@ -112,11 +123,32 @@ public abstract class OperationalShortcutRule {
 			uncheckedEdges.remove(nextKey.edge);
 			uncheckedSearchKeys.remove(nextKey);
 		}
+		
+		// then calculate lookups for relaxed nodes
+		while(!uncheckedRelaxedNodes.isEmpty()) {
+			Collection<SearchKey> nextSearchKeys = //
+					filterKeys(uncheckedSearchKeys, uncheckedNodes, uncheckedRelaxedNodes, true);
+			if(nextSearchKeys.isEmpty()) {
+				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + scRule.getName());
+				return null;
+			}
+			
+			SearchKey nextKey = nextSearchKeys.iterator().next();
+			searchPlan.add(Pair.of(nextKey, key2lookup.get(nextKey)));
+			
+			uncheckedRelaxedNodes.remove(nextKey.reverse ? nextKey.sourceNode : nextKey.targetNode);
+			uncheckedEdges.remove(nextKey.edge);
+			uncheckedSearchKeys.remove(nextKey);
+		}
 
 		// now add edge checks to check all unchecked edges
 		Map<SearchKey, EdgeCheck> key2uncheckedEdgeCheck = new HashMap<>();
 		for (TGGRuleEdge edge : uncheckedEdges) {
-			if (edge.getBindingType() == BindingType.CREATE)
+			if (edge.getBindingType() == BindingType.CREATE || edge.getBindingType() == BindingType.RELAXED)
+				continue;
+			
+			if (edge.getSrcNode().getBindingType() == BindingType.RELAXED
+					|| edge.getTrgNode().getBindingType() == BindingType.RELAXED)
 				continue;
 
 			if (edge.getSrcNode().getBindingType() == BindingType.NEGATIVE
@@ -145,19 +177,28 @@ public abstract class OperationalShortcutRule {
 		return new SearchPlan(searchPlan, element2nodeCheck, key2uncheckedEdgeCheck, key2nacNodeCheck, cspCheck);
 	}
 	
-	private Collection<SearchKey> filterKeys(Collection<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes) {
-		return keys.stream() //
-				.filter(key -> validLookupKey(uncheckedNodes, key)) //
-				.filter(key -> key.edge.getBindingType() != BindingType.NEGATIVE) //
-				.filter(key -> key.edge.getBindingType() != BindingType.CREATE) //
-				.collect(Collectors.toList());
+	private Collection<SearchKey> filterKeys(Collection<SearchKey> keys,
+			Collection<TGGRuleNode> uncheckedNodes, Collection<TGGRuleNode> uncheckedRelaxedNodes, boolean relaxed) {
+		Stream<SearchKey> filteredKeys = keys.stream() //
+				.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k));
+		if (!relaxed) {
+			filteredKeys = filteredKeys //
+					.filter(k -> (k.reverse ? k.sourceNode : k.targetNode).getBindingType() != BindingType.RELAXED) //
+					.filter(k -> k.edge.getBindingType() != BindingType.RELAXED);
+		}
+		return filteredKeys.collect(Collectors.toList());
 	}
 
 	// a valid lookup key is a key where source xor target has already been checked
-	private boolean validLookupKey(Collection<TGGRuleNode> uncheckedNodes, SearchKey key) {
-		boolean first  =  uncheckedNodes.contains(key.sourceNode) && !uncheckedNodes.contains(key.targetNode) &&  key.reverse;
-		boolean second = !uncheckedNodes.contains(key.sourceNode) &&  uncheckedNodes.contains(key.targetNode) && !key.reverse;
-		return first || second;
+	private boolean validLookupKey(Collection<TGGRuleNode> uncheckedNodes, Collection<TGGRuleNode> uncheckedRelaxedNodes,
+			SearchKey key) {
+		boolean srcChecked = !uncheckedNodes.contains(key.sourceNode) && !uncheckedRelaxedNodes.contains(key.sourceNode);
+		boolean trgChecked = !uncheckedNodes.contains(key.targetNode) && !uncheckedRelaxedNodes.contains(key.targetNode);
+		
+		boolean notReverse = !key.reverse &&  srcChecked && !trgChecked;
+		boolean reverse    =  key.reverse && !srcChecked &&  trgChecked;
+		
+		return notReverse || reverse;
 	}
 
 	protected void createConstraintChecks() {
@@ -278,7 +319,7 @@ public abstract class OperationalShortcutRule {
 	private void createNodeCheck(TGGRuleNode key) {
 		element2nodeCheck.put(key, n -> {
 			if (n == null)
-				return false;
+				return key.getBindingType() == BindingType.RELAXED;
 			return key.getType().isSuperTypeOf(n.eClass()) && checkInplaceAttributes(key, n);
 		});
 	}

@@ -126,20 +126,34 @@ public class LocalPatternSearch {
 		String lookupSourceName;
 		String lookupTargetName;
 		boolean isNegative;
+		boolean isRelaxed;
 
 		public LookupComponent(Lookup lookup, SearchKey key) {
 			super();
+
+			TGGRuleNode sourceNode = key.reverse ? key.targetNode : key.sourceNode;
+			TGGRuleNode targetNode = key.reverse ? key.sourceNode : key.targetNode;
+
 			this.lookup = lookup;
-			this.lookupSourceName = key.reverse ? key.targetNode.getName() : key.sourceNode.getName();
-			this.lookupTargetName = key.reverse ? key.sourceNode.getName() : key.targetNode.getName();
+			this.lookupSourceName = sourceNode.getName();
+			this.lookupTargetName = targetNode.getName();
 			this.isNegative = key.edge.getBindingType() == BindingType.NEGATIVE;
+			this.isRelaxed = key.edge.getBindingType() == BindingType.RELAXED //
+					|| ( targetNode.getBindingType() == BindingType.RELAXED //
+							&& key.edge.getBindingType() == BindingType.DELETE );
 		}
 
 		@Override
 		public ReturnState apply() {
-			Object lookupTarget = lookup.lookup(name2candidates.get(lookupSourceName));
+			EObject oldCandidate = name2candidates.get(lookupSourceName);
+			if (oldCandidate == null)
+				return isRelaxed ? nextComponent.apply() : ReturnState.FAILURE;
 
-			if (lookupTarget != null && lookupTarget instanceof List<?>) {
+			Object lookupTarget = lookup.lookup(oldCandidate);
+			if (lookupTarget == null)
+				return isRelaxed ? nextComponent.apply() : ReturnState.FAILURE;
+
+			if (lookupTarget instanceof List<?>) {
 				@SuppressWarnings("unchecked")
 				List<EObject> candidateList = (List<EObject>) lookupTarget;
 				for (EObject candidate : candidateList) {
@@ -162,7 +176,7 @@ public class LocalPatternSearch {
 						continue;
 					}
 				}
-				return ReturnState.FAILURE;
+				return isRelaxed ? nextComponent.apply() : ReturnState.FAILURE;
 			}
 
 			if (currentCandidates.contains((EObject) lookupTarget))

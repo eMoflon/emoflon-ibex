@@ -189,7 +189,8 @@ public class ShortcutPatternTool {
 		// Collect edges to revoke.
 		deletedRuleEdges.forEach(e -> {
 			EMFEdge runtimeEdge = strategy.getRuntimeEdge(brokenMatch, e);
-			edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
+			if (runtimeEdge.getSource() != null && runtimeEdge.getTarget() != null)
+				edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
 		});
 		
 		Set<EObject> nodesToRevoke = new HashSet<>();
