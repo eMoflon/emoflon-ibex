@@ -47,6 +47,7 @@ public class IbexOptions {
 	private boolean applyConcurrently;
 	private IbexExecutable executable;
 	private IRegistrationHelper registrationHelper;
+	private MatchDistributor matchDistributor;
 
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
@@ -60,7 +61,6 @@ public class IbexOptions {
 	
 	// Model Integration
 	private ConflictResolver conflictSolver;
-	private MatchDistributor matchDistributor;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
