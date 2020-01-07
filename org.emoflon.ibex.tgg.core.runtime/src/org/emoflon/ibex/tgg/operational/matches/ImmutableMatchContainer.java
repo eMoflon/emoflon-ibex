@@ -23,8 +23,4 @@ public class ImmutableMatchContainer {
 		return matchContainer.isEmpty();
 	}
 
-	public String getRuleName(ITGGMatch match) {
-		return matchContainer.getRuleName(match);
-	}
-
 }

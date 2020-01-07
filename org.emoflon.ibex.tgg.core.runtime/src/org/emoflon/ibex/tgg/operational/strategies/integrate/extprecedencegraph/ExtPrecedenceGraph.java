@@ -6,20 +6,22 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
 
 import precedencegraph.PrecedenceNode;
 import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphFactory;
 
-public class ExtPrecedenceGraph extends PrecedenceGraph {
+public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 
 	private INTEGRATE strategy;
+	private Resource precedenceGraph;
 
 	private PrecedenceNodeContainer nodes;
 	private Map<ITGGMatch, PrecedenceNode> matchToNode = new HashMap<>();
@@ -28,6 +30,7 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	public ExtPrecedenceGraph(INTEGRATE strategy) {
 		super(strategy);
 		this.strategy = strategy;
+		strategy.getOptions().getResourceHandler().getPrecedenceResource();
 		nodes = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
 	}
 
@@ -148,8 +151,8 @@ public class ExtPrecedenceGraph extends PrecedenceGraph {
 	}
 
 	private void prepareResource() {
-		if (strategy.getEPGResource().getContents().isEmpty())
-			strategy.getEPGResource().getContents().add(nodes);
+		if (precedenceGraph.getContents().isEmpty())
+			precedenceGraph.getContents().add(nodes);
 	}
 
 }

@@ -369,12 +369,12 @@ class DefaultFilesGenerator {
 	static def generateInitialFwdAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
-				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+				import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
 				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 			''',
 			fileName,
-			"SYNC",
+			"INITIAL_FWD",
 			projectName,
 			'''
 				logger.info("Starting INITIAL FWD");
@@ -392,11 +392,6 @@ class DefaultFilesGenerator {
 				init_fwd.terminate();
 			''',
 			'''
-				@Override
-				public boolean isPatternRelevantForCompiler(String patternName) {
-					return patternName.endsWith(PatternSuffixes.FWD);
-				}
-				
 				@Override
 				public void loadModels() throws IOException {
 					s = loadResource(options.projectPath() + "/instances/src.xmi");
@@ -461,12 +456,12 @@ class DefaultFilesGenerator {
 	static def generateInitialBwdAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
-				import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+				import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;
 				import org.eclipse.emf.ecore.util.EcoreUtil;
 				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 			''',
 			fileName,
-			"SYNC",
+			"INITIAL_BWD",
 			projectName,
 			'''
 				logger.info("Starting INITIAL BWD");
@@ -485,8 +480,10 @@ class DefaultFilesGenerator {
 			''',
 			'''
 				@Override
-				public boolean isPatternRelevantForCompiler(String patternName) {
-					return patternName.endsWith(PatternSuffixes.BWD);
+				public Collection<PatternType> getPatternRelevantForCompiler() {
+					Collection<PatternType> types = new LinkedList<>();
+					types.add(PatternType.BWD);
+					return types;
 				}
 				
 				@Override
@@ -598,14 +595,14 @@ class DefaultFilesGenerator {
 			import org.eclipse.emf.ecore.resource.ResourceSet;
 			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+			import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 			
 			public class _DefaultRegistrationHelper implements IRegistrationHelper{
 			
 				/** Load and register source and target metamodels */
-				public void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) throws IOException {
+				public void registerMetamodels(ResourceSet rs, IbexExecutable executable) throws IOException {
 					// Replace to register generated code or handle other URI-related requirements
-					new DemoclesRegistrationHelper().registerMetamodels(rs, strategy);
+					new DemoclesRegistrationHelper().registerMetamodels(rs, executable);
 				}
 			
 				/** Create default options **/
@@ -626,16 +623,16 @@ class DefaultFilesGenerator {
 			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».UserDefinedRuntimeTGGAttrConstraintFactory;
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
-			import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+			import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 			import org.emoflon.ibex.tgg.runtime.democles.DemoclesTGGEngine;
 			
 			public class DemoclesRegistrationHelper implements IRegistrationHelper {
 			
 				/** Load and register source and target metamodels */
-				public void registerMetamodels(ResourceSet rs, OperationalStrategy strategy) throws IOException {
+				public void registerMetamodels(ResourceSet rs, IbexExecutable executable) throws IOException {
 					// Replace to register generated code or handle other URI-related requirements
 					«FOR imp : tgg.imports»
-					strategy.loadAndRegisterMetamodel("«imp.name»");
+					executable.getResourceHandler().loadAndRegisterMetamodel("«imp.name»");
 					«ENDFOR»
 				}
 			
@@ -647,6 +644,7 @@ class DefaultFilesGenerator {
 					options.projectPath("«projectName»");
 					options.debug(false);
 					options.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
+					options.registrationHelper(this);
 					return options;
 				}
 			}

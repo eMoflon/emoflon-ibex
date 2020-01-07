@@ -4,11 +4,12 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -16,20 +17,10 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import language.TGGRuleCorr;
 import language.TGGRuleNode;
 
-public abstract class FWD_OPT extends OPT {
+public class FWD_OPT extends OPT {
 
 	public FWD_OPT(IbexOptions options) throws IOException {
 		super(options);
-	}
-
-	@Override
-	public void loadModels() throws IOException {
-		s = loadResource(options.projectPath() + "/instances/src.xmi");
-		t = createResource(options.projectPath() + "/instances/trg.xmi");
-		c = createResource(options.projectPath() + "/instances/corr.xmi");
-		p = createResource(options.projectPath() + "/instances/protocol.xmi");
-
-		EcoreUtil.resolveAll(rs);
 	}
 
 	@Override
@@ -50,17 +41,12 @@ public abstract class FWD_OPT extends OPT {
 		}
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
-		consistencyReporter.initSrc(this);
+		consistencyReporter.initSrc();
 	}
 
 	@Override
-	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD_OPT);
-	}
-
-	@Override
-	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD_OPT);
+	public boolean isPatternRelevantForInterpreter(PatternType type) {
+		return type == PatternType.FWD_OPT;
 	}
 
 	@Override
@@ -95,34 +81,13 @@ public abstract class FWD_OPT extends OPT {
 			contextEdgeToNeedingMatches.get(e).add(idCounter);
 		});
 
-		matchToContextNodes.put(idCounter,cfactory.createObjectSet());
+		matchToContextNodes.put(idCounter, cfactory.createObjectSet());
 		matchToContextNodes.get(idCounter).addAll(getBlackNodes(comatch, ruleName));
 
 		matchToContextEdges.put(idCounter, cfactory.createEMFEdgeHashSet());
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 
 		idCounter++;
-	}
-
-	@Override
-	public void saveModels() throws IOException {
-		p.save(null);
-
-		// Unrelax the metamodel
-		unrelaxReferences(options.tgg().getTrg());
-
-		// Remove adapters to avoid problems with notifications
-		t.eAdapters().clear();
-		t.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
-		c.eAdapters().clear();
-		c.getAllContents().forEachRemaining(o -> o.eAdapters().clear());
-
-		// Copy and fix the model in the process
-		FixingCopier.fixAll(t, c, "target");
-
-		// Now save fixed models
-		t.save(null);
-		c.save(null);
 	}
 
 	@Override
@@ -136,8 +101,7 @@ public abstract class FWD_OPT extends OPT {
 	}
 
 	@Override
-	public void loadTGG() throws IOException {
-		super.loadTGG();
-		relaxReferences(options.tgg().getTrg());
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getFWD_Op();
 	}
 }

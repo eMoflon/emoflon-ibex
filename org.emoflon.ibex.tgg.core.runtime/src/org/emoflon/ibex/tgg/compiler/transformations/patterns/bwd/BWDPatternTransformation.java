@@ -18,7 +18,7 @@ public class BWDPatternTransformation extends BWD_OPTPatternTransformation {
 
 	@Override
 	protected String getPatternName() {
-		return TGGPatternUtil.getBWDBlackPatternName(rule.getName());
+		return TGGPatternUtil.generateBWDBlackPatternName(rule.getName());
 	}
 
 	@Override

@@ -20,7 +20,7 @@ package org.emoflon.ibex.tgg.compiler.patterns;
  * @author anthony.anjorin
  */
 public class PatternSuffixes {
-
+	
 	/** Used to separate the suffix from the name of the pattern */
 	public static final String SEP = "__";
 
@@ -124,7 +124,7 @@ public class PatternSuffixes {
 	 * complement rules is met.
 	 */
 	public static final String GENForCO = SEP + "GenForCO";
-
+	
 	/**
 	 * Removes the suffix of a given pattern name.
 	 * 

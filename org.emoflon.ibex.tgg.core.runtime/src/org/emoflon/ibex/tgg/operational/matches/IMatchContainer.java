@@ -20,8 +20,6 @@ public interface IMatchContainer {
 		return getMatches().isEmpty();
 	}
 	
-	public String getRuleName(ITGGMatch match);
-	
 	public void removeAllMatches();
 	
 	public void matchApplied(ITGGMatch m);

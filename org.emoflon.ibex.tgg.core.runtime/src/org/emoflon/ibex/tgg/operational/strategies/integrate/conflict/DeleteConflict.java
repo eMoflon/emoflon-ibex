@@ -4,11 +4,11 @@ import java.util.Set;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.ShortCutRuleCRS;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.DeleteConflictResStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.CompromiseCRS;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.DeleteConflictResStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.PreserveDeletionCRS;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.RevokeDeletionCRS;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.ShortCutRuleCRS;
 
 public class DeleteConflict extends Conflict {
 

@@ -10,6 +10,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.emoflon.ibex.tgg.compiler.patterns.Pattern2Type;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -49,8 +51,8 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	protected Collection<TGGRuleEdge> blackTrgEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> blackCorrEdgesInRule = new ArrayList<>();;
 
-	public GreenPatternFactory(String ruleName, IbexOptions options, OperationalStrategy strategy) {
-		this(options, strategy);
+	public GreenPatternFactory(IbexOptions options, String ruleName) {
+		this(options);
 		this.ruleName = ruleName;
 
 		rule = options.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findAny()
@@ -78,10 +80,9 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
 	}
 
-	public GreenPatternFactory(IbexOptions options, OperationalStrategy strategy) {
-		this.options = options;
-		this.strategy = strategy;
+	public GreenPatternFactory(IbexOptions options) {
 		patterns = new HashMap<>();
+		this.options = options;
 	}
 
 	private Collection<TGGRuleEdge> validate(Collection<TGGRuleEdge> edges) {
@@ -103,59 +104,19 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 				.collect(Collectors.toList());
 	}
 
-	public IGreenPattern create(String patternName) {
-		if (isGENBlackPattern(patternName))
-			return createGreenPattern(GenGreenPattern.class);
-
-		if (isCCBlackPattern(patternName))
-			return createGreenPattern(CCGreenPattern.class);
-
-		if (isCOBlackPattern(patternName))
-			return createGreenPattern(COGreenPattern.class);
-
-		if (isFWDBlackPattern(patternName))
-			return createGreenPattern(FWDGreenPattern.class);
-
-		if (isBWDBlackPattern(patternName))
-			return createGreenPattern(BWDGreenPattern.class);
-
-		if (isFWDOptBlackPattern(patternName))
-			return createGreenPattern(FWDOptGreenPattern.class);
-
-		if (isBWDOptBlackPattern(patternName))
-			return createGreenPattern(BWDOptGreenPattern.class);
-		
-		return createGreenPattern(EmptyGreenPattern.class);
+	public IGreenPattern create(PatternType type) {
+		switch(type) {
+		case GEN: return createGreenPattern(GenGreenPattern.class);
+		case CC: return createGreenPattern(CCGreenPattern.class);
+		case CO: return createGreenPattern(COGreenPattern.class);
+		case FWD: return createGreenPattern(FWDGreenPattern.class);
+		case BWD: return createGreenPattern(BWDGreenPattern.class);
+		case FWD_OPT: return createGreenPattern(FWDOptGreenPattern.class);
+		case BWD_OPT: return createGreenPattern(BWDOptGreenPattern.class);
+		default: return createGreenPattern(EmptyGreenPattern.class);
+		}
 	}
 
-	private boolean isBWDBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getBWDBlackPatternName(ruleName));
-	}
-
-	private boolean isFWDBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getFWDBlackPatternName(ruleName));
-	}
-
-	private boolean isCOBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getCOBlackPatternName(ruleName));
-	}
-
-	private boolean isCCBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getCCBlackPatternName(ruleName));
-	}
-
-	private boolean isGENBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getGENBlackPatternName(ruleName));
-	}
-
-	private boolean isFWDOptBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getFWDOptBlackPatternName(ruleName));
-	}
-
-	private boolean isBWDOptBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getBWDOptBlackPatternName(ruleName));
-	}
- 
 	public IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {
 		return createPattern(c.getName(), () -> {
 			try {

@@ -15,7 +15,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EClassImpl;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.collections.IntSet;
 import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
@@ -28,7 +27,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.opt.cc.ConsistencyReporter;
+import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
@@ -44,7 +43,7 @@ public abstract class OPT extends OperationalStrategy {
 	protected IntToObjectMap<ITGGMatch> idToMatch = cfactory.createIntToObjectHashMap();
 	protected Map<EMFEdge, IntSet> edgeToMarkingMatches = cfactory.createEMFEdgeHashMap();
 	protected Map<EObject, IntSet> nodeToMarkingMatches = cfactory.createObjectToObjectHashMap();
-	protected ConsistencyReporter consistencyReporter = new ConsistencyReporter();
+	protected ConsistencyReporter consistencyReporter;
 	protected int nameCounter = 0;
 	protected IntToObjectMap<Set<EObject>> matchToContextNodes = cfactory.createIntToObjectHashMap();
 	protected Map<EObject, IntSet> contextNodeToNeedingMatches = cfactory.createObjectToObjectHashMap();
@@ -56,18 +55,14 @@ public abstract class OPT extends OperationalStrategy {
 	protected IntToObjectMap<String> matchIdToRuleName = cfactory.createIntToObjectHashMap();
 	protected int idCounter = 1;
 
-	// Hash maps to save the old metamodel state
-	protected ObjectToIntMap<EReference> referenceToUpperBound = cfactory.createObjectToIntHashMap();
-	protected ObjectToIntMap<EReference> referenceToLowerBound = cfactory.createObjectToIntHashMap();
-	protected Map<EReference, EReference> referenceToEOpposite = cfactory.createObjectToObjectHashMap();
-	protected Map<EReference, Boolean> referenceToContainment = cfactory.createObjectToObjectHashMap();
-
 	public OPT(final IbexOptions options) throws IOException {
 		super(options);
+		consistencyReporter = new ConsistencyReporter(this);
 	}
 
 	public OPT(final IbexOptions options, final IUpdatePolicy policy) throws IOException {
 		super(options, policy);
+		consistencyReporter = new ConsistencyReporter(this);
 	}
 
 	/**
@@ -84,7 +79,7 @@ public abstract class OPT extends OperationalStrategy {
 	@Override
 	public void run() throws IOException {
 		do
-			this.blackInterpreter.updateMatches();
+			this.matchDistributor.updateMatches();
 		while (this.processOneOperationalRuleMatch());
 
 		this.wrapUp();
@@ -92,79 +87,9 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected abstract void wrapUp();
 
-	public void relaxReferences(final EList<EPackage> model) {
-		EPackage[] packages = (EPackage[]) model.toArray();
-
-		for (EPackage p : packages) {
-			TreeIterator<EObject> it = p.eAllContents();
-
-			while (it.hasNext()) {
-				EObject next = it.next();
-				if (next instanceof EClassImpl) {
-					EClassImpl nextEClassImpl = (EClassImpl) next;
-
-					for (EReference reference : nextEClassImpl.getEAllReferences()) {
-						if (this.referenceToUpperBound.containsKey(reference)
-								&& this.referenceToLowerBound.containsKey(reference)
-								&& this.referenceToContainment.containsKey(reference)
-								&& this.referenceToEOpposite.containsKey(reference)) {
-							// Reference already exists, values must not be overwritten
-							continue;
-						}
-
-						// Save metamodel values
-						this.referenceToUpperBound.put(reference, reference.getUpperBound());
-						this.referenceToLowerBound.put(reference, reference.getLowerBound());
-						this.referenceToContainment.put(reference, reference.isContainment());
-						this.referenceToEOpposite.put(reference, reference.getEOpposite());
-
-						// Change metamodel values
-						reference.setUpperBound(-1);
-						reference.setLowerBound(0);
-						reference.setContainment(false);
-						reference.setEOpposite(null);
-					}
-				}
-			}
-		}
-	}
-
-	public void unrelaxReferences(final EList<EPackage> model) {
-
-		EPackage[] packages = (EPackage[]) model.toArray();
-
-		for (EPackage p : packages) {
-			TreeIterator<EObject> it = p.eAllContents();
-
-			while (it.hasNext()) {
-				EObject next = it.next();
-				if (next instanceof EClassImpl) {
-					EClassImpl nextEClassImpl = (EClassImpl) next;
-
-					for (EReference reference : nextEClassImpl.getEAllReferences()) {
-						// Get old metamodel values
-						int upperBound = this.referenceToUpperBound.getInt(reference);
-						int lowerBound = this.referenceToLowerBound.getInt(reference);
-						boolean containment = this.referenceToContainment.get(reference);
-						EReference eOpposite = this.referenceToEOpposite.get(reference);
-
-						// Change metamodel values
-						reference.setUpperBound(upperBound);
-						reference.setLowerBound(lowerBound);
-						reference.setContainment(containment);
-						reference.setEOpposite(eOpposite);
-
-						// Reset setting for reference
-						((EStructuralFeatureImpl) reference).setSettingDelegate(null);
-					}
-				}
-			}
-		}
-	}
-
 	protected void defineILPExclusions(final BinaryILPProblem ilpProblem) {
-		for (EObject node : this.nodeToMarkingMatches.keySet()) {
-			IntSet variables = this.nodeToMarkingMatches.get(node);
+		for (EObject node : nodeToMarkingMatches.keySet()) {
+			IntSet variables = nodeToMarkingMatches.get(node);
 			if (variables.size() <= 1) {
 				// there is only one match creating this node, no exclusion needed
 				continue;
@@ -173,8 +98,8 @@ public abstract class OPT extends OperationalStrategy {
 					"EXCL_nodeOnce_" + node.eClass().getName() + "_" + this.nameCounter++);
 		}
 
-		for (EMFEdge edge : this.edgeToMarkingMatches.keySet()) {
-			IntSet variables = this.edgeToMarkingMatches.get(edge);
+		for (EMFEdge edge : edgeToMarkingMatches.keySet()) {
+			IntSet variables = edgeToMarkingMatches.get(edge);
 			if (variables.size() <= 1) {
 				// there is only one match creating this edge, no exclusion needed
 				continue;
@@ -185,15 +110,15 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected void defineILPImplications(final BinaryILPProblem ilpProblem) {
-		for (EObject node : this.contextNodeToNeedingMatches.keySet()) {
-			IntSet needingMatchIDs = this.contextNodeToNeedingMatches.get(node);
-			IntSet creatingMatchIDs = this.nodeToMarkingMatches.get(node);
+		for (EObject node : contextNodeToNeedingMatches.keySet()) {
+			IntSet needingMatchIDs = contextNodeToNeedingMatches.get(node);
+			IntSet creatingMatchIDs = nodeToMarkingMatches.get(node);
 			// only one or none of the creating matches can be chosen (defined by
 			// exclusions)
 			if (creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
 				ilpProblem.addNegativeImplication(creatingMatchIDs.stream().map(m -> "x" + m),
 						needingMatchIDs.stream().map(m -> "x" + m),
-						"IMPL_" + node.eClass().getName() + this.nameCounter++);
+						"IMPL_" + node.eClass().getName() + nameCounter++);
 			} else {
 				// there is no match creating this node -> forbid all matches needing it
 				needingMatchIDs.stream().forEach(m -> {
@@ -202,15 +127,15 @@ public abstract class OPT extends OperationalStrategy {
 			}
 		}
 
-		for (EMFEdge edge : this.contextEdgeToNeedingMatches.keySet()) {
-			IntSet needingMatchIDs = this.contextEdgeToNeedingMatches.get(edge);
-			IntSet creatingMatchIDs = this.edgeToMarkingMatches.get(edge);
+		for (EMFEdge edge : contextEdgeToNeedingMatches.keySet()) {
+			IntSet needingMatchIDs = contextEdgeToNeedingMatches.get(edge);
+			IntSet creatingMatchIDs = edgeToMarkingMatches.get(edge);
 			// only one or none of the creating matches can be chosen (defined by
 			// exclusions)
 			if (creatingMatchIDs != null && !creatingMatchIDs.isEmpty()) {
 				ilpProblem.addNegativeImplication(creatingMatchIDs.stream().map(m -> "x" + m),
 						needingMatchIDs.stream().map(m -> "x" + m),
-						"IMPL" + edge.getType().getName() + this.nameCounter++);
+						"IMPL" + edge.getType().getName() + nameCounter++);
 			} else {
 				// there is no match creating this node -> forbid all matches needing it
 				needingMatchIDs.stream().forEach(m -> {
@@ -223,7 +148,7 @@ public abstract class OPT extends OperationalStrategy {
 	protected void defineILPObjective(final BinaryILPProblem ilpProblem) {
 		ILPLinearExpression expr = ilpProblem.createLinearExpression();
 		this.matchToWeight.keySet().stream().forEach(v -> {
-			double weight = this.matchToWeight.get(v);
+			double weight = matchToWeight.get(v);
 			expr.addTerm("x" + v, weight);
 		});
 		ilpProblem.setObjective(expr, Objective.maximize);
@@ -266,7 +191,7 @@ public abstract class OPT extends OperationalStrategy {
 				throw new AssertionError("Invalid solution");
 			}
 
-			int[] result = new int[this.idToMatch.size()];
+			int[] result = new int[idToMatch.size()];
 			this.idToMatch.keySet().stream().forEach(v -> {
 				if (ilpSolution.getVariable("x" + v) > 0)
 					result[v - 1] = v;
@@ -287,17 +212,17 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Set<EObject> getGreenNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
-		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getGreenSrcNodesInRule()));
-		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getGreenTrgNodesInRule()));
-		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getGreenCorrNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenSrcNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenTrgNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenCorrNodesInRule()));
 		return result;
 	}
 
 	protected Set<EObject> getBlackNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
-		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getBlackSrcNodesInRule()));
-		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getBlackTrgNodesInRule()));
-		result.addAll(this.getNodes(comatch, this.getGreenFactory(ruleName).getBlackCorrNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackSrcNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackTrgNodesInRule()));
+		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackCorrNodesInRule()));
 		return result;
 	}
 
@@ -311,19 +236,15 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Set<EMFEdge> getGreenEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		result.addAll(((IbexGreenInterpreter) this.greenInterpreter).createEdges(comatch,
-				this.getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
-		result.addAll(((IbexGreenInterpreter) this.greenInterpreter).createEdges(comatch,
-				this.getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
 		return result;
 	}
 
 	protected Set<EMFEdge> getBlackEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		result.addAll(((IbexGreenInterpreter) this.greenInterpreter).createEdges(comatch,
-				this.getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
-		result.addAll(((IbexGreenInterpreter) this.greenInterpreter).createEdges(comatch,
-				this.getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
 		return result;
 	}
 
@@ -342,9 +263,9 @@ public abstract class OPT extends OperationalStrategy {
 	 * @return The calculated weight
 	 */
 	public final double getWeightForMatch(final IMatch comatch, final String ruleName) {
-		if (this.userDefinedWeightCalculationStrategy != null)
-			return this.userDefinedWeightCalculationStrategy.calculateWeight(ruleName, comatch);
-		return this.getDefaultWeightForMatch(comatch, ruleName);
+		if (userDefinedWeightCalculationStrategy != null)
+			return userDefinedWeightCalculationStrategy.calculateWeight(ruleName, comatch);
+		return getDefaultWeightForMatch(comatch, ruleName);
 	}
 
 	/**
@@ -359,13 +280,8 @@ public abstract class OPT extends OperationalStrategy {
 	public abstract double getDefaultWeightForMatch(IMatch comatch, String ruleName);
 
 	@Override
-	public Resource loadResource(final String workspaceRelativePath) throws IOException {
-		return super.loadResource(workspaceRelativePath);
-	}
-
-	@Override
-	protected void removeBlackInterpreter() {
-		super.removeBlackInterpreter();
+	public void terminate() {
+		matchDistributor.removeBlackInterpreter();
 		for (ITGGMatch m : this.idToMatch.values()) {
 			for (String parameter : m.getParameterNames()) {
 				EObject object = (EObject) m.get(parameter);

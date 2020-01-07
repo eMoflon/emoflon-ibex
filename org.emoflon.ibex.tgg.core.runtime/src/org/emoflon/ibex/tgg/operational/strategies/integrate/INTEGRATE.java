@@ -10,40 +10,36 @@ import java.util.function.BiConsumer;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.delta.validation.DeltaValidator;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
-import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.GroupKey;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
-import org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies.AttributeRepairStrategy;
 
 import delta.DeltaContainer;
 import language.BindingType;
 import language.TGGRuleCorr;
 import runtime.TGGRuleApplication;
 
-public abstract class INTEGRATE extends ExtOperationalStrategy {
-
+public class INTEGRATE extends PropagatingOperationalStrategy {
 	private IntegrationPattern pattern;
 	private BrokenMatchAnalyser matchAnalyser;
 	private ModelChangeProtocol modelChangeProtocol;
@@ -71,6 +67,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		filterNacMatches = new HashSet<>();
 		analysedMatches = new HashMap<>();
 		mismatches = new HashSet<>();
+
+		initIntegrateDependantTools();
 	}
 
 	public void integrate() throws IOException {
@@ -79,7 +77,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
-		blackInterpreter.updateMatches();
+		matchDistributor.updateMatches();
 		getEPG().update();
 		modelChangeProtocol.attachAdapter();
 		userDeltaKey = modelChangeProtocol.new GroupKey();
@@ -87,15 +85,15 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 		applyUserDelta();
 
-		blackInterpreter.updateMatches();
+		matchDistributor.updateMatches();
 
-//		repair();
+//			repair();
 		deleteCorrsOfBrokenMatches();
 		analyseAndClassifyMatches();
 		detectAndResolveConflicts();
-		
+
 		modelChangeProtocol.unsetGroupKey();
-		
+
 		fillClassificationMaps();
 		calculateIntegrationSolution();
 		cleanUp();
@@ -106,7 +104,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 			modelChangeProtocol.util.applyUserDelta(userDeltaContainer);
 			userDeltaContainer = null;
 		} else if (userDeltaBiConsumer != null) {
-			userDeltaBiConsumer.accept(s.getContents().get(0), t.getContents().get(0));
+			userDeltaBiConsumer.accept(resourceHandler.getSourceResource().getContents().get(0),
+					resourceHandler.getTargetResource().getContents().get(0));
 			userDeltaBiConsumer = null;
 		}
 
@@ -115,13 +114,13 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	protected void deleteCorrsOfBrokenMatches() {
 		Map<TGGRuleApplication, ITGGMatch> processed = new HashMap<>();
 		do {
-			blackInterpreter.updateMatches();
+			matchDistributor.updateMatches();
 		} while (deleteCorrs(processed));
 		brokenRuleApplications.putAll(processed);
 	}
 
 	protected void analyseAndClassifyMatches() {
-		blackInterpreter.updateMatches();
+		matchDistributor.updateMatches();
 		getEPG().update();
 
 		analysedMatches.clear();
@@ -202,7 +201,8 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	protected void cleanUp() {
 		modelChangeProtocol.detachAdapter();
-		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
+		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
+				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
 		analysedMatches = new HashMap<>();
@@ -227,36 +227,22 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 		return new ExtPrecedenceGraph(this);
 	}
 
-	public Resource getEPGResource() {
-		return epg;
-	}
-
 	@Override
-	public void loadModels() throws IOException {
-		long tic = System.currentTimeMillis();
-		s = loadResource(options.projectPath() + "/instances/src.xmi");
-		t = loadResource(options.projectPath() + "/instances/trg.xmi");
-		c = loadResource(options.projectPath() + "/instances/corr.xmi");
-		p = loadResource(options.projectPath() + "/instances/protocol.xmi");
-		epg = createResource(options.projectPath() + "/instances/epg.xmi");
-		EcoreUtil.resolveAll(rs);
-		long toc = System.currentTimeMillis();
-
-		logger.info("Loaded all models in: " + (toc - tic) / 1000.0 + "s");
-	}
-
-	@Override
-	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.FWD) //
-				|| patternName.endsWith(PatternSuffixes.BWD) //
-				|| patternName.endsWith(PatternSuffixes.CONSISTENCY) //
-				|| patternName.endsWith(PatternSuffixes.CC) //
-				|| patternName.endsWith(PatternSuffixes.FILTER_NAC);
-	}
-
-	@Override
-	public boolean isPatternRelevantForInterpreter(String patternName) {
-		return super.isPatternRelevantForInterpreter(patternName);
+	public boolean isPatternRelevantForInterpreter(PatternType type) {
+		switch (type) {
+		case FWD:
+			return true;
+		case BWD:
+			return true;
+		case CONSISTENCY:
+			return true;
+		case CC:
+			return true;
+		case FILTER_NAC:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	@Override
@@ -266,28 +252,19 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	}
 
 	@Override
-	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.FILTER_NAC))
+	public void addOperationalRuleMatch(ITGGMatch match) {
+		if (match.getType() == PatternType.FILTER_NAC)
 			filterNacMatches.add((ITGGMatch) match);
 		else
-			super.addMatch(match);
+			super.addOperationalRuleMatch(match);
 	}
 
 	@Override
-	public void removeMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.FILTER_NAC))
-			filterNacMatches.remove(match);
+	public boolean removeOperationalRuleMatch(ITGGMatch match) {
+		if (match.getType() == PatternType.FILTER_NAC)
+			return filterNacMatches.remove(match);
 		else
-			super.removeMatch(match);
-	}
-
-	@Override
-	public void registerBlackInterpreter(IBlackInterpreter blackInterpreter) throws IOException {
-		super.registerBlackInterpreter(blackInterpreter);
-
-		BenchmarkLogger.startTimer();
-		initIntegrateDependantTools();
-		options.getBenchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
+			return super.removeOperationalRuleMatch(match);
 	}
 
 	public BrokenMatchAnalyser getMatchAnalyser() {
@@ -304,10 +281,6 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	public ModelChangeProtocol getModelChangeProtocol() {
 		return modelChangeProtocol;
-	}
-
-	public IBlackInterpreter getBlackInterpreter() {
-		return blackInterpreter;
 	}
 
 	public IRedInterpreter getRedInterpreter() {
@@ -345,7 +318,7 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 	public Set<Mismatch> getMismatches() {
 		return mismatches;
 	}
-	
+
 	public ModelChanges getUserModelChanges() {
 		return modelChangeProtocol.getModelChanges(userDeltaKey);
 	}
@@ -382,21 +355,13 @@ public abstract class INTEGRATE extends ExtOperationalStrategy {
 
 	private void initIntegrateDependantTools() {
 		matchAnalyser = new BrokenMatchAnalyser(this);
-		modelChangeProtocol = new ModelChangeProtocol(s, t, c);
+		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
+				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
 		conflictDetector = new ConflictDetector(this);
 	}
 
 	@Override
-	public void loadTGG() throws IOException {
-		super.loadTGG();
-	}
-
-	@Override
-	public void saveModels() throws IOException {
-		s.save(null);
-		t.save(null);
-		c.save(null);
-		p.save(null);
-		epg.save(null);
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getIntegrateTypes();
 	}
 }

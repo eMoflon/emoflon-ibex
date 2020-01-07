@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.compiler.patterns.Pattern2Type;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 
 public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements ITGGMatch {
 	private final Collection<EMFEdge> edges;
+	private PatternType type;
 
 	public SimpleMatch(String patternName) {
 		super(patternName);
+		this.type = Pattern2Type.resolve(patternName);
 		edges = new ArrayList<>();
 	}
 
@@ -27,5 +31,10 @@ public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch
 	@Override
 	public Collection<EMFEdge> getCreatedEdges() {
 		return edges;
+	}
+	
+	@Override
+	public PatternType getType() {
+		return type;
 	}
 }
