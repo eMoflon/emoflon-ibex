@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.operational.matches;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 import language.TGG;

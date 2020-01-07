@@ -22,7 +22,7 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
@@ -33,14 +33,13 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
-import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 
 import delta.DeltaContainer;
 import language.BindingType;
 import language.TGGRuleCorr;
 import runtime.TGGRuleApplication;
 
-public class INTEGRATE extends ExtOperationalStrategy {
+public class INTEGRATE extends PropagatingOperationalStrategy {
 	private IntegrationPattern pattern;
 	private BrokenMatchAnalyser matchAnalyser;
 	private ModelChangeProtocol modelChangeProtocol;

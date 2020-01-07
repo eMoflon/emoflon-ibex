@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGUtil;
-import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
 import language.BindingType;
 import language.DomainType;
@@ -16,10 +16,10 @@ import language.TGGRule;
 public class OperationalSCFactory {
 
 	private Collection<ShortcutRule> scRules;
-	private ExtOperationalStrategy strategy;
+	private PropagatingOperationalStrategy strategy;
 
 
-	public OperationalSCFactory(ExtOperationalStrategy strategy, Collection<ShortcutRule> scRules) {
+	public OperationalSCFactory(PropagatingOperationalStrategy strategy, Collection<ShortcutRule> scRules) {
 		this.strategy = strategy;
 		this.scRules = scRules;
 	}

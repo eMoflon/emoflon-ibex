@@ -23,7 +23,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
-import org.emoflon.ibex.tgg.operational.matches.MatchContainer;
+import org.emoflon.ibex.tgg.operational.matches.DefaultMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -116,7 +116,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	protected IMatchContainer createMatchContainer() {
-		return new MatchContainer(options.flattenedTGG());
+		return new DefaultMatchContainer(options.flattenedTGG());
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			return false;
 
 		ITGGMatch match = chooseOneMatch();
-		String ruleName = operationalMatchContainer.getRuleName(match);
+		String ruleName = match.getRuleName();
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
@@ -260,7 +260,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected void updateBlockedMatches() {
 		for(ITGGMatch match : operationalMatchContainer.getMatches()) {
-			if(!this.getUpdatePolicy().matchShouldBeApplied(match, operationalMatchContainer.getRuleName(match))) {
+			if(!this.getUpdatePolicy().matchShouldBeApplied(match, match.getRuleName())) {
 				if(!blockedMatches.containsKey(match))
 					blockedMatches.put(match, "Match is blocked by the update policy");
 				this.operationalMatchContainer.removeMatch(match);
@@ -285,7 +285,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	public IGreenPatternFactory getGreenFactory(String ruleName) {
 		assert (ruleName != null);
 		if (!factories.containsKey(ruleName)) {
-			factories.put(ruleName, new GreenPatternFactory(ruleName, options, this));
+			factories.put(ruleName, new GreenPatternFactory(options, ruleName));
 		}
 
 		return factories.get(ruleName);

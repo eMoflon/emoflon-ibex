@@ -15,7 +15,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 import language.TGGRuleCorr;
@@ -44,7 +43,7 @@ public class CC extends OPT {
 			return false;
 
 		ITGGMatch match = chooseOneMatch();
-		String ruleName = operationalMatchContainer.getRuleName(match);
+		String ruleName = match.getRuleName();
 
 		if (ruleName == null) {
 			removeOperationalRuleMatch(match);

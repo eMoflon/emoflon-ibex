@@ -10,10 +10,10 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
 
-public class SYNC extends ExtOperationalStrategy {
+public class SYNC extends PropagatingOperationalStrategy {
 
 	/***** Constructors 
 	 * @param sync *****/

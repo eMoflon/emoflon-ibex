@@ -51,8 +51,8 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	protected Collection<TGGRuleEdge> blackTrgEdgesInRule = new ArrayList<>();;
 	protected Collection<TGGRuleEdge> blackCorrEdgesInRule = new ArrayList<>();;
 
-	public GreenPatternFactory(String ruleName, IbexOptions options, OperationalStrategy strategy) {
-		this(options, strategy);
+	public GreenPatternFactory(IbexOptions options, String ruleName) {
+		this(options);
 		this.ruleName = ruleName;
 
 		rule = options.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findAny()
@@ -80,10 +80,9 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
 	}
 
-	public GreenPatternFactory(IbexOptions options, OperationalStrategy strategy) {
-		this.options = options;
-		this.strategy = strategy;
+	public GreenPatternFactory(IbexOptions options) {
 		patterns = new HashMap<>();
+		this.options = options;
 	}
 
 	private Collection<TGGRuleEdge> validate(Collection<TGGRuleEdge> edges) {

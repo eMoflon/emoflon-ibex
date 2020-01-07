@@ -10,7 +10,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
 import runtime.TGGRuleApplication;
 
@@ -18,9 +18,9 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 
 	protected final static Logger logger = Logger.getLogger(AbstractRepairStrategy.class);
 
-	private ExtOperationalStrategy operationalStrategy;
+	private PropagatingOperationalStrategy operationalStrategy;
 	
-	public AttributeRepairStrategy(ExtOperationalStrategy sync) {
+	public AttributeRepairStrategy(PropagatingOperationalStrategy sync) {
 		this.operationalStrategy = sync;
 	}
 

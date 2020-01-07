@@ -11,15 +11,14 @@ import java.util.Set;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 
-import language.TGG;
 import language.TGGRuleNode;
 
 public class LocalCCMatchContainer implements IMatchContainer{
-	private TGG tgg;
 	private Set<Object> markedElements = new HashSet<>();
 	private Map<Object, Collection<ITGGMatch>> elt2ccMatches = new HashMap<>();
 	private Set<ITGGMatch> consistencyMatches = new HashSet<>();
@@ -32,9 +31,11 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	boolean initFinished = false;
 	private Set<Object> markedEdges = new HashSet<>();
 	private IbexGreenInterpreter interpreter;
+	private IbexOptions options;
 	
 	private LocalCCMatchContainer(LocalCCMatchContainer old) {
-		this(old.tgg, old.interpreter);
+		this(old.options, old.interpreter);
+		this.options = old.options;
 		this.consistencyMatches.addAll(old.consistencyMatches);
 		this.ccMatches.addAll(old.ccMatches);
 		this.markedElements.addAll(old.markedElements);
@@ -42,14 +43,14 @@ public class LocalCCMatchContainer implements IMatchContainer{
 		this.elt2ccMatches.putAll(old.elt2ccMatches);
 	}
 	
-	public LocalCCMatchContainer(TGG tgg, IbexGreenInterpreter interpreter) {
-		this.tgg = tgg;
+	public LocalCCMatchContainer(IbexOptions options, IbexGreenInterpreter interpreter) {
+		this.options = options;
 		this.interpreter = interpreter;
 	}
 
 	public void addMatch(ITGGMatch match) {
 		if(!rule2pattern.containsKey(match.getRuleName())) {
-			IGreenPatternFactory factory = new GreenPatternFactory(match.getRuleName());
+			IGreenPatternFactory factory = new GreenPatternFactory(options, match.getRuleName());
 			rule2factory.put(match.getRuleName(), factory);
 			rule2pattern.put(match.getRuleName(), factory.create(PatternType.GEN));
 		}
@@ -71,7 +72,7 @@ public class LocalCCMatchContainer implements IMatchContainer{
 
 	private void addConsistencyMatch(ITGGMatch match) {
 		if(!rule2pattern.containsKey(match.getRuleName())) {
-			IGreenPatternFactory factory = new GreenPatternFactory(match.getRuleName());
+			IGreenPatternFactory factory = new GreenPatternFactory(options, match.getRuleName());
 			rule2pattern.put(match.getRuleName(), factory.create(PatternType.GEN));
 		}
 		
@@ -91,7 +92,7 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	
 	private boolean removeConsistencyMatch(ITGGMatch match) {
 		if(!rule2pattern.containsKey(match.getRuleName())) {
-			IGreenPatternFactory factory = new GreenPatternFactory(match.getRuleName());
+			IGreenPatternFactory factory = new GreenPatternFactory(options, match.getRuleName());
 			rule2pattern.put(match.getRuleName(), factory.create(PatternType.GEN));
 		}
 		

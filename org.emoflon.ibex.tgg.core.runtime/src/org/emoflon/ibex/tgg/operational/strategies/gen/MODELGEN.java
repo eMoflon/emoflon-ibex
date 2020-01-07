@@ -111,7 +111,7 @@ public class MODELGEN extends OperationalStrategy {
 			return false;
 
 		ITGGMatch match = chooseOneMatch();
-		String ruleName = operationalMatchContainer.getRuleName(match);
+		String ruleName = match.getRuleName();
 
 		Optional<ITGGMatch> comatch = processOperationalRuleMatch(ruleName, match);
 		comatch.ifPresent(cm -> {
@@ -130,7 +130,7 @@ public class MODELGEN extends OperationalStrategy {
 	@Override
 	protected void updateBlockedMatches() {
 		for (ITGGMatch match : operationalMatchContainer.getMatches().toArray(new ITGGMatch[0])) {
-			String ruleName = operationalMatchContainer.getRuleName(match);
+			String ruleName = match.getRuleName();
 			if (stopCriterion.dont()) {
 				if (!blockedMatches.containsKey(match))
 					blockedMatches.put(match, "Application blocked by stop criterion");

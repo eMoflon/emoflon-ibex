@@ -25,7 +25,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGUtil;
-import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 import language.BindingType;
@@ -46,7 +46,7 @@ public class ShortcutPatternTool {
 	
 	private int numOfDeletedNodes = 0;
 	
-	private ExtOperationalStrategy strategy;
+	private PropagatingOperationalStrategy strategy;
 	private TGGResourceHandler resourceHandler;
 	private Collection<ShortcutRule> scRules;
 	private Map<String, Collection<OperationalShortcutRule>> tggRule2srcSCRule;
@@ -55,7 +55,7 @@ public class ShortcutPatternTool {
 	
 	private IGreenInterpreter greenInterpreter;
 	
-	public ShortcutPatternTool(ExtOperationalStrategy strategy, Collection<ShortcutRule> scRules) {
+	public ShortcutPatternTool(PropagatingOperationalStrategy strategy, Collection<ShortcutRule> scRules) {
 		this.scRules = scRules;
 		this.strategy = strategy;
 		resourceHandler = strategy.getOptions().getResourceHandler();

@@ -44,7 +44,7 @@ public class LocalCC extends OPT {
 	
 	@Override
 	protected IMatchContainer createMatchContainer() {
-		return new LocalCCMatchContainer(getTGG(), (IbexGreenInterpreter) greenInterpreter);
+		return new LocalCCMatchContainer(options, (IbexGreenInterpreter) greenInterpreter);
 	}
 	
 	@Override

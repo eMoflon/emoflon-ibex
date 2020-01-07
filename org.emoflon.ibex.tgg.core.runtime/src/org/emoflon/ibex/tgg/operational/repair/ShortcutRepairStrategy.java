@@ -11,7 +11,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.ShortcutPatternTool;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.util.OverlapUtil;
-import org.emoflon.ibex.tgg.operational.strategies.ExtOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
@@ -29,11 +29,11 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 	protected final static Logger logger = Logger.getLogger(AbstractRepairStrategy.class);
 	
-	private ExtOperationalStrategy operationalStrategy;
+	private PropagatingOperationalStrategy operationalStrategy;
 	private ShortcutPatternTool scTool;
 	private SyncDirection syncDirection;
 	
-	public ShortcutRepairStrategy(ExtOperationalStrategy operationalStrategy) {
+	public ShortcutRepairStrategy(PropagatingOperationalStrategy operationalStrategy) {
 		this.operationalStrategy = operationalStrategy;
 		
 		// enable backward navigation for emf edges

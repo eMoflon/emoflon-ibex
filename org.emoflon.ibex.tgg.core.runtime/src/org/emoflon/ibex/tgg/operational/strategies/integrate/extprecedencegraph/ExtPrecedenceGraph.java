@@ -10,15 +10,15 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.sync.PrecedenceGraph;
 
 import precedencegraph.PrecedenceNode;
 import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphFactory;
 
-public class ExtPrecedenceGraph extends PrecedenceGraph {
+public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 
 	private INTEGRATE strategy;
 	private Resource precedenceGraph;
