@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFWDOptBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDOptBlackPatternName;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperator;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperator;
@@ -29,7 +29,7 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 
 	@Override
 	protected String getPatternName() {
-		return getFWDOptBlackPatternName(rule.getName());
+		return generateFWDOptBlackPatternName(rule.getName());
 	}
 
 	@Override

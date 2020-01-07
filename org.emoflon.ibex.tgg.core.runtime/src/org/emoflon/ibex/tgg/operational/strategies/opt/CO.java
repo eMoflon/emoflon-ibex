@@ -6,21 +6,16 @@ import java.util.Collection;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
-public abstract class CO extends CC {
+public class CO extends CC {
 
 	public CO(IbexOptions options) throws IOException {
 		super(options, new NextMatchUpdatePolicy());
-	}
-
-	@Override
-	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.CO) || patternName.endsWith(PatternSuffixes.GENForCO);
 	}
 
 	@Override
@@ -29,28 +24,13 @@ public abstract class CO extends CC {
 
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
-			IMatch comatch = idToMatch.get(id);
+			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0)
 				objectsToDelete.add(getRuleApplicationNode(comatch));
 		}
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
-		consistencyReporter.initWithCorr(this);
-	}
-
-	@Override
-	public void loadModels() throws IOException {
-		s = loadResource(options.projectPath() + "/instances/src.xmi");
-		t = loadResource(options.projectPath() + "/instances/trg.xmi");
-		c = loadResource(options.projectPath() + "/instances/corr.xmi");
-		p = createResource(options.projectPath() + "/instances/protocol.xmi");
-
-		EcoreUtil.resolveAll(rs);
-	}
-
-	@Override
-	public void saveModels() throws IOException {
-		p.save(null);
+		consistencyReporter.initWithCorr();
 	}
 
 	/*
@@ -77,7 +57,7 @@ public abstract class CO extends CC {
 	}
 
 	@Override
-	public String getGENPatternForMaximality() {
-		return PatternSuffixes.GENForCO;
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getCOTypes();
 	}
 }

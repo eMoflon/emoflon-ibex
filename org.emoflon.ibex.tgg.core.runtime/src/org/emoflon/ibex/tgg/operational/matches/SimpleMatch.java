@@ -4,22 +4,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.compiler.patterns.Pattern2Type;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 
-public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements IMatch {
+public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements ITGGMatch {
 	private final Collection<EMFEdge> edges;
+	private PatternType type;
 
 	public SimpleMatch(String patternName) {
 		super(patternName);
+		this.type = Pattern2Type.resolve(patternName);
 		edges = new ArrayList<>();
 	}
 
-	public SimpleMatch(IMatch match) {
+	public SimpleMatch(ITGGMatch match) {
 		super(match);
 		edges = new ArrayList<>(match.getCreatedEdges());
 	}
 
 	@Override
-	public IMatch copy() {
+	public ITGGMatch copy() {
 		SimpleMatch copy = new SimpleMatch(this);
 		return copy;
 	}
@@ -27,5 +31,10 @@ public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch
 	@Override
 	public Collection<EMFEdge> getCreatedEdges() {
 		return edges;
+	}
+	
+	@Override
+	public PatternType getType() {
+		return type;
 	}
 }

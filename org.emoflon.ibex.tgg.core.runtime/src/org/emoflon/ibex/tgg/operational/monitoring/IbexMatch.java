@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 public class IbexMatch {
 
@@ -17,7 +17,7 @@ public class IbexMatch {
 		ruleSets.clear();
 	}
 
-	public static IbexMatch newMatch(IMatch pMatch) {
+	public static IbexMatch newMatch(ITGGMatch pMatch) {
 
 		IbexMatch vMatch = new IbexMatch(pMatch, currentStep);
 
@@ -40,16 +40,16 @@ public class IbexMatch {
 		});
 	}
 
-	private IMatch match;
+	private ITGGMatch match;
 	private String matchName;
 	private String blockingReason;
 
-	private IbexMatch(IMatch pMatch, int pBirthStep) {
+	private IbexMatch(ITGGMatch pMatch, int pBirthStep) {
 		match = pMatch;
 		matchName = match.getRuleName() + " #" + pBirthStep;
 	}
 
-	public IMatch getIMatch() {
+	public ITGGMatch getIMatch() {
 		return match;
 	}
 

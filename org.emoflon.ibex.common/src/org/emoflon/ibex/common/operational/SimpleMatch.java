@@ -1,9 +1,9 @@
 package org.emoflon.ibex.common.operational;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.util.Collection;
 import java.util.Map;
-
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 /**
  * A simple implementation of {@link IMatch}.

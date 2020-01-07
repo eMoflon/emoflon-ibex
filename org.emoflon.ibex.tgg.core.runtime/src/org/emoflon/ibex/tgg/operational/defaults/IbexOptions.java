@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.defaults;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
@@ -7,12 +8,18 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EPackage;
+import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
-import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictResolver;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DefaultConflictResolver;
+import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 import language.TGG;
@@ -20,13 +27,13 @@ import language.TGGRule;
 import language.TGGRuleNode;
 
 public class IbexOptions {
-	private boolean blackInterpSupportsAttrConstrs = true;
 	private boolean debug;
 	private String workspacePath;
 	private String projectPath;
 	private String projectName;
 	private TGG tgg;
 	private TGG flattenedTGG;
+	private TGGResourceHandler resourceHandler;
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
 	private RuntimeTGGAttrConstraintFactory userDefinedConstraints;
 	private SupportedILPSolver ilpSolver;
@@ -38,6 +45,9 @@ public class IbexOptions {
 	private boolean useShortcutRules;
 	private boolean optimizeSyncPattern;
 	private boolean applyConcurrently;
+	private IbexExecutable executable;
+	private IRegistrationHelper registrationHelper;
+	private MatchDistributor matchDistributor;
 
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
@@ -48,6 +58,9 @@ public class IbexOptions {
 
 	// Benchmark Logging
 	private BenchmarkLogger logger;
+	
+	// Model Integration
+	private ConflictResolver conflictSolver;
 
 	public IbexOptions() {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
@@ -63,8 +76,16 @@ public class IbexOptions {
 		logger = new EmptyBenchmarkLogger();
 		repairAttributes = true;
 		useShortcutRules = false;
+		conflictSolver = new DefaultConflictResolver();
 		
 		applyConcurrently = false;
+
+		try {
+			setResourceHandler(new TGGResourceHandler());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		matchDistributor = new MatchDistributor(this);
 	}
 
 	public IbexOptions debug(boolean debug) {
@@ -180,15 +201,6 @@ public class IbexOptions {
 		return userDefinedConstraints;
 	}
 
-	public boolean blackInterpSupportsAttrConstrs() {
-		return blackInterpSupportsAttrConstrs;
-	}
-
-	public IbexOptions blackInterpSupportsAttrConstrs(boolean value) {
-		blackInterpSupportsAttrConstrs = value;
-		return this;
-	}
-	
 	public IBlackInterpreter getBlackInterpreter() {
 		return blackInterpreter;
 	}
@@ -273,5 +285,48 @@ public class IbexOptions {
 	public IbexOptions setBenchmarkLogger(BenchmarkLogger logger) {
 		this.logger = logger;
 		return this;
+	}
+
+	public ConflictResolver getConflictSolver() {
+		return conflictSolver;
+	}
+
+	public void setConflictSolver(ConflictResolver conflictSolver) {
+		this.conflictSolver = conflictSolver;
+	}
+	
+	public TGGResourceHandler getResourceHandler() {
+		return resourceHandler;
+	}
+
+	public IbexOptions setResourceHandler(TGGResourceHandler resourceHandler) {
+		this.resourceHandler = resourceHandler;
+		resourceHandler.setOptions(this);
+		if(executable != null)
+			executable.setResourceHandler(resourceHandler);
+		return this;
+	}
+	
+	public MatchDistributor getMatchDistributor() {
+		return matchDistributor;
+	}
+	
+	public IbexOptions setExecutable(IbexExecutable executable) {
+		this.executable = executable;
+		if(resourceHandler != null)
+			resourceHandler.setExecutable(executable);
+		return this;
+	}
+	
+	public IbexExecutable getExecutable() {
+		return executable;
+	}
+	
+	public void registrationHelper(IRegistrationHelper registrationHelper) {
+		this.registrationHelper = registrationHelper;
+	}
+	
+	public IRegistrationHelper registrationHelper() {
+		return registrationHelper;
 	}
 }
