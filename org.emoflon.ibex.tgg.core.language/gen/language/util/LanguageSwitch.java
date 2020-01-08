@@ -231,17 +231,6 @@ public class LanguageSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION: {
-			TGGAttributeExpression tggAttributeExpression = (TGGAttributeExpression) theEObject;
-			T result = caseTGGAttributeExpression(tggAttributeExpression);
-			if (result == null)
-				result = caseTGGExpression(tggAttributeExpression);
-			if (result == null)
-				result = caseTGGParamValue(tggAttributeExpression);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
 		case LanguagePackage.TGG_ENUM_EXPRESSION: {
 			TGGEnumExpression tggEnumExpression = (TGGEnumExpression) theEObject;
 			T result = caseTGGEnumExpression(tggEnumExpression);
@@ -249,6 +238,17 @@ public class LanguageSwitch<T> extends Switch<T> {
 				result = caseTGGExpression(tggEnumExpression);
 			if (result == null)
 				result = caseTGGParamValue(tggEnumExpression);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION: {
+			TGGAttributeExpression tggAttributeExpression = (TGGAttributeExpression) theEObject;
+			T result = caseTGGAttributeExpression(tggAttributeExpression);
+			if (result == null)
+				result = caseTGGExpression(tggAttributeExpression);
+			if (result == null)
+				result = caseTGGParamValue(tggAttributeExpression);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -544,21 +544,6 @@ public class LanguageSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Expression</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Expression</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGAttributeExpression(TGGAttributeExpression object) {
-		return null;
-	}
-
-	/**
 	 * Returns the result of interpreting the object as an instance of '<em>TGG Enum Expression</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -570,6 +555,21 @@ public class LanguageSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseTGGEnumExpression(TGGEnumExpression object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Expression</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTGGAttributeExpression(TGGAttributeExpression object) {
 		return null;
 	}
 

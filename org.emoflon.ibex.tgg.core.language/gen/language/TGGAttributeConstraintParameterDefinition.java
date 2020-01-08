@@ -4,8 +4,6 @@ package language;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -14,11 +12,11 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGAttributeConstraintParameterDefinition#getType <em>Type</em>}</li>
  *   <li>{@link language.TGGAttributeConstraintParameterDefinition#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGAttributeConstraintParameterDefinition()
  * @model
@@ -28,10 +26,6 @@ public interface TGGAttributeConstraintParameterDefinition extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Type</b></em>' reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Type</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Type</em>' reference.
 	 * @see #setType(EDataType)
@@ -54,10 +48,6 @@ public interface TGGAttributeConstraintParameterDefinition extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Name</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
@@ -76,7 +66,5 @@ public interface TGGAttributeConstraintParameterDefinition extends EObject {
 	 * @generated
 	 */
 	void setName(String value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeConstraintParameterDefinition

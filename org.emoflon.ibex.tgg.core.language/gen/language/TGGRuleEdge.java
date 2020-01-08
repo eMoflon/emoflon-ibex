@@ -3,8 +3,6 @@
 package language;
 
 import org.eclipse.emf.ecore.EReference;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -13,12 +11,12 @@ import org.eclipse.emf.ecore.EReference;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRuleEdge#getSrcNode <em>Src Node</em>}</li>
  *   <li>{@link language.TGGRuleEdge#getTrgNode <em>Trg Node</em>}</li>
  *   <li>{@link language.TGGRuleEdge#getType <em>Type</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRuleEdge()
  * @model
@@ -29,10 +27,6 @@ public interface TGGRuleEdge extends TGGRuleElement {
 	 * Returns the value of the '<em><b>Src Node</b></em>' reference.
 	 * It is bidirectional and its opposite is '{@link language.TGGRuleNode#getOutgoingEdges <em>Outgoing Edges</em>}'.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Src Node</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Src Node</em>' reference.
 	 * @see #setSrcNode(TGGRuleNode)
@@ -57,10 +51,6 @@ public interface TGGRuleEdge extends TGGRuleElement {
 	 * Returns the value of the '<em><b>Trg Node</b></em>' reference.
 	 * It is bidirectional and its opposite is '{@link language.TGGRuleNode#getIncomingEdges <em>Incoming Edges</em>}'.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Trg Node</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Trg Node</em>' reference.
 	 * @see #setTrgNode(TGGRuleNode)
@@ -84,10 +74,6 @@ public interface TGGRuleEdge extends TGGRuleElement {
 	/**
 	 * Returns the value of the '<em><b>Type</b></em>' reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Type</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Type</em>' reference.
 	 * @see #setType(EReference)
@@ -106,7 +92,5 @@ public interface TGGRuleEdge extends TGGRuleElement {
 	 * @generated
 	 */
 	void setType(EReference value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGRuleEdge

@@ -107,13 +107,13 @@
     <genClasses ecoreClass="Language.ecore#//TGGLiteralExpression">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Language.ecore#//TGGLiteralExpression/value"/>
     </genClasses>
-    <genClasses ecoreClass="Language.ecore#//TGGAttributeExpression">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Language.ecore#//TGGAttributeExpression/objectVar"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Language.ecore#//TGGAttributeExpression/attribute"/>
-    </genClasses>
     <genClasses ecoreClass="Language.ecore#//TGGEnumExpression">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Language.ecore#//TGGEnumExpression/eenum"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Language.ecore#//TGGEnumExpression/literal"/>
+    </genClasses>
+    <genClasses ecoreClass="Language.ecore#//TGGAttributeExpression">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Language.ecore#//TGGAttributeExpression/objectVar"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Language.ecore#//TGGAttributeExpression/attribute"/>
     </genClasses>
     <nestedGenPackages prefix="Repair" disposableProviderFactory="true" ecorePackage="Language.ecore#//repair">
       <genClasses ecoreClass="Language.ecore#//repair/ExternalShortcutRule">

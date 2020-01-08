@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime.precedencegraph
-Bundle-SymbolicName: org.emoflon.ibex.tgg.core.runtime.precedencegraph;singleton:=true
+Bundle-SymbolicName: org.emoflon.ibex.tgg.runtime.precedencegraph;singleton:=true
 Export-Package: precedencegraph,
  precedencegraph.impl,
  precedencegraph.util
