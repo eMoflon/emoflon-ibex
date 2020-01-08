@@ -175,15 +175,6 @@ public interface LanguageFactory extends EFactory {
 	TGGLiteralExpression createTGGLiteralExpression();
 
 	/**
-	 * Returns a new object of class '<em>TGG Attribute Expression</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Attribute Expression</em>'.
-	 * @generated
-	 */
-	TGGAttributeExpression createTGGAttributeExpression();
-
-	/**
 	 * Returns a new object of class '<em>TGG Enum Expression</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -191,6 +182,15 @@ public interface LanguageFactory extends EFactory {
 	 * @generated
 	 */
 	TGGEnumExpression createTGGEnumExpression();
+
+	/**
+	 * Returns a new object of class '<em>TGG Attribute Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>TGG Attribute Expression</em>'.
+	 * @generated
+	 */
+	TGGAttributeExpression createTGGAttributeExpression();
 
 	/**
 	 * Returns the package supported by this factory.

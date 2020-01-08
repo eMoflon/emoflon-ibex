@@ -6,15 +6,11 @@ import language.LanguagePackage;
 import language.TGGExpression;
 
 import org.eclipse.emf.ecore.EClass;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>TGG Expression</b></em>'.
  * <!-- end-user-doc -->
- * <p>
- * </p>
  *
  * @generated
  */
@@ -37,7 +33,5 @@ public abstract class TGGExpressionImpl extends TGGParamValueImpl implements TGG
 	protected EClass eStaticClass() {
 		return LanguagePackage.Literals.TGG_EXPRESSION;
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGExpressionImpl

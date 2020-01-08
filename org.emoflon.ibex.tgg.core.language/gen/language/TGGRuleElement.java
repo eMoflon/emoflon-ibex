@@ -2,9 +2,6 @@
  */
 package language;
 
-// <-- [user defined imports]
-// [user defined imports] -->
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>TGG Rule Element</b></em>'.
@@ -12,11 +9,11 @@ package language;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link language.TGGRuleElement#getDomainType <em>Domain Type</em>}</li>
  *   <li>{@link language.TGGRuleElement#getBindingType <em>Binding Type</em>}</li>
  * </ul>
- * </p>
  *
  * @see language.LanguagePackage#getTGGRuleElement()
  * @model abstract="true"
@@ -27,10 +24,6 @@ public interface TGGRuleElement extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Domain Type</b></em>' attribute.
 	 * The literals are from the enumeration {@link language.DomainType}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Domain Type</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Domain Type</em>' attribute.
 	 * @see language.DomainType
@@ -56,10 +49,6 @@ public interface TGGRuleElement extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Binding Type</b></em>' attribute.
 	 * The literals are from the enumeration {@link language.BindingType}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Binding Type</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Binding Type</em>' attribute.
 	 * @see language.BindingType
@@ -80,7 +69,5 @@ public interface TGGRuleElement extends TGGNamedElement {
 	 * @generated
 	 */
 	void setBindingType(BindingType value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGRuleElement

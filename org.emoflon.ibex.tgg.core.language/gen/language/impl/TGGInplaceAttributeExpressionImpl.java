@@ -16,8 +16,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -25,12 +23,12 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGInplaceAttributeExpressionImpl#getAttribute <em>Attribute</em>}</li>
  *   <li>{@link language.impl.TGGInplaceAttributeExpressionImpl#getValueExpr <em>Value Expr</em>}</li>
  *   <li>{@link language.impl.TGGInplaceAttributeExpressionImpl#getOperator <em>Operator</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -99,13 +97,15 @@ public class TGGInplaceAttributeExpressionImpl extends EObjectImpl implements TG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getAttribute() {
 		if (attribute != null && attribute.eIsProxy()) {
 			InternalEObject oldAttribute = (InternalEObject) attribute;
 			attribute = (EAttribute) eResolveProxy(oldAttribute);
 			if (attribute != oldAttribute) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
 			}
 		}
 		return attribute;
@@ -125,11 +125,13 @@ public class TGGInplaceAttributeExpressionImpl extends EObjectImpl implements TG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setAttribute(EAttribute newAttribute) {
 		EAttribute oldAttribute = attribute;
 		attribute = newAttribute;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
 	}
 
 	/**
@@ -137,6 +139,7 @@ public class TGGInplaceAttributeExpressionImpl extends EObjectImpl implements TG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public TGGExpression getValueExpr() {
 		return valueExpr;
 	}
@@ -150,7 +153,8 @@ public class TGGInplaceAttributeExpressionImpl extends EObjectImpl implements TG
 		TGGExpression oldValueExpr = valueExpr;
 		valueExpr = newValueExpr;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR, oldValueExpr, newValueExpr);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR, oldValueExpr, newValueExpr);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -164,18 +168,24 @@ public class TGGInplaceAttributeExpressionImpl extends EObjectImpl implements TG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setValueExpr(TGGExpression newValueExpr) {
 		if (newValueExpr != valueExpr) {
 			NotificationChain msgs = null;
 			if (valueExpr != null)
-				msgs = ((InternalEObject) valueExpr).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR, null, msgs);
+				msgs = ((InternalEObject) valueExpr).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR, null,
+						msgs);
 			if (newValueExpr != null)
-				msgs = ((InternalEObject) newValueExpr).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR, null, msgs);
+				msgs = ((InternalEObject) newValueExpr).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR, null,
+						msgs);
 			msgs = basicSetValueExpr(newValueExpr, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR, newValueExpr, newValueExpr));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR, newValueExpr, newValueExpr));
 	}
 
 	/**
@@ -183,6 +193,7 @@ public class TGGInplaceAttributeExpressionImpl extends EObjectImpl implements TG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public TGGAttributeConstraintOperators getOperator() {
 		return operator;
 	}
@@ -192,11 +203,13 @@ public class TGGInplaceAttributeExpressionImpl extends EObjectImpl implements TG
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setOperator(TGGAttributeConstraintOperators newOperator) {
 		TGGAttributeConstraintOperators oldOperator = operator;
 		operator = newOperator == null ? OPERATOR_EDEFAULT : newOperator;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__OPERATOR, oldOperator, operator));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_INPLACE_ATTRIBUTE_EXPRESSION__OPERATOR, oldOperator, operator));
 	}
 
 	/**
@@ -303,13 +316,11 @@ public class TGGInplaceAttributeExpressionImpl extends EObjectImpl implements TG
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (operator: ");
 		result.append(operator);
 		result.append(')');
 		return result.toString();
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGInplaceAttributeExpressionImpl

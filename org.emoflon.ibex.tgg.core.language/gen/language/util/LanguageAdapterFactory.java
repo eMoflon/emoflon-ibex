@@ -162,13 +162,13 @@ public class LanguageAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-		public Adapter caseTGGAttributeExpression(TGGAttributeExpression object) {
-			return createTGGAttributeExpressionAdapter();
+		public Adapter caseTGGEnumExpression(TGGEnumExpression object) {
+			return createTGGEnumExpressionAdapter();
 		}
 
 		@Override
-		public Adapter caseTGGEnumExpression(TGGEnumExpression object) {
-			return createTGGEnumExpressionAdapter();
+		public Adapter caseTGGAttributeExpression(TGGAttributeExpression object) {
+			return createTGGAttributeExpressionAdapter();
 		}
 
 		@Override
@@ -457,20 +457,6 @@ public class LanguageAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link language.TGGAttributeExpression <em>TGG Attribute Expression</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see language.TGGAttributeExpression
-	 * @generated
-	 */
-	public Adapter createTGGAttributeExpressionAdapter() {
-		return null;
-	}
-
-	/**
 	 * Creates a new adapter for an object of class '{@link language.TGGEnumExpression <em>TGG Enum Expression</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -481,6 +467,20 @@ public class LanguageAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createTGGEnumExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link language.TGGAttributeExpression <em>TGG Attribute Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see language.TGGAttributeExpression
+	 * @generated
+	 */
+	public Adapter createTGGAttributeExpressionAdapter() {
 		return null;
 	}
 

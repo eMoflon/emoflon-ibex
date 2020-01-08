@@ -14,8 +14,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -23,11 +21,11 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.repair.impl.TGGRuleElementMappingImpl#getSourceRuleElement <em>Source Rule Element</em>}</li>
  *   <li>{@link language.repair.impl.TGGRuleElementMappingImpl#getTargetRuleElement <em>Target Rule Element</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -76,13 +74,16 @@ public class TGGRuleElementMappingImpl extends EObjectImpl implements TGGRuleEle
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public TGGRuleElement getSourceRuleElement() {
 		if (sourceRuleElement != null && sourceRuleElement.eIsProxy()) {
 			InternalEObject oldSourceRuleElement = (InternalEObject) sourceRuleElement;
 			sourceRuleElement = (TGGRuleElement) eResolveProxy(oldSourceRuleElement);
 			if (sourceRuleElement != oldSourceRuleElement) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, RepairPackage.TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT, oldSourceRuleElement, sourceRuleElement));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							RepairPackage.TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT, oldSourceRuleElement,
+							sourceRuleElement));
 			}
 		}
 		return sourceRuleElement;
@@ -102,11 +103,14 @@ public class TGGRuleElementMappingImpl extends EObjectImpl implements TGGRuleEle
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setSourceRuleElement(TGGRuleElement newSourceRuleElement) {
 		TGGRuleElement oldSourceRuleElement = sourceRuleElement;
 		sourceRuleElement = newSourceRuleElement;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT, oldSourceRuleElement, sourceRuleElement));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					RepairPackage.TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT, oldSourceRuleElement,
+					sourceRuleElement));
 	}
 
 	/**
@@ -114,13 +118,16 @@ public class TGGRuleElementMappingImpl extends EObjectImpl implements TGGRuleEle
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public TGGRuleElement getTargetRuleElement() {
 		if (targetRuleElement != null && targetRuleElement.eIsProxy()) {
 			InternalEObject oldTargetRuleElement = (InternalEObject) targetRuleElement;
 			targetRuleElement = (TGGRuleElement) eResolveProxy(oldTargetRuleElement);
 			if (targetRuleElement != oldTargetRuleElement) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, RepairPackage.TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT, oldTargetRuleElement, targetRuleElement));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							RepairPackage.TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT, oldTargetRuleElement,
+							targetRuleElement));
 			}
 		}
 		return targetRuleElement;
@@ -140,11 +147,14 @@ public class TGGRuleElementMappingImpl extends EObjectImpl implements TGGRuleEle
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setTargetRuleElement(TGGRuleElement newTargetRuleElement) {
 		TGGRuleElement oldTargetRuleElement = targetRuleElement;
 		targetRuleElement = newTargetRuleElement;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT, oldTargetRuleElement, targetRuleElement));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					RepairPackage.TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT, oldTargetRuleElement,
+					targetRuleElement));
 	}
 
 	/**
@@ -218,7 +228,5 @@ public class TGGRuleElementMappingImpl extends EObjectImpl implements TGGRuleEle
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGRuleElementMappingImpl

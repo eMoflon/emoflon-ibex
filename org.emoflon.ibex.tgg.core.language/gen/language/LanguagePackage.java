@@ -1214,61 +1214,6 @@ public interface LanguagePackage extends EPackage {
 	int TGG_LITERAL_EXPRESSION_OPERATION_COUNT = TGG_EXPRESSION_OPERATION_COUNT + 0;
 
 	/**
-	 * The meta object id for the '{@link language.impl.TGGAttributeExpressionImpl <em>TGG Attribute Expression</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see language.impl.TGGAttributeExpressionImpl
-	 * @see language.impl.LanguagePackageImpl#getTGGAttributeExpression()
-	 * @generated
-	 */
-	int TGG_ATTRIBUTE_EXPRESSION = 19;
-
-	/**
-	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_EXPRESSION__PARAMETER_DEFINITION = TGG_EXPRESSION__PARAMETER_DEFINITION;
-
-	/**
-	 * The feature id for the '<em><b>Object Var</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR = TGG_EXPRESSION_FEATURE_COUNT + 0;
-
-	/**
-	 * The feature id for the '<em><b>Attribute</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE = TGG_EXPRESSION_FEATURE_COUNT + 1;
-
-	/**
-	 * The number of structural features of the '<em>TGG Attribute Expression</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_EXPRESSION_FEATURE_COUNT = TGG_EXPRESSION_FEATURE_COUNT + 2;
-
-	/**
-	 * The number of operations of the '<em>TGG Attribute Expression</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_EXPRESSION_OPERATION_COUNT = TGG_EXPRESSION_OPERATION_COUNT + 0;
-
-	/**
 	 * The meta object id for the '{@link language.impl.TGGEnumExpressionImpl <em>TGG Enum Expression</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1276,7 +1221,7 @@ public interface LanguagePackage extends EPackage {
 	 * @see language.impl.LanguagePackageImpl#getTGGEnumExpression()
 	 * @generated
 	 */
-	int TGG_ENUM_EXPRESSION = 20;
+	int TGG_ENUM_EXPRESSION = 19;
 
 	/**
 	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
@@ -1322,6 +1267,61 @@ public interface LanguagePackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_ENUM_EXPRESSION_OPERATION_COUNT = TGG_EXPRESSION_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link language.impl.TGGAttributeExpressionImpl <em>TGG Attribute Expression</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see language.impl.TGGAttributeExpressionImpl
+	 * @see language.impl.LanguagePackageImpl#getTGGAttributeExpression()
+	 * @generated
+	 */
+	int TGG_ATTRIBUTE_EXPRESSION = 20;
+
+	/**
+	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_ATTRIBUTE_EXPRESSION__PARAMETER_DEFINITION = TGG_EXPRESSION__PARAMETER_DEFINITION;
+
+	/**
+	 * The feature id for the '<em><b>Object Var</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR = TGG_EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Attribute</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE = TGG_EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>TGG Attribute Expression</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_ATTRIBUTE_EXPRESSION_FEATURE_COUNT = TGG_EXPRESSION_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of operations of the '<em>TGG Attribute Expression</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_ATTRIBUTE_EXPRESSION_OPERATION_COUNT = TGG_EXPRESSION_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link language.DomainType <em>Domain Type</em>}' enum.
@@ -2050,38 +2050,6 @@ public interface LanguagePackage extends EPackage {
 	EAttribute getTGGLiteralExpression_Value();
 
 	/**
-	 * Returns the meta object for class '{@link language.TGGAttributeExpression <em>TGG Attribute Expression</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>TGG Attribute Expression</em>'.
-	 * @see language.TGGAttributeExpression
-	 * @generated
-	 */
-	EClass getTGGAttributeExpression();
-
-	/**
-	 * Returns the meta object for the reference '{@link language.TGGAttributeExpression#getObjectVar <em>Object Var</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Object Var</em>'.
-	 * @see language.TGGAttributeExpression#getObjectVar()
-	 * @see #getTGGAttributeExpression()
-	 * @generated
-	 */
-	EReference getTGGAttributeExpression_ObjectVar();
-
-	/**
-	 * Returns the meta object for the reference '{@link language.TGGAttributeExpression#getAttribute <em>Attribute</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Attribute</em>'.
-	 * @see language.TGGAttributeExpression#getAttribute()
-	 * @see #getTGGAttributeExpression()
-	 * @generated
-	 */
-	EReference getTGGAttributeExpression_Attribute();
-
-	/**
 	 * Returns the meta object for class '{@link language.TGGEnumExpression <em>TGG Enum Expression</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2112,6 +2080,38 @@ public interface LanguagePackage extends EPackage {
 	 * @generated
 	 */
 	EReference getTGGEnumExpression_Literal();
+
+	/**
+	 * Returns the meta object for class '{@link language.TGGAttributeExpression <em>TGG Attribute Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>TGG Attribute Expression</em>'.
+	 * @see language.TGGAttributeExpression
+	 * @generated
+	 */
+	EClass getTGGAttributeExpression();
+
+	/**
+	 * Returns the meta object for the reference '{@link language.TGGAttributeExpression#getObjectVar <em>Object Var</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Object Var</em>'.
+	 * @see language.TGGAttributeExpression#getObjectVar()
+	 * @see #getTGGAttributeExpression()
+	 * @generated
+	 */
+	EReference getTGGAttributeExpression_ObjectVar();
+
+	/**
+	 * Returns the meta object for the reference '{@link language.TGGAttributeExpression#getAttribute <em>Attribute</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Attribute</em>'.
+	 * @see language.TGGAttributeExpression#getAttribute()
+	 * @see #getTGGAttributeExpression()
+	 * @generated
+	 */
+	EReference getTGGAttributeExpression_Attribute();
 
 	/**
 	 * Returns the meta object for enum '{@link language.DomainType <em>Domain Type</em>}'.
@@ -2214,7 +2214,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = eINSTANCE.getTGG_AttributeConstraintDefinitionLibrary();
+		EReference TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = eINSTANCE
+				.getTGG_AttributeConstraintDefinitionLibrary();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGRuleImpl <em>TGG Rule</em>}' class.
@@ -2476,7 +2477,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR = eINSTANCE.getTGGInplaceAttributeExpression_ValueExpr();
+		EReference TGG_INPLACE_ATTRIBUTE_EXPRESSION__VALUE_EXPR = eINSTANCE
+				.getTGGInplaceAttributeExpression_ValueExpr();
 
 		/**
 		 * The meta object literal for the '<em><b>Operator</b></em>' attribute feature.
@@ -2502,7 +2504,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE.getTGGAttributeConstraintLibrary_TggAttributeConstraints();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE
+				.getTGGAttributeConstraintLibrary_TggAttributeConstraints();
 
 		/**
 		 * The meta object literal for the '<em><b>Parameter Values</b></em>' containment reference list feature.
@@ -2510,7 +2513,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES = eINSTANCE.getTGGAttributeConstraintLibrary_ParameterValues();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__PARAMETER_VALUES = eINSTANCE
+				.getTGGAttributeConstraintLibrary_ParameterValues();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGAttributeConstraintImpl <em>TGG Attribute Constraint</em>}' class.
@@ -2572,7 +2576,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS = eINSTANCE.getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS = eINSTANCE
+				.getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGAttributeConstraintDefinitionImpl <em>TGG Attribute Constraint Definition</em>}' class.
@@ -2590,7 +2595,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED = eINSTANCE.getTGGAttributeConstraintDefinition_UserDefined();
+		EAttribute TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED = eINSTANCE
+				.getTGGAttributeConstraintDefinition_UserDefined();
 
 		/**
 		 * The meta object literal for the '<em><b>Parameter Definitions</b></em>' containment reference list feature.
@@ -2598,7 +2604,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = eINSTANCE.getTGGAttributeConstraintDefinition_ParameterDefinitions();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = eINSTANCE
+				.getTGGAttributeConstraintDefinition_ParameterDefinitions();
 
 		/**
 		 * The meta object literal for the '<em><b>Sync Adornments</b></em>' containment reference list feature.
@@ -2606,7 +2613,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS = eINSTANCE.getTGGAttributeConstraintDefinition_SyncAdornments();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS = eINSTANCE
+				.getTGGAttributeConstraintDefinition_SyncAdornments();
 
 		/**
 		 * The meta object literal for the '<em><b>Gen Adornments</b></em>' containment reference list feature.
@@ -2614,7 +2622,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS = eINSTANCE.getTGGAttributeConstraintDefinition_GenAdornments();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS = eINSTANCE
+				.getTGGAttributeConstraintDefinition_GenAdornments();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGAttributeConstraintParameterDefinitionImpl <em>TGG Attribute Constraint Parameter Definition</em>}' class.
@@ -2632,7 +2641,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE = eINSTANCE.getTGGAttributeConstraintParameterDefinition_Type();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE = eINSTANCE
+				.getTGGAttributeConstraintParameterDefinition_Type();
 
 		/**
 		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -2640,7 +2650,8 @@ public interface LanguagePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME = eINSTANCE.getTGGAttributeConstraintParameterDefinition_Name();
+		EAttribute TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME = eINSTANCE
+				.getTGGAttributeConstraintParameterDefinition_Name();
 
 		/**
 		 * The meta object literal for the '{@link language.impl.TGGAttributeConstraintAdornmentImpl <em>TGG Attribute Constraint Adornment</em>}' class.
@@ -2725,32 +2736,6 @@ public interface LanguagePackage extends EPackage {
 		EAttribute TGG_LITERAL_EXPRESSION__VALUE = eINSTANCE.getTGGLiteralExpression_Value();
 
 		/**
-		 * The meta object literal for the '{@link language.impl.TGGAttributeExpressionImpl <em>TGG Attribute Expression</em>}' class.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @see language.impl.TGGAttributeExpressionImpl
-		 * @see language.impl.LanguagePackageImpl#getTGGAttributeExpression()
-		 * @generated
-		 */
-		EClass TGG_ATTRIBUTE_EXPRESSION = eINSTANCE.getTGGAttributeExpression();
-
-		/**
-		 * The meta object literal for the '<em><b>Object Var</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR = eINSTANCE.getTGGAttributeExpression_ObjectVar();
-
-		/**
-		 * The meta object literal for the '<em><b>Attribute</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE = eINSTANCE.getTGGAttributeExpression_Attribute();
-
-		/**
 		 * The meta object literal for the '{@link language.impl.TGGEnumExpressionImpl <em>TGG Enum Expression</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2775,6 +2760,32 @@ public interface LanguagePackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_ENUM_EXPRESSION__LITERAL = eINSTANCE.getTGGEnumExpression_Literal();
+
+		/**
+		 * The meta object literal for the '{@link language.impl.TGGAttributeExpressionImpl <em>TGG Attribute Expression</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see language.impl.TGGAttributeExpressionImpl
+		 * @see language.impl.LanguagePackageImpl#getTGGAttributeExpression()
+		 * @generated
+		 */
+		EClass TGG_ATTRIBUTE_EXPRESSION = eINSTANCE.getTGGAttributeExpression();
+
+		/**
+		 * The meta object literal for the '<em><b>Object Var</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR = eINSTANCE.getTGGAttributeExpression_ObjectVar();
+
+		/**
+		 * The meta object literal for the '<em><b>Attribute</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE = eINSTANCE.getTGGAttributeExpression_Attribute();
 
 		/**
 		 * The meta object literal for the '{@link language.DomainType <em>Domain Type</em>}' enum.

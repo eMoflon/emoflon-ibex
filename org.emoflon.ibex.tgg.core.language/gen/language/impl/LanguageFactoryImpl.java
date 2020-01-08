@@ -28,7 +28,8 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	 */
 	public static LanguageFactory init() {
 		try {
-			LanguageFactory theLanguageFactory = (LanguageFactory) EPackage.Registry.INSTANCE.getEFactory(LanguagePackage.eNS_URI);
+			LanguageFactory theLanguageFactory = (LanguageFactory) EPackage.Registry.INSTANCE
+					.getEFactory(LanguagePackage.eNS_URI);
 			if (theLanguageFactory != null) {
 				return theLanguageFactory;
 			}
@@ -90,10 +91,10 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 			return createTGGParamValue();
 		case LanguagePackage.TGG_LITERAL_EXPRESSION:
 			return createTGGLiteralExpression();
-		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION:
-			return createTGGAttributeExpression();
 		case LanguagePackage.TGG_ENUM_EXPRESSION:
 			return createTGGEnumExpression();
+		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION:
+			return createTGGAttributeExpression();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -330,17 +331,6 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	 * @generated
 	 */
 	@Override
-	public TGGAttributeExpression createTGGAttributeExpression() {
-		TGGAttributeExpressionImpl tggAttributeExpression = new TGGAttributeExpressionImpl();
-		return tggAttributeExpression;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public TGGEnumExpression createTGGEnumExpression() {
 		TGGEnumExpressionImpl tggEnumExpression = new TGGEnumExpressionImpl();
 		return tggEnumExpression;
@@ -351,10 +341,22 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
+	public TGGAttributeExpression createTGGAttributeExpression() {
+		TGGAttributeExpressionImpl tggAttributeExpression = new TGGAttributeExpressionImpl();
+		return tggAttributeExpression;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public DomainType createDomainTypeFromString(EDataType eDataType, String initialValue) {
 		DomainType result = DomainType.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException(
+					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
@@ -375,7 +377,8 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	public BindingType createBindingTypeFromString(EDataType eDataType, String initialValue) {
 		BindingType result = BindingType.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException(
+					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
@@ -393,10 +396,12 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TGGAttributeConstraintOperators createTGGAttributeConstraintOperatorsFromString(EDataType eDataType, String initialValue) {
+	public TGGAttributeConstraintOperators createTGGAttributeConstraintOperatorsFromString(EDataType eDataType,
+			String initialValue) {
 		TGGAttributeConstraintOperators result = TGGAttributeConstraintOperators.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException(
+					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
