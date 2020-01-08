@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.delta.validation.DeltaValidator;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
@@ -23,7 +22,6 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
@@ -45,15 +43,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	private ModelChangeProtocol modelChangeProtocol;
 	private ConflictDetector conflictDetector;
 
-	protected Resource epg;
-
 	protected DeltaContainer userDeltaContainer;
 	protected BiConsumer<EObject, EObject> userDeltaBiConsumer;
 	protected GroupKey userDeltaKey;
-
-	// Element classification
-	private Map<EObject, EltClassifier> classifiedNodes;
-	private Map<EMFEdge, EltClassifier> classifiedEdges;
 
 	private Set<ITGGMatch> filterNacMatches;
 	private Map<ITGGMatch, AnalysedMatch> analysedMatches;
@@ -62,13 +54,14 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
-		classifiedNodes = new HashMap<>();
-		classifiedEdges = new HashMap<>();
 		filterNacMatches = new HashSet<>();
 		analysedMatches = new HashMap<>();
 		mismatches = new HashSet<>();
 
-		initIntegrateDependantTools();
+		matchAnalyser = new BrokenMatchAnalyser(this);
+		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
+				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
+		conflictDetector = new ConflictDetector(this);
 	}
 
 	public void integrate() throws IOException {
@@ -77,26 +70,22 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
+		initialize();
+		modelChangeProtocol.setGroupKey(userDeltaKey);
+		applyUserDelta();
+//		repair();
+		deleteCorrsOfBrokenMatches();
+		analyseAndClassifyMatches();
+		detectAndResolveConflicts();
+		modelChangeProtocol.unsetGroupKey();
+		cleanUp();
+	}
+	
+	protected void initialize() {
 		matchDistributor.updateMatches();
 		getEPG().update();
 		modelChangeProtocol.attachAdapter();
 		userDeltaKey = modelChangeProtocol.new GroupKey();
-		modelChangeProtocol.setGroupKey(userDeltaKey);
-
-		applyUserDelta();
-
-		matchDistributor.updateMatches();
-
-//			repair();
-		deleteCorrsOfBrokenMatches();
-		analyseAndClassifyMatches();
-		detectAndResolveConflicts();
-
-		modelChangeProtocol.unsetGroupKey();
-
-		fillClassificationMaps();
-		calculateIntegrationSolution();
-		cleanUp();
 	}
 
 	protected void applyUserDelta() {
@@ -146,17 +135,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		});
 	}
 
-	protected void fillClassificationMaps() {
-		mismatches.forEach(mm -> {
-			classifiedNodes.putAll(mm.getClassifiedNodes());
-			classifiedEdges.putAll(mm.getClassifiedEdges());
-		});
-	}
-
-	protected void calculateIntegrationSolution() {
-		// TODO adrianm: implement
-	}
-
 	private boolean deleteCorrs(Map<TGGRuleApplication, ITGGMatch> processed) {
 		if (brokenRuleApplications.isEmpty())
 			return false;
@@ -203,8 +181,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol.detachAdapter();
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
 				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
-		classifiedNodes = new HashMap<>();
-		classifiedEdges = new HashMap<>();
 		analysedMatches = new HashMap<>();
 		mismatches = new HashSet<>();
 	}
@@ -231,13 +207,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	public boolean isPatternRelevantForInterpreter(PatternType type) {
 		switch (type) {
 		case FWD:
-			return true;
 		case BWD:
-			return true;
 		case CONSISTENCY:
-			return true;
 		case CC:
-			return true;
 		case FILTER_NAC:
 			return true;
 		default:
@@ -299,14 +271,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return brokenRuleApplications.values();
 	}
 
-	public Map<EObject, EltClassifier> getClassifiedNodes() {
-		return classifiedNodes;
-	}
-
-	public Map<EMFEdge, EltClassifier> getClassifiedEdges() {
-		return classifiedEdges;
-	}
-
 	public Set<ITGGMatch> getFilterNacMatches() {
 		return filterNacMatches;
 	}
@@ -351,13 +315,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
 		DeltaValidator.validate(delta);
 		this.userDeltaContainer = delta;
-	}
-
-	private void initIntegrateDependantTools() {
-		matchAnalyser = new BrokenMatchAnalyser(this);
-		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
-				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
-		conflictDetector = new ConflictDetector(this);
 	}
 
 	@Override
