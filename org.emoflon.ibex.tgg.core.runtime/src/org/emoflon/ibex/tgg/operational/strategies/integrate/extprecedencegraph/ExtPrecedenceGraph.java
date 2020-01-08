@@ -30,7 +30,7 @@ public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 	public ExtPrecedenceGraph(INTEGRATE strategy) {
 		super(strategy);
 		this.strategy = strategy;
-		strategy.getOptions().getResourceHandler().getPrecedenceResource();
+		this.precedenceGraph = strategy.getOptions().getResourceHandler().getPrecedenceResource();
 		nodes = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
 	}
 
