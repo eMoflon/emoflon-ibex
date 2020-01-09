@@ -56,7 +56,16 @@ public enum BindingType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	NEGATIVE(3, "NEGATIVE", "NEGATIVE");
+	NEGATIVE(3, "NEGATIVE", "NEGATIVE"),
+	/**
+	* The '<em><b>RELAXED</b></em>' literal object.
+	* <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	* @see #RELAXED_VALUE
+	* @generated
+	* @ordered
+	*/
+	RELAXED(4, "RELAXED", "RELAXED");
 
 	/**
 	 * The '<em><b>CONTEXT</b></em>' literal value.
@@ -103,12 +112,23 @@ public enum BindingType implements Enumerator {
 	public static final int NEGATIVE_VALUE = 3;
 
 	/**
+	 * The '<em><b>RELAXED</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #RELAXED
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int RELAXED_VALUE = 4;
+
+	/**
 	 * An array of all the '<em><b>Binding Type</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final BindingType[] VALUES_ARRAY = new BindingType[] { CONTEXT, CREATE, DELETE, NEGATIVE, };
+	private static final BindingType[] VALUES_ARRAY = new BindingType[] { CONTEXT, CREATE, DELETE, NEGATIVE, RELAXED, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Binding Type</b></em>' enumerators.
@@ -172,6 +192,8 @@ public enum BindingType implements Enumerator {
 			return DELETE;
 		case NEGATIVE_VALUE:
 			return NEGATIVE;
+		case RELAXED_VALUE:
+			return RELAXED;
 		}
 		return null;
 	}
