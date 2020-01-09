@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.ShortcutPatternTool;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
-import org.emoflon.ibex.tgg.operational.repair.util.OverlapUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
@@ -18,9 +18,10 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import runtime.TGGRuleApplication;
 
 /**
- * This class attempts to repair broken matches by using operationalized shortcut rules (OSR).
- * These OSRs detect specific situations (like certain deltas) and try to repair the broken match to be either a valid match of its rule again
- * or by transforming the match to that of another rule.
+ * This class attempts to repair broken matches by using operationalized
+ * shortcut rules (OSR). These OSRs detect specific situations (like certain
+ * deltas) and try to repair the broken match to be either a valid match of its
+ * rule again or by transforming the match to that of another rule.
  * 
  * @author lfritsche
  *

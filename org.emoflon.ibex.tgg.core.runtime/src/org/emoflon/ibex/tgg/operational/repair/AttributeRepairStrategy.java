@@ -20,8 +20,8 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 
 	private PropagatingOperationalStrategy operationalStrategy;
 	
-	public AttributeRepairStrategy(PropagatingOperationalStrategy sync) {
-		this.operationalStrategy = sync;
+	public AttributeRepairStrategy(PropagatingOperationalStrategy operationalStrategy) {
+		this.operationalStrategy = operationalStrategy;
 	}
 
 	@Override
