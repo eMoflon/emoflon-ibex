@@ -184,14 +184,14 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass tggAttributeExpressionEClass = null;
+	private EClass tggEnumExpressionEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass tggEnumExpressionEClass = null;
+	private EClass tggAttributeExpressionEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -942,36 +942,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	 * @generated
 	 */
 	@Override
-	public EClass getTGGAttributeExpression() {
-		return tggAttributeExpressionEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EReference getTGGAttributeExpression_ObjectVar() {
-		return (EReference) tggAttributeExpressionEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EReference getTGGAttributeExpression_Attribute() {
-		return (EReference) tggAttributeExpressionEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EClass getTGGEnumExpression() {
 		return tggEnumExpressionEClass;
 	}
@@ -994,6 +964,36 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 	@Override
 	public EReference getTGGEnumExpression_Literal() {
 		return (EReference) tggEnumExpressionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getTGGAttributeExpression() {
+		return tggAttributeExpressionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getTGGAttributeExpression_ObjectVar() {
+		return (EReference) tggAttributeExpressionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getTGGAttributeExpression_Attribute() {
+		return (EReference) tggAttributeExpressionEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -1145,13 +1145,13 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		tggLiteralExpressionEClass = createEClass(TGG_LITERAL_EXPRESSION);
 		createEAttribute(tggLiteralExpressionEClass, TGG_LITERAL_EXPRESSION__VALUE);
 
-		tggAttributeExpressionEClass = createEClass(TGG_ATTRIBUTE_EXPRESSION);
-		createEReference(tggAttributeExpressionEClass, TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR);
-		createEReference(tggAttributeExpressionEClass, TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE);
-
 		tggEnumExpressionEClass = createEClass(TGG_ENUM_EXPRESSION);
 		createEReference(tggEnumExpressionEClass, TGG_ENUM_EXPRESSION__EENUM);
 		createEReference(tggEnumExpressionEClass, TGG_ENUM_EXPRESSION__LITERAL);
+
+		tggAttributeExpressionEClass = createEClass(TGG_ATTRIBUTE_EXPRESSION);
+		createEReference(tggAttributeExpressionEClass, TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR);
+		createEReference(tggAttributeExpressionEClass, TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE);
 
 		// Create enums
 		domainTypeEEnum = createEEnum(DOMAIN_TYPE);
@@ -1205,8 +1205,8 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		tggAttributeConstraintDefinitionEClass.getESuperTypes().add(this.getTGGNamedElement());
 		tggExpressionEClass.getESuperTypes().add(this.getTGGParamValue());
 		tggLiteralExpressionEClass.getESuperTypes().add(this.getTGGExpression());
-		tggAttributeExpressionEClass.getESuperTypes().add(this.getTGGExpression());
 		tggEnumExpressionEClass.getESuperTypes().add(this.getTGGExpression());
+		tggAttributeExpressionEClass.getESuperTypes().add(this.getTGGExpression());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(tggEClass, language.TGG.class, "TGG", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1404,15 +1404,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 				TGGLiteralExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeExpressionEClass, TGGAttributeExpression.class, "TGGAttributeExpression", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeExpression_ObjectVar(), this.getTGGRuleNode(), null, "objectVar", null, 0, 1,
-				TGGAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGAttributeExpression_Attribute(), ecorePackage.getEAttribute(), null, "attribute", null, 0,
-				1, TGGAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
 		initEClass(tggEnumExpressionEClass, TGGEnumExpression.class, "TGGEnumExpression", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getTGGEnumExpression_Eenum(), ecorePackage.getEEnum(), null, "eenum", null, 0, 1,
@@ -1421,6 +1412,15 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		initEReference(getTGGEnumExpression_Literal(), ecorePackage.getEEnumLiteral(), null, "literal", null, 0, 1,
 				TGGEnumExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(tggAttributeExpressionEClass, TGGAttributeExpression.class, "TGGAttributeExpression", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGAttributeExpression_ObjectVar(), this.getTGGRuleNode(), null, "objectVar", null, 0, 1,
+				TGGAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGAttributeExpression_Attribute(), ecorePackage.getEAttribute(), null, "attribute", null, 0,
+				1, TGGAttributeExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(domainTypeEEnum, DomainType.class, "DomainType");
@@ -1433,7 +1433,6 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		addEEnumLiteral(bindingTypeEEnum, BindingType.CREATE);
 		addEEnumLiteral(bindingTypeEEnum, BindingType.DELETE);
 		addEEnumLiteral(bindingTypeEEnum, BindingType.NEGATIVE);
-		addEEnumLiteral(bindingTypeEEnum, BindingType.RELAXED);
 
 		initEEnum(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.class,
 				"TGGAttributeConstraintOperators");

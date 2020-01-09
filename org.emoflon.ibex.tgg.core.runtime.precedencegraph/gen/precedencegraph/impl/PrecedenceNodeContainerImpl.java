@@ -19,8 +19,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import precedencegraph.PrecedenceNode;
 import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphPackage;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -28,10 +26,10 @@ import precedencegraph.PrecedencegraphPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link precedencegraph.impl.PrecedenceNodeContainerImpl#getNodes <em>Nodes</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -70,6 +68,7 @@ public class PrecedenceNodeContainerImpl extends EObjectImpl implements Preceden
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<PrecedenceNode> getNodes() {
 		if (nodes == null) {
 			nodes = new EObjectContainmentEList<PrecedenceNode>(PrecedenceNode.class, this,
@@ -151,7 +150,5 @@ public class PrecedenceNodeContainerImpl extends EObjectImpl implements Preceden
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //PrecedenceNodeContainerImpl

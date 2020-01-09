@@ -23,7 +23,7 @@ public class NumberOfMatchesObserver extends AbstractIbexObserver {
 				OperationalStrategy op = (OperationalStrategy) this.getObservable();
 				operationalMatchContainer = op.getMatchContainer();
 				matchesSize = operationalMatchContainer.getMatches().size();
-				String patternName = operationalMatchContainer.getRuleName(operationalMatchContainer.getNext());
+				String patternName = operationalMatchContainer.getNext().getRuleName();
 				logger.info("Pattern: " + patternName + " hasMatches: " + matchesSize);
 
 				break;

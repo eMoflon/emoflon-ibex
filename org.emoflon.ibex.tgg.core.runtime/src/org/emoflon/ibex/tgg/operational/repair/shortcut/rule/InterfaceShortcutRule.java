@@ -19,7 +19,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInpu
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
 import language.BindingType;
 import language.DomainType;
@@ -42,7 +42,7 @@ import language.TGGRuleNode;
  */
 public class InterfaceShortcutRule extends OperationalShortcutRule {
 	
-	public InterfaceShortcutRule(SYNC strategy, SyncDirection direction, ShortcutRule scRule) {
+	public InterfaceShortcutRule(PropagatingOperationalStrategy strategy, SyncDirection direction, ShortcutRule scRule) {
 		super(strategy, direction, scRule.copy());
 		this.strategy = strategy;
 

@@ -3,8 +3,6 @@
 package language;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -26,10 +24,6 @@ public interface TGGParamValue extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Parameter Definition</b></em>' reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Parameter Definition</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Parameter Definition</em>' reference.
 	 * @see #setParameterDefinition(TGGAttributeConstraintParameterDefinition)
@@ -48,7 +42,5 @@ public interface TGGParamValue extends EObject {
 	 * @generated
 	 */
 	void setParameterDefinition(TGGAttributeConstraintParameterDefinition value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGParamValue

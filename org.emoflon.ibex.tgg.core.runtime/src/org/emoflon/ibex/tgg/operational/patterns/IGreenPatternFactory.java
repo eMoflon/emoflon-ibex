@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.patterns;
 import java.util.Collection;
 import java.util.List;
 
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
@@ -15,7 +16,7 @@ import language.TGGRuleNode;
 
 public interface IGreenPatternFactory {
 
-	public IGreenPattern create(String patternName);
+	public IGreenPattern create(PatternType type);
 	
 	public IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c);
 

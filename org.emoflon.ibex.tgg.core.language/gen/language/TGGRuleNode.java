@@ -143,7 +143,5 @@ public interface TGGRuleNode extends TGGRuleElement {
 	 * @generated
 	 */
 	EList<TGGInplaceAttributeExpression> getAttrExpr();
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGRuleNode

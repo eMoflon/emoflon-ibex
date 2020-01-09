@@ -1,9 +1,9 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser.optimizeIBeXPattern;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getBWDBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWDBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFWDBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWD_OPTPatternTransformation;
@@ -41,7 +41,7 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolC
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import IBeXLanguage.IBeXAttributeConstraint;
@@ -82,29 +82,29 @@ public class ContextPatternTransformation {
 	 */
 	private HashMap<String, IBeXContextPattern> nameToPattern = new HashMap<>();
 	private Map<IBeXContextPattern, TGGNamedElement> patternToRuleMap = new HashMap<>();
-	private OperationalStrategy strategy;
+	private MatchDistributor distributor;
 
-	public ContextPatternTransformation(IbexOptions options, OperationalStrategy strategy) {
+	public ContextPatternTransformation(IbexOptions options, MatchDistributor distributor) {
 		this.options = options;
-		this.strategy = strategy;
+		this.distributor = distributor;
 		this.USE_INVOCATIONS_FOR_REFERENCES = options.getUseEdgePatterns();
 	}
 
 	public IBeXPatternSet transform() {
 		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
-			createPatternIfRelevant(rule, this::createModelGenPattern, PatternSuffixes.GEN);
-			createPatternIfRelevant(rule, this::createConsistencyPattern, PatternSuffixes.CONSISTENCY);
-			createPatternIfRelevant(rule, this::createCCPattern, PatternSuffixes.CC);
-			createPatternIfRelevant(rule, this::createCOPattern, PatternSuffixes.CO);
+			createPatternIfRelevant(rule, this::createModelGenPattern, PatternType.GEN);
+			createPatternIfRelevant(rule, this::createConsistencyPattern, PatternType.CONSISTENCY);
+			createPatternIfRelevant(rule, this::createCCPattern, PatternType.CC);
+			createPatternIfRelevant(rule, this::createCOPattern, PatternType.CO);
 
 			if (isDomainProgressive(rule, DomainType.SRC)) {
-				createPatternIfRelevant(rule, this::createFWDPattern, PatternSuffixes.FWD);
-				createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternSuffixes.FWD_OPT);
+				createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD);
+				createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternType.FWD_OPT);
 			}
 
 			if (isDomainProgressive(rule, DomainType.TRG)) {
-				createPatternIfRelevant(rule, this::createBWDPattern, PatternSuffixes.BWD);
-				createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternSuffixes.BWD_OPT);
+				createPatternIfRelevant(rule, this::createBWDPattern, PatternType.BWD);
+				createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternType.BWD_OPT);
 			}
 
 			optimizeSyncPatterns(rule);
@@ -118,8 +118,8 @@ public class ContextPatternTransformation {
 				|| !getEdgesByOperatorAndDomain(rule, BindingType.CREATE, domain).isEmpty();
 	}
 
-	private void createPatternIfRelevant(TGGRule rule, Consumer<TGGRule> transformer, String suffix) {
-		if (strategy.isPatternRelevantForCompiler(suffix)) {
+	private void createPatternIfRelevant(TGGRule rule, Consumer<TGGRule> transformer, PatternType type) {
+		if (distributor.getPatternRelevantForCompiler().contains(type)) {
 			transformer.accept(rule);
 		}
 	}
@@ -241,8 +241,8 @@ public class ContextPatternTransformation {
 		if(!options.optimizeSyncPattern())
 			return;
 		
-		IBeXContextPattern fwdPattern = getPattern(getFWDBlackPatternName(rule.getName()));
-		IBeXContextPattern bwdPattern = getPattern(getBWDBlackPatternName(rule.getName()));
+		IBeXContextPattern fwdPattern = getPattern(generateFWDBlackPatternName(rule.getName()));
+		IBeXContextPattern bwdPattern = getPattern(generateBWDBlackPatternName(rule.getName()));
 		IBeXContextPattern consistencyPattern = getPattern(getConsistencyPatternName(rule.getName()));
 		
 		boolean fwdPatternPresent = fwdPattern != null;

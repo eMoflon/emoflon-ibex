@@ -3,8 +3,6 @@
 package language;
 
 import org.eclipse.emf.common.util.EList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -30,10 +28,6 @@ public interface TGGAttributeConstraintDefinition extends TGGNamedElement {
 	 * Returns the value of the '<em><b>User Defined</b></em>' attribute.
 	 * The default value is <code>"true"</code>.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>User Defined</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>User Defined</em>' attribute.
 	 * @see #setUserDefined(boolean)
@@ -57,10 +51,6 @@ public interface TGGAttributeConstraintDefinition extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Parameter Definitions</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGAttributeConstraintParameterDefinition}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Parameter Definitions</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Parameter Definitions</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGGAttributeConstraintDefinition_ParameterDefinitions()
@@ -73,10 +63,6 @@ public interface TGGAttributeConstraintDefinition extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Sync Adornments</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGAttributeConstraintAdornment}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Sync Adornments</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Sync Adornments</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGGAttributeConstraintDefinition_SyncAdornments()
@@ -89,10 +75,6 @@ public interface TGGAttributeConstraintDefinition extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Gen Adornments</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGAttributeConstraintAdornment}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Gen Adornments</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Gen Adornments</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGGAttributeConstraintDefinition_GenAdornments()
@@ -100,7 +82,5 @@ public interface TGGAttributeConstraintDefinition extends TGGNamedElement {
 	 * @generated
 	 */
 	EList<TGGAttributeConstraintAdornment> getGenAdornments();
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeConstraintDefinition

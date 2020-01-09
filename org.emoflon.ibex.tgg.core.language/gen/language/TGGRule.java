@@ -3,8 +3,6 @@
 package language;
 
 import org.eclipse.emf.common.util.EList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -32,10 +30,6 @@ public interface TGGRule extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Refines</b></em>' reference list.
 	 * The list contents are of type {@link language.TGGRule}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Refines</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Refines</em>' reference list.
 	 * @see language.LanguagePackage#getTGGRule_Refines()
@@ -48,10 +42,6 @@ public interface TGGRule extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Nacs</b></em>' containment reference list.
 	 * The list contents are of type {@link language.NAC}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Nacs</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Nacs</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGGRule_Nacs()
@@ -64,10 +54,6 @@ public interface TGGRule extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Nodes</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGRuleNode}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Nodes</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Nodes</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGGRule_Nodes()
@@ -80,10 +66,6 @@ public interface TGGRule extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Edges</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGRuleEdge}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Edges</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Edges</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGGRule_Edges()
@@ -95,10 +77,6 @@ public interface TGGRule extends TGGNamedElement {
 	/**
 	 * Returns the value of the '<em><b>Attribute Condition Library</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Attribute Condition Library</em>' containment reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Attribute Condition Library</em>' containment reference.
 	 * @see #setAttributeConditionLibrary(TGGAttributeConstraintLibrary)
@@ -121,10 +99,6 @@ public interface TGGRule extends TGGNamedElement {
 	/**
 	 * Returns the value of the '<em><b>Abstract</b></em>' attribute.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Abstract</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Abstract</em>' attribute.
 	 * @see #setAbstract(boolean)
@@ -143,7 +117,5 @@ public interface TGGRule extends TGGNamedElement {
 	 * @generated
 	 */
 	void setAbstract(boolean value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGRule

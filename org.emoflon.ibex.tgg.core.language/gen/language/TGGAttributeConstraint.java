@@ -5,8 +5,6 @@ package language;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -29,10 +27,6 @@ public interface TGGAttributeConstraint extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Definition</b></em>' reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Definition</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Definition</em>' reference.
 	 * @see #setDefinition(TGGAttributeConstraintDefinition)
@@ -56,10 +50,6 @@ public interface TGGAttributeConstraint extends EObject {
 	 * Returns the value of the '<em><b>Parameters</b></em>' reference list.
 	 * The list contents are of type {@link language.TGGParamValue}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Parameters</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Parameters</em>' reference list.
 	 * @see language.LanguagePackage#getTGGAttributeConstraint_Parameters()
@@ -67,7 +57,5 @@ public interface TGGAttributeConstraint extends EObject {
 	 * @generated
 	 */
 	EList<TGGParamValue> getParameters();
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeConstraint

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.emoflon.ibex.tgg.core.runtime.precedencegraph</name>
+	<name>org.emoflon.ibex.tgg.runtime.precedencegraph</name>
 	<comment></comment>
 	<projects>
 	</projects>

@@ -8,8 +8,6 @@ import language.TGGRuleElement;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -38,10 +36,6 @@ public interface ExternalShortcutRule extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Source Rule</b></em>' reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Source Rule</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Source Rule</em>' reference.
 	 * @see #setSourceRule(TGGRule)
@@ -64,10 +58,6 @@ public interface ExternalShortcutRule extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Target Rule</b></em>' reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Target Rule</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Target Rule</em>' reference.
 	 * @see #setTargetRule(TGGRule)
@@ -91,10 +81,6 @@ public interface ExternalShortcutRule extends EObject {
 	 * Returns the value of the '<em><b>Deletions</b></em>' reference list.
 	 * The list contents are of type {@link language.TGGRuleElement}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Deletions</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Deletions</em>' reference list.
 	 * @see language.repair.RepairPackage#getExternalShortcutRule_Deletions()
@@ -107,10 +93,6 @@ public interface ExternalShortcutRule extends EObject {
 	 * Returns the value of the '<em><b>Creations</b></em>' reference list.
 	 * The list contents are of type {@link language.TGGRuleElement}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Creations</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Creations</em>' reference list.
 	 * @see language.repair.RepairPackage#getExternalShortcutRule_Creations()
@@ -123,10 +105,6 @@ public interface ExternalShortcutRule extends EObject {
 	 * Returns the value of the '<em><b>Unbound Src Context</b></em>' reference list.
 	 * The list contents are of type {@link language.TGGRuleElement}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Unbound Src Context</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Unbound Src Context</em>' reference list.
 	 * @see language.repair.RepairPackage#getExternalShortcutRule_UnboundSrcContext()
@@ -139,10 +117,6 @@ public interface ExternalShortcutRule extends EObject {
 	 * Returns the value of the '<em><b>Unbound Trg Context</b></em>' reference list.
 	 * The list contents are of type {@link language.TGGRuleElement}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Unbound Trg Context</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Unbound Trg Context</em>' reference list.
 	 * @see language.repair.RepairPackage#getExternalShortcutRule_UnboundTrgContext()
@@ -155,10 +129,6 @@ public interface ExternalShortcutRule extends EObject {
 	 * Returns the value of the '<em><b>Mapping</b></em>' containment reference list.
 	 * The list contents are of type {@link language.repair.TGGRuleElementMapping}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Mapping</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Mapping</em>' containment reference list.
 	 * @see language.repair.RepairPackage#getExternalShortcutRule_Mapping()
@@ -170,10 +140,6 @@ public interface ExternalShortcutRule extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Name</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
@@ -192,7 +158,5 @@ public interface ExternalShortcutRule extends EObject {
 	 * @generated
 	 */
 	void setName(String value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // ExternalShortcutRule

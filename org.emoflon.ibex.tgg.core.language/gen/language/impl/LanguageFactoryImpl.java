@@ -91,10 +91,10 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 			return createTGGParamValue();
 		case LanguagePackage.TGG_LITERAL_EXPRESSION:
 			return createTGGLiteralExpression();
-		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION:
-			return createTGGAttributeExpression();
 		case LanguagePackage.TGG_ENUM_EXPRESSION:
 			return createTGGEnumExpression();
+		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION:
+			return createTGGAttributeExpression();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -331,9 +331,9 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	 * @generated
 	 */
 	@Override
-	public TGGAttributeExpression createTGGAttributeExpression() {
-		TGGAttributeExpressionImpl tggAttributeExpression = new TGGAttributeExpressionImpl();
-		return tggAttributeExpression;
+	public TGGEnumExpression createTGGEnumExpression() {
+		TGGEnumExpressionImpl tggEnumExpression = new TGGEnumExpressionImpl();
+		return tggEnumExpression;
 	}
 
 	/**
@@ -342,9 +342,9 @@ public class LanguageFactoryImpl extends EFactoryImpl implements LanguageFactory
 	 * @generated
 	 */
 	@Override
-	public TGGEnumExpression createTGGEnumExpression() {
-		TGGEnumExpressionImpl tggEnumExpression = new TGGEnumExpressionImpl();
-		return tggEnumExpression;
+	public TGGAttributeExpression createTGGAttributeExpression() {
+		TGGAttributeExpressionImpl tggAttributeExpression = new TGGAttributeExpressionImpl();
+		return tggAttributeExpression;
 	}
 
 	/**

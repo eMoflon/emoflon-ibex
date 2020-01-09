@@ -10,4 +10,5 @@ public enum SyncDirection {
 	FORWARD,
 	BACKWARD,
 	UNDEFINED
+	
 }

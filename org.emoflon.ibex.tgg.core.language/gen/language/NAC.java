@@ -3,8 +3,6 @@
 package language;
 
 import org.eclipse.emf.common.util.EList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -29,10 +27,6 @@ public interface NAC extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Nodes</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGRuleNode}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Nodes</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Nodes</em>' containment reference list.
 	 * @see language.LanguagePackage#getNAC_Nodes()
@@ -45,10 +39,6 @@ public interface NAC extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Edges</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGRuleEdge}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Edges</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Edges</em>' containment reference list.
 	 * @see language.LanguagePackage#getNAC_Edges()
@@ -60,10 +50,6 @@ public interface NAC extends TGGNamedElement {
 	/**
 	 * Returns the value of the '<em><b>Attribute Condition Library</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Attribute Condition Library</em>' containment reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Attribute Condition Library</em>' containment reference.
 	 * @see #setAttributeConditionLibrary(TGGAttributeConstraintLibrary)
@@ -82,7 +68,5 @@ public interface NAC extends TGGNamedElement {
 	 * @generated
 	 */
 	void setAttributeConditionLibrary(TGGAttributeConstraintLibrary value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // NAC

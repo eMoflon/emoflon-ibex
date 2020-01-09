@@ -5,8 +5,6 @@ package precedencegraph;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -15,6 +13,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link precedencegraph.PrecedenceNode#isBroken <em>Broken</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getRequires <em>Requires</em>}</li>
@@ -23,7 +22,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link precedencegraph.PrecedenceNode#getBaseFor <em>Base For</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getMatchAsString <em>Match As String</em>}</li>
  * </ul>
- * </p>
  *
  * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode()
  * @model
@@ -33,10 +31,6 @@ public interface PrecedenceNode extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Broken</b></em>' attribute.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Broken</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Broken</em>' attribute.
 	 * @see #setBroken(boolean)
@@ -61,10 +55,6 @@ public interface PrecedenceNode extends EObject {
 	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
 	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getRequiredBy <em>Required By</em>}'.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Requires</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Requires</em>' reference list.
 	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_Requires()
@@ -79,10 +69,6 @@ public interface PrecedenceNode extends EObject {
 	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
 	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getRequires <em>Requires</em>}'.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Required By</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Required By</em>' reference list.
 	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_RequiredBy()
@@ -97,10 +83,6 @@ public interface PrecedenceNode extends EObject {
 	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
 	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getBaseFor <em>Base For</em>}'.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Based On</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Based On</em>' reference list.
 	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_BasedOn()
@@ -115,10 +97,6 @@ public interface PrecedenceNode extends EObject {
 	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
 	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getBasedOn <em>Based On</em>}'.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Base For</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Base For</em>' reference list.
 	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_BaseFor()
@@ -131,10 +109,6 @@ public interface PrecedenceNode extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Match As String</b></em>' attribute.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Match As String</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Match As String</em>' attribute.
 	 * @see #setMatchAsString(String)
@@ -153,7 +127,5 @@ public interface PrecedenceNode extends EObject {
 	 * @generated
 	 */
 	void setMatchAsString(String value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // PrecedenceNode

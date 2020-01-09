@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.operational.updatepolicy;
 
 import java.util.ArrayList;
 
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 
 /**
@@ -12,7 +12,7 @@ import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
  * @author anthonyanjorin
  */
 public class RandomMatchUpdatePolicy extends UpdatePolicy {
-	private ArrayList<IMatch> cache = new ArrayList<>();
+	private ArrayList<ITGGMatch> cache = new ArrayList<>();
 	private final int REFRESH;
 	private int COUNT = 0;
 
@@ -25,7 +25,7 @@ public class RandomMatchUpdatePolicy extends UpdatePolicy {
 	}
 
 	@Override
-	public IMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
+	public ITGGMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
 		if (COUNT > REFRESH || cache.isEmpty()) {
 			cache.clear();
 			cache.addAll(matchContainer.getMatches());
@@ -33,7 +33,7 @@ public class RandomMatchUpdatePolicy extends UpdatePolicy {
 		}
 
 		int randomIndex = (int) (Math.random() * cache.size());
-		IMatch m = cache.get(randomIndex);
+		ITGGMatch m = cache.get(randomIndex);
 		COUNT++;
 
 		if (matchContainer.getMatches().contains(m))

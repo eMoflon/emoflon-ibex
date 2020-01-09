@@ -20,8 +20,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
 
 import precedencegraph.PrecedenceNode;
 import precedencegraph.PrecedencegraphPackage;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -29,6 +27,7 @@ import precedencegraph.PrecedencegraphPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#isBroken <em>Broken</em>}</li>
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getRequires <em>Requires</em>}</li>
@@ -37,7 +36,6 @@ import precedencegraph.PrecedencegraphPackage;
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getBaseFor <em>Base For</em>}</li>
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getMatchAsString <em>Match As String</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -146,6 +144,7 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isBroken() {
 		return broken;
 	}
@@ -155,6 +154,7 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setBroken(boolean newBroken) {
 		boolean oldBroken = broken;
 		broken = newBroken;
@@ -168,6 +168,7 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<PrecedenceNode> getRequires() {
 		if (requires == null) {
 			requires = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class, this,
@@ -182,6 +183,7 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<PrecedenceNode> getRequiredBy() {
 		if (requiredBy == null) {
 			requiredBy = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class, this,
@@ -196,6 +198,7 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<PrecedenceNode> getBasedOn() {
 		if (basedOn == null) {
 			basedOn = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class, this,
@@ -209,6 +212,7 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<PrecedenceNode> getBaseFor() {
 		if (baseFor == null) {
 			baseFor = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class, this,
@@ -222,6 +226,7 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getMatchAsString() {
 		return matchAsString;
 	}
@@ -231,6 +236,7 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setMatchAsString(String newMatchAsString) {
 		String oldMatchAsString = matchAsString;
 		matchAsString = newMatchAsString;
@@ -404,7 +410,7 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (broken: ");
 		result.append(broken);
 		result.append(", matchAsString: ");
@@ -412,7 +418,5 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 		result.append(')');
 		return result.toString();
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //PrecedenceNodeImpl

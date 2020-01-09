@@ -5,8 +5,6 @@ package language;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EPackage;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -33,10 +31,6 @@ public interface TGG extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Src</b></em>' reference list.
 	 * The list contents are of type {@link org.eclipse.emf.ecore.EPackage}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Src</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Src</em>' reference list.
 	 * @see language.LanguagePackage#getTGG_Src()
@@ -49,10 +43,6 @@ public interface TGG extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Trg</b></em>' reference list.
 	 * The list contents are of type {@link org.eclipse.emf.ecore.EPackage}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Trg</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Trg</em>' reference list.
 	 * @see language.LanguagePackage#getTGG_Trg()
@@ -64,10 +54,6 @@ public interface TGG extends TGGNamedElement {
 	/**
 	 * Returns the value of the '<em><b>Corr</b></em>' reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Corr</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Corr</em>' reference.
 	 * @see #setCorr(EPackage)
@@ -91,10 +77,6 @@ public interface TGG extends TGGNamedElement {
 	 * Returns the value of the '<em><b>Rules</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGRule}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Rules</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Rules</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGG_Rules()
@@ -106,10 +88,6 @@ public interface TGG extends TGGNamedElement {
 	/**
 	 * Returns the value of the '<em><b>Attribute Constraint Definition Library</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Attribute Constraint Definition Library</em>' containment reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Attribute Constraint Definition Library</em>' containment reference.
 	 * @see #setAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary)
@@ -128,7 +106,5 @@ public interface TGG extends TGGNamedElement {
 	 * @generated
 	 */
 	void setAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary value);
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGG

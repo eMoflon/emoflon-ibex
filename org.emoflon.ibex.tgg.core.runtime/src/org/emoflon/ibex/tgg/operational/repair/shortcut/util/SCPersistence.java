@@ -10,6 +10,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 import language.TGGRuleElement;
 import language.repair.ExternalShortcutRule;
@@ -19,6 +20,7 @@ import language.repair.TGGRuleElementMapping;
 public class SCPersistence {
 	
 	private IbexOptions options;
+	private TGGResourceHandler resourceHandler;
 	
 	private Resource scResource;
 	private Resource oscFWDResource;
@@ -26,10 +28,11 @@ public class SCPersistence {
 	
 	public SCPersistence(OperationalStrategy strategy) {
 		this.options = strategy.getOptions();
+		resourceHandler = options.getResourceHandler();
 		
-		scResource = strategy.createResource(options.projectPath() + "/model/" + options.projectName() + ".sc.tgg.xmi");
-		oscFWDResource = strategy.createResource(options.projectPath() + "/model/" + options.projectName() + ".osc.fwd.tgg.xmi");
-		oscBWDResource = strategy.createResource(options.projectPath() + "/model/" + options.projectName() + ".osc.bwd.tgg.xmi");
+		scResource = resourceHandler.createResource(options.projectPath() + "/model/" + options.projectName() + ".sc.tgg.xmi");
+		oscFWDResource = resourceHandler.createResource(options.projectPath() + "/model/" + options.projectName() + ".osc.fwd.tgg.xmi");
+		oscBWDResource = resourceHandler.createResource(options.projectPath() + "/model/" + options.projectName() + ".osc.bwd.tgg.xmi");
 	}
 	
 	public void saveOperationalFWDSCRules(Collection<OperationalShortcutRule> oscRule) {

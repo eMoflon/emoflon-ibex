@@ -14,8 +14,9 @@ import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 import language.BindingType;
 import language.DomainType;
@@ -26,15 +27,17 @@ import language.TGGRuleNode;
 
 public abstract class IbexGreenPattern implements IGreenPattern {
 	protected IGreenPatternFactory factory;
-	protected OperationalStrategy strategy;
+	private IbexOptions options;
+	private TGGResourceHandler resourceHandler;
 	
 	public IbexGreenPattern(IGreenPatternFactory factory) {
 		this.factory = factory;
-		this.strategy = factory.getStrategy();
+		options = factory.getOptions();
+		resourceHandler = options.getResourceHandler();
 	}
 	
 	@Override
-	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
+	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match) {
 		try {			
 			return new RuntimeTGGAttributeConstraintContainer(
 					factory.getAttributeCSPVariables(), 
@@ -67,17 +70,17 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	}
 	
 	@Override
-	public boolean isToBeIgnored(IMatch match) {
+	public boolean isToBeIgnored(ITGGMatch match) {
 		return false;
 	}
 	
 	@Override
-	public void createMarkers(String ruleName, IMatch match) {
-		EPackage corrPackage = strategy.getOptions().getCorrMetamodel();
+	public void createMarkers(String ruleName, ITGGMatch match) {
+		EPackage corrPackage = options.getCorrMetamodel();
 		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(ruleName));
 		
 		EObject ra = EcoreUtil.create(type);
-		strategy.getProtocolResource().getContents().add(ra);
+		resourceHandler.getProtocolResource().getContents().add(ra);
 		
 	
 		for (TGGRuleNode n : factory.getGreenSrcNodesInRule()) {

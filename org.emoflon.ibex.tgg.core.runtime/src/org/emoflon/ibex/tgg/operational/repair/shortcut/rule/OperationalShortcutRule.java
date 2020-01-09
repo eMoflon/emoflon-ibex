@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchKey;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
@@ -28,7 +28,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.util.EMFNavigationUtil;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
@@ -59,7 +59,7 @@ import language.TGGRuleNode;
 public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
 
-	protected SYNC strategy;
+	protected PropagatingOperationalStrategy strategy;
 	protected SyncDirection direction;
 	protected ShortcutRule scRule;
 
@@ -72,7 +72,7 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-	public OperationalShortcutRule(SYNC strategy, SyncDirection direction, ShortcutRule scRule) {
+	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, SyncDirection direction, ShortcutRule scRule) {
 		this.scRule = scRule;
 		this.direction = direction;
 
@@ -227,7 +227,7 @@ public abstract class OperationalShortcutRule {
 		}
 
 		cspCheck = (name2candidates) -> {
-			IMatch match = new SCMatch(scRule.getName(), name2candidates);
+			ITGGMatch match = new SCMatch(scRule.getName(), name2candidates);
 			IRuntimeTGGAttrConstrContainer cspContainer = getGreenPattern().getAttributeConstraintContainer(match);
 			return cspContainer.solve();
 		};

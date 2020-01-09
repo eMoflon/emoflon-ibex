@@ -19,7 +19,7 @@ public class SCMatch extends SimpleMatch {
 	}
 	
 	private void initialize(Map<String, EObject> name2candidates) {
-		for(String name : name2candidates.keySet()) {
+		for (String name : name2candidates.keySet()) {
 			put(name, name2candidates.get(name));
 		}
 	}

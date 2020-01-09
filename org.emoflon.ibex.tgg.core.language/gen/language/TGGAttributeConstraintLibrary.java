@@ -5,8 +5,6 @@ package language;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -30,10 +28,6 @@ public interface TGGAttributeConstraintLibrary extends EObject {
 	 * Returns the value of the '<em><b>Tgg Attribute Constraints</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGAttributeConstraint}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Tgg Attribute Constraints</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Tgg Attribute Constraints</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGGAttributeConstraintLibrary_TggAttributeConstraints()
@@ -46,10 +40,6 @@ public interface TGGAttributeConstraintLibrary extends EObject {
 	 * Returns the value of the '<em><b>Parameter Values</b></em>' containment reference list.
 	 * The list contents are of type {@link language.TGGParamValue}.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Parameter Values</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Parameter Values</em>' containment reference list.
 	 * @see language.LanguagePackage#getTGGAttributeConstraintLibrary_ParameterValues()
@@ -57,7 +47,5 @@ public interface TGGAttributeConstraintLibrary extends EObject {
 	 * @generated
 	 */
 	EList<TGGParamValue> getParameterValues();
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } // TGGAttributeConstraintLibrary
