@@ -75,7 +75,7 @@ public class IbexOptions {
 		optimizeSyncPattern = false;
 		logger = new EmptyBenchmarkLogger();
 		repairAttributes = true;
-		useShortcutRules = false;
+		useShortcutRules = true;
 		conflictSolver = new DefaultConflictResolver();
 		
 		applyConcurrently = false;
