@@ -12,6 +12,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.C
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -30,7 +32,7 @@ public abstract class ConflictResolutionStrategy {
 		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
 		elements.forEach(elt -> {
 			if (elt instanceof TGGRuleEdge) {
-				EMFEdge edge = integrate.getRuntimeEdge(match, (TGGRuleEdge) elt);
+				EMFEdge edge = getRuntimeEdge(match, (TGGRuleEdge) elt);
 				if (integrate.getUserModelChanges().isDeleted(edge))
 					if (edge.getType().isContainment())
 						deletedContainmentEdges.add(edge);

@@ -10,9 +10,7 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
@@ -20,10 +18,10 @@ import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.matches.DefaultMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
-import org.emoflon.ibex.tgg.operational.matches.DefaultMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -35,7 +33,6 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 import language.TGG;
-import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
@@ -187,13 +184,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	public abstract void run() throws IOException;
 
-	public EMFEdge getRuntimeEdge(ITGGMatch match, TGGRuleEdge specificationEdge) {
-		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
-		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
-		EReference ref = specificationEdge.getType();
-		return new EMFEdge(src, trg, ref);
-	}
-	
 	protected boolean processOneOperationalRuleMatch() {
 		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty())
@@ -227,7 +217,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected Optional<ITGGMatch> processOperationalRuleMatch(String ruleName, ITGGMatch match) {
 		//generatedPatternsSizeObserver.setNodes(match);
-		if (this.getBlockedMatches().containsKey(match)) { 
+		if (getBlockedMatches().containsKey(match)) { 
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}

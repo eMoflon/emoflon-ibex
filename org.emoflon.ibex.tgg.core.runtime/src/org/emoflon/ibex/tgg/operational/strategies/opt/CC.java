@@ -78,7 +78,7 @@ public class CC extends OPT {
 	@Override
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);
-		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
+		matchToWeight.put(idCounter, getWeightForMatch(comatch, ruleName));
 		matchIdToRuleName.put(idCounter, ruleName);
 
 		getGreenNodes(comatch, ruleName).forEach(e -> {

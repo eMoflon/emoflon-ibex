@@ -12,6 +12,8 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
@@ -73,7 +75,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 
 		// Register edges
 		for (TGGRuleEdge contextEdge : gPattern.getMarkedContextEdges()) {
-			Object contextRuntimeEdge = strategy.getRuntimeEdge(m, contextEdge);
+			Object contextRuntimeEdge = getRuntimeEdge(m, contextEdge);
 
 			if (!translated.contains(contextRuntimeEdge)) {
 				requiredBy.computeIfAbsent(contextRuntimeEdge, (x) -> cfactory.createObjectSet());
@@ -84,7 +86,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 			}
 		}
 		for (TGGRuleEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
-			Object createdRuntimeEdge = strategy.getRuntimeEdge(m, createdEdge);
+			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
 			translates.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
 			translatedBy.computeIfAbsent(createdRuntimeEdge, (x) -> cfactory.createObjectSet());
 
@@ -105,7 +107,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		}
 
 		for (TGGRuleEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
-			Object createdRuntimeEdge = strategy.getRuntimeEdge(m, createdEdge);
+			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
 			if (translated.contains(createdRuntimeEdge))
 				return true;
 		}
@@ -181,8 +183,8 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 
 		gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
 		gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
-		gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(strategy.getRuntimeEdge(m, e)));
-		gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(strategy.getRuntimeEdge(m, e)));
+		gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
+		gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
 
 		raToTranslated.put(ra, translatedElts);
 		raToMatch.put(ra, m);
