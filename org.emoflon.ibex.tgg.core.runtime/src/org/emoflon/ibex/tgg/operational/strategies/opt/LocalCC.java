@@ -23,7 +23,7 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 import language.TGGRuleCorr;
 
-public class LocalCC extends OPT {
+public class LocalCC extends CC {
 
 	public LocalCC(IbexOptions options) throws IOException {
 		super(options);
@@ -34,15 +34,6 @@ public class LocalCC extends OPT {
 	}
 
 	@Override
-	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		IGreenPatternFactory greenFactory = getGreenFactory(ruleName);
-		return greenFactory.getGreenSrcEdgesInRule().size()
-				+ greenFactory.getGreenSrcNodesInRule().size()
-				+ greenFactory.getGreenTrgEdgesInRule().size()
-				+ greenFactory.getGreenTrgNodesInRule().size();
-	}
-	
-	@Override
 	protected IMatchContainer createMatchContainer() {
 		return new LocalCCMatchContainer(options, (IbexGreenInterpreter) greenInterpreter);
 	}
@@ -51,44 +42,6 @@ public class LocalCC extends OPT {
 	protected void addConsistencyMatch(ITGGMatch match) {
 		operationalMatchContainer.addMatch(match);
 		super.addConsistencyMatch(match);
-	}
-
-	@Override
-	protected boolean processOneOperationalRuleMatch() {
-		if (operationalMatchContainer.isEmpty())
-			return false;
-
-		ITGGMatch match = chooseOneMatch();
-		String ruleName = match.getRuleName();
-
-		if (ruleName == null) {
-			removeOperationalRuleMatch(match);
-			return true;
-		}
-
-		processOperationalRuleMatch(ruleName, match);
-		removeOperationalRuleMatch(match);
-
-		return true;
-	}
-
-	@Override
-	protected void wrapUp() {
-		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
-
-		for (int v : chooseTGGRuleApplications()) {
-			int id = v < 0 ? -v : v;
-			ITGGMatch comatch = idToMatch.get(id);
-			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
-					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
-
-				objectsToDelete.add(getRuleApplicationNode(comatch));
-			}
-		}
-
-		EcoreUtil.deleteAll(objectsToDelete, true);
-		consistencyReporter.init(this);
 	}
 
 	@Override
@@ -137,55 +90,5 @@ public class LocalCC extends OPT {
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 
 		idCounter++;
-	}
-
-	public boolean modelsAreConsistent() {
-		return getInconsistentSrcNodes().size() + //
-				getInconsistentTrgNodes().size() + //
-				getInconsistentSrcEdges().size() + //
-				getInconsistentTrgEdges().size() == 0;
-	}
-
-	public Collection<EObject> getInconsistentSrcNodes() {
-		return consistencyReporter.getInconsistentSrcNodes();
-	}
-
-	public Collection<EObject> getInconsistentTrgNodes() {
-		return consistencyReporter.getInconsistentTrgNodes();
-	}
-
-	public Collection<EMFEdge> getInconsistentSrcEdges() {
-		return consistencyReporter.getInconsistentSrcEdges();
-	}
-
-	public Collection<EMFEdge> getInconsistentTrgEdges() {
-		return consistencyReporter.getInconsistentTrgEdges();
-	}
-
-	public String generateConsistencyReport() {
-		String result = "";
-		if (modelsAreConsistent())
-			result += "Your models are consistent";
-		else {
-			result += "Your models are inconsistent. The following elements are not part of a consistent triple:";
-			result += "\n" + "Source nodes:" + "\n";
-			result += String.join("\n",
-					getInconsistentSrcNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
-			result += "\n" + "Source edges:" + "\n";
-			result += String.join("\n",
-					getInconsistentSrcEdges().stream().map(n -> n.toString()).collect(Collectors.toSet()));
-			result += "\n" + "Target nodes:" + "\n";
-			result += String.join("\n",
-					getInconsistentTrgNodes().stream().map(n -> n.toString()).collect(Collectors.toSet()));
-			result += "\n" + "Target edges:" + "\n";
-			result += String.join("\n",
-					getInconsistentTrgEdges().stream().map(n -> n.toString()).collect(Collectors.toSet()));
-		}
-		return result;
-	}
-
-	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getCCTypes();
 	}
 }

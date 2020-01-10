@@ -18,6 +18,8 @@ import precedencegraph.PrecedenceNode;
 import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphFactory;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 
 	private INTEGRATE strategy;
@@ -94,8 +96,8 @@ public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 		Set<Object> eltsBasedOn = new HashSet<>();
 		gFactory.getBlackSrcNodesInRule().forEach(n -> eltsBasedOn.add(match.get(n.getName())));
 		gFactory.getBlackTrgNodesInRule().forEach(n -> eltsBasedOn.add(match.get(n.getName())));
-		gFactory.getBlackSrcEdgesInRule().forEach(e -> eltsBasedOn.add(strategy.getRuntimeEdge(match, e)));
-		gFactory.getBlackTrgEdgesInRule().forEach(e -> eltsBasedOn.add(strategy.getRuntimeEdge(match, e)));
+		gFactory.getBlackSrcEdgesInRule().forEach(e -> eltsBasedOn.add(getRuntimeEdge(match, e)));
+		gFactory.getBlackTrgEdgesInRule().forEach(e -> eltsBasedOn.add(getRuntimeEdge(match, e)));
 
 		for (Object elt : eltsBasedOn) {
 			raToTranslated.forEach((ra, objs) -> {

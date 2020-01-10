@@ -79,8 +79,8 @@ public abstract class OPT extends OperationalStrategy {
 	@Override
 	public void run() throws IOException {
 		do
-			this.matchDistributor.updateMatches();
-		while (this.processOneOperationalRuleMatch());
+			matchDistributor.updateMatches();
+		while (processOneOperationalRuleMatch());
 
 		this.wrapUp();
 	}
@@ -166,16 +166,16 @@ public abstract class OPT extends OperationalStrategy {
 		BinaryILPProblem ilpProblem = ILPFactory.createBinaryILPProblem();
 
 		OperationalStrategy.logger.debug("Adding exclusions...");
-		this.defineILPExclusions(ilpProblem);
+		defineILPExclusions(ilpProblem);
 
 		OperationalStrategy.logger.debug("Adding implications...");
-		this.defineILPImplications(ilpProblem);
+		defineILPImplications(ilpProblem);
 
 		OperationalStrategy.logger.debug("Defining objective...");
-		this.defineILPObjective(ilpProblem);
+		defineILPObjective(ilpProblem);
 
 		OperationalStrategy.logger.debug("Adding user defined constraints...");
-		this.addUserDefinedConstraints(ilpProblem);
+		addUserDefinedConstraints(ilpProblem);
 
 		return ilpProblem;
 	}
@@ -192,7 +192,7 @@ public abstract class OPT extends OperationalStrategy {
 			}
 
 			int[] result = new int[idToMatch.size()];
-			this.idToMatch.keySet().stream().forEach(v -> {
+			idToMatch.keySet().stream().forEach(v -> {
 				if (ilpSolution.getVariable("x" + v) > 0)
 					result[v - 1] = v;
 				else
@@ -282,7 +282,7 @@ public abstract class OPT extends OperationalStrategy {
 	@Override
 	public void terminate() {
 		matchDistributor.removeBlackInterpreter();
-		for (ITGGMatch m : this.idToMatch.values()) {
+		for (ITGGMatch m : idToMatch.values()) {
 			for (String parameter : m.getParameterNames()) {
 				EObject object = (EObject) m.get(parameter);
 				object.eAdapters().clear();

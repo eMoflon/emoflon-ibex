@@ -31,6 +31,8 @@ import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrateg
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import language.BindingType;
 import language.DomainType;
 import language.TGGAttributeConstraintOperators;
@@ -191,7 +193,7 @@ public class ShortcutPatternTool {
 		Set<EMFEdge> edgesToRevoke = new HashSet<>();
 		// Collect edges to revoke.
 		deletedRuleEdges.forEach(e -> {
-			EMFEdge runtimeEdge = strategy.getRuntimeEdge(brokenMatch, e);
+			EMFEdge runtimeEdge = getRuntimeEdge(brokenMatch, e);
 			if (runtimeEdge.getSource() != null && runtimeEdge.getTarget() != null)
 				edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
 		});

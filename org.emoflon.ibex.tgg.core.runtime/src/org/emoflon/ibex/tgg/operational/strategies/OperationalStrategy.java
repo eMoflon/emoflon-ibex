@@ -187,13 +187,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	public abstract void run() throws IOException;
 
-	public EMFEdge getRuntimeEdge(ITGGMatch match, TGGRuleEdge specificationEdge) {
-		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
-		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
-		EReference ref = specificationEdge.getType();
-		return new EMFEdge(src, trg, ref);
-	}
-	
 	protected boolean processOneOperationalRuleMatch() {
 		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty())
@@ -227,7 +220,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected Optional<ITGGMatch> processOperationalRuleMatch(String ruleName, ITGGMatch match) {
 		//generatedPatternsSizeObserver.setNodes(match);
-		if (this.getBlockedMatches().containsKey(match)) { 
+		if (getBlockedMatches().containsKey(match)) { 
 			logger.debug("Application blocked by update policy.");
 			return Optional.empty();
 		}

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.matches;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,10 +17,12 @@ import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 
+import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class LocalCCMatchContainer implements IMatchContainer{
 	private Set<Object> markedElements = new HashSet<>();
+	private Set<Object> markedEdges = new HashSet<>();
 	private Map<Object, Collection<ITGGMatch>> elt2ccMatches = new HashMap<>();
 	private Set<ITGGMatch> consistencyMatches = new HashSet<>();
 	private Set<ITGGMatch> unprocessedConsistencyMatches = new HashSet<>();
@@ -29,7 +32,6 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	private Map<String, IGreenPatternFactory> rule2factory = new HashMap<>();
 	private Map<String, IGreenPattern> rule2pattern = new HashMap<>();
 	boolean initFinished = false;
-	private Set<Object> markedEdges = new HashSet<>();
 	private IbexGreenInterpreter interpreter;
 	private IbexOptions options;
 	
@@ -57,7 +59,7 @@ public class LocalCCMatchContainer implements IMatchContainer{
 		
 		switch(match.getType()) {
 		case CONSISTENCY: 
-			if(initFinished)
+			if(!initFinished)
 				addConsistencyMatch(match);
 			else 
 				unprocessedConsistencyMatches.add(match);
@@ -81,11 +83,20 @@ public class LocalCCMatchContainer implements IMatchContainer{
 			Object srcObject = match.get(srcNode.getName());
 			markedElements.add(srcObject);
 		}
+		for(TGGRuleNode corrNode : greenPattern.getCorrNodes()) {
+			Object corrObject = match.get(corrNode.getName());
+			markedElements.add(corrObject);
+		}
 		for(TGGRuleNode trgNode : greenPattern.getTrgNodes()) {
 			Object trgObject = match.get(trgNode.getName());
 			markedElements.add(trgObject);
 		}
-		markedEdges.addAll(getGreenEdges(match));
+		for(TGGRuleEdge edge : greenPattern.getSrcEdges()) {
+			markedEdges.add(getRuntimeEdge(match, edge));
+		}
+		for(TGGRuleEdge edge : greenPattern.getTrgEdges()) {
+			markedEdges.add(getRuntimeEdge(match, edge));
+		}
 		
 		consistencyMatches.add(match);
 	}
@@ -101,11 +112,20 @@ public class LocalCCMatchContainer implements IMatchContainer{
 			Object srcObject = match.get(srcNode.getName());
 			markedElements.remove(srcObject);
 		}
+		for(TGGRuleNode corrNode : greenPattern.getCorrNodes()) {
+			Object corrObject = match.get(corrNode.getName());
+			markedElements.remove(corrObject);
+		}
 		for(TGGRuleNode trgNode : greenPattern.getTrgNodes()) {
 			Object trgObject = match.get(trgNode.getName());
 			markedElements.remove(trgObject);
 		}
-		markedEdges.removeAll(match.getCreatedEdges());
+		for(TGGRuleEdge edge : greenPattern.getSrcEdges()) {
+			markedEdges.remove(getRuntimeEdge(match, edge));
+		}
+		for(TGGRuleEdge edge : greenPattern.getTrgEdges()) {
+			markedEdges.remove(getRuntimeEdge(match, edge));
+		}
 		
 		return consistencyMatches.remove(match);
 	}
@@ -119,16 +139,30 @@ public class LocalCCMatchContainer implements IMatchContainer{
 				return;
 			}
 		}
+		for(TGGRuleNode corrNode : greenPattern.getCorrNodes()) {
+			Object corrObject = match.get(corrNode.getName());
+			if(markedElements.contains(corrObject)) {
+				invalidCCMatches.add(match);
+				return;
+			}
+		}
 		for(TGGRuleNode trgNode : greenPattern.getTrgNodes()) {
 			Object trgObject = match.get(trgNode.getName());
-			markedElements.add(trgObject);
 			if(markedElements.contains(trgObject)) {
 				invalidCCMatches.add(match);
 				return;
 			}
 		}
-		for(EMFEdge edge : getGreenEdges(match)) {
-			if(markedEdges.contains(edge)) {
+		for(TGGRuleEdge srcEdge : greenPattern.getSrcEdges()) {
+			EMFEdge emfEdge = getRuntimeEdge(match, srcEdge);
+			if(markedEdges.contains(emfEdge)) {
+				invalidCCMatches.add(match);
+				return;
+			}
+		}
+		for(TGGRuleEdge trgEdge : greenPattern.getTrgEdges()) {
+			EMFEdge emfEdge = getRuntimeEdge(match, trgEdge);
+			if(markedEdges.contains(emfEdge)) {
 				invalidCCMatches.add(match);
 				return;
 			}
@@ -156,6 +190,7 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	}
 
 	public Set<ITGGMatch> getMatches() {
+		initFinished = true;
 		unprocessedCCMatches.forEach(this::addCCMatch);
 		unprocessedCCMatches.clear();
 		return ccMatches;

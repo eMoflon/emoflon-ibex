@@ -8,6 +8,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import language.DomainType;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -39,7 +41,7 @@ public abstract class MatchClassificationComponent {
 				EObject node = (EObject) mismatch.getMatch().get(elt.getName());
 				mismatch.addClassification(node, classifier);
 			} else if (elt instanceof TGGRuleEdge) {
-				EMFEdge edge = integrate.getRuntimeEdge(mismatch.getMatch(), (TGGRuleEdge) elt);
+				EMFEdge edge = getRuntimeEdge(mismatch.getMatch(), (TGGRuleEdge) elt);
 				mismatch.addClassification(edge, classifier);
 			}
 		});

@@ -15,6 +15,8 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
@@ -59,7 +61,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 
 		// Collect created edges to revoke.
 		pattern.getSrcTrgEdgesCreatedByPattern().forEach(e -> {
-			EMFEdge runtimeEdge = strategy.getRuntimeEdge(match, e);
+			EMFEdge runtimeEdge = getRuntimeEdge(match, e);
 			edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
 		});
 
