@@ -3,7 +3,15 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 import java.util.Arrays;
 import java.util.List;
 
-public class MCCProvider {
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.CREATE_FilterNac;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_Complete;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_Corr;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_OneSideIncompl;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_OneSided;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_Partly;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_PartlyOneSided;
+
+public class MatchClassCompProvider {
 
 	private static final CREATE_FilterNac createFilterNac = new CREATE_FilterNac();
 	private static final DEL_Complete delComplete = new DEL_Complete();
