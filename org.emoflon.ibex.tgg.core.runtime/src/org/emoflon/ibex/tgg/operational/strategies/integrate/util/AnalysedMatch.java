@@ -16,6 +16,7 @@ import language.DomainType;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
+@Deprecated
 public class AnalysedMatch {
 
 	private MatchModPattern pattern = new MatchModPattern(Modification.UNCHANGED);

@@ -17,6 +17,7 @@ import language.TGGRule;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
+@Deprecated
 public class BrokenMatchAnalyser {
 
 	private final INTEGRATE integrate;

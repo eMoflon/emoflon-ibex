@@ -1,12 +1,12 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import language.DomainType;
 import language.TGGRuleEdge;
@@ -15,9 +15,9 @@ import language.TGGRuleNode;
 
 public abstract class MatchClassificationComponent {
 
-	abstract public Mismatch classify(INTEGRATE integrate, AnalysedMatch analysedMatch);
+	abstract public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis);
 
-	abstract public boolean isApplicable(AnalysedMatch analysedMatch);
+	abstract public boolean isApplicable(MatchAnalysis analysis);
 
 	protected DomainType oppositeOf(DomainType type) {
 		switch (type) {
@@ -32,7 +32,7 @@ public abstract class MatchClassificationComponent {
 		}
 	}
 
-	protected void classifyElts(INTEGRATE integrate, Mismatch mismatch, List<TGGRuleElement> elements,
+	protected void classifyElts(INTEGRATE integrate, Mismatch mismatch, Set<TGGRuleElement> elements,
 			EltClassifier classifier) {
 		elements.forEach(elt -> {
 			if (elt instanceof TGGRuleNode) {

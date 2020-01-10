@@ -8,28 +8,23 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
 
 public class Mismatch {
 
-	private final AnalysedMatch analysedMatch;
+	private final ITGGMatch match;
 	private final MatchClassificationComponent integrationFragment;
 	private final Map<EObject, EltClassifier> classifiedNodes;
 	private final Map<EMFEdge, EltClassifier> classifiedEdges;
 
-	public Mismatch(AnalysedMatch analysedMatch, MatchClassificationComponent integrationFragment) {
-		this.analysedMatch = analysedMatch;
+	public Mismatch(ITGGMatch match, MatchClassificationComponent integrationFragment) {
+		this.match = match;
 		this.integrationFragment = integrationFragment;
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
 	}
 
-	public AnalysedMatch getAnalysedMatch() {
-		return analysedMatch;
-	}
-
 	public ITGGMatch getMatch() {
-		return analysedMatch.getMatch();
+		return match;
 	}
 
 	public MatchClassificationComponent getMCC() {

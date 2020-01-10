@@ -29,17 +29,16 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.GroupKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.BrokenMatchAnalyser;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import delta.DeltaContainer;
-import language.BindingType;
-import language.TGGRuleCorr;
 import runtime.TGGRuleApplication;
 
 public class INTEGRATE extends PropagatingOperationalStrategy {
 	private IntegrationPattern pattern;
-	private BrokenMatchAnalyser matchAnalyser;
+	private MatchAnalyser matchAnalyser;
 	private ModelChangeProtocol modelChangeProtocol;
 	private ConflictDetector conflictDetector;
 
@@ -48,17 +47,15 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected GroupKey userDeltaKey;
 
 	private Set<ITGGMatch> filterNacMatches;
-	private Map<ITGGMatch, AnalysedMatch> analysedMatches;
 	private Set<Mismatch> mismatches;
 
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
 		filterNacMatches = new HashSet<>();
-		analysedMatches = new HashMap<>();
 		mismatches = new HashSet<>();
 
-		matchAnalyser = new BrokenMatchAnalyser(this);
+		matchAnalyser = new MatchAnalyser(this);
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
 				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
 		conflictDetector = new ConflictDetector(this);
@@ -80,7 +77,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol.unsetGroupKey();
 		cleanUp();
 	}
-	
+
 	protected void initialize() {
 		matchDistributor.updateMatches();
 		getEPG().update();
@@ -112,17 +109,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		matchDistributor.updateMatches();
 		getEPG().update();
 
-		analysedMatches.clear();
 		for (ITGGMatch brokenMatch : getBrokenMatches()) {
-			AnalysedMatch analysedMatch = matchAnalyser.analyse(brokenMatch);
-			analysedMatches.put(brokenMatch, analysedMatch);
-		}
-
-		mismatches.clear();
-		for (AnalysedMatch am : getAnalysedMatches().values()) {
 			for (MatchClassificationComponent mcc : pattern.getMCComponents()) {
-				if (mcc.isApplicable(am)) {
-					getMismatches().add(mcc.classify(this, am));
+				MatchAnalysis analysis = matchAnalyser.getAnalysis(brokenMatch);
+				if (mcc.isApplicable(analysis)) {
+					mismatches.add(mcc.classify(this, analysis));
 					break;
 				}
 			}
@@ -171,17 +162,14 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param edgesToRevoke
 	 */
 	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		matchAnalyser.getRule(match.getRuleName()).getNodes().stream() //
-				.filter(n -> (n instanceof TGGRuleCorr) && n.getBindingType().equals(BindingType.CREATE)) //
-				.map(c -> (EObject) match.get(c.getName())) //
-				.forEach(c -> getIbexRedInterpreter().revokeCorr(c, nodesToRevoke, edgesToRevoke));
+		matchAnalyser.getNodes(match, new EltFilter().corr().create()).forEach(c -> //
+		getIbexRedInterpreter().revokeCorr((EObject) match.get(c.getName()), nodesToRevoke, edgesToRevoke));
 	}
 
 	protected void cleanUp() {
 		modelChangeProtocol.detachAdapter();
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
 				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
-		analysedMatches = new HashMap<>();
 		mismatches = new HashSet<>();
 	}
 
@@ -239,7 +227,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			return super.removeOperationalRuleMatch(match);
 	}
 
-	public BrokenMatchAnalyser getMatchAnalyser() {
+	public MatchAnalyser getMatchAnalyser() {
 		return matchAnalyser;
 	}
 
@@ -273,10 +261,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	public Set<ITGGMatch> getFilterNacMatches() {
 		return filterNacMatches;
-	}
-
-	public Map<ITGGMatch, AnalysedMatch> getAnalysedMatches() {
-		return analysedMatches;
 	}
 
 	public Set<Mismatch> getMismatches() {

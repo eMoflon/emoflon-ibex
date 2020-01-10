@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
@@ -11,8 +10,7 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -25,9 +23,7 @@ public abstract class ConflictResolutionStrategy {
 
 	protected void restoreMatch(INTEGRATE integrate, ITGGMatch match) {
 		ModelChangeProtocol mcp = integrate.getModelChangeProtocol();
-		// TODO adrianm: avoid using AnalysedMatch
-		AnalysedMatch analysedMatch = integrate.getAnalysedMatches().get(match);
-		List<TGGRuleElement> elements = analysedMatch.getElts(new EltFilter().create());
+		Set<TGGRuleElement> elements = integrate.getMatchAnalyser().getElts(match, new EltFilter().create());
 
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EObject> deletedNodes = new HashSet<>();

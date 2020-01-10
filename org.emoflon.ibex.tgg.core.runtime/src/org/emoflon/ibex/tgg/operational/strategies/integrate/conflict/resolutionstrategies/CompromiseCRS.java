@@ -1,11 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
 
-import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import language.TGGRuleNode;
 
@@ -17,17 +16,17 @@ public class CompromiseCRS extends DeleteConflictResStrategy {
 
 	@Override
 	public void apply(INTEGRATE integrate) {
-		AnalysedMatch analysedMatch = integrate.getAnalysedMatches().get(conflict.getMatch());
+		MatchAnalysis analysis = integrate.getMatchAnalyser().getAnalysis(conflict.getMatch());
 
 		conflict.getDeletionChain().foreachReverse(m -> {
 			restoreMatch(integrate, m);
 		});
 
-		analysedMatch.getElts(new EltFilter().srcAndTrg().create().deleted()).forEach(elt -> {
+		// TODO adrianm: execute this before restoring matches
+		analysis.getElts(new EltFilter().srcAndTrg().create().deleted()).forEach(elt -> {
 			if (elt instanceof TGGRuleNode) {
-				EObject eObj = (EObject) conflict.getMatch().get(elt.getName());
-				eObj.eContents().forEach(child -> {
-					if (!analysedMatch.getEObjectToNode().containsKey(child))
+				analysis.getObject((TGGRuleNode) elt).eContents().forEach(child -> {
+					if (!analysis.getObjects().contains(child))
 						integrate.getModelChangeProtocol().util.deleteElement(child, true);
 				});
 			}
