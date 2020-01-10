@@ -64,11 +64,18 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	}
 
 	@Override
-	public ITGGMatch repair(ITGGMatch repairCandiate) {
+	public ITGGMatch repair(ITGGMatch repairCandidate) {
 		updateDirection();
-		ITGGMatch repairedMatch = scTool.processBrokenMatch(syncDirection, repairCandiate);
+		ITGGMatch repairedMatch = scTool.processBrokenMatch(syncDirection, repairCandidate);
 		if(repairedMatch != null)
-			logger.info("Repaired: " + repairCandiate.getPatternName() + "->" + repairedMatch.getPatternName() + " (" + repairCandiate.hashCode() + "->" + repairedMatch.hashCode() + ")");
+			logger.info("Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + " (" + repairCandidate.hashCode() + "->" + repairedMatch.hashCode() + ")");
+		return repairedMatch;
+	}
+	
+	public ITGGMatch repair(ITGGMatch repairCandidate, SyncDirection direction) {
+		ITGGMatch repairedMatch = scTool.processBrokenMatch(direction, repairCandidate);
+		if(repairedMatch != null)
+			logger.info("Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + " (" + repairCandidate.hashCode() + "->" + repairedMatch.hashCode() + ")");
 		return repairedMatch;
 	}
 
