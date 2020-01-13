@@ -1,15 +1,17 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
+import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
-
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import language.DomainType;
 import language.TGGRuleEdge;
@@ -52,12 +54,24 @@ public abstract class MatchClassificationComponent {
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, getPropDirection(analysis));
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef), EltClassifier.USE);
 
 			return mismatch;
+		}
+
+		private SyncDirection getPropDirection(MatchAnalysis analysis) {
+			SyncDirection propDir = SyncDirection.UNDEFINED;
+			Collection<DomainType> domains = analysis.getFilterNacViolations().values();
+			if (domains.contains(DomainType.SRC))
+				propDir = SyncDirection.FORWARD;
+			if (domains.contains(DomainType.TRG) && propDir != SyncDirection.FORWARD)
+				propDir = SyncDirection.BACKWARD;
+			else
+				propDir = SyncDirection.UNDEFINED;
+			return propDir;
 		}
 
 		@Override
@@ -73,7 +87,7 @@ public abstract class MatchClassificationComponent {
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, SyncDirection.UNDEFINED);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef), EltClassifier.NO_USE);
@@ -94,7 +108,7 @@ public abstract class MatchClassificationComponent {
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, SyncDirection.UNDEFINED);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef), EltClassifier.USE);
@@ -117,14 +131,17 @@ public abstract class MatchClassificationComponent {
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType delSide;
+			SyncDirection propDir;
 			if (fwd.matches(analysis.getModPattern())) {
 				delSide = DomainType.SRC;
+				propDir = SyncDirection.FORWARD;
 			} else if (bwd.matches(analysis.getModPattern())) {
 				delSide = DomainType.TRG;
+				propDir = SyncDirection.BACKWARD;
 			} else
 				return null;
 
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, propDir);
 
 			EltFilter ef = new EltFilter().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef.domains(oppositeOf(delSide))),
@@ -149,14 +166,17 @@ public abstract class MatchClassificationComponent {
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType partlySide;
+			SyncDirection propDir;
 			if (fwd.matches(analysis.getModPattern())) {
 				partlySide = DomainType.TRG;
+				propDir = SyncDirection.FORWARD;
 			} else if (bwd.matches(analysis.getModPattern())) {
 				partlySide = DomainType.SRC;
+				propDir = SyncDirection.BACKWARD;
 			} else
 				return null;
 
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, propDir);
 
 			EltFilter ef = new EltFilter().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef.domains(oppositeOf(partlySide))),
@@ -181,7 +201,7 @@ public abstract class MatchClassificationComponent {
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, SyncDirection.UNDEFINED);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef.deleted()), EltClassifier.REWARDLESS_USE);
@@ -205,14 +225,17 @@ public abstract class MatchClassificationComponent {
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType delSide;
+			SyncDirection propDir;
 			if (fwd.matches(analysis.getModPattern())) {
 				delSide = DomainType.SRC;
+				propDir = SyncDirection.FORWARD;
 			} else if (bwd.matches(analysis.getModPattern())) {
 				delSide = DomainType.TRG;
+				propDir = SyncDirection.BACKWARD;
 			} else
 				return null;
 
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, propDir);
 
 			EltFilter ef = new EltFilter().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef.domains(oppositeOf(delSide))),

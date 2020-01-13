@@ -24,7 +24,7 @@ public class ConflictDetector {
 
 	public Set<DeleteConflict> detectDeleteConflicts() {
 		Set<DeleteConflict> conflicts = new HashSet<>();
-		for (Mismatch mismatch : integrate.getMismatches()) {
+		for (Mismatch mismatch : integrate.getMismatches().values()) {
 			DeleteConflict possibleConflict = detectDeleteConflict(mismatch);
 			if (possibleConflict != null)
 				conflicts.add(possibleConflict);

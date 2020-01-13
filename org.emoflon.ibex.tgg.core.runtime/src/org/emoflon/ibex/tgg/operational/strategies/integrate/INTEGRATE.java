@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +23,9 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
+import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
@@ -50,14 +55,14 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected GroupKey userDeltaKey;
 
 	private Set<ITGGMatch> filterNacMatches;
-	private Set<Mismatch> mismatches;
+	private Map<ITGGMatch, Mismatch> mismatches;
 	private Map<ITGGMatch, DeleteConflict> conflicts;
 
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
 		pattern = new IntegrationPattern();
 		filterNacMatches = new HashSet<>();
-		mismatches = new HashSet<>();
+		mismatches = new HashMap<>();
 		conflicts = new HashMap<>();
 
 		matchAnalyser = new MatchAnalyser(this);
@@ -84,7 +89,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			classifyMatches();
 			detectConflicts();
 			translateConflictFreeElements();
-		} while (repair());
+		} while (repairBrokenMatches());
 
 		detectAndResolveConflicts();
 		translateConflictFreeElements();
@@ -133,7 +138,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			MatchAnalysis analysis = matchAnalyser.getAnalysis(brokenMatch);
 			for (MatchClassificationComponent mcc : pattern.getMCComponents()) {
 				if (mcc.isApplicable(analysis)) {
-					mismatches.add(mcc.classify(this, analysis));
+					mismatches.put(analysis.getMatch(), mcc.classify(this, analysis));
 					break;
 				}
 			}
@@ -163,12 +168,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		setUpdatePolicy(new NextMatchUpdatePolicy());
 	}
 
-	protected boolean repair() {
-		return repairBrokenMatches();
-	}
-
 	protected void resolveMismatches() {
-		mismatches.forEach(mismatch -> {
+		mismatches.values().forEach(mismatch -> {
 			mismatch.resolveMismatch(this);
 			// TODO adrianm: implement
 		});
@@ -178,7 +179,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol.detachAdapter();
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
 				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
-		mismatches = new HashSet<>();
+		mismatches = new HashMap<>();
 		conflicts = new HashMap<>();
 	}
 
@@ -266,6 +267,53 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	@Override
+	protected boolean repairBrokenMatches() {
+		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
+		for (AbstractRepairStrategy rStrategy : repairStrategies) {
+			// TODO adrianm: also use attribute repair strategy for integrate
+			if (rStrategy instanceof AttributeRepairStrategy)
+				continue;
+
+			for (ITGGMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
+				if (alreadyProcessed.contains(repairCandidate))
+					continue;
+
+				ITGGMatch repairedMatch = null;
+				Mismatch mismatch = mismatches.get(repairCandidate);
+				if (mismatch != null)
+					repairedMatch = repairOneMatch(rStrategy, repairCandidate, mismatch.getPropagationDirection());
+				else
+					repairedMatch = repairOneMatch(rStrategy, repairCandidate, SyncDirection.UNDEFINED);
+
+				if (repairedMatch != null) {
+					alreadyProcessed.add(repairCandidate);
+
+					TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
+					brokenRuleApplications.remove(oldRa);
+
+					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
+					brokenRuleApplications.put(newRa, repairedMatch);
+					alreadyProcessed.add(repairedMatch);
+
+					options.getBenchmarkLogger().addToNumOfMatchesRepaired(1);
+				}
+			}
+		}
+		return !alreadyProcessed.isEmpty();
+	}
+
+	private ITGGMatch repairOneMatch(AbstractRepairStrategy rStrategy, ITGGMatch match, SyncDirection propDirection) {
+		ITGGMatch repairedMatch = null;
+		if (propDirection == SyncDirection.UNDEFINED) {
+			repairedMatch = rStrategy.repair(match, SyncDirection.FORWARD);
+			if (repairedMatch == null)
+				repairedMatch = rStrategy.repair(match, SyncDirection.BACKWARD);
+		} else
+			repairedMatch = rStrategy.repair(match, propDirection);
+		return repairedMatch;
+	}
+
+	@Override
 	public boolean isPatternRelevantForInterpreter(PatternType type) {
 		switch (type) {
 		case FWD:
@@ -323,7 +371,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return filterNacMatches;
 	}
 
-	public Set<Mismatch> getMismatches() {
+	public Map<ITGGMatch, Mismatch> getMismatches() {
 		return mismatches;
 	}
 

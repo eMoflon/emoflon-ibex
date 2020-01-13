@@ -6,17 +6,24 @@ import java.util.Optional;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
-
 public class SYNC extends PropagatingOperationalStrategy {
 
-	/***** Constructors 
-	 * @param sync *****/
+	// Forward or backward sync
+	protected SYNC_Strategy syncStrategy;
+
+	/*****
+	 * Constructors
+	 * 
+	 * @param sync
+	 *****/
 
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);
@@ -47,7 +54,7 @@ public class SYNC extends PropagatingOperationalStrategy {
 		syncStrategy = new BWD_Strategy();
 		run();
 	}
-	
+
 	protected void repair() {
 		initializeRepairStrategy(options);
 
@@ -56,6 +63,14 @@ public class SYNC extends PropagatingOperationalStrategy {
 		repairBrokenMatches();
 	}
 
+	public SYNC_Strategy getSyncStrategy() {
+		return syncStrategy;
+	}
+	
+	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, ITGGMatch m) {
+		return syncStrategy.determineCSP(factory, m);
+	}
+	
 	/***** Match and pattern management *****/
 
 	@Override

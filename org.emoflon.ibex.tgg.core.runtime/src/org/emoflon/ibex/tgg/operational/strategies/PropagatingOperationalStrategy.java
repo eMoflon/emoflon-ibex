@@ -12,28 +12,23 @@ import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
-import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC_Strategy;
 
 import runtime.TGGRuleApplication;
 
 public abstract class PropagatingOperationalStrategy extends OperationalStrategy {
-
-	// Forward or backward sync
-	protected SYNC_Strategy syncStrategy;
 	
 	// Repair
 	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
+	
 	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = CollectionFactory.cfactory
 			.createObjectToObjectHashMap();
 	protected IRedInterpreter redInterpreter;
@@ -49,7 +44,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		this.redInterpreter = redInterpreter;
 	}
 
-	/***** Sync algorithm *****/
+	/***** Algorithm *****/
 
 	protected void initializeRepairStrategy(IbexOptions options) {
 		if (!repairStrategies.isEmpty())
@@ -143,14 +138,6 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 			options.getBenchmarkLogger().addToNumOfMatchesRevoked(revoked.size());
 		}
-	}
-	
-	public SYNC_Strategy getSyncStrategy() {
-		return syncStrategy;
-	}
-	
-	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, ITGGMatch m) {
-		return syncStrategy.determineCSP(factory, m);
 	}
 
 	/***** Marker Handling *******/

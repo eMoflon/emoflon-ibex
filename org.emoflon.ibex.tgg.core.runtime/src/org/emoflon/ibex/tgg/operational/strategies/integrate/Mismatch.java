@@ -6,6 +6,7 @@ import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 
@@ -13,12 +14,16 @@ public class Mismatch {
 
 	private final ITGGMatch match;
 	private final MatchClassificationComponent matchClassComp;
+	private final SyncDirection propDirection;
+	
 	private final Map<EObject, EltClassifier> classifiedNodes;
 	private final Map<EMFEdge, EltClassifier> classifiedEdges;
 
-	public Mismatch(ITGGMatch match, MatchClassificationComponent matchClassComp) {
+	public Mismatch(ITGGMatch match, MatchClassificationComponent matchClassComp, SyncDirection propDirection) {
 		this.match = match;
 		this.matchClassComp = matchClassComp;
+		this.propDirection = propDirection;
+		
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
 	}
@@ -29,6 +34,10 @@ public class Mismatch {
 
 	public MatchClassificationComponent getMCC() {
 		return matchClassComp;
+	}
+
+	public SyncDirection getPropagationDirection() {
+		return propDirection;
 	}
 
 	public Map<EObject, EltClassifier> getClassifiedNodes() {
