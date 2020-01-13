@@ -12,13 +12,13 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Matc
 public class Mismatch {
 
 	private final ITGGMatch match;
-	private final MatchClassificationComponent integrationFragment;
+	private final MatchClassificationComponent matchClassComp;
 	private final Map<EObject, EltClassifier> classifiedNodes;
 	private final Map<EMFEdge, EltClassifier> classifiedEdges;
 
-	public Mismatch(ITGGMatch match, MatchClassificationComponent integrationFragment) {
+	public Mismatch(ITGGMatch match, MatchClassificationComponent matchClassComp) {
 		this.match = match;
-		this.integrationFragment = integrationFragment;
+		this.matchClassComp = matchClassComp;
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
 	}
@@ -28,7 +28,7 @@ public class Mismatch {
 	}
 
 	public MatchClassificationComponent getMCC() {
-		return integrationFragment;
+		return matchClassComp;
 	}
 
 	public Map<EObject, EltClassifier> getClassifiedNodes() {
@@ -45,6 +45,10 @@ public class Mismatch {
 
 	public void addClassification(EMFEdge edge, EltClassifier classifier) {
 		classifiedEdges.put(edge, classifier);
+	}
+	
+	public void resolveMismatch(INTEGRATE integrate) {
+		// TODO adrianm implement
 	}
 
 }

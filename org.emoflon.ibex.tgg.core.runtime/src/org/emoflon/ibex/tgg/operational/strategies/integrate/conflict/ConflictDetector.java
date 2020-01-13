@@ -1,9 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
@@ -24,8 +22,8 @@ public class ConflictDetector {
 		this.integrate = integrate;
 	}
 
-	public List<DeleteConflict> detectDeleteConflicts() {
-		List<DeleteConflict> conflicts = new ArrayList<>();
+	public Set<DeleteConflict> detectDeleteConflicts() {
+		Set<DeleteConflict> conflicts = new HashSet<>();
 		for (Mismatch mismatch : integrate.getMismatches()) {
 			DeleteConflict possibleConflict = detectDeleteConflict(mismatch);
 			if (possibleConflict != null)

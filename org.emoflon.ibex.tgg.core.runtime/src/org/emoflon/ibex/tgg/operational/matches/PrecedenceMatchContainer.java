@@ -190,7 +190,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		raToMatch.put(ra, m);
 
 		translated.addAll(translatedElts);
-		pending.removeAll(translatedElts);
+		pendingElts.removeAll(translatedElts);
 		
 		for (Object translatedElement : translatedElts) {
 			// Handle children: this parent has now been translated and can be removed

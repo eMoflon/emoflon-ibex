@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.emoflon.ibex.common.collections.CollectionFactory;
@@ -51,14 +50,6 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	}
 
 	/***** Sync algorithm *****/
-
-	protected void repair() {
-		initializeRepairStrategy(options);
-
-		// TODO loop this together with roll back
-		translate();
-		repairBrokenMatches();
-	}
 
 	protected void initializeRepairStrategy(IbexOptions options) {
 		if (!repairStrategies.isEmpty())
@@ -207,12 +198,6 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 		consistencyMatches.remove(ra);
 		operationalMatchContainer.removeMatch(match);
-	}
-
-	@Override
-	protected Optional<ITGGMatch> processOperationalRuleMatch(String ruleName, ITGGMatch match) {
-		Optional<ITGGMatch> comatch = super.processOperationalRuleMatch(ruleName, match);
-		return comatch;
 	}
 
 	@Override

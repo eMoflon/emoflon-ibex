@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,11 +14,10 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.C
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
-
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import runtime.TGGRuleApplication;
 
 public abstract class ConflictResolutionStrategy {
 
@@ -44,6 +45,8 @@ public abstract class ConflictResolutionStrategy {
 					deletedNodes.add(node);
 			}
 		});
+		TGGRuleApplication ruleApplication = integrate.getRuleApplicationNode(match);
+		deletedCrossEdges.addAll(integrate.getUserModelChanges().getDeletedEdges(ruleApplication));
 
 		deletedContainmentEdges.forEach(edge -> mcp.util.createEdge(edge));
 		deletedNodes.forEach(node -> {

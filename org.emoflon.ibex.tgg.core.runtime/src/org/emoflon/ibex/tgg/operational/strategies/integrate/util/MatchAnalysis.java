@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,7 +58,7 @@ public class MatchAnalysis {
 		nodeToEObject.forEach((n, o) -> eObjectToNode.put(o, n));
 
 		this.edgeToEMFEdge = rule.getEdges().stream() //
-				.collect(Collectors.toMap(e -> e, e -> opStrat.getRuntimeEdge(match, e)));
+				.collect(Collectors.toMap(e -> e, e -> getRuntimeEdge(match, e)));
 		this.emfEdgeToEdge = new HashMap<>();
 		edgeToEMFEdge.forEach((e, f) -> emfEdgeToEdge.put(f, e));
 

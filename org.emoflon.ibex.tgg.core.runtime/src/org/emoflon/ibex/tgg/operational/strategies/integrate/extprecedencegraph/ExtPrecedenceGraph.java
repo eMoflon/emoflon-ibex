@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,7 +10,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
@@ -17,8 +19,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import precedencegraph.PrecedenceNode;
 import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphFactory;
-
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 
@@ -38,11 +38,20 @@ public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 
 	@Override
 	public boolean removeMatch(ITGGMatch match) {
-		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY))
+		if (match.getType() == PatternType.CONSISTENCY)
 			handleBrokenConsistencyMatch(match);
 		else
 			deleteNode(match);
 		return super.removeMatch(match);
+	}
+
+	@Override
+	public void matchApplied(ITGGMatch match) {
+		super.matchApplied(match);
+		if (match.getType() == PatternType.CONSISTENCY) {
+			if (matchToNode.containsKey(match) && getNode(match).isBroken())
+				getNode(match).setBroken(false);
+		}
 	}
 
 	public PrecedenceNodeContainer getExtGraph() {
@@ -58,14 +67,13 @@ public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 		Set<ITGGMatch> matches = new HashSet<>();
 		matches.addAll(readySet);
 		matches.addAll(requires.keySet());
-		matches.removeIf(m -> m.getPatternName().endsWith(PatternSuffixes.CC));
+		matches.removeIf(m -> m.getType() == PatternType.CC);
 
 		Set<ITGGMatch> restoredMatches = new HashSet<>();
 		matches.removeIf(m -> {
-			PrecedenceNode n = matchToNode.get(m);
-			if (n == null)
+			if (!matchToNode.containsKey(m))
 				return false;
-			if (n.isBroken())
+			if (getNode(m).isBroken())
 				restoredMatches.add(m);
 			return true;
 		});
@@ -139,7 +147,7 @@ public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 		PrecedenceNode node = matchToNode.get(match);
 		if (node != null)
 			node.setBroken(true);
-		
+
 		readySet.remove(match);
 	}
 

@@ -47,6 +47,14 @@ public class SYNC extends PropagatingOperationalStrategy {
 		syncStrategy = new BWD_Strategy();
 		run();
 	}
+	
+	protected void repair() {
+		initializeRepairStrategy(options);
+
+		// TODO loop this together with roll back
+		translate();
+		repairBrokenMatches();
+	}
 
 	/***** Match and pattern management *****/
 
@@ -60,6 +68,11 @@ public class SYNC extends PropagatingOperationalStrategy {
 		return syncStrategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
 	}
 
+	@Override
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getSYNCTypes();
+	}
+
 	private void logCreatedAndDeletedNumbers() {
 		if (options.debug()) {
 			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream() //
@@ -70,10 +83,5 @@ public class SYNC extends PropagatingOperationalStrategy {
 			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedElements()
 					+ (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
 		}
-	}
-
-	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getSYNCTypes();
 	}
 }
