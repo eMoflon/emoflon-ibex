@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 
 import language.BindingType;
 import language.DomainType;
@@ -23,7 +23,7 @@ public class OperationalSCFactory {
 		this.scRules = scRules;
 	}
 
-	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(SyncDirection direction) {
+	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(PropagationDirection direction) {
 		Map<String, Collection<OperationalShortcutRule>> operationalRules = new HashMap<>();
 		for (ShortcutRule scRule : scRules) {
 			TGGRule sourceRule = scRule.getSourceRule();

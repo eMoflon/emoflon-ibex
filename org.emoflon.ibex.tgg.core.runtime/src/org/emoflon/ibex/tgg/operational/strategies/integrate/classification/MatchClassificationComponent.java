@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
@@ -62,15 +62,15 @@ public abstract class MatchClassificationComponent {
 			return mismatch;
 		}
 
-		private SyncDirection getPropDirection(MatchAnalysis analysis) {
-			SyncDirection propDir = SyncDirection.UNDEFINED;
+		private PropagationDirection getPropDirection(MatchAnalysis analysis) {
+			PropagationDirection propDir = PropagationDirection.UNDEFINED;
 			Collection<DomainType> domains = analysis.getFilterNacViolations().values();
 			if (domains.contains(DomainType.SRC))
-				propDir = SyncDirection.FORWARD;
-			if (domains.contains(DomainType.TRG) && propDir != SyncDirection.FORWARD)
-				propDir = SyncDirection.BACKWARD;
+				propDir = PropagationDirection.FORWARD;
+			if (domains.contains(DomainType.TRG) && propDir != PropagationDirection.FORWARD)
+				propDir = PropagationDirection.BACKWARD;
 			else
-				propDir = SyncDirection.UNDEFINED;
+				propDir = PropagationDirection.UNDEFINED;
 			return propDir;
 		}
 
@@ -87,7 +87,7 @@ public abstract class MatchClassificationComponent {
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, SyncDirection.UNDEFINED);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef), EltClassifier.NO_USE);
@@ -108,7 +108,7 @@ public abstract class MatchClassificationComponent {
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, SyncDirection.UNDEFINED);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef), EltClassifier.USE);
@@ -131,13 +131,13 @@ public abstract class MatchClassificationComponent {
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType delSide;
-			SyncDirection propDir;
+			PropagationDirection propDir;
 			if (fwd.matches(analysis.getModPattern())) {
 				delSide = DomainType.SRC;
-				propDir = SyncDirection.FORWARD;
+				propDir = PropagationDirection.FORWARD;
 			} else if (bwd.matches(analysis.getModPattern())) {
 				delSide = DomainType.TRG;
-				propDir = SyncDirection.BACKWARD;
+				propDir = PropagationDirection.BACKWARD;
 			} else
 				return null;
 
@@ -166,13 +166,13 @@ public abstract class MatchClassificationComponent {
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType partlySide;
-			SyncDirection propDir;
+			PropagationDirection propDir;
 			if (fwd.matches(analysis.getModPattern())) {
 				partlySide = DomainType.TRG;
-				propDir = SyncDirection.FORWARD;
+				propDir = PropagationDirection.FORWARD;
 			} else if (bwd.matches(analysis.getModPattern())) {
 				partlySide = DomainType.SRC;
-				propDir = SyncDirection.BACKWARD;
+				propDir = PropagationDirection.BACKWARD;
 			} else
 				return null;
 
@@ -201,7 +201,7 @@ public abstract class MatchClassificationComponent {
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, SyncDirection.UNDEFINED);
+			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
 			classifyElts(integrate, mismatch, analysis.getElts(ef.deleted()), EltClassifier.REWARDLESS_USE);
@@ -225,13 +225,13 @@ public abstract class MatchClassificationComponent {
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType delSide;
-			SyncDirection propDir;
+			PropagationDirection propDir;
 			if (fwd.matches(analysis.getModPattern())) {
 				delSide = DomainType.SRC;
-				propDir = SyncDirection.FORWARD;
+				propDir = PropagationDirection.FORWARD;
 			} else if (bwd.matches(analysis.getModPattern())) {
 				delSide = DomainType.TRG;
-				propDir = SyncDirection.BACKWARD;
+				propDir = PropagationDirection.BACKWARD;
 			} else
 				return null;
 

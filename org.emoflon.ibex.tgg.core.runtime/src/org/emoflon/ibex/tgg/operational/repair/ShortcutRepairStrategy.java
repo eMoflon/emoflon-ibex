@@ -10,8 +10,8 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
@@ -32,7 +32,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 	private PropagatingOperationalStrategy opStrat;
 	private ShortcutPatternTool scTool;
-	private SyncDirection syncDirection;
+	private PropagationDirection syncDirection;
 
 	public ShortcutRepairStrategy(PropagatingOperationalStrategy opStrat) {
 		this.opStrat = opStrat;
@@ -74,7 +74,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 		return repairedMatch;
 	}
 
-	public ITGGMatch repair(ITGGMatch repairCandidate, SyncDirection direction) {
+	public ITGGMatch repair(ITGGMatch repairCandidate, PropagationDirection direction) {
 		ITGGMatch repairedMatch = scTool.processBrokenMatch(direction, repairCandidate);
 		if (repairedMatch != null)
 			logger.info("Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + //
@@ -85,9 +85,9 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	private void updateDirection() {
 		if (opStrat instanceof SYNC)
 			syncDirection = ((SYNC) opStrat).getSyncStrategy() instanceof FWD_Strategy ? //
-					SyncDirection.FORWARD : SyncDirection.BACKWARD;
+					PropagationDirection.FORWARD : PropagationDirection.BACKWARD;
 		else
-			syncDirection = SyncDirection.UNDEFINED;
+			syncDirection = PropagationDirection.UNDEFINED;
 	}
 
 	public int countDeletedElements() {

@@ -25,8 +25,8 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
@@ -283,7 +283,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				if (mismatch != null)
 					repairedMatch = repairOneMatch(rStrategy, repairCandidate, mismatch.getPropagationDirection());
 				else
-					repairedMatch = repairOneMatch(rStrategy, repairCandidate, SyncDirection.UNDEFINED);
+					repairedMatch = repairOneMatch(rStrategy, repairCandidate, PropagationDirection.UNDEFINED);
 
 				if (repairedMatch != null) {
 					alreadyProcessed.add(repairCandidate);
@@ -302,12 +302,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return !alreadyProcessed.isEmpty();
 	}
 
-	private ITGGMatch repairOneMatch(AbstractRepairStrategy rStrategy, ITGGMatch match, SyncDirection propDirection) {
+	private ITGGMatch repairOneMatch(AbstractRepairStrategy rStrategy, ITGGMatch match, PropagationDirection propDirection) {
 		ITGGMatch repairedMatch = null;
-		if (propDirection == SyncDirection.UNDEFINED) {
-			repairedMatch = rStrategy.repair(match, SyncDirection.FORWARD);
+		if (propDirection == PropagationDirection.UNDEFINED) {
+			repairedMatch = rStrategy.repair(match, PropagationDirection.FORWARD);
 			if (repairedMatch == null)
-				repairedMatch = rStrategy.repair(match, SyncDirection.BACKWARD);
+				repairedMatch = rStrategy.repair(match, PropagationDirection.BACKWARD);
 		} else
 			repairedMatch = rStrategy.repair(match, propDirection);
 		return repairedMatch;

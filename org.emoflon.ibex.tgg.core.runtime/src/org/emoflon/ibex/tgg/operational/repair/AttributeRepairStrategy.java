@@ -10,8 +10,8 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.sync.BWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
@@ -39,7 +39,7 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 	}
 
 	@Override
-	public ITGGMatch repair(ITGGMatch repairCandidate, SyncDirection direction) {
+	public ITGGMatch repair(ITGGMatch repairCandidate, PropagationDirection direction) {
 		IGreenPatternFactory factory = opStrat.getGreenFactory(PatternSuffixes.removeSuffix(repairCandidate.getPatternName()));
 		IRuntimeTGGAttrConstrContainer csp;
 		switch (direction) {

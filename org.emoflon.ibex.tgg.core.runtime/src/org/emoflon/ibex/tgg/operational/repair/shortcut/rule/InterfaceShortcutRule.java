@@ -16,10 +16,10 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 
 import language.BindingType;
 import language.DomainType;
@@ -42,7 +42,7 @@ import language.TGGRuleNode;
  */
 public class InterfaceShortcutRule extends OperationalShortcutRule {
 	
-	public InterfaceShortcutRule(PropagatingOperationalStrategy strategy, SyncDirection direction, ShortcutRule scRule) {
+	public InterfaceShortcutRule(PropagatingOperationalStrategy strategy, PropagationDirection direction, ShortcutRule scRule) {
 		super(strategy, direction, scRule.copy());
 		this.strategy = strategy;
 

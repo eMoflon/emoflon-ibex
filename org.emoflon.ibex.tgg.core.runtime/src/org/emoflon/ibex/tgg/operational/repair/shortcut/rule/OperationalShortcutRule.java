@@ -26,9 +26,9 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
@@ -60,7 +60,7 @@ public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
 
 	protected PropagatingOperationalStrategy strategy;
-	protected SyncDirection direction;
+	protected PropagationDirection direction;
 	protected ShortcutRule scRule;
 
 	protected Collection<TGGRuleElement> markedElements;
@@ -72,7 +72,7 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, SyncDirection direction, ShortcutRule scRule) {
+	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, PropagationDirection direction, ShortcutRule scRule) {
 		this.scRule = scRule;
 		this.direction = direction;
 
