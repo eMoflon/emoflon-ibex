@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 

@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,8 +7,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.EltClassifier;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 
 public class Mismatch {
 

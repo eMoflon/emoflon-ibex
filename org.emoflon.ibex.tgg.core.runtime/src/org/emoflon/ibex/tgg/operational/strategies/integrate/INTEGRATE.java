@@ -28,6 +28,7 @@ import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
