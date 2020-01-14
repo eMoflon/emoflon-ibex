@@ -68,7 +68,8 @@ public class CC extends OPT {
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
 				objectsToDelete.add(getRuleApplicationNode(comatch));
-			}
+			} else
+				processValidMatch(comatch);
 		}
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
@@ -114,6 +115,17 @@ public class CC extends OPT {
 		matchToContextEdges.get(idCounter).addAll(getBlackEdges(comatch, ruleName));
 
 		idCounter++;
+	}
+
+	/**
+	 * Processes a valid <code>ITGGMatch</code>.
+	 * <p>
+	 * <i>Note: Default implementation is no-op. Override this method if needed.</i>
+	 * </p>
+	 * 
+	 * @param match Match to process
+	 */
+	protected void processValidMatch(ITGGMatch match) { // NO-OP
 	}
 
 	public boolean modelsAreConsistent() {
