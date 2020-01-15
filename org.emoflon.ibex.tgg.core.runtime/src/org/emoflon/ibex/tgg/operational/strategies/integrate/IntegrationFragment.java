@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
 import java.io.IOException;
 
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 
 public interface IntegrationFragment {
@@ -60,7 +61,9 @@ public interface IntegrationFragment {
 	public static class CheckLocalConsistency implements IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			ChangeKey key = i.revokeBrokenCorrsAndRuleApplNodes();
 			i.consistencyChecker.run();
+			i.restoreBrokenCorrsAndRuleApplNodes(key);
 		}
 	}
 
@@ -75,7 +78,7 @@ public interface IntegrationFragment {
 		public static class RevokeBrokenCorrespondences implements IntegrationFragment {
 			@Override
 			public void apply(INTEGRATE i) throws IOException {
-				i.revokeBrokenCorrs();
+				i.revokeBrokenCorrsAndRuleApplNodes();
 			}
 		}
 	}

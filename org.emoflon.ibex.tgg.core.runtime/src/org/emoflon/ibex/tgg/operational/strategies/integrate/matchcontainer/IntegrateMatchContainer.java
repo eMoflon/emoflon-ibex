@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 

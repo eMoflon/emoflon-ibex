@@ -6,8 +6,8 @@ import java.util.Set;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.IntegrateMatchContainer;
 
 public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 

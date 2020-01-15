@@ -13,6 +13,8 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.delta.validation.DeltaValidator;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
@@ -30,9 +32,10 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Matc
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.IntegrateMatchContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.GroupKey;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ConflictFreeElementsUpdatePolicy;
@@ -61,7 +64,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	//// DATA ////
 	protected DeltaContainer userDeltaContainer;
 	protected BiConsumer<EObject, EObject> userDeltaBiConsumer;
-	protected GroupKey userDeltaKey;
+	protected ChangeKey userDeltaKey;
 
 	protected Set<ITGGMatch> filterNacMatches;
 	protected Map<ITGGMatch, Mismatch> mismatches;
@@ -95,6 +98,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				removeBrokenMatchesAfterCCMatchApplication(match);
 			}
 		};
+		options.setExecutable(this);
 
 	}
 
@@ -128,7 +132,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		matchDistributor.updateMatches();
 		getIntegrMatchContainer().update();
 		modelChangeProtocol.attachAdapter();
-		userDeltaKey = modelChangeProtocol.new GroupKey();
+		userDeltaKey = new ChangeKey();
 	}
 
 	protected void cleanUp() {
@@ -167,25 +171,30 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void resolveMismatches() {
-		mismatches.values().forEach(mismatch -> {
-			mismatch.resolveMismatch(this);
-			brokenRuleApplications.remove(getRuleApplicationNode(mismatch.getMatch()));
-			getIntegrMatchContainer().removeBrokenMatch(mismatch.getMatch());
-		});
+		mismatches.values().forEach(mismatch -> mismatch.resolveMismatch(this));
 	}
 
-	protected void revokeBrokenCorrs() {
+	protected ChangeKey revokeBrokenCorrsAndRuleApplNodes() {
+		ChangeKey key = new ChangeKey();
+		modelChangeProtocol.registerKey(key);
+
 		Map<TGGRuleApplication, ITGGMatch> processed = new HashMap<>();
 		do {
 			matchDistributor.updateMatches();
-		} while (deleteCorrs(processed));
+		} while (deleteCorrsAndRAs(processed));
 		brokenRuleApplications.putAll(processed);
+
+		modelChangeProtocol.deregisterKey(key);
+		return key;
 	}
 
-	private boolean deleteCorrs(Map<TGGRuleApplication, ITGGMatch> processed) {
+	private boolean deleteCorrsAndRAs(Map<TGGRuleApplication, ITGGMatch> processed) {
 		if (brokenRuleApplications.isEmpty())
 			return false;
-		brokenRuleApplications.values().forEach(m -> deleteGreenCorrs(m));
+		brokenRuleApplications.forEach((ra, m) -> {
+			deleteGreenCorrs(m);
+			EcoreUtil.delete(ra, true);
+		});
 		processed.putAll(brokenRuleApplications);
 		brokenRuleApplications.clear();
 		return true;
@@ -219,8 +228,28 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param edgesToRevoke
 	 */
 	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		matchAnalyser.getNodes(match, new EltFilter().corr().create()).forEach(c -> //
-		getIbexRedInterpreter().revokeCorr((EObject) match.get(c.getName()), nodesToRevoke, edgesToRevoke));
+		matchAnalyser.getObjects(match, new EltFilter().corr().create())
+				.forEach(obj -> getIbexRedInterpreter().revokeCorr(obj, nodesToRevoke, edgesToRevoke));
+	}
+
+	protected void restoreBrokenCorrsAndRuleApplNodes(ChangeKey key) {
+		matchDistributor.updateMatches();
+		ModelChanges changes = modelChangeProtocol.getModelChanges(key);
+		brokenRuleApplications.forEach((ra, m) -> {
+			matchAnalyser.getObjects(m, new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj));
+			restoreNode(changes, ra);
+		});
+	}
+
+	private void restoreNode(ModelChanges changes, EObject node) {
+		Resource resource = changes.containedInResource(node);
+		if (resource != null) {
+			resource.getContents().add(node);
+			changes.getDeletedEdges(node).forEach(e -> {
+				if (node.equals(e.getSource()))
+					ModelChangeUtil.createEdge(e);
+			});
+		}
 	}
 
 	@Override
@@ -364,10 +393,13 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			throw new RuntimeException("IbexRedInterpreter implementation is needed", e);
 		}
 	}
-	
+
 	public void removeBrokenMatch(ITGGMatch brokenMatch) {
-		brokenRuleApplications.remove(getRuleApplicationNode(brokenMatch));
+		TGGRuleApplication ra = getRuleApplicationNode(brokenMatch);
+		brokenRuleApplications.remove(ra);
+		EcoreUtil.delete(ra, true);
 		getIntegrMatchContainer().removeBrokenMatch(brokenMatch);
+		
 	}
 
 	public Set<ITGGMatch> getFilterNacMatches() {

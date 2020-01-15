@@ -21,11 +21,11 @@ public class ModelChangeProtocol {
 
 	private EContentAdapter adapter;
 
-	private Map<GroupKey, ModelChanges> groupedModelChanges;
-	private Set<GroupKey> currentKeys;
+	private Map<ChangeKey, ModelChanges> groupedModelChanges;
+	private Set<ChangeKey> currentKeys;
 
-	public class GroupKey {
-		public GroupKey() {
+	public static class ChangeKey {
+		public ChangeKey() {
 		}
 	}
 
@@ -78,16 +78,16 @@ public class ModelChangeProtocol {
 			observedRes[i].eAdapters().remove(adapter);
 	}
 
-	public void registerKey(GroupKey key) {
+	public void registerKey(ChangeKey key) {
 		currentKeys.add(key);
 		groupedModelChanges.computeIfAbsent(key, k -> new ModelChanges());
 	}
 
-	public void deregisterKey(GroupKey key) {
+	public void deregisterKey(ChangeKey key) {
 		currentKeys.remove(key);
 	}
 
-	public ModelChanges getModelChanges(GroupKey key) {
+	public ModelChanges getModelChanges(ChangeKey key) {
 		return groupedModelChanges.get(key);
 	}
 
