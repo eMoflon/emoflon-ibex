@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 
@@ -73,17 +76,36 @@ public class MatchAnalyser {
 		return getElts(analysis, filter);
 	}
 
-	public Set<TGGRuleNode> getNodes(ITGGMatch match, EltFilter filter) {
+	Stream<TGGRuleNode> getNodeStream(ITGGMatch match, EltFilter filter) {
 		return getElts(match, filter).stream() //
 				.filter(elt -> elt instanceof TGGRuleNode) //
-				.map(elt -> (TGGRuleNode) elt) //
-				.collect(Collectors.toSet());
+				.map(elt -> (TGGRuleNode) elt);
+	}
+
+	public Set<TGGRuleNode> getNodes(ITGGMatch match, EltFilter filter) {
+		return getNodeStream(match, filter).collect(Collectors.toSet());
+	}
+
+	public Stream<TGGRuleEdge> getEdgeStream(ITGGMatch match, EltFilter filter) {
+		return getElts(match, filter).stream() //
+				.filter(elt -> elt instanceof TGGRuleEdge) //
+				.map(elt -> (TGGRuleEdge) elt);
 	}
 
 	public Set<TGGRuleEdge> getEdges(ITGGMatch match, EltFilter filter) {
-		return getElts(match, filter).stream() //
-				.filter(elt -> elt instanceof TGGRuleEdge) //
-				.map(elt -> (TGGRuleEdge) elt) //
+		return getEdgeStream(match, filter).collect(Collectors.toSet());
+	}
+
+	public Set<EObject> getObjects(ITGGMatch match, EltFilter filter) {
+		return getNodeStream(match, filter) //
+				.map(n -> (EObject) match.get(n.getName())) //
+				.collect(Collectors.toSet());
+	}
+
+	public Set<EMFEdge> getEMFEdges(ITGGMatch match, EltFilter filter) {
+		MatchAnalysis analysis = getRawAnalysis(match);
+		return getEdgeStream(match, filter) //
+				.map(e -> analysis.getEMFEdge(e)) //
 				.collect(Collectors.toSet());
 	}
 
@@ -109,7 +131,7 @@ public class MatchAnalyser {
 			this.domainTypes = Arrays.asList(DomainType.TRG);
 			return this;
 		}
-		
+
 		public EltFilter corr() {
 			this.domainTypes = Arrays.asList(DomainType.CORR);
 			return this;

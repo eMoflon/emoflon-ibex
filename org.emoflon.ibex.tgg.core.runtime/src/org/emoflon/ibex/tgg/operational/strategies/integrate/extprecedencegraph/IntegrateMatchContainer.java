@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph
 
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +21,7 @@ import precedencegraph.PrecedenceNode;
 import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphFactory;
 
-public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
+public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 
 	private INTEGRATE strategy;
 	private Resource precedenceGraph;
@@ -29,7 +30,7 @@ public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 	private Map<ITGGMatch, PrecedenceNode> matchToNode = new HashMap<>();
 	private Map<PrecedenceNode, ITGGMatch> nodeToMatch = new HashMap<>();
 
-	public ExtPrecedenceGraph(INTEGRATE strategy) {
+	public IntegrateMatchContainer(INTEGRATE strategy) {
 		super(strategy);
 		this.strategy = strategy;
 		this.precedenceGraph = strategy.getOptions().getResourceHandler().getPrecedenceResource();
@@ -55,18 +56,13 @@ public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 	}
 
 	public PrecedenceNodeContainer getExtGraph() {
-		update();
 		return nodes;
 	}
 
 	public void update() {
 		prepareResource();
 
-		getMatches();
-
-		Set<ITGGMatch> matches = new HashSet<>();
-		matches.addAll(readySet);
-		matches.addAll(requires.keySet());
+		Set<ITGGMatch> matches = getMatches();
 		matches.removeIf(m -> m.getType() == PatternType.CC);
 
 		Set<ITGGMatch> restoredMatches = new HashSet<>();
@@ -90,11 +86,26 @@ public class ExtPrecedenceGraph extends PrecedenceMatchContainer {
 		return matchToNode.get(match);
 	}
 
-	public void removeAllBrokenNodes() {
+	public void removeAllBrokenMatches() {
 		nodes.getNodes().forEach(n -> {
 			if (n.isBroken())
 				deleteNode(getMatch(n));
 		});
+		clearPendingElements();
+	}
+
+	public void removeBrokenMatch(ITGGMatch match) {
+		if (getNode(match).isBroken()) {
+			deleteNode(match);
+			
+			IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
+			Collection<Object> translatedElts = new ArrayList<>();
+			gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
+			gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
+			gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+			gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+			pendingElts.removeAll(translatedElts);
+		}
 	}
 
 	private void updateNode(ITGGMatch match) {

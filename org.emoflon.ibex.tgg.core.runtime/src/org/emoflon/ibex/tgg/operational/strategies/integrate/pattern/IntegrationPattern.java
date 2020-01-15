@@ -1,11 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.pattern;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassCompProvider;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.fragments.IntegrationFragment;
 
 public class IntegrationPattern {
 
@@ -20,7 +19,7 @@ public class IntegrationPattern {
 
 	public IntegrationPattern() {
 		mcComponents = MatchClassCompProvider.getDefaultMCCs();
-		fragments = new ArrayList<>();
+		fragments = IntegrationFragmentProvider.getDefaultIntegrationFragments();
 	}
 
 	public List<MatchClassificationComponent> getMCComponents() {

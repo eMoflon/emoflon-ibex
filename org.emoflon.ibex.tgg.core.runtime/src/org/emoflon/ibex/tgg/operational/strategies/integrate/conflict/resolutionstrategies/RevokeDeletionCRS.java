@@ -7,7 +7,7 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.IntegrateMatchContainer;
 
 public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 
@@ -30,10 +30,10 @@ public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 	}
 
 	protected void restoreMatchesBasedOn(INTEGRATE integrate, ITGGMatch match) {
-		ExtPrecedenceGraph epg = integrate.getEPG();
-		epg.getNode(match).getBaseFor().forEach(n -> {
+		IntegrateMatchContainer imc = integrate.getIntegrMatchContainer();
+		imc.getNode(match).getBaseFor().forEach(n -> {
 			if (n.isBroken()) {
-				ITGGMatch m = epg.getMatch(n);
+				ITGGMatch m = imc.getMatch(n);
 				if (!restored.contains(m)) {
 					restoreMatch(integrate, m);
 					restored.add(m);
