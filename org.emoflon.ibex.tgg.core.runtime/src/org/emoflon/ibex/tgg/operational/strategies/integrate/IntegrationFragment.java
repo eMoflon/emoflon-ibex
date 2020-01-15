@@ -2,6 +2,8 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
 import java.io.IOException;
 
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
+
 public interface IntegrationFragment {
 
 	void apply(INTEGRATE integrate) throws IOException;
@@ -12,7 +14,7 @@ public interface IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
 			if (i.userDeltaContainer != null) {
-				i.modelChangeProtocol.util.applyUserDelta(i.userDeltaContainer);
+				ModelChangeUtil.applyUserDelta(i.userDeltaContainer);
 				i.userDeltaContainer = null;
 			} else if (i.userDeltaBiConsumer != null) {
 				i.userDeltaBiConsumer.accept(i.getResourceHandler().getSourceResource().getContents().get(0),

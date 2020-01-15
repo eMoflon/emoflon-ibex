@@ -114,12 +114,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	@Override
 	public void run() throws IOException {
 		initialize();
-		modelChangeProtocol.setGroupKey(userDeltaKey);
+		modelChangeProtocol.registerKey(userDeltaKey);
 
 		for (IntegrationFragment fragment : pattern.getIntegrationFragments())
 			fragment.apply(this);
 
-		modelChangeProtocol.unsetGroupKey();
+		modelChangeProtocol.deregisterKey(userDeltaKey);
 		cleanUp();
 	}
 

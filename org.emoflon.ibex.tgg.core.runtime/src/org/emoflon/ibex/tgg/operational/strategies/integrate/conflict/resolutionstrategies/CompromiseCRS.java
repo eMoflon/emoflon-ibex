@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutio
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
@@ -27,7 +28,7 @@ public class CompromiseCRS extends DeleteConflictResStrategy {
 			if (elt instanceof TGGRuleNode) {
 				analysis.getObject((TGGRuleNode) elt).eContents().forEach(child -> {
 					if (!analysis.getObjects().contains(child))
-						integrate.getModelChangeProtocol().util.deleteElement(child, true);
+						ModelChangeUtil.deleteElement(child, true);
 				});
 			}
 		});

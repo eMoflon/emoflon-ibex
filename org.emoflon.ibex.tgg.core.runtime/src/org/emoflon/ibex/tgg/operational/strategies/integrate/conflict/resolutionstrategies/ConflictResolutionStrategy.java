@@ -11,7 +11,7 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 
 import language.TGGRuleEdge;
@@ -25,7 +25,6 @@ public abstract class ConflictResolutionStrategy {
 	}
 
 	protected void restoreMatch(INTEGRATE integrate, ITGGMatch match) {
-		ModelChangeProtocol mcp = integrate.getModelChangeProtocol();
 		Set<TGGRuleElement> elements = integrate.getMatchAnalyser().getElts(match, new EltFilter().create());
 
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
@@ -48,13 +47,13 @@ public abstract class ConflictResolutionStrategy {
 		TGGRuleApplication ruleApplication = integrate.getRuleApplicationNode(match);
 		deletedCrossEdges.addAll(integrate.getUserModelChanges().getDeletedEdges(ruleApplication));
 
-		deletedContainmentEdges.forEach(edge -> mcp.util.createEdge(edge));
+		deletedContainmentEdges.forEach(edge -> ModelChangeUtil.createEdge(edge));
 		deletedNodes.forEach(node -> {
 			Resource resource = integrate.getUserModelChanges().containedInResource(node);
 			if (resource != null)
 				resource.getContents().add(node);
 		});
-		deletedCrossEdges.forEach(edge -> mcp.util.createEdge(edge));
+		deletedCrossEdges.forEach(edge -> ModelChangeUtil.createEdge(edge));
 	}
 
 	/**

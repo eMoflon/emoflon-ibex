@@ -14,14 +14,8 @@ import delta.StructuralDelta;
 
 public class ModelChangeUtil {
 
-	private final ModelChangeProtocol protocol;
-
-	public ModelChangeUtil(ModelChangeProtocol protocol) {
-		this.protocol = protocol;
-	}
-
 	@SuppressWarnings("unchecked")
-	public void deleteElement(EObject element, boolean deleteContainedChildren) {
+	public static void deleteElement(EObject element, boolean deleteContainedChildren) {
 		if (deleteContainedChildren) {
 			deleteElementAndContainedChildren(element);
 		} else {
@@ -40,13 +34,13 @@ public class ModelChangeUtil {
 		}
 	}
 
-	private void deleteElementAndContainedChildren(EObject element) {
+	private static void deleteElementAndContainedChildren(EObject element) {
 		element.eContents().forEach(child -> deleteElementAndContainedChildren(child));
 		EcoreUtil.delete(element, false);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void createEdge(EMFEdge edge) {
+	public static void createEdge(EMFEdge edge) {
 		if (edge.getType().isMany()) {
 			Collection<EObject> feature = (Collection<EObject>) edge.getSource().eGet(edge.getType());
 			feature.add(edge.getTarget());
@@ -55,7 +49,9 @@ public class ModelChangeUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void deleteEdge(EMFEdge edge) {
+	public static void deleteEdge(EMFEdge edge) {
+		if (edge.getSource() == null || edge.getTarget() == null)
+			return;
 		if (edge.getType().isMany()) {
 			Collection<EObject> value = (Collection<EObject>) edge.getSource().eGet(edge.getType());
 			value.remove(edge.getTarget());
@@ -63,38 +59,34 @@ public class ModelChangeUtil {
 			edge.getSource().eSet(edge.getType(), null);
 	}
 
-	public void revertAttributeChange(AttributeChange attributeChange) {
+	public static void revertAttributeChange(AttributeChange attributeChange) {
 		attributeChange.getElement().eSet(attributeChange.getAttribute(), attributeChange.getOldValue());
 	}
 
-	public void applyUserDelta(DeltaContainer deltas) {
+	public static void applyUserDelta(DeltaContainer deltas) {
 		deltas.getDeltas().forEach(delta -> apply(delta));
 	}
 
-	private void apply(Delta delta) {
+	private static void apply(Delta delta) {
 		delta.getAttributeDeltas().forEach(attrDelta -> applyAttributeDelta(attrDelta));
 		StructuralDelta strDelta = delta.getStructuralDelta();
 		if (strDelta != null)
 			applyStructuralDelta(strDelta);
 	}
 
-	private void applyAttributeDelta(AttributeDelta attrDelta) {
+	private static void applyAttributeDelta(AttributeDelta attrDelta) {
 		attrDelta.getObject().eSet(attrDelta.getAttribute(), attrDelta.getNewValue());
 	}
 
-	private void applyStructuralDelta(StructuralDelta strDelta) {
-		strDelta.getDeletedObjects().forEach(obj -> this.deleteElement(obj, false));
-		strDelta.getDeletedLinks().forEach(link -> {
-			EMFEdge edge = createEMFEdgeFromLink(link);
-			if (!protocol.getCurrentModelChanges().getRawDeletedEdges().contains(edge))
-				this.deleteEdge(edge);
-		});
+	private static void applyStructuralDelta(StructuralDelta strDelta) {
+		strDelta.getDeletedObjects().forEach(obj -> deleteElement(obj, false));
+		strDelta.getDeletedLinks().forEach(link -> deleteEdge(createEMFEdgeFromLink(link)));
 
 		// TODO adrianm: first create containment edges
-		strDelta.getCreatedLinks().forEach(link -> this.createEdge(createEMFEdgeFromLink(link)));
+		strDelta.getCreatedLinks().forEach(link -> createEdge(createEMFEdgeFromLink(link)));
 	}
 
-	private EMFEdge createEMFEdgeFromLink(Link link) {
+	private static EMFEdge createEMFEdgeFromLink(Link link) {
 		return new EMFEdge(link.getSrc(), link.getTrg(), link.getType());
 	}
 

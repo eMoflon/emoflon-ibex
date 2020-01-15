@@ -57,16 +57,14 @@ public class Mismatch {
 	}
 
 	public void resolveMismatch(INTEGRATE integrate) {
-		ModelChangeUtil util = integrate.getModelChangeProtocol().util;
-		
 		integrate.deleteGreenCorrs(match);
 		classifiedEdges.forEach((e, cl) -> {
-			if(isDeleteClassifier(cl))
-				util.deleteEdge(e);
+			if (isDeleteClassifier(cl))
+				ModelChangeUtil.deleteEdge(e);
 		});
 		classifiedNodes.forEach((n, cl) -> {
-			if(isDeleteClassifier(cl))
-				util.deleteElement(n, true);
+			if (isDeleteClassifier(cl))
+				ModelChangeUtil.deleteElement(n, true);
 		});
 		integrate.removeBrokenMatch(match);
 	}
