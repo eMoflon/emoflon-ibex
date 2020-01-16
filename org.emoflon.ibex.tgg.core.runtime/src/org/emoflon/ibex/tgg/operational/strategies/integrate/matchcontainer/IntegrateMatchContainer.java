@@ -62,7 +62,7 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	public void update() {
 		prepareResource();
 
-		Set<ITGGMatch> matches = getMatches();
+		Set<ITGGMatch> matches = new HashSet<>(getMatches());
 		matches.removeIf(m -> m.getType() == PatternType.CC);
 
 		Set<ITGGMatch> restoredMatches = new HashSet<>();
