@@ -41,10 +41,8 @@ public interface IntegrationFragment {
 		public void apply(INTEGRATE i) throws IOException {
 			i.classifyMatches();
 			i.detectConflicts();
-			i.conflicts.values().forEach(conflict -> {
-				i.getOptions().getConflictSolver().resolveDeleteConflict(conflict).apply(i);
-				i.conflicts.remove(conflict.getMatch());
-			});
+			i.conflicts.values()
+					.forEach(conflict -> i.getOptions().getConflictSolver().resolveDeleteConflict(conflict).apply(i));
 		}
 	}
 
@@ -86,9 +84,10 @@ public interface IntegrationFragment {
 	public static class CleanUp implements IntegrationFragment {
 
 		@Override
-		public void apply(INTEGRATE integrate) throws IOException {
-			// TODO adrianm: implement
-			// delete all elements that haven't been translated
+		public void apply(INTEGRATE i) throws IOException {
+			i.revokeBrokenCorrsAndRuleApplNodes();
+			i.clearBrokenRuleApplications();
+			i.revokeUntranslatedElements();
 		}
 
 	}

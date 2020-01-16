@@ -4,6 +4,7 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -249,6 +250,20 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					ModelChangeUtil.createEdge(e);
 			});
 		}
+	}
+
+	protected void clearBrokenRuleApplications() {
+		brokenRuleApplications.clear();
+	}
+
+	protected void revokeUntranslatedElements() {
+		Set<EObject> untranslated = new HashSet<>();
+		resourceHandler.getSourceResource().getAllContents().forEachRemaining(n -> untranslated.add(n));
+		resourceHandler.getTargetResource().getAllContents().forEachRemaining(n -> untranslated.add(n));
+		resourceHandler.getProtocolResource().getContents()
+				.forEach(ra -> ra.eCrossReferences().forEach(obj -> untranslated.remove(obj)));
+		
+		getIbexRedInterpreter().revoke(untranslated, Collections.emptySet());
 	}
 
 	@Override

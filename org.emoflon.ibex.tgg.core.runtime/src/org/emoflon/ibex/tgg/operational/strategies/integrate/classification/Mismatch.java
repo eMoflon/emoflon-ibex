@@ -1,15 +1,15 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 public class Mismatch {
 
@@ -59,18 +59,19 @@ public class Mismatch {
 
 	public void resolveMismatch(INTEGRATE integrate) {
 		integrate.deleteGreenCorrs(match);
-		// TODO adrianm: dirty quick fix:
-		// filters already "deleted" elements
-		// to prevent democles from throwing a RuntimeException
-		MatchAnalysis analysis = integrate.getMatchAnalyser().getAnalysis(match);
+		
+		Set<EObject> nodesToBeDeleted = new HashSet<>();
+		Set<EMFEdge> edgesToBeDeleted = new HashSet<>();
 		classifiedNodes.forEach((n, cl) -> {
-			if (isDeleteClassifier(cl) && !analysis.isElementDeleted(analysis.getNode(n)))
-				ModelChangeUtil.deleteElement(n, true);
+			if (isDeleteClassifier(cl))
+				nodesToBeDeleted.add(n);
 		});
 		classifiedEdges.forEach((e, cl) -> {
-			if (isDeleteClassifier(cl) && !analysis.isElementDeleted(analysis.getEdge(e)))
-				ModelChangeUtil.deleteEdge(e);
+			if (isDeleteClassifier(cl))
+				edgesToBeDeleted.add(e);
 		});
+		integrate.getIbexRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
+		
 		integrate.removeBrokenMatch(match);
 	}
 
