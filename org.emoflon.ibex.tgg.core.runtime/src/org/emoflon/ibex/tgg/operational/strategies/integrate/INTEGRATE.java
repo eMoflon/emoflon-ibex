@@ -235,10 +235,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void restoreBrokenCorrsAndRuleApplNodes(ChangeKey key) {
 		matchDistributor.updateMatches();
 		ModelChanges changes = modelChangeProtocol.getModelChanges(key);
-		brokenRuleApplications.forEach((ra, m) -> {
-			matchAnalyser.getObjects(m, new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj));
-			restoreNode(changes, ra);
-		});
+		brokenRuleApplications.forEach((ra, m) -> matchAnalyser.getObjects(m, new EltFilter().corr().create())
+				.forEach(obj -> restoreNode(changes, obj)));
+		brokenRuleApplications.forEach((ra, m) -> restoreNode(changes, ra));
 	}
 
 	private void restoreNode(ModelChanges changes, EObject node) {
@@ -399,7 +398,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		brokenRuleApplications.remove(ra);
 		EcoreUtil.delete(ra, true);
 		getIntegrMatchContainer().removeBrokenMatch(brokenMatch);
-		
+
 	}
 
 	public Set<ITGGMatch> getFilterNacMatches() {
