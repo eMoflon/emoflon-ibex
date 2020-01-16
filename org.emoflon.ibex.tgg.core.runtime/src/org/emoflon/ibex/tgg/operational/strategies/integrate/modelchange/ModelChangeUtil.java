@@ -16,6 +16,9 @@ public class ModelChangeUtil {
 
 	@SuppressWarnings("unchecked")
 	public static void deleteElement(EObject element, boolean deleteContainedChildren) {
+		if(isDangling(element))
+			return;
+		
 		if (deleteContainedChildren) {
 			deleteElementAndContainedChildren(element);
 		} else {
@@ -41,6 +44,9 @@ public class ModelChangeUtil {
 
 	@SuppressWarnings("unchecked")
 	public static void createEdge(EMFEdge edge) {
+		if (edge.getSource() == null || edge.getTarget() == null)
+			return;
+		
 		if (edge.getType().isMany()) {
 			Collection<EObject> feature = (Collection<EObject>) edge.getSource().eGet(edge.getType());
 			feature.add(edge.getTarget());
@@ -51,6 +57,8 @@ public class ModelChangeUtil {
 	@SuppressWarnings("unchecked")
 	public static void deleteEdge(EMFEdge edge) {
 		if (edge.getSource() == null || edge.getTarget() == null)
+			return;
+		if(isDangling(edge.getSource()))
 			return;
 		if (edge.getType().isMany()) {
 			Collection<EObject> value = (Collection<EObject>) edge.getSource().eGet(edge.getType());
@@ -88,6 +96,10 @@ public class ModelChangeUtil {
 
 	private static EMFEdge createEMFEdgeFromLink(Link link) {
 		return new EMFEdge(link.getSrc(), link.getTrg(), link.getType());
+	}
+
+	private static boolean isDangling(EObject object) {
+		return object.eResource() == null;
 	}
 
 }
