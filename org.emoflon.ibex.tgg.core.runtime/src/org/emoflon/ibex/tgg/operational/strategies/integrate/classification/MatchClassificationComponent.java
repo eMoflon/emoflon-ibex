@@ -219,7 +219,7 @@ public abstract class MatchClassificationComponent {
 	public static class DEL_PartlyOneSided extends MatchClassificationComponent {
 
 		private final MCPattern fwd = MCPattern.DEL_PARTLYONESIDED_FWD;
-		private final MCPattern bwd = MCPattern.DEL_PARTLYONESIDED_FWD;
+		private final MCPattern bwd = MCPattern.DEL_PARTLYONESIDED_BWD;
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
