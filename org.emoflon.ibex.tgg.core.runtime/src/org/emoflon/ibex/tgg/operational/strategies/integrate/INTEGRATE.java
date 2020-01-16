@@ -29,7 +29,7 @@ import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Mismatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
@@ -149,7 +149,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		mismatches.clear();
 		for (ITGGMatch brokenMatch : brokenRuleApplications.values()) {
 			MatchAnalysis analysis = matchAnalyser.getAnalysis(brokenMatch);
-			for (MatchClassificationComponent mcc : pattern.getMCComponents()) {
+			for (MatchClassifier mcc : pattern.getMCComponents()) {
 				if (mcc.isApplicable(analysis)) {
 					mismatches.put(analysis.getMatch(), mcc.classify(this, analysis));
 					break;

@@ -3,15 +3,15 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 import java.util.Arrays;
 import java.util.List;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.CREATE_FilterNac;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_Complete;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_Corr;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_OneSideIncompl;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_OneSided;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_Partly;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent.DEL_PartlyOneSided;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.CREATE_FilterNac;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_Complete;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_Corr;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_OneSideIncompl;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_OneSided;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_Partly;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_PartlyOneSided;
 
-public class MatchClassCompProvider {
+public class MatchClassifierProvider {
 
 	private static final CREATE_FilterNac createFilterNac = new CREATE_FilterNac();
 	private static final DEL_Complete delComplete = new DEL_Complete();
@@ -21,7 +21,7 @@ public class MatchClassCompProvider {
 	private static final DEL_Partly delPartly = new DEL_Partly();
 	private static final DEL_PartlyOneSided delPartlyOneSided = new DEL_PartlyOneSided();
 
-	private static final List<MatchClassificationComponent> defaultMCCs = Arrays.asList( //
+	private static final List<MatchClassifier> defaultMCCs = Arrays.asList( //
 			delComplete, //
 			delOneSided, //
 			delCorr, //
@@ -31,7 +31,7 @@ public class MatchClassCompProvider {
 			createFilterNac //
 	);
 
-	public static List<MatchClassificationComponent> getDefaultMCCs() {
+	public static List<MatchClassifier> getDefaultMCCs() {
 		return defaultMCCs;
 	}
 

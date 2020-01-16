@@ -6,18 +6,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification;
-
 import language.BindingType;
 import language.DomainType;
 
-public class MatchModPattern {
+public class MatchModification {
 
 	private final int initMapCapacity = 8;
 
-	private Map<DomainType, Map<BindingType, Modification>> pattern = new HashMap<>(initMapCapacity);
+	private Map<DomainType, Map<BindingType, DomainModification>> pattern = new HashMap<>(initMapCapacity);
 
-	public MatchModPattern(Modification initialMod) {
+	public MatchModification(DomainModification initialMod) {
 		pattern.put(DomainType.SRC, new HashMap<>(initMapCapacity));
 		pattern.put(DomainType.TRG, new HashMap<>(initMapCapacity));
 		pattern.put(DomainType.CORR, new HashMap<>(initMapCapacity));
@@ -35,12 +33,12 @@ public class MatchModPattern {
 	 * @param trgCre  Modification of green part in target domain
 	 * @param trgCon  Modification of black part in target domain
 	 */
-	public MatchModPattern(Modification srcCre, Modification srcCon, //
-			Modification corrCre, Modification corrCon, //
-			Modification trgCre, Modification trgCon) {
-		Map<BindingType, Modification> src = new HashMap<>(initMapCapacity);
-		Map<BindingType, Modification> corr = new HashMap<>(initMapCapacity);
-		Map<BindingType, Modification> trg = new HashMap<>(initMapCapacity);
+	public MatchModification(DomainModification srcCre, DomainModification srcCon, //
+			DomainModification corrCre, DomainModification corrCon, //
+			DomainModification trgCre, DomainModification trgCon) {
+		Map<BindingType, DomainModification> src = new HashMap<>(initMapCapacity);
+		Map<BindingType, DomainModification> corr = new HashMap<>(initMapCapacity);
+		Map<BindingType, DomainModification> trg = new HashMap<>(initMapCapacity);
 
 		src.put(BindingType.CREATE, srcCre);
 		src.put(BindingType.CONTEXT, srcCon);
@@ -54,16 +52,16 @@ public class MatchModPattern {
 		pattern.put(DomainType.TRG, trg);
 	}
 
-	public void setModType(DomainType domain, BindingType binding, Modification mod) {
+	public void setModType(DomainType domain, BindingType binding, DomainModification mod) {
 		pattern.get(domain).put(binding, mod);
 	}
 
-	public Modification getModType(DomainType domain, BindingType binding) {
+	public DomainModification getModType(DomainType domain, BindingType binding) {
 		return pattern.get(domain).get(binding);
 	}
 
-	protected List<Modification> serialise() {
-		List<Modification> result = new LinkedList<>();
+	protected List<DomainModification> serialise() {
+		List<DomainModification> result = new LinkedList<>();
 
 		List<DomainType> domains = Arrays.asList(DomainType.SRC, DomainType.CORR, DomainType.TRG);
 		List<BindingType> bindings = Arrays.asList(BindingType.CREATE, BindingType.CONTEXT);

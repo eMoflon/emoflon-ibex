@@ -14,13 +14,13 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 public class Mismatch {
 
 	private final ITGGMatch match;
-	private final MatchClassificationComponent matchClassComp;
+	private final MatchClassifier matchClassComp;
 	private final PropagationDirection propDirection;
 
-	private final Map<EObject, EltClassifier> classifiedNodes;
-	private final Map<EMFEdge, EltClassifier> classifiedEdges;
+	private final Map<EObject, ElementClassifier> classifiedNodes;
+	private final Map<EMFEdge, ElementClassifier> classifiedEdges;
 
-	public Mismatch(ITGGMatch match, MatchClassificationComponent matchClassComp, PropagationDirection propDirection) {
+	public Mismatch(ITGGMatch match, MatchClassifier matchClassComp, PropagationDirection propDirection) {
 		this.match = match;
 		this.matchClassComp = matchClassComp;
 		this.propDirection = propDirection;
@@ -33,7 +33,7 @@ public class Mismatch {
 		return match;
 	}
 
-	public MatchClassificationComponent getMCC() {
+	public MatchClassifier getMCC() {
 		return matchClassComp;
 	}
 
@@ -41,19 +41,19 @@ public class Mismatch {
 		return propDirection;
 	}
 
-	public Map<EObject, EltClassifier> getClassifiedNodes() {
+	public Map<EObject, ElementClassifier> getClassifiedNodes() {
 		return classifiedNodes;
 	}
 
-	public Map<EMFEdge, EltClassifier> getClassifiedEdges() {
+	public Map<EMFEdge, ElementClassifier> getClassifiedEdges() {
 		return classifiedEdges;
 	}
 
-	public void addClassification(EObject node, EltClassifier classifier) {
+	public void addClassification(EObject node, ElementClassifier classifier) {
 		classifiedNodes.put(node, classifier);
 	}
 
-	public void addClassification(EMFEdge edge, EltClassifier classifier) {
+	public void addClassification(EMFEdge edge, ElementClassifier classifier) {
 		classifiedEdges.put(edge, classifier);
 	}
 
@@ -75,7 +75,7 @@ public class Mismatch {
 		integrate.removeBrokenMatch(match);
 	}
 
-	private static boolean isDeleteClassifier(EltClassifier classifier) {
+	private static boolean isDeleteClassifier(ElementClassifier classifier) {
 		switch (classifier) {
 		case NO_USE:
 		case PENAL_USE:

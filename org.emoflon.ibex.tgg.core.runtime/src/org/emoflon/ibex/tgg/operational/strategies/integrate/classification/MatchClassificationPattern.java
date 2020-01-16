@@ -1,16 +1,16 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import static org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification.COMPL_DEL;
-import static org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification.PART_DEL;
-import static org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification.UNCHANGED;
-import static org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification.UNSPECIFIED;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.COMPL_DEL;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.PART_DEL;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.UNCHANGED;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.UNSPECIFIED;
 
 import java.util.List;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.Modification;
+public enum MatchClassificationPattern {
 
-public enum MCPattern {
-
+	// TODO adrianm: consider to merge this enums into its corresponding IntegrationFragments
+	
 	// DEL-Complete
 	DEL_COMPLETE(COMPL_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED),
 
@@ -32,7 +32,7 @@ public enum MCPattern {
 	// DEL-Corr
 	DEL_CORR(UNCHANGED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNCHANGED, UNSPECIFIED);
 
-	private MatchModPattern pattern;
+	private MatchModification pattern;
 
 	/**
 	 * @param srcCre  Modification of green part in source domain
@@ -42,19 +42,19 @@ public enum MCPattern {
 	 * @param trgCre  Modification of green part in target domain
 	 * @param trgCon  Modification of black part in target domain
 	 */
-	private MCPattern(Modification srcCre, Modification srcCon, //
-			Modification corrCre, Modification corrCon, //
-			Modification trgCre, Modification trgCon) {
-		pattern = new MatchModPattern(srcCre, srcCon, corrCre, corrCon, trgCre, trgCon);
+	private MatchClassificationPattern(DomainModification srcCre, DomainModification srcCon, //
+			DomainModification corrCre, DomainModification corrCon, //
+			DomainModification trgCre, DomainModification trgCon) {
+		pattern = new MatchModification(srcCre, srcCon, corrCre, corrCon, trgCre, trgCon);
 	}
 
-	public boolean matches(MatchModPattern pattern) {
-		List<Modification> thisPattern = this.pattern.serialise();
-		List<Modification> otherPattern = pattern.serialise();
+	public boolean matches(MatchModification pattern) {
+		List<DomainModification> thisPattern = this.pattern.serialise();
+		List<DomainModification> otherPattern = pattern.serialise();
 
 		for (int i = 0; i < thisPattern.size(); i++) {
-			Modification thisMod = thisPattern.get(i);
-			Modification otherMod = otherPattern.get(i);
+			DomainModification thisMod = thisPattern.get(i);
+			DomainModification otherMod = otherPattern.get(i);
 			if (!thisMod.equals(otherMod)) {
 				if (!thisMod.equals(UNSPECIFIED))
 					return false;

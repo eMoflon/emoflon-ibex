@@ -15,7 +15,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchModPattern;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchModification;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
@@ -42,7 +43,7 @@ public class MatchAnalysis {
 
 	private Set<TGGRuleElement> deletedElements;
 	private Map<ITGGMatch, DomainType> filterNacViolations;
-	private MatchModPattern pattern;
+	private MatchModification pattern;
 
 	MatchAnalysis(INTEGRATE opStrat, ITGGMatch match, TGGRule rule) {
 		this.opStrat = opStrat;
@@ -117,17 +118,17 @@ public class MatchAnalysis {
 	}
 
 	private void createModPattern() {
-		pattern = new MatchModPattern(Modification.UNCHANGED);
+		pattern = new MatchModification(DomainModification.UNCHANGED);
 		Predicate<TGGRuleElement> isDel = e -> isElementDeleted(e);
 		groupedElements.forEach((domain, bindingMap) -> {
 			bindingMap.forEach((binding, elements) -> {
-				Modification mod;
+				DomainModification mod;
 				if (elements.stream().allMatch(isDel))
-					mod = Modification.COMPL_DEL;
+					mod = DomainModification.COMPL_DEL;
 				else if (elements.stream().anyMatch(isDel))
-					mod = Modification.PART_DEL;
+					mod = DomainModification.PART_DEL;
 				else
-					mod = Modification.UNCHANGED;
+					mod = DomainModification.UNCHANGED;
 				pattern.setModType(domain, binding, mod);
 			});
 		});
@@ -153,7 +154,7 @@ public class MatchAnalysis {
 		return match;
 	}
 
-	public MatchModPattern getModPattern() {
+	public MatchModification getModPattern() {
 		return pattern;
 	}
 	
