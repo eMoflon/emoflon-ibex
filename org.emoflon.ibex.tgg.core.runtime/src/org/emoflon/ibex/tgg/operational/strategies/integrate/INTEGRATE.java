@@ -38,7 +38,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ConflictFreeElementsUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
@@ -53,8 +52,6 @@ import delta.DeltaContainer;
 import runtime.TGGRuleApplication;
 
 public class INTEGRATE extends PropagatingOperationalStrategy {
-
-	protected IntegrationPattern pattern;
 
 	//// TOOLS ////
 	protected MatchAnalyser matchAnalyser;
@@ -73,13 +70,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
-		this.pattern = new IntegrationPattern();
-		init();
-	}
-
-	public INTEGRATE(IbexOptions options, IntegrationPattern pattern) throws IOException {
-		super(options);
-		this.pattern = pattern;
 		init();
 	}
 
@@ -121,7 +111,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		initialize();
 		modelChangeProtocol.registerKey(userDeltaKey);
 
-		for (IntegrationFragment fragment : pattern.getIntegrationFragments())
+		for (IntegrationFragment fragment : options.getIntegrationPattern().getIntegrationFragments())
 			fragment.apply(this);
 
 		modelChangeProtocol.deregisterKey(userDeltaKey);
@@ -149,7 +139,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		mismatches.clear();
 		for (ITGGMatch brokenMatch : brokenRuleApplications.values()) {
 			MatchAnalysis analysis = matchAnalyser.getAnalysis(brokenMatch);
-			for (MatchClassifier mcc : pattern.getMCComponents()) {
+			for (MatchClassifier mcc : options.getIntegrationPattern().getMCComponents()) {
 				if (mcc.isApplicable(analysis)) {
 					mismatches.put(analysis.getMatch(), mcc.classify(this, analysis));
 					break;
@@ -262,7 +252,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		resourceHandler.getTargetResource().getAllContents().forEachRemaining(n -> untranslated.add(n));
 		resourceHandler.getProtocolResource().getContents()
 				.forEach(ra -> ra.eCrossReferences().forEach(obj -> untranslated.remove(obj)));
-		
+
 		getIbexRedInterpreter().revoke(untranslated, Collections.emptySet());
 	}
 

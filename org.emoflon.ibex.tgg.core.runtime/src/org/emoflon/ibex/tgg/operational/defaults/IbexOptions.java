@@ -17,6 +17,7 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttr
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictResolver;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DefaultConflictResolver;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
@@ -60,6 +61,7 @@ public class IbexOptions {
 	private BenchmarkLogger logger;
 	
 	// Model Integration
+	private IntegrationPattern integrationPattern;
 	private ConflictResolver conflictSolver;
 
 	public IbexOptions() {
@@ -76,6 +78,7 @@ public class IbexOptions {
 		logger = new EmptyBenchmarkLogger();
 		repairAttributes = true;
 		useShortcutRules = false;
+		integrationPattern = new IntegrationPattern();
 		conflictSolver = new DefaultConflictResolver();
 		
 		applyConcurrently = false;
@@ -276,6 +279,14 @@ public class IbexOptions {
 	public IbexOptions ignoreDomainConformity(boolean ignoreDomainConformity) {
 		this.ignoreDomainConformity = ignoreDomainConformity;
 		return this;
+	}
+
+	public IntegrationPattern getIntegrationPattern() {
+		return integrationPattern;
+	}
+
+	public void setIntegrationPattern(IntegrationPattern integrationPattern) {
+		this.integrationPattern = integrationPattern;
 	}
 
 	public BenchmarkLogger getBenchmarkLogger() {
