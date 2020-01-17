@@ -30,10 +30,10 @@ public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 	}
 
 	protected void restoreMatchesBasedOn(INTEGRATE integrate, ITGGMatch match) {
-		IntegrateMatchContainer imc = integrate.getIntegrMatchContainer();
-		imc.getNode(match).getBaseFor().forEach(n -> {
+		IntegrateMatchContainer matchContainer = integrate.getIntegrMatchContainer();
+		matchContainer.getNode(match).getBaseFor().forEach(n -> {
 			if (n.isBroken()) {
-				ITGGMatch m = imc.getMatch(n);
+				ITGGMatch m = matchContainer.getMatch(n);
 				if (!restored.contains(m)) {
 					restoreMatch(integrate, m);
 					restored.add(m);

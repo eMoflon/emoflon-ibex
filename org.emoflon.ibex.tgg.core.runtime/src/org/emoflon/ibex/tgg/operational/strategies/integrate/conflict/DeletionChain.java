@@ -16,14 +16,14 @@ import precedencegraph.PrecedenceNode;
 
 public class DeletionChain {
 
-	private IntegrateMatchContainer imc;
+	private IntegrateMatchContainer matchContainer;
 
 	private LinkedHashMap<ITGGMatch, Set<ITGGMatch>> chain;
 	private ITGGMatch first;
 	private Set<ITGGMatch> last;
 
 	DeletionChain(INTEGRATE integrate, ITGGMatch brokenMatch) {
-		this.imc = integrate.getIntegrMatchContainer();
+		this.matchContainer = integrate.getIntegrMatchContainer();
 		this.chain = new LinkedHashMap<>();
 		this.first = brokenMatch;
 		this.last = new HashSet<>();
@@ -37,10 +37,10 @@ public class DeletionChain {
 	private void concludeDeletionChain(ITGGMatch currentMatch) {
 		chain.computeIfAbsent(currentMatch, m -> {
 			Set<ITGGMatch> set = new HashSet<>();
-			PrecedenceNode currentNode = imc.getNode(currentMatch);
+			PrecedenceNode currentNode = matchContainer.getNode(currentMatch);
 			currentNode.getBasedOn().forEach(n -> {
 				if (n.isBroken())
-					set.add(imc.getMatch(n));
+					set.add(matchContainer.getMatch(n));
 			});
 			return set;
 		});

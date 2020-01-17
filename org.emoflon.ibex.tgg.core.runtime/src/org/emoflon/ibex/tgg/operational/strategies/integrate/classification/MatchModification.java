@@ -60,7 +60,23 @@ public class MatchModification {
 		return pattern.get(domain).get(binding);
 	}
 
-	protected List<DomainModification> serialise() {
+	public boolean matches(MatchModification pattern) {
+		List<DomainModification> thisPattern = this.serialise();
+		List<DomainModification> otherPattern = pattern.serialise();
+
+		for (int i = 0; i < thisPattern.size(); i++) {
+			DomainModification thisMod = thisPattern.get(i);
+			DomainModification otherMod = otherPattern.get(i);
+			if (!thisMod.equals(otherMod)) {
+				if (!thisMod.equals(DomainModification.UNSPECIFIED) && !otherMod.equals(DomainModification.UNSPECIFIED))
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	List<DomainModification> serialise() {
 		List<DomainModification> result = new LinkedList<>();
 
 		List<DomainType> domains = Arrays.asList(DomainType.SRC, DomainType.CORR, DomainType.TRG);

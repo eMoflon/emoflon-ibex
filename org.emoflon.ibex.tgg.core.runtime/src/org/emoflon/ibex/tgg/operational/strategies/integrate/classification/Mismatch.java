@@ -10,19 +10,20 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 public class Mismatch {
 
 	private final ITGGMatch match;
-	private final MatchClassifier matchClassComp;
+	private final MatchClassifier matchClassifier;
 	private final PropagationDirection propDirection;
 
 	private final Map<EObject, ElementClassifier> classifiedNodes;
 	private final Map<EMFEdge, ElementClassifier> classifiedEdges;
 
-	public Mismatch(ITGGMatch match, MatchClassifier matchClassComp, PropagationDirection propDirection) {
+	public Mismatch(ITGGMatch match, MatchClassifier matchClassifier, PropagationDirection propDirection) {
 		this.match = match;
-		this.matchClassComp = matchClassComp;
+		this.matchClassifier = matchClassifier;
 		this.propDirection = propDirection;
 
 		classifiedNodes = new HashMap<>();
@@ -33,8 +34,8 @@ public class Mismatch {
 		return match;
 	}
 
-	public MatchClassifier getMCC() {
-		return matchClassComp;
+	public MatchClassifier getMatchClassifier() {
+		return matchClassifier;
 	}
 
 	public PropagationDirection getPropagationDirection() {
@@ -59,19 +60,20 @@ public class Mismatch {
 
 	public void resolveMismatch(INTEGRATE integrate) {
 		integrate.deleteGreenCorrs(match);
-		
+
+		MatchAnalysis analysis = integrate.getMatchAnalyser().getAnalysis(match);
 		Set<EObject> nodesToBeDeleted = new HashSet<>();
 		Set<EMFEdge> edgesToBeDeleted = new HashSet<>();
 		classifiedNodes.forEach((n, cl) -> {
-			if (isDeleteClassifier(cl))
+			if (isDeleteClassifier(cl) && !analysis.isElementDeleted(analysis.getNode(n)))
 				nodesToBeDeleted.add(n);
 		});
 		classifiedEdges.forEach((e, cl) -> {
-			if (isDeleteClassifier(cl))
+			if (isDeleteClassifier(cl) && !analysis.isElementDeleted(analysis.getEdge(e)))
 				edgesToBeDeleted.add(e);
 		});
 		integrate.getIbexRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
-		
+
 		integrate.removeBrokenMatch(match);
 	}
 

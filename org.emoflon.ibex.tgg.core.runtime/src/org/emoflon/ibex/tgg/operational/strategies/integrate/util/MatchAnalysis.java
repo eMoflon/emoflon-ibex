@@ -217,5 +217,34 @@ public class MatchAnalysis {
 	public EMFEdge getEMFEdge(TGGRuleEdge edge) {
 		return edgeToEMFEdge.get(edge);
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("MatchAnalysis [\n");
+		builder.append("  " + print().replace("\n", "\n  "));
+		builder.append("\n]");
+		return builder.toString();
+	}
+
+	private String print() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Match [\n");
+		builder.append("  " + match.getPatternName());
+		builder.append("\n]\n");
+		builder.append(pattern.toString() + "\n");
+		builder.append("FilterNAC Violations [\n");
+		builder.append("  " + printFilterNacViolations().replace("\n", "\n  "));
+		builder.append("\n]");
+		return builder.toString();
+	}
+
+	private String printFilterNacViolations() {
+		StringBuilder builder = new StringBuilder();
+		for (ITGGMatch fnm : filterNacViolations.keySet()) {
+			builder.append(fnm.getRuleName() + "\n");
+		}
+		return builder.length() == 0 ? builder.toString() : builder.substring(0, builder.length() - 1);
+	}
 
 }

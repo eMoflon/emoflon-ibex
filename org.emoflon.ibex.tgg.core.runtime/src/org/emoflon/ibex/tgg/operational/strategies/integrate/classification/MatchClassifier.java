@@ -1,6 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.COMPL_DEL;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.PART_DEL;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.UNCHANGED;
+import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.UNSPECIFIED;
 
 import java.util.Collection;
 import java.util.Set;
@@ -82,7 +86,8 @@ public abstract class MatchClassifier {
 
 	public static class DEL_Complete extends MatchClassifier {
 
-		private final MatchClassificationPattern pattern = MatchClassificationPattern.DEL_COMPLETE;
+		private final MatchModification pattern = new MatchModification( //
+				COMPL_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED);
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
@@ -103,7 +108,8 @@ public abstract class MatchClassifier {
 
 	public static class DEL_Corr extends MatchClassifier {
 
-		private final MatchClassificationPattern pattern = MatchClassificationPattern.DEL_CORR;
+		private final MatchModification pattern = new MatchModification( //
+				UNCHANGED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNCHANGED, UNSPECIFIED);
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
@@ -124,17 +130,19 @@ public abstract class MatchClassifier {
 
 	public static class DEL_OneSided extends MatchClassifier {
 
-		private final MatchClassificationPattern fwd = MatchClassificationPattern.DEL_ONESIDED_FWD;
-		private final MatchClassificationPattern bwd = MatchClassificationPattern.DEL_ONESIDED_BWD;
+		private final MatchModification fwdPattern = new MatchModification( //
+				COMPL_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, UNCHANGED, UNSPECIFIED);
+		private final MatchModification bwdPattern = new MatchModification( //
+				UNCHANGED, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED);
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType delSide;
 			PropagationDirection propDir;
-			if (fwd.matches(analysis.getModPattern())) {
+			if (fwdPattern.matches(analysis.getModPattern())) {
 				delSide = DomainType.SRC;
 				propDir = PropagationDirection.FORWARD;
-			} else if (bwd.matches(analysis.getModPattern())) {
+			} else if (bwdPattern.matches(analysis.getModPattern())) {
 				delSide = DomainType.TRG;
 				propDir = PropagationDirection.BACKWARD;
 			} else
@@ -152,24 +160,26 @@ public abstract class MatchClassifier {
 
 		@Override
 		public boolean isApplicable(MatchAnalysis analysis) {
-			return fwd.matches(analysis.getModPattern()) || bwd.matches(analysis.getModPattern());
+			return fwdPattern.matches(analysis.getModPattern()) || bwdPattern.matches(analysis.getModPattern());
 		}
 
 	}
 
 	public static class DEL_OneSideIncompl extends MatchClassifier {
 
-		private final MatchClassificationPattern fwd = MatchClassificationPattern.DEL_ONESIDEINCOMPL_FWD;
-		private final MatchClassificationPattern bwd = MatchClassificationPattern.DEL_ONESIDEINCOMPL_BWD;
+		private final MatchModification fwdPattern = new MatchModification( //
+				COMPL_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, PART_DEL, UNSPECIFIED);
+		private final MatchModification bwdPattern = new MatchModification( //
+				PART_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED);
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType partlySide;
 			PropagationDirection propDir;
-			if (fwd.matches(analysis.getModPattern())) {
+			if (fwdPattern.matches(analysis.getModPattern())) {
 				partlySide = DomainType.TRG;
 				propDir = PropagationDirection.FORWARD;
-			} else if (bwd.matches(analysis.getModPattern())) {
+			} else if (bwdPattern.matches(analysis.getModPattern())) {
 				partlySide = DomainType.SRC;
 				propDir = PropagationDirection.BACKWARD;
 			} else
@@ -189,14 +199,15 @@ public abstract class MatchClassifier {
 
 		@Override
 		public boolean isApplicable(MatchAnalysis analysis) {
-			return fwd.matches(analysis.getModPattern()) || bwd.matches(analysis.getModPattern());
+			return fwdPattern.matches(analysis.getModPattern()) || bwdPattern.matches(analysis.getModPattern());
 		}
 
 	}
 
 	public static class DEL_Partly extends MatchClassifier {
 
-		private final MatchClassificationPattern pattern = MatchClassificationPattern.DEL_PARTLY;
+		private final MatchModification pattern = new MatchModification( //
+				PART_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, PART_DEL, UNSPECIFIED);
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
@@ -218,17 +229,19 @@ public abstract class MatchClassifier {
 
 	public static class DEL_PartlyOneSided extends MatchClassifier {
 
-		private final MatchClassificationPattern fwd = MatchClassificationPattern.DEL_PARTLYONESIDED_FWD;
-		private final MatchClassificationPattern bwd = MatchClassificationPattern.DEL_PARTLYONESIDED_BWD;
+		private final MatchModification fwdPattern = new MatchModification( //
+				PART_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, UNCHANGED, UNSPECIFIED);
+		private final MatchModification bwdPattern = new MatchModification( //
+				UNCHANGED, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, PART_DEL, UNSPECIFIED);
 
 		@Override
 		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType delSide;
 			PropagationDirection propDir;
-			if (fwd.matches(analysis.getModPattern())) {
+			if (fwdPattern.matches(analysis.getModPattern())) {
 				delSide = DomainType.SRC;
 				propDir = PropagationDirection.FORWARD;
-			} else if (bwd.matches(analysis.getModPattern())) {
+			} else if (bwdPattern.matches(analysis.getModPattern())) {
 				delSide = DomainType.TRG;
 				propDir = PropagationDirection.BACKWARD;
 			} else
@@ -248,7 +261,7 @@ public abstract class MatchClassifier {
 
 		@Override
 		public boolean isApplicable(MatchAnalysis analysis) {
-			return fwd.matches(analysis.getModPattern()) || bwd.matches(analysis.getModPattern());
+			return fwdPattern.matches(analysis.getModPattern()) || bwdPattern.matches(analysis.getModPattern());
 		}
 
 	}
