@@ -73,11 +73,12 @@ public interface IntegrationFragment {
 			i.translateConflictFreeElements();
 		}
 
-		public static class RevokeBrokenCorrespondences implements IntegrationFragment {
-			@Override
-			public void apply(INTEGRATE i) throws IOException {
-				i.revokeBrokenCorrsAndRuleApplNodes();
-			}
+	}
+
+	public static class RevokeBrokenCorrespondences implements IntegrationFragment {
+		@Override
+		public void apply(INTEGRATE i) throws IOException {
+			i.revokeBrokenCorrsAndRuleApplNodes();
 		}
 	}
 

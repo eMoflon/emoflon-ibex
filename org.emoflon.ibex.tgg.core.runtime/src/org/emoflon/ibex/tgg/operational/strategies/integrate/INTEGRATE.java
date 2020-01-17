@@ -139,9 +139,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		mismatches.clear();
 		for (ITGGMatch brokenMatch : brokenRuleApplications.values()) {
 			MatchAnalysis analysis = matchAnalyser.getAnalysis(brokenMatch);
-			for (MatchClassifier mcc : options.getIntegrationPattern().getMCComponents()) {
-				if (mcc.isApplicable(analysis)) {
-					mismatches.put(analysis.getMatch(), mcc.classify(this, analysis));
+			for (MatchClassifier matchClassifier : options.getIntegrationPattern().getMatchClassifier()) {
+				if (matchClassifier.isApplicable(analysis)) {
+					mismatches.put(analysis.getMatch(), matchClassifier.classify(this, analysis));
 					break;
 				}
 			}

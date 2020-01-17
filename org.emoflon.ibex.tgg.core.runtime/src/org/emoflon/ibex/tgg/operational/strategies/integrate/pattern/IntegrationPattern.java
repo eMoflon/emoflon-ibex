@@ -27,7 +27,7 @@ public class IntegrationPattern {
 		this.matchClassifier = MatchClassifierProvider.getDefaultMatchClassifier();
 	}
 
-	public List<MatchClassifier> getMCComponents() {
+	public List<MatchClassifier> getMatchClassifier() {
 		return matchClassifier;
 	}
 

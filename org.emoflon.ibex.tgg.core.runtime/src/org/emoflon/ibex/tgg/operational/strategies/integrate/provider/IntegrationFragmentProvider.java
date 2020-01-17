@@ -11,7 +11,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment
 import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment.ResolveBrokenMatches;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment.ResolveConflicts;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment.Translate;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment.Translate.RevokeBrokenCorrespondences;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment.RevokeBrokenCorrespondences;
 
 public class IntegrationFragmentProvider {
 

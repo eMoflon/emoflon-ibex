@@ -19,11 +19,8 @@ public class CompromiseCRS extends DeleteConflictResStrategy {
 	public void apply(INTEGRATE integrate) {
 		MatchAnalysis analysis = integrate.getMatchAnalyser().getAnalysis(conflict.getMatch());
 
-		conflict.getDeletionChain().foreachReverse(m -> {
-			restoreMatch(integrate, m);
-		});
+		conflict.getDeletionChain().foreachReverse(m -> restoreMatch(integrate, m));
 
-		// TODO adrianm: execute this before restoring matches
 		analysis.getElts(new EltFilter().srcAndTrg().create().deleted()).forEach(elt -> {
 			if (elt instanceof TGGRuleNode) {
 				analysis.getObject((TGGRuleNode) elt).eContents().forEach(child -> {
