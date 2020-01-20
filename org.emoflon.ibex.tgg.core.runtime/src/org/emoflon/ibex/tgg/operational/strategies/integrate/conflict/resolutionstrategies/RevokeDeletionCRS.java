@@ -9,6 +9,11 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.C
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
 
+/**
+ * A {@link DeleteConflictResStrategy} that completely revokes the deletion to
+ * resolve the conflict.
+ *
+ */
 public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 
 	protected Set<ITGGMatch> restored;

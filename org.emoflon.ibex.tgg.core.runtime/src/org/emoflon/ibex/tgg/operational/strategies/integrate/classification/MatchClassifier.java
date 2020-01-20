@@ -53,6 +53,11 @@ public abstract class MatchClassifier {
 		});
 	}
 
+	/**
+	 * Classifies a broken <code>Match</code> that has <code>FilterNAC</code>
+	 * violations in one or both domains.
+	 *
+	 */
 	public static class CREATE_FilterNac extends MatchClassifier {
 
 		@Override
@@ -84,6 +89,11 @@ public abstract class MatchClassifier {
 
 	}
 
+	/**
+	 * Classifies a broken <code>Match</code> whose created elements in source
+	 * <i>and</i> target domain are completely deleted.
+	 *
+	 */
 	public static class DEL_Complete extends MatchClassifier {
 
 		private final MatchModification pattern = new MatchModification( //
@@ -106,6 +116,11 @@ public abstract class MatchClassifier {
 
 	}
 
+	/**
+	 * Classifies a broken <code>Match</code> whose context correspondence elements
+	 * are completely deleted.
+	 *
+	 */
 	public static class DEL_Corr extends MatchClassifier {
 
 		private final MatchModification pattern = new MatchModification( //
@@ -128,6 +143,11 @@ public abstract class MatchClassifier {
 
 	}
 
+	/**
+	 * Classifies a broken <code>Match</code> whose created elements are completely
+	 * deleted in only one domain (source <i>or</i> target).
+	 * 
+	 */
 	public static class DEL_OneSided extends MatchClassifier {
 
 		private final MatchModification fwdPattern = new MatchModification( //
@@ -165,6 +185,11 @@ public abstract class MatchClassifier {
 
 	}
 
+	/**
+	 * Classifies a broken <code>Match</code> whose created elements are completely
+	 * deleted in one domain but incompletely deleted in the other domain.
+	 *
+	 */
 	public static class DEL_OneSideIncompl extends MatchClassifier {
 
 		private final MatchModification fwdPattern = new MatchModification( //
@@ -204,6 +229,11 @@ public abstract class MatchClassifier {
 
 	}
 
+	/**
+	 * Classifies a broken <code>Match</code> whose created elements are deleted
+	 * incompletely in <i>both</i> domains (source and target).
+	 *
+	 */
 	public static class DEL_Partly extends MatchClassifier {
 
 		private final MatchModification pattern = new MatchModification( //
@@ -227,6 +257,11 @@ public abstract class MatchClassifier {
 
 	}
 
+	/**
+	 * Classifies a broken <code>Match</code> whose created elements are not deleted
+	 * in one domain but partly deleted in the other domain.
+	 * 
+	 */
 	public static class DEL_PartlyOneSided extends MatchClassifier {
 
 		private final MatchModification fwdPattern = new MatchModification( //

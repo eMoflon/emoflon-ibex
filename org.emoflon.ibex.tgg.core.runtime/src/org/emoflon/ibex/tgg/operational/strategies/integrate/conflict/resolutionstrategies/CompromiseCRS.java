@@ -9,6 +9,11 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import language.TGGRuleNode;
 
+/**
+ * A {@link DeleteConflictResStrategy} that revokes as few as possible deletions
+ * to resolve the conflict.
+ *
+ */
 public class CompromiseCRS extends DeleteConflictResStrategy {
 
 	public CompromiseCRS(DeleteConflict conflict, ConflResStratToken token) {
