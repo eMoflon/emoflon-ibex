@@ -90,7 +90,7 @@ public class ModelChangeUtil {
 		strDelta.getDeletedObjects().forEach(obj -> deleteElement(obj, false));
 		strDelta.getDeletedLinks().forEach(link -> deleteEdge(createEMFEdgeFromLink(link)));
 
-		// TODO adrianm: first create containment edges
+		// adrianm: if there are any problems with Democles, try create containment edges first
 		strDelta.getCreatedLinks().forEach(link -> createEdge(createEMFEdgeFromLink(link)));
 	}
 
