@@ -1,14 +1,18 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
 
 import java.util.Set;
+import java.util.function.BiConsumer;
 
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.ActAndLetRepairCRS;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.CompromiseCRS;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.DeleteConflictResStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.PreserveDeletionCRS;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.RevokeDeletionCRS;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies.ActAndLetRepairCRS;
+
+import delta.DeltaContainer;
 
 public class DeleteConflict extends Conflict {
 
@@ -62,14 +66,33 @@ public class DeleteConflict extends Conflict {
 	}
 
 	/**
-	 * Creates a {@link ActAndLetRepairCRS} that expects an action from the user
+	 * Creates an {@link ActAndLetRepairCRS} that expects an action from the user
 	 * respectively a model change to be performed in order to repair the models so
 	 * that the conflict will be resolved.
+	 * <p>
+	 * Alternatively use {@link DeleteConflict#actAndLetRepairRule(DeltaContainer)}.
+	 * </p>
 	 * 
+	 * @param delta the model changes in the form of a <code>BiConsumer</code>
 	 * @return the conflict resolution strategy
 	 */
-	public DeleteConflictResStrategy actAndLetRepairRule() {
-		return new ActAndLetRepairCRS(this, TOKEN);
+	public DeleteConflictResStrategy actAndLetRepairRule(BiConsumer<EObject, EObject> delta) {
+		return new ActAndLetRepairCRS(this, TOKEN, delta);
+	}
+
+	/**
+	 * Creates an {@link ActAndLetRepairCRS} that expects an action from the user
+	 * respectively a model change to be performed in order to repair the models so
+	 * that the conflict will be resolved.
+	 * <p>
+	 * Alternatively use {@link DeleteConflict#actAndLetRepairRule(BiConsumer)}.
+	 * </p>
+	 * 
+	 * @param delta the model changes in the form of a <code>DeltaContainer</code>
+	 * @return the conflict resolution strategy
+	 */
+	public DeleteConflictResStrategy actAndLetRepairRule(DeltaContainer delta) {
+		return new ActAndLetRepairCRS(this, TOKEN, delta);
 	}
 
 }
