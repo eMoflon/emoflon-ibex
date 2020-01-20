@@ -123,8 +123,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	/***** Match and pattern management *****/
 	protected void addOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.CONSISTENCY)
+		if (match.getType() == PatternType.CONSISTENCY) {
 			addConsistencyMatch(match);
+		}
 
 		if (isPatternRelevantForInterpreter(match.getType()) && matchIsDomainConform(match)) {
 			operationalMatchContainer.addMatch(match);
