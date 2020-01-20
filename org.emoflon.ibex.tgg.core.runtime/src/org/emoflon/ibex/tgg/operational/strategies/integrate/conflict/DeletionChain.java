@@ -10,20 +10,20 @@ import java.util.function.Consumer;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.extprecedencegraph.ExtPrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 
 import precedencegraph.PrecedenceNode;
 
 public class DeletionChain {
 
-	private ExtPrecedenceGraph epg;
+	private IntegrateMatchContainer matchContainer;
 
 	private LinkedHashMap<ITGGMatch, Set<ITGGMatch>> chain;
 	private ITGGMatch first;
 	private Set<ITGGMatch> last;
 
 	DeletionChain(INTEGRATE integrate, ITGGMatch brokenMatch) {
-		this.epg = integrate.getEPG();
+		this.matchContainer = integrate.getIntegrMatchContainer();
 		this.chain = new LinkedHashMap<>();
 		this.first = brokenMatch;
 		this.last = new HashSet<>();
@@ -37,10 +37,10 @@ public class DeletionChain {
 	private void concludeDeletionChain(ITGGMatch currentMatch) {
 		chain.computeIfAbsent(currentMatch, m -> {
 			Set<ITGGMatch> set = new HashSet<>();
-			PrecedenceNode currentNode = epg.getNode(currentMatch);
+			PrecedenceNode currentNode = matchContainer.getNode(currentMatch);
 			currentNode.getBasedOn().forEach(n -> {
 				if (n.isBroken())
-					set.add(epg.getMatch(n));
+					set.add(matchContainer.getMatch(n));
 			});
 			return set;
 		});

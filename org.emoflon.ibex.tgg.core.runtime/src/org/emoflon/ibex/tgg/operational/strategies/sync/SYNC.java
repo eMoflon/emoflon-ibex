@@ -6,17 +6,24 @@ import java.util.Optional;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
-
 public class SYNC extends PropagatingOperationalStrategy {
 
-	/***** Constructors 
-	 * @param sync *****/
+	// Forward or backward sync
+	protected SYNC_Strategy syncStrategy;
+
+	/*****
+	 * Constructors
+	 * 
+	 * @param sync
+	 *****/
 
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);
@@ -48,6 +55,22 @@ public class SYNC extends PropagatingOperationalStrategy {
 		run();
 	}
 
+	protected void repair() {
+		initializeRepairStrategy(options);
+
+		// TODO loop this together with roll back
+		translate();
+		repairBrokenMatches();
+	}
+
+	public SYNC_Strategy getSyncStrategy() {
+		return syncStrategy;
+	}
+	
+	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, ITGGMatch m) {
+		return syncStrategy.determineCSP(factory, m);
+	}
+	
 	/***** Match and pattern management *****/
 
 	@Override
@@ -60,6 +83,11 @@ public class SYNC extends PropagatingOperationalStrategy {
 		return syncStrategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
 	}
 
+	@Override
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getSYNCTypes();
+	}
+
 	private void logCreatedAndDeletedNumbers() {
 		if (options.debug()) {
 			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream() //
@@ -70,10 +98,5 @@ public class SYNC extends PropagatingOperationalStrategy {
 			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedElements()
 					+ (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
 		}
-	}
-
-	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getSYNCTypes();
 	}
 }

@@ -1,34 +1,38 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.pattern;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MCCProvider;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassificationComponent;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.fragments.IntegrationFragment;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.provider.IntegrationFragmentProvider;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.provider.MatchClassifierProvider;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
 
 public class IntegrationPattern {
 
-	private final List<MatchClassificationComponent> mcComponents;
+	private final List<MatchClassifier> matchClassifier;
 	private final List<IntegrationFragment> fragments;
 
-	public IntegrationPattern(List<MatchClassificationComponent> mcComponents,
-			List<IntegrationFragment> fragments) {
-		this.mcComponents = mcComponents;
+	public IntegrationPattern(List<IntegrationFragment> fragments, List<MatchClassifier> matchClassifier) {
 		this.fragments = fragments;
+		this.matchClassifier = matchClassifier;
+	}
+	
+	public IntegrationPattern(List<IntegrationFragment> fragments) {
+		this.fragments = fragments;
+		this.matchClassifier = MatchClassifierProvider.getDefaultMatchClassifier();
 	}
 
 	public IntegrationPattern() {
-		mcComponents = MCCProvider.getDefaultMCCs();
-		fragments = new ArrayList<>();
+		this.fragments = IntegrationFragmentProvider.getDefaultIntegrationFragments();
+		this.matchClassifier = MatchClassifierProvider.getDefaultMatchClassifier();
 	}
 
-	public List<MatchClassificationComponent> getMCComponents() {
-		return mcComponents;
+	public List<MatchClassifier> getMatchClassifier() {
+		return matchClassifier;
 	}
 
 	public List<IntegrationFragment> getIntegrationFragments() {
 		return fragments;
 	}
-	
+
 }

@@ -2,7 +2,10 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
@@ -15,30 +18,28 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 public class ModelChangeProtocol {
 
 	private final Resource[] observedRes;
-	public final ModelChangeUtil util;
 
 	private EContentAdapter adapter;
 
-	private Map<GroupKey, ModelChanges> groupedModelChanges;
-	private GroupKey currentKey;
+	private Map<ChangeKey, ModelChanges> groupedModelChanges;
+	private Set<ChangeKey> currentKeys;
 
-	public class GroupKey {
-		public GroupKey() {
+	public static class ChangeKey {
+		public ChangeKey() {
 		}
 	}
 
 	public ModelChangeProtocol(Resource... observedRes) {
 		this.observedRes = observedRes;
-		this.util = new ModelChangeUtil(this);
 
 		groupedModelChanges = new HashMap<>();
-		currentKey = null;
+		currentKeys = new HashSet<>();
 
 		adapter = new EContentAdapter() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void notifyChanged(Notification n) {
-				if (currentKey != null) {
+				if (!currentKeys.isEmpty()) {
 					switch (n.getEventType()) {
 					case Notification.ADD:
 						processAddNotif(n.getNotifier(), (EReference) n.getFeature(), (EObject) n.getNewValue());
@@ -77,92 +78,94 @@ public class ModelChangeProtocol {
 			observedRes[i].eAdapters().remove(adapter);
 	}
 
-	public void setGroupKey(GroupKey key) {
-		currentKey = key;
-		groupedModelChanges.computeIfAbsent(currentKey, k -> new ModelChanges());
+	public void registerKey(ChangeKey key) {
+		currentKeys.add(key);
+		groupedModelChanges.computeIfAbsent(key, k -> new ModelChanges());
 	}
 
-	public GroupKey getCurrentGroupKey() {
-		return currentKey;
+	public void deregisterKey(ChangeKey key) {
+		currentKeys.remove(key);
 	}
 
-	public void unsetGroupKey() {
-		currentKey = null;
-	}
-
-	public ModelChanges getModelChanges(GroupKey key) {
+	public ModelChanges getModelChanges(ChangeKey key) {
 		return groupedModelChanges.get(key);
 	}
 
-	public ModelChanges getCurrentModelChanges() {
-		return groupedModelChanges.get(currentKey);
+	public Set<ModelChanges> getCurrentModelChanges() {
+		return currentKeys.stream() //
+				.map(k -> groupedModelChanges.get(k)) //
+				.collect(Collectors.toSet());
 	}
 
 	private void processAddNotif(Object notifier, EReference feature, EObject newValue) {
-		ModelChanges changes = getCurrentModelChanges();
+		Set<ModelChanges> changes = getCurrentModelChanges();
 
 		if (notifier instanceof Resource) {
-			changes.addCreatedElement(newValue);
+			changes.forEach(c -> c.addCreatedElement(newValue));
 		} else if (notifier instanceof EObject) {
-			changes.addCreatedEdge(new EMFEdge((EObject) notifier, newValue, feature));
+			changes.forEach(c -> c.addCreatedEdge(new EMFEdge((EObject) notifier, newValue, feature)));
 			if (feature.isContainment())
-				changes.addCreatedElement(newValue);
+				changes.forEach(c -> c.addCreatedElement(newValue));
 		}
 	}
 
 	private void processAddManyNotif(Object notifier, EReference feature, Collection<EObject> newValues) {
-		ModelChanges changes = getCurrentModelChanges();
+		Set<ModelChanges> changes = getCurrentModelChanges();
 
 		if (notifier instanceof Resource) {
-			changes.addAllCreatedElements(newValues);
+			changes.forEach(c -> c.addAllCreatedElements(newValues));
 		} else if (notifier instanceof EObject) {
-			newValues.forEach(newValue -> changes.addCreatedEdge(new EMFEdge((EObject) notifier, newValue, feature)));
+			newValues.forEach(newValue -> changes
+					.forEach(c -> c.addCreatedEdge(new EMFEdge((EObject) notifier, newValue, feature))));
 			if (feature.isContainment())
-				changes.addAllCreatedElements(newValues);
+				changes.forEach(c -> c.addAllCreatedElements(newValues));
 		}
 	}
 
 	private void processRemoveNotif(Object notifier, EReference feature, EObject oldValue) {
-		ModelChanges changes = getCurrentModelChanges();
+		Set<ModelChanges> changes = getCurrentModelChanges();
 
 		if (notifier instanceof Resource) {
-			changes.addDelEltContainedInRes(oldValue, (Resource) notifier);
+			changes.forEach(c -> c.addDelEltContainedInRes(oldValue, (Resource) notifier));
 		} else if (notifier instanceof EObject) {
-			changes.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature));
+			changes.forEach(c -> c.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature)));
 			if (feature.isContainment())
-				changes.addDeletedElement(oldValue);
+				changes.forEach(c -> c.addDeletedElement(oldValue));
 		}
 	}
 
 	private void processRemoveManyNotif(Object notifier, EReference feature, Collection<EObject> oldValues) {
-		ModelChanges changes = getCurrentModelChanges();
+		Set<ModelChanges> changes = getCurrentModelChanges();
 
 		if (notifier instanceof Resource) {
-			oldValues.forEach(oldValue -> changes.addDelEltContainedInRes(oldValue, (Resource) notifier));
+			oldValues.forEach(
+					oldValue -> changes.forEach(c -> c.addDelEltContainedInRes(oldValue, (Resource) notifier)));
 		} else if (notifier instanceof EObject) {
-			oldValues.forEach(oldValue -> changes.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature)));
+			oldValues.forEach(oldValue -> changes
+					.forEach(c -> c.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature))));
 			if (feature.isContainment())
-				changes.addAllDeletedElements(oldValues);
+				changes.forEach(c -> c.addAllDeletedElements(oldValues));
 		}
 	}
 
 	private void processSetNotif(EObject notifier, Object feature, Object oldValue, Object newValue) {
-		ModelChanges changes = getCurrentModelChanges();
+		Set<ModelChanges> changes = getCurrentModelChanges();
 
 		if (feature instanceof EReference) {
 			EReference reference = (EReference) feature;
 			if (oldValue != null) {
-				changes.addDeletedEdge(new EMFEdge(notifier, (EObject) oldValue, reference));
+				changes.forEach(c -> c.addDeletedEdge(new EMFEdge(notifier, (EObject) oldValue, reference)));
 				if (reference.isContainment())
-					changes.addDeletedElement((EObject) oldValue);
+					changes.forEach(c -> c.addDeletedElement((EObject) oldValue));
 			}
 			if (newValue != null) {
-				changes.addCreatedEdge(new EMFEdge(notifier, (EObject) newValue, reference));
+				changes.forEach(c -> c.addCreatedEdge(new EMFEdge(notifier, (EObject) newValue, reference)));
 				if (reference.isContainment())
-					changes.addCreatedElement((EObject) newValue);
+					changes.forEach(c -> c.addCreatedElement((EObject) newValue));
 			}
 		} else if (feature instanceof EAttribute) {
-			changes.addAttributeChange(new AttributeChange(notifier, (EAttribute) feature, oldValue, newValue));
+			changes.forEach(
+					c -> c.addAttributeChange(new AttributeChange(notifier, (EAttribute) feature, oldValue, newValue)));
 		}
 	}
 

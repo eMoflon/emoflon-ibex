@@ -11,6 +11,10 @@ import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
+import org.emoflon.ibex.tgg.operational.strategies.sync.BWD_Strategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 import runtime.TGGRuleApplication;
 
@@ -18,22 +22,46 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 
 	protected final static Logger logger = Logger.getLogger(AbstractRepairStrategy.class);
 
-	private PropagatingOperationalStrategy operationalStrategy;
-	
-	public AttributeRepairStrategy(PropagatingOperationalStrategy operationalStrategy) {
-		this.operationalStrategy = operationalStrategy;
+	private PropagatingOperationalStrategy opStrat;
+
+	public AttributeRepairStrategy(PropagatingOperationalStrategy opStrat) {
+		this.opStrat = opStrat;
 	}
 
 	@Override
 	public ITGGMatch repair(ITGGMatch repairCandidate) {
-		IGreenPatternFactory factory = operationalStrategy.getGreenFactory(PatternSuffixes.removeSuffix(repairCandidate.getPatternName()));		
-		IRuntimeTGGAttrConstrContainer csp = operationalStrategy.determineCSP(factory, repairCandidate);
+		IGreenPatternFactory factory = opStrat.getGreenFactory(PatternSuffixes.removeSuffix(repairCandidate.getPatternName()));
+		if (opStrat instanceof SYNC) {
+			IRuntimeTGGAttrConstrContainer csp = ((SYNC) opStrat).determineCSP(factory, repairCandidate);
+			return repair(repairCandidate, csp);
+		}
+		return null;
+	}
+
+	@Override
+	public ITGGMatch repair(ITGGMatch repairCandidate, PropagationDirection direction) {
+		IGreenPatternFactory factory = opStrat.getGreenFactory(PatternSuffixes.removeSuffix(repairCandidate.getPatternName()));
+		IRuntimeTGGAttrConstrContainer csp;
+		switch (direction) {
+		case FORWARD:
+			csp = new FWD_Strategy().determineCSP(factory, repairCandidate);
+			break;
+		case BACKWARD:
+			csp = new BWD_Strategy().determineCSP(factory, repairCandidate);
+			break;
+		default:
+			return null;
+		}
+		return repair(repairCandidate, csp);
+	}
+
+	private ITGGMatch repair(ITGGMatch repairCandidate, IRuntimeTGGAttrConstrContainer csp) {
 		if (csp.solve()) {
 			csp.applyCSPValues(repairCandidate);
 			logger.info("Repaired: " + repairCandidate.getPatternName() + " (" + repairCandidate.hashCode() + ")");
 			return repairCandidate;
-		} else
-			return null;
+		}
+		return null;
 	}
 
 	@Override
@@ -44,7 +72,7 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 				.map(brokenRuleApplications::get)//
 				.collect(Collectors.toList());
 	}
-	
+
 	private boolean noMissingNodes(TGGRuleApplication ra) {
 		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
 	}

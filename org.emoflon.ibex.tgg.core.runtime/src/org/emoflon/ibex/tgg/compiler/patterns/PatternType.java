@@ -36,6 +36,7 @@ public enum PatternType {
 			Collection<PatternType> types = new LinkedList<>();
 			types.add(PatternType.CC);
 			types.add(PatternType.GENForCC);
+			types.add(PatternType.CONSISTENCY);
 			return types;
 		}
 		

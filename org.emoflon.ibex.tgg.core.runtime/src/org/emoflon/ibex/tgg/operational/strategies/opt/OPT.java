@@ -8,17 +8,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.impl.EClassImpl;
-import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
 import org.emoflon.ibex.common.collections.IntSet;
 import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
-import org.emoflon.ibex.common.collections.ObjectToIntMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
@@ -27,7 +20,6 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
@@ -79,8 +71,8 @@ public abstract class OPT extends OperationalStrategy {
 	@Override
 	public void run() throws IOException {
 		do
-			this.matchDistributor.updateMatches();
-		while (this.processOneOperationalRuleMatch());
+			matchDistributor.updateMatches();
+		while (processOneOperationalRuleMatch());
 
 		this.wrapUp();
 	}
@@ -166,16 +158,16 @@ public abstract class OPT extends OperationalStrategy {
 		BinaryILPProblem ilpProblem = ILPFactory.createBinaryILPProblem();
 
 		OperationalStrategy.logger.debug("Adding exclusions...");
-		this.defineILPExclusions(ilpProblem);
+		defineILPExclusions(ilpProblem);
 
 		OperationalStrategy.logger.debug("Adding implications...");
-		this.defineILPImplications(ilpProblem);
+		defineILPImplications(ilpProblem);
 
 		OperationalStrategy.logger.debug("Defining objective...");
-		this.defineILPObjective(ilpProblem);
+		defineILPObjective(ilpProblem);
 
 		OperationalStrategy.logger.debug("Adding user defined constraints...");
-		this.addUserDefinedConstraints(ilpProblem);
+		addUserDefinedConstraints(ilpProblem);
 
 		return ilpProblem;
 	}
@@ -192,7 +184,7 @@ public abstract class OPT extends OperationalStrategy {
 			}
 
 			int[] result = new int[idToMatch.size()];
-			this.idToMatch.keySet().stream().forEach(v -> {
+			idToMatch.keySet().stream().forEach(v -> {
 				if (ilpSolution.getVariable("x" + v) > 0)
 					result[v - 1] = v;
 				else
@@ -282,7 +274,7 @@ public abstract class OPT extends OperationalStrategy {
 	@Override
 	public void terminate() {
 		matchDistributor.removeBlackInterpreter();
-		for (ITGGMatch m : this.idToMatch.values()) {
+		for (ITGGMatch m : idToMatch.values()) {
 			for (String parameter : m.getParameterNames()) {
 				EObject object = (EObject) m.get(parameter);
 				object.eAdapters().clear();

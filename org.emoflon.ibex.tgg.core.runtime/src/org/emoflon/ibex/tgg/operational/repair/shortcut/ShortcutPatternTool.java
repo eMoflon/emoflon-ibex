@@ -25,11 +25,13 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SyncDirection;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
+
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import language.BindingType;
 import language.DomainType;
@@ -74,8 +76,8 @@ public class ShortcutPatternTool {
 	private void initialize() {
 		OperationalSCFactory factory = new OperationalSCFactory(strategy, scRules);
 		
-		tggRule2srcSCRule = factory.createOperationalRules(SyncDirection.FORWARD);
-		tggRule2trgSCRule = factory.createOperationalRules(SyncDirection.BACKWARD);
+		tggRule2srcSCRule = factory.createOperationalRules(PropagationDirection.FORWARD);
+		tggRule2trgSCRule = factory.createOperationalRules(PropagationDirection.BACKWARD);
 		
 		rule2matcher = new HashMap<>();
 		
@@ -98,7 +100,7 @@ public class ShortcutPatternTool {
 		persistence.saveOperationalBWDSCRules(tggRule2trgSCRule.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
 	}
 
-	public ITGGMatch processBrokenMatch(SyncDirection direction, ITGGMatch brokenMatch) {
+	public ITGGMatch processBrokenMatch(PropagationDirection direction, ITGGMatch brokenMatch) {
 		String ruleName = PatternSuffixes.removeSuffix(brokenMatch.getPatternName());
 		switch(direction) {
 		case FORWARD:
@@ -191,7 +193,7 @@ public class ShortcutPatternTool {
 		Set<EMFEdge> edgesToRevoke = new HashSet<>();
 		// Collect edges to revoke.
 		deletedRuleEdges.forEach(e -> {
-			EMFEdge runtimeEdge = strategy.getRuntimeEdge(brokenMatch, e);
+			EMFEdge runtimeEdge = getRuntimeEdge(brokenMatch, e);
 			if (runtimeEdge.getSource() != null && runtimeEdge.getTarget() != null)
 				edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
 		});

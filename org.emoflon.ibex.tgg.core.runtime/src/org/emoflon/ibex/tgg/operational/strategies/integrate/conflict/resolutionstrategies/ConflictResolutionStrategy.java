@@ -1,7 +1,8 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
@@ -10,13 +11,13 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.AnalysedMatch.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import runtime.TGGRuleApplication;
 
 public abstract class ConflictResolutionStrategy {
 
@@ -24,17 +25,14 @@ public abstract class ConflictResolutionStrategy {
 	}
 
 	protected void restoreMatch(INTEGRATE integrate, ITGGMatch match) {
-		ModelChangeProtocol mcp = integrate.getModelChangeProtocol();
-		// TODO adrianm: avoid using AnalysedMatch
-		AnalysedMatch analysedMatch = integrate.getAnalysedMatches().get(match);
-		List<TGGRuleElement> elements = analysedMatch.getElts(new EltFilter().create());
+		Set<TGGRuleElement> elements = integrate.getMatchAnalyser().getElts(match, new EltFilter().create());
 
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EObject> deletedNodes = new HashSet<>();
 		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
 		elements.forEach(elt -> {
 			if (elt instanceof TGGRuleEdge) {
-				EMFEdge edge = integrate.getRuntimeEdge(match, (TGGRuleEdge) elt);
+				EMFEdge edge = getRuntimeEdge(match, (TGGRuleEdge) elt);
 				if (integrate.getUserModelChanges().isDeleted(edge))
 					if (edge.getType().isContainment())
 						deletedContainmentEdges.add(edge);
@@ -46,14 +44,16 @@ public abstract class ConflictResolutionStrategy {
 					deletedNodes.add(node);
 			}
 		});
+		TGGRuleApplication ruleApplication = integrate.getRuleApplicationNode(match);
+		deletedCrossEdges.addAll(integrate.getUserModelChanges().getDeletedEdges(ruleApplication));
 
-		deletedContainmentEdges.forEach(edge -> mcp.util.createEdge(edge));
+		deletedContainmentEdges.forEach(edge -> ModelChangeUtil.createEdge(edge));
 		deletedNodes.forEach(node -> {
 			Resource resource = integrate.getUserModelChanges().containedInResource(node);
 			if (resource != null)
 				resource.getContents().add(node);
 		});
-		deletedCrossEdges.forEach(edge -> mcp.util.createEdge(edge));
+		deletedCrossEdges.forEach(edge -> ModelChangeUtil.createEdge(edge));
 	}
 
 	/**

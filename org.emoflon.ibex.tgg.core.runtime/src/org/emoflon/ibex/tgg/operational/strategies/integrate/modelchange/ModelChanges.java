@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -261,38 +260,10 @@ public class ModelChanges {
 
 	private void cleanUp() {
 		if (modified) {
-			// Note: not longer in use -> neutralization takes place instantly when new
-			// entries come in
-//			neutralizeEntries();
 			detectAppendagesOfNewlyCreatedElements();
-
 			newlyCreatedElements.clear();
 			newlyDeletedElements.clear();
 			modified = false;
-		}
-	}
-
-	private void neutralizeEntries() {
-		Iterator<EObject> eltIt = createdElements.iterator();
-		while (eltIt.hasNext()) {
-			EObject element = eltIt.next();
-			if (deletedElements.contains(element)) {
-				eltIt.remove();
-				deletedElements.remove(element);
-			}
-		}
-
-		Iterator<EMFEdge> edgeIt = createdEdges.iterator();
-		while (edgeIt.hasNext()) {
-			EMFEdge edge = edgeIt.next();
-			if (deletedEdges.contains(edge)) {
-				eltIt.remove();
-				deletedEdges.remove(edge);
-				srcMappedCreatedEdges.get(edge.getSource()).remove(edge);
-				trgMappedCreatedEdges.get(edge.getTarget()).remove(edge);
-				srcMappedDeletedEdges.get(edge.getSource()).remove(edge);
-				trgMappedDeletedEdges.get(edge.getTarget()).remove(edge);
-			}
 		}
 	}
 
