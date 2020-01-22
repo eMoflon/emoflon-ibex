@@ -17,7 +17,8 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
- org.moflon.core.utilities;visibility:=reexport
+ org.moflon.core.utilities;visibility:=reexport,
+ org.emoflon.ibex.tgg.language
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
