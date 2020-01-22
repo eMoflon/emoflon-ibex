@@ -174,137 +174,145 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	def static String visualizeSCRuleMerged(ExternalShortcutRule scrule) {
+		var namespace = scrule.name
+		var namespaceSrc = "[S] " + scrule.sourceRule.name
+		var namespaceTrg = "[T] " + scrule.targetRule.name
+		
 		'''
 			«plantUMLPreamble»
 			
-			package "«scrule.name»" {
-				together {
-					«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.TRG]»
-						«visualizeNodeMapping(mapping, "TRG")»
-					«ENDFOR»
-					«FOR element : scrule.unboundSrcContext.filter(DomainType.TRG)»
-						«visualizeNode(element, "BLACK", "TRG", "S")»
-					«ENDFOR»
-					«FOR element : scrule.unboundTrgContext.filter(DomainType.TRG)»
-						«visualizeNode(element, "BLACK", "TRG", "T")»
-					«ENDFOR»
-					«FOR element : scrule.creations.filter(DomainType.TRG)»
-						«visualizeNode(element, "GREEN", "TRG", "T")»
-					«ENDFOR»
-					«FOR element : scrule.deletions.filter(DomainType.TRG)»
-						«visualizeNode(element, "RED", "TRG", "S")»
-					«ENDFOR»
-				}
-				
-				together {
-					«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.SRC]»
-						«visualizeNodeMapping(mapping, "SRC")»
-					«ENDFOR»
-					«FOR element : scrule.unboundSrcContext.filter(DomainType.SRC)»
-						«visualizeNode(element, "BLACK", "SRC", "S")»
-					«ENDFOR»
-					«FOR element : scrule.unboundTrgContext.filter(DomainType.SRC)»
-						«visualizeNode(element, "BLACK", "SRC", "T")»
-					«ENDFOR»
-					«FOR element : scrule.creations.filter(DomainType.SRC)»
-						«visualizeNode(element, "GREEN", "SRC", "T")»
-					«ENDFOR»
-					«FOR element : scrule.deletions.filter(DomainType.SRC)»
-						«visualizeNode(element, "RED", "SRC", "S")»
-					«ENDFOR»
-				}
-				
-				together {
-					«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.CORR]»
-						«visualizeCorrMapping(mapping)»
-					«ENDFOR»
-					«FOR element : scrule.unboundSrcContext.filter(DomainType.CORR)»
-						«visualizeCorr(element, "BLACK", "S")»
-					«ENDFOR»
-					«FOR element : scrule.unboundTrgContext.filter(DomainType.CORR)»
-						«visualizeCorr(element, "BLACK", "T")»
-					«ENDFOR»
-					«FOR element : scrule.creations.filter(DomainType.CORR)»
-						«visualizeCorr(element, "GREEN", "T")»
-					«ENDFOR»
-					«FOR element : scrule.deletions.filter(DomainType.CORR)»
-						«visualizeCorr(element, "RED", "S")»
-					«ENDFOR»
-				}
+			together {
+				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.TRG]»
+					«visualizeNodeMapping(namespace, mapping, "TRG")»
+				«ENDFOR»
+				«FOR element : scrule.unboundSrcContext.filter(DomainType.TRG)»
+					«visualizeNode(namespace, element, "BLACK", "TRG", "S")»
+				«ENDFOR»
+				«FOR element : scrule.unboundTrgContext.filter(DomainType.TRG)»
+					«visualizeNode(namespace, element, "BLACK", "TRG", "T")»
+				«ENDFOR»
+				«FOR element : scrule.creations.filter(DomainType.TRG)»
+					«visualizeNode(namespace, element, "GREEN", "TRG", "T")»
+				«ENDFOR»
+				«FOR element : scrule.deletions.filter(DomainType.TRG)»
+					«visualizeNode(namespace, element, "RED", "TRG", "S")»
+				«ENDFOR»
+			}
+			
+			together {
+				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.SRC]»
+					«visualizeNodeMapping(namespace, mapping, "SRC")»
+				«ENDFOR»
+				«FOR element : scrule.unboundSrcContext.filter(DomainType.SRC)»
+					«visualizeNode(namespace, element, "BLACK", "SRC", "S")»
+				«ENDFOR»
+				«FOR element : scrule.unboundTrgContext.filter(DomainType.SRC)»
+					«visualizeNode(namespace, element, "BLACK", "SRC", "T")»
+				«ENDFOR»
+				«FOR element : scrule.creations.filter(DomainType.SRC)»
+					«visualizeNode(namespace, element, "GREEN", "SRC", "T")»
+				«ENDFOR»
+				«FOR element : scrule.deletions.filter(DomainType.SRC)»
+					«visualizeNode(namespace, element, "RED", "SRC", "S")»
+				«ENDFOR»
+			}
+			
+			together {
+				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.CORR]»
+					«visualizeCorrMapping(namespace, mapping)»
+				«ENDFOR»
+				«FOR element : scrule.unboundSrcContext.filter(DomainType.CORR)»
+					«visualizeCorr(namespace, element, "BLACK", "S")»
+				«ENDFOR»
+				«FOR element : scrule.unboundTrgContext.filter(DomainType.CORR)»
+					«visualizeCorr(namespace, element, "BLACK", "T")»
+				«ENDFOR»
+				«FOR element : scrule.creations.filter(DomainType.CORR)»
+					«visualizeCorr(namespace, element, "GREEN", "T")»
+				«ENDFOR»
+				«FOR element : scrule.deletions.filter(DomainType.CORR)»
+					«visualizeCorr(namespace, element, "RED", "S")»
+				«ENDFOR»
 			}
 			
 			«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType != DomainType.CORR]»
-				«visualizeEdgeMapping(mapping)»
+				«visualizeEdgeMapping(namespace, mapping)»
 			«ENDFOR»
 			«FOR element : scrule.unboundSrcContext.filterInverse(DomainType.CORR)»
-				«visualizeEdge(element, "BLACK", "S", scrule.mapping)»
+				«visualizeEdge(namespace, element, "BLACK", "S", scrule.mapping)»
 			«ENDFOR»
 			«FOR element : scrule.unboundTrgContext.filterInverse(DomainType.CORR)»
-				«visualizeEdge(element, "BLACK", "T", scrule.mapping)»
+				«visualizeEdge(namespace, element, "BLACK", "T", scrule.mapping)»
 			«ENDFOR»
 			«FOR element : scrule.creations.filterInverse(DomainType.CORR)»
-				«visualizeEdge(element, "GREEN", "T", scrule.mapping)»
+				«visualizeEdge(namespace, element, "GREEN", "T", scrule.mapping)»
 			«ENDFOR»
 			«FOR element : scrule.deletions.filterInverse(DomainType.CORR)»
-				«visualizeEdge(element, "RED", "S", scrule.mapping)»
+				«visualizeEdge(namespace, element, "RED", "S", scrule.mapping)»
 			«ENDFOR»
+			
+			«visualizeTGGRule(namespaceSrc, scrule.sourceRule)»
+			«visualizeTGGRule(namespaceTrg, scrule.targetRule)»
+			
+			"«namespaceSrc»" -down-> "«namespace»"
+			"«namespaceTrg»" -up-> "«namespace»" 
 		'''
 	}
 
-	private def static visualizeNodeMapping(TGGRuleElementMapping mapping, String domain) {
+	private def static visualizeNodeMapping(String namespace, TGGRuleElementMapping mapping, String domain) {
 		if (mapping.sourceRuleElement instanceof TGGRuleNode) {
 			'''
-				class «idOfMapped(mapping.sourceRuleElement as TGGRuleNode)» <<BLUE>> <<«domain»>>
+				class «idOfMapped(namespace, mapping.sourceRuleElement as TGGRuleNode)» <<BLUE>> <<«domain»>>
 			'''
 		}
 	}
 
-	private def static visualizeNode(TGGRuleElement elt, String domain, String binding, String origin) {
+	private def static visualizeNode(String namespace, TGGRuleElement elt, String domain, String binding, String origin) {
 		if (elt instanceof TGGRuleNode) {
 			'''
-				class «idOf(elt as TGGRuleNode, origin)» <<«binding»>> <<«domain»>>
+				class «idOf(namespace, elt as TGGRuleNode, origin)» <<«binding»>> <<«domain»>>
 			'''
 		}
 	}
 
-	private def static visualizeCorrMapping(TGGRuleElementMapping mapping) {
+	private def static visualizeCorrMapping(String namespace, TGGRuleElementMapping mapping) {
 		if (mapping.sourceRuleElement instanceof TGGRuleCorr) {
 			var srcCorr = mapping.sourceRuleElement as TGGRuleCorr
 			'''
-				«idOfMapped(srcCorr.source)» .[#«"BLUE".color»] «idOfMapped(srcCorr.target)» : «srcCorr.name»
+				«idOfMapped(namespace, srcCorr.source)» .[#«"BLUE".color»] «idOfMapped(namespace, srcCorr.target)» : «srcCorr.name»
 			'''
 		}
 	}
 
-	private def static visualizeCorr(TGGRuleElement elt, String binding, String origin) {
+	private def static visualizeCorr(String namespace, TGGRuleElement elt, String binding, String origin) {
 		if (elt instanceof TGGRuleCorr) {
 			var corr = elt as TGGRuleCorr
 			'''
-				«idOf(corr.source, origin)» .[#«binding.color»] «idOf(corr.target, origin)» : «corr.name»
+				«idOf(namespace, corr.source, origin)» .[#«binding.color»] «idOf(namespace, corr.target, origin)» : «corr.name»
 			'''
 		}
 	}
 
-	private def static visualizeEdgeMapping(TGGRuleElementMapping mapping) {
+	private def static visualizeEdgeMapping(String namespace, TGGRuleElementMapping mapping) {
 		if (mapping.sourceRuleElement instanceof TGGRuleEdge) {
 			var srcEdge = mapping.sourceRuleElement as TGGRuleEdge
 			'''
-				«idOfMapped(srcEdge.srcNode)» -[#«"BLUE".color»]-> «idOfMapped(srcEdge.trgNode)» : «srcEdge.type.name»
+				«idOfMapped(namespace, srcEdge.srcNode)» -[#«"BLUE".color»]-> «idOfMapped(namespace, srcEdge.trgNode)» : «srcEdge.type.name»
 			'''
 		}
 	}
 
-	private def static visualizeEdge(TGGRuleElement elt, String binding, String origin,
+	private def static visualizeEdge(String namespace, TGGRuleElement elt, String binding, String origin,
 		List<TGGRuleElementMapping> mappings) {
 		if (elt instanceof TGGRuleEdge) {
 			var edge = elt as TGGRuleEdge
 
 			var srcMapping = edge.srcNode.isMapped(mappings)
 			var trgMapping = edge.trgNode.isMapped(mappings)
-			var srcId = srcMapping === null ? idOf(edge.srcNode, origin) : idOfMapped(
-					srcMapping.sourceRuleElement as TGGRuleNode)
-			var trgId = trgMapping === null ? idOf(edge.trgNode, origin) : idOfMapped(
-					trgMapping.sourceRuleElement as TGGRuleNode)
+			var srcId = srcMapping === null ? idOf(namespace, edge.srcNode, origin) : idOfMapped(
+					namespace, srcMapping.sourceRuleElement as TGGRuleNode)
+			var trgId = trgMapping === null ? idOf(namespace, edge.trgNode, origin) : idOfMapped(
+					namespace, trgMapping.sourceRuleElement as TGGRuleNode)
 
 			'''
 				«srcId» -[#«binding.color»]-> «trgId» : «edge.type.name»
@@ -316,12 +324,12 @@ class IBeXTggXmiPlantUMLGenerator {
 		mappings.findFirst[m|m.sourceRuleElement.equals(node) || m.targetRuleElement.equals(node)]
 	}
 
-	private def static idOfMapped(TGGRuleNode srcNode) {
-		'''"[ST] «srcNode.name» : «srcNode.type.name»"'''
+	private def static idOfMapped(String namespace, TGGRuleNode srcNode) {
+		'''"«namespace».[ST] «srcNode.name» : «srcNode.type.name»"'''
 	}
 
-	private def static idOf(TGGRuleNode node, String origin) {
-		'''"[«origin»] «node.name» : «node.type.name»"'''
+	private def static idOf(String namespace, TGGRuleNode node, String origin) {
+		'''"«namespace».[«origin»] «node.name» : «node.type.name»"'''
 	}
 
 	private def static getColor(String binding) {
