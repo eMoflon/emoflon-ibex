@@ -27,6 +27,7 @@ class IBeXTggXmiPlantUMLGenerator {
 				BorderColor<<GREEN>> SpringGreen
 				BorderColor<<RED>> Red
 				BorderColor<<BLACK>> Black
+				BorderColor<<BLUE>> Blue
 				BackgroundColor<<ABSBG>> White
 				BackgroundColor<<TRG>> MistyRose
 				BackgroundColor<<SRC>> LightYellow
@@ -253,7 +254,7 @@ class IBeXTggXmiPlantUMLGenerator {
 	private def static visualizeNodeMapping(TGGRuleElementMapping mapping, String domain) {
 		if (mapping.sourceRuleElement instanceof TGGRuleNode) {
 			'''
-				class «idOfMapped(mapping.sourceRuleElement as TGGRuleNode)» <<BLACK>> <<«domain»>>
+				class «idOfMapped(mapping.sourceRuleElement as TGGRuleNode)» <<BLUE>> <<«domain»>>
 			'''
 		}
 	}
@@ -270,7 +271,7 @@ class IBeXTggXmiPlantUMLGenerator {
 		if (mapping.sourceRuleElement instanceof TGGRuleCorr) {
 			var srcCorr = mapping.sourceRuleElement as TGGRuleCorr
 			'''
-				«idOfMapped(srcCorr.source)» . «idOfMapped(srcCorr.target)» : «srcCorr.name»
+				«idOfMapped(srcCorr.source)» .[#«"BLUE".color»] «idOfMapped(srcCorr.target)» : «srcCorr.name»
 			'''
 		}
 	}
@@ -288,7 +289,7 @@ class IBeXTggXmiPlantUMLGenerator {
 		if (mapping.sourceRuleElement instanceof TGGRuleEdge) {
 			var srcEdge = mapping.sourceRuleElement as TGGRuleEdge
 			'''
-				«idOfMapped(srcEdge.srcNode)» --> «idOfMapped(srcEdge.trgNode)» : «srcEdge.type.name»
+				«idOfMapped(srcEdge.srcNode)» -[#«"BLUE".color»]-> «idOfMapped(srcEdge.trgNode)» : «srcEdge.type.name»
 			'''
 		}
 	}
@@ -333,6 +334,9 @@ class IBeXTggXmiPlantUMLGenerator {
 			}
 			case "RED": {
 				"Red"
+			}
+			case "BLUE": {
+				"Blue"
 			}
 			default: {
 				"Black"
