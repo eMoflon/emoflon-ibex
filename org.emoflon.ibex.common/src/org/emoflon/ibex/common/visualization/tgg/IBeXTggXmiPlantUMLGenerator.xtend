@@ -4,17 +4,28 @@ import java.util.List
 import language.BindingType
 import language.DomainType
 import language.TGG
+import language.TGGAttributeConstraint
+import language.TGGAttributeConstraintLibrary
+import language.TGGAttributeConstraintOperators
+import language.TGGAttributeExpression
+import language.TGGEnumExpression
+import language.TGGInplaceAttributeExpression
+import language.TGGLiteralExpression
+import language.TGGParamValue
 import language.TGGRule
 import language.TGGRuleCorr
 import language.TGGRuleEdge
 import language.TGGRuleElement
 import language.TGGRuleNode
+import language.impl.TGGAttributeExpressionImpl
+import language.impl.TGGEnumExpressionImpl
+import language.impl.TGGLiteralExpressionImpl
 import language.repair.ExternalShortcutRule
 import language.repair.TGGRuleElementMapping
 
 class IBeXTggXmiPlantUMLGenerator {
 
-	def static CharSequence plantUMLPreamble() {
+	private def static CharSequence plantUMLPreamble() {
 		'''
 			hide empty members
 			hide circle
@@ -23,12 +34,12 @@ class IBeXTggXmiPlantUMLGenerator {
 			skinparam shadowing false
 			
 			skinparam class {
-				BorderColor<<ABSB>> SlateGrey
+				BorderColor<<GREY>> SlateGrey
 				BorderColor<<GREEN>> SpringGreen
 				BorderColor<<RED>> Red
 				BorderColor<<BLACK>> Black
 				BorderColor<<BLUE>> Blue
-				BackgroundColor<<ABSBG>> White
+				BackgroundColor<<WHITE>> White
 				BackgroundColor<<TRG>> MistyRose
 				BackgroundColor<<SRC>> LightYellow
 				ArrowColor Black
@@ -36,12 +47,35 @@ class IBeXTggXmiPlantUMLGenerator {
 		'''
 	}
 
+	private def static getColor(String binding) {
+		'''[#«switch (binding) {
+			case "BLACK": {
+				"Black"
+			}
+			case "GREEN": {
+				"SpringGreen"
+			}
+			case "RED": {
+				"Red"
+			}
+			case "BLUE": {
+				"Blue"
+			}
+			case "GREY": {
+				"SlateGrey"
+			}
+			default: {
+				"Black"
+			}
+		}»]'''
+	}
+
 	def static String visualizeTGG(TGG tgg) {
 		'''
 				«plantUMLPreamble»
 			
 				«FOR rule : tgg.rules»
-					«IF rule.abstract»abstract «ENDIF»class «rule.name» «IF rule.abstract»<<ABSBG>> <<ABSB>>«ELSE»<<BLACK>>«ENDIF»
+					«IF rule.abstract»abstract «ENDIF»class «rule.name» «IF rule.abstract»<<WHITE>> <<GREY>>«ELSE»<<BLACK>>«ENDIF»
 				«ENDFOR»
 				
 				«FOR rule : tgg.rules»
@@ -53,15 +87,18 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	def static String visualizeTGGRule(TGGRule rule) {
+		var namespaceRule = "Rule: " + rule.name
+		var namespaceConstr = "Attribute Constraints"
+		
 		'''
 			«plantUMLPreamble»
 			
-			package "«rule.name»" {
-				«visualizeTGGRule(rule.name, rule)»
-			}
+			«visualizeTGGRule(namespaceRule, rule)»
+			
+			«visualizeContraints(namespaceRule, namespaceConstr, rule.attributeConditionLibrary)»
 		'''
 	}
-
+	
 	private def static visualizeTGGRule(String namespace, TGGRule rule) {
 		'''
 			together {
@@ -88,6 +125,48 @@ class IBeXTggXmiPlantUMLGenerator {
 		'''
 	}
 
+	private def static visualizeContraints(String namespaceRule, String namespaceConstr, TGGAttributeConstraintLibrary library) {
+		'''
+			«FOR constr : library.tggAttributeConstraints»
+				«visualizeAttrConstr(namespaceRule, namespaceConstr, constr)»
+			«ENDFOR»
+		'''
+	}
+	
+	private def static visualizeAttrConstr(String namespaceRule, String namespaceConstr, TGGAttributeConstraint constraint) {
+		var paramString = '''«FOR parameter : constraint.parameters»«visualizeParameter(parameter)», «ENDFOR»'''
+		var constrId = '''"«namespaceConstr».«constraint.definition.name»"'''
+		
+		'''
+			class «constrId» <<WHITE>> <<BLACK>> {
+				«paramString.substring(0, paramString.length - 2)»
+			}
+			
+			«FOR param : constraint.parameters»
+				«IF param instanceof TGGAttributeExpression»
+					«idOf(namespaceRule, (param as TGGAttributeExpression).objectVar)» ..«"GREY".color» «constrId»
+				«ENDIF»
+			«ENDFOR»
+		'''
+	}
+	
+	private def static visualizeParameter(TGGParamValue value) {
+		switch (value.class) {
+			case TGGLiteralExpressionImpl: {
+				var litExpr = value as TGGLiteralExpression
+				'''«litExpr.value»'''
+			}
+			case TGGAttributeExpressionImpl: {
+				var attrExpr = value as TGGAttributeExpression
+				'''«attrExpr.objectVar.name».«attrExpr.attribute.name»'''
+			}
+			case TGGEnumExpressionImpl: {
+				var enumExpr = value as TGGEnumExpression
+				'''«enumExpr.literal.literal»'''
+			}
+		}
+	}
+
 	private def static getSrcNodes(TGGRule rule) {
 		rule.nodes.filter[n|n.domainType == DomainType.SRC]
 	}
@@ -106,19 +185,50 @@ class IBeXTggXmiPlantUMLGenerator {
 
 	private def static visualizeNode(String namespace, TGGRuleNode node, String domain) {
 		'''
-			class «idOf(namespace, node)» <<«node.color»>> <<«domain»>>
+			class «idOf(namespace, node)» <<«node.bindingType.color»>> <<«domain»>> {
+				«FOR expr : node.attrExpr»
+					«expr.visualizeAttrExpr(node.bindingType)»
+				«ENDFOR»
+			}
 		'''
+	}
+	
+	private def static visualizeAttrExpr(TGGInplaceAttributeExpression expr, BindingType binding) {
+		'''«expr.attribute.name» «expr.operator.getSign(binding)» «expr.valueExpr.visualizeParameter»'''
+	}
+	
+	private def static getSign(TGGAttributeConstraintOperators operator, BindingType binding) {
+		switch (operator) {
+			case EQUAL: {
+				'''«IF binding === BindingType.CREATE»:=«ELSE»==«ENDIF»'''
+			}
+			case GR_EQUAL: {
+				'''>='''
+			}
+			case GREATER: {
+				'''>'''
+			}
+			case LESSER: {
+				'''<'''
+			}
+			case LE_EQUAL: {
+				'''<='''
+			}
+			case UNEQUAL: {
+				'''!='''
+			}
+		}
 	}
 
 	private def static visualizeCorr(String namespace, TGGRuleCorr node) {
 		'''
-			«idOf(namespace, node.source)» .«IF node.bindingType==BindingType.CREATE»[#SpringGreen]«ENDIF» «idOf(namespace, node.target)» : «node.name»
+			«idOf(namespace, node.source)» .«node.bindingType.color.color» «idOf(namespace, node.target)» : «node.name»
 		'''
 	}
 
 	private def static visualizeEdge(String namespace, TGGRuleEdge edge) {
 		'''
-			«idOf(namespace, edge.srcNode)» -«IF edge.bindingType==BindingType.CREATE»[#SpringGreen]«ENDIF»-> «idOf(namespace, edge.trgNode)» : «edge.type.name»
+			«idOf(namespace, edge.srcNode)» -«edge.bindingType.color.color»-> «idOf(namespace, edge.trgNode)» : «edge.type.name»
 		'''
 	}
 
@@ -126,8 +236,8 @@ class IBeXTggXmiPlantUMLGenerator {
 		'''"«namespace».«node.name» : «node.type.name»"'''
 	}
 
-	private def static getColor(TGGRuleNode node) {
-		switch (node.bindingType) {
+	private def static getColor(BindingType binding) {
+		switch (binding) {
 			case CREATE: {
 				return "GREEN";
 			}
@@ -261,16 +371,27 @@ class IBeXTggXmiPlantUMLGenerator {
 
 	private def static visualizeNodeMapping(String namespace, TGGRuleElementMapping mapping, String domain) {
 		if (mapping.sourceRuleElement instanceof TGGRuleNode) {
+			var srcNode = mapping.sourceRuleElement as TGGRuleNode
+			var trgNode = mapping.targetRuleElement as TGGRuleNode
 			'''
-				class «idOfMapped(namespace, mapping.sourceRuleElement as TGGRuleNode)» <<BLUE>> <<«domain»>>
+				class «idOfMapped(namespace, srcNode)» <<BLUE>> <<«domain»>> {
+					«FOR expr : trgNode.attrExpr»
+						«expr.visualizeAttrExpr(trgNode.bindingType)»
+					«ENDFOR»
+				}
 			'''
 		}
 	}
 
 	private def static visualizeNode(String namespace, TGGRuleElement elt, String domain, String binding, String origin) {
 		if (elt instanceof TGGRuleNode) {
+			var node = elt as TGGRuleNode
 			'''
-				class «idOf(namespace, elt as TGGRuleNode, origin)» <<«binding»>> <<«domain»>>
+				class «idOf(namespace, node, origin)» <<«binding»>> <<«domain»>> {
+					«FOR expr : node.attrExpr»
+						«expr.visualizeAttrExpr(node.bindingType)»
+					«ENDFOR»
+				}
 			'''
 		}
 	}
@@ -279,7 +400,7 @@ class IBeXTggXmiPlantUMLGenerator {
 		if (mapping.sourceRuleElement instanceof TGGRuleCorr) {
 			var srcCorr = mapping.sourceRuleElement as TGGRuleCorr
 			'''
-				«idOfMapped(namespace, srcCorr.source)» .[#«"BLUE".color»] «idOfMapped(namespace, srcCorr.target)» : «srcCorr.name»
+				«idOfMapped(namespace, srcCorr.source)» .«"BLUE".color» «idOfMapped(namespace, srcCorr.target)» : «srcCorr.name»
 			'''
 		}
 	}
@@ -288,7 +409,7 @@ class IBeXTggXmiPlantUMLGenerator {
 		if (elt instanceof TGGRuleCorr) {
 			var corr = elt as TGGRuleCorr
 			'''
-				«idOf(namespace, corr.source, origin)» .[#«binding.color»] «idOf(namespace, corr.target, origin)» : «corr.name»
+				«idOf(namespace, corr.source, origin)» .«binding.color» «idOf(namespace, corr.target, origin)» : «corr.name»
 			'''
 		}
 	}
@@ -297,7 +418,7 @@ class IBeXTggXmiPlantUMLGenerator {
 		if (mapping.sourceRuleElement instanceof TGGRuleEdge) {
 			var srcEdge = mapping.sourceRuleElement as TGGRuleEdge
 			'''
-				«idOfMapped(namespace, srcEdge.srcNode)» -[#«"BLUE".color»]-> «idOfMapped(namespace, srcEdge.trgNode)» : «srcEdge.type.name»
+				«idOfMapped(namespace, srcEdge.srcNode)» -«"BLUE".color»-> «idOfMapped(namespace, srcEdge.trgNode)» : «srcEdge.type.name»
 			'''
 		}
 	}
@@ -315,7 +436,7 @@ class IBeXTggXmiPlantUMLGenerator {
 					namespace, trgMapping.sourceRuleElement as TGGRuleNode)
 
 			'''
-				«srcId» -[#«binding.color»]-> «trgId» : «edge.type.name»
+				«srcId» -«binding.color»-> «trgId» : «edge.type.name»
 			'''
 		}
 	}
@@ -330,26 +451,6 @@ class IBeXTggXmiPlantUMLGenerator {
 
 	private def static idOf(String namespace, TGGRuleNode node, String origin) {
 		'''"«namespace».[«origin»] «node.name» : «node.type.name»"'''
-	}
-
-	private def static getColor(String binding) {
-		switch (binding) {
-			case "BLACK": {
-				"Black"
-			}
-			case "GREEN": {
-				"SpringGreen"
-			}
-			case "RED": {
-				"Red"
-			}
-			case "BLUE": {
-				"Blue"
-			}
-			default: {
-				"Black"
-			}
-		}
 	}
 
 	private def static filter(List<TGGRuleElement> list, DomainType domainType) {
