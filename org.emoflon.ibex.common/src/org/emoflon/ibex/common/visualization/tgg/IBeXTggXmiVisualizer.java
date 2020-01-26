@@ -11,6 +11,7 @@ import org.moflon.core.ui.visualisation.common.EMoflonVisualiser;
 import language.TGG;
 import language.TGGRule;
 import language.repair.ExternalShortcutRule;
+import language.repair.TGGRuleElementMapping;
 
 public class IBeXTggXmiVisualizer extends EMoflonVisualiser {
 
@@ -22,6 +23,7 @@ public class IBeXTggXmiVisualizer extends EMoflonVisualiser {
 		throw new IllegalArgumentException("Invalid selection: " + selection);
 	}
 
+	@SuppressWarnings("unchecked")
 	private String visualizeSelection(IStructuredSelection selection) {
 		Object element = selection.getFirstElement();
 		if (element instanceof TGG)
@@ -30,6 +32,12 @@ public class IBeXTggXmiVisualizer extends EMoflonVisualiser {
 			return IBeXTggXmiPlantUMLGenerator.visualizeTGGRule((TGGRule) element);
 		if (element instanceof ExternalShortcutRule)
 			return IBeXTggXmiPlantUMLGenerator.visualizeSCRuleMerged((ExternalShortcutRule) element);
+		if (element instanceof TGGRuleElementMapping) {
+			if (selection.size() <= 1)
+				return IBeXTggXmiPlantUMLGenerator.visualizeMapping((TGGRuleElementMapping) element);
+			else if (selection.toList().stream().allMatch(e -> e instanceof TGGRuleElementMapping))
+				return IBeXTggXmiPlantUMLGenerator.visualizeMappings(selection.toList());
+		}
 
 		throw new IllegalArgumentException("Invalid selection: " + selection);
 	}
@@ -41,7 +49,8 @@ public class IBeXTggXmiVisualizer extends EMoflonVisualiser {
 				.map(EcoreEditor::getSelection) //
 				.flatMap(maybeCast(TreeSelection.class)) //
 				.map(TreeSelection::getFirstElement) //
-				.filter(elt -> elt instanceof TGG || elt instanceof TGGRule || elt instanceof ExternalShortcutRule) //
+				.filter(elt -> elt instanceof TGG || elt instanceof TGGRule || elt instanceof ExternalShortcutRule
+						|| elt instanceof TGGRuleElementMapping) //
 				.isPresent();
 	}
 
