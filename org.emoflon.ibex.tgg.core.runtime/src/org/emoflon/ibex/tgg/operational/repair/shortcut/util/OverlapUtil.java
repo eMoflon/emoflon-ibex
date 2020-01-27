@@ -77,7 +77,8 @@ public class OverlapUtil {
 	}
 
 	private Collection<ShortcutRule> extractShortcutRulesFromOverlaps() {
-		return overlaps.stream().map(o -> new ShortcutRule(o)).collect(Collectors.toList());
+		return overlaps.stream().map(o -> new ShortcutRule(o, options.relaxedSCPatternMatching()))
+				.collect(Collectors.toList());
 	}
 
 	private void calculateOverlaps(TGG tgg) {

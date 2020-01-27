@@ -44,6 +44,7 @@ public class IbexOptions {
 	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity;
 	private boolean ignoreDomainConformity;
 	private boolean useShortcutRules;
+	private boolean relaxedSCPatternMatching;
 	private boolean optimizeSyncPattern;
 	private boolean applyConcurrently;
 	private IbexExecutable executable;
@@ -78,6 +79,7 @@ public class IbexOptions {
 		logger = new EmptyBenchmarkLogger();
 		repairAttributes = true;
 		useShortcutRules = true;
+		relaxedSCPatternMatching = true;
 		integrationPattern = new IntegrationPattern();
 		conflictSolver = new DefaultConflictResolver();
 		
@@ -107,6 +109,14 @@ public class IbexOptions {
 	public IbexOptions repairUsingShortcutRules(boolean useShortcutRules) {
 		this.useShortcutRules = useShortcutRules;
 		return this;
+	}
+
+	public boolean relaxedSCPatternMatching() {
+		return relaxedSCPatternMatching;
+	}
+
+	public void relaxedSCPatternMatching(boolean relaxedSCPatternMatching) {
+		this.relaxedSCPatternMatching = relaxedSCPatternMatching;
 	}
 
 	public boolean repairAttributes() {
