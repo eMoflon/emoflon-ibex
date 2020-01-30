@@ -221,6 +221,8 @@ public class LocalPatternSearch {
 		String sourceName;
 		String targetName;
 		boolean isNegative;
+		boolean isSrcRelaxed;
+		boolean isTrgRelaxed;
 
 		public EdgeCheckComponent(EdgeCheck check, SearchKey key) {
 			super();
@@ -228,11 +230,27 @@ public class LocalPatternSearch {
 			this.sourceName = key.sourceNode.getName();
 			this.targetName = key.targetNode.getName();
 			this.isNegative = key.edge.getBindingType() == BindingType.NEGATIVE;
+			this.isSrcRelaxed = key.sourceNode.getBindingType() == BindingType.RELAXED;
+			this.isTrgRelaxed = key.targetNode.getBindingType() == BindingType.RELAXED;
 		}
 
 		@Override
 		public ReturnState apply() {
-			if (check.checkConstraint(name2candidates.get(sourceName), name2candidates.get(targetName))) {
+			EObject srcCandidate = name2candidates.get(sourceName);
+			if (srcCandidate == null)
+				if (isSrcRelaxed)
+					return nextComponent == null ? ReturnState.SUCCESS : nextComponent.apply();
+				else
+					return ReturnState.FAILURE;
+				
+			EObject trgCandidate = name2candidates.get(targetName);
+			if(trgCandidate == null)
+				if (isTrgRelaxed)
+					return nextComponent == null ? ReturnState.SUCCESS : nextComponent.apply();
+				else
+					return ReturnState.FAILURE;
+			
+			if (check.checkConstraint(srcCandidate, trgCandidate)) {
 				if (nextComponent == null)
 					return ReturnState.SUCCESS;
 				return nextComponent.apply();
@@ -244,16 +262,26 @@ public class LocalPatternSearch {
 	private class NACNodeCheckComponent extends Component {
 		NACNodeCheck check;
 		String sourceName;
+		boolean isSrcRelaxed;
 
 		public NACNodeCheckComponent(NACNodeCheck check, SearchKey key) {
 			super();
 			this.check = check;
-			this.sourceName = key.reverse ? key.targetNode.getName() : key.sourceNode.getName();
+			TGGRuleNode srcNode = key.reverse ? key.targetNode : key.sourceNode;
+			this.sourceName = srcNode.getName();
+			this.isSrcRelaxed = srcNode.getBindingType() == BindingType.RELAXED;
 		}
 
 		@Override
 		public ReturnState apply() {
-			if (check.checkConstraint(name2candidates.get(sourceName), currentCandidates)) {
+			EObject srcCandidate = name2candidates.get(sourceName);
+			if(srcCandidate == null)
+				if (isSrcRelaxed)
+					return nextComponent == null ? ReturnState.SUCCESS : nextComponent.apply();
+				else
+					return ReturnState.FAILURE;
+			
+			if (check.checkConstraint(srcCandidate, currentCandidates)) {
 				if (nextComponent == null)
 					return ReturnState.SUCCESS;
 				return nextComponent.apply();

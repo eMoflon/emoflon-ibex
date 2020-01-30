@@ -147,10 +147,11 @@ public abstract class OperationalShortcutRule {
 			if (edge.getBindingType() == BindingType.CREATE || edge.getBindingType() == BindingType.RELAXED)
 				continue;
 			
-			if (edge.getSrcNode().getBindingType() == BindingType.RELAXED
-					|| edge.getTrgNode().getBindingType() == BindingType.RELAXED)
-				continue;
-
+			if (edge.getBindingType() != BindingType.NEGATIVE)
+				if (edge.getSrcNode().getBindingType() == BindingType.RELAXED
+						|| edge.getTrgNode().getBindingType() == BindingType.RELAXED)
+					continue;
+			
 			if (edge.getSrcNode().getBindingType() == BindingType.NEGATIVE
 					|| edge.getTrgNode().getBindingType() == BindingType.NEGATIVE)
 				continue;
