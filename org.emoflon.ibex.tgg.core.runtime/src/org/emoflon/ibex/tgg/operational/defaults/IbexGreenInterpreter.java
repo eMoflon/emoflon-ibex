@@ -44,6 +44,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private int numOfCreatedNodes = 0;
 	private OperationalStrategy operationalStrategy;
 	private IbexOptions options;
+	private boolean optimizeCreation;
 
 	private TGGResourceHandler resourceHandler;
 
@@ -51,6 +52,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		this.operationalStrategy = operationalStrategy;
 		options = operationalStrategy.getOptions();
 		resourceHandler = options.getResourceHandler();
+		optimizeCreation = operationalStrategy.getOptions().getBlackInterpreter() != null && !operationalStrategy.getOptions().getBlackInterpreter().getClass().getName().contains("Democles");
 	}
 
 	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
@@ -189,7 +191,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 		cspContainer.applyCSPValues(comatch);
 
-		if(operationalStrategy.getOptions().getBlackInterpreter().getClass().getName().contains("Democles")) {
+		if(!optimizeCreation) {
 			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getSourceResource(), (EObject) comatch.get(n.getName())));	
 			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));	
 			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));	
