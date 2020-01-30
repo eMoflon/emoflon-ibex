@@ -308,7 +308,7 @@ public abstract class OperationalShortcutRule {
 				@SuppressWarnings("unchecked")
 				List<EObject> list = (List<EObject>) refTarget;
 				for (EObject obj : list) {
-					if (!candidates.contains(refTarget) && nodeCheck.checkConstraint(obj))
+					if (!candidates.contains(obj) && nodeCheck.checkConstraint(obj))
 						return false;
 				}
 				return true;
