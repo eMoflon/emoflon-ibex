@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcut
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearch;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
@@ -116,27 +118,33 @@ public class ShortcutPatternTool {
 		if(rules == null)
 			return null;
 		
-		for(OperationalShortcutRule osr : rules) {
-			// TODO lfritsche: clear up
-			if(rule2matcher.get(osr) == null)
-				continue;
+		Collection<OperationalShortcutRule> copiedRules = new ArrayList<>(rules);
+		IShortcutRuleUpdatePolicy policy = strategy.getOptions().getShortcutRuleUpdatePolicy();
+		do {
+			OperationalShortcutRule osr = policy.chooseOneShortcutRule(copiedRules, brokenMatch, objDomain);
+			if(osr == null)
+				return null;
 			
-			logger.debug("Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");
-			
+			logger.debug("Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");			
 			ITGGMatch newMatch = processBrokenMatch(osr, brokenMatch);
-			if(newMatch == null)
+			if(newMatch == null) {
+				copiedRules.remove(osr);
 				continue;
-
+			}
+			
 			Optional<ITGGMatch> newCoMatch = processCreations(osr, newMatch);
-			if(!newCoMatch.isPresent())
+			if(!newCoMatch.isPresent()) {
+				copiedRules.remove(osr);
 				continue;
+			}
 
 			processDeletions(osr, newMatch);
 			
 			processAttributes(osr, newMatch, objDomain);
 			
 			return transformToTargetMatch(osr, newCoMatch.get());
-		}
+			
+		} while (!copiedRules.isEmpty());
 		return null;
 	}
 	
