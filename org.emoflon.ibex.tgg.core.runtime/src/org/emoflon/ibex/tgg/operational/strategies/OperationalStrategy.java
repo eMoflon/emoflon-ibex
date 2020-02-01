@@ -16,6 +16,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.DefaultMatchContainer;
@@ -129,15 +130,15 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		if (isPatternRelevantForInterpreter(match.getType()) && matchIsDomainConform(match)) {
 			operationalMatchContainer.addMatch(match);
-			logger.debug("Received and added " + match.getPatternName());
+			LoggerConfig.log(logger, options.getLoggerConfig().log_incomingMatches(), () -> "Received and added " + match.getPatternName());
 		} else
-			logger.debug("Received but rejected " + match.getPatternName());
+			LoggerConfig.log(logger, options.getLoggerConfig().log_incomingMatches(), () -> "Received but rejected " + match.getPatternName());
 	}
 
 	protected void addConsistencyMatch(ITGGMatch match) {
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		consistencyMatches.put(ruleAppNode, match);
-		logger.debug("Received and added consistency match: " + match.getPatternName() + "(" + match.hashCode() + ")");
+		LoggerConfig.log(logger, options.getLoggerConfig().log_incomingMatches(), () -> "Received and added consistency match: " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	protected boolean removeOperationalRuleMatch(ITGGMatch match) {
@@ -196,13 +197,12 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
+		LoggerConfig.log(logger, options.getLoggerConfig().log_matchApplication(), () -> "Processing match: " + match);
 		if (result.isPresent()) {
 			options.getBenchmarkLogger().addToNumOfMatchesApplied(1);
-			logger.debug("Removed as it has just been applied: ");
+			LoggerConfig.log(logger, options.getLoggerConfig().log_matchApplication(), () -> "Removed as it has just been applied: ");
 		} else
-			logger.debug("Removed as application failed: ");
-
-		logger.debug(match);
+			LoggerConfig.log(logger, options.getLoggerConfig().log_matchApplication(), () -> "Removed as application failed: ");
 
 		return true;
 	}
@@ -219,19 +219,19 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected Optional<ITGGMatch> processOperationalRuleMatch(String ruleName, ITGGMatch match) {
 		//generatedPatternsSizeObserver.setNodes(match);
 		if (getBlockedMatches().containsKey(match)) { 
-			logger.debug("Application blocked by update policy.");
+			LoggerConfig.log(logger, options.getLoggerConfig().log_matchApplication(), () -> "Application blocked by update policy.");
 			return Optional.empty();
 		}
 
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.getType());
 
-		logger.debug("Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
+		LoggerConfig.log(logger, options.getLoggerConfig().log_matchApplication(), () -> "Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
 
 		Optional<ITGGMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 
 		comatch.ifPresent(cm -> {
-			logger.debug("Successfully applied: " + match.getPatternName());
+			LoggerConfig.log(logger, options.getLoggerConfig().log_matchApplication(), () -> "Successfully applied: " + match.getPatternName());
 			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
@@ -263,7 +263,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	public Map<ITGGMatch, String> getBlockedMatches() {
-	    return this.blockedMatches;
+	    return blockedMatches;
 	}
 	
 	public IGreenInterpreter getGreenInterpreter() {
