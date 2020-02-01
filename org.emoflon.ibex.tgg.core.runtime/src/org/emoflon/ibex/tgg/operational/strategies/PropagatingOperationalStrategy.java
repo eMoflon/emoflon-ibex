@@ -186,7 +186,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		if (brokenRuleApplications.containsKey(ruleAppNode)) {
-			LoggerConfig.log(logger, options.getLoggerConfig().log_matchApplication(), () -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
+			LoggerConfig.log(options.getLoggerConfig().log_matchApplication(), () -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 		}
 
@@ -234,11 +234,13 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	public void terminate() throws IOException {
 		DecimalFormat df = new DecimalFormat("0.#####");
 		df.setMaximumFractionDigits(5);
-		LoggerConfig.log(logger, options.getLoggerConfig().log_translationTime(), () -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(logger, options.getLoggerConfig().log_repairTime(), () -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(logger, options.getLoggerConfig().log_removalTime(), () -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(logger, options.getLoggerConfig().log_matchApplicationTime(), () -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(logger, options.getLoggerConfig().log_collectMatchTime(), () -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.getLoggerConfig().log_translationTime(), () -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.getLoggerConfig().log_repairTime(), () -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.getLoggerConfig().log_removalTime(), () -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.getLoggerConfig().log_matchApplicationTime(), () -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.getLoggerConfig().log_collectMatchTime(), () -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
+		
+		((PrecedenceMatchContainer) operationalMatchContainer).log(logger);
 		super.terminate();
 	}
 	

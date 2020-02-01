@@ -112,7 +112,6 @@ public class MatchDistributor implements IMatchObserver {
 		blackInterpreter = null;
 		rs.getAllContents().forEachRemaining(c -> c.eAdapters().clear());
 		rs.eAdapters().clear();
-		logger.debug("Removed black interpreter");
 	}
 
 	@Override

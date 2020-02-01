@@ -17,6 +17,7 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.GreenSCPattern;
@@ -45,6 +46,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private OperationalStrategy operationalStrategy;
 	private IbexOptions options;
 	private boolean optimizeCreation;
+	private long creationTime = 0;
 
 	private TGGResourceHandler resourceHandler;
 
@@ -165,9 +167,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	@Override
 	public Optional<ITGGMatch> apply(IGreenPattern greenPattern, String ruleName, ITGGMatch match) {
+		long tic = System.nanoTime();
 		// Check if match is valid
 		if (matchIsInvalid(ruleName, greenPattern, match)) {
-			logger.debug("Blocking application as match is invalid.");
+			LoggerConfig.log(options.getLoggerConfig().log_matchApplication(), () -> "Blocking application as match is invalid.");
 			return Optional.empty();
 		}
 
@@ -179,7 +182,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		// Check if all attribute values provided match are as expected
 		IRuntimeTGGAttrConstrContainer cspContainer = greenPattern.getAttributeConstraintContainer(match);
 		if (!cspContainer.solve()) {
-			logger.debug("Blocking application as attribute conditions don't hold.");
+			LoggerConfig.log(options.getLoggerConfig().log_matchApplication(), () -> "Blocking application as attribute conditions don't hold.");
 			return Optional.empty();
 		}
 
@@ -209,6 +212,8 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));	
 			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));	
 		}
+		
+		creationTime = getCreationTime() + System.nanoTime() - tic;
 		
 		return Optional.of(comatch);
 	}
@@ -369,5 +374,9 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	@Override
 	public int getNumOfCreatedElements() {
 		return numOfCreatedNodes;
+	}
+
+	public long getCreationTime() {
+		return creationTime;
 	}
 }

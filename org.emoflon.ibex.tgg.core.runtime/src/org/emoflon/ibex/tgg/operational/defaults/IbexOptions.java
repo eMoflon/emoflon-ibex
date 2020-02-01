@@ -348,7 +348,8 @@ public class IbexOptions {
 		return loggerConfig;
 	}
 
-	public void setLoggerConfig(LoggerConfig loggerConfig) {
+	public IbexOptions setLoggerConfig(LoggerConfig loggerConfig) {
 		this.loggerConfig = loggerConfig;
+		return this;
 	}
 }

@@ -3,34 +3,40 @@ package org.emoflon.ibex.tgg.operational.debug;
 import java.util.function.Supplier;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class LoggerConfig {
 	
-	boolean log_all = false;
-	boolean log_allTimes = false;
-	boolean log_incomingMatches = false;
-	boolean log_matchApplication = false;
-	boolean log_matchApplicationTime = false;
-	boolean log_addMatchTime = false;
-	boolean log_collectMatchTime = false;
-	boolean log_translationTime = false;
-	boolean log_removalTime = false;
-	boolean log_repairTime = false;
+	private static Logger logger = Logger.getRootLogger();
+	
+	protected boolean log_all = false;
+	protected boolean log_allTimes = false;
+	protected boolean log_incomingMatches = false;
+	protected boolean log_matchApplication = false;
+	protected boolean log_matchApplicationTime = false;
+	protected boolean log_addMatchTime = false;
+	protected boolean log_collectMatchTime = false;
+	protected boolean log_translationTime = false;
+	protected boolean log_removalTime = false;
+	protected boolean log_repairTime = false;
 	
 	public LoggerConfig() {
-		if(log_all()) {
-			BasicConfigurator.configure();
-			Logger.getRootLogger().setLevel(Level.DEBUG);
-		}
-		else {
-			BasicConfigurator.configure();
-			Logger.getRootLogger().setLevel(Level.INFO);
-		}
+//		if(log_anything()) {
+//			BasicConfigurator.configure();
+//			Logger.getRootLogger().setLevel(Level.DEBUG);
+//		}
+//		else {
+//			BasicConfigurator.configure();
+//			Logger.getRootLogger().setLevel(Level.INFO);
+//		}
 	}
 	
-	private boolean log_all() {
+	private boolean log_anything() {
+		return log_all || log_allTimes || log_incomingMatches || log_matchApplication || log_matchApplication || log_matchApplication
+				|| log_addMatchTime || log_collectMatchTime || log_translationTime || log_removalTime || log_repairTime;
+	}
+	
+	public boolean log_all() {
 		return log_all;
 	}
 	
@@ -70,7 +76,9 @@ public class LoggerConfig {
 		return log_all || log_allTimes;
 	}
 	
-	public static void log(Logger logger, boolean apply, Supplier<String> output) {
+	public static void log(boolean apply, Supplier<String> output) {
+		BasicConfigurator.resetConfiguration();
+		BasicConfigurator.configure();
 		if(apply)
 			logger.debug(output.get());
 	}

@@ -1,8 +1,8 @@
 package org.emoflon.ibex.tgg.operational.matches;
 
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
@@ -35,6 +37,11 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 	protected Map<TGGRuleApplication, ITGGMatch> raToMatch = new HashMap<>();
 	
 	protected Set<ITGGMatch> readySet = new HashSet<>();
+	
+	private long addMatchTime = 0;
+	private long getMatchTime = 0;
+	private long matchAppliedTime = 0;
+	private long removeMatchTime = 0;
 
 	public PrecedenceMatchContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
@@ -42,7 +49,9 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 
 	@Override
 	public void addMatch(ITGGMatch match) {
+		long tic = System.nanoTime();
 		pending.add(match);
+		addMatchTime += System.nanoTime() - tic;
 	}
 
 	private void handleMatch(ITGGMatch m) {
@@ -137,6 +146,8 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 
 	@Override
 	public void matchApplied(ITGGMatch m) {
+		long tic = System.nanoTime();
+		
 		if (m.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
 			consistencyMatchApplied(m);
 			return;
@@ -170,6 +181,8 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		}
 
 		translated.addAll(translatedElts);
+		
+		matchAppliedTime += System.nanoTime() - tic;
 	}
 	
 	private void consistencyMatchApplied(ITGGMatch m) {
@@ -213,10 +226,13 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 
 	@Override
 	public Set<ITGGMatch> getMatches() {
+		long tic = System.nanoTime();
 		Collection<ITGGMatch> notPendingMatches = pending.stream().filter(this::noElementIsPending).collect(Collectors.toList());
 		notPendingMatches.forEach(this::handleMatch);
 		pending.removeAll(notPendingMatches);
-		return validate(readySet);
+		Set<ITGGMatch> validate = validate(readySet);
+		getMatchTime += System.nanoTime() - tic;
+		return validate;
 	}
 	
 	private Set<ITGGMatch> validate(Set<ITGGMatch> readySet) {
@@ -234,6 +250,8 @@ public class PrecedenceMatchContainer implements IMatchContainer {
  
 	@Override
 	public boolean removeMatch(ITGGMatch match) {
+		long tic = System.nanoTime();
+		
 		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
 			return removeConsistencyMatch(match);
 		}
@@ -263,6 +281,8 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		}
 
 		readySet.remove(match);
+		
+		removeMatchTime += System.nanoTime() - tic;
 
 		return true;
 	}
@@ -292,5 +312,18 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		translates.clear();
 
 		readySet.clear();
+	}
+	
+	public void log(Logger logger) {
+		DecimalFormat df = new DecimalFormat("0.#####");
+		df.setMaximumFractionDigits(5);
+		
+		LoggerConfig config = strategy.getOptions().getLoggerConfig();
+		LoggerConfig.log(config.log_allTimes(), () -> "PrecedenceMatchContainer -> {");
+		LoggerConfig.log(config.log_allTimes(), () -> "      addMatchTime:     " + df.format((double) addMatchTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(config.log_allTimes(), () -> "      getMatchTime:     " + df.format((double) getMatchTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(config.log_allTimes(), () -> "      matchAppliedTime: " + df.format((double) matchAppliedTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(config.log_allTimes(), () -> "      removeMatchTime:  " + df.format((double) removeMatchTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(config.log_allTimes(), () -> "}");
 	}
 }
