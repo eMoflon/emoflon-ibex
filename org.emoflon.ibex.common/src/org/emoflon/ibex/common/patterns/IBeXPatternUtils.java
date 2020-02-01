@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -203,7 +204,7 @@ public class IBeXPatternUtils {
 	 * @return the created IBeXPattern
 	 */
 	public static <T extends IBeXContext> Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType,
-			HashMap<String, T> nameToPattern, Consumer<String> logError) {
+			Map<String, T> nameToPattern, Consumer<String> logError) {
 		Objects.requireNonNull(edgeType, "Edge type must not be null!");
 
 		EClass sourceType = edgeType.getEContainingClass();

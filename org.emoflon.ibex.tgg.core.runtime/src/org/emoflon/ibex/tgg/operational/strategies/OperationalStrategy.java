@@ -250,6 +250,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	protected void updateBlockedMatches() {
+		if(this.getUpdatePolicy() instanceof NextMatchUpdatePolicy)
+			return;
+		
 		for(ITGGMatch match : operationalMatchContainer.getMatches()) {
 			if(!this.getUpdatePolicy().matchShouldBeApplied(match, match.getRuleName())) {
 				if(!blockedMatches.containsKey(match))
