@@ -11,7 +11,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
-import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
+import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
@@ -207,7 +207,7 @@ public class MODELGEN extends OperationalStrategy {
 	private void collectMatchesForAxioms() {
 		options.getFlattenedConcreteTGGRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom())
 				.forEach(r -> {
-					addOperationalRuleMatch(new SimpleMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
+					addOperationalRuleMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
 				});
 	}
 

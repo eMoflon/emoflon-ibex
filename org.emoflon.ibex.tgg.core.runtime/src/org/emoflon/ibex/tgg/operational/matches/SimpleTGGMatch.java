@@ -7,24 +7,24 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 
-public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements ITGGMatch {
+public class SimpleTGGMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements ITGGMatch {
 	private final Collection<EMFEdge> edges;
 	private PatternType type;
 
-	public SimpleMatch(String patternName) {
+	public SimpleTGGMatch(String patternName) {
 		super(patternName);
 		this.type = PatternUtil.resolve(patternName);
 		edges = new ArrayList<>();
 	}
 
-	public SimpleMatch(ITGGMatch match) {
+	public SimpleTGGMatch(ITGGMatch match) {
 		super(match);
 		edges = new ArrayList<>(match.getCreatedEdges());
 	}
 
 	@Override
 	public ITGGMatch copy() {
-		SimpleMatch copy = new SimpleMatch(this);
+		SimpleTGGMatch copy = new SimpleTGGMatch(this);
 		return copy;
 	}
 

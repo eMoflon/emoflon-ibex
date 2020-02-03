@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
+import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 
 /**
  * Represents a match for a operationalized shortcut rule application
@@ -11,7 +11,7 @@ import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
  * @author lfritsche
  *
  */
-public class SCMatch extends SimpleMatch {
+public class SCMatch extends SimpleTGGMatch {
 
 	public SCMatch(String patternName, Map<String, EObject> name2candidates) {
 		super(patternName);
