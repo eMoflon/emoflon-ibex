@@ -29,11 +29,13 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	protected IGreenPatternFactory factory;
 	private IbexOptions options;
 	private TGGResourceHandler resourceHandler;
+	private boolean optimizeMarkerCreation;
 	
 	public IbexGreenPattern(IGreenPatternFactory factory) {
 		this.factory = factory;
 		options = factory.getOptions();
 		resourceHandler = options.getResourceHandler();
+		optimizeMarkerCreation = false;
 	}
 	
 	@Override
@@ -80,8 +82,10 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(ruleName));
 		
 		EObject ra = EcoreUtil.create(type);
-		resourceHandler.getProtocolResource().getContents().add(ra);
 		
+		if(!optimizeMarkerCreation) {
+			resourceHandler.getProtocolResource().getContents().add(ra);
+		}
 	
 		for (TGGRuleNode n : factory.getGreenSrcNodesInRule()) {
 			String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.SRC, n.getName());
@@ -120,5 +124,8 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 		}
 		
 		match.put(TGGPatternUtil.getProtocolNodeName(ruleName), ra);
+		if(optimizeMarkerCreation) {
+			resourceHandler.getProtocolResource().getContents().add(ra);
+		}
 	}
 }

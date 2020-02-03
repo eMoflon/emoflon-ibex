@@ -25,85 +25,85 @@ public class TGGPatternUtil {
 
 	public static String generateFWDBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.FWD;
-		Pattern2Type.registerPattern(patternName, PatternType.FWD);
+		PatternUtil.registerPattern(patternName, PatternType.FWD);
 		return patternName;
 	}
 
 	public static String generateBWDBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.BWD;
-		Pattern2Type.registerPattern(patternName, PatternType.BWD);
+		PatternUtil.registerPattern(patternName, PatternType.BWD);
 		return patternName;
 	}
 
 	public static String generateCOBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.CO;
-		Pattern2Type.registerPattern(patternName, PatternType.CO);
+		PatternUtil.registerPattern(patternName, PatternType.CO);
 		return patternName;
 	}
 
 	public static String generateCCBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.CC;
-		Pattern2Type.registerPattern(patternName, PatternType.CC);
+		PatternUtil.registerPattern(patternName, PatternType.CC);
 		return patternName;
 	}
 
 	public static String generateGENBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.GEN;
-		Pattern2Type.registerPattern(patternName, PatternType.GEN);
+		PatternUtil.registerPattern(patternName, PatternType.GEN);
 		return patternName;
 	}
 
 	public static String generateFWDOptBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.FWD_OPT;
-		Pattern2Type.registerPattern(patternName, PatternType.FWD_OPT);
+		PatternUtil.registerPattern(patternName, PatternType.FWD_OPT);
 		return patternName;
 	}
 
 	public static String generateBWDOptBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.BWD_OPT;
-		Pattern2Type.registerPattern(patternName, PatternType.BWD_OPT);
+		PatternUtil.registerPattern(patternName, PatternType.BWD_OPT);
 		return patternName;
 	}
 	
 	public static String generateGenForCCBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.GENForCC;
-		Pattern2Type.registerPattern(patternName, PatternType.GENForCC);
+		PatternUtil.registerPattern(patternName, PatternType.GENForCC);
 		return patternName;
 	}
 	
 	public static String generateGenForCOBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.GENForCO;
-		Pattern2Type.registerPattern(patternName, PatternType.GENForCO);
+		PatternUtil.registerPattern(patternName, PatternType.GENForCO);
 		return patternName;
 	}
 
 	public static String getAxiomNACPatternName(String ruleName, String nacName) {
 		String patternName = ruleName + PatternSuffixes.SEP + nacName + PatternSuffixes.GEN_AXIOM_NAC;
-		Pattern2Type.registerPattern(patternName, PatternType.GEN_AXIOM_NAC);
+		PatternUtil.registerPattern(patternName, PatternType.GEN_AXIOM_NAC);
 		return patternName;
 	}
 
 	public static String getConsistencyPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.CONSISTENCY;
-		Pattern2Type.registerPattern(patternName, PatternType.CONSISTENCY);
+		PatternUtil.registerPattern(patternName, PatternType.CONSISTENCY);
 		return patternName;
 	}
 	
 	public static String getProtocolPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.PROTOCOL;
-		Pattern2Type.registerPattern(patternName, PatternType.PROTOCOL);
+		PatternUtil.registerPattern(patternName, PatternType.PROTOCOL);
 		return patternName;
 	}
 	
 	public static String getProtocolCorePatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.PROTOCOL_CORE;
-		Pattern2Type.registerPattern(patternName, PatternType.PROTOCOL_CORE);
+		PatternUtil.registerPattern(patternName, PatternType.PROTOCOL_CORE);
 		return patternName;
 	}
 	
 	public static String getNACPatternName(String nacName) {
 		String patternName = nacName + PatternSuffixes.USER_NAC;
-		Pattern2Type.registerPattern(patternName, PatternType.USER_NAC);
+		PatternUtil.registerPattern(patternName, PatternType.USER_NAC);
 		return patternName;
 	}
 

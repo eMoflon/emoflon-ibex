@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
@@ -81,18 +82,19 @@ public class ContextPatternTransformation {
 	/**
 	 * Mapping between pattern names and the context patterns.
 	 */
-	private HashMap<String, IBeXContextPattern> nameToPattern = new HashMap<>();
-	private Map<IBeXContextPattern, TGGNamedElement> patternToRuleMap = new HashMap<>();
+	private Map<String, IBeXContextPattern> nameToPattern = new ConcurrentHashMap<>();
+	private Map<IBeXContextPattern, TGGNamedElement> patternToRuleMap = new ConcurrentHashMap<>();
 	private MatchDistributor distributor;
 
 	public ContextPatternTransformation(IbexOptions options, MatchDistributor distributor) {
 		this.options = options;
-		this.distributor = distributor;
 		this.USE_INVOCATIONS_FOR_REFERENCES = options.getUseEdgePatterns();
+		this.distributor = distributor;
 	}
 
 	public IBeXPatternSet transform() {
-		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
+		options.getFlattenedConcreteTGGRules().parallelStream().forEach(rule -> {
+//		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
 			createPatternIfRelevant(rule, this::createModelGenPattern, PatternType.GEN);
 			createPatternIfRelevant(rule, this::createConsistencyPattern, PatternType.CONSISTENCY);
 			createPatternIfRelevant(rule, this::createCCPattern, PatternType.CC);
@@ -109,7 +111,8 @@ public class ContextPatternTransformation {
 			}
 
 			optimizeSyncPatterns(rule);
-		}
+//		}
+		});
 
 		return createSortedPatternSet();
 	}
@@ -418,7 +421,7 @@ public class ContextPatternTransformation {
 		patternToRuleMap.put(ibexPattern, tggElement);
 	}
 
-	public void addContextPattern(final IBeXContextPattern ibexPattern) {
+	public synchronized void addContextPattern(final IBeXContextPattern ibexPattern) {
 		Objects.requireNonNull(ibexPattern, "The pattern must not be null!");
 
 		ibexContextPatterns.add(ibexPattern);

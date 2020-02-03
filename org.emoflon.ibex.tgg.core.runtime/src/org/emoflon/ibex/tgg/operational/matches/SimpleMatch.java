@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.compiler.patterns.Pattern2Type;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 
 public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements ITGGMatch {
@@ -13,7 +13,7 @@ public class SimpleMatch extends org.emoflon.ibex.common.operational.SimpleMatch
 
 	public SimpleMatch(String patternName) {
 		super(patternName);
-		this.type = Pattern2Type.resolve(patternName);
+		this.type = PatternUtil.resolve(patternName);
 		edges = new ArrayList<>();
 	}
 

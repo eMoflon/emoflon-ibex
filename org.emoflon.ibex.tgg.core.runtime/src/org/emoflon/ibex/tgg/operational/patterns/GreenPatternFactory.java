@@ -4,12 +4,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -27,27 +29,27 @@ import language.TGGRuleNode;
 public class GreenPatternFactory implements IGreenPatternFactory {
 	protected String ruleName;
 	protected IbexOptions options;
-	protected List<TGGParamValue> variables = new ArrayList<>();
-	protected List<TGGAttributeConstraint> constraints = new ArrayList<>();
+	protected List<TGGParamValue> variables = new LinkedList<>();
+	protected List<TGGAttributeConstraint> constraints = new LinkedList<>();
 	protected final static Logger logger = Logger.getLogger(GreenPatternFactory.class);
 
 	private Map<String, IGreenPattern> patterns;
 	private OperationalStrategy strategy;
 	private TGGRule rule;
 
-	protected Collection<TGGRuleNode> greenSrcNodesInRule = new ArrayList<>();
-	protected Collection<TGGRuleNode> greenTrgNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleCorr> greenCorrNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> greenSrcEdgesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> greenTrgEdgesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> greenCorrEdgesInRule = new ArrayList<>();;
+	protected List<TGGRuleNode> greenSrcNodesInRule = new LinkedList<>();
+	protected List<TGGRuleNode> greenTrgNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleCorr> greenCorrNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> greenSrcEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> greenTrgEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> greenCorrEdgesInRule = new LinkedList<>();;
 
-	protected Collection<TGGRuleNode> blackSrcNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleNode> blackTrgNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleCorr> blackCorrNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> blackSrcEdgesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> blackTrgEdgesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> blackCorrEdgesInRule = new ArrayList<>();;
+	protected List<TGGRuleNode> blackSrcNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleNode> blackTrgNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleCorr> blackCorrNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> blackSrcEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> blackTrgEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> blackCorrEdgesInRule = new LinkedList<>();;
 
 	public GreenPatternFactory(IbexOptions options, String ruleName) {
 		this(options);
@@ -76,6 +78,17 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 		constraints.addAll(rule.getAttributeConditionLibrary().getTggAttributeConstraints());
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
+		
+		greenSrcEdgesInRule.sort((a, b) -> compareEdges(a, b));
+		greenTrgEdgesInRule.sort((a, b) -> compareEdges(a, b));
+	}
+	
+	private int compareEdges(TGGRuleEdge a, TGGRuleEdge b) {
+		boolean a_val = a.getSrcNode().getBindingType() == BindingType.CONTEXT && a.getTrgNode().getBindingType() == BindingType.CREATE;
+		boolean b_val = b.getSrcNode().getBindingType() == BindingType.CONTEXT && b.getTrgNode().getBindingType() == BindingType.CREATE;
+		if(a_val && !b_val) return 1;
+		if(!a_val && b_val) return -1;
+		return 0;
 	}
 
 	public GreenPatternFactory(IbexOptions options) {

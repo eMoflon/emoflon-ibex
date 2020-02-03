@@ -340,11 +340,11 @@ public class TGGResourceHandler {
 		rs.getResources().remove(flattenedRes);
 	}
 	
-	private Resource loadFlattenedTGGResource() throws IOException {
+	protected Resource loadFlattenedTGGResource() throws IOException {
 		return loadResource(options.projectPath() + "/model/" + options.projectName() + "_flattened.tgg.xmi");
 	}
 
-	private Resource loadTGGResource() throws IOException {
+	protected Resource loadTGGResource() throws IOException {
 		return loadResource(options.projectPath() + "/model/" + options.projectName() + ".tgg.xmi");
 	}
 	

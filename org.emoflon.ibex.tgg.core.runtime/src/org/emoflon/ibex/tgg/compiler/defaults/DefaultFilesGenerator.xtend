@@ -78,7 +78,7 @@ class DefaultFilesGenerator {
 	}
 
 	static def String generateBasicStructure(String additionalImports, String fileName, String strategy, 
-		String projectName, String setUpRoutine, String body) {
+		String projectName, String setUpRoutine) {
 		'''
 			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
 			
@@ -89,6 +89,7 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.BasicConfigurator;
 			
 			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
+			import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 			
 			import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».config.*;
 			
@@ -97,11 +98,34 @@ class DefaultFilesGenerator {
 			
 			public class «fileName» extends «strategy» {
 			
+				// eMoflon supports other pattern matching engines. Replace _DefaultRegistrationHelper with one of the other registrationHelpers from the *.config-package to choose between them. Default: Democles 
 				public static IRegistrationHelper registrationHelper = new _DefaultRegistrationHelper();
 			
 				public «fileName»() throws IOException {
-					super(registrationHelper.createIbexOptions());
-					registerBlackInterpreter(options.getBlackInterpreter());
+					super(registrationHelper.createIbexOptions().setResourceHandler(new TGGResourceHandler() {
+						@Override
+						public void saveModels() throws IOException {
+							// Use the commented code below to implement saveModels individually.
+							// source.save(null);
+							// target.save(null);
+							// corr.save(null);
+							// protocol.save(null);
+							
+							super.saveModels();
+						}
+						
+						@Override
+						public void loadModels() throws IOException {
+							// Use the commented code below to implement loadModels individually.
+							// loadResource loads from a file while createResource creates a new resource without content
+							// source = loadResource(options.projectPath() + "/instances/src.xmi");
+							// target = createResource(options.projectPath() + "/instances/trg.xmi");
+							// corr = createResource(options.projectPath() + "/instances/corr.xmi");
+							// protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+							
+							super.loadModels();
+						}
+					}));
 				}
 			
 				public static void main(String[] args) throws IOException {
@@ -110,11 +134,6 @@ class DefaultFilesGenerator {
 			
 					«setUpRoutine»
 				}
-				
-				«body»
-				
-				«generateMetamodelRegistration()»
-				
 			}
 		'''
 	}
@@ -133,6 +152,7 @@ class DefaultFilesGenerator {
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			
 			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
+			import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 			
 			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.IBeXOperation;
 			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.VictoryIBeXAdapter;
@@ -146,8 +166,7 @@ class DefaultFilesGenerator {
 				private static IRegistrationHelper registrationHelper = new _DefaultRegistrationHelper();
 			
 				public «fileName»() throws IOException {
-					super(createIbexOptions());
-					registerBlackInterpreter(options.getBlackInterpreter());
+					super(registrationHelper.createIbexOptions());
 				}
 			
 				public static void main(String[] args) throws IOException {
@@ -158,8 +177,6 @@ class DefaultFilesGenerator {
 				}
 				
 				«body»
-				
-				«generateMetamodelRegistration()»
 			}
 		'''
 	}
@@ -191,8 +208,7 @@ class DefaultFilesGenerator {
 				
 				generator.saveModels();
 				generator.terminate();
-			''',
-			""
+			'''
 		)
 	}
 	
@@ -263,15 +279,14 @@ class DefaultFilesGenerator {
 				
 				sync.saveModels();
 				sync.terminate();
-			''',
-			""
+			'''
 		)
 	}
 
 	static def generateCCAppFile(String projectName, String fileName) {
 		return generateBasicStructure(
 			'''
-				import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
+				import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
 			''',
 			fileName,
 			"CC",
@@ -288,8 +303,7 @@ class DefaultFilesGenerator {
 				cc.saveModels();
 				cc.terminate();
 				logger.info(cc.generateConsistencyReport());			
-			''',
-			""
+			'''
 		)
 	}
 
@@ -313,8 +327,7 @@ class DefaultFilesGenerator {
 				co.saveModels();
 				co.terminate();
 				logger.info(co.generateConsistencyReport());
-			''',
-			""
+			'''
 		)
 	}
 
@@ -337,8 +350,7 @@ class DefaultFilesGenerator {
 				
 				fwd_opt.saveModels();
 				fwd_opt.terminate();
-			''',
-			""
+			'''
 		)
 	}
 
@@ -361,8 +373,7 @@ class DefaultFilesGenerator {
 				
 				bwd_opt.saveModels();
 				bwd_opt.terminate();
-			''',
-			""
+			'''
 		)
 	}
 
@@ -390,24 +401,6 @@ class DefaultFilesGenerator {
 				
 				init_fwd.saveModels();
 				init_fwd.terminate();
-			''',
-			'''
-				@Override
-				public void loadModels() throws IOException {
-					s = loadResource(options.projectPath() + "/instances/src.xmi");
-					t = createResource(options.projectPath() + "/instances/trg.xmi");
-					c = createResource(options.projectPath() + "/instances/corr.xmi");
-					p = createResource(options.projectPath() + "/instances/protocol.xmi");
-					
-					EcoreUtil.resolveAll(rs);
-				}
-				
-				@Override
-				public void saveModels() throws IOException {
-					t.save(null);
-					c.save(null);
-					p.save(null);
-				}
 			'''
 		)
 	}
@@ -477,31 +470,6 @@ class DefaultFilesGenerator {
 				
 				init_bwd.saveModels();
 				init_bwd.terminate();
-			''',
-			'''
-				@Override
-				public Collection<PatternType> getPatternRelevantForCompiler() {
-					Collection<PatternType> types = new LinkedList<>();
-					types.add(PatternType.BWD);
-					return types;
-				}
-				
-				@Override
-				public void loadModels() throws IOException {
-					t = loadResource(options.projectPath() + "/instances/trg.xmi");
-					s = createResource(options.projectPath() + "/instances/src.xmi");
-					c = createResource(options.projectPath() + "/instances/corr.xmi");
-					p = createResource(options.projectPath() + "/instances/protocol.xmi");
-					
-					EcoreUtil.resolveAll(rs);
-				}
-				
-				@Override
-				public void saveModels() throws IOException {
-					s.save(null);
-					c.save(null);
-					p.save(null);
-				}
 			'''
 		)
 	}
@@ -528,8 +496,7 @@ class DefaultFilesGenerator {
 				
 				integrate.saveModels();
 				integrate.terminate();
-			''',
-			""
+			'''
 		)
 	}
 
@@ -574,18 +541,6 @@ class DefaultFilesGenerator {
 		)
 	}
 	
-	def static generateMetamodelRegistration() {
-		'''
-			@Override
-			protected void registerUserMetamodels() throws IOException {
-				registrationHelper.registerMetamodels(rs, this);
-					
-				// Register correspondence metamodel last
-				loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectName() + ".ecore");
-			}
-		'''
-	}
-	
 	def static String generateDefaultRegHelperFile(String projectName) {
 		'''
 			package org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».config;
@@ -623,7 +578,7 @@ class DefaultFilesGenerator {
 			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».UserDefinedRuntimeTGGAttrConstraintFactory;
 			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
-			import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+			import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 			import org.emoflon.ibex.tgg.runtime.democles.DemoclesTGGEngine;
 			
 			public class DemoclesRegistrationHelper implements IRegistrationHelper {

@@ -17,6 +17,7 @@ import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttr
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.DefaultSCRUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictResolver;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DefaultConflictResolver;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
@@ -31,6 +32,7 @@ import language.TGGRuleNode;
 
 public class IbexOptions {
 	private boolean debug;
+	private LoggerConfig loggerConfig;
 	private String workspacePath;
 	private String projectPath;
 	private String projectName;
@@ -86,7 +88,8 @@ public class IbexOptions {
 		scrUpdatePolicy = new DefaultSCRUpdatePolicy();
 		integrationPattern = new IntegrationPattern();
 		conflictSolver = new DefaultConflictResolver();
-
+		loggerConfig = new LoggerConfig();
+		
 		applyConcurrently = false;
 
 		try {
@@ -364,5 +367,14 @@ public class IbexOptions {
 
 	public IRegistrationHelper registrationHelper() {
 		return registrationHelper;
+	}
+
+	public LoggerConfig getLoggerConfig() {
+		return loggerConfig;
+	}
+
+	public IbexOptions setLoggerConfig(LoggerConfig loggerConfig) {
+		this.loggerConfig = loggerConfig;
+		return this;
 	}
 }

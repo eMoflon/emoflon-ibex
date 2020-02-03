@@ -86,10 +86,10 @@ public class SimpleMatch implements IMatch {
 		return getHashCode();
 	}
 
-	@Override
-	public boolean equals(final Object object) {
-		return object instanceof IMatch && isEqual((IMatch) object);
-	}
+//	@Override
+//	public boolean equals(final Object object) {
+//		return object instanceof IMatch && isEqual((IMatch) object);
+//	}
 
 	@Override
 	public String toString() {

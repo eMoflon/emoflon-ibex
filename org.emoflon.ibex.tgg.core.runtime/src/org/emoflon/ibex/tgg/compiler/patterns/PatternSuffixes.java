@@ -137,4 +137,30 @@ public class PatternSuffixes {
 		return name.substring(0, name.indexOf(SEP));
 	}
 
+	public static PatternType extractType(String name) {
+		if (name.lastIndexOf(SEP) == -1) {
+			throw new RuntimeException(name + " is not a valid TGG pattern.");
+		}
+		String suffix = name.substring(name.lastIndexOf(SEP));
+		switch(suffix) {
+		case USER_NAC: return PatternType.USER_NAC;
+		case FILTER_NAC: return PatternType.FILTER_NAC;
+		case EDGE: return PatternType.EDGE;
+		case GEN_REFINEMENT_INVOCATIONS: return PatternType.GEN_REFINEMENT_INVOCATIONS;
+		case GEN: return PatternType.GEN;
+		case GEN_AXIOM_NAC: return PatternType.GEN_AXIOM_NAC;
+		case FWD: return PatternType.FWD;
+		case FWD_OPT: return PatternType.FWD_OPT;
+		case BWD: return PatternType.BWD;
+		case BWD_OPT: return PatternType.BWD_OPT;
+		case CONSISTENCY: return PatternType.CONSISTENCY;
+		case PROTOCOL: return PatternType.PROTOCOL;
+		case PROTOCOL_CORE: return PatternType.PROTOCOL_CORE;
+		case CC: return PatternType.CC;
+		case GENForCC: return PatternType.GENForCC;
+		case CO: return PatternType.CO;
+		case GENForCO: return PatternType.GENForCO;
+		default: throw new RuntimeException(suffix + "is an unknown suffix for TGG patterns");
+		}
+	}
 }

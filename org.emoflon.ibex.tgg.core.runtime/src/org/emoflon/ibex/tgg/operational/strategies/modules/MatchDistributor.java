@@ -38,6 +38,8 @@ public class MatchDistributor implements IMatchObserver {
 	private IBlackInterpreter blackInterpreter;
 	private ResourceSet rs;
 	
+	protected long time;
+	
 	private boolean initialized = false;
 	
 	public MatchDistributor(IbexOptions options) {
@@ -58,7 +60,9 @@ public class MatchDistributor implements IMatchObserver {
 	}
 	
 	public void updateMatches() {
+		long tic = System.nanoTime();
 		blackInterpreter.updateMatches();
+		time = getTime() + System.nanoTime() - tic;
 	}
 	
 	@Override
@@ -108,7 +112,6 @@ public class MatchDistributor implements IMatchObserver {
 		blackInterpreter = null;
 		rs.getAllContents().forEachRemaining(c -> c.eAdapters().clear());
 		rs.eAdapters().clear();
-		logger.debug("Removed black interpreter");
 	}
 
 	@Override
@@ -167,5 +170,9 @@ public class MatchDistributor implements IMatchObserver {
 
 	public Collection<PatternType> getPatternRelevantForCompiler() {
 		return type2addMatch.keySet();
+	}
+
+	public long getTime() {
+		return time;
 	}
 }
