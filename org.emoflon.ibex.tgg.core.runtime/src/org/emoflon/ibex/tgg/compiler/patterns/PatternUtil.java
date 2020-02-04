@@ -8,7 +8,7 @@ public class PatternUtil {
 	private static Map<String, String> patternName2ruleName = new HashMap<>();
 	private static Map<String, PatternType> patternName2type = new HashMap<>();
 	
-	public static void registerPattern(String patternName, PatternType type) {
+	public synchronized static void registerPattern(String patternName, PatternType type) {
 		patternName2type.put(patternName, type);
 		patternName2ruleName.put(patternName, PatternSuffixes.removeSuffix(patternName));
 	}
