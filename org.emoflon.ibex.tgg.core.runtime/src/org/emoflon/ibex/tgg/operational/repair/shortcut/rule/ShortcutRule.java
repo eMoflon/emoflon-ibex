@@ -46,6 +46,7 @@ public class ShortcutRule {
 	private Collection<TGGRuleNode> preservedNodes;
 
 	private TGGOverlap overlap;
+	private boolean relaxedPatternMatching;
 
 	private Collection<String> nodeNames;
 	private Collection<String> edgeNames;
@@ -56,8 +57,9 @@ public class ShortcutRule {
 	private Map<String, TGGRuleNode> srcName2oldNodes;
 	private Map<String, TGGRuleNode> trgName2oldNodes;
 
-	public ShortcutRule(TGGOverlap overlap) {
+	public ShortcutRule(TGGOverlap overlap, boolean relaxedPatternMatching) {
 		this.overlap = overlap;
+		this.relaxedPatternMatching = relaxedPatternMatching;
 
 		src2newNodes = cfactory.createObjectToObjectHashMap();
 		trg2newNodes = cfactory.createObjectToObjectHashMap();
@@ -80,7 +82,7 @@ public class ShortcutRule {
 	}
 
 	public ShortcutRule copy() {
-		return new ShortcutRule(overlap);
+		return new ShortcutRule(overlap, relaxedPatternMatching);
 	}
 
 	private void initialize(TGGOverlap overlap) {
@@ -105,14 +107,14 @@ public class ShortcutRule {
 
 	private void initializeContext(TGGOverlap overlap) {
 		for (TGGRuleNode node : extractNodes(overlap.unboundSrcContext))
-			createNewNode(node, BindingType.RELAXED, SCInputRule.SOURCE);
+			createNewNode(node, relaxedPatternMatching ? BindingType.RELAXED : BindingType.CONTEXT, SCInputRule.SOURCE);
 		for (TGGRuleNode node : extractNodes(overlap.unboundTrgContext))
 			createNewNode(node, BindingType.CONTEXT, SCInputRule.TARGET);
 		for (TGGRuleNode node : extractNodes(overlap.mappings.keySet()))
 			createNewMergedNode(node, (TGGRuleNode) overlap.mappings.get(node));
 
 		for (TGGRuleEdge edge : extractEdges(overlap.unboundSrcContext))
-			createNewEdge(edge, BindingType.RELAXED, SCInputRule.SOURCE);
+			createNewEdge(edge, relaxedPatternMatching ? BindingType.RELAXED : BindingType.CONTEXT, SCInputRule.SOURCE);
 		for (TGGRuleEdge edge : extractEdges(overlap.unboundTrgContext))
 			createNewEdge(edge, BindingType.CONTEXT, SCInputRule.TARGET);
 		for (TGGRuleEdge edge : extractEdges(overlap.mappings.keySet()))

@@ -15,6 +15,8 @@ import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.DefaultSCRUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictResolver;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DefaultConflictResolver;
@@ -46,6 +48,8 @@ public class IbexOptions {
 	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity;
 	private boolean ignoreDomainConformity;
 	private boolean useShortcutRules;
+	private boolean relaxedSCPatternMatching;
+	private IShortcutRuleUpdatePolicy scrUpdatePolicy;
 	private boolean optimizeSyncPattern;
 	private boolean applyConcurrently;
 	private IbexExecutable executable;
@@ -61,7 +65,7 @@ public class IbexOptions {
 
 	// Benchmark Logging
 	private BenchmarkLogger logger;
-	
+
 	// Model Integration
 	private IntegrationPattern integrationPattern;
 	private ConflictResolver conflictSolver;
@@ -70,16 +74,18 @@ public class IbexOptions {
 		debug = Logger.getRootLogger().getLevel() == Level.DEBUG;
 		projectPath = "/";
 		workspacePath = "./../";
-		
+
 		setIlpSolver(SupportedILPSolver.Sat4J);
 		useEdgePatterns = false;
 		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
-		ignoreInjecitity = (x,y) -> false;
+		ignoreInjecitity = (x, y) -> false;
 		ignoreDomainConformity = false;
 		optimizeSyncPattern = false;
 		logger = new EmptyBenchmarkLogger();
 		repairAttributes = true;
 		useShortcutRules = false;
+		relaxedSCPatternMatching = true;
+		scrUpdatePolicy = new DefaultSCRUpdatePolicy();
 		integrationPattern = new IntegrationPattern();
 		conflictSolver = new DefaultConflictResolver();
 		loggerConfig = new LoggerConfig();
@@ -106,10 +112,18 @@ public class IbexOptions {
 	public boolean repairUsingShortcutRules() {
 		return useShortcutRules;
 	}
-	
+
 	public IbexOptions repairUsingShortcutRules(boolean useShortcutRules) {
 		this.useShortcutRules = useShortcutRules;
 		return this;
+	}
+
+	public boolean relaxedSCPatternMatching() {
+		return relaxedSCPatternMatching;
+	}
+
+	public void relaxedSCPatternMatching(boolean relaxedSCPatternMatching) {
+		this.relaxedSCPatternMatching = relaxedSCPatternMatching;
 	}
 
 	public boolean repairAttributes() {
@@ -120,7 +134,18 @@ public class IbexOptions {
 		this.repairAttributes = repairAttributes;
 		return this;
 	}
-	
+
+	public IShortcutRuleUpdatePolicy getShortcutRuleUpdatePolicy() {
+		return scrUpdatePolicy;
+	}
+
+	public void setShortcutRuleUpdatePolicy(IShortcutRuleUpdatePolicy scrUpdatePolicy) {
+		if (scrUpdatePolicy == null)
+			this.scrUpdatePolicy = new DefaultSCRUpdatePolicy();
+		else
+			this.scrUpdatePolicy = scrUpdatePolicy;
+	}
+
 	public boolean applyConcurrently() {
 		return applyConcurrently;
 	}
@@ -129,7 +154,7 @@ public class IbexOptions {
 		this.applyConcurrently = applyConcurrently;
 		return this;
 	}
-	
+
 	public IbexOptions workspacePath(String workspacePath) {
 		this.workspacePath = workspacePath;
 		return this;
@@ -210,7 +235,7 @@ public class IbexOptions {
 	public IBlackInterpreter getBlackInterpreter() {
 		return blackInterpreter;
 	}
-	
+
 	public IbexOptions setBlackInterpreter(IBlackInterpreter blackInterpreter) {
 		this.blackInterpreter = blackInterpreter;
 		return this;
@@ -251,7 +276,7 @@ public class IbexOptions {
 	public FilterNACStrategy getLookAheadStrategy() {
 		return lookAheadStrategy;
 	}
-	
+
 	public IbexOptions setLookAheadStrategy(FilterNACStrategy lookAheadStrategy) {
 		this.lookAheadStrategy = lookAheadStrategy;
 		return this;
@@ -269,7 +294,7 @@ public class IbexOptions {
 	public BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjectivity() {
 		return ignoreInjecitity;
 	}
-	
+
 	public IbexOptions ignoreInjectivity(BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity) {
 		this.ignoreInjecitity = ignoreInjecitity;
 		return this;
@@ -278,7 +303,7 @@ public class IbexOptions {
 	public boolean ignoreDomainConformity() {
 		return ignoreDomainConformity;
 	}
-	
+
 	public IbexOptions ignoreDomainConformity(boolean ignoreDomainConformity) {
 		this.ignoreDomainConformity = ignoreDomainConformity;
 		return this;
@@ -308,7 +333,7 @@ public class IbexOptions {
 	public void setConflictSolver(ConflictResolver conflictSolver) {
 		this.conflictSolver = conflictSolver;
 	}
-	
+
 	public TGGResourceHandler getResourceHandler() {
 		return resourceHandler;
 	}
@@ -316,30 +341,30 @@ public class IbexOptions {
 	public IbexOptions setResourceHandler(TGGResourceHandler resourceHandler) {
 		this.resourceHandler = resourceHandler;
 		resourceHandler.setOptions(this);
-		if(executable != null)
+		if (executable != null)
 			executable.setResourceHandler(resourceHandler);
 		return this;
 	}
-	
+
 	public MatchDistributor getMatchDistributor() {
 		return matchDistributor;
 	}
-	
+
 	public IbexOptions setExecutable(IbexExecutable executable) {
 		this.executable = executable;
-		if(resourceHandler != null)
+		if (resourceHandler != null)
 			resourceHandler.setExecutable(executable);
 		return this;
 	}
-	
+
 	public IbexExecutable getExecutable() {
 		return executable;
 	}
-	
+
 	public void registrationHelper(IRegistrationHelper registrationHelper) {
 		this.registrationHelper = registrationHelper;
 	}
-	
+
 	public IRegistrationHelper registrationHelper() {
 		return registrationHelper;
 	}

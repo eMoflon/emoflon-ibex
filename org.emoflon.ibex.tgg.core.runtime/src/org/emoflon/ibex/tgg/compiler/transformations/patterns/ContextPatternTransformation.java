@@ -60,6 +60,7 @@ import language.BindingType;
 import language.DomainType;
 import language.NAC;
 import language.TGGAttributeConstraintOperators;
+import language.TGGAttributeExpression;
 import language.TGGEnumExpression;
 import language.TGGExpression;
 import language.TGGInplaceAttributeExpression;
@@ -182,7 +183,7 @@ public class ContextPatternTransformation {
 		OperationalPatternTransformation transformer = new ProtocolPatternTransformation(this, options, rule);
 		return transformer.transform();
 	}
-	
+
 	protected IBeXContextPattern createProtocolCorePattern(TGGRule rule) {
 		OperationalPatternTransformation transformer = new ProtocolCorePatternTransformation(this, options, rule);
 		return transformer.transform();
@@ -238,48 +239,48 @@ public class ContextPatternTransformation {
 
 		return nacPattern;
 	}
-	
+
 	public void optimizeSyncPatterns(TGGRule rule) {
-		if(!options.optimizeSyncPattern())
+		if (!options.optimizeSyncPattern())
 			return;
-		
+
 		IBeXContextPattern fwdPattern = getPattern(generateFWDBlackPatternName(rule.getName()));
 		IBeXContextPattern bwdPattern = getPattern(generateBWDBlackPatternName(rule.getName()));
 		IBeXContextPattern consistencyPattern = getPattern(getConsistencyPatternName(rule.getName()));
-		
+
 		boolean fwdPatternPresent = fwdPattern != null;
 		boolean bwdPatternPresent = bwdPattern != null;
 		boolean consistencyPatternPresent = consistencyPattern != null;
 
-		if(fwdPatternPresent && consistencyPatternPresent)  {
+		if (fwdPatternPresent && consistencyPatternPresent) {
 			createInvocation(consistencyPattern, fwdPattern);
-			
+
 			optimizeIBeXPattern(consistencyPattern, fwdPattern);
 		}
-		
-		if(bwdPatternPresent && consistencyPatternPresent) {
-			createInvocation(consistencyPattern, bwdPattern);	
-			
+
+		if (bwdPatternPresent && consistencyPatternPresent) {
+			createInvocation(consistencyPattern, bwdPattern);
+
 			optimizeIBeXPattern(consistencyPattern, bwdPattern);
 		}
 
-		if(fwdPatternPresent && bwdPatternPresent) {
-			if(!isAxiomatic(rule)) {
+		if (fwdPatternPresent && bwdPatternPresent) {
+			if (!isAxiomatic(rule)) {
 				IBeXContextPattern genPattern = createModelGenPattern(rule);
-				if(genPattern != null) {
+				if (genPattern != null) {
 					createInvocation(fwdPattern, genPattern);
 					createInvocation(bwdPattern, genPattern);
-					
+
 					optimizeIBeXPattern(fwdPattern, genPattern);
 					optimizeIBeXPattern(bwdPattern, genPattern);
 				}
 			}
 		}
-		
-		if(consistencyPatternPresent) {
+
+		if (consistencyPatternPresent) {
 			IBeXContextPattern protocolPattern = createProtocolPattern(rule);
 			IBeXContextPattern protocolCorePattern = createProtocolCorePattern(rule);
-			
+
 			createInvocation(consistencyPattern, protocolPattern);
 			createInvocation(protocolPattern, protocolCorePattern);
 
@@ -287,7 +288,7 @@ public class ContextPatternTransformation {
 			optimizeIBeXPattern(protocolPattern, protocolCorePattern);
 		}
 	}
-	
+
 	public void createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(true);
@@ -348,6 +349,9 @@ public class ContextPatternTransformation {
 		}
 
 		for (TGGInplaceAttributeExpression attrExp : node.getAttrExpr()) {
+			if(attrExp.getValueExpr() instanceof TGGAttributeExpression)
+				continue;
+				
 			IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
 			ibexAttrConstraint.setNode(ibexNode.get());
 			ibexAttrConstraint.setType(attrExp.getAttribute());
@@ -503,7 +507,7 @@ public class ContextPatternTransformation {
 
 		return ibexPatternSet;
 	}
-	
+
 	public void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
 		IBeXNode protocolNode = createProtocolNode(rule, ibexPattern);
 		connectProtocolNode(ibexPattern, protocolNode, rule);

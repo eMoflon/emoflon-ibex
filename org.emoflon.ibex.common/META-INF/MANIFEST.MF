@@ -31,5 +31,6 @@ Export-Package: IBeXLanguage,
  org.emoflon.ibex.common.ide,
  org.emoflon.ibex.common.operational,
  org.emoflon.ibex.common.patterns,
- org.emoflon.ibex.common.visualization
+ org.emoflon.ibex.common.visualization,
+ org.emoflon.ibex.common.visualization.tgg
 

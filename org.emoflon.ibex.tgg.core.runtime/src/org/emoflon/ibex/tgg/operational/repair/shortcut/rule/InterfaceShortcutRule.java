@@ -68,7 +68,8 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 			removeEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE));
 			removeNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.DELETE));
 			
-			addNACforCreatedInterface(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG));
+			// Note: at the moment not required -> maybe use it if there are problems with already created green edges
+			// addNACforCreatedInterface(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG));
 			break;
 		case BACKWARD:
 			createFilterNacs(scRule.getTargetRule(), DomainType.TRG);
@@ -83,7 +84,8 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 			removeEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE));
 			removeNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.DELETE));
 			
-			addNACforCreatedInterface(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC));
+			// Note: at the moment not required -> maybe use it if there are problems with already created green edges
+			// addNACforCreatedInterface(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC));
 			break;
 		default:
 			throw new RuntimeException("Shortcut Rules can only be operationalized for FORWARD and BACKWARD operations");
@@ -228,6 +230,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 		filterEdges.iterator().forEachRemaining(EcoreUtil::delete);
 	}
 
+	@SuppressWarnings("unused")
 	private void addNACforCreatedInterface(Collection<TGGRuleEdge> edges) {
 		for(TGGRuleEdge edge : edges) {
 			TGGRuleNode src = edge.getSrcNode();
@@ -237,13 +240,16 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 				if(edge.getBindingType() != BindingType.CREATE)
 					continue;
 				
+				if(src.getBindingType() == BindingType.CREATE || trg.getBindingType() == BindingType.CREATE)
+					continue;
+				
 				TGGRuleEdge nac = LanguageFactory.eINSTANCE.createTGGRuleEdge();
 				nac.setDomainType(edge.getDomainType());
 				nac.setBindingType(BindingType.NEGATIVE);
 				nac.setType(edge.getType());
 				nac.setSrcNode(edge.getSrcNode());
 				nac.setTrgNode(edge.getTrgNode());
-				nac.setName(edge.getSrcNode().getName() + "_" + edge.getType().getName() + "_" + edge.getTrgNode().getName());
+				nac.setName(edge.getSrcNode().getName() + "__" + edge.getType().getName() + "__" + edge.getTrgNode().getName());
 				scRule.getEdges().add(nac);
 			}
 		}

@@ -47,8 +47,8 @@ public class SearchKey {
 	@Override
 	public String toString() {
 		if (reverse)
-			return targetNode.getName() + "__" + edge.getName() + "__" + sourceNode.getName();
+			return targetNode.getName() + "__" + edge.getType().getName() + "__" + sourceNode.getName();
 		else
-			return sourceNode.getName() + "__" + edge.getName() + "__" + targetNode.getName();
+			return sourceNode.getName() + "__" + edge.getType().getName() + "__" + targetNode.getName();
 	}
 }
