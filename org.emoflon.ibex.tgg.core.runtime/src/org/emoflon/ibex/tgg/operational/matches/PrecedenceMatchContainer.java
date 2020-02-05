@@ -318,7 +318,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		DecimalFormat df = new DecimalFormat("0.#####");
 		df.setMaximumFractionDigits(5);
 		
-		LoggerConfig config = strategy.getOptions().getLoggerConfig();
+		LoggerConfig config = strategy.getOptions().debug.loggerConfig();
 		LoggerConfig.log(config.log_allTimes(), () -> "PrecedenceMatchContainer -> {");
 		LoggerConfig.log(config.log_allTimes(), () -> "      addMatchTime:     " + df.format((double) addMatchTime / (double) (1000 * 1000 * 1000)));
 		LoggerConfig.log(config.log_allTimes(), () -> "      getMatchTime:     " + df.format((double) getMatchTime / (double) (1000 * 1000 * 1000)));

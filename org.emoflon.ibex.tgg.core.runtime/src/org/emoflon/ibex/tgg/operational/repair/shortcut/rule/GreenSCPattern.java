@@ -103,7 +103,7 @@ public class GreenSCPattern extends IbexGreenPattern {
 					newAttributeCSPVariables, 
 					sortedConstraints,
 					match,
-					factory.getOptions().constraintProvider());
+					factory.getOptions().csp.constraintProvider());
 	}
 
 	@Override

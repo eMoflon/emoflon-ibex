@@ -96,7 +96,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 	private void createRuleApplicationNode() {
 		TGGRuleNode oldRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
 		oldRaNode.setName(getProtocolNodeName(scRule.getSourceRule().getName()));
-		EClass oldRaType = (EClass) strategy.getOptions().getCorrMetamodel().getEClassifier(getMarkerTypeName(this.scRule.getSourceRule().getName()));
+		EClass oldRaType = (EClass) strategy.getOptions().tgg.corrMetamodel().getEClassifier(getMarkerTypeName(this.scRule.getSourceRule().getName()));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);
 

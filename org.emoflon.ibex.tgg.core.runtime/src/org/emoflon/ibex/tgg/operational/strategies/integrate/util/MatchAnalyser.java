@@ -34,7 +34,7 @@ public class MatchAnalyser {
 	}
 
 	private void init() {
-		nameToRules = integrate.getOptions().flattenedTGG().getRules().stream() //
+		nameToRules = integrate.getOptions().tgg.flattenedTGG().getRules().stream() //
 				.collect(Collectors.toMap(rule -> rule.getName(), rule -> rule));
 		matchToAnalysis = new HashMap<>();
 	}

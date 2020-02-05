@@ -35,7 +35,7 @@ public class ConsistencyReporter {
 
 	public ConsistencyReporter(OperationalStrategy strategy) {
 		this.strategy = strategy;
-		resourceHandler = strategy.getOptions().getResourceHandler();
+		resourceHandler = strategy.getOptions().resourceHandler();
 	}
 	
 	public void init(OperationalStrategy strategy) {

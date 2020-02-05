@@ -38,14 +38,14 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 		this.opStrat = opStrat;
 
 		// enable backward navigation for emf edges
-		opStrat.getOptions().getResourceHandler() //
+		opStrat.getOptions().resourceHandler() //
 				.getResourceSet().eAdapters().add(new ECrossReferenceAdapter());
 		initialize();
 	}
 
 	private void initialize() {
 		OverlapUtil util = new OverlapUtil(opStrat.getOptions());
-		Collection<ShortcutRule> shortcutRules = util.calculateShortcutRules(opStrat.getOptions().flattenedTGG());
+		Collection<ShortcutRule> shortcutRules = util.calculateShortcutRules(opStrat.getOptions().tgg.flattenedTGG());
 		scTool = new ShortcutPatternTool(opStrat, shortcutRules);
 		updateDirection();
 	}

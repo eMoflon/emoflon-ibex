@@ -71,7 +71,7 @@ public class ShortcutPatternTool {
 	public ShortcutPatternTool(PropagatingOperationalStrategy strategy, Collection<ShortcutRule> scRules) {
 		this.scRules = scRules;
 		this.strategy = strategy;
-		resourceHandler = strategy.getOptions().getResourceHandler();
+		resourceHandler = strategy.getOptions().resourceHandler();
 		initialize();
 	}
 	
@@ -119,7 +119,7 @@ public class ShortcutPatternTool {
 			return null;
 		
 		Collection<OperationalShortcutRule> copiedRules = new ArrayList<>(rules);
-		IShortcutRuleUpdatePolicy policy = strategy.getOptions().getShortcutRuleUpdatePolicy();
+		IShortcutRuleUpdatePolicy policy = strategy.getOptions().repair.shortcutRuleUpdatePolicy();
 		do {
 			OperationalShortcutRule osr = policy.chooseOneShortcutRule(copiedRules, brokenMatch, objDomain);
 			if(osr == null)

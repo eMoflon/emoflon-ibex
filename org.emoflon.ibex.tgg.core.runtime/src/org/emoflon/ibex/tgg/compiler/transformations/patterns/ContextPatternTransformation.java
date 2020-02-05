@@ -87,12 +87,12 @@ public class ContextPatternTransformation {
 
 	public ContextPatternTransformation(IbexOptions options, MatchDistributor distributor) {
 		this.options = options;
-		this.USE_INVOCATIONS_FOR_REFERENCES = options.getUseEdgePatterns();
+		this.USE_INVOCATIONS_FOR_REFERENCES = options.patterns.useEdgePatterns();
 		this.distributor = distributor;
 	}
 
 	public IBeXPatternSet transform() {
-		options.getFlattenedConcreteTGGRules().parallelStream().forEach(rule -> {
+		options.tgg.getFlattenedConcreteTGGRules().parallelStream().forEach(rule -> {
 //		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
 			createPatternIfRelevant(rule, this::createModelGenPattern, PatternType.GEN);
 			createPatternIfRelevant(rule, this::createConsistencyPattern, PatternType.CONSISTENCY);
@@ -241,7 +241,7 @@ public class ContextPatternTransformation {
 	}
 
 	public void optimizeSyncPatterns(TGGRule rule) {
-		if (!options.optimizeSyncPattern())
+		if (!options.propagate.optimizeSyncPattern())
 			return;
 
 		IBeXContextPattern fwdPattern = getPattern(generateFWDBlackPatternName(rule.getName()));
@@ -516,7 +516,7 @@ public class ContextPatternTransformation {
 	public IBeXNode createProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
 		IBeXNode protocolNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
 		protocolNode.setName(TGGPatternUtil.getProtocolNodeName(rule.getName()));
-		EClass type = (EClass) options.getCorrMetamodel()
+		EClass type = (EClass) options.tgg.corrMetamodel()
 				.getEClassifier(TGGModelUtils.getMarkerTypeName(rule.getName()));
 		protocolNode.setType(type);
 		ibexPattern.getSignatureNodes().add(protocolNode);

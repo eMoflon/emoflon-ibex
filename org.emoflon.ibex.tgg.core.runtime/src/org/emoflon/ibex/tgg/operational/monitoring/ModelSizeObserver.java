@@ -23,7 +23,7 @@ public class ModelSizeObserver extends AbstractIbexObserver {
 		case MATCHAPPLIED:
 			if (this.getObservable() instanceof OperationalStrategy) {
 				OperationalStrategy op = (OperationalStrategy) this.getObservable();
-				TGGResourceHandler rHandler = op.getOptions().getResourceHandler();
+				TGGResourceHandler rHandler = op.getOptions().resourceHandler();
 				this.currentSize = this.getNumberOfObjectsInModels(rHandler.getSourceResource(), rHandler.getCorrResource(),
 						rHandler.getTargetResource());
 				logger.info("Size of input models is " + this.currentSize + " elements");

@@ -178,7 +178,7 @@ public abstract class OPT extends OperationalStrategy {
 
 		try {
 			OperationalStrategy.logger.debug("Attempting to solve ILP");
-			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, this.options.getIlpSolver());
+			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, this.options.ilpSolver());
 			if (!ilpProblem.checkValidity(ilpSolution)) {
 				throw new AssertionError("Invalid solution");
 			}

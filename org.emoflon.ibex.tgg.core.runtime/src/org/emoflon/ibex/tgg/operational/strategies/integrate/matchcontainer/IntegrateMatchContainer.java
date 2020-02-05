@@ -33,7 +33,7 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	public IntegrateMatchContainer(INTEGRATE strategy) {
 		super(strategy);
 		this.strategy = strategy;
-		this.precedenceGraph = strategy.getOptions().getResourceHandler().getPrecedenceResource();
+		this.precedenceGraph = strategy.getOptions().resourceHandler().getPrecedenceResource();
 		nodes = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
 	}
 

@@ -30,7 +30,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	public IbexRedInterpreter(OperationalStrategy operationalStrategy) {
 		this.strategy = operationalStrategy;
 		options = strategy.getOptions();
-		resourceHandler = options.getResourceHandler();
+		resourceHandler = options.resourceHandler();
 	}
 
 	@Override

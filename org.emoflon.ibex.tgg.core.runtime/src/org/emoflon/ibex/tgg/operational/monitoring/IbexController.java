@@ -34,7 +34,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	public void register(OperationalStrategy pOperationalStrategy) {
 		operationalStrategy = pOperationalStrategy;
 		options = operationalStrategy.getOptions();
-		resourceHandler = options.getResourceHandler();
+		resourceHandler = options.resourceHandler();
 		pOperationalStrategy.registerObserver(this);
 		pOperationalStrategy.setUpdatePolicy(this);
 	}
@@ -74,7 +74,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 				new TGGObjectGraph(filterResourceItems(items, resourceHandler.getSourceResource()),
 						filterResourceItems(items, resourceHandler.getTargetResource()),
 						filterResourceItems(items, resourceHandler.getCorrResource())),
-				options.tgg().getRules().stream().filter(rule -> rule.getName().equals(appliedRuleName))
+				options.tgg.tgg().getRules().stream().filter(rule -> rule.getName().equals(appliedRuleName))
 						.findFirst().orElse(null));
 		protocolsStepList.add(protocolStep);
 	}

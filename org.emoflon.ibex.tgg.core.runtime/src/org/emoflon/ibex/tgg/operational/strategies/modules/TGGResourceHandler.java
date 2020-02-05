@@ -90,12 +90,12 @@ public class TGGResourceHandler {
 	public void saveRelevantModels() throws IOException {
 		if(executable instanceof FWD_OPT) {
 			// Unrelax the metamodel
-			relaxer.unrelaxReferences(options.tgg().getTrg());
+			relaxer.unrelaxReferences(options.tgg.tgg().getTrg());
 		}
 		
 		if(executable instanceof BWD_OPT) {
 			// Unrelax the metamodel
-			relaxer.unrelaxReferences(options.tgg().getSrc());
+			relaxer.unrelaxReferences(options.tgg.tgg().getSrc());
 		}
 		
 		saveModels();
@@ -182,11 +182,11 @@ public class TGGResourceHandler {
 	
 	public void loadRelevantModels() throws IOException {
 		if(executable instanceof FWD_OPT) {
-			relaxer.relaxReferences(options.tgg().getTrg());
+			relaxer.relaxReferences(options.tgg.tgg().getTrg());
 		}
 		
 		if(executable instanceof BWD_OPT) {
-			relaxer.relaxReferences(options.tgg().getSrc());
+			relaxer.relaxReferences(options.tgg.tgg().getSrc());
 		}
 		
 		loadModels();
@@ -195,75 +195,75 @@ public class TGGResourceHandler {
 
 	public void loadModels() throws IOException {
 		if(executable == null || executable instanceof MODELGEN) {
-			source = createResource(options.projectPath() + "/instances/src.xmi");
-			target = createResource(options.projectPath() + "/instances/trg.xmi");
-			corr = createResource(options.projectPath() + "/instances/corr.xmi");
-			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+			source = createResource(options.project.path() + "/instances/src.xmi");
+			target = createResource(options.project.path() + "/instances/trg.xmi");
+			corr = createResource(options.project.path() + "/instances/corr.xmi");
+			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 			return;
 		}
 		
 		if(executable instanceof FWD_OPT) {
-			source = loadResource(options.projectPath() + "/instances/src.xmi");
-			target = createResource(options.projectPath() + "/instances/trg.xmi");
-			corr = createResource(options.projectPath() + "/instances/corr.xmi");
-			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+			source = loadResource(options.project.path() + "/instances/src.xmi");
+			target = createResource(options.project.path() + "/instances/trg.xmi");
+			corr = createResource(options.project.path() + "/instances/corr.xmi");
+			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 		}
 		
 		if(executable instanceof BWD_OPT) {
-			source = createResource(options.projectPath() + "/instances/src.xmi");
-			target = loadResource(options.projectPath() + "/instances/trg.xmi");
-			corr = createResource(options.projectPath() + "/instances/corr.xmi");
-			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+			source = createResource(options.project.path() + "/instances/src.xmi");
+			target = loadResource(options.project.path() + "/instances/trg.xmi");
+			corr = createResource(options.project.path() + "/instances/corr.xmi");
+			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 		}
 		
 		if(executable instanceof SYNC) {
 			if(executable instanceof INITIAL_FWD) {
-				source = loadResource(options.projectPath() + "/instances/src.xmi");
-				target = createResource(options.projectPath() + "/instances/trg.xmi");
-				corr = createResource(options.projectPath() + "/instances/corr.xmi");
-				protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+				source = loadResource(options.project.path() + "/instances/src.xmi");
+				target = createResource(options.project.path() + "/instances/trg.xmi");
+				corr = createResource(options.project.path() + "/instances/corr.xmi");
+				protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 			} else
 			if(executable instanceof INITIAL_BWD) {
-				source = createResource(options.projectPath() + "/instances/src.xmi");
-				target = loadResource(options.projectPath() + "/instances/trg.xmi");
-				corr = createResource(options.projectPath() + "/instances/corr.xmi");
-				protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+				source = createResource(options.project.path() + "/instances/src.xmi");
+				target = loadResource(options.project.path() + "/instances/trg.xmi");
+				corr = createResource(options.project.path() + "/instances/corr.xmi");
+				protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 			}
 			else {
-				source = loadResource(options.projectPath() + "/instances/src.xmi");
-				target = loadResource(options.projectPath() + "/instances/trg.xmi");
-				corr = loadResource(options.projectPath() + "/instances/corr.xmi");
-				protocol = loadResource(options.projectPath() + "/instances/protocol.xmi");
+				source = loadResource(options.project.path() + "/instances/src.xmi");
+				target = loadResource(options.project.path() + "/instances/trg.xmi");
+				corr = loadResource(options.project.path() + "/instances/corr.xmi");
+				protocol = loadResource(options.project.path() + "/instances/protocol.xmi");
 			}
 		}
 		
 		if(executable instanceof CC) {
-			source = loadResource(options.projectPath() + "/instances/src.xmi");
-			target = loadResource(options.projectPath() + "/instances/trg.xmi");
-			corr = createResource(options.projectPath() + "/instances/corr.xmi");
-			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+			source = loadResource(options.project.path() + "/instances/src.xmi");
+			target = loadResource(options.project.path() + "/instances/trg.xmi");
+			corr = createResource(options.project.path() + "/instances/corr.xmi");
+			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 		}
 		
 		if(executable instanceof CO) {
-			source = loadResource(options.projectPath() + "/instances/src.xmi");
-			target = loadResource(options.projectPath() + "/instances/trg.xmi");
-			corr = loadResource(options.projectPath() + "/instances/corr.xmi");
-			protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+			source = loadResource(options.project.path() + "/instances/src.xmi");
+			target = loadResource(options.project.path() + "/instances/trg.xmi");
+			corr = loadResource(options.project.path() + "/instances/corr.xmi");
+			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 		}
 		
 		if(executable instanceof INTEGRATE) {
-			source = loadResource(options.projectPath() + "/instances/src.xmi");
-			target = loadResource(options.projectPath() + "/instances/trg.xmi");
-			corr = loadResource(options.projectPath() + "/instances/corr.xmi");
-			protocol = loadResource(options.projectPath() + "/instances/protocol.xmi");
-			precedence = createResource(options.projectPath() + "/instances/epg.xmi");
+			source = loadResource(options.project.path() + "/instances/src.xmi");
+			target = loadResource(options.project.path() + "/instances/trg.xmi");
+			corr = loadResource(options.project.path() + "/instances/corr.xmi");
+			protocol = loadResource(options.project.path() + "/instances/protocol.xmi");
+			precedence = createResource(options.project.path() + "/instances/epg.xmi");
 		}
 
 		EcoreUtil.resolveAll(rs);
 	}
 	
 	protected void createAndPrepareResourceSet() {
-		rs = options.getBlackInterpreter().createAndPrepareResourceSet(options.workspacePath());
+		rs = options.blackInterpreter().createAndPrepareResourceSet(options.project.workspacePath());
 	}
 
 	public ResourceSet getResourceSet() {
@@ -302,7 +302,7 @@ public class TGGResourceHandler {
 
 	public EPackage loadAndRegisterCorrMetamodel(String workspaceRelativePath) throws IOException {
 		EPackage pack = loadAndRegisterMetamodel(workspaceRelativePath);
-		options.setCorrMetamodel(pack);
+		options.tgg.corrMetamodel(pack);
 		return pack;
 	}
 
@@ -328,24 +328,24 @@ public class TGGResourceHandler {
 				.find(rs)//
 				.forEach((eob, settings) -> logger.error("Problems resolving: " + eob));
 
-		options.tgg((TGG) res.getContents().get(0));
-		options.flattenedTgg((TGG) flattenedRes.getContents().get(0));
+		options.tgg.tgg((TGG) res.getContents().get(0));
+		options.tgg.flattenedTgg((TGG) flattenedRes.getContents().get(0));
 
 		RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
-				options.tgg().getAttributeConstraintDefinitionLibrary());
-		runtimeConstraintProvider.registerFactory(options.userDefinedConstraints());
-		options.setConstraintProvider(runtimeConstraintProvider);
+				options.tgg.tgg().getAttributeConstraintDefinitionLibrary());
+		runtimeConstraintProvider.registerFactory(options.csp.userDefinedConstraints());
+		options.csp.constraintProvider(runtimeConstraintProvider);
 
 		rs.getResources().remove(res);
 		rs.getResources().remove(flattenedRes);
 	}
 	
 	protected Resource loadFlattenedTGGResource() throws IOException {
-		return loadResource(options.projectPath() + "/model/" + options.projectName() + "_flattened.tgg.xmi");
+		return loadResource(options.project.path() + "/model/" + options.project.name() + "_flattened.tgg.xmi");
 	}
 
 	protected Resource loadTGGResource() throws IOException {
-		return loadResource(options.projectPath() + "/model/" + options.projectName() + ".tgg.xmi");
+		return loadResource(options.project.path() + "/model/" + options.project.name() + ".tgg.xmi");
 	}
 	
 	private void registerInternalMetamodels() {
@@ -355,10 +355,10 @@ public class TGGResourceHandler {
 	}
 	
 	protected void registerUserMetamodels() throws IOException {
-		options.registrationHelper().registerMetamodels(rs, options.getExecutable());
+		options.registrationHelper().registerMetamodels(rs, options.executable());
 		
 		// Register correspondence metamodel last
-		loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectName() + ".ecore");
+		loadAndRegisterCorrMetamodel(options.project.path() + "/model/" + options.project.name() + ".ecore");
 	}
 	
 	public void addToTrash(EObject o) {

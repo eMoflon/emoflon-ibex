@@ -89,7 +89,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				removeBrokenMatchesAfterCCMatchApplication(match);
 			}
 		};
-		options.setExecutable(this);
+		options.executable(this);
 
 	}
 
@@ -111,7 +111,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		initialize();
 		modelChangeProtocol.registerKey(userDeltaKey);
 
-		for (IntegrationFragment fragment : options.getIntegrationPattern().getIntegrationFragments())
+		for (IntegrationFragment fragment : options.integration.pattern().getIntegrationFragments())
 			fragment.apply(this);
 
 		modelChangeProtocol.deregisterKey(userDeltaKey);
@@ -139,7 +139,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		mismatches.clear();
 		for (ITGGMatch brokenMatch : brokenRuleApplications.values()) {
 			MatchAnalysis analysis = matchAnalyser.getAnalysis(brokenMatch);
-			for (MatchClassifier matchClassifier : options.getIntegrationPattern().getMatchClassifier()) {
+			for (MatchClassifier matchClassifier : options.integration.pattern().getMatchClassifier()) {
 				if (matchClassifier.isApplicable(analysis)) {
 					mismatches.put(analysis.getMatch(), matchClassifier.classify(this, analysis));
 					break;
@@ -276,7 +276,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		removeOperationalRuleMatch(match);
 
 		if (result.isPresent()) {
-			options.getBenchmarkLogger().addToNumOfMatchesApplied(1);
+			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
 			logger.debug("Removed as it has just been applied: ");
 		} else
 			logger.debug("Removed as application failed: ");
@@ -328,7 +328,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					brokenRuleApplications.put(newRa, repairedMatch);
 					alreadyProcessed.add(repairedMatch);
 
-					options.getBenchmarkLogger().addToNumOfMatchesRepaired(1);
+					options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
 				}
 			}
 		}

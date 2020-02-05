@@ -32,7 +32,7 @@ public class FilterNACAnalysis {
 	public Collection<FilterNACCandidate> computeFilterNACCandidates() {
 		final Collection<FilterNACCandidate> filterNACs = new ArrayList<>();
 
-		if (options.getLookAheadStrategy().equals(FilterNACStrategy.NONE))
+		if (options.patterns.lookAheadStrategy().equals(FilterNACStrategy.NONE))
 			return filterNACs;
 
 		for (TGGRuleNode n : rule.getNodes()) {

@@ -34,7 +34,7 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	public IbexGreenPattern(IGreenPatternFactory factory) {
 		this.factory = factory;
 		options = factory.getOptions();
-		resourceHandler = options.getResourceHandler();
+		resourceHandler = options.resourceHandler();
 		optimizeMarkerCreation = false;
 	}
 	
@@ -45,7 +45,7 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 					factory.getAttributeCSPVariables(), 
 					 sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints()),
 					match,
-					factory.getOptions().constraintProvider());
+					factory.getOptions().csp.constraintProvider());
 		} catch (Exception e) {
 			throw new IllegalStateException("Unable to sort attribute constraints for " + match.getPatternName() + ", " + e.getMessage(), e);
 		}
@@ -78,7 +78,7 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	
 	@Override
 	public void createMarkers(String ruleName, ITGGMatch match) {
-		EPackage corrPackage = options.getCorrMetamodel();
+		EPackage corrPackage = options.tgg.corrMetamodel();
 		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(ruleName));
 		
 		EObject ra = EcoreUtil.create(type);

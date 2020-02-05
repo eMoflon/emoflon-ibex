@@ -41,8 +41,8 @@ public interface IntegrationFragment {
 		public void apply(INTEGRATE i) throws IOException {
 			i.classifyMatches();
 			i.detectConflicts();
-			i.conflicts.values()
-					.forEach(conflict -> i.getOptions().getConflictSolver().resolveDeleteConflict(conflict).apply(i));
+			i.conflicts.values().forEach(
+					conflict -> i.getOptions().integration.conflictSolver().resolveDeleteConflict(conflict).apply(i));
 		}
 	}
 

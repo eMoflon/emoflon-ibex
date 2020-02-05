@@ -33,7 +33,7 @@ public class SYNC extends PropagatingOperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
-		options.getBenchmarkLogger().startNewRun();
+		options.debug.benchmarkLogger().startNewRun();
 		BenchmarkLogger.startTimer();
 
 		repair();
@@ -42,7 +42,7 @@ public class SYNC extends PropagatingOperationalStrategy {
 		logCreatedAndDeletedNumbers();
 
 		collectDataToBeLogged();
-		options.getBenchmarkLogger().addToExecutionTime(BenchmarkLogger.stopTimer());
+		options.debug.benchmarkLogger().addToExecutionTime(BenchmarkLogger.stopTimer());
 	}
 
 	public void forward() throws IOException {
@@ -89,7 +89,7 @@ public class SYNC extends PropagatingOperationalStrategy {
 	}
 
 	private void logCreatedAndDeletedNumbers() {
-		if (options.debug()) {
+		if (options.debug.ibexDebug()) {
 			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream() //
 					.filter(rStr -> rStr instanceof ShortcutRepairStrategy) //
 					.map(rStr -> (ShortcutRepairStrategy) rStr) //

@@ -53,8 +53,8 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
 		this.operationalStrategy = operationalStrategy;
 		options = operationalStrategy.getOptions();
-		resourceHandler = options.getResourceHandler();
-		optimizeCreation = operationalStrategy.getOptions().getBlackInterpreter() != null && !operationalStrategy.getOptions().getBlackInterpreter().getClass().getName().contains("Democles");
+		resourceHandler = options.resourceHandler();
+		optimizeCreation = operationalStrategy.getOptions().blackInterpreter() != null && !operationalStrategy.getOptions().blackInterpreter().getClass().getName().contains("Democles");
 	}
 
 	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
@@ -170,7 +170,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		long tic = System.nanoTime();
 		// Check if match is valid
 		if (matchIsInvalid(ruleName, greenPattern, match)) {
-			LoggerConfig.log(options.getLoggerConfig().log_matchApplication(), () -> "Blocking application as match is invalid.");
+			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Blocking application as match is invalid.");
 			return Optional.empty();
 		}
 
@@ -182,7 +182,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		// Check if all attribute values provided match are as expected
 		IRuntimeTGGAttrConstrContainer cspContainer = greenPattern.getAttributeConstraintContainer(match);
 		if (!cspContainer.solve()) {
-			LoggerConfig.log(options.getLoggerConfig().log_matchApplication(), () -> "Blocking application as attribute conditions don't hold.");
+			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Blocking application as attribute conditions don't hold.");
 			return Optional.empty();
 		}
 

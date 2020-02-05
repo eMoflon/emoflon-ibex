@@ -50,11 +50,11 @@ public class MatchDistributor implements IMatchObserver {
 		if(initialized)
 			return;
 		
-		rs = options.getResourceHandler().getResourceSet();
-		if(options.getBlackInterpreter() == null)
+		rs = options.resourceHandler().getResourceSet();
+		if(options.blackInterpreter() == null)
 			logger.warn("No pattern matcher is registered!");
 		else	
-			initialiseBlackInterpreter(options.getExecutable());
+			initialiseBlackInterpreter(options.executable());
 		
 		initialized = true;
 	}
@@ -71,7 +71,7 @@ public class MatchDistributor implements IMatchObserver {
 	}
 	
 	protected void initialiseBlackInterpreter(IbexExecutable executable) throws IOException {		
-		blackInterpreter = options.getBlackInterpreter();
+		blackInterpreter = options.blackInterpreter();
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
 			blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
@@ -147,7 +147,7 @@ public class MatchDistributor implements IMatchObserver {
 	/***** Benchmark Logging *****/
 	
 	public void collectDataToBeLogged() {
-		options.getBenchmarkLogger().setNumOfMatchesFound(matchCounter);
+		options.debug.benchmarkLogger().setNumOfMatchesFound(matchCounter);
 	}
 	
 	public void register(Collection<PatternType> types, Consumer<ITGGMatch> addMatch, Consumer<ITGGMatch> removeMatch) {

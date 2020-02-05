@@ -102,7 +102,7 @@ class DefaultFilesGenerator {
 				public static IRegistrationHelper registrationHelper = new _DefaultRegistrationHelper();
 			
 				public «fileName»() throws IOException {
-					super(registrationHelper.createIbexOptions().setResourceHandler(new TGGResourceHandler() {
+					super(registrationHelper.createIbexOptions().resourceHandler(new TGGResourceHandler() {
 						@Override
 						public void saveModels() throws IOException {
 							// Use the commented code below to implement saveModels individually.
@@ -118,10 +118,10 @@ class DefaultFilesGenerator {
 						public void loadModels() throws IOException {
 							// Use the commented code below to implement loadModels individually.
 							// loadResource loads from a file while createResource creates a new resource without content
-							// source = loadResource(options.projectPath() + "/instances/src.xmi");
-							// target = createResource(options.projectPath() + "/instances/trg.xmi");
-							// corr = createResource(options.projectPath() + "/instances/corr.xmi");
-							// protocol = createResource(options.projectPath() + "/instances/protocol.xmi");
+							// source = loadResource(options.project.path() + "/instances/src.xmi");
+							// target = createResource(options.project.path() + "/instances/trg.xmi");
+							// corr = createResource(options.project.path() + "/instances/corr.xmi");
+							// protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 							
 							super.loadModels();
 						}
@@ -594,11 +594,11 @@ class DefaultFilesGenerator {
 				/** Create default options **/
 				public IbexOptions createIbexOptions() {
 					IbexOptions options = new IbexOptions();
-					options.setBlackInterpreter(new DemoclesTGGEngine());
-					options.projectName("«MoflonUtil.lastCapitalizedSegmentOf(projectName)»");
-					options.projectPath("«projectName»");
-					options.debug(false);
-					options.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
+					options.blackInterpreter(new DemoclesTGGEngine());
+					options.project.name("«MoflonUtil.lastCapitalizedSegmentOf(projectName)»");
+					options.project.path("«projectName»");
+					options.debug.ibexDebug(false);
+					options.csp.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());
 					options.registrationHelper(this);
 					return options;
 				}

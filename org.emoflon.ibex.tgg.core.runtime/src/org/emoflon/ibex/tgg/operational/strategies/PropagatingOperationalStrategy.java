@@ -57,10 +57,10 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		if (!repairStrategies.isEmpty())
 			return;
 
-		if (options.repairUsingShortcutRules()) {
+		if (options.repair.useShortcutRules()) {
 			repairStrategies.add(new ShortcutRepairStrategy(this));
 		}
-		if (options.repairAttributes()) {
+		if (options.repair.repairAttributes()) {
 			repairStrategies.add(new AttributeRepairStrategy(this));
 		}
 	}
@@ -85,7 +85,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 					brokenRuleApplications.put(newRa, repairedMatch);
 					alreadyProcessed.add(repairedMatch);
 
-					options.getBenchmarkLogger().addToNumOfMatchesRepaired(1);
+					options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
 				}
 			}
 		}
@@ -95,7 +95,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 	protected void translate() {
 		long tic = System.nanoTime();
-		if(options.applyConcurrently()) {
+		if (options.propagate.applyConcurrently()) {
 			matchDistributor.updateMatches();
 			
 			while(true) {
@@ -110,7 +110,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		else {
 			do {
 				matchDistributor.updateMatches();
-			}while (processOneOperationalRuleMatch());
+			} while (processOneOperationalRuleMatch());
 		}
 		
 		translateTime += System.nanoTime() - tic;
@@ -158,7 +158,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);
 
-			options.getBenchmarkLogger().addToNumOfMatchesRevoked(revoked.size());
+			options.debug.benchmarkLogger().addToNumOfMatchesRevoked(revoked.size());
 		}
 	}
 
@@ -186,7 +186,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		if (brokenRuleApplications.containsKey(ruleAppNode)) {
-			LoggerConfig.log(options.getLoggerConfig().log_matchApplication(), () -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
+			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 		}
 
@@ -211,13 +211,13 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 	@Override
 	protected void collectDataToBeLogged() {
-		if (options.getBenchmarkLogger() instanceof EmptyBenchmarkLogger)
+		if (options.debug.benchmarkLogger() instanceof EmptyBenchmarkLogger)
 			return;
 
 		super.collectDataToBeLogged();
 
 		int repStratDeletions = 0;
-		if (!(options.getBenchmarkLogger() instanceof EmptyBenchmarkLogger))
+		if (!(options.debug.benchmarkLogger() instanceof EmptyBenchmarkLogger))
 			repStratDeletions = repairStrategies.stream() //
 					.filter(rStr -> rStr instanceof ShortcutRepairStrategy) //
 					.map(rStr -> (ShortcutRepairStrategy) rStr) //
@@ -225,8 +225,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 					.map(srStr -> srStr.countDeletedElements()) //
 					.orElse(0);
 
-		options.getBenchmarkLogger().setNumOfElementsCreated(greenInterpreter.getNumOfCreatedElements());
-		options.getBenchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedElements() + //
+		options.debug.benchmarkLogger().setNumOfElementsCreated(greenInterpreter.getNumOfCreatedElements());
+		options.debug.benchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedElements() + //
 				repStratDeletions);
 	}
 	
@@ -234,11 +234,11 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	public void terminate() throws IOException {
 		DecimalFormat df = new DecimalFormat("0.#####");
 		df.setMaximumFractionDigits(5);
-		LoggerConfig.log(options.getLoggerConfig().log_translationTime(), () -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.getLoggerConfig().log_repairTime(), () -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.getLoggerConfig().log_removalTime(), () -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.getLoggerConfig().log_matchApplicationTime(), () -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.getLoggerConfig().log_collectMatchTime(), () -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_translationTime(), () -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_repairTime(), () -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_removalTime(), () -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), () -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_collectMatchTime(), () -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
 		
 		((PrecedenceMatchContainer) operationalMatchContainer).log(logger);
 		super.terminate();

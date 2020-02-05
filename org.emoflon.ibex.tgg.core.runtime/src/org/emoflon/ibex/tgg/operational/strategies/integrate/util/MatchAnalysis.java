@@ -96,7 +96,7 @@ public class MatchAnalysis {
 	}
 
 	private boolean isValidResource(Resource resource) {
-		TGGResourceHandler resourceHandler = opStrat.getOptions().getResourceHandler();
+		TGGResourceHandler resourceHandler = opStrat.getOptions().resourceHandler();
 		if (resource.equals(resourceHandler.getSourceResource()))
 			return true;
 		if (resource.equals(resourceHandler.getTargetResource()))

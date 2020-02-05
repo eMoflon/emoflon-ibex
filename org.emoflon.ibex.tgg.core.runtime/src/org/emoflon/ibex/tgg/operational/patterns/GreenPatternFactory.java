@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.patterns;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,7 +10,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -55,7 +53,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		this(options);
 		this.ruleName = ruleName;
 
-		rule = options.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findAny()
+		rule = options.tgg.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findAny()
 				.orElseThrow(() -> new IllegalStateException("Could not find " + ruleName + " in the TGG."));
 
 		greenSrcNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.SRC));

@@ -42,7 +42,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	public VictoryDataProvider(OperationalStrategy pOperationalStrategy) {
 		this.op = pOperationalStrategy;
 		options = op.getOptions();
-		resourceHandler = options.getResourceHandler();
+		resourceHandler = options.resourceHandler();
 		
 		this.getDefaultSaveLocation();
 	}
@@ -50,7 +50,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	@Override
 	public TGGRule getRule(String pRuleName) {
 		try {
-			return op.getOptions().flattenedTGG().getRules().stream().filter(r -> r.getName().equals(pRuleName))
+			return op.getOptions().tgg.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(pRuleName))
 					.findFirst().get();
 		} catch (Exception e) {
 			logger.error(e);
@@ -232,6 +232,6 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 
 	@Override
 	public Collection<TGGRule> getAllRules() {
-		return op.getOptions().flattenedTGG().getRules();
+		return op.getOptions().tgg.flattenedTGG().getRules();
 	}
 }

@@ -85,7 +85,7 @@ public abstract class OperationalPatternTransformation {
 				if(ruleNode_i.getBindingType() != ruleNode_j.getBindingType())
 					continue;
 				
-				if(options.ignoreInjectivity().test(ruleNode_i, ruleNode_j))
+				if(options.patterns.ignoreInjectivity().test(ruleNode_i, ruleNode_j))
 					continue;
 				
 				if (IBeXPatternOptimiser.unequalConstraintNecessary(ruleNode_i, ruleNode_j)) {
