@@ -64,7 +64,7 @@ public interface IMatch {
 		return getParameterNames().contains(name);
 	}
 	
-	int getHashCode();
+	long getHashCode();
 	
 	@Override
 	int hashCode();
@@ -82,11 +82,11 @@ public interface IMatch {
 			return false;
 		}
 		
-		if (!getPatternName().equals(match.getPatternName())) {
+		if(getHashCode() != match.getHashCode()) {
 			return false;
 		}
 		
-		if(getHashCode() != match.getHashCode()) {
+		if (!getPatternName().equals(match.getPatternName())) {
 			return false;
 		}
 
