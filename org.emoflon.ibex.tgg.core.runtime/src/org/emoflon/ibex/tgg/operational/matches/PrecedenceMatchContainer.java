@@ -11,7 +11,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.emoflon.ibex.common.collections.CollectionFactory;
+import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
@@ -21,22 +24,25 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
+
 public class PrecedenceMatchContainer implements IMatchContainer {
+	public static final CollectionFactory cfactory = new JDKCollectionFactory();
+
 	protected PropagatingOperationalStrategy strategy;
 
-	protected Collection<Object> translated = new HashSet<>();
-	protected Collection<Object> pendingElts = new HashSet<>();
-	protected Collection<ITGGMatch> pending = new HashSet<>();
+	protected Collection<Object> translated = cfactory.createObjectSet();
+	protected Collection<Object> pendingElts = cfactory.createObjectSet();
+	protected Collection<ITGGMatch> pending = cfactory.createObjectSet();
 
-	protected Map<ITGGMatch, Collection<Object>> requires = new HashMap<>();
-	protected Map<Object, Collection<ITGGMatch>> requiredBy = new HashMap<>();
-	protected Map<ITGGMatch, Collection<Object>> translates = new HashMap<>();
-	protected Map<Object, Collection<ITGGMatch>> translatedBy = new HashMap<>();
+	protected Map<ITGGMatch, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
+	protected Map<Object, Collection<ITGGMatch>> requiredBy = cfactory.createObjectToObjectHashMap();
+	protected Map<ITGGMatch, Collection<Object>> translates = cfactory.createObjectToObjectHashMap();
+	protected Map<Object, Collection<ITGGMatch>> translatedBy = cfactory.createObjectToObjectHashMap();
 
-	protected Map<TGGRuleApplication, Collection<Object>> raToTranslated = new HashMap<>();
-	protected Map<TGGRuleApplication, ITGGMatch> raToMatch = new HashMap<>();
+	protected Map<TGGRuleApplication, Collection<Object>> raToTranslated = cfactory.createObjectToObjectHashMap();
+	protected Map<TGGRuleApplication, ITGGMatch> raToMatch = cfactory.createObjectToObjectHashMap();
 	
-	protected Set<ITGGMatch> readySet = new HashSet<>();
+	protected Set<ITGGMatch> readySet = cfactory.createObjectSet();
 	
 	private long addMatchTime = 0;
 	private long getMatchTime = 0;
@@ -66,8 +72,8 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 			Object contextObj = m.get(contextNode.getName());
 
 			if (!translated.contains(contextObj)) {
-				requires.computeIfAbsent(m, (x) -> new HashSet<>());
-				requiredBy.computeIfAbsent(contextObj, (x) -> new HashSet<>());
+				requires.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
+				requiredBy.computeIfAbsent(contextObj, (x) -> cfactory.createObjectSet());
 
 				requires.get(m).add(contextObj);
 				requiredBy.get(contextObj).add(m);
@@ -76,8 +82,8 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
 			Object createdObj = m.get(createdNode.getName());
 
-			translates.computeIfAbsent(m, (x) -> new HashSet<>());
-			translatedBy.computeIfAbsent(createdObj, (x) -> new HashSet<>());
+			translates.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
+			translatedBy.computeIfAbsent(createdObj, (x) -> cfactory.createObjectSet());
 
 			translates.get(m).add(createdObj);
 			translatedBy.get(createdObj).add(m);
@@ -88,8 +94,8 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 			Object contextRuntimeEdge = getRuntimeEdge(m, contextEdge);
 
 			if (!translated.contains(contextRuntimeEdge)) {
-				requiredBy.computeIfAbsent(contextRuntimeEdge, (x) -> new HashSet<>());
-				requires.computeIfAbsent(m, (x) -> new HashSet<>());
+				requiredBy.computeIfAbsent(contextRuntimeEdge, (x) -> cfactory.createObjectSet());
+				requires.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
 
 				requiredBy.get(contextRuntimeEdge).add(m);
 				requires.get(m).add(contextRuntimeEdge);
@@ -97,8 +103,8 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		}
 		for (TGGRuleEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
 			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
-			translates.computeIfAbsent(m, (x) -> new HashSet<>());
-			translatedBy.computeIfAbsent(createdRuntimeEdge, (x) -> new HashSet<>());
+			translates.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
+			translatedBy.computeIfAbsent(createdRuntimeEdge, (x) -> cfactory.createObjectSet());
 
 			translates.get(m).add(createdRuntimeEdge);
 			translatedBy.get(createdRuntimeEdge).add(m);
@@ -171,7 +177,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 
 			// Kill siblings
 			if (translatedBy.containsKey(translatedElement)) {
-				Collection<ITGGMatch> siblings = new HashSet<>();
+				Collection<ITGGMatch> siblings = cfactory.createObjectSet();
 				siblings.addAll(translatedBy.get(translatedElement));
 				siblings.remove(m);
 
@@ -193,7 +199,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
 
 		// Add translated elements
-		Collection<Object> translatedElts = new HashSet<>();
+		Collection<Object> translatedElts = cfactory.createObjectSet();
 
 		gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
 		gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
@@ -227,9 +233,12 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 	@Override
 	public Set<ITGGMatch> getMatches() {
 		long tic = System.nanoTime();
-		Collection<ITGGMatch> notPendingMatches = pending.stream().filter(this::noElementIsPending).collect(Collectors.toList());
+		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toList());
 		notPendingMatches.forEach(this::handleMatch);
-		pending.removeAll(notPendingMatches);
+		if(notPendingMatches.size() == pending.size())
+			pending.clear();
+		else
+			pending.removeAll(notPendingMatches);
 		Set<ITGGMatch> validate = validate(readySet);
 		getMatchTime += System.nanoTime() - tic;
 		return validate;
@@ -239,7 +248,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		if(pendingElts.isEmpty())
 			return readySet;
 		
-		Set<ITGGMatch> filteredReadySet = new HashSet<>();
+		Set<ITGGMatch> filteredReadySet = cfactory.createObjectSet();
 		for(ITGGMatch m : readySet) {
 			if(m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p))))
 				continue;
@@ -252,7 +261,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 	public boolean removeMatch(ITGGMatch match) {
 		long tic = System.nanoTime();
 		
-		if (match.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
+		if (match.getType() == PatternType.CONSISTENCY) {
 			return removeConsistencyMatch(match);
 		}
 		

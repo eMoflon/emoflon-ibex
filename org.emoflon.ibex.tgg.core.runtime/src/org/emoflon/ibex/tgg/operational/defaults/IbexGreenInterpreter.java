@@ -213,7 +213,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));	
 		}
 		
-		creationTime = getCreationTime() + System.nanoTime() - tic;
+		creationTime += System.nanoTime() - tic;
 		
 		return Optional.of(comatch);
 	}
