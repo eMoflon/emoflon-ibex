@@ -361,6 +361,10 @@ public abstract class OperationalShortcutRule {
 		return key2lookup;
 	}
 
+	public PropagationDirection getDirection() {
+		return direction;
+	}
+
 	public String getName() {
 		return scRule.getSourceRule().getName() + "_OSC_" + scRule.getTargetRule().getName();
 	}

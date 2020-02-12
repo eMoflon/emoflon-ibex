@@ -14,6 +14,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 
 import language.BindingType;
 import language.TGGRuleNode;
@@ -51,6 +52,22 @@ public class LocalPatternSearch {
 
 	private void buildComponents() {
 		Component lastComponent = null;
+
+		for (TGGRuleNode mergedNode : osr.getScRule().getMergedNodes()) {
+			if (skipNodeCheck(mergedNode))
+				continue;
+
+			Component accessNodeCheckComp = new NodeCheckComponent( //
+					searchPlan.key2nodeCheck.get(mergedNode), mergedNode);
+
+			if (firstComponent == null)
+				firstComponent = accessNodeCheckComp;
+			else
+				lastComponent.setNextComponent(accessNodeCheckComp);
+
+			lastComponent = accessNodeCheckComp;
+		}
+
 		for (Pair<SearchKey, Lookup> entry : searchPlan.lookUpPlan) {
 			Component lookupComp = new LookupComponent(entry.getRight(), entry.getLeft());
 
@@ -86,6 +103,21 @@ public class LocalPatternSearch {
 		Component cspCheckComp = new CSPCheckComponent(searchPlan.cspCheck);
 		lastComponent.setNextComponent(cspCheckComp);
 		lastComponent = cspCheckComp;
+	}
+
+	private boolean skipNodeCheck(TGGRuleNode mergedNode) {
+		if (osr.getScRule().getPreservedNodes().contains(mergedNode))
+			switch (mergedNode.getDomainType()) {
+			case SRC:
+				if (osr.getDirection() == PropagationDirection.BACKWARD)
+					return true;
+			case TRG:
+				if (osr.getDirection() == PropagationDirection.FORWARD)
+					return true;
+			default:
+				return false;
+			}
+		return false;
 	}
 
 	public SCMatch findMatch(Map<String, EObject> name2entryNodeElem) {
@@ -139,8 +171,8 @@ public class LocalPatternSearch {
 			this.lookupTargetName = targetNode.getName();
 			this.isNegative = key.edge.getBindingType() == BindingType.NEGATIVE;
 			this.isRelaxed = key.edge.getBindingType() == BindingType.RELAXED //
-					|| ( targetNode.getBindingType() == BindingType.RELAXED //
-							&& key.edge.getBindingType() == BindingType.DELETE );
+					|| (targetNode.getBindingType() == BindingType.RELAXED //
+							&& key.edge.getBindingType() == BindingType.DELETE);
 		}
 
 		@Override
@@ -242,14 +274,14 @@ public class LocalPatternSearch {
 					return nextComponent == null ? ReturnState.SUCCESS : nextComponent.apply();
 				else
 					return ReturnState.FAILURE;
-				
+
 			EObject trgCandidate = name2candidates.get(targetName);
-			if(trgCandidate == null)
+			if (trgCandidate == null)
 				if (isTrgRelaxed)
 					return nextComponent == null ? ReturnState.SUCCESS : nextComponent.apply();
 				else
 					return ReturnState.FAILURE;
-			
+
 			if (check.checkConstraint(srcCandidate, trgCandidate)) {
 				if (nextComponent == null)
 					return ReturnState.SUCCESS;
@@ -275,12 +307,12 @@ public class LocalPatternSearch {
 		@Override
 		public ReturnState apply() {
 			EObject srcCandidate = name2candidates.get(sourceName);
-			if(srcCandidate == null)
+			if (srcCandidate == null)
 				if (isSrcRelaxed)
 					return nextComponent == null ? ReturnState.SUCCESS : nextComponent.apply();
 				else
 					return ReturnState.FAILURE;
-			
+
 			if (check.checkConstraint(srcCandidate, currentCandidates)) {
 				if (nextComponent == null)
 					return ReturnState.SUCCESS;
