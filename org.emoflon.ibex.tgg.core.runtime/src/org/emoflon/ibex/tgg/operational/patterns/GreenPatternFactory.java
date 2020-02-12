@@ -138,7 +138,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		});
 	}
 
-	protected IGreenPattern createPattern(String key, Supplier<IGreenPattern> creator) {
+	protected synchronized IGreenPattern createPattern(String key, Supplier<IGreenPattern> creator) {
 		if (!patterns.containsKey(key)) {
 			IGreenPattern newValue = creator.get();
 			if (newValue != null)
