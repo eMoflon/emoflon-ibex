@@ -1,8 +1,7 @@
 package org.emoflon.ibex.common.operational;
 
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -14,7 +13,7 @@ public class SimpleMatch implements IMatch {
 	 */
 	private String patternName;
 	
-	protected int hash;
+	protected long hash;
 	protected boolean hashInit = false;
 
 	/**
@@ -30,7 +29,7 @@ public class SimpleMatch implements IMatch {
 	 */
 	public SimpleMatch(final String patternName) {
 		this.patternName = patternName;
-		this.parameters = cfactory.createObjectToObjectHashMap();
+		this.parameters = new LinkedHashMap<>();
 	}
 
 	/**
@@ -41,7 +40,7 @@ public class SimpleMatch implements IMatch {
 	 */
 	public SimpleMatch(final IMatch match) {
 		this.patternName = match.getPatternName();
-		this.parameters = cfactory.createObjectToObjectHashMap();
+		this.parameters = new LinkedHashMap<>();
 		match.getParameterNames().forEach(parameterName -> {
 			this.parameters.put(parameterName, match.get(parameterName));
 		});
@@ -73,9 +72,9 @@ public class SimpleMatch implements IMatch {
 	}
 	
 	@Override
-	public int getHashCode() {
+	public long getHashCode() {
 		if(!hashInit) {
-			hash = (int) parameters.values().stream().reduce(0, (a, b) -> a.hashCode() + b.hashCode());
+			hash = HashUtil.collectionToHash(parameters.values());
 			hashInit = true;
 		}
 		return hash;
@@ -83,7 +82,7 @@ public class SimpleMatch implements IMatch {
 
 	@Override
 	public int hashCode() {
-		return getHashCode();
+		return (int)getHashCode();
 	}
 
 	@Override

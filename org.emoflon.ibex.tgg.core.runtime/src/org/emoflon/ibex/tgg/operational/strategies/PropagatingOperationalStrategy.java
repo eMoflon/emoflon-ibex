@@ -14,6 +14,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
@@ -234,11 +235,15 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	public void terminate() throws IOException {
 		DecimalFormat df = new DecimalFormat("0.#####");
 		df.setMaximumFractionDigits(5);
-		LoggerConfig.log(options.debug.loggerConfig().log_translationTime(), () -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_repairTime(), () -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_removalTime(), () -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), () -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_collectMatchTime(), () -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_translationTime(), 		() -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_repairTime(), 			() -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_removalTime(), 			() -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)) + " -> {");
+		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "		Init time: " + df.format((double) initMatchApplicationTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "		Choose match time: " + df.format((double) chooseMatchTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "		Create elements time: " + df.format((double) ((IbexGreenInterpreter) greenInterpreter).getCreationTime() / (double) (1000 * 1000 * 1000)) + "}");
+		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "		Finalize time: " + df.format((double) finishRuleApplicationTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(options.debug.loggerConfig().log_collectMatchTime(), 		() -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
 		
 		((PrecedenceMatchContainer) operationalMatchContainer).log(logger);
 		super.terminate();

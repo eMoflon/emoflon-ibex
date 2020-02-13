@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
@@ -57,6 +58,11 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected TGGResourceHandler resourceHandler;
 
 	protected MatchDistributor matchDistributor;
+	
+	protected long chooseMatchTime = 0;
+	protected long finishRuleApplicationTime = 0;
+	protected long initMatchApplicationTime = 0;
+
 
 	/***** Constructors *****/
 
@@ -191,8 +197,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
+		long tic = System.nanoTime();
 		ITGGMatch match = chooseOneMatch();
 		String ruleName = match.getRuleName();
+		chooseMatchTime += System.nanoTime() - tic;
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
@@ -218,6 +226,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected Optional<ITGGMatch> processOperationalRuleMatch(String ruleName, ITGGMatch match) {
 		//generatedPatternsSizeObserver.setNodes(match);
+		long tic = System.nanoTime();
+
 		if (getBlockedMatches().containsKey(match)) { 
 			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Application blocked by update policy.");
 			return Optional.empty();
@@ -227,14 +237,18 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		IGreenPattern greenPattern = factory.create(match.getType());
 
 		LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
+		initMatchApplicationTime += System.nanoTime() - tic;
 
 		Optional<ITGGMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
-
+		
 		comatch.ifPresent(cm -> {
 			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Successfully applied: " + match.getPatternName());
 			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
+			
+			long l_tic = System.nanoTime();
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
+			finishRuleApplicationTime += System.nanoTime() - l_tic;
 		});
 
 		return comatch;
@@ -276,7 +290,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		cacheObjectToResource.clear();
 	}
 
-	public IGreenPatternFactory getGreenFactory(String ruleName) {
+	public synchronized IGreenPatternFactory getGreenFactory(String ruleName) {
 		assert (ruleName != null);
 		if (!factories.containsKey(ruleName)) {
 			factories.put(ruleName, new GreenPatternFactory(options, ruleName));
