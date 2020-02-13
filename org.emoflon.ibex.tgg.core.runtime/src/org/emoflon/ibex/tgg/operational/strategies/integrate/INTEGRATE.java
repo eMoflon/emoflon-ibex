@@ -20,6 +20,7 @@ import org.emoflon.delta.validation.DeltaValidator;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
@@ -263,6 +264,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
+		long tic = System.nanoTime();
+		
 		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty())
 			return false;
@@ -277,12 +280,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
-			logger.debug("Removed as it has just been applied: ");
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as it has just been applied: ");
 		} else
-			logger.debug("Removed as application failed: ");
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: ");
+		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "" + match);
 
-		logger.debug(match);
-
+		matchApplicationTime += System.nanoTime() - tic;
 		return true;
 	}
 
@@ -301,6 +304,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	protected boolean repairBrokenMatches() {
+		long tic = System.nanoTime();
+		
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
 		for (AbstractRepairStrategy rStrategy : repairStrategies) {
 			// TODO adrianm: also use attribute repair strategy for integrate
@@ -332,6 +337,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				}
 			}
 		}
+		
+		repairTime += System.nanoTime() - tic;
 		return !alreadyProcessed.isEmpty();
 	}
 

@@ -16,6 +16,7 @@ import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -122,10 +123,10 @@ public class MatchDistributor implements IMatchObserver {
 		if (consumers != null) {
 			matchCounter++;
 			if (currentIntervalStart == -1) {
-				logger.info("Now collecting matches...");
+				LoggerConfig.log(LoggerConfig.log_all(), () -> "Now collecting matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			} else if (System.currentTimeMillis() - currentIntervalStart > INTERVAL_LENGTH) {
-				logger.info("Collected " + matchCounter + " matches...");
+				LoggerConfig.log(LoggerConfig.log_all(), () -> "Collected " + matchCounter + " matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			}
 
@@ -139,8 +140,8 @@ public class MatchDistributor implements IMatchObserver {
 		Collection<Consumer<ITGGMatch>> consumers = type2removeMatch.get(tggMatch.getType());
 		if (consumers != null) {
 			consumers.forEach(c -> c.accept(tggMatch));
-			logger.debug("Removed due to delete event from pattern matcher: ");
-			logger.debug(match.getPatternName());
+			LoggerConfig.log(LoggerConfig.log_all(), () ->
+					"Removed due to delete event from pattern matcher: " + match.getPatternName());
 		}
 	}
 

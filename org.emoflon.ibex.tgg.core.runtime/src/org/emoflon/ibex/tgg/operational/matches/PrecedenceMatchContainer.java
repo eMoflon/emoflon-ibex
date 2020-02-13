@@ -4,8 +4,6 @@ import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -326,13 +324,12 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 	public void log(Logger logger) {
 		DecimalFormat df = new DecimalFormat("0.#####");
 		df.setMaximumFractionDigits(5);
-		
-		LoggerConfig config = strategy.getOptions().debug.loggerConfig();
-		LoggerConfig.log(config.log_allTimes(), () -> "PrecedenceMatchContainer -> {");
-		LoggerConfig.log(config.log_allTimes(), () -> "      addMatchTime:     " + df.format((double) addMatchTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(config.log_allTimes(), () -> "      getMatchTime:     " + df.format((double) getMatchTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(config.log_allTimes(), () -> "      matchAppliedTime: " + df.format((double) matchAppliedTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(config.log_allTimes(), () -> "      removeMatchTime:  " + df.format((double) removeMatchTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(config.log_allTimes(), () -> "}");
+
+		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "PrecedenceMatchContainer -> {");
+		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "     addMatchTime:     " + df.format((double) addMatchTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "     getMatchTime:     " + df.format((double) getMatchTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "     matchAppliedTime: " + df.format((double) matchAppliedTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "     removeMatchTime:  " + df.format((double) removeMatchTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "}");
 	}
 }

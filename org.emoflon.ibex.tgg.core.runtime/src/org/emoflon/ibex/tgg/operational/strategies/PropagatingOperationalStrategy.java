@@ -36,10 +36,10 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			.createObjectToObjectHashMap();
 	protected IRedInterpreter redInterpreter;
 	
-	private long repairTime = 0;
-	private long translateTime = 0;
-	private long removeTime = 0;
-	private long matchApplicationTime = 0;
+	protected long repairTime = 0;
+	protected long translateTime = 0;
+	protected long removeTime = 0;
+	protected long matchApplicationTime = 0;
 
 	/***** Constructors *****/
 
@@ -187,7 +187,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		if (brokenRuleApplications.containsKey(ruleAppNode)) {
-			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 		}
 
@@ -235,15 +235,16 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	public void terminate() throws IOException {
 		DecimalFormat df = new DecimalFormat("0.#####");
 		df.setMaximumFractionDigits(5);
-		LoggerConfig.log(options.debug.loggerConfig().log_translationTime(), 		() -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_repairTime(), 			() -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_removalTime(), 			() -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)) + " -> {");
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "		Init time: " + df.format((double) initMatchApplicationTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "		Choose match time: " + df.format((double) chooseMatchTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "		Create elements time: " + df.format((double) ((IbexGreenInterpreter) greenInterpreter).getCreationTime() / (double) (1000 * 1000 * 1000)) + "}");
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplicationTime(), 	() -> "		Finalize time: " + df.format((double) finishRuleApplicationTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(options.debug.loggerConfig().log_collectMatchTime(), 		() -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_translationTime(), 		() -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_repairTime(), 			() -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_removalTime(), 			() -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)) + " -> {");
+		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Init time:            " + df.format((double) initMatchApplicationTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Choose match time:    " + df.format((double) chooseMatchTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Create elements time: " + df.format((double) ((IbexGreenInterpreter) greenInterpreter).getCreationTime() / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Finalize time:        " + df.format((double) finishRuleApplicationTime / (double) (1000 * 1000 * 1000)));
+		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "}");
+		LoggerConfig.log(LoggerConfig.log_collectMatchTime(), 		() -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
 		
 		((PrecedenceMatchContainer) operationalMatchContainer).log(logger);
 		super.terminate();

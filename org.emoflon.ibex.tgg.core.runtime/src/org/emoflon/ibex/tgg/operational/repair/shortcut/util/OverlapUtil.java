@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
@@ -82,7 +83,7 @@ public class OverlapUtil {
 	}
 
 	private void calculateOverlaps(TGG tgg) {
-		logger.debug("Creating ILP problems for ShortCut-Rules");
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Creating ILP problems for ShortCut-Rules");
 		// overlap all rules (also with themselves)
 		for (int i = 0; i < tgg.getRules().size(); i++) {
 			for (int j = i; j < tgg.getRules().size(); j++) {
@@ -238,7 +239,7 @@ public class OverlapUtil {
 		defineILPObjective(ilpProblem);
 
 		try {
-			logger.debug(
+			LoggerConfig.log(LoggerConfig.log_repair(), () ->
 					"Attempting to solve ILP for SC-Rule: " + sourceRule.getName() + " -> " + targetRule.getName());
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, SupportedILPSolver.Sat4J);
 			if (!ilpProblem.checkValidity(ilpSolution)) {
