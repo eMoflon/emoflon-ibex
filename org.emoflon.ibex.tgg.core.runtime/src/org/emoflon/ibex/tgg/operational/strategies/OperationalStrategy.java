@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
@@ -136,15 +135,15 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		if (isPatternRelevantForInterpreter(match.getType()) && matchIsDomainConform(match)) {
 			operationalMatchContainer.addMatch(match);
-			LoggerConfig.log(options.debug.loggerConfig().log_incomingMatches(), () -> "Received and added " + match.getPatternName());
+			LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received and added " + match.getPatternName());
 		} else
-			LoggerConfig.log(options.debug.loggerConfig().log_incomingMatches(), () -> "Received but rejected " + match.getPatternName());
+			LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received but rejected " + match.getPatternName());
 	}
 
 	protected void addConsistencyMatch(ITGGMatch match) {
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		consistencyMatches.put(ruleAppNode, match);
-		LoggerConfig.log(options.debug.loggerConfig().log_incomingMatches(), () -> "Received and added consistency match: " + match.getPatternName() + "(" + match.hashCode() + ")");
+		LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received and added consistency match: " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	protected boolean removeOperationalRuleMatch(ITGGMatch match) {
@@ -205,13 +204,13 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Processing match: " + match);
+		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Processing match: " + match);
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
-			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Removed as it has just been applied: ");
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as it has just been applied: ");
 		} else
-			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Removed as application failed: ");
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "" + match);
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: ");
+		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "" + match);
 		return true;
 	}
 
@@ -229,20 +228,20 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		long tic = System.nanoTime();
 
 		if (getBlockedMatches().containsKey(match)) { 
-			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Application blocked by update policy.");
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Application blocked by update policy.");
 			return Optional.empty();
 		}
 
 		IGreenPatternFactory factory = getGreenFactory(ruleName);
 		IGreenPattern greenPattern = factory.create(match.getType());
 
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
+		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
 		initMatchApplicationTime += System.nanoTime() - tic;
 
 		Optional<ITGGMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 		
 		comatch.ifPresent(cm -> {
-			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Successfully applied: " + match.getPatternName());
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Successfully applied: " + match.getPatternName());
 			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
 			

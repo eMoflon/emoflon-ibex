@@ -280,12 +280,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
-			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(),
-					() -> "Removed as it has just been applied: ");
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as it has just been applied: ");
 		} else
-			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(),
-					() -> "Removed as application failed: ");
-		LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "" + match);
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: ");
+		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "" + match);
 
 		matchApplicationTime += System.nanoTime() - tic;
 		return true;

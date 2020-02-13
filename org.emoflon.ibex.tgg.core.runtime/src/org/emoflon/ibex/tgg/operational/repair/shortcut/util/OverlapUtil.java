@@ -83,7 +83,7 @@ public class OverlapUtil {
 	}
 
 	private void calculateOverlaps(TGG tgg) {
-		LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> "Creating ILP problems for ShortCut-Rules");
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Creating ILP problems for ShortCut-Rules");
 		// overlap all rules (also with themselves)
 		for (int i = 0; i < tgg.getRules().size(); i++) {
 			for (int j = i; j < tgg.getRules().size(); j++) {
@@ -239,7 +239,7 @@ public class OverlapUtil {
 		defineILPObjective(ilpProblem);
 
 		try {
-			LoggerConfig.log(options.debug.loggerConfig().log_all(), () ->
+			LoggerConfig.log(LoggerConfig.log_repair(), () ->
 					"Attempting to solve ILP for SC-Rule: " + sourceRule.getName() + " -> " + targetRule.getName());
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, SupportedILPSolver.Sat4J);
 			if (!ilpProblem.checkValidity(ilpSolution)) {

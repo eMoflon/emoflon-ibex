@@ -123,10 +123,10 @@ public class MatchDistributor implements IMatchObserver {
 		if (consumers != null) {
 			matchCounter++;
 			if (currentIntervalStart == -1) {
-				LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> "Now collecting matches...");
+				LoggerConfig.log(LoggerConfig.log_all(), () -> "Now collecting matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			} else if (System.currentTimeMillis() - currentIntervalStart > INTERVAL_LENGTH) {
-				LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> "Collected " + matchCounter + " matches...");
+				LoggerConfig.log(LoggerConfig.log_all(), () -> "Collected " + matchCounter + " matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			}
 
@@ -140,7 +140,7 @@ public class MatchDistributor implements IMatchObserver {
 		Collection<Consumer<ITGGMatch>> consumers = type2removeMatch.get(tggMatch.getType());
 		if (consumers != null) {
 			consumers.forEach(c -> c.accept(tggMatch));
-			LoggerConfig.log(options.debug.loggerConfig().log_all(), () ->
+			LoggerConfig.log(LoggerConfig.log_all(), () ->
 					"Removed due to delete event from pattern matcher: " + match.getPatternName());
 		}
 	}

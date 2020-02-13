@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +19,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
-import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -34,8 +35,6 @@ import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrateg
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
-
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import language.BindingType;
 import language.DomainType;
@@ -62,7 +61,6 @@ public class ShortcutPatternTool {
 	private int numOfDeletedNodes = 0;
 	
 	private PropagatingOperationalStrategy strategy;
-	private IbexOptions options;
 	private TGGResourceHandler resourceHandler;
 	private Collection<ShortcutRule> scRules;
 	private Map<String, Collection<OperationalShortcutRule>> tggRule2srcSCRule;
@@ -74,7 +72,6 @@ public class ShortcutPatternTool {
 	public ShortcutPatternTool(PropagatingOperationalStrategy strategy, Collection<ShortcutRule> scRules) {
 		this.scRules = scRules;
 		this.strategy = strategy;
-		this.options = strategy.getOptions();
 		this.resourceHandler = strategy.getOptions().resourceHandler();
 		initialize();
 	}
@@ -92,11 +89,11 @@ public class ShortcutPatternTool {
 		
 		greenInterpreter = strategy.getGreenInterpreter();
 		
-		LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> "Generated " + scRules.size() + "Short-Cut Rules...");
-		LoggerConfig.log(options.debug.loggerConfig().log_all(), () ->
-				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) + " Forward Repair Rules...");
-		LoggerConfig.log(options.debug.loggerConfig().log_all(), () ->
-				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Backward Repair Rules...");
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generated " + scRules.size() + " Short-Cut Rules");
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
+				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) + " Forward Repair Rules");
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
+				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Backward Repair Rules");
 
 		persistSCRules();
 	}
@@ -131,7 +128,7 @@ public class ShortcutPatternTool {
 			if(osr == null)
 				return null;
 			
-			LoggerConfig.log(options.debug.loggerConfig().log_all(), () ->
+			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
 					"Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");			
 			ITGGMatch newMatch = processBrokenMatch(osr, brokenMatch);
 			if(newMatch == null) {

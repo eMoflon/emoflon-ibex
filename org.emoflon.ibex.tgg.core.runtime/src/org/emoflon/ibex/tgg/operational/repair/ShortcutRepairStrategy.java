@@ -72,7 +72,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 		updateDirection();
 		ITGGMatch repairedMatch = scTool.processBrokenMatch(syncDirection, repairCandidate);
 		if (repairedMatch != null)
-			LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> //
+			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
 					"Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + //
 					" (" + repairCandidate.hashCode() + "->" + repairedMatch.hashCode() + ")");
 		return repairedMatch;
@@ -81,7 +81,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	public ITGGMatch repair(ITGGMatch repairCandidate, PropagationDirection direction) {
 		ITGGMatch repairedMatch = scTool.processBrokenMatch(direction, repairCandidate);
 		if (repairedMatch != null)
-			LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> //
+			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
 					"Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + //
 					" (" + repairCandidate.hashCode() + "->" + repairedMatch.hashCode() + ")");
 		return repairedMatch;
