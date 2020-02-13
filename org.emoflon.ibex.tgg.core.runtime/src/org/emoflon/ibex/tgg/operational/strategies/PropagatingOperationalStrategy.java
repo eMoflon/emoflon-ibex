@@ -36,10 +36,10 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			.createObjectToObjectHashMap();
 	protected IRedInterpreter redInterpreter;
 	
-	private long repairTime = 0;
-	private long translateTime = 0;
-	private long removeTime = 0;
-	private long matchApplicationTime = 0;
+	protected long repairTime = 0;
+	protected long translateTime = 0;
+	protected long removeTime = 0;
+	protected long matchApplicationTime = 0;
 
 	/***** Constructors *****/
 

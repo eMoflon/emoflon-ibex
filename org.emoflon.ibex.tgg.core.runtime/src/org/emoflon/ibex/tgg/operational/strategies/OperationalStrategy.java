@@ -211,7 +211,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Removed as it has just been applied: ");
 		} else
 			LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "Removed as application failed: ");
-
+		LoggerConfig.log(options.debug.loggerConfig().log_matchApplication(), () -> "" + match);
 		return true;
 	}
 

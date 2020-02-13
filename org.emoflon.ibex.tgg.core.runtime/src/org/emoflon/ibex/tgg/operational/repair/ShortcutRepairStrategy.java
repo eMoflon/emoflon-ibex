@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
@@ -31,15 +33,16 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	protected final static Logger logger = Logger.getLogger(AbstractRepairStrategy.class);
 
 	private PropagatingOperationalStrategy opStrat;
+	private IbexOptions options;
 	private ShortcutPatternTool scTool;
 	private PropagationDirection syncDirection;
 
 	public ShortcutRepairStrategy(PropagatingOperationalStrategy opStrat) {
 		this.opStrat = opStrat;
+		this.options = opStrat.getOptions();
 
 		// enable backward navigation for emf edges
-		opStrat.getOptions().resourceHandler() //
-				.getResourceSet().eAdapters().add(new ECrossReferenceAdapter());
+		options.resourceHandler().getResourceSet().eAdapters().add(new ECrossReferenceAdapter());
 		initialize();
 	}
 
@@ -52,10 +55,10 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 	@Override
 	public Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
-		return brokenRuleApplications.keySet()//
-				.stream()//
-				.filter(this::noMissingNodes)//
-				.map(brokenRuleApplications::get)//
+		return brokenRuleApplications.keySet() //
+				.stream() //
+				.filter(this::noMissingNodes) //
+				.map(brokenRuleApplications::get) //
 				.collect(Collectors.toList());
 	}
 
@@ -69,7 +72,8 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 		updateDirection();
 		ITGGMatch repairedMatch = scTool.processBrokenMatch(syncDirection, repairCandidate);
 		if (repairedMatch != null)
-			logger.info("Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + //
+			LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> //
+					"Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + //
 					" (" + repairCandidate.hashCode() + "->" + repairedMatch.hashCode() + ")");
 		return repairedMatch;
 	}
@@ -77,7 +81,8 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	public ITGGMatch repair(ITGGMatch repairCandidate, PropagationDirection direction) {
 		ITGGMatch repairedMatch = scTool.processBrokenMatch(direction, repairCandidate);
 		if (repairedMatch != null)
-			logger.info("Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + //
+			LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> //
+					"Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + //
 					" (" + repairCandidate.hashCode() + "->" + repairedMatch.hashCode() + ")");
 		return repairedMatch;
 	}

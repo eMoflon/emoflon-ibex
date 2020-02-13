@@ -16,6 +16,8 @@ import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -60,6 +62,7 @@ public class ShortcutPatternTool {
 	private int numOfDeletedNodes = 0;
 	
 	private PropagatingOperationalStrategy strategy;
+	private IbexOptions options;
 	private TGGResourceHandler resourceHandler;
 	private Collection<ShortcutRule> scRules;
 	private Map<String, Collection<OperationalShortcutRule>> tggRule2srcSCRule;
@@ -71,7 +74,8 @@ public class ShortcutPatternTool {
 	public ShortcutPatternTool(PropagatingOperationalStrategy strategy, Collection<ShortcutRule> scRules) {
 		this.scRules = scRules;
 		this.strategy = strategy;
-		resourceHandler = strategy.getOptions().resourceHandler();
+		this.options = strategy.getOptions();
+		this.resourceHandler = strategy.getOptions().resourceHandler();
 		initialize();
 	}
 	
@@ -88,9 +92,11 @@ public class ShortcutPatternTool {
 		
 		greenInterpreter = strategy.getGreenInterpreter();
 		
-		logger.info("Generated " + scRules.size() + "Short-Cut Rules...");
-		logger.info("Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Forward Repair Rules...");
-		logger.info("Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Backward Repair Rules...");
+		LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> "Generated " + scRules.size() + "Short-Cut Rules...");
+		LoggerConfig.log(options.debug.loggerConfig().log_all(), () ->
+				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) + " Forward Repair Rules...");
+		LoggerConfig.log(options.debug.loggerConfig().log_all(), () ->
+				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Backward Repair Rules...");
 
 		persistSCRules();
 	}
@@ -125,7 +131,8 @@ public class ShortcutPatternTool {
 			if(osr == null)
 				return null;
 			
-			logger.debug("Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");			
+			LoggerConfig.log(options.debug.loggerConfig().log_all(), () ->
+					"Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");			
 			ITGGMatch newMatch = processBrokenMatch(osr, brokenMatch);
 			if(newMatch == null) {
 				copiedRules.remove(osr);

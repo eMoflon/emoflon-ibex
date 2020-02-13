@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
@@ -23,9 +25,11 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 	protected final static Logger logger = Logger.getLogger(AbstractRepairStrategy.class);
 
 	private PropagatingOperationalStrategy opStrat;
+	private IbexOptions options;
 
 	public AttributeRepairStrategy(PropagatingOperationalStrategy opStrat) {
 		this.opStrat = opStrat;
+		this.options = opStrat.getOptions();
 	}
 
 	@Override
@@ -58,7 +62,8 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 	private ITGGMatch repair(ITGGMatch repairCandidate, IRuntimeTGGAttrConstrContainer csp) {
 		if (csp.solve()) {
 			csp.applyCSPValues(repairCandidate);
-			logger.info("Repaired: " + repairCandidate.getPatternName() + " (" + repairCandidate.hashCode() + ")");
+			LoggerConfig.log(options.debug.loggerConfig().log_all(), () -> //
+					"Repaired: " + repairCandidate.getPatternName() + " (" + repairCandidate.hashCode() + ")");
 			return repairCandidate;
 		}
 		return null;
@@ -66,10 +71,10 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 
 	@Override
 	public Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
-		return brokenRuleApplications.keySet()//
-				.stream()//
-				.filter(this::noMissingNodes)//
-				.map(brokenRuleApplications::get)//
+		return brokenRuleApplications.keySet() //
+				.stream() //
+				.filter(this::noMissingNodes) //
+				.map(brokenRuleApplications::get) //
 				.collect(Collectors.toList());
 	}
 
