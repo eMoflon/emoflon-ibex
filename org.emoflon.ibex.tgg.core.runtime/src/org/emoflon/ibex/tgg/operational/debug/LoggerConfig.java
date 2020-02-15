@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
  * <li>incomingMatches</li>
  * <li>matchApplication</li>
  * <li>repair</li>
+ * <li>ilp</li>
  * <li>matchApplicationTime</li>
  * <li>addMatchTime</li>
  * <li>collectMatchTime</li>
@@ -30,7 +31,7 @@ import org.apache.log4j.Logger;
  * </p>
  * 
  * @author lfritsche
- * @author AdrianM
+ * @author Adrian Möller
  *
  */
 public final class LoggerConfig {
@@ -44,6 +45,7 @@ public final class LoggerConfig {
 	private static boolean log_incomingMatches = getValue("incomingMatches");
 	private static boolean log_matchApplication = getValue("matchApplication");
 	private static boolean log_repair = getValue("repair");
+	private static boolean log_ilp = getValue("ilp");
 	private static boolean log_matchApplicationTime = getValue("matchApplicationTime");
 	private static boolean log_addMatchTime = getValue("addMatchTime");
 	private static boolean log_collectMatchTime = getValue("collectMatchTime");
@@ -52,7 +54,7 @@ public final class LoggerConfig {
 	private static boolean log_repairTime = getValue("repairTime");
 
 	public boolean log_anything() {
-		return log_all || log_allTimes || log_incomingMatches || log_matchApplication || log_repair
+		return log_all || log_allTimes || log_incomingMatches || log_matchApplication || log_repair || log_ilp
 				|| log_matchApplicationTime || log_addMatchTime || log_collectMatchTime || log_translationTime
 				|| log_removalTime || log_repairTime;
 	}
@@ -61,6 +63,10 @@ public final class LoggerConfig {
 		return log_all;
 	}
 
+	public static boolean log_allTimes() {
+		return log_all || log_allTimes;
+	}
+	
 	public static boolean log_incomingMatches() {
 		return log_all || log_incomingMatches;
 	}
@@ -71,6 +77,10 @@ public final class LoggerConfig {
 
 	public static boolean log_repair() {
 		return log_all || log_repair;
+	}
+
+	public static boolean log_ilp() {
+		return log_all || log_ilp;
 	}
 
 	public static boolean log_matchApplicationTime() {
@@ -95,10 +105,6 @@ public final class LoggerConfig {
 
 	public static boolean log_repairTime() {
 		return log_all || log_allTimes || log_repairTime;
-	}
-
-	public static boolean log_allTimes() {
-		return log_all || log_allTimes;
 	}
 
 	public static void log(boolean apply, Supplier<String> output) {

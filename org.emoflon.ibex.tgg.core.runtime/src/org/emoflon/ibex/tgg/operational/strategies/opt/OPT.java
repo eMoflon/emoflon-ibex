@@ -15,6 +15,7 @@ import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -153,20 +154,20 @@ public abstract class OPT extends OperationalStrategy {
 	 * @return the ILP Problem
 	 */
 	protected BinaryILPProblem createILPProblem() {
-		OperationalStrategy.logger.debug("Creating ILP problem for " + this.idToMatch.size() + " matches");
+		LoggerConfig.log(LoggerConfig.log_ilp(), () -> "Creating ILP problem for " + this.idToMatch.size() + " matches");
 
 		BinaryILPProblem ilpProblem = ILPFactory.createBinaryILPProblem();
 
-		OperationalStrategy.logger.debug("Adding exclusions...");
+		LoggerConfig.log(LoggerConfig.log_ilp(), () -> "Adding exclusions...");
 		defineILPExclusions(ilpProblem);
 
-		OperationalStrategy.logger.debug("Adding implications...");
+		LoggerConfig.log(LoggerConfig.log_ilp(), () -> "Adding implications...");
 		defineILPImplications(ilpProblem);
 
-		OperationalStrategy.logger.debug("Defining objective...");
+		LoggerConfig.log(LoggerConfig.log_ilp(), () -> "Defining objective...");
 		defineILPObjective(ilpProblem);
 
-		OperationalStrategy.logger.debug("Adding user defined constraints...");
+		LoggerConfig.log(LoggerConfig.log_ilp(), () -> "Adding user defined constraints...");
 		addUserDefinedConstraints(ilpProblem);
 
 		return ilpProblem;
@@ -177,7 +178,7 @@ public abstract class OPT extends OperationalStrategy {
 		BinaryILPProblem ilpProblem = this.createILPProblem();
 
 		try {
-			OperationalStrategy.logger.debug("Attempting to solve ILP");
+			LoggerConfig.log(LoggerConfig.log_ilp(), () -> "Attempting to solve ILP");
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, this.options.ilpSolver());
 			if (!ilpProblem.checkValidity(ilpSolution)) {
 				throw new AssertionError("Invalid solution");
