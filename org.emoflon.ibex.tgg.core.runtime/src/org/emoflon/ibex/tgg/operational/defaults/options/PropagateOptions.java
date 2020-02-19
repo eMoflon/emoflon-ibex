@@ -6,12 +6,14 @@ public class PropagateOptions extends IbexSubOptions {
 	
 	private boolean applyConcurrently;
 	private boolean optimizeSyncPattern;
+	private boolean usePrecedenceGraph;
 
 	public PropagateOptions(IbexOptions options) {
 		super(options);
 		
 		applyConcurrently = false;
 		optimizeSyncPattern = false;
+		usePrecedenceGraph = false;
 	}
 	
 	public boolean applyConcurrently() {
@@ -30,6 +32,14 @@ public class PropagateOptions extends IbexSubOptions {
 	public IbexOptions optimizeSyncPattern(boolean optimizeSyncPattern) {
 		this.optimizeSyncPattern = optimizeSyncPattern;
 		return options;
+	}
+
+	public boolean usePrecedenceGraph() {
+		return usePrecedenceGraph;
+	}
+
+	public void usePrecedenceGraph(boolean usePrecedenceGraph) {
+		this.usePrecedenceGraph = usePrecedenceGraph;
 	}
 
 }
