@@ -11,10 +11,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-public class MarkingMatchContainer implements IMatchContainer {
+public class MarkingMatchContainer extends LoggingMatchContainer implements IMatchContainer {
 
 	protected OperationalStrategy opStrat;
 
@@ -29,43 +30,24 @@ public class MarkingMatchContainer implements IMatchContainer {
 
 	@Override
 	public void addMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.CONSISTENCY)
-			addConsistencyMatch(match);
-		else
-			matches.add(match);
-	}
-
-	private void addConsistencyMatch(ITGGMatch match) {
-		IGreenPatternFactory gFactory = opStrat.getGreenFactory(match.getRuleName());
-
-		gFactory.getGreenSrcNodesInRule().stream() //
-				.map(n -> (EObject) match.get(n.getName())) //
-				.forEach(obj -> markedElements.add(obj));
-		gFactory.getGreenTrgNodesInRule().stream() //
-				.map(n -> (EObject) match.get(n.getName())) //
-				.forEach(obj -> markedElements.add(obj));
+		long tic = System.nanoTime();
+		matches.add(match);
+		addMatchTime += System.nanoTime() - tic;
 	}
 
 	@Override
 	public boolean removeMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.CONSISTENCY)
-			return removeConsistencyMatch(match);
-
-		matches.remove(match);
-		return true;
-	}
-
-	private boolean removeConsistencyMatch(ITGGMatch match) {
-		IGreenPatternFactory gFactory = opStrat.getGreenFactory(match.getRuleName());
-
-		gFactory.getGreenSrcNodesInRule().stream() //
-				.map(n -> (EObject) match.get(n.getName())) //
-				.forEach(obj -> markedElements.remove(obj));
-		gFactory.getGreenTrgNodesInRule().stream() //
-				.map(n -> (EObject) match.get(n.getName())) //
-				.forEach(obj -> markedElements.remove(obj));
-
-		return true;
+		long tic = System.nanoTime();
+		if (match.getType() == PatternType.CONSISTENCY) {
+			boolean removed = removeConsistencyMatch(match);
+			removeMatchTime += System.nanoTime() - tic;
+			return removed;
+		}
+		else {
+			matches.remove(match);
+			removeMatchTime += System.nanoTime() - tic;
+			return true;
+		}
 	}
 
 	@Override
@@ -74,27 +56,8 @@ public class MarkingMatchContainer implements IMatchContainer {
 	}
 
 	@Override
-	public Set<ITGGMatch> getMatches() {
-		Collection<ITGGMatch> neverApplicable = new LinkedList<>();
-		
-		Set<ITGGMatch> nextMatches = matches.stream() //
-				.filter(m -> checkPositiveRAs(m, opStrat.getGreenFactory(m.getRuleName()))) //
-				.filter(m -> {
-					if (checkNegativeRAs(m, opStrat.getGreenFactory(m.getRuleName())))
-						return true;
-					else {
-						neverApplicable.add(m);
-						return false;
-					}
-				}) //
-				.collect(Collectors.toSet());
-		
-		matches.removeAll(neverApplicable);
-		return nextMatches;
-	}
-
-	@Override
 	public ITGGMatch getNext() {
+		long tic = System.nanoTime();
 		List<ITGGMatch> notApplicable = new LinkedList<>();
 		ITGGMatch match = null;
 
@@ -115,7 +78,75 @@ public class MarkingMatchContainer implements IMatchContainer {
 			}
 		}
 		matches.addAll(notApplicable);
+		getMatchTime += System.nanoTime() - tic;
 		return match;
+	}
+
+	@Override
+	public Set<ITGGMatch> getMatches() {
+		long tic = System.nanoTime();
+		Collection<ITGGMatch> neverApplicable = new LinkedList<>();
+
+		Set<ITGGMatch> nextMatches = matches.stream() //
+				.filter(m -> checkPositiveRAs(m, opStrat.getGreenFactory(m.getRuleName()))) //
+				.filter(m -> {
+					if (checkNegativeRAs(m, opStrat.getGreenFactory(m.getRuleName())))
+						return true;
+					else {
+						neverApplicable.add(m);
+						return false;
+					}
+				}) //
+				.collect(Collectors.toSet());
+
+		matches.removeAll(neverApplicable);
+		getMatchTime += System.nanoTime() - tic;
+		return nextMatches;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return matches.isEmpty() ? true : getNext() == null;
+	}
+
+	@Override
+	public void removeAllMatches() {
+		markedElements.clear();
+		matches.clear();
+	}
+
+	@Override
+	public void matchApplied(ITGGMatch match) {
+		long tic = System.nanoTime();
+		if (match.getType() == PatternType.CONSISTENCY)
+			consistencyMatchApplied(match);
+		else
+			matches.remove(match);
+		matchAppliedTime += System.nanoTime() - tic;
+	}
+
+	private boolean removeConsistencyMatch(ITGGMatch match) {
+		IGreenPatternFactory gFactory = opStrat.getGreenFactory(match.getRuleName());
+
+		gFactory.getGreenSrcNodesInRule().stream() //
+				.map(n -> (EObject) match.get(n.getName())) //
+				.forEach(obj -> markedElements.remove(obj));
+		gFactory.getGreenTrgNodesInRule().stream() //
+				.map(n -> (EObject) match.get(n.getName())) //
+				.forEach(obj -> markedElements.remove(obj));
+
+		return true;
+	}
+
+	private void consistencyMatchApplied(ITGGMatch match) {
+		IGreenPatternFactory gFactory = opStrat.getGreenFactory(match.getRuleName());
+
+		gFactory.getGreenSrcNodesInRule().stream() //
+				.map(n -> (EObject) match.get(n.getName())) //
+				.forEach(obj -> markedElements.add(obj));
+		gFactory.getGreenTrgNodesInRule().stream() //
+				.map(n -> (EObject) match.get(n.getName())) //
+				.forEach(obj -> markedElements.add(obj));
 	}
 
 	private boolean checkPositiveRAs(ITGGMatch match, IGreenPatternFactory gFactory) {
@@ -138,17 +169,6 @@ public class MarkingMatchContainer implements IMatchContainer {
 					.map(n -> (EObject) match.get(n.getName())) //
 					.noneMatch(obj -> markedElements.contains(obj));
 		return false;
-	}
-
-	@Override
-	public void removeAllMatches() {
-		markedElements.clear();
-		matches.clear();
-	}
-
-	@Override
-	public void matchApplied(ITGGMatch match) {
-		matches.remove(match);
 	}
 
 }

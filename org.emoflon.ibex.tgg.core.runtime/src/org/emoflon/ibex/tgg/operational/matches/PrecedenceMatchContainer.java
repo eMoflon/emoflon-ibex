@@ -2,18 +2,16 @@ package org.emoflon.ibex.tgg.operational.matches;
 
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
 import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
@@ -23,7 +21,7 @@ import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 
-public class PrecedenceMatchContainer implements IMatchContainer {
+public class PrecedenceMatchContainer extends LoggingMatchContainer implements IMatchContainer {
 	public static final CollectionFactory cfactory = new JDKCollectionFactory();
 
 	protected PropagatingOperationalStrategy strategy;
@@ -41,11 +39,6 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 	protected Map<TGGRuleApplication, ITGGMatch> raToMatch = cfactory.createObjectToObjectHashMap();
 	
 	protected Set<ITGGMatch> readySet = cfactory.createObjectSet();
-	
-	private long addMatchTime = 0;
-	private long getMatchTime = 0;
-	private long matchAppliedTime = 0;
-	private long removeMatchTime = 0;
 
 	public PrecedenceMatchContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
@@ -260,11 +253,16 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		long tic = System.nanoTime();
 		
 		if (match.getType() == PatternType.CONSISTENCY) {
-			return removeConsistencyMatch(match);
+			boolean removed = removeConsistencyMatch(match);
+			
+			removeMatchTime += System.nanoTime() - tic;
+			return removed;
 		}
 		
 		if (pending.contains(match)) {
 			pending.remove(match);
+			
+			removeMatchTime += System.nanoTime() - tic;
 			return true;
 		}
 
@@ -290,7 +288,6 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		readySet.remove(match);
 		
 		removeMatchTime += System.nanoTime() - tic;
-
 		return true;
 	}
 	
@@ -302,6 +299,7 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 		
 		translated.removeAll(raToTranslated.get(ra));
 		pendingElts.addAll(raToTranslated.remove(ra));
+		raToMatch.remove(ra);
 		
 		return true;
 	}
@@ -320,16 +318,5 @@ public class PrecedenceMatchContainer implements IMatchContainer {
 
 		readySet.clear();
 	}
-	
-	public void log(Logger logger) {
-		DecimalFormat df = new DecimalFormat("0.#####");
-		df.setMaximumFractionDigits(5);
 
-		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "PrecedenceMatchContainer -> {");
-		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "     addMatchTime:     " + df.format((double) addMatchTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "     getMatchTime:     " + df.format((double) getMatchTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "     matchAppliedTime: " + df.format((double) matchAppliedTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "     removeMatchTime:  " + df.format((double) removeMatchTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> "}");
-	}
 }

@@ -14,6 +14,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
@@ -179,7 +180,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 	@Override
 	protected IMatchContainer createMatchContainer() {
-		return new MarkingMatchContainer(this);
+		return new PrecedenceMatchContainer(this);
 	}
 
 	@Override
@@ -247,8 +248,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "}");
 		LoggerConfig.log(LoggerConfig.log_collectMatchTime(), 		() -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
 		
-		if (operationalMatchContainer instanceof PrecedenceMatchContainer)
-			((PrecedenceMatchContainer) operationalMatchContainer).log(logger);
+		if (operationalMatchContainer instanceof LoggingMatchContainer)
+			((LoggingMatchContainer) operationalMatchContainer).log();
 		super.terminate();
 	}
 	
