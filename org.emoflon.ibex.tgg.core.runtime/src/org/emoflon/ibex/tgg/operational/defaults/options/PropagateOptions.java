@@ -38,8 +38,9 @@ public class PropagateOptions extends IbexSubOptions {
 		return usePrecedenceGraph;
 	}
 
-	public void usePrecedenceGraph(boolean usePrecedenceGraph) {
+	public IbexOptions usePrecedenceGraph(boolean usePrecedenceGraph) {
 		this.usePrecedenceGraph = usePrecedenceGraph;
+		return options;
 	}
 
 }
