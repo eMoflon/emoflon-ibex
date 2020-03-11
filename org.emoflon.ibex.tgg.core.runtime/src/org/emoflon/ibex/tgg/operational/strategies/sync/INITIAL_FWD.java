@@ -15,7 +15,7 @@ public class INITIAL_FWD extends SYNC {
 	@Override
 	public Collection<PatternType> getPatternRelevantForCompiler() {
 		Collection<PatternType> types = new LinkedList<>();
-		types.add(PatternType.BWD);
+		types.add(PatternType.FWD);
 		return types;
 	}
 }
