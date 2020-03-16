@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.repair.shortcut.rule;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
+import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGRule;
 import language.TGGRuleEdge;
@@ -89,6 +91,7 @@ public class ShortcutRule {
 		initializeContext(overlap);
 		initializeCreate(overlap);
 		initializeDelete(overlap);
+		adaptInplaceAttrExprs();
 	}
 
 	private void initializeDelete(TGGOverlap overlap) {
@@ -121,9 +124,17 @@ public class ShortcutRule {
 			createNewEdge(edge, BindingType.CONTEXT);
 	}
 
+	private void adaptInplaceAttrExprs() {
+		nodes.stream() //
+				.flatMap(n -> n.getAttrExpr().stream()) //
+				.filter(e -> e.getValueExpr() instanceof TGGAttributeExpression) //
+				.map(e -> (TGGAttributeExpression) e.getValueExpr()) //
+				.forEach(attrExpr -> attrExpr.setObjectVar(trg2newNodes.get(attrExpr.getObjectVar())));
+	}
+
 	private void createNewNode(TGGRuleNode oldNode, BindingType binding, SCInputRule scInput) {
 		TGGRuleNode newNode = createNode(oldNode.eClass(), oldNode.getName(), binding, oldNode.getDomainType(),
-				oldNode.getType(), oldNode.getAttrExpr());
+				oldNode.getType(), scInput == SCInputRule.TARGET ? oldNode.getAttrExpr() : Collections.emptyList());
 		registerNewNode(oldNode, newNode, scInput);
 	}
 
@@ -283,6 +294,14 @@ public class ShortcutRule {
 
 	public TGGRuleNode mapTrgToSCNodeNode(String name) {
 		return trg2newNodes.getOrDefault(trgName2oldNodes.getOrDefault(name, null), null);
+	}
+
+	public Collection<TGGRuleNode> getNewSrcNodes() {
+		return src2newNodes.values();
+	}
+
+	public Collection<TGGRuleNode> getNewTrgNodes() {
+		return trg2newNodes.values();
 	}
 
 	public TGGOverlap getOverlap() {
