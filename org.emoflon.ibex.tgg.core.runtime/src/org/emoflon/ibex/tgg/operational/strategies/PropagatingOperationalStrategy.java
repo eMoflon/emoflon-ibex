@@ -14,11 +14,13 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.matches.MarkingMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
@@ -28,14 +30,14 @@ import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import runtime.TGGRuleApplication;
 
 public abstract class PropagatingOperationalStrategy extends OperationalStrategy {
-	
+
 	// Repair
 	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
-	
+
 	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = CollectionFactory.cfactory
 			.createObjectToObjectHashMap();
 	protected IRedInterpreter redInterpreter;
-	
+
 	protected long repairTime = 0;
 	protected long translateTime = 0;
 	protected long removeTime = 0;
@@ -98,25 +100,24 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		long tic = System.nanoTime();
 		if (options.propagate.applyConcurrently()) {
 			matchDistributor.updateMatches();
-			
-			while(true) {
+
+			while (true) {
 				while (processOneOperationalRuleMatch()) {
-					
+
 				}
 				matchDistributor.updateMatches();
-				if(!processOneOperationalRuleMatch())
+				if (!processOneOperationalRuleMatch())
 					return;
 			}
-		}
-		else {
+		} else {
 			do {
 				matchDistributor.updateMatches();
 			} while (processOneOperationalRuleMatch());
 		}
-		
+
 		translateTime += System.nanoTime() - tic;
 	}
-	
+
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
 		long tic = System.nanoTime();
@@ -178,7 +179,10 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 	@Override
 	protected IMatchContainer createMatchContainer() {
-		return new PrecedenceMatchContainer(this);
+		if (options.propagate.usePrecedenceGraph())
+			return new PrecedenceMatchContainer(this);
+		else
+			return new MarkingMatchContainer(this);
 	}
 
 	@Override
@@ -187,7 +191,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		if (brokenRuleApplications.containsKey(ruleAppNode)) {
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
+			LoggerConfig.log(LoggerConfig.log_matchApplication(),
+					() -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 		}
 
@@ -230,7 +235,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		options.debug.benchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedElements() + //
 				repStratDeletions);
 	}
-	
+
 	@Override
 	public void terminate() throws IOException {
 		DecimalFormat df = new DecimalFormat("0.#####");
@@ -245,10 +250,10 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Finalize time:        " + df.format((double) finishRuleApplicationTime / (double) (1000 * 1000 * 1000)));
 		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "}");
 		LoggerConfig.log(LoggerConfig.log_collectMatchTime(), 		() -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
-		
-		((PrecedenceMatchContainer) operationalMatchContainer).log(logger);
+
+		if (operationalMatchContainer instanceof LoggingMatchContainer)
+			((LoggingMatchContainer) operationalMatchContainer).log();
 		super.terminate();
 	}
-	
-	
+
 }
