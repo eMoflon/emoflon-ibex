@@ -175,6 +175,24 @@ public interface IBeXLanguageFactory extends EFactory {
 	IBeXCSP createIBeXCSP();
 
 	/**
+	 * Returns a new object of class '<em>IBe XStochastic Attribute Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XStochastic Attribute Value</em>'.
+	 * @generated
+	 */
+	IBeXStochasticAttributeValue createIBeXStochasticAttributeValue();
+
+	/**
+	 * Returns a new object of class '<em>IBe XArithmetic Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XArithmetic Value</em>'.
+	 * @generated
+	 */
+	IBeXArithmeticValue createIBeXArithmeticValue();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

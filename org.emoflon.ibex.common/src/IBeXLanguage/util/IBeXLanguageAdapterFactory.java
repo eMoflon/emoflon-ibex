@@ -179,6 +179,16 @@ public class IBeXLanguageAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseIBeXStochasticAttributeValue(IBeXStochasticAttributeValue object) {
+			return createIBeXStochasticAttributeValueAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXArithmeticValue(IBeXArithmeticValue object) {
+			return createIBeXArithmeticValueAdapter();
+		}
+
+		@Override
 		public Adapter defaultCase(EObject object) {
 			return createEObjectAdapter();
 		}
@@ -502,6 +512,34 @@ public class IBeXLanguageAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXCSPAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link IBeXLanguage.IBeXStochasticAttributeValue <em>IBe XStochastic Attribute Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see IBeXLanguage.IBeXStochasticAttributeValue
+	 * @generated
+	 */
+	public Adapter createIBeXStochasticAttributeValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link IBeXLanguage.IBeXArithmeticValue <em>IBe XArithmetic Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see IBeXLanguage.IBeXArithmeticValue
+	 * @generated
+	 */
+	public Adapter createIBeXArithmeticValueAdapter() {
 		return null;
 	}
 

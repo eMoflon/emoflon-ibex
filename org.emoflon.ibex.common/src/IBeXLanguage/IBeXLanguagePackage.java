@@ -1199,6 +1199,89 @@ public interface IBeXLanguagePackage extends EPackage {
 	int IBE_XCSP_OPERATION_COUNT = 0;
 
 	/**
+	 * The meta object id for the '{@link IBeXLanguage.impl.IBeXStochasticAttributeValueImpl <em>IBe XStochastic Attribute Value</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see IBeXLanguage.impl.IBeXStochasticAttributeValueImpl
+	 * @see IBeXLanguage.impl.IBeXLanguagePackageImpl#getIBeXStochasticAttributeValue()
+	 * @generated
+	 */
+	int IBE_XSTOCHASTIC_ATTRIBUTE_VALUE = 22;
+
+	/**
+	 * The feature id for the '<em><b>Range</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE = IBE_XATTRIBUTE_VALUE_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Function</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION = IBE_XATTRIBUTE_VALUE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>IBe XStochastic Attribute Value</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XSTOCHASTIC_ATTRIBUTE_VALUE_FEATURE_COUNT = IBE_XATTRIBUTE_VALUE_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of operations of the '<em>IBe XStochastic Attribute Value</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XSTOCHASTIC_ATTRIBUTE_VALUE_OPERATION_COUNT = IBE_XATTRIBUTE_VALUE_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link IBeXLanguage.impl.IBeXArithmeticValueImpl <em>IBe XArithmetic Value</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see IBeXLanguage.impl.IBeXArithmeticValueImpl
+	 * @see IBeXLanguage.impl.IBeXLanguagePackageImpl#getIBeXArithmeticValue()
+	 * @generated
+	 */
+	int IBE_XARITHMETIC_VALUE = 23;
+
+	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XARITHMETIC_VALUE__EXPRESSION = IBE_XATTRIBUTE_VALUE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XArithmetic Value</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XARITHMETIC_VALUE_FEATURE_COUNT = IBE_XATTRIBUTE_VALUE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XArithmetic Value</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XARITHMETIC_VALUE_OPERATION_COUNT = IBE_XATTRIBUTE_VALUE_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link IBeXLanguage.IBeXRelation <em>IBe XRelation</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1206,7 +1289,7 @@ public interface IBeXLanguagePackage extends EPackage {
 	 * @see IBeXLanguage.impl.IBeXLanguagePackageImpl#getIBeXRelation()
 	 * @generated
 	 */
-	int IBE_XRELATION = 22;
+	int IBE_XRELATION = 24;
 
 	/**
 	 * Returns the meta object for class '{@link IBeXLanguage.IBeXAttribute <em>IBe XAttribute</em>}'.
@@ -1915,6 +1998,59 @@ public interface IBeXLanguagePackage extends EPackage {
 	EReference getIBeXCSP_Values();
 
 	/**
+	 * Returns the meta object for class '{@link IBeXLanguage.IBeXStochasticAttributeValue <em>IBe XStochastic Attribute Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XStochastic Attribute Value</em>'.
+	 * @see IBeXLanguage.IBeXStochasticAttributeValue
+	 * @generated
+	 */
+	EClass getIBeXStochasticAttributeValue();
+
+	/**
+	 * Returns the meta object for the attribute '{@link IBeXLanguage.IBeXStochasticAttributeValue#getRange <em>Range</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Range</em>'.
+	 * @see IBeXLanguage.IBeXStochasticAttributeValue#getRange()
+	 * @see #getIBeXStochasticAttributeValue()
+	 * @generated
+	 */
+	EAttribute getIBeXStochasticAttributeValue_Range();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link IBeXLanguage.IBeXStochasticAttributeValue#getFunction <em>Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Function</em>'.
+	 * @see IBeXLanguage.IBeXStochasticAttributeValue#getFunction()
+	 * @see #getIBeXStochasticAttributeValue()
+	 * @generated
+	 */
+	EReference getIBeXStochasticAttributeValue_Function();
+
+	/**
+	 * Returns the meta object for class '{@link IBeXLanguage.IBeXArithmeticValue <em>IBe XArithmetic Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XArithmetic Value</em>'.
+	 * @see IBeXLanguage.IBeXArithmeticValue
+	 * @generated
+	 */
+	EClass getIBeXArithmeticValue();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link IBeXLanguage.IBeXArithmeticValue#getExpression <em>Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Expression</em>'.
+	 * @see IBeXLanguage.IBeXArithmeticValue#getExpression()
+	 * @see #getIBeXArithmeticValue()
+	 * @generated
+	 */
+	EReference getIBeXArithmeticValue_Expression();
+
+	/**
 	 * Returns the meta object for enum '{@link IBeXLanguage.IBeXRelation <em>IBe XRelation</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2520,6 +2656,50 @@ public interface IBeXLanguagePackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XCSP__VALUES = eINSTANCE.getIBeXCSP_Values();
+
+		/**
+		 * The meta object literal for the '{@link IBeXLanguage.impl.IBeXStochasticAttributeValueImpl <em>IBe XStochastic Attribute Value</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see IBeXLanguage.impl.IBeXStochasticAttributeValueImpl
+		 * @see IBeXLanguage.impl.IBeXLanguagePackageImpl#getIBeXStochasticAttributeValue()
+		 * @generated
+		 */
+		EClass IBE_XSTOCHASTIC_ATTRIBUTE_VALUE = eINSTANCE.getIBeXStochasticAttributeValue();
+
+		/**
+		 * The meta object literal for the '<em><b>Range</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE = eINSTANCE.getIBeXStochasticAttributeValue_Range();
+
+		/**
+		 * The meta object literal for the '<em><b>Function</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION = eINSTANCE.getIBeXStochasticAttributeValue_Function();
+
+		/**
+		 * The meta object literal for the '{@link IBeXLanguage.impl.IBeXArithmeticValueImpl <em>IBe XArithmetic Value</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see IBeXLanguage.impl.IBeXArithmeticValueImpl
+		 * @see IBeXLanguage.impl.IBeXLanguagePackageImpl#getIBeXArithmeticValue()
+		 * @generated
+		 */
+		EClass IBE_XARITHMETIC_VALUE = eINSTANCE.getIBeXArithmeticValue();
+
+		/**
+		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XARITHMETIC_VALUE__EXPRESSION = eINSTANCE.getIBeXArithmeticValue_Expression();
 
 		/**
 		 * The meta object literal for the '{@link IBeXLanguage.IBeXRelation <em>IBe XRelation</em>}' enum.

@@ -95,6 +95,10 @@ public class IBeXLanguageFactoryImpl extends EFactoryImpl implements IBeXLanguag
 			return createIBeXPatternSet();
 		case IBeXLanguagePackage.IBE_XCSP:
 			return createIBeXCSP();
+		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE:
+			return createIBeXStochasticAttributeValue();
+		case IBeXLanguagePackage.IBE_XARITHMETIC_VALUE:
+			return createIBeXArithmeticValue();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -325,6 +329,28 @@ public class IBeXLanguageFactoryImpl extends EFactoryImpl implements IBeXLanguag
 	public IBeXCSP createIBeXCSP() {
 		IBeXCSPImpl iBeXCSP = new IBeXCSPImpl();
 		return iBeXCSP;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXStochasticAttributeValue createIBeXStochasticAttributeValue() {
+		IBeXStochasticAttributeValueImpl iBeXStochasticAttributeValue = new IBeXStochasticAttributeValueImpl();
+		return iBeXStochasticAttributeValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXArithmeticValue createIBeXArithmeticValue() {
+		IBeXArithmeticValueImpl iBeXArithmeticValue = new IBeXArithmeticValueImpl();
+		return iBeXArithmeticValue;
 	}
 
 	/**

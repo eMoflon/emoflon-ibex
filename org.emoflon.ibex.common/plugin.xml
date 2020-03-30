@@ -10,4 +10,12 @@
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="IBeXLanguage.IBeXLanguagePackage" genModel="model/Common.genmodel" uri="platform:/resource/org.emoflon.ibex.common/model/Common.ecore"/>
   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated Common -->
+      <package
+            uri="platform:/resource/org.emoflon.ibex.common/model/StochasticExtension.ecore"
+            class="StochasticLanguage.StochasticLanguagePackage"
+            genModel="model/Common.genmodel"/>
+   </extension>
 </plugin>

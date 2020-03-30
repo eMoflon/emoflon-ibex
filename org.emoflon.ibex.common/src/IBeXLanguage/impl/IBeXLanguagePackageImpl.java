@@ -2,6 +2,7 @@
  */
 package IBeXLanguage.impl;
 
+import IBeXLanguage.IBeXArithmeticValue;
 import IBeXLanguage.IBeXAttribute;
 import IBeXLanguage.IBeXAttributeAssignment;
 import IBeXLanguage.IBeXAttributeConstraint;
@@ -26,6 +27,11 @@ import IBeXLanguage.IBeXPattern;
 import IBeXLanguage.IBeXPatternInvocation;
 import IBeXLanguage.IBeXPatternSet;
 import IBeXLanguage.IBeXRelation;
+import IBeXLanguage.IBeXStochasticAttributeValue;
+
+import StochasticLanguage.StochasticLanguagePackage;
+
+import StochasticLanguage.impl.StochasticLanguagePackageImpl;
 
 import java.util.Map;
 
@@ -203,6 +209,20 @@ public class IBeXLanguagePackageImpl extends EPackageImpl implements IBeXLanguag
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass iBeXStochasticAttributeValueEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXArithmeticValueEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EEnum iBeXRelationEEnum = null;
 
 	/**
@@ -255,11 +275,19 @@ public class IBeXLanguagePackageImpl extends EPackageImpl implements IBeXLanguag
 
 		isInited = true;
 
+		// Obtain or create and register interdependencies
+		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(StochasticLanguagePackage.eNS_URI);
+		StochasticLanguagePackageImpl theStochasticLanguagePackage = (StochasticLanguagePackageImpl) (registeredPackage instanceof StochasticLanguagePackageImpl
+				? registeredPackage
+				: StochasticLanguagePackage.eINSTANCE);
+
 		// Create package meta-data objects
 		theIBeXLanguagePackage.createPackageContents();
+		theStochasticLanguagePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theIBeXLanguagePackage.initializePackageContents();
+		theStochasticLanguagePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theIBeXLanguagePackage.freeze();
@@ -935,6 +963,56 @@ public class IBeXLanguagePackageImpl extends EPackageImpl implements IBeXLanguag
 	 * @generated
 	 */
 	@Override
+	public EClass getIBeXStochasticAttributeValue() {
+		return iBeXStochasticAttributeValueEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getIBeXStochasticAttributeValue_Range() {
+		return (EAttribute) iBeXStochasticAttributeValueEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXStochasticAttributeValue_Function() {
+		return (EReference) iBeXStochasticAttributeValueEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXArithmeticValue() {
+		return iBeXArithmeticValueEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXArithmeticValue_Expression() {
+		return (EReference) iBeXArithmeticValueEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getIBeXRelation() {
 		return iBeXRelationEEnum;
 	}
@@ -1057,6 +1135,13 @@ public class IBeXLanguagePackageImpl extends EPackageImpl implements IBeXLanguag
 		createEAttribute(iBeXCSPEClass, IBE_XCSP__PACKAGE);
 		createEReference(iBeXCSPEClass, IBE_XCSP__VALUES);
 
+		iBeXStochasticAttributeValueEClass = createEClass(IBE_XSTOCHASTIC_ATTRIBUTE_VALUE);
+		createEAttribute(iBeXStochasticAttributeValueEClass, IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE);
+		createEReference(iBeXStochasticAttributeValueEClass, IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION);
+
+		iBeXArithmeticValueEClass = createEClass(IBE_XARITHMETIC_VALUE);
+		createEReference(iBeXArithmeticValueEClass, IBE_XARITHMETIC_VALUE__EXPRESSION);
+
 		// Create enums
 		iBeXRelationEEnum = createEEnum(IBE_XRELATION);
 	}
@@ -1085,6 +1170,10 @@ public class IBeXLanguagePackageImpl extends EPackageImpl implements IBeXLanguag
 		setNsPrefix(eNS_PREFIX);
 		setNsURI(eNS_URI);
 
+		// Obtain other dependent packages
+		StochasticLanguagePackage theStochasticLanguagePackage = (StochasticLanguagePackage) EPackage.Registry.INSTANCE
+				.getEPackage(StochasticLanguagePackage.eNS_URI);
+
 		// Create type parameters
 
 		// Set bounds for type parameters
@@ -1104,6 +1193,8 @@ public class IBeXLanguagePackageImpl extends EPackageImpl implements IBeXLanguag
 		iBeXEnumLiteralEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 		iBeXNodeEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXPatternEClass.getESuperTypes().add(this.getIBeXNamedElement());
+		iBeXStochasticAttributeValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
+		iBeXArithmeticValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(iBeXAttributeEClass, IBeXAttribute.class, "IBeXAttribute", IS_ABSTRACT, !IS_INTERFACE,
@@ -1301,6 +1392,22 @@ public class IBeXLanguagePackageImpl extends EPackageImpl implements IBeXLanguag
 		initEReference(getIBeXCSP_Values(), this.getIBeXAttributeValue(), null, "values", null, 0, -1, IBeXCSP.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXStochasticAttributeValueEClass, IBeXStochasticAttributeValue.class,
+				"IBeXStochasticAttributeValue", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getIBeXStochasticAttributeValue_Range(), theStochasticLanguagePackage.getGTStochasticRange(),
+				"range", null, 0, 1, IBeXStochasticAttributeValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXStochasticAttributeValue_Function(),
+				theStochasticLanguagePackage.getGTStochasticFunction(), null, "function", null, 0, 1,
+				IBeXStochasticAttributeValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXArithmeticValueEClass, IBeXArithmeticValue.class, "IBeXArithmeticValue", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXArithmeticValue_Expression(), theStochasticLanguagePackage.getGTArithmetics(), null,
+				"expression", null, 0, 1, IBeXArithmeticValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(iBeXRelationEEnum, IBeXRelation.class, "IBeXRelation");

@@ -186,4 +186,13 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
         eType="#//IBeXAttributeValue" containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXStochasticAttributeValue" eSuperTypes="#//IBeXAttributeValue">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="range" eType="ecore:EEnum StochasticExtension.ecore#//GTStochasticRange"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="function" eType="ecore:EClass StochasticExtension.ecore#//GTStochasticFunction"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXArithmeticValue" eSuperTypes="#//IBeXAttributeValue">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" eType="ecore:EClass StochasticExtension.ecore#//GTArithmetics"
+        containment="true"/>
+  </eClassifiers>
 </ecore:EPackage>
