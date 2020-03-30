@@ -85,7 +85,8 @@ public class GTNamedElementImpl extends EObjectImpl implements GTNamedElement {
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_NAMED_ELEMENT__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_NAMED_ELEMENT__NAME, oldName,
+					name));
 	}
 
 	/**

@@ -297,9 +297,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		JavaFileGenerator generator = new JavaFileGenerator(getClassNamePrefix(), packageName, eClassifiersManager);
 		IFolder matchesPackage = ensureFolderExists(apiPackage.getFolder("matches"));
 		IFolder rulesPackage = ensureFolderExists(apiPackage.getFolder("rules"));
+		IFolder probabilitiesPackage = ensureFolderExists(apiPackage.getFolder("probabilities"));
 		gtRuleSet.getRules().forEach(gtRule -> {
 			generator.generateMatchClass(matchesPackage, gtRule);
 			generator.generateRuleClass(rulesPackage, gtRule);
+			generator.generateProbabilityClass(probabilitiesPackage, gtRule);
 		});
 
 		generator.generateAPIClass(apiPackage, gtRuleSet,

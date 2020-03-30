@@ -253,13 +253,31 @@ public interface GTLanguagePackage extends EPackage {
 	int GT_RULE__RULE_NODES = GT_NAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
+	 * The feature id for the '<em><b>Constraints</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_RULE__CONSTRAINTS = GT_NAMED_ELEMENT_FEATURE_COUNT + 5;
+
+	/**
+	 * The feature id for the '<em><b>Probability</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_RULE__PROBABILITY = GT_NAMED_ELEMENT_FEATURE_COUNT + 6;
+
+	/**
 	 * The number of structural features of the '<em>GT Rule</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_RULE_FEATURE_COUNT = GT_NAMED_ELEMENT_FEATURE_COUNT + 5;
+	int GT_RULE_FEATURE_COUNT = GT_NAMED_ELEMENT_FEATURE_COUNT + 7;
 
 	/**
 	 * The number of operations of the '<em>GT Rule</em>' class.
@@ -306,6 +324,107 @@ public interface GTLanguagePackage extends EPackage {
 	 * @ordered
 	 */
 	int GT_RULE_SET_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link GTLanguage.impl.GTProbabilityImpl <em>GT Probability</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see GTLanguage.impl.GTProbabilityImpl
+	 * @see GTLanguage.impl.GTLanguagePackageImpl#getGTProbability()
+	 * @generated
+	 */
+	int GT_PROBABILITY = 5;
+
+	/**
+	 * The feature id for the '<em><b>Function</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_PROBABILITY__FUNCTION = 0;
+
+	/**
+	 * The feature id for the '<em><b>Parameter</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_PROBABILITY__PARAMETER = 1;
+
+	/**
+	 * The number of structural features of the '<em>GT Probability</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_PROBABILITY_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>GT Probability</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_PROBABILITY_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link GTLanguage.impl.GTArithmeticConstraintImpl <em>GT Arithmetic Constraint</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see GTLanguage.impl.GTArithmeticConstraintImpl
+	 * @see GTLanguage.impl.GTLanguagePackageImpl#getGTArithmeticConstraint()
+	 * @generated
+	 */
+	int GT_ARITHMETIC_CONSTRAINT = 6;
+
+	/**
+	 * The feature id for the '<em><b>Parameter</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ARITHMETIC_CONSTRAINT__PARAMETER = 0;
+
+	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ARITHMETIC_CONSTRAINT__EXPRESSION = 1;
+
+	/**
+	 * The feature id for the '<em><b>Relation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ARITHMETIC_CONSTRAINT__RELATION = 2;
+
+	/**
+	 * The number of structural features of the '<em>GT Arithmetic Constraint</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ARITHMETIC_CONSTRAINT_FEATURE_COUNT = 3;
+
+	/**
+	 * The number of operations of the '<em>GT Arithmetic Constraint</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ARITHMETIC_CONSTRAINT_OPERATION_COUNT = 0;
 
 	/**
 	 * Returns the meta object for class '{@link GTLanguage.GTNamedElement <em>GT Named Element</em>}'.
@@ -436,6 +555,28 @@ public interface GTLanguagePackage extends EPackage {
 	EReference getGTRule_RuleNodes();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link GTLanguage.GTRule#getProbability <em>Probability</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Probability</em>'.
+	 * @see GTLanguage.GTRule#getProbability()
+	 * @see #getGTRule()
+	 * @generated
+	 */
+	EReference getGTRule_Probability();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link GTLanguage.GTRule#getConstraints <em>Constraints</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Constraints</em>'.
+	 * @see GTLanguage.GTRule#getConstraints()
+	 * @see #getGTRule()
+	 * @generated
+	 */
+	EReference getGTRule_Constraints();
+
+	/**
 	 * Returns the meta object for class '{@link GTLanguage.GTRuleSet <em>GT Rule Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -455,6 +596,81 @@ public interface GTLanguagePackage extends EPackage {
 	 * @generated
 	 */
 	EReference getGTRuleSet_Rules();
+
+	/**
+	 * Returns the meta object for class '{@link GTLanguage.GTProbability <em>GT Probability</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>GT Probability</em>'.
+	 * @see GTLanguage.GTProbability
+	 * @generated
+	 */
+	EClass getGTProbability();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link GTLanguage.GTProbability#getFunction <em>Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Function</em>'.
+	 * @see GTLanguage.GTProbability#getFunction()
+	 * @see #getGTProbability()
+	 * @generated
+	 */
+	EReference getGTProbability_Function();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link GTLanguage.GTProbability#getParameter <em>Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Parameter</em>'.
+	 * @see GTLanguage.GTProbability#getParameter()
+	 * @see #getGTProbability()
+	 * @generated
+	 */
+	EReference getGTProbability_Parameter();
+
+	/**
+	 * Returns the meta object for class '{@link GTLanguage.GTArithmeticConstraint <em>GT Arithmetic Constraint</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>GT Arithmetic Constraint</em>'.
+	 * @see GTLanguage.GTArithmeticConstraint
+	 * @generated
+	 */
+	EClass getGTArithmeticConstraint();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link GTLanguage.GTArithmeticConstraint#getParameter <em>Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Parameter</em>'.
+	 * @see GTLanguage.GTArithmeticConstraint#getParameter()
+	 * @see #getGTArithmeticConstraint()
+	 * @generated
+	 */
+	EReference getGTArithmeticConstraint_Parameter();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link GTLanguage.GTArithmeticConstraint#getExpression <em>Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Expression</em>'.
+	 * @see GTLanguage.GTArithmeticConstraint#getExpression()
+	 * @see #getGTArithmeticConstraint()
+	 * @generated
+	 */
+	EReference getGTArithmeticConstraint_Expression();
+
+	/**
+	 * Returns the meta object for the attribute '{@link GTLanguage.GTArithmeticConstraint#getRelation <em>Relation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Relation</em>'.
+	 * @see GTLanguage.GTArithmeticConstraint#getRelation()
+	 * @see #getGTArithmeticConstraint()
+	 * @generated
+	 */
+	EAttribute getGTArithmeticConstraint_Relation();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -584,6 +800,22 @@ public interface GTLanguagePackage extends EPackage {
 		EReference GT_RULE__RULE_NODES = eINSTANCE.getGTRule_RuleNodes();
 
 		/**
+		 * The meta object literal for the '<em><b>Probability</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_RULE__PROBABILITY = eINSTANCE.getGTRule_Probability();
+
+		/**
+		 * The meta object literal for the '<em><b>Constraints</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_RULE__CONSTRAINTS = eINSTANCE.getGTRule_Constraints();
+
+		/**
 		 * The meta object literal for the '{@link GTLanguage.impl.GTRuleSetImpl <em>GT Rule Set</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -600,6 +832,66 @@ public interface GTLanguagePackage extends EPackage {
 		 * @generated
 		 */
 		EReference GT_RULE_SET__RULES = eINSTANCE.getGTRuleSet_Rules();
+
+		/**
+		 * The meta object literal for the '{@link GTLanguage.impl.GTProbabilityImpl <em>GT Probability</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see GTLanguage.impl.GTProbabilityImpl
+		 * @see GTLanguage.impl.GTLanguagePackageImpl#getGTProbability()
+		 * @generated
+		 */
+		EClass GT_PROBABILITY = eINSTANCE.getGTProbability();
+
+		/**
+		 * The meta object literal for the '<em><b>Function</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_PROBABILITY__FUNCTION = eINSTANCE.getGTProbability_Function();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameter</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_PROBABILITY__PARAMETER = eINSTANCE.getGTProbability_Parameter();
+
+		/**
+		 * The meta object literal for the '{@link GTLanguage.impl.GTArithmeticConstraintImpl <em>GT Arithmetic Constraint</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see GTLanguage.impl.GTArithmeticConstraintImpl
+		 * @see GTLanguage.impl.GTLanguagePackageImpl#getGTArithmeticConstraint()
+		 * @generated
+		 */
+		EClass GT_ARITHMETIC_CONSTRAINT = eINSTANCE.getGTArithmeticConstraint();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameter</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_ARITHMETIC_CONSTRAINT__PARAMETER = eINSTANCE.getGTArithmeticConstraint_Parameter();
+
+		/**
+		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_ARITHMETIC_CONSTRAINT__EXPRESSION = eINSTANCE.getGTArithmeticConstraint_Expression();
+
+		/**
+		 * The meta object literal for the '<em><b>Relation</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute GT_ARITHMETIC_CONSTRAINT__RELATION = eINSTANCE.getGTArithmeticConstraint_Relation();
 
 	}
 

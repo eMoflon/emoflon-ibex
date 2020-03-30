@@ -2,9 +2,11 @@
  */
 package GTLanguage.impl;
 
+import GTLanguage.GTArithmeticConstraint;
 import GTLanguage.GTLanguagePackage;
 import GTLanguage.GTNode;
 import GTLanguage.GTParameter;
+import GTLanguage.GTProbability;
 import GTLanguage.GTRule;
 
 import java.util.Collection;
@@ -36,6 +38,8 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link GTLanguage.impl.GTRuleImpl#getNodes <em>Nodes</em>}</li>
  *   <li>{@link GTLanguage.impl.GTRuleImpl#getParameters <em>Parameters</em>}</li>
  *   <li>{@link GTLanguage.impl.GTRuleImpl#getRuleNodes <em>Rule Nodes</em>}</li>
+ *   <li>{@link GTLanguage.impl.GTRuleImpl#getConstraints <em>Constraints</em>}</li>
+ *   <li>{@link GTLanguage.impl.GTRuleImpl#getProbability <em>Probability</em>}</li>
  * </ul>
  *
  * @generated
@@ -112,6 +116,26 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 	protected EList<GTNode> ruleNodes;
 
 	/**
+	 * The cached value of the '{@link #getConstraints() <em>Constraints</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getConstraints()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<GTArithmeticConstraint> constraints;
+
+	/**
+	 * The cached value of the '{@link #getProbability() <em>Probability</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProbability()
+	 * @generated
+	 * @ordered
+	 */
+	protected GTProbability probability;
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -150,7 +174,8 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 		String oldDocumentation = documentation;
 		documentation = newDocumentation;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__DOCUMENTATION, oldDocumentation, documentation));
+			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__DOCUMENTATION,
+					oldDocumentation, documentation));
 	}
 
 	/**
@@ -173,7 +198,8 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 		boolean oldExecutable = executable;
 		executable = newExecutable;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__EXECUTABLE, oldExecutable, executable));
+			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__EXECUTABLE, oldExecutable,
+					executable));
 	}
 
 	/**
@@ -197,7 +223,8 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 	@Override
 	public EList<GTParameter> getParameters() {
 		if (parameters == null) {
-			parameters = new EObjectContainmentEList<GTParameter>(GTParameter.class, this, GTLanguagePackage.GT_RULE__PARAMETERS);
+			parameters = new EObjectContainmentEList<GTParameter>(GTParameter.class, this,
+					GTLanguagePackage.GT_RULE__PARAMETERS);
 		}
 		return parameters;
 	}
@@ -221,12 +248,82 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 	 * @generated
 	 */
 	@Override
+	public GTProbability getProbability() {
+		return probability;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetProbability(GTProbability newProbability, NotificationChain msgs) {
+		GTProbability oldProbability = probability;
+		probability = newProbability;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					GTLanguagePackage.GT_RULE__PROBABILITY, oldProbability, newProbability);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setProbability(GTProbability newProbability) {
+		if (newProbability != probability) {
+			NotificationChain msgs = null;
+			if (probability != null)
+				msgs = ((InternalEObject) probability).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - GTLanguagePackage.GT_RULE__PROBABILITY, null, msgs);
+			if (newProbability != null)
+				msgs = ((InternalEObject) newProbability).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - GTLanguagePackage.GT_RULE__PROBABILITY, null, msgs);
+			msgs = basicSetProbability(newProbability, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__PROBABILITY,
+					newProbability, newProbability));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EList<GTArithmeticConstraint> getConstraints() {
+		if (constraints == null) {
+			constraints = new EObjectContainmentEList<GTArithmeticConstraint>(GTArithmeticConstraint.class, this,
+					GTLanguagePackage.GT_RULE__CONSTRAINTS);
+		}
+		return constraints;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case GTLanguagePackage.GT_RULE__NODES:
 			return ((InternalEList<?>) getNodes()).basicRemove(otherEnd, msgs);
 		case GTLanguagePackage.GT_RULE__PARAMETERS:
 			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
+		case GTLanguagePackage.GT_RULE__CONSTRAINTS:
+			return ((InternalEList<?>) getConstraints()).basicRemove(otherEnd, msgs);
+		case GTLanguagePackage.GT_RULE__PROBABILITY:
+			return basicSetProbability(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -249,6 +346,10 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 			return getParameters();
 		case GTLanguagePackage.GT_RULE__RULE_NODES:
 			return getRuleNodes();
+		case GTLanguagePackage.GT_RULE__CONSTRAINTS:
+			return getConstraints();
+		case GTLanguagePackage.GT_RULE__PROBABILITY:
+			return getProbability();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -280,6 +381,13 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 			getRuleNodes().clear();
 			getRuleNodes().addAll((Collection<? extends GTNode>) newValue);
 			return;
+		case GTLanguagePackage.GT_RULE__CONSTRAINTS:
+			getConstraints().clear();
+			getConstraints().addAll((Collection<? extends GTArithmeticConstraint>) newValue);
+			return;
+		case GTLanguagePackage.GT_RULE__PROBABILITY:
+			setProbability((GTProbability) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -307,6 +415,12 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 		case GTLanguagePackage.GT_RULE__RULE_NODES:
 			getRuleNodes().clear();
 			return;
+		case GTLanguagePackage.GT_RULE__CONSTRAINTS:
+			getConstraints().clear();
+			return;
+		case GTLanguagePackage.GT_RULE__PROBABILITY:
+			setProbability((GTProbability) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -320,7 +434,8 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 		case GTLanguagePackage.GT_RULE__DOCUMENTATION:
-			return DOCUMENTATION_EDEFAULT == null ? documentation != null : !DOCUMENTATION_EDEFAULT.equals(documentation);
+			return DOCUMENTATION_EDEFAULT == null ? documentation != null
+					: !DOCUMENTATION_EDEFAULT.equals(documentation);
 		case GTLanguagePackage.GT_RULE__EXECUTABLE:
 			return executable != EXECUTABLE_EDEFAULT;
 		case GTLanguagePackage.GT_RULE__NODES:
@@ -329,6 +444,10 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 			return parameters != null && !parameters.isEmpty();
 		case GTLanguagePackage.GT_RULE__RULE_NODES:
 			return ruleNodes != null && !ruleNodes.isEmpty();
+		case GTLanguagePackage.GT_RULE__CONSTRAINTS:
+			return constraints != null && !constraints.isEmpty();
+		case GTLanguagePackage.GT_RULE__PROBABILITY:
+			return probability != null;
 		}
 		return super.eIsSet(featureID);
 	}

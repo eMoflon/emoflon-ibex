@@ -92,6 +92,16 @@ public class GTLanguageAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseGTProbability(GTProbability object) {
+			return createGTProbabilityAdapter();
+		}
+
+		@Override
+		public Adapter caseGTArithmeticConstraint(GTArithmeticConstraint object) {
+			return createGTArithmeticConstraintAdapter();
+		}
+
+		@Override
 		public Adapter defaultCase(EObject object) {
 			return createEObjectAdapter();
 		}
@@ -177,6 +187,34 @@ public class GTLanguageAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createGTRuleSetAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link GTLanguage.GTProbability <em>GT Probability</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see GTLanguage.GTProbability
+	 * @generated
+	 */
+	public Adapter createGTProbabilityAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link GTLanguage.GTArithmeticConstraint <em>GT Arithmetic Constraint</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see GTLanguage.GTArithmeticConstraint
+	 * @generated
+	 */
+	public Adapter createGTArithmeticConstraintAdapter() {
 		return null;
 	}
 

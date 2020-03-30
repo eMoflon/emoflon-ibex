@@ -20,9 +20,89 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTRule/nodes"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTRule/parameters"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTRule/ruleNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTRule/constraints"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTRule/probability"/>
     </genClasses>
     <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTRuleSet">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTRuleSet/rules"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTProbability">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTProbability/function"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTProbability/parameter"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTArithmeticConstraint">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTArithmeticConstraint/parameter"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTArithmeticConstraint/expression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.gt/model/Gt.ecore#//GTArithmeticConstraint/relation"/>
+    </genClasses>
+  </genPackages>
+  <genPackages prefix="StochasticLanguage" ecorePackage="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticDistribution">
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticDistribution/NORMAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticDistribution/UNIFORM"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticDistribution/EXPONENTIAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticDistribution/STATIC"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticRange">
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticRange/NEUTRAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticRange/POSITIVE"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticRange/NEGATIVE"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//TwoParameterOperator">
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//TwoParameterOperator/ADDITION"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//TwoParameterOperator/MULTIPLICATION"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//TwoParameterOperator/DIVISION"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//TwoParameterOperator/MODULO"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//TwoParameterOperator/EXPONENTIAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//TwoParameterOperator/SUBTRACTION"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator">
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator/ROOT"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator/ABSOLUTE"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator/SIN"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator/COS"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator/TAN"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator/E_EXPONENTIAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator/LOGARITHMUS"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator/NATLOG"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//OneParameterOperator/BRACKET"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTRelation">
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTRelation/GREATER_OR_EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTRelation/GREATER"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTRelation/EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTRelation/UNEQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTRelation/SMALLER_OR_EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTRelation/SMALLER"/>
+    </genEnums>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticNamedElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticNamedElement/name"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticNode">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticNode/type"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTAttribute">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTAttribute/attribute"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTAttribute/negative"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticFunction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticFunction/mean"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticFunction/sd"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTStochasticFunction/distribution"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTNumber">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTNumber/number"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTArithmetics"/>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTTwoParameterCalculation">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTTwoParameterCalculation/left"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTTwoParameterCalculation/right"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTTwoParameterCalculation/operator"/>
+    </genClasses>
+    <genClasses ecoreClass="platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTOneParameterCalculation">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTOneParameterCalculation/value"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTOneParameterCalculation/operator"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/plugin/org.emoflon.ibex.common/model/StochasticExtension.ecore#//GTOneParameterCalculation/negative"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

@@ -9,6 +9,7 @@ Export-Package: GTLanguage,
  GTLanguage.impl,
  GTLanguage.util,
  org.emoflon.ibex.gt.api,
+ org.emoflon.ibex.gt.arithmetics,
  org.emoflon.ibex.gt.codegen,
  org.emoflon.ibex.gt.engine,
  org.emoflon.ibex.gt.transformations
@@ -26,6 +27,7 @@ Require-Bundle: org.apache.log4j,
  org.moflon.core.plugins,
  org.moflon.core.propertycontainer,
  org.moflon.core.utilities
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/commons-math3-3.6.1.jar
 Automatic-Module-Name: org.emoflon.ibex.gt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

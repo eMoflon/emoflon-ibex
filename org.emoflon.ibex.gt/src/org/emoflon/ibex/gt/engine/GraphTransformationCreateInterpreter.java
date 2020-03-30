@@ -13,7 +13,10 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.gt.arithmetics.IBeXArithmeticsCalculatorHelper;
+import org.emoflon.ibex.gt.arithmetics.IBeXStochasticCalculatorHelper;
 
+import IBeXLanguage.IBeXArithmeticValue;
 import IBeXLanguage.IBeXAttributeAssignment;
 import IBeXLanguage.IBeXAttributeExpression;
 import IBeXLanguage.IBeXAttributeParameter;
@@ -21,6 +24,7 @@ import IBeXLanguage.IBeXAttributeValue;
 import IBeXLanguage.IBeXConstant;
 import IBeXLanguage.IBeXCreatePattern;
 import IBeXLanguage.IBeXEnumLiteral;
+import IBeXLanguage.IBeXStochasticAttributeValue;
 
 /**
  * Interpreter applying creation of elements for graph transformation.
@@ -140,8 +144,13 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 				throw new IllegalArgumentException("Missing required parameter " + parameterName);
 			}
 			calculatedValue = parameters.get(parameterName);
+		} else if(value instanceof IBeXStochasticAttributeValue) {
+			calculatedValue = IBeXStochasticCalculatorHelper.getGeneratedValue(
+					(IBeXStochasticAttributeValue) value, match, assignment.getType().getEAttributeType());
+		} else if(value instanceof IBeXArithmeticValue) {
+			calculatedValue = IBeXArithmeticsCalculatorHelper.getValue((IBeXArithmeticValue) value, 
+					match, assignment.getType().getEAttributeType());
 		}
-
 		EObject object = (EObject) match.get(assignment.getNode().getName());
 		return new AssignmentTriple(object, assignment.getType(), calculatedValue);
 	}

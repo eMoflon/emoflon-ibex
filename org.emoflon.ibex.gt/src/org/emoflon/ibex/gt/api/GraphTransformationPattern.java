@@ -141,7 +141,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return the Stream of matches
 	 */
-	public final Stream<M> matchStream() {
+	public Stream<M> matchStream() {
 		return interpreter.matchStream(patternName, getParameters()) //
 				.map(m -> convertMatch(m));
 	}
@@ -284,4 +284,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the typed match
 	 */
 	protected abstract M convertMatch(final IMatch match);
+	
+	public String getPatternName() {
+		return patternName;
+	}
 }

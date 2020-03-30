@@ -27,7 +27,8 @@ public class GTLanguageFactoryImpl extends EFactoryImpl implements GTLanguageFac
 	 */
 	public static GTLanguageFactory init() {
 		try {
-			GTLanguageFactory theGTLanguageFactory = (GTLanguageFactory) EPackage.Registry.INSTANCE.getEFactory(GTLanguagePackage.eNS_URI);
+			GTLanguageFactory theGTLanguageFactory = (GTLanguageFactory) EPackage.Registry.INSTANCE
+					.getEFactory(GTLanguagePackage.eNS_URI);
 			if (theGTLanguageFactory != null) {
 				return theGTLanguageFactory;
 			}
@@ -65,6 +66,10 @@ public class GTLanguageFactoryImpl extends EFactoryImpl implements GTLanguageFac
 			return createGTRule();
 		case GTLanguagePackage.GT_RULE_SET:
 			return createGTRuleSet();
+		case GTLanguagePackage.GT_PROBABILITY:
+			return createGTProbability();
+		case GTLanguagePackage.GT_ARITHMETIC_CONSTRAINT:
+			return createGTArithmeticConstraint();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -123,6 +128,28 @@ public class GTLanguageFactoryImpl extends EFactoryImpl implements GTLanguageFac
 	public GTRuleSet createGTRuleSet() {
 		GTRuleSetImpl gtRuleSet = new GTRuleSetImpl();
 		return gtRuleSet;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public GTProbability createGTProbability() {
+		GTProbabilityImpl gtProbability = new GTProbabilityImpl();
+		return gtProbability;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public GTArithmeticConstraint createGTArithmeticConstraint() {
+		GTArithmeticConstraintImpl gtArithmeticConstraint = new GTArithmeticConstraintImpl();
+		return gtArithmeticConstraint;
 	}
 
 	/**
