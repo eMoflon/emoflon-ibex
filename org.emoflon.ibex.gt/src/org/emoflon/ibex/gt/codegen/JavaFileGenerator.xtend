@@ -173,7 +173,7 @@ class JavaFileGenerator {
 					if(gillespieMap.containsKey(rule)){
 						double totalActivity = getTotalSystemActivity();
 						if(totalActivity > 0){
-							return gillespieMap.get(rule)[0]/totalActivity;	
+							return gillespieMap.get(rule)[1]/totalActivity;	
 						}								
 					}
 					return 0;
@@ -501,16 +501,15 @@ class JavaFileGenerator {
 				
 				«IF !rule.constraints.empty»
 				@Override
-				public Stream<«getMatchClassName(rule)»> matchStream(){
-					return super.matchStream().filter( match -> 
+				protected Stream<IMatch> untypedMatchStream(){
+					return super.untypedMatchStream().filter( match -> 
 						«FOR constraint: rule.constraints SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression) SEPARATOR '&&'»
-						«arithmeticConstraint»
+						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
+						«arithmeticConstraint» &&
 						«ENDFOR»
-						match.get«constraint.parameter.name.toFirstUpper»().get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						JavaProbabilityFileGenerator.transformExpression(constraint.expression)»«ENDFOR»
-					);
-					
+						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
+						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+					);				
 				}
 				«ENDIF»
 				@Override

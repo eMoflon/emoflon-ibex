@@ -169,6 +169,7 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 					GTAttribute gtAttribute = StochasticLanguageFactory.eINSTANCE.createGTAttribute();
 					gtAttribute.setName(node.getName());
 					gtAttribute.setAttribute(attribute.getAttribute());
+					gtAttribute.setType(node.getType());
 					GTArithmeticConstraint constraint = GTLanguageFactory.eINSTANCE.createGTArithmeticConstraint();
 					constraint.setParameter(gtAttribute);
 					constraint.setRelation(convertRelation(attribute.getRelation()));
