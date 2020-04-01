@@ -135,9 +135,16 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	public final Collection<M> findMatches() {
 		return matchStream().collect(Collectors.toList());
 	}
+	
+	/**
+	 * Finds and returns all untyped matches for the pattern.
+	 * 
+	 * @return the Stream of matches
+	 */
 	protected Stream<IMatch> untypedMatchStream(){
 		return interpreter.matchStream(patternName, getParameters());
 	}
+	
 	/**
 	 * Finds and returns all matches for the pattern as a Stream.
 	 * 
