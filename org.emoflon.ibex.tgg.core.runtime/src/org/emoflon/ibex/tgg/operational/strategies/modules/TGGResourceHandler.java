@@ -25,6 +25,7 @@ import org.emoflon.ibex.tgg.operational.strategies.opt.MetamodelRelaxer;
 import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.moflon.core.utilities.MoflonUtil;
 
 import language.TGG;
 import language.impl.LanguagePackageImpl;
@@ -341,11 +342,11 @@ public class TGGResourceHandler {
 	}
 	
 	protected Resource loadFlattenedTGGResource() throws IOException {
-		return loadResource(options.project.path() + "/model/" + options.project.name() + "_flattened.tgg.xmi");
+		return loadResource(options.project.path() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + "_flattened.tgg.xmi");
 	}
 
 	protected Resource loadTGGResource() throws IOException {
-		return loadResource(options.project.path() + "/model/" + options.project.name() + ".tgg.xmi");
+		return loadResource(options.project.path() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + ".tgg.xmi");
 	}
 	
 	private void registerInternalMetamodels() {
@@ -358,7 +359,7 @@ public class TGGResourceHandler {
 		options.registrationHelper().registerMetamodels(rs, options.executable());
 		
 		// Register correspondence metamodel last
-		loadAndRegisterCorrMetamodel(options.project.path() + "/model/" + options.project.name() + ".ecore");
+		loadAndRegisterCorrMetamodel(options.project.path() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + ".ecore");
 	}
 	
 	public void addToTrash(EObject o) {
