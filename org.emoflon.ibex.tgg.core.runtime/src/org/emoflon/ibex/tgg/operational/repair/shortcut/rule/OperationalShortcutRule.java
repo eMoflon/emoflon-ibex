@@ -421,7 +421,7 @@ public abstract class OperationalShortcutRule {
 	}
 
 	public String getName() {
-		return scRule.getSourceRule().getName() + "_OSC_" + scRule.getTargetRule().getName();
+		return scRule.getOriginalRule().getName() + "_OSC_" + scRule.getReplacingRule().getName();
 	}
 
 	public IGreenPattern getGreenPattern() {
@@ -432,6 +432,6 @@ public abstract class OperationalShortcutRule {
 	}
 
 	private IGreenPattern createGreenPattern() {
-		return new GreenSCPattern(strategy.getGreenFactory(scRule.getTargetRule().getName()), this);
+		return new GreenSCPattern(strategy.getGreenFactory(scRule.getReplacingRule().getName()), this);
 	}
 }

@@ -80,13 +80,13 @@ public class SCPersistence {
 	public ExternalShortcutRule convertToEMF(ShortcutRule scRule, String name) {
 		ExternalShortcutRule esc = createESCRule(name);
 		
-		esc.setSourceRule(scRule.getSourceRule());
-		esc.setTargetRule(scRule.getTargetRule());
+		esc.setSourceRule(scRule.getOriginalRule());
+		esc.setTargetRule(scRule.getReplacingRule());
 
 		esc.getCreations().addAll(scRule.getOverlap().creations);
 		esc.getDeletions().addAll(scRule.getOverlap().deletions);
-		esc.getUnboundSrcContext().addAll(scRule.getOverlap().unboundSrcContext);
-		esc.getUnboundTrgContext().addAll(scRule.getOverlap().unboundTrgContext);
+		esc.getUnboundSrcContext().addAll(scRule.getOverlap().unboundOriginalContext);
+		esc.getUnboundTrgContext().addAll(scRule.getOverlap().unboundReplacingContext);
 		
 		esc.getMapping().addAll(convertToEMF(scRule.getOverlap().mappings));
 		

@@ -95,7 +95,7 @@ public class GreenSCPattern extends IbexGreenPattern {
 			for(TGGParamValue pVal : newAttributeCSPVariables) {
 				if(pVal instanceof TGGAttributeExpression) {
 					TGGAttributeExpression attrExpr = (TGGAttributeExpression) pVal;
-					attrExpr.setObjectVar(oscRule.scRule.mapTrgToSCNodeNode(attrExpr.getObjectVar().getName()));
+					attrExpr.setObjectVar(oscRule.scRule.mapReplacingToSCNodeNode(attrExpr.getObjectVar().getName()));
 				}
 			}
 			

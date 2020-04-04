@@ -26,13 +26,13 @@ public class OperationalSCFactory {
 	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(PropagationDirection direction) {
 		Map<String, Collection<OperationalShortcutRule>> operationalRules = new HashMap<>();
 		for (ShortcutRule scRule : scRules) {
-			TGGRule sourceRule = scRule.getSourceRule();
-			TGGRule targetRule = scRule.getTargetRule();
+			TGGRule originalRule = scRule.getOriginalRule();
+			TGGRule replacingRule = scRule.getReplacingRule();
 
 			// TODO larsF, adrianM: does this make sense?
 			// we do not want rules that do not preserve elements or contain no interface edges
-			if (TGGFilterUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE).size()
-					+ TGGFilterUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE).size() == 0)
+			if (TGGFilterUtil.filterEdges(originalRule.getEdges(), BindingType.CREATE).size()
+					+ TGGFilterUtil.filterEdges(replacingRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
 
 			if (TGGFilterUtil.filterNodes(scRule.getMergedNodes(), DomainType.SRC).size() == 0)
@@ -42,7 +42,7 @@ public class OperationalSCFactory {
 				continue;
 
 			InterfaceShortcutRule isr = new InterfaceShortcutRule(strategy, direction, scRule);
-			operationalRules.computeIfAbsent(sourceRule.getName(), k -> new LinkedList<>()).add(isr);
+			operationalRules.computeIfAbsent(originalRule.getName(), k -> new LinkedList<>()).add(isr);
 		}
 		return operationalRules;
 	}

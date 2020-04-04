@@ -63,8 +63,8 @@ public class ShortcutPatternTool {
 	private PropagatingOperationalStrategy strategy;
 	private TGGResourceHandler resourceHandler;
 	private Collection<ShortcutRule> scRules;
-	private Map<String, Collection<OperationalShortcutRule>> tggRule2srcSCRule;
-	private Map<String, Collection<OperationalShortcutRule>> tggRule2trgSCRule;
+	private Map<String, Collection<OperationalShortcutRule>> tggRule2fwdSCRule;
+	private Map<String, Collection<OperationalShortcutRule>> tggRule2bwdSCRule;
 	private Map<OperationalShortcutRule, LocalPatternSearch> rule2matcher;
 	
 	private IGreenInterpreter greenInterpreter;
@@ -79,21 +79,21 @@ public class ShortcutPatternTool {
 	private void initialize() {
 		OperationalSCFactory factory = new OperationalSCFactory(strategy, scRules);
 		
-		tggRule2srcSCRule = factory.createOperationalRules(PropagationDirection.FORWARD);
-		tggRule2trgSCRule = factory.createOperationalRules(PropagationDirection.BACKWARD);
+		tggRule2fwdSCRule = factory.createOperationalRules(PropagationDirection.FORWARD);
+		tggRule2bwdSCRule = factory.createOperationalRules(PropagationDirection.BACKWARD);
 		
 		rule2matcher = new HashMap<>();
 		
-		tggRule2srcSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
-		tggRule2trgSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
+		tggRule2fwdSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
+		tggRule2bwdSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
 		
 		greenInterpreter = strategy.getGreenInterpreter();
 		
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generated " + scRules.size() + " Short-Cut Rules");
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) + " Forward Repair Rules");
+				"Generated " + tggRule2fwdSCRule.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) + " Forward Repair Rules");
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Backward Repair Rules");
+				"Generated " + tggRule2fwdSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Backward Repair Rules");
 
 		persistSCRules();
 	}
@@ -101,17 +101,17 @@ public class ShortcutPatternTool {
 	private void persistSCRules() {
 		SCPersistence persistence = new SCPersistence(strategy);
 		persistence.saveSCRules(scRules);
-		persistence.saveOperationalFWDSCRules(tggRule2srcSCRule.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
-		persistence.saveOperationalBWDSCRules(tggRule2trgSCRule.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
+		persistence.saveOperationalFWDSCRules(tggRule2fwdSCRule.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
+		persistence.saveOperationalBWDSCRules(tggRule2bwdSCRule.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
 	}
 
 	public ITGGMatch processBrokenMatch(PropagationDirection direction, ITGGMatch brokenMatch) {
 		String ruleName = PatternSuffixes.removeSuffix(brokenMatch.getPatternName());
 		switch(direction) {
 		case FORWARD:
-			return processBrokenMatch(tggRule2srcSCRule.get(ruleName), DomainType.TRG, brokenMatch);
+			return processBrokenMatch(tggRule2fwdSCRule.get(ruleName), DomainType.TRG, brokenMatch);
 		case BACKWARD:
-			return processBrokenMatch(tggRule2trgSCRule.get(ruleName), DomainType.SRC, brokenMatch);
+			return processBrokenMatch(tggRule2bwdSCRule.get(ruleName), DomainType.SRC, brokenMatch);
 		default:
 			return null;
 		}
@@ -146,7 +146,7 @@ public class ShortcutPatternTool {
 			
 			processAttributes(osr, newMatch, objDomain);
 			
-			return transformToTargetMatch(osr, newCoMatch.get());
+			return transformToReplacingMatch(osr, newCoMatch.get());
 			
 		} while (!copiedRules.isEmpty());
 		return null;
@@ -160,16 +160,16 @@ public class ShortcutPatternTool {
 	 * @param scMatch
 	 * @return
 	 */
-	private ITGGMatch transformToTargetMatch(OperationalShortcutRule osr, ITGGMatch scMatch) {
-		ITGGMatch newMatch = new SimpleTGGMatch(osr.getScRule().getTargetRule().getName() + PatternSuffixes.CONSISTENCY);
+	private ITGGMatch transformToReplacingMatch(OperationalShortcutRule osr, ITGGMatch scMatch) {
+		ITGGMatch newMatch = new SimpleTGGMatch(osr.getScRule().getReplacingRule().getName() + PatternSuffixes.CONSISTENCY);
 		
-		osr.getScRule().getTargetRule().getNodes().forEach(n -> 
-			newMatch.put(n.getName(), scMatch.get(osr.getScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET).getName()))
+		osr.getScRule().getReplacingRule().getNodes().forEach(n -> 
+			newMatch.put(n.getName(), scMatch.get(osr.getScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.REPLACING).getName()))
 		);
 		
-		IGreenPatternFactory greenFactory = strategy.getGreenFactory(osr.getScRule().getTargetRule().getName());
+		IGreenPatternFactory greenFactory = strategy.getGreenFactory(osr.getScRule().getReplacingRule().getName());
 		IGreenPattern greenPattern = greenFactory.create(PatternType.FWD);
-		greenPattern.createMarkers(osr.getScRule().getTargetRule().getName(), newMatch);
+		greenPattern.createMarkers(osr.getScRule().getReplacingRule().getName(), newMatch);
 		
 		return newMatch;
 	}
@@ -177,7 +177,7 @@ public class ShortcutPatternTool {
 	private ITGGMatch processBrokenMatch(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
 		Map<String, EObject> name2entryNodeElem = new HashMap<>();	
 		for(String param : brokenMatch.getParameterNames()) {
-			TGGRuleNode scNode = osr.getScRule().mapSrcToSCNodeNode(param);
+			TGGRuleNode scNode = osr.getScRule().mapOriginalToSCNodeNode(param);
 			if(scNode == null || !osr.getScRule().getMergedNodes().contains(scNode))
 				continue;
 			
@@ -229,7 +229,7 @@ public class ShortcutPatternTool {
 	}
 	
 	private Optional<ITGGMatch> processCreations(OperationalShortcutRule osc, ITGGMatch brokenMatch) {
-		return greenInterpreter.apply(osc.getGreenPattern(), osc.getScRule().getTargetRule().getName(), brokenMatch);
+		return greenInterpreter.apply(osc.getGreenPattern(), osc.getScRule().getReplacingRule().getName(), brokenMatch);
 	}
 
 	private void processAttributes(OperationalShortcutRule osr, ITGGMatch match, DomainType objDomain) {

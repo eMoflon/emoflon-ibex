@@ -56,7 +56,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 //		removeNodes(TGGCollectionUtil.filterNodes(scRule.getNodes(), DomainType.CORR, BindingType.CONTEXT));
 		switch(direction) {
 		case FORWARD:
-			createFilterNacs(scRule.getTargetRule(), DomainType.SRC);
+			createFilterNacs(scRule.getReplacingRule(), DomainType.SRC);
 
 			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
 			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.RELAXED), BindingType.CONTEXT);
@@ -72,7 +72,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 			// addNACforCreatedInterface(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG));
 			break;
 		case BACKWARD:
-			createFilterNacs(scRule.getTargetRule(), DomainType.TRG);
+			createFilterNacs(scRule.getReplacingRule(), DomainType.TRG);
 
 			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
 			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.RELAXED), BindingType.CONTEXT);
@@ -95,8 +95,8 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 	
 	private void createRuleApplicationNode() {
 		TGGRuleNode oldRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		oldRaNode.setName(getProtocolNodeName(scRule.getSourceRule().getName()));
-		EClass oldRaType = (EClass) strategy.getOptions().tgg.corrMetamodel().getEClassifier(getMarkerTypeName(this.scRule.getSourceRule().getName()));
+		oldRaNode.setName(getProtocolNodeName(scRule.getOriginalRule().getName()));
+		EClass oldRaType = (EClass) strategy.getOptions().tgg.corrMetamodel().getEClassifier(getMarkerTypeName(this.scRule.getOriginalRule().getName()));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);
 
@@ -121,11 +121,11 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 	private void createRuleApplicationLink(BiFunction<TGGRuleNode, TGGRuleNode, EReference> createdRef, BiFunction<TGGRuleNode, TGGRuleNode, EReference> contextRef, TGGRuleNode oldRaNode, DomainType dType) {
 		TGGOverlap overlap = scRule.getOverlap();
 		Stream<TGGRuleNode> deletedNodes = TGGFilterUtil.filterNodes(TGGFilterUtil.filterNodes(overlap.deletions), dType).stream();
-		Stream<TGGRuleNode> sourceRuleUnboundContextNodes = TGGFilterUtil.filterNodes(TGGFilterUtil.filterNodes(overlap.unboundSrcContext), dType).stream().filter(n -> scRule.getSourceRule().getNodes().contains(n));
+		Stream<TGGRuleNode> sourceRuleUnboundContextNodes = TGGFilterUtil.filterNodes(TGGFilterUtil.filterNodes(overlap.unboundOriginalContext), dType).stream().filter(n -> scRule.getOriginalRule().getNodes().contains(n));
 		Stream<TGGRuleNode> sourceRuleCreatedMappingNodeKeys = TGGFilterUtil.filterNodes(TGGFilterUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CREATE).stream();
 		Stream<TGGRuleNode> sourceRuleContextMappingNodeKeys = TGGFilterUtil.filterNodes(TGGFilterUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CONTEXT).stream();
 
-		Function<TGGRuleNode, TGGRuleNode> srcToSCNode = n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.SOURCE);
+		Function<TGGRuleNode, TGGRuleNode> srcToSCNode = n -> scRule.mapRuleNodeToSCRuleNode(n, SCInputRule.ORIGINAL);
 		
 		if(createdRef != null) {
 			deletedNodes.forEach(n -> createRuleApplicationEdge(createdRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
@@ -157,7 +157,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 
 		Collection<FilterNACCandidate> decCandidates = filterNACAnalysis.computeFilterNACCandidates();
 		for(FilterNACCandidate dec : decCandidates) {
-			TGGRuleNode decNode = scRule.mapRuleNodeToSCRuleNode(dec.getNodeInRule(), SCInputRule.TARGET);
+			TGGRuleNode decNode = scRule.mapRuleNodeToSCRuleNode(dec.getNodeInRule(), SCInputRule.REPLACING);
 			TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
 			edge.setType(dec.getEdgeType());
 			edge.setBindingType(BindingType.NEGATIVE);
