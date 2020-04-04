@@ -126,7 +126,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		}
 	}
 
-	public IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {
+	public synchronized IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {
 		return createPattern(c.getName(), () -> {
 			try {
 				return c.getConstructor(GreenPatternFactory.class).newInstance(this);
@@ -138,7 +138,7 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 		});
 	}
 
-	protected synchronized IGreenPattern createPattern(String key, Supplier<IGreenPattern> creator) {
+	protected IGreenPattern createPattern(String key, Supplier<IGreenPattern> creator) {
 		if (!patterns.containsKey(key)) {
 			IGreenPattern newValue = creator.get();
 			if (newValue != null)
