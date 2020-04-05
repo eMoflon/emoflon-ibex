@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser.optimizeIBeXPattern;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateGENBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWDBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
@@ -26,6 +27,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWDPatternTransformation;
@@ -84,11 +86,13 @@ public class ContextPatternTransformation {
 	private Map<String, IBeXContextPattern> nameToPattern = new ConcurrentHashMap<>();
 	private Map<IBeXContextPattern, TGGNamedElement> patternToRuleMap = new ConcurrentHashMap<>();
 	private MatchDistributor distributor;
+	private FilterNACAnalysis filterNacAnalysis;
 
 	public ContextPatternTransformation(IbexOptions options, MatchDistributor distributor) {
 		this.options = options;
 		this.USE_INVOCATIONS_FOR_REFERENCES = options.patterns.useEdgePatterns();
 		this.distributor = distributor;
+		this.filterNacAnalysis = new FilterNACAnalysis(options.tgg.flattenedTGG(), options);
 	}
 
 	public IBeXPatternSet transform() {
@@ -140,52 +144,52 @@ public class ContextPatternTransformation {
 	}
 
 	private IBeXContextPattern createModelGenPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new GENPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new GENPatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFWDPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new FWDPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new FWDPatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createBWDPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new BWDPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new BWDPatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
 	public IBeXContextPattern createConsistencyPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new ConsistencyPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new ConsistencyPatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createCCPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new CCPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new CCPatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createCOPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new COPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new COPatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFWD_OPTPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new FWD_OPTPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new FWD_OPTPatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createBWD_OPTPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
 	protected IBeXContextPattern createProtocolPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new ProtocolPatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new ProtocolPatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
 	protected IBeXContextPattern createProtocolCorePattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new ProtocolCorePatternTransformation(this, options, rule);
+		OperationalPatternTransformation transformer = new ProtocolCorePatternTransformation(this, options, rule, filterNacAnalysis);
 		return transformer.transform();
 	}
 
@@ -255,13 +259,13 @@ public class ContextPatternTransformation {
 		if (fwdPatternPresent && consistencyPatternPresent) {
 			createInvocation(consistencyPattern, fwdPattern);
 
-			optimizeIBeXPattern(consistencyPattern, fwdPattern);
+//			optimizeIBeXPattern(consistencyPattern, fwdPattern);
 		}
 
 		if (bwdPatternPresent && consistencyPatternPresent) {
 			createInvocation(consistencyPattern, bwdPattern);
 
-			optimizeIBeXPattern(consistencyPattern, bwdPattern);
+//			optimizeIBeXPattern(consistencyPattern, bwdPattern);
 		}
 
 		if (fwdPatternPresent && bwdPatternPresent) {
@@ -271,21 +275,21 @@ public class ContextPatternTransformation {
 					createInvocation(fwdPattern, genPattern);
 					createInvocation(bwdPattern, genPattern);
 
-					optimizeIBeXPattern(fwdPattern, genPattern);
-					optimizeIBeXPattern(bwdPattern, genPattern);
+//					optimizeIBeXPattern(fwdPattern, genPattern);
+//					optimizeIBeXPattern(bwdPattern, genPattern);
 				}
 			}
 		}
 
 		if (consistencyPatternPresent) {
-			IBeXContextPattern protocolPattern = createProtocolPattern(rule);
-			IBeXContextPattern protocolCorePattern = createProtocolCorePattern(rule);
+//			IBeXContextPattern protocolPattern = createProtocolPattern(rule);
+//			IBeXContextPattern protocolCorePattern = createProtocolCorePattern(rule);
 
-			createInvocation(consistencyPattern, protocolPattern);
-			createInvocation(protocolPattern, protocolCorePattern);
+//			createInvocation(consistencyPattern, protocolPattern);
+//			createInvocation(protocolPattern, protocolCorePattern);
 
-			optimizeIBeXPattern(consistencyPattern, protocolPattern);
-			optimizeIBeXPattern(protocolPattern, protocolCorePattern);
+//			optimizeIBeXPattern(consistencyPattern, protocolPattern);
+//			optimizeIBeXPattern(protocolPattern, protocolCorePattern);
 		}
 	}
 

@@ -23,8 +23,8 @@ import language.TGGRuleNode;
 
 public class FWD_OPTPatternTransformation extends OperationalPatternTransformation {
 
-	public FWD_OPTPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
-		super(parent, options, rule);
+	public FWD_OPTPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+		super(parent, options, rule, filterNACAnalysis);
 	}
 
 	@Override
@@ -56,8 +56,7 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 	}

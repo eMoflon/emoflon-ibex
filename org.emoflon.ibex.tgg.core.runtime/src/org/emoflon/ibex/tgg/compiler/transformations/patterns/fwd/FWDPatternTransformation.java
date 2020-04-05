@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd;
 
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
@@ -11,8 +12,8 @@ import language.NAC;
 import language.TGGRule;
 
 public class FWDPatternTransformation extends FWD_OPTPatternTransformation {
-	public FWDPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
-		super(parent, options, rule);
+	public FWDPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+		super(parent, options, rule, filterNACAnalysis);
 	}
 
 	@Override

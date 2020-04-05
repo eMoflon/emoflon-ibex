@@ -13,6 +13,7 @@ import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
@@ -41,10 +42,13 @@ public abstract class OperationalPatternTransformation {
 	protected IbexOptions options;
 	protected TGGRule rule;
 
-	public OperationalPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
+	protected FilterNACAnalysis filterNACAnalysis;
+
+	public OperationalPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
 		this.parent = parent;
 		this.options = options;
 		this.rule = rule;
+		this.filterNACAnalysis = filterNACAnalysis;
 	}
 
 	protected abstract String getPatternName();
@@ -98,7 +102,6 @@ public abstract class OperationalPatternTransformation {
 
 		// Transform edges.
 		transformEdges(ibexPattern);
-
 		// Transform NACs
 		transformNACs(ibexPattern);
 		

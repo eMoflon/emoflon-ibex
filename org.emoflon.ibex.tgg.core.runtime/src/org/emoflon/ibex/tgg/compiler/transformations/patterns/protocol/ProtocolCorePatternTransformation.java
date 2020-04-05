@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolCorePatternName;
 
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -11,8 +12,8 @@ import language.TGGRule;
 
 public class ProtocolCorePatternTransformation extends OperationalPatternTransformation {
 
-	public ProtocolCorePatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
-		super(parent, options, rule);
+	public ProtocolCorePatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+		super(parent, options, rule, filterNACAnalysis);
 	}
 
 	@Override

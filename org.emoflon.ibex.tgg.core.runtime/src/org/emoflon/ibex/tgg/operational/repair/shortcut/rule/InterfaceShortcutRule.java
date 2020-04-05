@@ -42,9 +42,12 @@ import language.TGGRuleNode;
  */
 public class InterfaceShortcutRule extends OperationalShortcutRule {
 	
-	public InterfaceShortcutRule(PropagatingOperationalStrategy strategy, PropagationDirection direction, ShortcutRule scRule) {
+	private FilterNACAnalysis filterNACAnalysis;
+
+	public InterfaceShortcutRule(PropagatingOperationalStrategy strategy, PropagationDirection direction, ShortcutRule scRule, FilterNACAnalysis filterNACAnalysis) {
 		super(strategy, direction, scRule.copy());
 		this.strategy = strategy;
+		this.filterNACAnalysis = filterNACAnalysis;
 
 		operationalize();
 		createConstraintChecks();
@@ -153,9 +156,7 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 	}
 
 	private void createFilterNacs(TGGRule targetRule, DomainType domain) {
-		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(domain, targetRule, strategy.getOptions());
-
-		Collection<FilterNACCandidate> decCandidates = filterNACAnalysis.computeFilterNACCandidates();
+		Collection<FilterNACCandidate> decCandidates = filterNACAnalysis.computeFilterNACCandidates(targetRule, domain);
 		for(FilterNACCandidate dec : decCandidates) {
 			TGGRuleNode decNode = scRule.mapRuleNodeToSCRuleNode(dec.getNodeInRule(), SCInputRule.TARGET);
 			TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();

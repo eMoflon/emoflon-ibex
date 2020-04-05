@@ -15,8 +15,8 @@ import language.TGGRuleNode;
 
 public class ConsistencyPatternTransformation extends OperationalPatternTransformation {
 
-	public ConsistencyPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
-		super(parent, options, rule);
+	public ConsistencyPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+		super(parent, options, rule, filterNACAnalysis);
 	}
 
 	@Override
@@ -48,13 +48,11 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 
-		filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule, options);
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 	}

@@ -4,6 +4,7 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateGENB
 
 import java.util.List;
 
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
@@ -19,8 +20,8 @@ import language.TGGRuleNode;
 
 public class GENPatternTransformation extends OperationalPatternTransformation {
 
-	public GENPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
-		super(parent, options, rule);
+	public GENPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+		super(parent, options, rule, filterNACAnalysis);
 	}
 
 	@Override

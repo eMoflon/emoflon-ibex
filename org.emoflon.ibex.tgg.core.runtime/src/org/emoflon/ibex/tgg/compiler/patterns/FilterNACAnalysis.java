@@ -20,16 +20,15 @@ import language.TGGRuleNode;
 
 public class FilterNACAnalysis {
 	private DomainType domain;
-	private TGGRule rule;
+	private TGG tgg;
 	private IbexOptions options;
 
-	public FilterNACAnalysis(DomainType domain, TGGRule rule, IbexOptions options) {
-		this.domain = domain;
-		this.rule = rule;
+	public FilterNACAnalysis(TGG tgg, IbexOptions options) {
+		this.tgg = tgg;
 		this.options = options;
 	}
 
-	public Collection<FilterNACCandidate> computeFilterNACCandidates() {
+	public Collection<FilterNACCandidate> computeFilterNACCandidates(TGGRule rule, DomainType domain) {
 		final Collection<FilterNACCandidate> filterNACs = new ArrayList<>();
 
 		if (options.patterns.lookAheadStrategy().equals(FilterNACStrategy.NONE))
@@ -50,7 +49,7 @@ public class FilterNACAnalysis {
 
 					if (typeDoesNotFitToDirection(n, eType, eDirection))
 						continue;
-					if (onlyPossibleEdgeIsAlreadyTranslatedInRule(n, eType, eDirection))
+					if (onlyPossibleEdgeIsAlreadyTranslatedInRule(rule, n, eType, eDirection))
 						continue;
 					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg))
 						continue;
@@ -63,7 +62,7 @@ public class FilterNACAnalysis {
 		}
 
 		// Use optimiser to remove some of the filter NACs
-		final Collection<FilterNACCandidate> optimisedFilterNACs = filterNACs.stream().filter(nac -> !isRedundantDueToEMFContainmentSemantics(nac)).collect(Collectors.toList());
+		final Collection<FilterNACCandidate> optimisedFilterNACs = filterNACs.stream().filter(nac -> !isRedundantDueToEMFContainmentSemantics(rule, nac)).collect(Collectors.toList());
 
 		optimisedFilterNACs.removeAll(ignoreDueToEOppositeSemantics(optimisedFilterNACs));
 
@@ -74,7 +73,7 @@ public class FilterNACAnalysis {
 		return optimisedFilterNACs;
 	}
 
-	private boolean isRedundantDueToEMFContainmentSemantics(FilterNACCandidate filterNAC) {
+	private boolean isRedundantDueToEMFContainmentSemantics(TGGRule rule, FilterNACCandidate filterNAC) {
 		for (TGGRuleEdge edge : rule.getEdges()) {
 			// Edges must be of same type and be containment
 			if (edge.getType().equals(filterNAC.getEdgeType()) && edge.getType().isContainment()) {
@@ -114,7 +113,7 @@ public class FilterNACAnalysis {
 		return !isEdgeInTGG(tgg, eType, eDirection, false, domain);
 	}
 
-	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
+	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRule rule, TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
 		int numOfEdges = countEdgeInRule(rule, n, eType, eDirection, false, domain).getEdgeCount();
 		return eType.getUpperBound() == 1 && numOfEdges == 1;
 	}
