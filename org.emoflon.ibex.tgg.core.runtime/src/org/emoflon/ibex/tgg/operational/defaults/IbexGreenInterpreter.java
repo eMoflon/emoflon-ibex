@@ -120,7 +120,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 	}
 
-	private void applyInPlaceAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject newObj) {
+	public void applyInPlaceAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject newObj) {
 		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
 			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {

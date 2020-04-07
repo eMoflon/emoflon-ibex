@@ -22,7 +22,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchKey;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.InplAttrCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
@@ -67,7 +67,7 @@ public abstract class OperationalShortcutRule {
 	protected Collection<TGGRuleElement> markedElements;
 	protected Map<SearchKey, Lookup> key2lookup;
 	protected Map<TGGRuleNode, NodeCheck> elt2nodeCheck;
-	protected Map<TGGRuleNode, InplAttrCheck> elt2inplAttrCheck;
+	protected Map<TGGRuleNode, AttrCheck> elt2inplAttrCheck;
 	protected Map<SearchKey, EdgeCheck> key2edgeCheck;
 	protected Map<SearchKey, NACNodeCheck> key2nacNodeCheck;
 	protected CSPCheck cspCheck;

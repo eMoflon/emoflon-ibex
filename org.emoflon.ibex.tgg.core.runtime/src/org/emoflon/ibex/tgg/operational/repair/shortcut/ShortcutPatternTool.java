@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -34,15 +35,9 @@ import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
-import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import language.BindingType;
 import language.DomainType;
-import language.TGGAttributeConstraintOperators;
-import language.TGGAttributeExpression;
-import language.TGGEnumExpression;
-import language.TGGInplaceAttributeExpression;
-import language.TGGLiteralExpression;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TempContainer;
@@ -227,34 +222,19 @@ public class ShortcutPatternTool {
 			}
 		}
 	}
-	
+
 	private Optional<ITGGMatch> processCreations(OperationalShortcutRule osc, ITGGMatch brokenMatch) {
 		return greenInterpreter.apply(osc.getGreenPattern(), osc.getScRule().getReplacingRule().getName(), brokenMatch);
 	}
 
 	private void processAttributes(OperationalShortcutRule osr, ITGGMatch match, DomainType objDomain) {
-		TGGFilterUtil.filterNodes(osr.getScRule().getNodes(), objDomain).stream() //
-				.filter(n -> osr.getScRule().getPreservedNodes().contains(n)) //
-				.forEach(n -> applyInPlaceAttributeAssignments(match, n, (EObject) match.get(n.getName())));
-	}
-	
-	// TODO adrianm: copied from IbexGreenInterpreter's private method -> refactor this
-	private void applyInPlaceAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject obj) {
-		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
-			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
-				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
-					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
-					obj.eSet(attrExpr.getAttribute(), String2EPrimitive.convertLiteral(tle.getValue(),
-							attrExpr.getAttribute().getEAttributeType()));
-				} else if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
-					TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
-					obj.eSet(attrExpr.getAttribute(), tee.getLiteral().getInstance());
-				} else if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
-					TGGAttributeExpression tae = (TGGAttributeExpression) attrExpr.getValueExpr();
-					EObject objVar = (EObject) match.get(tae.getObjectVar().getName());
-					obj.eSet(attrExpr.getAttribute(), objVar.eGet(tae.getAttribute()));
-				}
-			}
+		try {
+			IbexGreenInterpreter ibexGI = (IbexGreenInterpreter) greenInterpreter;
+			TGGFilterUtil.filterNodes(osr.getScRule().getNodes(), objDomain).stream() //
+					.filter(n -> osr.getScRule().getPreservedNodes().contains(n)) //
+					.forEach(n -> ibexGI.applyInPlaceAttributeAssignments(match, n, (EObject) match.get(n.getName())));
+		} catch (Exception e) {
+			throw new RuntimeException("IbexGreenInterpreter implementation is needed", e);
 		}
 	}
 

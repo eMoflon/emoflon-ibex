@@ -5,6 +5,6 @@ import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
 
 @FunctionalInterface
-public interface InplAttrCheck {
+public interface AttrCheck {
 	boolean checkAttributes(EObject source, Map<String, EObject> candidates);
 }

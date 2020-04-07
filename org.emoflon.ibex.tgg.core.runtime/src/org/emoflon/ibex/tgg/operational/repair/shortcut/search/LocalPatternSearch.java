@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.InplAttrCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
@@ -54,7 +54,7 @@ public class LocalPatternSearch {
 	private void buildComponents() {
 		Component lastComponent = null;
 
-		Set<Component> inplAttrComponents = new HashSet<>();
+		Set<Component> attrCheckComponents = new HashSet<>();
 
 		for (Pair<SearchKey, Lookup> entry : searchPlan.lookUpPlan) {
 			Component lookupComp = new LookupComponent(entry.getRight(), entry.getLeft());
@@ -68,9 +68,9 @@ public class LocalPatternSearch {
 					entry.getLeft().sourceNode : entry.getLeft().targetNode;
 			Component nodeCheckComp = new NodeCheckComponent(searchPlan.key2nodeCheck.get(nodeForCheck), nodeForCheck);
 
-			if (searchPlan.key2inplAttrCheck.containsKey(nodeForCheck))
-				inplAttrComponents.add( //
-						new InplAttrCheckComponent(searchPlan.key2inplAttrCheck.get(nodeForCheck), nodeForCheck));
+			if (searchPlan.key2AttrCheck.containsKey(nodeForCheck))
+				attrCheckComponents.add( //
+						new AttrCheckComponent(searchPlan.key2AttrCheck.get(nodeForCheck), nodeForCheck));
 
 			lookupComp.setNextComponent(nodeCheckComp);
 			lastComponent = nodeCheckComp;
@@ -89,20 +89,20 @@ public class LocalPatternSearch {
 			lastComponent = edgeNodeCheckComp;
 		}
 
-		for (Component comp : inplAttrComponents) {
+		for (Component comp : attrCheckComponents) {
 			lastComponent.setNextComponent(comp);
 			lastComponent = comp;
 		}
 
 		for (TGGRuleNode mergedNode : osr.getScRule().getMergedNodes()) {
-			if (!searchPlan.key2inplAttrCheck.containsKey(mergedNode) || skipNodeCheck(mergedNode))
+			if (!searchPlan.key2AttrCheck.containsKey(mergedNode) || skipAttrCheck(mergedNode))
 				continue;
 
-			Component accessNodeInplAttrCheckComp = new InplAttrCheckComponent( //
-					searchPlan.key2inplAttrCheck.get(mergedNode), mergedNode);
+			Component accessNodeAttrCheckComp = new AttrCheckComponent( //
+					searchPlan.key2AttrCheck.get(mergedNode), mergedNode);
 
-			lastComponent.setNextComponent(accessNodeInplAttrCheckComp);
-			lastComponent = accessNodeInplAttrCheckComp;
+			lastComponent.setNextComponent(accessNodeAttrCheckComp);
+			lastComponent = accessNodeAttrCheckComp;
 		}
 
 		Component cspCheckComp = new CSPCheckComponent(searchPlan.cspCheck);
@@ -110,7 +110,7 @@ public class LocalPatternSearch {
 		lastComponent = cspCheckComp;
 	}
 
-	private boolean skipNodeCheck(TGGRuleNode mergedNode) {
+	private boolean skipAttrCheck(TGGRuleNode mergedNode) {
 		if (osr.getScRule().getPreservedNodes().contains(mergedNode))
 			switch (mergedNode.getDomainType()) {
 			case SRC:
@@ -253,11 +253,11 @@ public class LocalPatternSearch {
 
 	}
 
-	private class InplAttrCheckComponent extends Component {
-		InplAttrCheck check;
+	private class AttrCheckComponent extends Component {
+		AttrCheck check;
 		String nodeName;
 
-		public InplAttrCheckComponent(InplAttrCheck check, TGGRuleNode node) {
+		public AttrCheckComponent(AttrCheck check, TGGRuleNode node) {
 			super();
 			this.check = check;
 			this.nodeName = node.getName();

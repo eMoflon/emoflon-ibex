@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.InplAttrCheck;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
@@ -24,20 +24,20 @@ public class SearchPlan {
 
 	public List<Pair<SearchKey, Lookup>> lookUpPlan;
 	public Map<TGGRuleNode, NodeCheck> key2nodeCheck;
-	public Map<TGGRuleNode, InplAttrCheck> key2inplAttrCheck;
+	public Map<TGGRuleNode, AttrCheck> key2AttrCheck;
 	public Map<SearchKey, EdgeCheck> key2edgeCheck;
 	public Map<SearchKey, NACNodeCheck> key2nacNodeCheck;
 	public CSPCheck cspCheck;
 
 	public SearchPlan(List<Pair<SearchKey, Lookup>> lookUpPlan, 
 			Map<TGGRuleNode, NodeCheck> key2nodeCheck, 
-			Map<TGGRuleNode, InplAttrCheck> key2InplAttrCheck, 
+			Map<TGGRuleNode, AttrCheck> key2InplAttrCheck, 
 			Map<SearchKey, EdgeCheck> key2edgeCheck, 
 			Map<SearchKey, NACNodeCheck> key2nacNodeCheck,
 			CSPCheck cspCheck) {
 		this.lookUpPlan = lookUpPlan;
 		this.key2nodeCheck = key2nodeCheck;
-		this.key2inplAttrCheck = key2InplAttrCheck;
+		this.key2AttrCheck = key2InplAttrCheck;
 		this.key2edgeCheck = key2edgeCheck;
 		this.key2nacNodeCheck = key2nacNodeCheck;
 		this.cspCheck = cspCheck;
