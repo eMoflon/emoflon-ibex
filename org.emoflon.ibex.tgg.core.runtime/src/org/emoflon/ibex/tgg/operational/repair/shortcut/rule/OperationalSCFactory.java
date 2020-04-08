@@ -10,7 +10,6 @@ import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrateg
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 
 import language.BindingType;
-import language.DomainType;
 import language.TGGRule;
 
 public class OperationalSCFactory {
@@ -30,15 +29,9 @@ public class OperationalSCFactory {
 			TGGRule replacingRule = scRule.getReplacingRule();
 
 			// TODO larsF, adrianM: does this make sense?
-			// we do not want rules that do not preserve elements or contain no interface edges
+			// we do not want rules that contain no interface edges
 			if (TGGFilterUtil.filterEdges(originalRule.getEdges(), BindingType.CREATE).size()
 					+ TGGFilterUtil.filterEdges(replacingRule.getEdges(), BindingType.CREATE).size() == 0)
-				continue;
-
-			if (TGGFilterUtil.filterNodes(scRule.getMergedNodes(), DomainType.SRC).size() == 0)
-				continue;
-
-			if (TGGFilterUtil.filterNodes(scRule.getMergedNodes(), DomainType.TRG).size() == 0)
 				continue;
 
 			InterfaceShortcutRule isr = new InterfaceShortcutRule(strategy, direction, scRule);

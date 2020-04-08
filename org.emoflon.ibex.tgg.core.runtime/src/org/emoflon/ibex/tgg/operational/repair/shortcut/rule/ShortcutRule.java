@@ -310,24 +310,28 @@ public class ShortcutRule {
 
 	@Override
 	public String toString() {
-		String name = "Shortcut-Rule - originalRule: " + originalRule.getName() + " replacingRule: " + replacingRule.getName() + "\n";
-		name += "nodes: \n";
+		String name = "Shortcut-Rule - " + getName() + "\n";
+		name += "Unbound Nodes: \n";
 		for (TGGRuleNode node : nodes) {
-			if (node.getName().contains("eMoflon_ProtocolNode"))
+			if(mergedNodes.contains(node))
 				continue;
 			name += "    " + node.getName() + " : " + node.getType().getName() + " - " + node.getBindingType().getName() + "\n";
 		}
-		name += "edges: \n";
+		
+		name += "Merged Nodes: \n";
+		for (TGGRuleNode node : mergedNodes) {
+			name += "    " + node.getName() + " : " + node.getType().getName() + " - " + node.getBindingType().getName() + "\n";
+		}
+		
+		name += "Edges: \n";
 		for (TGGRuleEdge edge : edges) {
-			if (edge.getName().contains("eMoflon_ProtocolNode"))
-				continue;
 			name += "    " + edge.getName() + " : " + edge.getType().getName() + " - " + edge.getBindingType().getName() + "\n";
 		}
 		return name;
 	}
 
 	public String getName() {
-		return originalRule.getName() + "_SC_" + replacingRule.getName();
+		return originalRule.getName() + "->" + replacingRule.getName() + "_" + overlap.category;
 	}
 
 	public enum SCInputRule {

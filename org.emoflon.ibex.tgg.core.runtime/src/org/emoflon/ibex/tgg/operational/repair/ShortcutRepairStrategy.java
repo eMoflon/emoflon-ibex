@@ -47,8 +47,13 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	}
 
 	private void initialize() {
-		OverlapUtil util = new OverlapUtil(opStrat.getOptions());
-		Collection<ShortcutRule> shortcutRules = util.calculateShortcutRules(opStrat.getOptions().tgg.flattenedTGG());
+		Collection<ShortcutRule> shortcutRules = new OverlapUtil(opStrat.getOptions()) //
+				.calculateShortcutRules(opStrat.getOptions().tgg.flattenedTGG());
+		
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generated " + shortcutRules.size() + " Short-Cut Rules:");
+		for (ShortcutRule scRule : shortcutRules)
+			LoggerConfig.log(LoggerConfig.log_repair(), () -> "  " + scRule.getName());
+		
 		scTool = new ShortcutPatternTool(opStrat, shortcutRules);
 		updateDirection();
 	}
@@ -72,18 +77,14 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 		updateDirection();
 		ITGGMatch repairedMatch = scTool.processBrokenMatch(syncDirection, repairCandidate);
 		if (repairedMatch != null)
-			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-					"Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + //
-					" (" + repairCandidate.hashCode() + "->" + repairedMatch.hashCode() + ")");
+			logSuccessfulRepair(repairCandidate, repairedMatch);
 		return repairedMatch;
 	}
 
 	public ITGGMatch repair(ITGGMatch repairCandidate, PropagationDirection direction) {
 		ITGGMatch repairedMatch = scTool.processBrokenMatch(direction, repairCandidate);
 		if (repairedMatch != null)
-			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-					"Repaired: " + repairCandidate.getPatternName() + "->" + repairedMatch.getPatternName() + //
-					" (" + repairCandidate.hashCode() + "->" + repairedMatch.hashCode() + ")");
+			logSuccessfulRepair(repairCandidate, repairedMatch);
 		return repairedMatch;
 	}
 
@@ -97,5 +98,11 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 	public int countDeletedElements() {
 		return scTool.countDeletedElements();
+	}
+
+	private void logSuccessfulRepair(ITGGMatch repairCandidate, ITGGMatch repairedMatch) {
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
+		"  '-> repaired: '" + repairCandidate.getPatternName() + "' -> '" + repairedMatch.getPatternName() + //
+				"' (" + repairCandidate.hashCode() + " -> " + repairedMatch.hashCode() + ")");
 	}
 }

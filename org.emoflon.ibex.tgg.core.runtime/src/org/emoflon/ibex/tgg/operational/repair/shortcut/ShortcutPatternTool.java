@@ -84,11 +84,10 @@ public class ShortcutPatternTool {
 		
 		greenInterpreter = strategy.getGreenInterpreter();
 		
-		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generated " + scRules.size() + " Short-Cut Rules");
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
 				"Generated " + tggRule2fwdSCRule.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) + " Forward Repair Rules");
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-				"Generated " + tggRule2fwdSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Backward Repair Rules");
+				"Generated " + tggRule2fwdSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a + b) + " Backward Repair Rules");
 
 		persistSCRules();
 	}
@@ -124,7 +123,7 @@ public class ShortcutPatternTool {
 				return null;
 			
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-					"Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");			
+					"Repair attempt: '" + brokenMatch.getPatternName() + "' with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");			
 			ITGGMatch newMatch = processBrokenMatch(osr, brokenMatch);
 			if(newMatch == null) {
 				copiedRules.remove(osr);

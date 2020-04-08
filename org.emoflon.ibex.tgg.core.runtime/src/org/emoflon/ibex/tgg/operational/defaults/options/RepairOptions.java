@@ -9,6 +9,7 @@ public class RepairOptions extends IbexSubOptions {
 	private boolean repairAttributes;
 	private boolean useShortcutRules;
 	private boolean relaxedSCPatternMatching;
+	private boolean advancedOverlapStrategies;
 	private IShortcutRuleUpdatePolicy scrUpdatePolicy;
 
 	public RepairOptions(IbexOptions options) {
@@ -17,6 +18,7 @@ public class RepairOptions extends IbexSubOptions {
 		repairAttributes = true;
 		useShortcutRules = false;
 		relaxedSCPatternMatching = true;
+		advancedOverlapStrategies = false;
 		scrUpdatePolicy = new DefaultSCRUpdatePolicy();
 	}
 
@@ -44,6 +46,15 @@ public class RepairOptions extends IbexSubOptions {
 
 	public IbexOptions repairAttributes(boolean repairAttributes) {
 		this.repairAttributes = repairAttributes;
+		return options;
+	}
+	
+	public boolean advancedOverlapStrategies() {
+		return advancedOverlapStrategies;
+	}
+	
+	public IbexOptions advancedOverlapStrategies(boolean advancedOverlapStrategies) {
+		this.advancedOverlapStrategies = advancedOverlapStrategies;
 		return options;
 	}
 
