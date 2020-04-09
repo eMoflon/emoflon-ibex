@@ -31,14 +31,14 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	protected IGreenPatternFactory factory;
 	private IbexOptions options;
 	private TGGResourceHandler resourceHandler;
-	private boolean optimizeMarkerCreation;
+	private boolean optimizeMarkerCreation = false;
 	private Map<TGGRuleNode, EReference> name2ref = new HashMap<>();
 	
 	public IbexGreenPattern(IGreenPatternFactory factory) {
 		this.factory = factory;
 		options = factory.getOptions();
 		resourceHandler = options.resourceHandler();
-		optimizeMarkerCreation = false;
+		optimizeMarkerCreation = options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("HiPE");
 	}
 	
 	@Override

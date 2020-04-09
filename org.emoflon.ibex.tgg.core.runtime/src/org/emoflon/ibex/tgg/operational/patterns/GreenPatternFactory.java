@@ -3,13 +3,16 @@ package org.emoflon.ibex.tgg.operational.patterns;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -109,8 +112,27 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	}
 
 	private Collection<TGGRuleEdge> getEdges(BindingType bt, DomainType dt) {
-		return rule.getEdges().stream().filter(e -> e.getBindingType() == bt && e.getDomainType() == dt)
+		Collection<TGGRuleEdge> edges =  rule.getEdges().stream().filter(e -> e.getBindingType() == bt && e.getDomainType() == dt)
 				.collect(Collectors.toList());
+		
+		// filter opposite edges
+		Set<EMFEdge> emfEdges = new HashSet<>();
+		Set<TGGRuleEdge> removedEdges = new HashSet<>();
+		for(TGGRuleEdge edge : edges) {
+			EMFEdge eEdge = new EMFEdge(edge.getSrcNode(), edge.getTrgNode(), edge.getType());
+			if(emfEdges.contains(eEdge)) {
+				removedEdges.add(edge);
+				continue;
+			}
+			
+			if(eEdge.getType().getEOpposite() != null) {
+				EMFEdge opposite = new EMFEdge(edge.getTrgNode(), edge.getSrcNode(), edge.getType().getEOpposite());
+				emfEdges.add(opposite);
+			}
+		}
+		
+		edges.removeAll(removedEdges);
+		return edges;
 	}
 
 	public IGreenPattern create(PatternType type) {

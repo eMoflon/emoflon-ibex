@@ -143,6 +143,11 @@ public class ConsistencyReporter {
 					EReference refOfEdge = specificationEdge.getType();
 					EMFEdge edge = new EMFEdge(srcOfEdge, trgOfEdge, refOfEdge);
 					edges.remove(edge);
+					
+					if(refOfEdge.getEOpposite() != null) {
+						EMFEdge opposite = new EMFEdge(trgOfEdge, srcOfEdge, refOfEdge.getEOpposite());
+						edges.remove(opposite);
+					}
 				}
 			}
 		});

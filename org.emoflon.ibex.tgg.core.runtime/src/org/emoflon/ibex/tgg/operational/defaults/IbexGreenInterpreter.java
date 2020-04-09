@@ -50,7 +50,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
 		resourceHandler = operationalStrategy.getOptions().resourceHandler();
-		optimizeCreation = operationalStrategy.getOptions().blackInterpreter() != null && !operationalStrategy.getOptions().blackInterpreter().getClass().getName().contains("Democles");
+		optimizeCreation = operationalStrategy.getOptions().blackInterpreter() != null && operationalStrategy.getOptions().blackInterpreter().getClass().getName().contains("HiPE");
 	}
 
 	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {

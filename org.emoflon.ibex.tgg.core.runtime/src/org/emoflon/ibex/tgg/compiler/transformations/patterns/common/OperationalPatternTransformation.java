@@ -147,7 +147,7 @@ public abstract class OperationalPatternTransformation {
 					IBeXConstant constant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
 					iCSP.getValues().add(constant);
 					constant.setValue(tggLiteralExpr.getValue());
-					constant.setStringValue("\"" + tggLiteralExpr.getValue() + "\"");
+					constant.setStringValue(tggLiteralExpr.getValue());
 				}
 			}
 			
