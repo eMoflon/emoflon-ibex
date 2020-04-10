@@ -48,6 +48,9 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
+		if(options.propagate.optimizeSyncPattern())
+			return;
+		
 		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
