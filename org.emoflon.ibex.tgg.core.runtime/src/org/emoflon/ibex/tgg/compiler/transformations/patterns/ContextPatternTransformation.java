@@ -268,18 +268,18 @@ public class ContextPatternTransformation {
 //			optimizeIBeXPattern(consistencyPattern, bwdPattern);
 		}
 
-		if (fwdPatternPresent && bwdPatternPresent) {
-			if (!isAxiomatic(rule)) {
-				IBeXContextPattern genPattern = createModelGenPattern(rule);
-				if (genPattern != null) {
-					createInvocation(fwdPattern, genPattern);
-					createInvocation(bwdPattern, genPattern);
-
-//					optimizeIBeXPattern(fwdPattern, genPattern);
-//					optimizeIBeXPattern(bwdPattern, genPattern);
-				}
-			}
-		}
+//		if (fwdPatternPresent && bwdPatternPresent) {
+//			if (!isAxiomatic(rule)) {
+//				IBeXContextPattern genPattern = createModelGenPattern(rule);
+//				if (genPattern != null) {
+//					createInvocation(fwdPattern, genPattern);
+//					createInvocation(bwdPattern, genPattern);
+//
+////					optimizeIBeXPattern(fwdPattern, genPattern);
+////					optimizeIBeXPattern(bwdPattern, genPattern);
+//				}
+//			}
+//		}
 
 		if (consistencyPatternPresent) {
 //			IBeXContextPattern protocolPattern = createProtocolPattern(rule);
