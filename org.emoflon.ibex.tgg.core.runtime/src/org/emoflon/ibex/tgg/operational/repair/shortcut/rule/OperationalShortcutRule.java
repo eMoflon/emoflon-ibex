@@ -102,7 +102,7 @@ public abstract class OperationalShortcutRule {
 		Collection<TGGRuleEdge> uncheckedEdges = scRule.getEdges().stream() //
 				.collect(Collectors.toList());
 
-		Collection<SearchKey> uncheckedSearchKeys = key2lookup.keySet().stream() //
+		List<SearchKey> uncheckedSearchKeys = key2lookup.keySet().stream() //
 				.filter(key -> key.edge.getBindingType() != BindingType.NEGATIVE) //
 				.filter(key -> key.edge.getBindingType() != BindingType.CREATE) //
 				.collect(Collectors.toList());
@@ -111,7 +111,7 @@ public abstract class OperationalShortcutRule {
 		
 		// first calculate the lookups to find all elements + their corresponding node checks
 		while (!uncheckedNodes.isEmpty()) {
-			Collection<SearchKey> nextSearchKeys = //
+			List<SearchKey> nextSearchKeys = //
 					filterKeys(uncheckedSearchKeys, uncheckedNodes, uncheckedRelaxedNodes, false);
 			if (nextSearchKeys.isEmpty()) {
 				// TODO lfritsche: clear this up
@@ -130,7 +130,7 @@ public abstract class OperationalShortcutRule {
 
 		// then calculate lookups for relaxed nodes
 		while (!uncheckedRelaxedNodes.isEmpty()) {
-			Collection<SearchKey> nextSearchKeys = //
+			List<SearchKey> nextSearchKeys = //
 					filterKeys(uncheckedSearchKeys, uncheckedNodes, uncheckedRelaxedNodes, true);
 			if (nextSearchKeys.isEmpty()) {
 				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + scRule.getName());
@@ -182,7 +182,7 @@ public abstract class OperationalShortcutRule {
 		return new SearchPlan(searchPlan, elt2nodeCheck, elt2inplAttrCheck, key2uncheckedEdgeCheck, key2nacNodeCheck, cspCheck);
 	}
 
-	private Collection<SearchKey> filterKeys(Collection<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes,
+	private List<SearchKey> filterKeys(List<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes,
 			Collection<TGGRuleNode> uncheckedRelaxedNodes, boolean relaxed) {
 		Stream<SearchKey> filteredKeys = keys.stream() //
 				.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k));
@@ -190,6 +190,14 @@ public abstract class OperationalShortcutRule {
 			filteredKeys = filteredKeys //
 					.filter(k -> (k.reverse ? k.sourceNode : k.targetNode).getBindingType() != BindingType.RELAXED) //
 					.filter(k -> k.edge.getBindingType() != BindingType.RELAXED);
+		} else {
+			filteredKeys = filteredKeys.sorted((a, b) -> {
+				if (a.sourceNode.getBindingType() == b.sourceNode.getBindingType())
+					return 0;
+				if ((a.reverse ? a.targetNode : a.sourceNode).getBindingType() != BindingType.RELAXED)
+					return -1;
+				return 1;
+			});
 		}
 		return filteredKeys.collect(Collectors.toList());
 	}
