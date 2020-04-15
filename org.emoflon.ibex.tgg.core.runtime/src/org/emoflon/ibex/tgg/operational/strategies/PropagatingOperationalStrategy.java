@@ -194,6 +194,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			LoggerConfig.log(LoggerConfig.log_matchApplication(),
 					() -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
+			options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
 		}
 
 		operationalMatchContainer.matchApplied(match);
@@ -231,8 +232,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 					.map(srStr -> srStr.countDeletedElements()) //
 					.orElse(0);
 
-		options.debug.benchmarkLogger().setNumOfElementsCreated(greenInterpreter.getNumOfCreatedElements());
-		options.debug.benchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedElements() + //
+		options.debug.benchmarkLogger().setNumOfElementsCreated(greenInterpreter.getNumOfCreatedNodes());
+		options.debug.benchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedNodes() + //
 				repStratDeletions);
 	}
 

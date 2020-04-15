@@ -94,8 +94,8 @@ public class SYNC extends PropagatingOperationalStrategy {
 					.filter(rStr -> rStr instanceof ShortcutRepairStrategy) //
 					.map(rStr -> (ShortcutRepairStrategy) rStr) //
 					.findFirst();
-			logger.info("Created elements: " + greenInterpreter.getNumOfCreatedElements());
-			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedElements()
+			logger.info("Created elements: " + greenInterpreter.getNumOfCreatedNodes());
+			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedNodes()
 					+ (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
 		}
 	}

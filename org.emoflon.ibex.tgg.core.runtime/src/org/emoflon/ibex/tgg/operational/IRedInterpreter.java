@@ -6,5 +6,7 @@ public interface IRedInterpreter {
 
 	void revokeOperationalRule(ITGGMatch match);
 
-	int getNumOfDeletedElements();
+	int getNumOfDeletedNodes();
+	
+	int getNumOfDeletedCorrNodes();
 }

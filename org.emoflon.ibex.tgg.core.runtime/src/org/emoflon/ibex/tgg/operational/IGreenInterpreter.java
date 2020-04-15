@@ -12,5 +12,7 @@ public interface IGreenInterpreter {
 	 */
 	Optional<ITGGMatch> apply(IGreenPattern greenPattern, String ruleName, ITGGMatch match);
 	
-	int getNumOfCreatedElements();
+	int getNumOfCreatedNodes();
+	
+	int getNumOfCreatedCorrNodes();
 }

@@ -36,15 +36,22 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 /**
- * @author leblebici Util class for creating EObjects, Edges, and
- *         Correspondences for a given set of green TGGRuleElement
+ * Util class for creating EObjects, Edges, and Correspondences for a given set
+ * of green TGGRuleElement
+ * 
+ * @author leblebici
  */
 public class IbexGreenInterpreter implements IGreenInterpreter {
 	private static final Logger logger = Logger.getLogger(IbexGreenInterpreter.class);
 
+	/**
+	 * Number of created source & target nodes
+	 */
 	private int numOfCreatedNodes = 0;
-	private boolean optimizeCreation;
+	private int numOfCreatedCorrNodes = 0;
 	private long creationTime = 0;
+	
+	private boolean optimizeCreation;
 
 	private TGGResourceHandler resourceHandler;
 
@@ -54,8 +61,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
-		for (TGGRuleNode n : greenNodes)
+		for (TGGRuleNode n : greenNodes) {
 			comatch.put(n.getName(), createNode(comatch, n));
+			numOfCreatedNodes++;
+		}
 	}
 
 	public Collection<EMFEdge> createEdges(ITGGMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
@@ -82,8 +91,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private EObject createNode(ITGGMatch match, TGGRuleNode node) {
-		numOfCreatedNodes++;
-
 		EObject newObj = EcoreUtil.create(node.getType());
 
 		applyInPlaceAttributeAssignments(match, node, newObj);
@@ -158,6 +165,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		EObject corr = createNode(comatch, node);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
+		numOfCreatedCorrNodes++;
 		return corr;
 	}
 
@@ -368,8 +376,13 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	@Override
-	public int getNumOfCreatedElements() {
+	public int getNumOfCreatedNodes() {
 		return numOfCreatedNodes;
+	}
+
+	@Override
+	public int getNumOfCreatedCorrNodes() {
+		return numOfCreatedCorrNodes;
 	}
 
 	public long getCreationTime() {
