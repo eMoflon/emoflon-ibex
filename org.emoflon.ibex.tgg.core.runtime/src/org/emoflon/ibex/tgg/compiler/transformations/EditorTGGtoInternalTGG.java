@@ -1,19 +1,23 @@
 package org.emoflon.ibex.tgg.compiler.transformations;
 
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
@@ -21,6 +25,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.core.transformation.ParamValueSet;
 import org.emoflon.ibex.tgg.core.transformation.TGGProject;
 import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
@@ -106,6 +111,7 @@ public class EditorTGGtoInternalTGG {
 		tggProject.ifPresent(p -> {
 			try {
 				ResourceSet rs = xtextParsedTGG.eResource().getResourceSet();
+				EcoreUtil.resolveAll(rs);
 				IFile corrFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER)//
 						.getFile(getNameOfGeneratedFile(project) + IbexTGGBuilder.ECORE_FILE_EXTENSION);
 				IbexTGGBuilder.saveModelInProject(corrFile, rs, p.getCorrPackage());
@@ -465,12 +471,20 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private EPackage createCorrModel(TripleGraphGrammarFile xtextTGG, IProject project) {
+		String qualifiedName = xtextTGG.getSchema().getName();
+		
 		EPackage corrModel = ecoreFactory.createEPackage();
+		corrModel.setName(MoflonUtil.lastSegmentOf(qualifiedName));
+		corrModel.setNsPrefix(qualifiedName);
+		corrModel.setNsURI("platform:/resource/" + project.getName() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(corrModel.getName()) + ".ecore");
 
-		corrModel.setName(xtextTGG.getSchema().getName());
-		corrModel.setNsPrefix(xtextTGG.getSchema().getName());
-		corrModel.setNsURI("platform:/resource/" + project.getName() + "/model/" + corrModel.getName() + ".ecore");
-
+		EAnnotation genAnnotation = ecoreFactory.createEAnnotation();
+		genAnnotation.setSource("http://www.eclipse.org/emf/2002/GenModel");
+		BasicEMap<String, String> map = new BasicEMap<>();
+		map.put("basePackage", qualifiedName);
+		genAnnotation.getDetails().putAll(map);
+		corrModel.getEAnnotations().add(genAnnotation);
+		
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
 			corrModel.getEClassifiers().add(createEClass(ct));
 		}
