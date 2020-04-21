@@ -1,21 +1,18 @@
 package org.emoflon.ibex.tgg.compiler.transformations;
 
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EClass;
@@ -480,9 +477,6 @@ public class EditorTGGtoInternalTGG {
 
 		EAnnotation genAnnotation = ecoreFactory.createEAnnotation();
 		genAnnotation.setSource("http://www.eclipse.org/emf/2002/GenModel");
-		BasicEMap<String, String> map = new BasicEMap<>();
-		map.put("basePackage", qualifiedName);
-		genAnnotation.getDetails().putAll(map);
 		corrModel.getEAnnotations().add(genAnnotation);
 		
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
@@ -502,7 +496,7 @@ public class EditorTGGtoInternalTGG {
 				corrModel.getEClassifiers().add(createMarkerClass(rule));
 			}
 		}
-
+		
 		return corrModel;
 	}
 
