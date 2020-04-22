@@ -3,7 +3,8 @@ package org.emoflon.ibex.common.operational;
 import java.util.Map;
 import java.util.Optional;
 
-import IBeXLanguage.IBeXCreatePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
+
 
 /**
  * The interface for the interpreter which applies an {@link IBeXCreatePattern}.

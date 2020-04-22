@@ -12,14 +12,14 @@ import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.moflon.core.utilities.EcoreUtils;
 
-import IBeXLanguage.IBeXContextPattern;
-import IBeXLanguage.IBeXEdge;
-import IBeXLanguage.IBeXLanguageFactory;
-import IBeXLanguage.IBeXNode;
-import IBeXLanguage.IBeXNodePair;
-import IBeXLanguage.IBeXPatternInvocation;
 
 /**
  * Utility methods to transform editor patterns to IBeX Patterns.
@@ -176,7 +176,7 @@ public class EditorToIBeXPatternHelper {
 	public static void addInjectivityConstraintIfNecessary(final IBeXContextPattern ibexPattern, final IBeXNode node1,
 			final IBeXNode node2) {
 		if (EcoreUtils.areTypesCompatible(node1.getType(), node2.getType())) {
-			IBeXNodePair nodePair = IBeXLanguageFactory.eINSTANCE.createIBeXNodePair();
+			IBeXNodePair nodePair = IBeXPatternModelFactory.eINSTANCE.createIBeXNodePair();
 			nodePair.getValues().add(node1);
 			nodePair.getValues().add(node2);
 			ibexPattern.getInjectivityConstraints().add(nodePair);

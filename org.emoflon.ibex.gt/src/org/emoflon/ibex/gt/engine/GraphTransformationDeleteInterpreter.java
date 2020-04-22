@@ -16,10 +16,9 @@ import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
-
-import IBeXLanguage.IBeXDeletePattern;
-import IBeXLanguage.IBeXEdge;
-import IBeXLanguage.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 
 /**
  * Interpreter applying deletion of elements for graph transformation.

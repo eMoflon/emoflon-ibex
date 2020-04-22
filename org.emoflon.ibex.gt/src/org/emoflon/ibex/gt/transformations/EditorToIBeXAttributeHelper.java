@@ -18,20 +18,19 @@ import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
-
-import IBeXLanguage.IBeXAttributeAssignment;
-import IBeXLanguage.IBeXAttributeConstraint;
-import IBeXLanguage.IBeXAttributeExpression;
-import IBeXLanguage.IBeXAttributeParameter;
-import IBeXLanguage.IBeXAttributeValue;
-import IBeXLanguage.IBeXConstant;
-import IBeXLanguage.IBeXContextPattern;
-import IBeXLanguage.IBeXCreatePattern;
-import IBeXLanguage.IBeXEnumLiteral;
-import IBeXLanguage.IBeXLanguageFactory;
-import IBeXLanguage.IBeXNode;
-import IBeXLanguage.IBeXPattern;
-import IBeXLanguage.IBeXRelation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 
 /**
  * Helper to transform attributes from the editor to the IBeX model.
@@ -113,7 +112,7 @@ public class EditorToIBeXAttributeHelper {
 	 */
 	private void transformAttributeCondition(final EditorAttribute editorAttribute, final IBeXNode ibexNode,
 			final IBeXContextPattern ibexContextPattern) {
-		IBeXAttributeConstraint ibexAttrConstraint = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeConstraint();
+		IBeXAttributeConstraint ibexAttrConstraint = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeConstraint();
 		ibexAttrConstraint.setNode(ibexNode);
 		ibexAttrConstraint.setType(editorAttribute.getAttribute());
 
@@ -155,7 +154,7 @@ public class EditorToIBeXAttributeHelper {
 	 */
 	private void transformAttributeAssignment(final EditorAttribute editorAttribute, final IBeXNode ibexNode,
 			final IBeXCreatePattern ibexCreatePattern) {
-		IBeXAttributeAssignment ibexAssignment = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeAssignment();
+		IBeXAttributeAssignment ibexAssignment = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeAssignment();
 		ibexAssignment.setNode(ibexNode);
 		ibexAssignment.setType(editorAttribute.getAttribute());
 		convertAttributeValue(editorAttribute, ibexCreatePattern).ifPresent(v -> ibexAssignment.setValue(v));
@@ -243,7 +242,7 @@ public class EditorToIBeXAttributeHelper {
 	 */
 	private static Optional<IBeXAttributeValue> convertAttributeValue(final EditorAttributeExpression editorExpression,
 			final IBeXPattern ibexPattern) {
-		IBeXAttributeExpression ibexAttributeExpression = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeExpression();
+		IBeXAttributeExpression ibexAttributeExpression = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
 		ibexAttributeExpression.setAttribute(editorExpression.getAttribute());
 		Optional<IBeXNode> ibexExistingNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern,
 				editorExpression.getNode().getName());
@@ -268,7 +267,7 @@ public class EditorToIBeXAttributeHelper {
 	 * @return the IBeXEnumLiteral
 	 */
 	private static IBeXEnumLiteral convertAttributeValue(final EditorEnumExpression editorExpression) {
-		IBeXEnumLiteral ibexEnumLiteral = IBeXLanguageFactory.eINSTANCE.createIBeXEnumLiteral();
+		IBeXEnumLiteral ibexEnumLiteral = IBeXPatternModelFactory.eINSTANCE.createIBeXEnumLiteral();
 		ibexEnumLiteral.setLiteral(editorExpression.getLiteral());
 		return ibexEnumLiteral;
 	}
@@ -286,7 +285,7 @@ public class EditorToIBeXAttributeHelper {
 		Optional<Object> object = GTEditorAttributeUtils.convertEDataTypeStringToObject(type,
 				editorExpression.getValue());
 		if (object.isPresent()) {
-			IBeXConstant ibexConstant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
+			IBeXConstant ibexConstant = IBeXPatternModelFactory.eINSTANCE.createIBeXConstant();
 			ibexConstant.setValue(object.get());
 			ibexConstant.setStringValue(object.get().toString());
 			return ibexConstant;
@@ -303,7 +302,7 @@ public class EditorToIBeXAttributeHelper {
 	 * @return the IBeXAttributeParameter
 	 */
 	private static IBeXAttributeParameter convertAttributeValue(final EditorParameterExpression editorExpression) {
-		IBeXAttributeParameter parameter = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeParameter();
+		IBeXAttributeParameter parameter = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeParameter();
 		parameter.setName(editorExpression.getParameter().getName());
 		return parameter;
 	}

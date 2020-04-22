@@ -12,6 +12,13 @@ import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
@@ -19,13 +26,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
-import IBeXLanguage.IBeXAttributeExpression;
-import IBeXLanguage.IBeXCSP;
-import IBeXLanguage.IBeXConstant;
-import IBeXLanguage.IBeXContextPattern;
-import IBeXLanguage.IBeXLanguageFactory;
-import IBeXLanguage.IBeXNode;
-import IBeXLanguage.IBeXPatternInvocation;
 import language.TGG;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
@@ -73,7 +73,7 @@ public abstract class OperationalPatternTransformation {
 			return null;
 		
 		// Root pattern
-		IBeXContextPattern ibexPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
+		IBeXContextPattern ibexPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
 		ibexPattern.setName(patternName);
 		parent.addContextPattern(ibexPattern, rule);
 
@@ -113,7 +113,7 @@ public abstract class OperationalPatternTransformation {
 
 	private void transformCEPs(IBeXContextPattern ibexPattern) {
 		for(TGGAttributeConstraint csp : rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
-			IBeXCSP iCSP = IBeXLanguageFactory.eINSTANCE.createIBeXCSP();
+			IBeXCSP iCSP = IBeXPatternModelFactory.eINSTANCE.createIBeXCSP();
 			iCSP.setName(csp.getDefinition().getName());
 			if(csp.getDefinition().isUserDefined()) {
 				iCSP.setName("UserDefined_" + iCSP.getName());
@@ -126,7 +126,7 @@ public abstract class OperationalPatternTransformation {
 			for(TGGParamValue param : csp.getParameters()) {
 				if(param instanceof TGGAttributeExpression) {
 					TGGAttributeExpression tggAttrExpr = (TGGAttributeExpression) param;
-					IBeXAttributeExpression attrExpr = IBeXLanguageFactory.eINSTANCE.createIBeXAttributeExpression();
+					IBeXAttributeExpression attrExpr = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
 					Optional<IBeXNode> iBeXNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, tggAttrExpr.getObjectVar().getName());
 					if(iBeXNode.isPresent())
 						attrExpr.setNode(iBeXNode.get());
@@ -137,14 +137,14 @@ public abstract class OperationalPatternTransformation {
 				}
 				else if(param instanceof TGGEnumExpression) {
 					TGGEnumExpression tggEnumExpr = (TGGEnumExpression) param;
-					IBeXConstant constant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
+					IBeXConstant constant = IBeXPatternModelFactory.eINSTANCE.createIBeXConstant();
 					iCSP.getValues().add(constant);
 					constant.setValue(tggEnumExpr.getLiteral());
 					constant.setStringValue(tggEnumExpr.getEenum().getEPackage().getNsPrefix() + "." + tggEnumExpr.getEenum().getName() + "." + tggEnumExpr.getLiteral().getName());
 				}
 				else if(param instanceof TGGLiteralExpression) {
 					TGGLiteralExpression tggLiteralExpr = (TGGLiteralExpression) param;
-					IBeXConstant constant = IBeXLanguageFactory.eINSTANCE.createIBeXConstant();
+					IBeXConstant constant = IBeXPatternModelFactory.eINSTANCE.createIBeXConstant();
 					iCSP.getValues().add(constant);
 					constant.setValue(tggLiteralExpr.getValue());
 					constant.setStringValue(tggLiteralExpr.getValue());
@@ -165,7 +165,7 @@ public abstract class OperationalPatternTransformation {
 		}
 		
 		// Root pattern
-		IBeXContextPattern nacPattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
+		IBeXContextPattern nacPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
 
 		// Transform nodes
 		TGGRuleNode firstNode = candidate.getNodeInRule();
@@ -194,7 +194,7 @@ public abstract class OperationalPatternTransformation {
 	}
 
 	private void createNegativeInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
-		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
+		IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(false);
 		ArrayList<IBeXNode> localNodes = new ArrayList<>();
 
@@ -214,7 +214,7 @@ public abstract class OperationalPatternTransformation {
 	}
 	
 	protected void createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee, boolean isPositive) {
-		IBeXPatternInvocation invocation = IBeXLanguageFactory.eINSTANCE.createIBeXPatternInvocation();
+		IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(isPositive);
 
 		// Creating mapping for invocation: missing signature nodes of the invoked
@@ -225,7 +225,7 @@ public abstract class OperationalPatternTransformation {
 			if (src.isPresent())
 				invocation.getMapping().put(src.get(), node);
 			else {
-				IBeXNode newLocalNode = IBeXLanguageFactory.eINSTANCE.createIBeXNode();
+				IBeXNode newLocalNode = IBeXPatternModelFactory.eINSTANCE.createIBeXNode();
 				newLocalNode.setName(node.getName());
 				newLocalNode.setType(node.getType());
 				invoker.getLocalNodes().add(newLocalNode);

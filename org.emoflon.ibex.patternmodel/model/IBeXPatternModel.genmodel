@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/org.emoflon.ibex.patternmodel/src-gen" creationIcons="false"
+    editDirectory="/org.emoflon.ibex.patternmodel.edit/src-gen" editorDirectory="/org.emoflon.ibex.patternmodel.editor/src-gen"
+    modelPluginID="org.emoflon.ibex.patternmodel" modelName="IBeXPatternModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0"
+    copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>IBeXPatternModel.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="IBeXPatternModel" basePackage="org.emoflon.ibex.patternmodel"
+      disposableProviderFactory="true" ecorePackage="IBeXPatternModel.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXPatternModel.ecore#//IBeXRelation">
+      <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXRelation/GREATER_OR_EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXRelation/GREATER"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXRelation/EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXRelation/UNEQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXRelation/SMALLER_OR_EQUAL"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXRelation/SMALLER"/>
+    </genEnums>
+    <genClasses image="false" ecoreClass="IBeXPatternModel.ecore#//IBeXAttribute">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXAttribute/type"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXAttribute/node"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXAttribute/value"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXAttributeAssignment"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXAttributeConstraint">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXAttributeConstraint/relation"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXAttributeParameter"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXAttributeValue"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXAttributeExpression">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXAttributeExpression/attribute"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXAttributeExpression/node"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXConstant">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXConstant/value"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXConstant/stringValue"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="IBeXPatternModel.ecore#//IBeXContext"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXContextAlternatives">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextAlternatives/alternativePatterns"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXContextPattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextPattern/attributeConstraint"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextPattern/injectivityConstraints"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextPattern/invocations"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextPattern/localEdges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextPattern/localNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextPattern/signatureNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextPattern/csps"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXCreatePattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXCreatePattern/attributeAssignments"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXCreatePattern/contextNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXCreatePattern/createdEdges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXCreatePattern/createdNodes"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXDeletePattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDeletePattern/contextNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDeletePattern/deletedEdges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDeletePattern/deletedNodes"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXEdge">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXEdge/sourceNode"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXEdge/targetNode"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXEdge/type"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXEnumLiteral">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXEnumLiteral/literal"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="IBeXPatternModel.ecore#//IBeXNamedElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXNamedElement/name"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXNode">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXNode/incomingEdges"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXNode/outgoingEdges"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXNode/type"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXNodePair">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXNodePair/values"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXNodeToNodeMapping">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXNodeToNodeMapping/key"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXNodeToNodeMapping/value"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="IBeXPatternModel.ecore#//IBeXPattern"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXPatternInvocation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXPatternInvocation/positive"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXPatternInvocation/invokedBy"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXPatternInvocation/invokedPattern"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXPatternInvocation/mapping"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXPatternSet">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXPatternSet/contextPatterns"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXPatternSet/createPatterns"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXPatternSet/deletePatterns"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXCSP">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXCSP/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXCSP/package"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXCSP/values"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

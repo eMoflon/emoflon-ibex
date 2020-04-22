@@ -8,13 +8,13 @@ import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAn
 
 import java.util.List;
 
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
-import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;

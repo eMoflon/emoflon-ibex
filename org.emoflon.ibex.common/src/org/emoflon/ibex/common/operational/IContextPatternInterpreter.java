@@ -2,8 +2,7 @@ package org.emoflon.ibex.common.operational;
 
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-
-import IBeXLanguage.IBeXPatternSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 
 /**
  * Interface for a pattern matcher.
