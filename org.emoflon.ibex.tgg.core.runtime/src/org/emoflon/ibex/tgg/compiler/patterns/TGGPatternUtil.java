@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import language.BindingType;
 import language.DomainType;

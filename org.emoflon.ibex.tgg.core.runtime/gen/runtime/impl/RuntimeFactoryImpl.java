@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
+import runtime.*;
 import runtime.Protocol;
 import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
@@ -29,7 +30,8 @@ public class RuntimeFactoryImpl extends EFactoryImpl implements RuntimeFactory {
 	 */
 	public static RuntimeFactory init() {
 		try {
-			RuntimeFactory theRuntimeFactory = (RuntimeFactory) EPackage.Registry.INSTANCE.getEFactory(RuntimePackage.eNS_URI);
+			RuntimeFactory theRuntimeFactory = (RuntimeFactory) EPackage.Registry.INSTANCE
+					.getEFactory(RuntimePackage.eNS_URI);
 			if (theRuntimeFactory != null) {
 				return theRuntimeFactory;
 			}

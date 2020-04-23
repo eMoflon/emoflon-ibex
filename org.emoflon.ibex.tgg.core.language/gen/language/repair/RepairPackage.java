@@ -38,7 +38,7 @@ public interface RepairPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_URI = "platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/repair";
+	String eNS_URI = "platform:/plugin/org.emoflon.ibex.tgg.language/model/Language.ecore#/repair";
 
 	/**
 	 * The package namespace name.

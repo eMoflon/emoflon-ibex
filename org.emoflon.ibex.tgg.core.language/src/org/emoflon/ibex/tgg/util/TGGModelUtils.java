@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.core.util;
+package org.emoflon.ibex.tgg.util;
 
 import java.util.Collection;
 import java.util.List;
