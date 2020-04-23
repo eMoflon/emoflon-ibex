@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.emoflon.ibex.tgg.core.transformation.TGGProject;
+import org.emoflon.ibex.tgg.transformation.TGGProject;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
 import org.moflon.core.utilities.WorkspaceHelper;

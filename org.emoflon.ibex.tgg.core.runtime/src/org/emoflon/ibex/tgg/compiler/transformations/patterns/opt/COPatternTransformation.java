@@ -7,8 +7,8 @@ import java.util.List;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import language.BindingType;
 import language.TGGRule;

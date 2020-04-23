@@ -12,13 +12,13 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import language.BindingType;
 import language.DomainType;

@@ -1,8 +1,8 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.rule;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getMarkerRefName;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getMarkerTypeName;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerRefName;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerTypeName;
 
 import java.util.Collection;
 import java.util.function.BiFunction;

@@ -1433,6 +1433,7 @@ public class LanguagePackageImpl extends EPackageImpl implements LanguagePackage
 		addEEnumLiteral(bindingTypeEEnum, BindingType.CREATE);
 		addEEnumLiteral(bindingTypeEEnum, BindingType.DELETE);
 		addEEnumLiteral(bindingTypeEEnum, BindingType.NEGATIVE);
+		addEEnumLiteral(bindingTypeEEnum, BindingType.RELAXED);
 
 		initEEnum(tggAttributeConstraintOperatorsEEnum, TGGAttributeConstraintOperators.class,
 				"TGGAttributeConstraintOperators");

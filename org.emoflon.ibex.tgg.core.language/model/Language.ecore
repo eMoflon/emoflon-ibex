@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="language" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="language" nsURI="platform:/plugin/org.emoflon.ibex.tgg.language/model/Language.ecore"
     nsPrefix="language">
   <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
     <details key="documentation" value="Internal, IBeX-specific, TGG Metamodel for defining TGG Rules"/>
@@ -147,7 +147,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="objectVar" eType="#//TGGRuleNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
   </eClassifiers>
-  <eSubpackages name="repair" nsURI="platform:/plugin/org.emoflon.ibex.tgg.core.language/model/Language.ecore#/repair"
+  <eSubpackages name="repair" nsURI="platform:/plugin/org.emoflon.ibex.tgg.language/model/Language.ecore#/repair"
       nsPrefix="repair">
     <eClassifiers xsi:type="ecore:EClass" name="ExternalShortcutRule">
       <eStructuralFeatures xsi:type="ecore:EReference" name="sourceRule" eType="#//TGGRule"/>

@@ -1,10 +1,10 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDOptBlackPatternName;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperator;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
-import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperator;
-import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperator;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperator;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
 import java.util.List;
 

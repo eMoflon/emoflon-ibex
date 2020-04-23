@@ -105,6 +105,6 @@ Export-Package: .,
  runtime,
  runtime.impl,
  runtime.util
-Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime
+Automatic-Module-Name: org.emoflon.ibex.tgg.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 

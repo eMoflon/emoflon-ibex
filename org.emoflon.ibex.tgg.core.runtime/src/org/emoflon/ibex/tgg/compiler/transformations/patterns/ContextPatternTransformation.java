@@ -6,9 +6,9 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWDB
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil.isAxiomatic;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,10 +53,10 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.CCPatternTrans
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.COPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolCorePatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolPatternTransformation;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import language.BindingType;
 import language.DomainType;
