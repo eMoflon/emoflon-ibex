@@ -26,8 +26,10 @@ Require-Bundle: org.apache.log4j,
  org.emoflon.ibex.gt.editor.ui,
  org.moflon.core.plugins,
  org.moflon.core.propertycontainer,
- org.moflon.core.utilities
-Bundle-ClassPath: .,
- lib/commons-math3-3.6.1.jar
+ org.moflon.core.utilities,
+ org.emoflon.ibex.gt.sgtpatternmodel;bundle-version="0.1.0",
+ org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:=reexport,
+ org.emoflon.ibex.patternmodel
+Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

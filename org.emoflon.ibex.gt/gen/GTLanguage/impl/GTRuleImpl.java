@@ -248,6 +248,20 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 	 * @generated
 	 */
 	@Override
+	public EList<GTArithmeticConstraint> getConstraints() {
+		if (constraints == null) {
+			constraints = new EObjectContainmentEList<GTArithmeticConstraint>(GTArithmeticConstraint.class, this,
+					GTLanguagePackage.GT_RULE__CONSTRAINTS);
+		}
+		return constraints;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public GTProbability getProbability() {
 		return probability;
 	}
@@ -292,20 +306,6 @@ public class GTRuleImpl extends GTNamedElementImpl implements GTRule {
 		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, GTLanguagePackage.GT_RULE__PROBABILITY,
 					newProbability, newProbability));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EList<GTArithmeticConstraint> getConstraints() {
-		if (constraints == null) {
-			constraints = new EObjectContainmentEList<GTArithmeticConstraint>(GTArithmeticConstraint.class, this,
-					GTLanguagePackage.GT_RULE__CONSTRAINTS);
-		}
-		return constraints;
 	}
 
 	/**

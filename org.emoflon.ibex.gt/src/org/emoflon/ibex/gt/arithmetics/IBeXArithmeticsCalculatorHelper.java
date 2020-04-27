@@ -3,8 +3,7 @@ package org.emoflon.ibex.gt.arithmetics;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.common.operational.IMatch;
-
-import IBeXLanguage.IBeXArithmeticValue;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 
 public class IBeXArithmeticsCalculatorHelper {
 	

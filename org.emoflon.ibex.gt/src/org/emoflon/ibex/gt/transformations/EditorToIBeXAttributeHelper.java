@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
 import org.emoflon.ibex.gt.editor.gT.EditorAttributeExpression;
@@ -20,6 +21,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
@@ -33,6 +35,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 
 /**
  * Helper to transform attributes from the editor to the IBeX model.
@@ -322,7 +325,7 @@ public class EditorToIBeXAttributeHelper {
 	 * @return the IBeXStochasticAttributeValue
 	 */
 	private static IBeXStochasticAttributeValue convertAttributeValue(final StochasticFunctionExpression stochasticExpression) {
-		IBeXStochasticAttributeValue value = IBeXLanguageFactory.eINSTANCE.createIBeXStochasticAttributeValue();
+		IBeXStochasticAttributeValue value = IBeXPatternModelFactory.eINSTANCE.createIBeXStochasticAttributeValue();
 		value.setFunction(EditorToStochasticExtensionHelper
 				.transformStochasticFunction(stochasticExpression));
 		// the value of the enums from GTStochasticRange and OperatorRange need to be the same
@@ -336,7 +339,7 @@ public class EditorToIBeXAttributeHelper {
 	 * @return the IBeXArithmeticValue
 	 */
 	private static IBeXArithmeticValue convertAttributeValue(final ArithmeticCalculationExpression expression) {
-		IBeXArithmeticValue value= IBeXLanguageFactory.eINSTANCE.createIBeXArithmeticValue();		;
+		IBeXArithmeticValue value= IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();		;
 		value.setExpression(EditorToArithmeticExtensionHelper.transformToGTArithmetics(expression.getExpression()));
 		return value;
 	}

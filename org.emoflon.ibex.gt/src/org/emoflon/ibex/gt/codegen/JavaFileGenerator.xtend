@@ -14,7 +14,7 @@ import GTLanguage.GTNode
 import GTLanguage.GTRule
 import GTLanguage.GTRuleSet
 import java.util.HashSet
-import StochasticLanguage.GTRelation
+import org.emoflon.ibex.gt.SGTPatternModel.GTRelation
 
 /**
  * This class contains the templates for the API Java classes.

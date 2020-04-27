@@ -8,11 +8,4 @@
     <package class="GTLanguage.GTLanguagePackage" genModel="model/Gt.genmodel" uri="platform:/resource/org.emoflon.ibex.gt/model/Gt.ecore"/>
   </extension>
 
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated Gt -->
-      <package
-            uri="platform:/resource/org.emoflon.ibex.common/model/StochasticExtension.ecore"
-            class="StochasticLanguage.StochasticLanguagePackage"
-            genModel="model/Gt.genmodel"/>
-   </extension>
 </plugin>

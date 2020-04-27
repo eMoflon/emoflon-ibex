@@ -112,6 +112,18 @@ public interface GTRule extends GTNamedElement {
 	EList<GTNode> getRuleNodes();
 
 	/**
+	 * Returns the value of the '<em><b>Constraints</b></em>' containment reference list.
+	 * The list contents are of type {@link GTLanguage.GTArithmeticConstraint}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Constraints</em>' containment reference list.
+	 * @see GTLanguage.GTLanguagePackage#getGTRule_Constraints()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<GTArithmeticConstraint> getConstraints();
+
+	/**
 	 * Returns the value of the '<em><b>Probability</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -132,17 +144,5 @@ public interface GTRule extends GTNamedElement {
 	 * @generated
 	 */
 	void setProbability(GTProbability value);
-
-	/**
-	 * Returns the value of the '<em><b>Constraints</b></em>' containment reference list.
-	 * The list contents are of type {@link GTLanguage.GTArithmeticConstraint}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Constraints</em>' containment reference list.
-	 * @see GTLanguage.GTLanguagePackage#getGTRule_Constraints()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<GTArithmeticConstraint> getConstraints();
 
 } // GTRule

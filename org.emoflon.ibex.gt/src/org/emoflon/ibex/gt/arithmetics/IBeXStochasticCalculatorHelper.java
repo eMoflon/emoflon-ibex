@@ -5,12 +5,12 @@ import java.util.Random;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticDistribution;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticFunction;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 
-import IBeXLanguage.IBeXStochasticAttributeValue;
-import StochasticLanguage.GTArithmetics;
-import StochasticLanguage.GTStochasticDistribution;
-import StochasticLanguage.GTStochasticFunction;
-import StochasticLanguage.GTStochasticRange;
 
 
 /**

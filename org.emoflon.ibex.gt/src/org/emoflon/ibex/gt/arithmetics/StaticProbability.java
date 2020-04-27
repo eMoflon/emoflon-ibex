@@ -6,10 +6,9 @@ import java.util.Random;
 import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticDistribution;
 import org.emoflon.ibex.gt.api.GraphTransformationMatch;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
-
-import StochasticLanguage.GTStochasticDistribution;
 
 /**
  * class for all probabilities that do not depend on parameters

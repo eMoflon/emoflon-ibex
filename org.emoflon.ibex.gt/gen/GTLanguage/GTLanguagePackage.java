@@ -555,17 +555,6 @@ public interface GTLanguagePackage extends EPackage {
 	EReference getGTRule_RuleNodes();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link GTLanguage.GTRule#getProbability <em>Probability</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Probability</em>'.
-	 * @see GTLanguage.GTRule#getProbability()
-	 * @see #getGTRule()
-	 * @generated
-	 */
-	EReference getGTRule_Probability();
-
-	/**
 	 * Returns the meta object for the containment reference list '{@link GTLanguage.GTRule#getConstraints <em>Constraints</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -575,6 +564,17 @@ public interface GTLanguagePackage extends EPackage {
 	 * @generated
 	 */
 	EReference getGTRule_Constraints();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link GTLanguage.GTRule#getProbability <em>Probability</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Probability</em>'.
+	 * @see GTLanguage.GTRule#getProbability()
+	 * @see #getGTRule()
+	 * @generated
+	 */
+	EReference getGTRule_Probability();
 
 	/**
 	 * Returns the meta object for class '{@link GTLanguage.GTRuleSet <em>GT Rule Set</em>}'.
@@ -800,20 +800,20 @@ public interface GTLanguagePackage extends EPackage {
 		EReference GT_RULE__RULE_NODES = eINSTANCE.getGTRule_RuleNodes();
 
 		/**
-		 * The meta object literal for the '<em><b>Probability</b></em>' containment reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference GT_RULE__PROBABILITY = eINSTANCE.getGTRule_Probability();
-
-		/**
 		 * The meta object literal for the '<em><b>Constraints</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
 		EReference GT_RULE__CONSTRAINTS = eINSTANCE.getGTRule_Constraints();
+
+		/**
+		 * The meta object literal for the '<em><b>Probability</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_RULE__PROBABILITY = eINSTANCE.getGTRule_Probability();
 
 		/**
 		 * The meta object literal for the '{@link GTLanguage.impl.GTRuleSetImpl <em>GT Rule Set</em>}' class.

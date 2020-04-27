@@ -2,11 +2,11 @@
  */
 package GTLanguage;
 
-import StochasticLanguage.GTArithmetics;
-import StochasticLanguage.GTAttribute;
-import StochasticLanguage.GTRelation;
-
 import org.eclipse.emf.ecore.EObject;
+
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute;
+import org.emoflon.ibex.gt.SGTPatternModel.GTRelation;
 
 /**
  * <!-- begin-user-doc -->
@@ -73,11 +73,11 @@ public interface GTArithmeticConstraint extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Relation</b></em>' attribute.
-	 * The literals are from the enumeration {@link StochasticLanguage.GTRelation}.
+	 * The literals are from the enumeration {@link org.emoflon.ibex.gt.SGTPatternModel.GTRelation}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Relation</em>' attribute.
-	 * @see StochasticLanguage.GTRelation
+	 * @see org.emoflon.ibex.gt.SGTPatternModel.GTRelation
 	 * @see #setRelation(GTRelation)
 	 * @see GTLanguage.GTLanguagePackage#getGTArithmeticConstraint_Relation()
 	 * @model
@@ -90,7 +90,7 @@ public interface GTArithmeticConstraint extends EObject {
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Relation</em>' attribute.
-	 * @see StochasticLanguage.GTRelation
+	 * @see org.emoflon.ibex.gt.SGTPatternModel.GTRelation
 	 * @see #getRelation()
 	 * @generated
 	 */

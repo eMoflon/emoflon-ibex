@@ -5,7 +5,8 @@
     editDirectory="/org.emoflon.ibex.patternmodel.edit/src-gen" editorDirectory="/org.emoflon.ibex.patternmodel.editor/src-gen"
     modelPluginID="org.emoflon.ibex.patternmodel" modelName="IBeXPatternModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
     codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0"
-    copyrightFields="false" operationReflection="true" importOrganizing="true">
+    copyrightFields="false" usedGenPackages="../../org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.genmodel#//SGTPatternModel"
+    operationReflection="true" importOrganizing="true">
   <foreignModel>IBeXPatternModel.ecore</foreignModel>
   <testsDirectory xsi:nil="true"/>
   <genPackages prefix="IBeXPatternModel" basePackage="org.emoflon.ibex.patternmodel"
@@ -100,6 +101,13 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXCSP/name"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXCSP/package"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXCSP/values"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXStochasticAttributeValue">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXStochasticAttributeValue/range"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXStochasticAttributeValue/function"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXArithmeticValue">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXArithmeticValue/expression"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

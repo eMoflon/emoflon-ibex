@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute;
+import org.emoflon.ibex.gt.SGTPatternModel.GTRelation;
+import org.emoflon.ibex.gt.SGTPatternModel.SGTPatternModelFactory;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
@@ -22,10 +25,6 @@ import GTLanguage.GTNode;
 import GTLanguage.GTParameter;
 import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
-import StochasticLanguage.GTAttribute;
-import StochasticLanguage.GTRelation;
-import StochasticLanguage.StochasticLanguageFactory;
-
 
 /**
  * Transformation from the editor model to an representation of the GT API.
@@ -166,7 +165,7 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 		for(final EditorNode node: editorPattern.getNodes()) {
 			for(final EditorAttribute attribute: node.getAttributes()) {
 				if(attribute.getValue() instanceof ArithmeticCalculationExpression && attribute.getRelation() != EditorRelation.ASSIGNMENT) {
-					GTAttribute gtAttribute = StochasticLanguageFactory.eINSTANCE.createGTAttribute();
+					GTAttribute gtAttribute = SGTPatternModelFactory.eINSTANCE.createGTAttribute();
 					gtAttribute.setName(node.getName());
 					gtAttribute.setAttribute(attribute.getAttribute());
 					gtAttribute.setType(node.getType());

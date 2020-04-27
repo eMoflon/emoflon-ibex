@@ -2,16 +2,16 @@ package org.emoflon.ibex.gt.codegen
 
 import GTLanguage.GTRule
 import GTLanguage.GTProbability
-import StochasticLanguage.GTStochasticDistribution
 import java.util.HashSet
-import StochasticLanguage.GTArithmetics
-import StochasticLanguage.GTNumber
-import StochasticLanguage.GTAttribute
-import StochasticLanguage.GTOneParameterCalculation
-import StochasticLanguage.GTTwoParameterCalculation
 import java.util.ArrayList
 import java.util.List
-import StochasticLanguage.TwoParameterOperator
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticDistribution
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics
+import org.emoflon.ibex.gt.SGTPatternModel.GTNumber
+import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute
+import org.emoflon.ibex.gt.SGTPatternModel.GTTwoParameterCalculation
+import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation
+import org.emoflon.ibex.gt.SGTPatternModel.TwoParameterOperator
 
 /**
  *  Enum for the different Constraint types
@@ -267,7 +267,7 @@ class JavaProbabilityFileGenerator {
 	 * returns the arithmetic constraints for the expression; can be used for IMatch matches or matches
 	 * of the generated match classes
 	 */
-	private static def getArithmeticConstraint(GTArithmetics expression, List<String> list,boolean isIMatch){
+	private static def getArithmeticConstraint(GTArithmetics expression, List<String> list, boolean isIMatch){
 		if(expression instanceof GTNumber || expression instanceof GTAttribute) return;
 		if(expression instanceof GTOneParameterCalculation){
 			getArithmeticConstraint(expression.value, list, isIMatch)

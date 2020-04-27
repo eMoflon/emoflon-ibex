@@ -1,12 +1,6 @@
 /**
  */
-package IBeXLanguage.impl;
-
-import IBeXLanguage.IBeXLanguagePackage;
-import IBeXLanguage.IBeXStochasticAttributeValue;
-
-import StochasticLanguage.GTStochasticFunction;
-import StochasticLanguage.GTStochasticRange;
+package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -16,6 +10,12 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticFunction;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
+
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
+
 /**
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>IBe XStochastic Attribute Value</b></em>'.
@@ -24,8 +24,8 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link IBeXLanguage.impl.IBeXStochasticAttributeValueImpl#getRange <em>Range</em>}</li>
- *   <li>{@link IBeXLanguage.impl.IBeXStochasticAttributeValueImpl#getFunction <em>Function</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXStochasticAttributeValueImpl#getRange <em>Range</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXStochasticAttributeValueImpl#getFunction <em>Function</em>}</li>
  * </ul>
  *
  * @generated
@@ -77,7 +77,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return IBeXLanguagePackage.Literals.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE;
+		return IBeXPatternModelPackage.Literals.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE;
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 		range = newRange == null ? RANGE_EDEFAULT : newRange;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE, oldRange, range));
+					IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE, oldRange, range));
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 		function = newFunction;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION, oldFunction, newFunction);
+					IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION, oldFunction, newFunction);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -144,18 +144,18 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 			NotificationChain msgs = null;
 			if (function != null)
 				msgs = ((InternalEObject) function).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION, null,
-						msgs);
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION,
+						null, msgs);
 			if (newFunction != null)
 				msgs = ((InternalEObject) newFunction).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION, null,
-						msgs);
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION,
+						null, msgs);
 			msgs = basicSetFunction(newFunction, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION, newFunction, newFunction));
+					IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION, newFunction, newFunction));
 	}
 
 	/**
@@ -166,7 +166,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
 			return basicSetFunction(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -180,9 +180,9 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE:
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE:
 			return getRange();
-		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
 			return getFunction();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -196,10 +196,10 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE:
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE:
 			setRange((GTStochasticRange) newValue);
 			return;
-		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
 			setFunction((GTStochasticFunction) newValue);
 			return;
 		}
@@ -214,10 +214,10 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE:
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE:
 			setRange(RANGE_EDEFAULT);
 			return;
-		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
 			setFunction((GTStochasticFunction) null);
 			return;
 		}
@@ -232,9 +232,9 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE:
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE:
 			return range != RANGE_EDEFAULT;
-		case IBeXLanguagePackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
 			return function != null;
 		}
 		return super.eIsSet(featureID);

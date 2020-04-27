@@ -1,5 +1,10 @@
 package org.emoflon.ibex.gt.transformations;
 
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTNumber;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticDistribution;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticFunction;
+import org.emoflon.ibex.gt.SGTPatternModel.SGTPatternModelFactory;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorProbability;
@@ -9,11 +14,6 @@ import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
 
 import GTLanguage.GTLanguageFactory;
 import GTLanguage.GTProbability;
-import StochasticLanguage.GTArithmetics;
-import StochasticLanguage.GTNumber;
-import StochasticLanguage.GTStochasticDistribution;
-import StochasticLanguage.GTStochasticFunction;
-import StochasticLanguage.StochasticLanguageFactory;
 
 /**
  * Utility class for stochastic extension transformation
@@ -59,7 +59,7 @@ public class EditorToStochasticExtensionHelper {
 	 * @return the transformed function
 	 */
 	public static GTStochasticFunction transformStochasticFunction(final StochasticFunctionExpression function){
-		GTStochasticFunction stochasticFunction = StochasticLanguageFactory.eINSTANCE.createGTStochasticFunction();
+		GTStochasticFunction stochasticFunction = SGTPatternModelFactory.eINSTANCE.createGTStochasticFunction();
 		stochasticFunction.setDistribution(transformDistribution(function.getDistribution()));
 		stochasticFunction.setMean(EditorToArithmeticExtensionHelper
 				.transformToGTArithmetics(function.getMean()));
@@ -67,7 +67,7 @@ public class EditorToStochasticExtensionHelper {
 			stochasticFunction.setSd(EditorToArithmeticExtensionHelper
 					.transformToGTArithmetics(function.getSd()));	
 		}else {
-			GTNumber sd = StochasticLanguageFactory.eINSTANCE.createGTNumber();
+			GTNumber sd = SGTPatternModelFactory.eINSTANCE.createGTNumber();
 			sd.setNumber(0.0);
 			stochasticFunction.setSd(sd);
 		}
@@ -80,9 +80,9 @@ public class EditorToStochasticExtensionHelper {
 	 * @param probability the probability of the rule
 	 */
 	private static GTStochasticFunction createStaticProbability(final GTArithmetics expression) {
-		GTStochasticFunction function = StochasticLanguageFactory.eINSTANCE.createGTStochasticFunction();
+		GTStochasticFunction function = SGTPatternModelFactory.eINSTANCE.createGTStochasticFunction();
 		function.setMean(expression);
-		GTNumber sd = StochasticLanguageFactory.eINSTANCE.createGTNumber();
+		GTNumber sd = SGTPatternModelFactory.eINSTANCE.createGTNumber();
 		sd.setNumber(0.0);
 		function.setSd(sd);
 		function.setDistribution(GTStochasticDistribution.STATIC);

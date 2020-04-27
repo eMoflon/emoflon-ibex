@@ -2,12 +2,11 @@ package org.emoflon.ibex.gt.arithmetics;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
-
-import StochasticLanguage.GTArithmetics;
-import StochasticLanguage.GTAttribute;
-import StochasticLanguage.GTNumber;
-import StochasticLanguage.GTOneParameterCalculation;
-import StochasticLanguage.GTTwoParameterCalculation;
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute;
+import org.emoflon.ibex.gt.SGTPatternModel.GTNumber;
+import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
+import org.emoflon.ibex.gt.SGTPatternModel.GTTwoParameterCalculation;
 
 public class RuntimeArithmeticsExtensionCalculator {
 	

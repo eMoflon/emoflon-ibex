@@ -5,9 +5,6 @@ package GTLanguage.impl;
 import GTLanguage.GTLanguagePackage;
 import GTLanguage.GTProbability;
 
-import StochasticLanguage.GTArithmetics;
-import StochasticLanguage.GTStochasticFunction;
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
@@ -16,6 +13,9 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticFunction;
 
 /**
  * <!-- begin-user-doc -->

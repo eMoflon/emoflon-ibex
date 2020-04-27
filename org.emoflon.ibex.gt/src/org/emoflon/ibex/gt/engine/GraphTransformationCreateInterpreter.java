@@ -13,6 +13,9 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.gt.arithmetics.IBeXArithmeticsCalculatorHelper;
+import org.emoflon.ibex.gt.arithmetics.IBeXStochasticCalculatorHelper;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
@@ -20,6 +23,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 
 
 /**

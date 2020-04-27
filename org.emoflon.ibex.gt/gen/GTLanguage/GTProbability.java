@@ -2,10 +2,10 @@
  */
 package GTLanguage;
 
-import StochasticLanguage.GTArithmetics;
-import StochasticLanguage.GTStochasticFunction;
-
 import org.eclipse.emf.ecore.EObject;
+
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticFunction;
 
 /**
  * <!-- begin-user-doc -->

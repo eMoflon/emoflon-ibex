@@ -1,5 +1,13 @@
 package org.emoflon.ibex.gt.transformations;
 
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute;
+import org.emoflon.ibex.gt.SGTPatternModel.GTNumber;
+import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
+import org.emoflon.ibex.gt.SGTPatternModel.GTTwoParameterCalculation;
+import org.emoflon.ibex.gt.SGTPatternModel.OneParameterOperator;
+import org.emoflon.ibex.gt.SGTPatternModel.SGTPatternModelFactory;
+import org.emoflon.ibex.gt.SGTPatternModel.TwoParameterOperator;
 import org.emoflon.ibex.gt.editor.gT.AddExpression;
 import org.emoflon.ibex.gt.editor.gT.AddOperator;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticAttribute;
@@ -9,15 +17,6 @@ import org.emoflon.ibex.gt.editor.gT.ExpExpression;
 import org.emoflon.ibex.gt.editor.gT.MultExpression;
 import org.emoflon.ibex.gt.editor.gT.OneParameterArithmetics;
 import org.emoflon.ibex.gt.editor.utils.GTArithmeticsCalculatorUtil;
-
-import StochasticLanguage.GTArithmetics;
-import StochasticLanguage.GTAttribute;
-import StochasticLanguage.GTNumber;
-import StochasticLanguage.GTOneParameterCalculation;
-import StochasticLanguage.GTTwoParameterCalculation;
-import StochasticLanguage.OneParameterOperator;
-import StochasticLanguage.StochasticLanguageFactory;
-import StochasticLanguage.TwoParameterOperator;
 
 public class EditorToArithmeticExtensionHelper {
 	
@@ -32,7 +31,7 @@ public class EditorToArithmeticExtensionHelper {
 		//if the expression has two parameters and one operator
 		if(expression instanceof AddExpression || expression instanceof MultExpression || 
 				expression instanceof ExpExpression) {
-			GTTwoParameterCalculation calculation = StochasticLanguageFactory.eINSTANCE.createGTTwoParameterCalculation();
+			GTTwoParameterCalculation calculation = SGTPatternModelFactory.eINSTANCE.createGTTwoParameterCalculation();
 			if(expression instanceof AddExpression) {
 				/* tries to parse the expression tree; if it is runtime-depended
 				 * (with node attributes) it will create a new GTArithmetics node
@@ -83,7 +82,7 @@ public class EditorToArithmeticExtensionHelper {
 			try {
 				return tryToParseExpression(expression);
 			} catch(IllegalArgumentException e) {
-				GTOneParameterCalculation calculation = StochasticLanguageFactory.eINSTANCE.createGTOneParameterCalculation();
+				GTOneParameterCalculation calculation = SGTPatternModelFactory.eINSTANCE.createGTOneParameterCalculation();
 				calculation.setValue(transformToGTArithmetics(((OneParameterArithmetics) expression).getExpression()));
 				switch(((OneParameterArithmetics) expression).getOperator()) {
 					case ABSOLUTE: 	calculation.setOperator(OneParameterOperator.ABSOLUTE);
@@ -113,7 +112,7 @@ public class EditorToArithmeticExtensionHelper {
 		}
 		//if the parameter is an attribute from a node
 		else if(expression instanceof ArithmeticNodeAttribute) {
-			GTAttribute calculation = StochasticLanguageFactory.eINSTANCE.createGTAttribute();
+			GTAttribute calculation = SGTPatternModelFactory.eINSTANCE.createGTAttribute();
 			calculation.setType(((ArithmeticNodeAttribute) expression).getNode().getType());
 			calculation.setName(((ArithmeticNodeAttribute) expression).getNode().getName());
 			calculation.setAttribute(((ArithmeticNodeAttribute) expression).getAttribute());
@@ -122,7 +121,7 @@ public class EditorToArithmeticExtensionHelper {
 		}
 		//if the attribute is a number
 		else {
-			GTNumber calculation = StochasticLanguageFactory.eINSTANCE.createGTNumber();
+			GTNumber calculation = SGTPatternModelFactory.eINSTANCE.createGTNumber();
 			calculation.setNumber(((ArithmeticAttribute) expression).getStaticAttribute());
 			return calculation;
 		}
@@ -134,7 +133,7 @@ public class EditorToArithmeticExtensionHelper {
 	 */
 	private static GTNumber tryToParseExpression(ArithmeticExpression expression) throws IllegalArgumentException{
 			double value = GTArithmeticsCalculatorUtil.getValue(expression);
-			GTNumber number = StochasticLanguageFactory.eINSTANCE.createGTNumber();
+			GTNumber number = SGTPatternModelFactory.eINSTANCE.createGTNumber();
 			number.setNumber(value);
 			return number;
 	}

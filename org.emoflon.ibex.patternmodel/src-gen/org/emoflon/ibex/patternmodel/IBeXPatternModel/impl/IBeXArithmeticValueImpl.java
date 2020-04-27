@@ -1,11 +1,6 @@
 /**
  */
-package IBeXLanguage.impl;
-
-import IBeXLanguage.IBeXArithmeticValue;
-import IBeXLanguage.IBeXLanguagePackage;
-
-import StochasticLanguage.GTArithmetics;
+package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -15,6 +10,11 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
+
 /**
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>IBe XArithmetic Value</b></em>'.
@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link IBeXLanguage.impl.IBeXArithmeticValueImpl#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXArithmeticValueImpl#getExpression <em>Expression</em>}</li>
  * </ul>
  *
  * @generated
@@ -55,7 +55,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return IBeXLanguagePackage.Literals.IBE_XARITHMETIC_VALUE;
+		return IBeXPatternModelPackage.Literals.IBE_XARITHMETIC_VALUE;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 		expression = newExpression;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXLanguagePackage.IBE_XARITHMETIC_VALUE__EXPRESSION, oldExpression, newExpression);
+					IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION, oldExpression, newExpression);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -98,16 +98,16 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 			NotificationChain msgs = null;
 			if (expression != null)
 				msgs = ((InternalEObject) expression).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXLanguagePackage.IBE_XARITHMETIC_VALUE__EXPRESSION, null, msgs);
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION, null, msgs);
 			if (newExpression != null)
 				msgs = ((InternalEObject) newExpression).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXLanguagePackage.IBE_XARITHMETIC_VALUE__EXPRESSION, null, msgs);
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION, null, msgs);
 			msgs = basicSetExpression(newExpression, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXLanguagePackage.IBE_XARITHMETIC_VALUE__EXPRESSION,
-					newExpression, newExpression));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION, newExpression, newExpression));
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
 			return basicSetExpression(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -132,7 +132,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
 			return getExpression();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -146,7 +146,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
 			setExpression((GTArithmetics) newValue);
 			return;
 		}
@@ -161,7 +161,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
 			setExpression((GTArithmetics) null);
 			return;
 		}
@@ -176,7 +176,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXLanguagePackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
 			return expression != null;
 		}
 		return super.eIsSet(featureID);

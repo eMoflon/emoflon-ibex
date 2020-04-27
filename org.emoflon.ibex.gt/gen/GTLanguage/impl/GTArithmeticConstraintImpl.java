@@ -5,10 +5,6 @@ package GTLanguage.impl;
 import GTLanguage.GTArithmeticConstraint;
 import GTLanguage.GTLanguagePackage;
 
-import StochasticLanguage.GTArithmetics;
-import StochasticLanguage.GTAttribute;
-import StochasticLanguage.GTRelation;
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
@@ -17,6 +13,10 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute;
+import org.emoflon.ibex.gt.SGTPatternModel.GTRelation;
 
 /**
  * <!-- begin-user-doc -->

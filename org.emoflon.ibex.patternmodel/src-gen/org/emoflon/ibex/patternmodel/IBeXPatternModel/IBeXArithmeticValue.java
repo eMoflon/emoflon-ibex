@@ -1,8 +1,8 @@
 /**
  */
-package IBeXLanguage;
+package org.emoflon.ibex.patternmodel.IBeXPatternModel;
 
-import StochasticLanguage.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
 
 /**
  * <!-- begin-user-doc -->
@@ -13,10 +13,10 @@ import StochasticLanguage.GTArithmetics;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link IBeXLanguage.IBeXArithmeticValue#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue#getExpression <em>Expression</em>}</li>
  * </ul>
  *
- * @see IBeXLanguage.IBeXLanguagePackage#getIBeXArithmeticValue()
+ * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXArithmeticValue()
  * @model
  * @generated
  */
@@ -27,14 +27,14 @@ public interface IBeXArithmeticValue extends IBeXAttributeValue {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Expression</em>' containment reference.
 	 * @see #setExpression(GTArithmetics)
-	 * @see IBeXLanguage.IBeXLanguagePackage#getIBeXArithmeticValue_Expression()
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXArithmeticValue_Expression()
 	 * @model containment="true"
 	 * @generated
 	 */
 	GTArithmetics getExpression();
 
 	/**
-	 * Sets the value of the '{@link IBeXLanguage.IBeXArithmeticValue#getExpression <em>Expression</em>}' containment reference.
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue#getExpression <em>Expression</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Expression</em>' containment reference.

@@ -12,16 +12,14 @@ import GTLanguage.GTProbability;
 import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
 
-import StochasticLanguage.StochasticLanguagePackage;
-
-import StochasticLanguage.impl.StochasticLanguagePackageImpl;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+
+import org.emoflon.ibex.gt.SGTPatternModel.SGTPatternModelPackage;
 
 /**
  * <!-- begin-user-doc -->
@@ -129,19 +127,14 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 
 		isInited = true;
 
-		// Obtain or create and register interdependencies
-		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(StochasticLanguagePackage.eNS_URI);
-		StochasticLanguagePackageImpl theStochasticLanguagePackage = (StochasticLanguagePackageImpl) (registeredPackage instanceof StochasticLanguagePackageImpl
-				? registeredPackage
-				: StochasticLanguagePackage.eINSTANCE);
+		// Initialize simple dependencies
+		SGTPatternModelPackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
 		theGTLanguagePackage.createPackageContents();
-		theStochasticLanguagePackage.createPackageContents();
 
 		// Initialize created meta-data
 		theGTLanguagePackage.initializePackageContents();
-		theStochasticLanguagePackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theGTLanguagePackage.freeze();
@@ -277,8 +270,8 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 	 * @generated
 	 */
 	@Override
-	public EReference getGTRule_Probability() {
-		return (EReference) gtRuleEClass.getEStructuralFeatures().get(6);
+	public EReference getGTRule_Constraints() {
+		return (EReference) gtRuleEClass.getEStructuralFeatures().get(5);
 	}
 
 	/**
@@ -287,8 +280,8 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 	 * @generated
 	 */
 	@Override
-	public EReference getGTRule_Constraints() {
-		return (EReference) gtRuleEClass.getEStructuralFeatures().get(5);
+	public EReference getGTRule_Probability() {
+		return (EReference) gtRuleEClass.getEStructuralFeatures().get(6);
 	}
 
 	/**
@@ -467,8 +460,8 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 		setNsURI(eNS_URI);
 
 		// Obtain other dependent packages
-		StochasticLanguagePackage theStochasticLanguagePackage = (StochasticLanguagePackage) EPackage.Registry.INSTANCE
-				.getEPackage(StochasticLanguagePackage.eNS_URI);
+		SGTPatternModelPackage theSGTPatternModelPackage = (SGTPatternModelPackage) EPackage.Registry.INSTANCE
+				.getEPackage(SGTPatternModelPackage.eNS_URI);
 
 		// Create type parameters
 
@@ -525,22 +518,22 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 
 		initEClass(gtProbabilityEClass, GTProbability.class, "GTProbability", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGTProbability_Function(), theStochasticLanguagePackage.getGTStochasticFunction(), null,
+		initEReference(getGTProbability_Function(), theSGTPatternModelPackage.getGTStochasticFunction(), null,
 				"function", null, 0, 1, GTProbability.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTProbability_Parameter(), theStochasticLanguagePackage.getGTArithmetics(), null, "parameter",
+		initEReference(getGTProbability_Parameter(), theSGTPatternModelPackage.getGTArithmetics(), null, "parameter",
 				null, 0, 1, GTProbability.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(gtArithmeticConstraintEClass, GTArithmeticConstraint.class, "GTArithmeticConstraint", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGTArithmeticConstraint_Parameter(), theStochasticLanguagePackage.getGTAttribute(), null,
+		initEReference(getGTArithmeticConstraint_Parameter(), theSGTPatternModelPackage.getGTAttribute(), null,
 				"parameter", null, 0, 1, GTArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTArithmeticConstraint_Expression(), theStochasticLanguagePackage.getGTArithmetics(), null,
+		initEReference(getGTArithmeticConstraint_Expression(), theSGTPatternModelPackage.getGTArithmetics(), null,
 				"expression", null, 0, 1, GTArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getGTArithmeticConstraint_Relation(), theStochasticLanguagePackage.getGTRelation(), "relation",
+		initEAttribute(getGTArithmeticConstraint_Relation(), theSGTPatternModelPackage.getGTRelation(), "relation",
 				null, 0, 1, GTArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE,
 				!IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
