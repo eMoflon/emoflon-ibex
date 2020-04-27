@@ -67,6 +67,24 @@ public interface GTLanguageFactory extends EFactory {
 	GTRuleSet createGTRuleSet();
 
 	/**
+	 * Returns a new object of class '<em>GT Probability</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>GT Probability</em>'.
+	 * @generated
+	 */
+	GTProbability createGTProbability();
+
+	/**
+	 * Returns a new object of class '<em>GT Arithmetic Constraint</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>GT Arithmetic Constraint</em>'.
+	 * @generated
+	 */
+	GTArithmeticConstraint createGTArithmeticConstraint();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

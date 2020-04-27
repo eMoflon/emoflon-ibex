@@ -35,6 +35,10 @@
         eType="#//GTParameter" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="ruleNodes" upperBound="-1"
         eType="#//GTNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="constraints" upperBound="-1"
+        eType="#//GTArithmeticConstraint" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="probability" eType="#//GTProbability"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTRuleSet">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -42,5 +46,18 @@
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"
         eType="#//GTRule" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GTProbability">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="function" eType="ecore:EClass platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTStochasticFunction"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" eType="ecore:EClass platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTArithmetics"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GTArithmeticConstraint">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" eType="ecore:EClass platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTAttribute"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" eType="ecore:EClass platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTArithmetics"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="relation" eType="ecore:EEnum platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTRelation"/>
   </eClassifiers>
 </ecore:EPackage>

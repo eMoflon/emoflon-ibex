@@ -6,6 +6,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.utils.GTFlattener;
 
+
 /**
  * This is a super class for model transformations from the editor model to
  * another model.
@@ -36,4 +37,5 @@ public abstract class AbstractEditorModelTransformation<TargetModel>
 			return Optional.of(flattener.getFlattenedPattern());
 		}
 	}
+	
 }

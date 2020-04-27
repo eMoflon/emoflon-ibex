@@ -22,6 +22,8 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link GTLanguage.GTRule#getNodes <em>Nodes</em>}</li>
  *   <li>{@link GTLanguage.GTRule#getParameters <em>Parameters</em>}</li>
  *   <li>{@link GTLanguage.GTRule#getRuleNodes <em>Rule Nodes</em>}</li>
+ *   <li>{@link GTLanguage.GTRule#getConstraints <em>Constraints</em>}</li>
+ *   <li>{@link GTLanguage.GTRule#getProbability <em>Probability</em>}</li>
  * </ul>
  *
  * @see GTLanguage.GTLanguagePackage#getGTRule()
@@ -108,5 +110,39 @@ public interface GTRule extends GTNamedElement {
 	 * @generated
 	 */
 	EList<GTNode> getRuleNodes();
+
+	/**
+	 * Returns the value of the '<em><b>Constraints</b></em>' containment reference list.
+	 * The list contents are of type {@link GTLanguage.GTArithmeticConstraint}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Constraints</em>' containment reference list.
+	 * @see GTLanguage.GTLanguagePackage#getGTRule_Constraints()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<GTArithmeticConstraint> getConstraints();
+
+	/**
+	 * Returns the value of the '<em><b>Probability</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Probability</em>' containment reference.
+	 * @see #setProbability(GTProbability)
+	 * @see GTLanguage.GTLanguagePackage#getGTRule_Probability()
+	 * @model containment="true"
+	 * @generated
+	 */
+	GTProbability getProbability();
+
+	/**
+	 * Sets the value of the '{@link GTLanguage.GTRule#getProbability <em>Probability</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Probability</em>' containment reference.
+	 * @see #getProbability()
+	 * @generated
+	 */
+	void setProbability(GTProbability value);
 
 } // GTRule

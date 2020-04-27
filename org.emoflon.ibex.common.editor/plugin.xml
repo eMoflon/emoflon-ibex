@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?eclipse version="3.0"?><!--
+--><plugin>
+
+<extension point="org.eclipse.ui.editors"><editor class="org.eclipse.emfforms.spi.editor.GenericEditor" default="false" extensions="ibexlanguage" icon="icons/full/obj16/IBeXLanguageModelFile.gif" id="org.emoflon.ibex.common.editor.IBeXLanguage.emfformseditor" name="EMFForms Editor"/></extension>
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated Common -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="IBeXLanguage.presentation.IBeXLanguageModelWizardID"
+            name="%_UI_IBeXLanguageModelWizard_label"
+            class="IBeXLanguage.presentation.IBeXLanguageModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/IBeXLanguageModelFile.gif">
+         <description>%_UI_IBeXLanguageModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated Common -->
+      <editor
+            id="IBeXLanguage.presentation.IBeXLanguageEditorID"
+            name="%_UI_IBeXLanguageEditor_label"
+            icon="icons/full/obj16/IBeXLanguageModelFile.gif"
+            extensions="ibexlanguage"
+            class="IBeXLanguage.presentation.IBeXLanguageEditor"
+            contributorClass="IBeXLanguage.presentation.IBeXLanguageActionBarContributor">
+      </editor>
+   </extension>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated Common -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="StochasticLanguage.presentation.StochasticLanguageModelWizardID"
+            name="%_UI_StochasticLanguageModelWizard_label"
+            class="StochasticLanguage.presentation.StochasticLanguageModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/StochasticLanguageModelFile.gif">
+         <description>%_UI_StochasticLanguageModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated Common -->
+      <editor
+            id="StochasticLanguage.presentation.StochasticLanguageEditorID"
+            name="%_UI_StochasticLanguageEditor_label"
+            icon="icons/full/obj16/StochasticLanguageModelFile.gif"
+            extensions="stochasticlanguage"
+            class="StochasticLanguage.presentation.StochasticLanguageEditor"
+            contributorClass="StochasticLanguage.presentation.StochasticLanguageActionBarContributor">
+      </editor>
+   </extension>
+</plugin>

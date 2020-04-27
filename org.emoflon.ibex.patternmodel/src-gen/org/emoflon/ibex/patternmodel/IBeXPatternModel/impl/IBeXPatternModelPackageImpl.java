@@ -12,6 +12,8 @@ import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
+import org.emoflon.ibex.gt.SGTPatternModel.SGTPatternModelPackage;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
@@ -36,6 +38,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 
 /**
  * <!-- begin-user-doc -->
@@ -203,6 +206,20 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass iBeXStochasticAttributeValueEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXArithmeticValueEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EEnum iBeXRelationEEnum = null;
 
 	/**
@@ -254,6 +271,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 				: new IBeXPatternModelPackageImpl();
 
 		isInited = true;
+
+		// Initialize simple dependencies
+		SGTPatternModelPackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
 		theIBeXPatternModelPackage.createPackageContents();
@@ -935,6 +955,56 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EClass getIBeXStochasticAttributeValue() {
+		return iBeXStochasticAttributeValueEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getIBeXStochasticAttributeValue_Range() {
+		return (EAttribute) iBeXStochasticAttributeValueEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXStochasticAttributeValue_Function() {
+		return (EReference) iBeXStochasticAttributeValueEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXArithmeticValue() {
+		return iBeXArithmeticValueEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXArithmeticValue_Expression() {
+		return (EReference) iBeXArithmeticValueEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getIBeXRelation() {
 		return iBeXRelationEEnum;
 	}
@@ -1057,6 +1127,13 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEAttribute(iBeXCSPEClass, IBE_XCSP__PACKAGE);
 		createEReference(iBeXCSPEClass, IBE_XCSP__VALUES);
 
+		iBeXStochasticAttributeValueEClass = createEClass(IBE_XSTOCHASTIC_ATTRIBUTE_VALUE);
+		createEAttribute(iBeXStochasticAttributeValueEClass, IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE);
+		createEReference(iBeXStochasticAttributeValueEClass, IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION);
+
+		iBeXArithmeticValueEClass = createEClass(IBE_XARITHMETIC_VALUE);
+		createEReference(iBeXArithmeticValueEClass, IBE_XARITHMETIC_VALUE__EXPRESSION);
+
 		// Create enums
 		iBeXRelationEEnum = createEEnum(IBE_XRELATION);
 	}
@@ -1085,6 +1162,10 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		setNsPrefix(eNS_PREFIX);
 		setNsURI(eNS_URI);
 
+		// Obtain other dependent packages
+		SGTPatternModelPackage theSGTPatternModelPackage = (SGTPatternModelPackage) EPackage.Registry.INSTANCE
+				.getEPackage(SGTPatternModelPackage.eNS_URI);
+
 		// Create type parameters
 
 		// Set bounds for type parameters
@@ -1104,6 +1185,8 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXEnumLiteralEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 		iBeXNodeEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXPatternEClass.getESuperTypes().add(this.getIBeXNamedElement());
+		iBeXStochasticAttributeValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
+		iBeXArithmeticValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(iBeXAttributeEClass, IBeXAttribute.class, "IBeXAttribute", IS_ABSTRACT, !IS_INTERFACE,
@@ -1301,6 +1384,21 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXCSP_Values(), this.getIBeXAttributeValue(), null, "values", null, 0, -1, IBeXCSP.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXStochasticAttributeValueEClass, IBeXStochasticAttributeValue.class,
+				"IBeXStochasticAttributeValue", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getIBeXStochasticAttributeValue_Range(), theSGTPatternModelPackage.getGTStochasticRange(),
+				"range", null, 0, 1, IBeXStochasticAttributeValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXStochasticAttributeValue_Function(), theSGTPatternModelPackage.getGTStochasticFunction(),
+				null, "function", null, 0, 1, IBeXStochasticAttributeValue.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXArithmeticValueEClass, IBeXArithmeticValue.class, "IBeXArithmeticValue", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXArithmeticValue_Expression(), theSGTPatternModelPackage.getGTArithmetics(), null,
+				"expression", null, 0, 1, IBeXArithmeticValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(iBeXRelationEEnum, IBeXRelation.class, "IBeXRelation");

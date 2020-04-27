@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
+import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
+import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
 import org.emoflon.ibex.gt.editor.gT.EditorAttributeExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
@@ -17,7 +19,9 @@ import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
+import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
@@ -31,6 +35,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 
 /**
  * Helper to transform attributes from the editor to the IBeX model.
@@ -225,7 +230,12 @@ public class EditorToIBeXAttributeHelper {
 					editorAttribute.getAttribute().getEAttributeType()));
 		} else if (value instanceof EditorParameterExpression) {
 			return Optional.of(convertAttributeValue((EditorParameterExpression) value));
-		} else {
+		} else if(value instanceof StochasticFunctionExpression) {
+			return Optional.of(convertAttributeValue((StochasticFunctionExpression) value));
+		} else if(value instanceof ArithmeticCalculationExpression) {
+			return Optional.of(convertAttributeValue((ArithmeticCalculationExpression) value));
+		}
+		else {
 			transformation.logError("Invalid attribute value: %s", editorAttribute.getValue());
 			return Optional.empty();
 		}
@@ -305,5 +315,32 @@ public class EditorToIBeXAttributeHelper {
 		IBeXAttributeParameter parameter = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeParameter();
 		parameter.setName(editorExpression.getParameter().getName());
 		return parameter;
+	}
+	
+	/**
+	 * Sets the stochastic attribute which later generates a numeric value
+	 * 
+	 * @param stochasticExpression
+	 * 			the stochastic expression
+	 * @return the IBeXStochasticAttributeValue
+	 */
+	private static IBeXStochasticAttributeValue convertAttributeValue(final StochasticFunctionExpression stochasticExpression) {
+		IBeXStochasticAttributeValue value = IBeXPatternModelFactory.eINSTANCE.createIBeXStochasticAttributeValue();
+		value.setFunction(EditorToStochasticExtensionHelper
+				.transformStochasticFunction(stochasticExpression));
+		// the value of the enums from GTStochasticRange and OperatorRange need to be the same
+		value.setRange(GTStochasticRange.get(stochasticExpression.getOperatorRange().getValue()));
+		return value;
+	}
+	/**
+	 * partly calculates and transforms the arithmetic expression
+	 * 
+	 * @param expression the arithmetic expression
+	 * @return the IBeXArithmeticValue
+	 */
+	private static IBeXArithmeticValue convertAttributeValue(final ArithmeticCalculationExpression expression) {
+		IBeXArithmeticValue value= IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();		;
+		value.setExpression(EditorToArithmeticExtensionHelper.transformToGTArithmetics(expression.getExpression()));
+		return value;
 	}
 }

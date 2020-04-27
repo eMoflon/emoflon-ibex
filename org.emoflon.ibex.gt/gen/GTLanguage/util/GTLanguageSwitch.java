@@ -107,6 +107,20 @@ public class GTLanguageSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case GTLanguagePackage.GT_PROBABILITY: {
+			GTProbability gtProbability = (GTProbability) theEObject;
+			T result = caseGTProbability(gtProbability);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case GTLanguagePackage.GT_ARITHMETIC_CONSTRAINT: {
+			GTArithmeticConstraint gtArithmeticConstraint = (GTArithmeticConstraint) theEObject;
+			T result = caseGTArithmeticConstraint(gtArithmeticConstraint);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		default:
 			return defaultCase(theEObject);
 		}
@@ -184,6 +198,36 @@ public class GTLanguageSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseGTRuleSet(GTRuleSet object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>GT Probability</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>GT Probability</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseGTProbability(GTProbability object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>GT Arithmetic Constraint</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>GT Arithmetic Constraint</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseGTArithmeticConstraint(GTArithmeticConstraint object) {
 		return null;
 	}
 

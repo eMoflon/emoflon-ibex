@@ -265,6 +265,24 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE: {
+			IBeXStochasticAttributeValue iBeXStochasticAttributeValue = (IBeXStochasticAttributeValue) theEObject;
+			T result = caseIBeXStochasticAttributeValue(iBeXStochasticAttributeValue);
+			if (result == null)
+				result = caseIBeXAttributeValue(iBeXStochasticAttributeValue);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE: {
+			IBeXArithmeticValue iBeXArithmeticValue = (IBeXArithmeticValue) theEObject;
+			T result = caseIBeXArithmeticValue(iBeXArithmeticValue);
+			if (result == null)
+				result = caseIBeXAttributeValue(iBeXArithmeticValue);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		default:
 			return defaultCase(theEObject);
 		}
@@ -597,6 +615,36 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXCSP(IBeXCSP object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XStochastic Attribute Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XStochastic Attribute Value</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXStochasticAttributeValue(IBeXStochasticAttributeValue object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XArithmetic Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XArithmetic Value</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXArithmeticValue(IBeXArithmeticValue object) {
 		return null;
 	}
 

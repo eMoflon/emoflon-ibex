@@ -7,4 +7,5 @@
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="GTLanguage.GTLanguagePackage" genModel="model/Gt.genmodel" uri="platform:/resource/org.emoflon.ibex.gt/model/Gt.ecore"/>
   </extension>
+
 </plugin>
