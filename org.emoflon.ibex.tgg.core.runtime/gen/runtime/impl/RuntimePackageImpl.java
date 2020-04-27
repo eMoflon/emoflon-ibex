@@ -5,7 +5,6 @@ package runtime.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
 import runtime.Protocol;
@@ -86,7 +85,9 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 
 		// Obtain or create and register package
 		Object registeredRuntimePackage = EPackage.Registry.INSTANCE.get(eNS_URI);
-		RuntimePackageImpl theRuntimePackage = registeredRuntimePackage instanceof RuntimePackageImpl ? (RuntimePackageImpl) registeredRuntimePackage : new RuntimePackageImpl();
+		RuntimePackageImpl theRuntimePackage = registeredRuntimePackage instanceof RuntimePackageImpl
+				? (RuntimePackageImpl) registeredRuntimePackage
+				: new RuntimePackageImpl();
 
 		isInited = true;
 
@@ -235,16 +236,22 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 		// Add supertypes to classes
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(protocolEClass, Protocol.class, "Protocol", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getProtocol_Steps(), this.getTGGRuleApplication(), this.getTGGRuleApplication_Protocol(), "steps", null, 0, -1, Protocol.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+		initEClass(protocolEClass, Protocol.class, "Protocol", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getProtocol_Steps(), this.getTGGRuleApplication(), this.getTGGRuleApplication_Protocol(),
+				"steps", null, 0, -1, Protocol.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggRuleApplicationEClass, TGGRuleApplication.class, "TGGRuleApplication", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGRuleApplication_Protocol(), this.getProtocol(), this.getProtocol_Steps(), "protocol", null, 0, 1, TGGRuleApplication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+		initEClass(tggRuleApplicationEClass, TGGRuleApplication.class, "TGGRuleApplication", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGRuleApplication_Protocol(), this.getProtocol(), this.getProtocol_Steps(), "protocol", null,
+				0, 1, TGGRuleApplication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tempContainerEClass, TempContainer.class, "TempContainer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTempContainer_Objects(), ecorePackage.getEObject(), null, "objects", null, 0, -1, TempContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+		initEClass(tempContainerEClass, TempContainer.class, "TempContainer", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTempContainer_Objects(), ecorePackage.getEObject(), null, "objects", null, 0, -1,
+				TempContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource

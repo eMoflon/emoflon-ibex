@@ -11,20 +11,16 @@ public class ImmutableMatchContainer {
 		this.matchContainer = matchContainer;
 	}
 	
-	public IMatch getNext() {
+	public ITGGMatch getNext() {
 		return matchContainer.getNext();
 	}
 	
-	public Set<IMatch> getMatches() {
+	public Set<ITGGMatch> getMatches() {
 		return Collections.unmodifiableSet(matchContainer.getMatches());
 	}
 	
 	public boolean isEmpty() {
 		return matchContainer.isEmpty();
-	}
-
-	public String getRuleName(IMatch match) {
-		return matchContainer.getRuleName(match);
 	}
 
 }

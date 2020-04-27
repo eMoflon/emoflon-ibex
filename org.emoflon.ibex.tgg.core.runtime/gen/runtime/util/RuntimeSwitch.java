@@ -4,10 +4,13 @@ package runtime.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.util.Switch;
 
 import runtime.*;
+import runtime.Protocol;
+import runtime.RuntimePackage;
+import runtime.TGGRuleApplication;
+import runtime.TempContainer;
 
 /**
  * <!-- begin-user-doc -->

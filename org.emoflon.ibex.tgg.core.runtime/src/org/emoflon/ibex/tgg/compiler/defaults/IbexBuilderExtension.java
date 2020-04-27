@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.transformations.EditorTGGtoInternalTGG;
-import org.emoflon.ibex.tgg.core.transformation.TGGProject;
 import org.emoflon.ibex.tgg.ide.admin.BuilderExtension;
 import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
+import org.emoflon.ibex.tgg.transformation.TGGProject;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 public class IbexBuilderExtension implements BuilderExtension {

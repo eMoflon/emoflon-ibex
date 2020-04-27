@@ -13,8 +13,6 @@ import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -22,11 +20,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGEnumExpressionImpl#getEenum <em>Eenum</em>}</li>
  *   <li>{@link language.impl.TGGEnumExpressionImpl#getLiteral <em>Literal</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -75,13 +73,15 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EEnum getEenum() {
 		if (eenum != null && eenum.eIsProxy()) {
 			InternalEObject oldEenum = (InternalEObject) eenum;
 			eenum = (EEnum) eResolveProxy(oldEenum);
 			if (eenum != oldEenum) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ENUM_EXPRESSION__EENUM, oldEenum, eenum));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							LanguagePackage.TGG_ENUM_EXPRESSION__EENUM, oldEenum, eenum));
 			}
 		}
 		return eenum;
@@ -101,11 +101,13 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setEenum(EEnum newEenum) {
 		EEnum oldEenum = eenum;
 		eenum = newEenum;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ENUM_EXPRESSION__EENUM, oldEenum, eenum));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ENUM_EXPRESSION__EENUM, oldEenum,
+					eenum));
 	}
 
 	/**
@@ -113,13 +115,15 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EEnumLiteral getLiteral() {
 		if (literal != null && literal.eIsProxy()) {
 			InternalEObject oldLiteral = (InternalEObject) literal;
 			literal = (EEnumLiteral) eResolveProxy(oldLiteral);
 			if (literal != oldLiteral) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ENUM_EXPRESSION__LITERAL, oldLiteral, literal));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							LanguagePackage.TGG_ENUM_EXPRESSION__LITERAL, oldLiteral, literal));
 			}
 		}
 		return literal;
@@ -139,11 +143,13 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setLiteral(EEnumLiteral newLiteral) {
 		EEnumLiteral oldLiteral = literal;
 		literal = newLiteral;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ENUM_EXPRESSION__LITERAL, oldLiteral, literal));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ENUM_EXPRESSION__LITERAL,
+					oldLiteral, literal));
 	}
 
 	/**
@@ -217,7 +223,5 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGEnumExpressionImpl

@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-
-import IBeXLanguage.IBeXAttributeConstraint;
-import IBeXLanguage.IBeXContextPattern;
-import IBeXLanguage.IBeXEdge;
-import IBeXLanguage.IBeXNode;
-import IBeXLanguage.IBeXNodePair;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair;
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGRuleEdge;

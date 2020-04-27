@@ -58,7 +58,7 @@ public class EMFEdge {
 	public boolean equals(final Object o) {
 		if (o instanceof EMFEdge) {
 			EMFEdge e = (EMFEdge) o;
-			return getSource() == e.getSource() && getTarget() == e.getTarget() && getType() == e.getType();
+			return getSource().equals(e.getSource()) && getTarget().equals(e.getTarget()) && getType().equals(e.getType());
 		}
 		return false;
 	}

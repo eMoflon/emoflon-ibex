@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 
-import IBeXLanguage.IBeXPatternSet;
 
 /**
  * This is the abstraction for all patterns.

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="precedencegraph" nsURI="http://www.example.org/precedencegraph"
+    nsPrefix="precedencegraph">
+  <eClassifiers xsi:type="ecore:EClass" name="PrecedenceNodeContainer">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
+        eType="#//PrecedenceNode" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PrecedenceNode">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="broken" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="requires" upperBound="-1"
+        eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/requiredBy"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="requiredBy" upperBound="-1"
+        eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/requires"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="basedOn" upperBound="-1"
+        eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/baseFor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="baseFor" upperBound="-1"
+        eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/basedOn"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="matchAsString" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+</ecore:EPackage>

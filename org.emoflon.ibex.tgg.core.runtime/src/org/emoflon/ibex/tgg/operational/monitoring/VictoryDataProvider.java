@@ -19,8 +19,10 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 import language.TGGRule;
 
@@ -33,15 +35,22 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	OperationalStrategy op;
 	String[] savedPLocations;
 
+	private IbexOptions options;
+
+	private TGGResourceHandler resourceHandler;
+
 	public VictoryDataProvider(OperationalStrategy pOperationalStrategy) {
 		this.op = pOperationalStrategy;
+		options = op.getOptions();
+		resourceHandler = options.resourceHandler();
+		
 		this.getDefaultSaveLocation();
 	}
 
 	@Override
 	public TGGRule getRule(String pRuleName) {
 		try {
-			return op.getOptions().flattenedTGG().getRules().stream().filter(r -> r.getName().equals(pRuleName))
+			return op.getOptions().tgg.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(pRuleName))
 					.findFirst().get();
 		} catch (Exception e) {
 			logger.error(e);
@@ -98,7 +107,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	}
 
 	@Override
-	public Set<IMatch> getMatches() {
+	public Set<ITGGMatch> getMatches() {
 		try {
 			return op.getMatchContainer().getMatches();
 		} catch (Exception e) {
@@ -108,7 +117,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	}
 
 	@Override
-	public Set<IMatch> getMatches(String pRuleName) {
+	public Set<ITGGMatch> getMatches(String pRuleName) {
 		try {
 			return this.getMatches().stream().filter(r -> r.getRuleName().equals(pRuleName))
 					.collect(Collectors.toSet());
@@ -119,7 +128,7 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 	}
 
 	@Override
-	public Set<IMatch> getMatches(IMatch match) {
+	public Set<ITGGMatch> getMatches(ITGGMatch match) {
 		try {
 			return this.getMatches(match.getRuleName());
 		} catch (Exception e) {
@@ -140,10 +149,10 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		Set<URI> newUri = new HashSet<URI>();
 
 		// storing resources that needs to be saved
-		resources.put("s", op.getSourceResource());
-		resources.put("t", op.getTargetResource());
-		resources.put("c", op.getCorrResource());
-		resources.put("p", op.getProtocolResource());
+		resources.put("s", resourceHandler.getSourceResource());
+		resources.put("t", resourceHandler.getTargetResource());
+		resources.put("c", resourceHandler.getCorrResource());
+		resources.put("p", resourceHandler.getProtocolResource());
 
 		System.out.println(Arrays.toString(pLocations));
 
@@ -198,10 +207,10 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 		int count = 0;
 		LinkedHashMap<String, Resource> resources = new LinkedHashMap<String, Resource>();
 
-		resources.put("s", op.getSourceResource());
-		resources.put("t", op.getTargetResource());
-		resources.put("c", op.getCorrResource());
-		resources.put("p", op.getProtocolResource());
+		resources.put("s", resourceHandler.getSourceResource());
+		resources.put("t", resourceHandler.getTargetResource());
+		resources.put("c", resourceHandler.getCorrResource());
+		resources.put("p", resourceHandler.getProtocolResource());
 
 		for (Entry<String, Resource> e : resources.entrySet()) {
 			Resource r = e.getValue();
@@ -223,6 +232,6 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 
 	@Override
 	public Collection<TGGRule> getAllRules() {
-		return op.getOptions().flattenedTGG().getRules();
+		return op.getOptions().tgg.flattenedTGG().getRules();
 	}
 }

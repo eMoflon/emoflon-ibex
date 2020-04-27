@@ -19,8 +19,6 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -28,14 +26,15 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGAttributeConstraintDefinitionLibraryImpl#getTggAttributeConstraintDefinitions <em>Tgg Attribute Constraint Definitions</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
-public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl implements TGGAttributeConstraintDefinitionLibrary {
+public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl
+		implements TGGAttributeConstraintDefinitionLibrary {
 	/**
 	 * The cached value of the '{@link #getTggAttributeConstraintDefinitions() <em>Tgg Attribute Constraint Definitions</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -70,9 +69,11 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl imp
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGAttributeConstraintDefinition> getTggAttributeConstraintDefinitions() {
 		if (tggAttributeConstraintDefinitions == null) {
-			tggAttributeConstraintDefinitions = new EObjectContainmentEList<TGGAttributeConstraintDefinition>(TGGAttributeConstraintDefinition.class, this,
+			tggAttributeConstraintDefinitions = new EObjectContainmentEList<TGGAttributeConstraintDefinition>(
+					TGGAttributeConstraintDefinition.class, this,
 					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS);
 		}
 		return tggAttributeConstraintDefinitions;
@@ -117,7 +118,8 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl imp
 		switch (featureID) {
 		case LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
 			getTggAttributeConstraintDefinitions().clear();
-			getTggAttributeConstraintDefinitions().addAll((Collection<? extends TGGAttributeConstraintDefinition>) newValue);
+			getTggAttributeConstraintDefinitions()
+					.addAll((Collection<? extends TGGAttributeConstraintDefinition>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -151,7 +153,5 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl imp
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGAttributeConstraintDefinitionLibraryImpl

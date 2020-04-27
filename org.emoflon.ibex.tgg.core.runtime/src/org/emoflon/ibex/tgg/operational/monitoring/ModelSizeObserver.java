@@ -5,6 +5,7 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 public class ModelSizeObserver extends AbstractIbexObserver {
 
@@ -22,8 +23,9 @@ public class ModelSizeObserver extends AbstractIbexObserver {
 		case MATCHAPPLIED:
 			if (this.getObservable() instanceof OperationalStrategy) {
 				OperationalStrategy op = (OperationalStrategy) this.getObservable();
-				this.currentSize = this.getNumberOfObjectsInModels(op.getSourceResource(), op.getCorrResource(),
-						op.getTargetResource());
+				TGGResourceHandler rHandler = op.getOptions().resourceHandler();
+				this.currentSize = this.getNumberOfObjectsInModels(rHandler.getSourceResource(), rHandler.getCorrResource(),
+						rHandler.getTargetResource());
 				logger.info("Size of input models is " + this.currentSize + " elements");
 				logger.info("***********************");
 				break;

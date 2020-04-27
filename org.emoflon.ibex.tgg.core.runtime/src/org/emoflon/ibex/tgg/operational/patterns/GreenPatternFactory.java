@@ -1,16 +1,19 @@
 package org.emoflon.ibex.tgg.operational.patterns;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
@@ -27,33 +30,33 @@ import language.TGGRuleNode;
 public class GreenPatternFactory implements IGreenPatternFactory {
 	protected String ruleName;
 	protected IbexOptions options;
-	protected List<TGGParamValue> variables = new ArrayList<>();
-	protected List<TGGAttributeConstraint> constraints = new ArrayList<>();
+	protected List<TGGParamValue> variables = new LinkedList<>();
+	protected List<TGGAttributeConstraint> constraints = new LinkedList<>();
 	protected final static Logger logger = Logger.getLogger(GreenPatternFactory.class);
 
 	private Map<String, IGreenPattern> patterns;
 	private OperationalStrategy strategy;
 	private TGGRule rule;
 
-	protected Collection<TGGRuleNode> greenSrcNodesInRule = new ArrayList<>();
-	protected Collection<TGGRuleNode> greenTrgNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleCorr> greenCorrNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> greenSrcEdgesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> greenTrgEdgesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> greenCorrEdgesInRule = new ArrayList<>();;
+	protected List<TGGRuleNode> greenSrcNodesInRule = new LinkedList<>();
+	protected List<TGGRuleNode> greenTrgNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleCorr> greenCorrNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> greenSrcEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> greenTrgEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> greenCorrEdgesInRule = new LinkedList<>();;
 
-	protected Collection<TGGRuleNode> blackSrcNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleNode> blackTrgNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleCorr> blackCorrNodesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> blackSrcEdgesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> blackTrgEdgesInRule = new ArrayList<>();;
-	protected Collection<TGGRuleEdge> blackCorrEdgesInRule = new ArrayList<>();;
+	protected List<TGGRuleNode> blackSrcNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleNode> blackTrgNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleCorr> blackCorrNodesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> blackSrcEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> blackTrgEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleEdge> blackCorrEdgesInRule = new LinkedList<>();;
 
-	public GreenPatternFactory(String ruleName, IbexOptions options, OperationalStrategy strategy) {
-		this(options, strategy);
+	public GreenPatternFactory(IbexOptions options, String ruleName) {
+		this(options);
 		this.ruleName = ruleName;
 
-		rule = options.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findAny()
+		rule = options.tgg.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findAny()
 				.orElseThrow(() -> new IllegalStateException("Could not find " + ruleName + " in the TGG."));
 
 		greenSrcNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.SRC));
@@ -76,12 +79,22 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 		constraints.addAll(rule.getAttributeConditionLibrary().getTggAttributeConstraints());
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
+		
+		greenSrcEdgesInRule.sort((a, b) -> compareEdges(a, b));
+		greenTrgEdgesInRule.sort((a, b) -> compareEdges(a, b));
+	}
+	
+	private int compareEdges(TGGRuleEdge a, TGGRuleEdge b) {
+		boolean a_val = a.getSrcNode().getBindingType() == BindingType.CONTEXT && a.getTrgNode().getBindingType() == BindingType.CREATE;
+		boolean b_val = b.getSrcNode().getBindingType() == BindingType.CONTEXT && b.getTrgNode().getBindingType() == BindingType.CREATE;
+		if(a_val && !b_val) return 1;
+		if(!a_val && b_val) return -1;
+		return 0;
 	}
 
-	public GreenPatternFactory(IbexOptions options, OperationalStrategy strategy) {
-		this.options = options;
-		this.strategy = strategy;
+	public GreenPatternFactory(IbexOptions options) {
 		patterns = new HashMap<>();
+		this.options = options;
 	}
 
 	private Collection<TGGRuleEdge> validate(Collection<TGGRuleEdge> edges) {
@@ -99,64 +112,43 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	}
 
 	private Collection<TGGRuleEdge> getEdges(BindingType bt, DomainType dt) {
-		return rule.getEdges().stream().filter(e -> e.getBindingType() == bt && e.getDomainType() == dt)
+		Collection<TGGRuleEdge> edges =  rule.getEdges().stream().filter(e -> e.getBindingType() == bt && e.getDomainType() == dt)
 				.collect(Collectors.toList());
-	}
-
-	public IGreenPattern create(String patternName) {
-		if (isGENBlackPattern(patternName))
-			return createGreenPattern(GenGreenPattern.class);
-
-		if (isCCBlackPattern(patternName))
-			return createGreenPattern(CCGreenPattern.class);
-
-		if (isCOBlackPattern(patternName))
-			return createGreenPattern(COGreenPattern.class);
-
-		if (isFWDBlackPattern(patternName))
-			return createGreenPattern(FWDGreenPattern.class);
-
-		if (isBWDBlackPattern(patternName))
-			return createGreenPattern(BWDGreenPattern.class);
-
-		if (isFWDOptBlackPattern(patternName))
-			return createGreenPattern(FWDOptGreenPattern.class);
-
-		if (isBWDOptBlackPattern(patternName))
-			return createGreenPattern(BWDOptGreenPattern.class);
 		
-		return createGreenPattern(EmptyGreenPattern.class);
+		// filter opposite edges
+		Set<EMFEdge> emfEdges = new HashSet<>();
+		Set<TGGRuleEdge> removedEdges = new HashSet<>();
+		for(TGGRuleEdge edge : edges) {
+			EMFEdge eEdge = new EMFEdge(edge.getSrcNode(), edge.getTrgNode(), edge.getType());
+			if(emfEdges.contains(eEdge)) {
+				removedEdges.add(edge);
+				continue;
+			}
+			
+			if(eEdge.getType().getEOpposite() != null) {
+				EMFEdge opposite = new EMFEdge(edge.getTrgNode(), edge.getSrcNode(), edge.getType().getEOpposite());
+				emfEdges.add(opposite);
+			}
+		}
+		
+		edges.removeAll(removedEdges);
+		return edges;
 	}
 
-	private boolean isBWDBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getBWDBlackPatternName(ruleName));
+	public IGreenPattern create(PatternType type) {
+		switch(type) {
+		case GEN: return createGreenPattern(GenGreenPattern.class);
+		case CC: return createGreenPattern(CCGreenPattern.class);
+		case CO: return createGreenPattern(COGreenPattern.class);
+		case FWD: return createGreenPattern(FWDGreenPattern.class);
+		case BWD: return createGreenPattern(BWDGreenPattern.class);
+		case FWD_OPT: return createGreenPattern(FWDOptGreenPattern.class);
+		case BWD_OPT: return createGreenPattern(BWDOptGreenPattern.class);
+		default: return createGreenPattern(EmptyGreenPattern.class);
+		}
 	}
 
-	private boolean isFWDBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getFWDBlackPatternName(ruleName));
-	}
-
-	private boolean isCOBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getCOBlackPatternName(ruleName));
-	}
-
-	private boolean isCCBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getCCBlackPatternName(ruleName));
-	}
-
-	private boolean isGENBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getGENBlackPatternName(ruleName));
-	}
-
-	private boolean isFWDOptBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getFWDOptBlackPatternName(ruleName));
-	}
-
-	private boolean isBWDOptBlackPattern(String patternName) {
-		return patternName.equals(TGGPatternUtil.getBWDOptBlackPatternName(ruleName));
-	}
- 
-	public IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {
+	public synchronized IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {
 		return createPattern(c.getName(), () -> {
 			try {
 				return c.getConstructor(GreenPatternFactory.class).newInstance(this);

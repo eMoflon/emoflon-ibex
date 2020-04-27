@@ -13,18 +13,14 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.gt.arithmetics.IBeXArithmeticsCalculatorHelper;
-import org.emoflon.ibex.gt.arithmetics.IBeXStochasticCalculatorHelper;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 
-import IBeXLanguage.IBeXArithmeticValue;
-import IBeXLanguage.IBeXAttributeAssignment;
-import IBeXLanguage.IBeXAttributeExpression;
-import IBeXLanguage.IBeXAttributeParameter;
-import IBeXLanguage.IBeXAttributeValue;
-import IBeXLanguage.IBeXConstant;
-import IBeXLanguage.IBeXCreatePattern;
-import IBeXLanguage.IBeXEnumLiteral;
-import IBeXLanguage.IBeXStochasticAttributeValue;
 
 /**
  * Interpreter applying creation of elements for graph transformation.

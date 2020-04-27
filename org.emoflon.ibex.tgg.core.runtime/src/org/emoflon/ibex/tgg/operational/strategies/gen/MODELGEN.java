@@ -1,17 +1,17 @@
 package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
-import org.emoflon.ibex.tgg.operational.matches.SimpleMatch;
+import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
@@ -38,8 +38,7 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.UpdatePolicy;
  * Checks ensure that the basic abstract syntax (EMF and metamodel constraints)
  * of all metamodels are respected (NACs are not necessary for upper bound
  * multiplicities). Lower bound multiplicities and other OCL constraints are not
- * supported. Multi-amalgamation is supported and can be controlled by an update
- * policy.
+ * supported.
  * 
  * <br/>
  * <br/>
@@ -47,9 +46,9 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.UpdatePolicy;
  * To further increase scalability, subclass and supress, e.g., protocol
  * creation and/or model saving, etc.
  * 
- * @author Anthony Anjorin
+ * @author Anthony Anjorin, Lars Fritsche
  */
-public abstract class MODELGEN extends OperationalStrategy {
+public class MODELGEN extends OperationalStrategy {
 
 	/********************** Attributes *********************/
 
@@ -59,7 +58,8 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 */
 	protected MODELGENStopCriterion stopCriterion;
 
-	/** Constructors **/
+	/** Constructors 
+	 * @param modelgen **/
 
 	public MODELGEN(IbexOptions options) throws IOException {
 		super(options, new RandomMatchUpdatePolicy(50));
@@ -75,35 +75,12 @@ public abstract class MODELGEN extends OperationalStrategy {
 	public void run() throws IOException {
 		collectMatchesForAxioms();
 		do
-			blackInterpreter.updateMatches();
+			matchDistributor.updateMatches();
 		while (processOneOperationalRuleMatch());
 	}
 
 	public void setStopCriterion(MODELGENStopCriterion stop) {
 		this.stopCriterion = stop;
-	}
-	
-	@Override
-	protected void loadTGG() throws IOException {
-		super.loadTGG();
-	}
-
-	@Override
-	public void saveModels() throws IOException {
-		s.save(null);
-		t.save(null);
-		c.save(null);
-		p.save(null);
-	}
-
-	@Override
-	public void loadModels() throws IOException {
-		s = createResource(options.projectPath() + "/instances/src.xmi");
-		t = createResource(options.projectPath() + "/instances/trg.xmi");
-		c = createResource(options.projectPath() + "/instances/corr.xmi");
-		p = createResource(options.projectPath() + "/instances/protocol.xmi");
-
-		EcoreUtil.resolveAll(rs);
 	}
 
 	/**
@@ -112,36 +89,20 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * axiom match. Otherwise we can add the match as usual.
 	 */
 	@Override
-	public void addMatch(org.emoflon.ibex.common.operational.IMatch match) {
-		if (TGGPatternUtil.isGENAxiomNacPattern(match.getPatternName())) {
+	public void addOperationalRuleMatch(ITGGMatch match) {
+		if (match.getType() == PatternType.GEN_AXIOM_NAC) {
 			this.deleteAxiomMatchesForFoundNACs(match);
 		} else {
-			super.addMatch(match);
+			super.addOperationalRuleMatch(match);
 		}
-	}
-
-	@Override
-	public boolean isPatternRelevantForCompiler(String patternName) {
-		return patternName.endsWith(PatternSuffixes.GEN) || patternName.endsWith(PatternSuffixes.GEN_AXIOM_NAC);
 	}
 
 	/********************** Internal Interface *********************/
 
 	/**
-	 * Override in subclasses (concrete modelgen apps in TGG projects), to register
-	 * all required metamodels for the concrete example.
-	 */
-	protected abstract void registerUserMetamodels() throws IOException;
-
-	/**
 	 * In contrast to other TGG ops, MODELGEN (i) does not automatically remove
 	 * successful matches (but can use them repeatedly), (ii) updates the state of
 	 * its stop criterion after every rule application.
-	 * 
-	 * <br/>
-	 * 
-	 * For TGGs with multi-amalgamation, all complement matches are handled
-	 * immediately after the corresponding kernel match.
 	 */
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
@@ -149,10 +110,10 @@ public abstract class MODELGEN extends OperationalStrategy {
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
-		IMatch match = chooseOneMatch();
-		String ruleName = operationalMatchContainer.getRuleName(match);
+		ITGGMatch match = chooseOneMatch();
+		String ruleName = match.getRuleName();
 
-		Optional<IMatch> comatch = processOperationalRuleMatch(ruleName, match);
+		Optional<ITGGMatch> comatch = processOperationalRuleMatch(ruleName, match);
 		comatch.ifPresent(cm -> {
 			updateStopCriterion(ruleName);
 		});
@@ -165,29 +126,29 @@ public abstract class MODELGEN extends OperationalStrategy {
 
 		return true;
 	}
-	
+
 	@Override
 	protected void updateBlockedMatches() {
-		for(IMatch match : operationalMatchContainer.getMatches().toArray(new IMatch[0])) {
-			String ruleName = operationalMatchContainer.getRuleName(match);
-			if(stopCriterion.dont()) {
-				if(!blockedMatches.containsKey(match))
+		for (ITGGMatch match : operationalMatchContainer.getMatches().toArray(new ITGGMatch[0])) {
+			String ruleName = match.getRuleName();
+			if (stopCriterion.dont()) {
+				if (!blockedMatches.containsKey(match))
 					blockedMatches.put(match, "Application blocked by stop criterion");
 				removeOperationalRuleMatch(match);
 			}
 			if (stopCriterion.dont(ruleName)) {
-				if(!blockedMatches.containsKey(match))
+				if (!blockedMatches.containsKey(match))
 					blockedMatches.put(match, "Application blocked by ruleName stop criterion");
 				removeOperationalRuleMatch(match);
 			}
 		}
 		super.updateBlockedMatches();
 	}
-	
+
 	@Override
-	protected IMatch chooseOneMatch() {
-		IMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
-		
+	protected ITGGMatch chooseOneMatch() {
+		ITGGMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
+
 		if (match == null)
 			throw new IllegalStateException("Update policies should never return null!");
 
@@ -199,7 +160,7 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * up the generation process).
 	 */
 	@Override
-	protected void handleSuccessfulRuleApplication(IMatch cm, String ruleName, IGreenPattern greenPattern) {
+	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, IGreenPattern greenPattern) {
 		createMarkers(greenPattern, cm, ruleName);
 	}
 
@@ -210,9 +171,9 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * @param match the match of a NAC for an Axiom
 	 */
 	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
-		Set<IMatch> matchesToRemove = new HashSet<>();
+		Set<ITGGMatch> matchesToRemove = new HashSet<>();
 
-		String axiomName = TGGPatternUtil.getGENBlackPatternName(//
+		String axiomName = TGGPatternUtil.generateGENBlackPatternName(//
 				TGGPatternUtil.extractGENAxiomNacName(match.getPatternName()));
 
 		operationalMatchContainer.getMatches()//
@@ -220,10 +181,10 @@ public abstract class MODELGEN extends OperationalStrategy {
 				.filter(m -> m.getPatternName().equals(axiomName))//
 				.forEach(m -> matchesToRemove.add(m));
 
-		matchesToRemove.forEach(m -> removeMatch(m));
+		matchesToRemove.forEach(m -> operationalMatchContainer.removeMatch(m));
 	}
 
-		/**
+	/**
 	 * Update stop criterion by passing number of created source and target elements
 	 * (nodes and edges).
 	 * 
@@ -244,9 +205,14 @@ public abstract class MODELGEN extends OperationalStrategy {
 	 * the axiom is found (or the stop criterion blocks the rule).
 	 */
 	private void collectMatchesForAxioms() {
-		options.getFlattenedConcreteTGGRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom())
+		options.tgg.getFlattenedConcreteTGGRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom())
 				.forEach(r -> {
-					addOperationalRuleMatch(new SimpleMatch(TGGPatternUtil.getGENBlackPatternName(r.getName())));
+					addOperationalRuleMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
 				});
+	}
+
+	@Override
+	public Collection<PatternType> getPatternRelevantForCompiler() {
+		return PatternType.getModelGENTypes();
 	}
 }

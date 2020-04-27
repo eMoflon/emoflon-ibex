@@ -6,7 +6,8 @@ Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
-Require-Bundle: net.sourceforge.plantuml.eclipse,
+Require-Bundle: org.emoflon.ibex.patternmodel;bundle-version="0.1.0";visibility:=reexport,
+ net.sourceforge.plantuml.eclipse,
  org.eclipse.jface,
  org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.editor,
@@ -17,42 +18,16 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
- org.moflon.core.utilities;visibility:=reexport
+ org.moflon.core.utilities;visibility:=reexport,
+ org.emoflon.ibex.tgg.language
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: IBeXLanguage;uses:="org.eclipse.emf.ecore,org.eclipse.emf.common.util,StochasticLanguage",
- IBeXLanguage.impl;
-  uses:="org.eclipse.emf.ecore,
-   org.eclipse.emf.ecore.impl,
-   org.eclipse.emf.common.util,
-   org.eclipse.emf.common.notify,
-   IBeXLanguage,
-   StochasticLanguage",
- IBeXLanguage.util;
-  uses:="org.eclipse.emf.ecore,
-   org.eclipse.emf.common.notify,
-   org.eclipse.emf.common.notify.impl,
-   org.eclipse.emf.ecore.util,
-   IBeXLanguage,
-   StochasticLanguage",
- StochasticLanguage;uses:="org.eclipse.emf.ecore,org.eclipse.emf.common.util",
- StochasticLanguage.impl;
-  uses:="org.eclipse.emf.ecore,
-   org.eclipse.emf.ecore.impl,
-   org.eclipse.emf.common.notify,
-   StochasticLanguage",
- StochasticLanguage.util;
-  uses:="org.eclipse.emf.ecore,
-   org.eclipse.emf.common.notify,
-   org.eclipse.emf.common.notify.impl,
-   org.eclipse.emf.ecore.util,
-   StochasticLanguage",
- org.emoflon.ibex.common.collections,
- org.emoflon.ibex.common.collections.jdk;uses:="org.emoflon.ibex.common.collections",
- org.emoflon.ibex.common.emf;uses:="org.eclipse.emf.ecore,org.eclipse.emf.ecore.resource",
- org.emoflon.ibex.common.ide;uses:="org.moflon.core.preferences,org.moflon.emf.codegen",
- org.emoflon.ibex.common.operational;uses:="org.eclipse.emf.ecore,org.eclipse.emf.ecore.resource,IBeXLanguage",
- org.emoflon.ibex.common.patterns;uses:="org.eclipse.emf.ecore,IBeXLanguage",
- org.emoflon.ibex.common.visualization;uses:="IBeXLanguage"
-
+Export-Package: org.emoflon.ibex.common.collections,
+ org.emoflon.ibex.common.collections.jdk,
+ org.emoflon.ibex.common.emf,
+ org.emoflon.ibex.common.ide,
+ org.emoflon.ibex.common.operational,
+ org.emoflon.ibex.common.patterns,
+ org.emoflon.ibex.common.visualization,
+ org.emoflon.ibex.common.visualization.tgg

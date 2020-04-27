@@ -4,12 +4,14 @@ package runtime.util;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
-
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
-
 import org.eclipse.emf.ecore.EObject;
 
 import runtime.*;
+import runtime.Protocol;
+import runtime.RuntimePackage;
+import runtime.TGGRuleApplication;
+import runtime.TempContainer;
 
 /**
  * <!-- begin-user-doc -->

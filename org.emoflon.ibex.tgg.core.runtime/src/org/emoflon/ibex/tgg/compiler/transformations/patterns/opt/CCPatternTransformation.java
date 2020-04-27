@@ -1,17 +1,17 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.opt;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getCCBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateCCBlackPatternName;
 
 import java.util.List;
 
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
-import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
@@ -20,13 +20,13 @@ import language.TGGRuleNode;
 
 public class CCPatternTransformation extends OperationalPatternTransformation {
 
-	public CCPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
-		super(parent, options, rule);
+	public CCPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+		super(parent, options, rule, filterNACAnalysis);
 	}
 
 	@Override
 	protected String getPatternName() {
-		return getCCBlackPatternName(rule.getName());
+		return generateCCBlackPatternName(rule.getName());
 	}
 
 	@Override
@@ -57,13 +57,11 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 
-		filterNACAnalysis = new FilterNACAnalysis(DomainType.TRG, rule, options);
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 	}

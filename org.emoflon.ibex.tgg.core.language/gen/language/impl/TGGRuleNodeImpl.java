@@ -23,8 +23,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -32,6 +30,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGRuleNodeImpl#getIncomingEdges <em>Incoming Edges</em>}</li>
  *   <li>{@link language.impl.TGGRuleNodeImpl#getOutgoingEdges <em>Outgoing Edges</em>}</li>
@@ -40,7 +39,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link language.impl.TGGRuleNodeImpl#getIncomingCorrsTarget <em>Incoming Corrs Target</em>}</li>
  *   <li>{@link language.impl.TGGRuleNodeImpl#getAttrExpr <em>Attr Expr</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -129,9 +127,11 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRuleEdge> getIncomingEdges() {
 		if (incomingEdges == null) {
-			incomingEdges = new EObjectWithInverseResolvingEList<TGGRuleEdge>(TGGRuleEdge.class, this, LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES, LanguagePackage.TGG_RULE_EDGE__TRG_NODE);
+			incomingEdges = new EObjectWithInverseResolvingEList<TGGRuleEdge>(TGGRuleEdge.class, this,
+					LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES, LanguagePackage.TGG_RULE_EDGE__TRG_NODE);
 		}
 		return incomingEdges;
 	}
@@ -141,9 +141,11 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRuleEdge> getOutgoingEdges() {
 		if (outgoingEdges == null) {
-			outgoingEdges = new EObjectWithInverseResolvingEList<TGGRuleEdge>(TGGRuleEdge.class, this, LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES, LanguagePackage.TGG_RULE_EDGE__SRC_NODE);
+			outgoingEdges = new EObjectWithInverseResolvingEList<TGGRuleEdge>(TGGRuleEdge.class, this,
+					LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES, LanguagePackage.TGG_RULE_EDGE__SRC_NODE);
 		}
 		return outgoingEdges;
 	}
@@ -153,13 +155,15 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getType() {
 		if (type != null && type.eIsProxy()) {
 			InternalEObject oldType = (InternalEObject) type;
 			type = (EClass) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_NODE__TYPE, oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_NODE__TYPE,
+							oldType, type));
 			}
 		}
 		return type;
@@ -179,6 +183,7 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setType(EClass newType) {
 		EClass oldType = type;
 		type = newType;
@@ -191,9 +196,11 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRuleCorr> getIncomingCorrsSource() {
 		if (incomingCorrsSource == null) {
-			incomingCorrsSource = new EObjectWithInverseResolvingEList<TGGRuleCorr>(TGGRuleCorr.class, this, LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE, LanguagePackage.TGG_RULE_CORR__SOURCE);
+			incomingCorrsSource = new EObjectWithInverseResolvingEList<TGGRuleCorr>(TGGRuleCorr.class, this,
+					LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE, LanguagePackage.TGG_RULE_CORR__SOURCE);
 		}
 		return incomingCorrsSource;
 	}
@@ -203,9 +210,11 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRuleCorr> getIncomingCorrsTarget() {
 		if (incomingCorrsTarget == null) {
-			incomingCorrsTarget = new EObjectWithInverseResolvingEList<TGGRuleCorr>(TGGRuleCorr.class, this, LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET, LanguagePackage.TGG_RULE_CORR__TARGET);
+			incomingCorrsTarget = new EObjectWithInverseResolvingEList<TGGRuleCorr>(TGGRuleCorr.class, this,
+					LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET, LanguagePackage.TGG_RULE_CORR__TARGET);
 		}
 		return incomingCorrsTarget;
 	}
@@ -215,9 +224,11 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGInplaceAttributeExpression> getAttrExpr() {
 		if (attrExpr == null) {
-			attrExpr = new EObjectContainmentEList<TGGInplaceAttributeExpression>(TGGInplaceAttributeExpression.class, this, LanguagePackage.TGG_RULE_NODE__ATTR_EXPR);
+			attrExpr = new EObjectContainmentEList<TGGInplaceAttributeExpression>(TGGInplaceAttributeExpression.class,
+					this, LanguagePackage.TGG_RULE_NODE__ATTR_EXPR);
 		}
 		return attrExpr;
 	}
@@ -236,9 +247,11 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 		case LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES:
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getOutgoingEdges()).basicAdd(otherEnd, msgs);
 		case LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrsSource()).basicAdd(otherEnd, msgs);
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrsSource()).basicAdd(otherEnd,
+					msgs);
 		case LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrsTarget()).basicAdd(otherEnd, msgs);
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrsTarget()).basicAdd(otherEnd,
+					msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -380,7 +393,5 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 		}
 		return super.eIsSet(featureID);
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGRuleNodeImpl

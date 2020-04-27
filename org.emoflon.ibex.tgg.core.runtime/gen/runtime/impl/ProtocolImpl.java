@@ -5,14 +5,10 @@ package runtime.impl;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
@@ -28,10 +24,10 @@ import runtime.TGGRuleApplication;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link runtime.impl.ProtocolImpl#getSteps <em>Steps</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -70,9 +66,11 @@ public class ProtocolImpl extends EObjectImpl implements Protocol {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<TGGRuleApplication> getSteps() {
 		if (steps == null) {
-			steps = new EObjectContainmentWithInverseEList<TGGRuleApplication>(TGGRuleApplication.class, this, RuntimePackage.PROTOCOL__STEPS, RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL);
+			steps = new EObjectContainmentWithInverseEList<TGGRuleApplication>(TGGRuleApplication.class, this,
+					RuntimePackage.PROTOCOL__STEPS, RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL);
 		}
 		return steps;
 	}

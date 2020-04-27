@@ -10,8 +10,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-// <-- [user defined imports]
-// [user defined imports] -->
 
 /**
  * <!-- begin-user-doc -->
@@ -19,10 +17,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link language.impl.TGGLiteralExpressionImpl#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -71,6 +69,7 @@ public class TGGLiteralExpressionImpl extends TGGExpressionImpl implements TGGLi
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getValue() {
 		return value;
 	}
@@ -80,11 +79,13 @@ public class TGGLiteralExpressionImpl extends TGGExpressionImpl implements TGGLi
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setValue(String newValue) {
 		String oldValue = value;
 		value = newValue;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_LITERAL_EXPRESSION__VALUE, oldValue, value));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_LITERAL_EXPRESSION__VALUE,
+					oldValue, value));
 	}
 
 	/**
@@ -155,13 +156,11 @@ public class TGGLiteralExpressionImpl extends TGGExpressionImpl implements TGGLi
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (value: ");
 		result.append(value);
 		result.append(')');
 		return result.toString();
 	}
-	// <-- [user code injected with eMoflon]
 
-	// [user code injected with eMoflon] -->
 } //TGGLiteralExpressionImpl

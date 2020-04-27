@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -13,18 +14,18 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.moflon.core.utilities.EcoreUtils;
 
-import IBeXLanguage.IBeXContext;
-import IBeXLanguage.IBeXContextPattern;
-import IBeXLanguage.IBeXCreatePattern;
-import IBeXLanguage.IBeXDeletePattern;
-import IBeXLanguage.IBeXEdge;
-import IBeXLanguage.IBeXLanguageFactory;
-import IBeXLanguage.IBeXNamedElement;
-import IBeXLanguage.IBeXNode;
-import IBeXLanguage.IBeXPattern;
-import IBeXLanguage.IBeXPatternSet;
 
 /**
  * Utility for working with {@link IBeXPattern}s.
@@ -203,7 +204,7 @@ public class IBeXPatternUtils {
 	 * @return the created IBeXPattern
 	 */
 	public static <T extends IBeXContext> Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType,
-			HashMap<String, T> nameToPattern, Consumer<String> logError) {
+			Map<String, T> nameToPattern, Consumer<String> logError) {
 		Objects.requireNonNull(edgeType, "Edge type must not be null!");
 
 		EClass sourceType = edgeType.getEContainingClass();
@@ -221,7 +222,7 @@ public class IBeXPatternUtils {
 			return Optional.of((IBeXContextPattern) nameToPattern.get(name));
 		}
 
-		IBeXContextPattern edgePattern = IBeXLanguageFactory.eINSTANCE.createIBeXContextPattern();
+		IBeXContextPattern edgePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
 		edgePattern.setName(name);
 
 		IBeXNode ibexSignatureSourceNode = IBeXPatternFactory.createNode("src", sourceType);

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.emoflon.ibex.tgg.runtime.precedencegraph/gen"
+    modelPluginID="org.emoflon.ibex.tgg.runtime.precedencegraph" modelName="Precedencegraph"
+    updateClasspath="false" codeFormatting="true" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" operationReflection="true">
+  <foreignModel>Precedencegraph.ecore</foreignModel>
+  <genPackages prefix="Precedencegraph" disposableProviderFactory="true" ecorePackage="Precedencegraph.ecore#/">
+    <genClasses ecoreClass="Precedencegraph.ecore#//PrecedenceNodeContainer">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Precedencegraph.ecore#//PrecedenceNodeContainer/nodes"/>
+    </genClasses>
+    <genClasses ecoreClass="Precedencegraph.ecore#//PrecedenceNode">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Precedencegraph.ecore#//PrecedenceNode/broken"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Precedencegraph.ecore#//PrecedenceNode/requires"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Precedencegraph.ecore#//PrecedenceNode/requiredBy"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Precedencegraph.ecore#//PrecedenceNode/basedOn"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Precedencegraph.ecore#//PrecedenceNode/baseFor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Precedencegraph.ecore#//PrecedenceNode/matchAsString"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

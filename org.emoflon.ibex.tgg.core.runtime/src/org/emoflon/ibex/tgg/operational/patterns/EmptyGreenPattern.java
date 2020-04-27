@@ -5,7 +5,7 @@ import java.util.Collections;
 
 import org.emoflon.ibex.tgg.operational.csp.EmptyRuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.matches.IMatch;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -43,7 +43,7 @@ public class EmptyGreenPattern implements IGreenPattern {
 	}
 
 	@Override
-	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(IMatch match) {
+	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match) {
 		return new EmptyRuntimeTGGAttributeConstraintContainer();
 	}
 
@@ -63,12 +63,12 @@ public class EmptyGreenPattern implements IGreenPattern {
 	}
 	
 	@Override
-	public boolean isToBeIgnored(IMatch match) {
+	public boolean isToBeIgnored(ITGGMatch match) {
 		return true;
 	}
 
 	@Override
-	public void createMarkers(String ruleName, IMatch match) {
+	public void createMarkers(String ruleName, ITGGMatch match) {
 		
 	}
 

@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import language.BindingType;
 import language.DomainType;
@@ -23,44 +23,88 @@ public class TGGPatternUtil {
 		return nodeName.split("__").length == 3;
 	}
 
-	public static String getBWDFusedPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.BWD;
+	public static String generateFWDBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.FWD;
+		PatternUtil.registerPattern(patternName, PatternType.FWD);
+		return patternName;
 	}
 
-	public static String getFWDBlackPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.FWD;
+	public static String generateBWDBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.BWD;
+		PatternUtil.registerPattern(patternName, PatternType.BWD);
+		return patternName;
 	}
 
-	public static String getBWDBlackPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.BWD;
+	public static String generateCOBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.CO;
+		PatternUtil.registerPattern(patternName, PatternType.CO);
+		return patternName;
 	}
 
-	public static String getCOBlackPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.CO;
+	public static String generateCCBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.CC;
+		PatternUtil.registerPattern(patternName, PatternType.CC);
+		return patternName;
 	}
 
-	public static String getCCBlackPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.CC;
+	public static String generateGENBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.GEN;
+		PatternUtil.registerPattern(patternName, PatternType.GEN);
+		return patternName;
 	}
 
-	public static String getGENBlackPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.GEN;
+	public static String generateFWDOptBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.FWD_OPT;
+		PatternUtil.registerPattern(patternName, PatternType.FWD_OPT);
+		return patternName;
 	}
 
-	public static String getFWDOptBlackPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.FWD_OPT;
-	}
-
-	public static String getBWDOptBlackPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.BWD_OPT;
+	public static String generateBWDOptBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.BWD_OPT;
+		PatternUtil.registerPattern(patternName, PatternType.BWD_OPT);
+		return patternName;
 	}
 	
-	public static String getGenForCCBlackPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.GENForCC;
+	public static String generateGenForCCBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.GENForCC;
+		PatternUtil.registerPattern(patternName, PatternType.GENForCC);
+		return patternName;
 	}
 	
-	public static String getGenForCOBlackPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.GENForCO;
+	public static String generateGenForCOBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.GENForCO;
+		PatternUtil.registerPattern(patternName, PatternType.GENForCO);
+		return patternName;
+	}
+
+	public static String getAxiomNACPatternName(String ruleName, String nacName) {
+		String patternName = ruleName + PatternSuffixes.SEP + nacName + PatternSuffixes.GEN_AXIOM_NAC;
+		PatternUtil.registerPattern(patternName, PatternType.GEN_AXIOM_NAC);
+		return patternName;
+	}
+
+	public static String getConsistencyPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.CONSISTENCY;
+		PatternUtil.registerPattern(patternName, PatternType.CONSISTENCY);
+		return patternName;
+	}
+	
+	public static String getProtocolPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.PROTOCOL;
+		PatternUtil.registerPattern(patternName, PatternType.PROTOCOL);
+		return patternName;
+	}
+	
+	public static String getProtocolCorePatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.PROTOCOL_CORE;
+		PatternUtil.registerPattern(patternName, PatternType.PROTOCOL_CORE);
+		return patternName;
+	}
+	
+	public static String getNACPatternName(String nacName) {
+		String patternName = nacName + PatternSuffixes.USER_NAC;
+		PatternUtil.registerPattern(patternName, PatternType.USER_NAC);
+		return patternName;
 	}
 
 	/**
@@ -71,37 +115,6 @@ public class TGGPatternUtil {
 	 */
 	public static String extractGENAxiomNacName(String name) {
 		return name.substring(0, name.indexOf(PatternSuffixes.SEP));
-	}
-
-	/**
-	 * Checks if the given name matches the naming structure of a
-	 * {@link GENAxiomNacPattern} by checking if the suffix matches.
-	 * 
-	 * @param name The name of the pattern to check
-	 * @return true if the name has the suffix {@link PatternSuffixes}.GEN_AXIOM_NAC
-	 */
-	public static boolean isGENAxiomNacPattern(String name) {
-		return name.endsWith(PatternSuffixes.GEN_AXIOM_NAC);
-	}
-
-	public static String getAxiomNACPatternName(String ruleName, String nacName) {
-		return ruleName + PatternSuffixes.SEP + nacName + PatternSuffixes.GEN_AXIOM_NAC;
-	}
-
-	public static String getConsistencyPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.CONSISTENCY;
-	}
-	
-	public static String getProtocolPatternName(String ruleName) {
-		return ruleName + PatternSuffixes.PROTOCOL;
-	}
-	
-	public static String getProtocolCorePatternName(String ruleName) {
-		return ruleName + PatternSuffixes.PROTOCOL_CORE;
-	}
-
-	public static String getNACPatternName(String nacName) {
-		return nacName + PatternSuffixes.USER_NAC;
 	}
 	
 	public static String getFilterNACPatternName(FilterNACCandidate candidate, TGGRule rule) {

@@ -2,7 +2,7 @@ package org.emoflon.ibex.common.operational;
 
 import java.util.Optional;
 
-import IBeXLanguage.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 
 /**
  * The interface for the interpreter which applies an {@link IBeXDeletePattern}.

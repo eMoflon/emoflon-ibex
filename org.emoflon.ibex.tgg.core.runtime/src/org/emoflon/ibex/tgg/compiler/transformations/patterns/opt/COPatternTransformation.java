@@ -1,14 +1,15 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.opt;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getCOBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateCOBlackPatternName;
 
 import java.util.List;
 
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
-import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
 import language.TGGRule;
 import language.TGGRuleEdge;
@@ -16,13 +17,13 @@ import language.TGGRuleNode;
 
 public class COPatternTransformation extends CCPatternTransformation {
 
-	public COPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
-		super(parent, options, rule);
+	public COPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+		super(parent, options, rule, filterNACAnalysis);
 	}
 
 	@Override
 	protected String getPatternName() {
-		return getCOBlackPatternName(rule.getName());
+		return generateCOBlackPatternName(rule.getName());
 	}
 
 	@Override

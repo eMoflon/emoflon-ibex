@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-Name: eMoflon::IBeX Bidirectional Model Transformation via Triple Graph Grammars - Runtime
-Bundle-SymbolicName: org.emoflon.ibex.tgg.core.runtime;singleton:=true
+Bundle-SymbolicName: org.emoflon.ibex.tgg.runtime;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: eMoflon::IBeX Developers
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
  org.eclipse.emf.common,
- org.emoflon.ibex.tgg.core.language,
+ org.emoflon.ibex.tgg.language,
  com.google.guava,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
@@ -21,7 +21,10 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.moflon.emf.codegen,
  org.sat4j.core;visibility:=reexport,
  org.sat4j.pb;visibility:=reexport,
- org.emoflon.ibex.gt;visibility:=reexport
+ org.emoflon.ibex.gt;visibility:=reexport,
+ org.emoflon.ibex.tgg.runtime.precedencegraph;visibility:=reexport,
+ org.emoflon.delta,
+ org.emoflon.ibex.patternmodel
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/commons-io-2.5.jar,
@@ -73,18 +76,28 @@ Export-Package: .,
  org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.common,
  org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.plan,
  org.emoflon.ibex.tgg.operational.csp.sorting.solver.democles.plan.common,
+ org.emoflon.ibex.tgg.operational.debug,
  org.emoflon.ibex.tgg.operational.defaults,
+ org.emoflon.ibex.tgg.operational.defaults.options,
  org.emoflon.ibex.tgg.operational.matches,
  org.emoflon.ibex.tgg.operational.monitoring,
  org.emoflon.ibex.tgg.operational.monitoring.data,
  org.emoflon.ibex.tgg.operational.patterns,
+ org.emoflon.ibex.tgg.operational.repair,
+ org.emoflon.ibex.tgg.operational.repair.shortcut.rule,
+ org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy,
  org.emoflon.ibex.tgg.operational.strategies,
  org.emoflon.ibex.tgg.operational.strategies.gen,
+ org.emoflon.ibex.tgg.operational.strategies.integrate,
+ org.emoflon.ibex.tgg.operational.strategies.integrate.conflict,
+ org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies,
+ org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer,
+ org.emoflon.ibex.tgg.operational.strategies.integrate.pattern,
+ org.emoflon.ibex.tgg.operational.strategies.integrate.provider,
+ org.emoflon.ibex.tgg.operational.strategies.integrate.util,
+ org.emoflon.ibex.tgg.operational.strategies.modules,
  org.emoflon.ibex.tgg.operational.strategies.opt,
- org.emoflon.ibex.tgg.operational.strategies.opt.cc,
  org.emoflon.ibex.tgg.operational.strategies.sync,
- org.emoflon.ibex.tgg.operational.strategies.sync.repair,
- org.emoflon.ibex.tgg.operational.strategies.sync.repair.strategies,
  org.emoflon.ibex.tgg.operational.updatepolicy,
  org.emoflon.ibex.tgg.util,
  org.emoflon.ibex.tgg.util.ilp,
@@ -92,6 +105,6 @@ Export-Package: .,
  runtime,
  runtime.impl,
  runtime.util
-Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime
+Automatic-Module-Name: org.emoflon.ibex.tgg.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
