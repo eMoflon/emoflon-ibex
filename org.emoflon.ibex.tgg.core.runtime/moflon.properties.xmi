@@ -4,5 +4,6 @@
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:org.moflon.core.propertycontainer="platform:/plugin/org.moflon.core.propertycontainer/model/Propertycontainer.ecore"
     projectName="org.emoflon.ibex.tgg.runtime">
-  <replaceGenModel/>
+  <replaceGenModel
+      bool="false"/>
 </org.moflon.core.propertycontainer:MoflonPropertiesContainer>
