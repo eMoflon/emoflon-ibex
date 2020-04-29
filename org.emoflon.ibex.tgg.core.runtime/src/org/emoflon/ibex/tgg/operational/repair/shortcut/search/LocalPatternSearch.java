@@ -243,6 +243,7 @@ public class LocalPatternSearch {
 
 		@Override
 		public ReturnState apply() {
+			// TODO move relaxed null-check to this point
 			if (check.checkConstraint(name2candidates.get(nodeName))) {
 				if (nextComponent == null)
 					return ReturnState.SUCCESS;

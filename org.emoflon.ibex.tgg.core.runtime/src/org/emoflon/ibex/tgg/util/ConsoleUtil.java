@@ -9,6 +9,7 @@ import java.io.PrintStream;
  */
 public class ConsoleUtil {
 
+	// TODO adrianm: save printed stuff for retrieving later
 	private static final PrintStream dummyPrintStream = new PrintStream(new OutputStream() {
 		@Override
 		public void write(int b) throws IOException {
@@ -18,6 +19,10 @@ public class ConsoleUtil {
 	
 	public interface ThrowingSupplier<T, E extends Exception> {
 		T get() throws E;
+	}
+	
+	public interface ThrowingVoidSupplier<E extends Exception> {
+		void get() throws E;
 	}
 
 	/**
@@ -35,6 +40,13 @@ public class ConsoleUtil {
 		T result = operation.get();
 		System.setOut(currentPrintStream);
 		return result;
+	}
+	
+	public static <E extends Exception> void suppressUnwantedPrints(ThrowingVoidSupplier<E> operation) throws E {
+		PrintStream currentPrintStream = System.out;
+		System.setOut(dummyPrintStream);
+		operation.get();
+		System.setOut(currentPrintStream);
 	}
 
 }

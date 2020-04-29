@@ -87,8 +87,6 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
 					brokenRuleApplications.put(newRa, repairedMatch);
 					alreadyProcessed.add(repairedMatch);
-
-					options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
 				}
 			}
 		}
@@ -215,6 +213,10 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		consistencyMatches.remove(ra);
 		operationalMatchContainer.removeMatch(match);
 	}
+	
+	public IRedInterpreter getRedInterpreter() {
+		return redInterpreter;
+	}
 
 	@Override
 	protected void collectDataToBeLogged() {
@@ -223,18 +225,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 		super.collectDataToBeLogged();
 
-		int repStratDeletions = 0;
-		if (!(options.debug.benchmarkLogger() instanceof EmptyBenchmarkLogger))
-			repStratDeletions = repairStrategies.stream() //
-					.filter(rStr -> rStr instanceof ShortcutRepairStrategy) //
-					.map(rStr -> (ShortcutRepairStrategy) rStr) //
-					.findFirst() //
-					.map(srStr -> srStr.countDeletedElements()) //
-					.orElse(0);
-
 		options.debug.benchmarkLogger().setNumOfElementsCreated(greenInterpreter.getNumOfCreatedNodes());
-		options.debug.benchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedNodes() + //
-				repStratDeletions);
+		options.debug.benchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedNodes());
 	}
 
 	@Override

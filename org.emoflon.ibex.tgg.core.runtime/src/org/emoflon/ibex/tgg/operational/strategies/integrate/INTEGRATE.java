@@ -202,7 +202,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Set<EObject> nodesToRevoke = new HashSet<EObject>();
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 		prepareGreenCorrDeletion(match, nodesToRevoke, edgesToRevoke);
-		getIbexRedInterpreter().revoke(nodesToRevoke, edgesToRevoke);
+		getRedInterpreter().revoke(nodesToRevoke, edgesToRevoke);
 	}
 
 	/**
@@ -254,7 +254,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		resourceHandler.getProtocolResource().getContents()
 				.forEach(ra -> ra.eCrossReferences().forEach(obj -> untranslated.remove(obj)));
 
-		getIbexRedInterpreter().revoke(untranslated, Collections.emptySet());
+		getRedInterpreter().revoke(untranslated, Collections.emptySet());
 	}
 
 	@Override
@@ -332,8 +332,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
 					brokenRuleApplications.put(newRa, repairedMatch);
 					alreadyProcessed.add(repairedMatch);
-
-					options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
 				}
 			}
 		}

@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Optional;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
@@ -11,7 +10,6 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
 public class SYNC extends PropagatingOperationalStrategy {
@@ -90,13 +88,8 @@ public class SYNC extends PropagatingOperationalStrategy {
 
 	private void logCreatedAndDeletedNumbers() {
 		if (options.debug.ibexDebug()) {
-			Optional<ShortcutRepairStrategy> scStrategy = repairStrategies.stream() //
-					.filter(rStr -> rStr instanceof ShortcutRepairStrategy) //
-					.map(rStr -> (ShortcutRepairStrategy) rStr) //
-					.findFirst();
 			logger.info("Created elements: " + greenInterpreter.getNumOfCreatedNodes());
-			logger.info("Deleted elements: " + (redInterpreter.getNumOfDeletedNodes()
-					+ (scStrategy.isPresent() ? scStrategy.get().countDeletedElements() : 0)));
+			logger.info("Deleted elements: " + redInterpreter.getNumOfDeletedNodes());
 		}
 	}
 }

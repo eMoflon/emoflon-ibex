@@ -13,7 +13,7 @@ public class PropagateOptions extends IbexSubOptions {
 		
 		applyConcurrently = false;
 		optimizeSyncPattern = false;
-		usePrecedenceGraph = false;
+		usePrecedenceGraph = true;
 	}
 	
 	public boolean applyConcurrently() {

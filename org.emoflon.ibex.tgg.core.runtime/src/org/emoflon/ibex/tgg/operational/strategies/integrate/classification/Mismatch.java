@@ -72,7 +72,7 @@ public class Mismatch {
 			if (isDeleteClassifier(cl) && !analysis.isElementDeleted(analysis.getEdge(e)))
 				edgesToBeDeleted.add(e);
 		});
-		integrate.getIbexRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
+		integrate.getRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
 
 		integrate.removeBrokenMatch(match);
 	}
