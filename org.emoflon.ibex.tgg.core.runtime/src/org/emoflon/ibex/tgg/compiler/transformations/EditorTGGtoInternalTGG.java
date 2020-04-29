@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EClass;
@@ -475,9 +476,16 @@ public class EditorTGGtoInternalTGG {
 		corrModel.setNsPrefix(qualifiedName);
 		corrModel.setNsURI("platform:/resource/" + project.getName() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(corrModel.getName()) + ".ecore");
 
-		EAnnotation genAnnotation = ecoreFactory.createEAnnotation();
-		genAnnotation.setSource("http://www.eclipse.org/emf/2002/GenModel");
-		corrModel.getEAnnotations().add(genAnnotation);
+		BasicEMap<String, String> map = new BasicEMap<>();
+		int index = qualifiedName.lastIndexOf('.');
+		if(index >= 0) {
+			EAnnotation genAnnotation = ecoreFactory.createEAnnotation();
+			genAnnotation.setSource("http://www.eclipse.org/emf/2002/GenModel");
+			String prefix = qualifiedName.substring(0, index);
+			map.put("basePackage", prefix);
+			genAnnotation.getDetails().putAll(map);
+			corrModel.getEAnnotations().add(genAnnotation);
+		}
 		
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
 			corrModel.getEClassifiers().add(createEClass(ct));
