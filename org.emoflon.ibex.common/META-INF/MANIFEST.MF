@@ -29,5 +29,6 @@ Export-Package: org.emoflon.ibex.common.collections,
  org.emoflon.ibex.common.ide,
  org.emoflon.ibex.common.operational,
  org.emoflon.ibex.common.patterns,
+ org.emoflon.ibex.common.project,
  org.emoflon.ibex.common.visualization,
  org.emoflon.ibex.common.visualization.tgg
