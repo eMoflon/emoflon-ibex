@@ -102,7 +102,7 @@ public class OverlapUtil {
 		ILPOverlapSolver overlapSolver = new ILPOverlapSolver( //
 				calculateNodeCandidates(originalRule, replacingRule, mapContext), //
 				calculateEdgeCandidates(originalRule, replacingRule, mapContext), //
-				SupportedILPSolver.Sat4J);
+				options.ilpSolver());
 
 		return createOverlapFromILPSolution(originalRule, replacingRule, //
 				overlapSolver.solvedNodeCandidates(), overlapSolver.solvedEdgeCandidates(), category);
@@ -260,7 +260,7 @@ public class OverlapUtil {
 		return new ILPOverlapSolver( //
 				rule.getNodes().stream().map(n -> new NodeCandidate(n, n)).collect(Collectors.toList()), //
 				rule.getEdges().stream().map(e -> new EdgeCandidate(e, e)).collect(Collectors.toList()), //
-				SupportedILPSolver.Sat4J) {
+				options.ilpSolver()) {
 			@Override
 			protected void defineMoreILPConditions(BinaryILPProblem ilpProblem) {
 				implications.forEach(i -> i.add(ilpProblem, nameCounter, node2cdts));

@@ -98,6 +98,7 @@ final class GurobiWrapper extends ILPSolver {
 	private void prepareModel() throws GRBException {
 		this.env = new GRBEnv("Gurobi_ILP.log");
 		this.model = new GRBModel(this.env);
+		this.model.set(GRB.IntParam.OutputFlag, 0);
 
 		for (int variableId : this.ilpProblem.getVariableIdsOfUnfixedVariables()) {
 			this.registerVariable(variableId);
