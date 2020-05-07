@@ -2,11 +2,13 @@
  */
 package GTLanguage.impl;
 
+import GTLanguage.GTArithmeticConstraint;
 import GTLanguage.GTLanguageFactory;
 import GTLanguage.GTLanguagePackage;
 import GTLanguage.GTNamedElement;
 import GTLanguage.GTNode;
 import GTLanguage.GTParameter;
+import GTLanguage.GTProbability;
 import GTLanguage.GTRule;
 import GTLanguage.GTRuleSet;
 
@@ -16,6 +18,8 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+
+import org.emoflon.ibex.gt.SGTPatternModel.SGTPatternModelPackage;
 
 /**
  * <!-- begin-user-doc -->
@@ -58,6 +62,20 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 	 * @generated
 	 */
 	private EClass gtRuleSetEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass gtProbabilityEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass gtArithmeticConstraintEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -103,9 +121,14 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 
 		// Obtain or create and register package
 		Object registeredGTLanguagePackage = EPackage.Registry.INSTANCE.get(eNS_URI);
-		GTLanguagePackageImpl theGTLanguagePackage = registeredGTLanguagePackage instanceof GTLanguagePackageImpl ? (GTLanguagePackageImpl) registeredGTLanguagePackage : new GTLanguagePackageImpl();
+		GTLanguagePackageImpl theGTLanguagePackage = registeredGTLanguagePackage instanceof GTLanguagePackageImpl
+				? (GTLanguagePackageImpl) registeredGTLanguagePackage
+				: new GTLanguagePackageImpl();
 
 		isInited = true;
+
+		// Initialize simple dependencies
+		SGTPatternModelPackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
 		theGTLanguagePackage.createPackageContents();
@@ -247,6 +270,26 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 	 * @generated
 	 */
 	@Override
+	public EReference getGTRule_Constraints() {
+		return (EReference) gtRuleEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getGTRule_Probability() {
+		return (EReference) gtRuleEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getGTRuleSet() {
 		return gtRuleSetEClass;
 	}
@@ -259,6 +302,76 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 	@Override
 	public EReference getGTRuleSet_Rules() {
 		return (EReference) gtRuleSetEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getGTProbability() {
+		return gtProbabilityEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getGTProbability_Function() {
+		return (EReference) gtProbabilityEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getGTProbability_Parameter() {
+		return (EReference) gtProbabilityEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getGTArithmeticConstraint() {
+		return gtArithmeticConstraintEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getGTArithmeticConstraint_Parameter() {
+		return (EReference) gtArithmeticConstraintEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getGTArithmeticConstraint_Expression() {
+		return (EReference) gtArithmeticConstraintEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getGTArithmeticConstraint_Relation() {
+		return (EAttribute) gtArithmeticConstraintEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -306,9 +419,20 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 		createEReference(gtRuleEClass, GT_RULE__NODES);
 		createEReference(gtRuleEClass, GT_RULE__PARAMETERS);
 		createEReference(gtRuleEClass, GT_RULE__RULE_NODES);
+		createEReference(gtRuleEClass, GT_RULE__CONSTRAINTS);
+		createEReference(gtRuleEClass, GT_RULE__PROBABILITY);
 
 		gtRuleSetEClass = createEClass(GT_RULE_SET);
 		createEReference(gtRuleSetEClass, GT_RULE_SET__RULES);
+
+		gtProbabilityEClass = createEClass(GT_PROBABILITY);
+		createEReference(gtProbabilityEClass, GT_PROBABILITY__FUNCTION);
+		createEReference(gtProbabilityEClass, GT_PROBABILITY__PARAMETER);
+
+		gtArithmeticConstraintEClass = createEClass(GT_ARITHMETIC_CONSTRAINT);
+		createEReference(gtArithmeticConstraintEClass, GT_ARITHMETIC_CONSTRAINT__PARAMETER);
+		createEReference(gtArithmeticConstraintEClass, GT_ARITHMETIC_CONSTRAINT__EXPRESSION);
+		createEAttribute(gtArithmeticConstraintEClass, GT_ARITHMETIC_CONSTRAINT__RELATION);
 	}
 
 	/**
@@ -335,6 +459,10 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 		setNsPrefix(eNS_PREFIX);
 		setNsURI(eNS_URI);
 
+		// Obtain other dependent packages
+		SGTPatternModelPackage theSGTPatternModelPackage = (SGTPatternModelPackage) EPackage.Registry.INSTANCE
+				.getEPackage(SGTPatternModelPackage.eNS_URI);
+
 		// Create type parameters
 
 		// Set bounds for type parameters
@@ -345,32 +473,69 @@ public class GTLanguagePackageImpl extends EPackageImpl implements GTLanguagePac
 		gtRuleEClass.getESuperTypes().add(this.getGTNamedElement());
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(gtNamedElementEClass, GTNamedElement.class, "GTNamedElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getGTNamedElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, GTNamedElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
+		initEClass(gtNamedElementEClass, GTNamedElement.class, "GTNamedElement", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getGTNamedElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, GTNamedElement.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(gtNodeEClass, GTNode.class, "GTNode", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGTNode_Type(), ecorePackage.getEClass(), null, "type", null, 0, 1, GTNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		initEReference(getGTNode_Type(), ecorePackage.getEClass(), null, "type", null, 0, 1, GTNode.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(gtParameterEClass, GTParameter.class, "GTParameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGTParameter_Type(), ecorePackage.getEDataType(), null, "type", null, 0, 1, GTParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+		initEClass(gtParameterEClass, GTParameter.class, "GTParameter", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTParameter_Type(), ecorePackage.getEDataType(), null, "type", null, 0, 1, GTParameter.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(gtRuleEClass, GTRule.class, "GTRule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getGTRule_Documentation(), ecorePackage.getEString(), "documentation", null, 0, 1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
+		initEAttribute(getGTRule_Documentation(), ecorePackage.getEString(), "documentation", null, 0, 1, GTRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getGTRule_Executable(), ecorePackage.getEBoolean(), "executable", null, 0, 1, GTRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTRule_Nodes(), this.getGTNode(), null, "nodes", null, 0, -1, GTRule.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
-		initEAttribute(getGTRule_Executable(), ecorePackage.getEBoolean(), "executable", null, 0, 1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTRule_Nodes(), this.getGTNode(), null, "nodes", null, 0, -1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getGTRule_Parameters(), this.getGTParameter(), null, "parameters", null, 0, -1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+		initEReference(getGTRule_Parameters(), this.getGTParameter(), null, "parameters", null, 0, -1, GTRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTRule_RuleNodes(), this.getGTNode(), null, "ruleNodes", null, 0, -1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		initEReference(getGTRule_RuleNodes(), this.getGTNode(), null, "ruleNodes", null, 0, -1, GTRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTRule_Constraints(), this.getGTArithmeticConstraint(), null, "constraints", null, 0, -1,
+				GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTRule_Probability(), this.getGTProbability(), null, "probability", null, 0, 1, GTRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(gtRuleSetEClass, GTRuleSet.class, "GTRuleSet", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGTRuleSet_Rules(), this.getGTRule(), null, "rules", null, 0, -1, GTRuleSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		initEClass(gtRuleSetEClass, GTRuleSet.class, "GTRuleSet", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTRuleSet_Rules(), this.getGTRule(), null, "rules", null, 0, -1, GTRuleSet.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(gtProbabilityEClass, GTProbability.class, "GTProbability", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTProbability_Function(), theSGTPatternModelPackage.getGTStochasticFunction(), null,
+				"function", null, 0, 1, GTProbability.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTProbability_Parameter(), theSGTPatternModelPackage.getGTArithmetics(), null, "parameter",
+				null, 0, 1, GTProbability.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(gtArithmeticConstraintEClass, GTArithmeticConstraint.class, "GTArithmeticConstraint", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTArithmeticConstraint_Parameter(), theSGTPatternModelPackage.getGTAttribute(), null,
+				"parameter", null, 0, 1, GTArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTArithmeticConstraint_Expression(), theSGTPatternModelPackage.getGTArithmetics(), null,
+				"expression", null, 0, 1, GTArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getGTArithmeticConstraint_Relation(), theSGTPatternModelPackage.getGTRelation(), "relation",
+				null, 0, 1, GTArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE,
+				!IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

@@ -23,7 +23,8 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.sat4j.pb;visibility:=reexport,
  org.emoflon.ibex.gt;visibility:=reexport,
  org.emoflon.ibex.tgg.runtime.precedencegraph;visibility:=reexport,
- org.emoflon.delta
+ org.emoflon.delta,
+ org.emoflon.ibex.patternmodel
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/commons-io-2.5.jar,
@@ -104,6 +105,6 @@ Export-Package: .,
  runtime,
  runtime.impl,
  runtime.util
-Automatic-Module-Name: org.emoflon.ibex.tgg.core.runtime
+Automatic-Module-Name: org.emoflon.ibex.tgg.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 

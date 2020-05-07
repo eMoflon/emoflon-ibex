@@ -2,7 +2,10 @@ package org.emoflon.ibex.tgg.compiler.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,16 +23,32 @@ import language.TGGRuleNode;
 
 public class FilterNACAnalysis {
 	private DomainType domain;
-	private TGGRule rule;
+	private TGG tgg;
 	private IbexOptions options;
+	
+	private Map<EReference, Collection<TGGRule>> ref2rules = new HashMap<>();
 
-	public FilterNACAnalysis(DomainType domain, TGGRule rule, IbexOptions options) {
-		this.domain = domain;
-		this.rule = rule;
+	public FilterNACAnalysis(TGG tgg, IbexOptions options) {
+		this.tgg = tgg;
 		this.options = options;
+		
+		initializeCaching();
 	}
 
-	public Collection<FilterNACCandidate> computeFilterNACCandidates() {
+	private void initializeCaching() {
+		for(TGGRule rule : tgg.getRules()) {
+			for(TGGRuleEdge edge : rule.getEdges()) {
+				if(!ref2rules.containsKey(edge.getType())) {
+					Collection<TGGRule> rules = new HashSet<>();
+					ref2rules.put(edge.getType(), rules);
+				}
+				
+				ref2rules.get(edge.getType()).add(rule);
+			}
+		}
+	}
+
+	public Collection<FilterNACCandidate> computeFilterNACCandidates(TGGRule rule, DomainType domain) {
 		final Collection<FilterNACCandidate> filterNACs = new ArrayList<>();
 
 		if (options.patterns.lookAheadStrategy().equals(FilterNACStrategy.NONE))
@@ -50,7 +69,7 @@ public class FilterNACAnalysis {
 
 					if (typeDoesNotFitToDirection(n, eType, eDirection))
 						continue;
-					if (onlyPossibleEdgeIsAlreadyTranslatedInRule(n, eType, eDirection))
+					if (onlyPossibleEdgeIsAlreadyTranslatedInRule(rule, n, eType, eDirection))
 						continue;
 					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg))
 						continue;
@@ -63,7 +82,7 @@ public class FilterNACAnalysis {
 		}
 
 		// Use optimiser to remove some of the filter NACs
-		final Collection<FilterNACCandidate> optimisedFilterNACs = filterNACs.stream().filter(nac -> !isRedundantDueToEMFContainmentSemantics(nac)).collect(Collectors.toList());
+		final Collection<FilterNACCandidate> optimisedFilterNACs = filterNACs.stream().filter(nac -> !isRedundantDueToEMFContainmentSemantics(rule, nac)).collect(Collectors.toList());
 
 		optimisedFilterNACs.removeAll(ignoreDueToEOppositeSemantics(optimisedFilterNACs));
 
@@ -74,7 +93,7 @@ public class FilterNACAnalysis {
 		return optimisedFilterNACs;
 	}
 
-	private boolean isRedundantDueToEMFContainmentSemantics(FilterNACCandidate filterNAC) {
+	private boolean isRedundantDueToEMFContainmentSemantics(TGGRule rule, FilterNACCandidate filterNAC) {
 		for (TGGRuleEdge edge : rule.getEdges()) {
 			// Edges must be of same type and be containment
 			if (edge.getType().equals(filterNAC.getEdgeType()) && edge.getType().isContainment()) {
@@ -114,7 +133,7 @@ public class FilterNACAnalysis {
 		return !isEdgeInTGG(tgg, eType, eDirection, false, domain);
 	}
 
-	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
+	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRule rule, TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
 		int numOfEdges = countEdgeInRule(rule, n, eType, eDirection, false, domain).getEdgeCount();
 		return eType.getUpperBound() == 1 && numOfEdges == 1;
 	}
@@ -132,7 +151,8 @@ public class FilterNACAnalysis {
 	}
 
 	private List<TGGRule> determineSavingRules(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
-		return tgg.getRules().stream().filter(r -> isSavingRule(domain, eType, eDirection, r)).collect(Collectors.toList());
+//		return tgg.getRules().stream().filter(r -> isSavingRule(domain, eType, eDirection, r)).collect(Collectors.toList());
+		return ref2rules.get(eType).stream().filter(r -> isSavingRule(domain, eType, eDirection, r)).collect(Collectors.toList());
 	}
 
 	private boolean isSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGGRule r) {
@@ -144,7 +164,7 @@ public class FilterNACAnalysis {
 	 * those rules where our entry point is not set to context
 	 */
 	private boolean isEdgeInTGG(TGG tgg, EReference eType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
-		return tgg.getRules().stream().filter(r -> countEdgeInRule(r, eType, eDirection, findRescuePattern, mode).getEdgeCount() > 0).count() != 0;
+		return ref2rules.containsKey(eType);
 	}
 
 	private MaxIncidentEdgeCount countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {

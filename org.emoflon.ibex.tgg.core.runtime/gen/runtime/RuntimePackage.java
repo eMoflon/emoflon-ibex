@@ -40,7 +40,7 @@ public interface RuntimePackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_URI = "platform:/plugin/org.emoflon.ibex.tgg.core.runtime/model/Runtime.ecore";
+	String eNS_URI = "platform:/plugin/org.emoflon.ibex.tgg.runtime/model/Runtime.ecore";
 
 	/**
 	 * The package namespace name.
@@ -48,7 +48,7 @@ public interface RuntimePackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_PREFIX = "org.emoflon.ibex.tgg.core.runtime";
+	String eNS_PREFIX = "org.emoflon.ibex.tgg.runtime";
 
 	/**
 	 * The singleton instance of the package.

@@ -5,14 +5,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute;
+import org.emoflon.ibex.gt.SGTPatternModel.GTRelation;
+import org.emoflon.ibex.gt.SGTPatternModel.SGTPatternModelFactory;
+import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
 import org.emoflon.ibex.gt.editor.gT.EditorParameter;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
+import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.utils.GTCommentExtractor;
 
+import GTLanguage.GTArithmeticConstraint;
 import GTLanguage.GTLanguageFactory;
 import GTLanguage.GTNode;
 import GTLanguage.GTParameter;
@@ -72,9 +79,11 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 		gtRule.setName(flattenedPattern.getName());
 		gtRule.setDocumentation(documentation);
 		gtRule.setExecutable(flattenedPattern.getType() == EditorPatternType.RULE);
-
+		gtRule.setProbability(EditorToStochasticExtensionHelper
+				.transformToGTProbability(flattenedPattern));
 		transformNodes(flattenedPattern, gtRule);
 		transformParameters(flattenedPattern, gtRule);
+		transformConstraints(flattenedPattern, gtRule);
 
 		gtRules.add(gtRule);
 	}
@@ -145,5 +154,50 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 		gtParameter.setName(editorParameter.getName());
 		gtParameter.setType(editorParameter.getType());
 		return gtParameter;
+	}	
+	
+	/**
+	 * Transforms the arithmetic expressions to rule constraints; only used when context patterns
+	 * @param editorPattern
+	 * @param gtRule
+	 */
+	private void transformConstraints(final EditorPattern editorPattern, final GTRule gtRule) {
+		for(final EditorNode node: editorPattern.getNodes()) {
+			for(final EditorAttribute attribute: node.getAttributes()) {
+				if(attribute.getValue() instanceof ArithmeticCalculationExpression && attribute.getRelation() != EditorRelation.ASSIGNMENT) {
+					GTAttribute gtAttribute = SGTPatternModelFactory.eINSTANCE.createGTAttribute();
+					gtAttribute.setName(node.getName());
+					gtAttribute.setAttribute(attribute.getAttribute());
+					gtAttribute.setType(node.getType());
+					GTArithmeticConstraint constraint = GTLanguageFactory.eINSTANCE.createGTArithmeticConstraint();
+					constraint.setParameter(gtAttribute);
+					constraint.setRelation(convertRelation(attribute.getRelation()));
+					constraint.setExpression(EditorToArithmeticExtensionHelper
+							.transformToGTArithmetics(((ArithmeticCalculationExpression) attribute.getValue()).getExpression()));
+					gtRule.getConstraints().add(constraint);
+				}
+			}
+		}
+	}
+	/**
+	 * private method for the arithmeticConstraints
+	 */
+	private static GTRelation convertRelation(final EditorRelation relation) {
+		switch (relation) {
+		case GREATER:
+			return GTRelation.GREATER;
+		case GREATER_OR_EQUAL:
+			return GTRelation.GREATER_OR_EQUAL;
+		case EQUAL:
+			return GTRelation.EQUAL;
+		case UNEQUAL:
+			return GTRelation.UNEQUAL;
+		case SMALLER:
+			return GTRelation.SMALLER;
+		case SMALLER_OR_EQUAL:
+			return GTRelation.SMALLER_OR_EQUAL;
+		default:
+			throw new IllegalArgumentException("Cannot convert relation: " + relation);
+		}
 	}
 }

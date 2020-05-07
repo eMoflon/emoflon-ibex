@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
@@ -24,6 +25,8 @@ public class OperationalSCFactory {
 
 	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(PropagationDirection direction) {
 		Map<String, Collection<OperationalShortcutRule>> operationalRules = new HashMap<>();
+		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(strategy.getTGG(), strategy.getOptions());
+
 		for (ShortcutRule scRule : scRules) {
 			TGGRule originalRule = scRule.getOriginalRule();
 			TGGRule replacingRule = scRule.getReplacingRule();
@@ -34,7 +37,7 @@ public class OperationalSCFactory {
 					+ TGGFilterUtil.filterEdges(replacingRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
 
-			InterfaceShortcutRule isr = new InterfaceShortcutRule(strategy, direction, scRule);
+			InterfaceShortcutRule isr = new InterfaceShortcutRule(strategy, direction, scRule, filterNACAnalysis);
 			operationalRules.computeIfAbsent(originalRule.getName(), k -> new LinkedList<>()).add(isr);
 		}
 		return operationalRules;

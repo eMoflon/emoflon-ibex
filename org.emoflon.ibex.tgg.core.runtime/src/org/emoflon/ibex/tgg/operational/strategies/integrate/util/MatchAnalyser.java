@@ -55,8 +55,15 @@ public class MatchAnalyser {
 		Set<TGGRuleElement> filtered = new HashSet<>();
 		for (DomainType domain : filter.domainTypes) {
 			for (BindingType binding : filter.bindingTypes) {
-				List<TGGRuleElement> group = analysis.groupedElements.get(domain).get(binding);
-				if (filter.all)
+				Map<BindingType, List<TGGRuleElement>> map = analysis.groupedElements.get(domain);
+				if(map == null)
+					continue;
+				
+				List<TGGRuleElement> group = map.get(binding);
+				if(group == null)
+					continue;
+				
+				if(filter.all)
 					filtered.addAll(group);
 				else
 					group.forEach(elt -> {

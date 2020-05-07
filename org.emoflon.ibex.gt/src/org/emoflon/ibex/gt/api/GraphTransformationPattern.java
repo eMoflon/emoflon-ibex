@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 
-import IBeXLanguage.IBeXPatternSet;
 
 /**
  * This is the abstraction for all patterns.
@@ -122,7 +122,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return an {@link Optional} for the match
 	 */
 	public final Optional<M> findAnyMatch() {
-		return interpreter.matchStream(patternName, getParameters()) //
+		return untypedMatchStream() //
 				.findAny() //
 				.map(m -> convertMatch(m));
 	}
@@ -135,14 +135,23 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	public final Collection<M> findMatches() {
 		return matchStream().collect(Collectors.toList());
 	}
-
+	
+	/**
+	 * Finds and returns all untyped matches for the pattern.
+	 * 
+	 * @return the Stream of matches
+	 */
+	protected Stream<IMatch> untypedMatchStream(){
+		return interpreter.matchStream(patternName, getParameters());
+	}
+	
 	/**
 	 * Finds and returns all matches for the pattern as a Stream.
 	 * 
 	 * @return the Stream of matches
 	 */
-	public final Stream<M> matchStream() {
-		return interpreter.matchStream(patternName, getParameters()) //
+	public Stream<M> matchStream() {
+		return untypedMatchStream() //
 				.map(m -> convertMatch(m));
 	}
 
@@ -172,7 +181,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the number of matches
 	 */
 	public final long countMatches() {
-		return interpreter.matchStream(patternName, getParameters()).count();
+		return untypedMatchStream().count();
 	}
 
 	/**
@@ -284,4 +293,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the typed match
 	 */
 	protected abstract M convertMatch(final IMatch match);
+	
+	public String getPatternName() {
+		return patternName;
+	}
 }

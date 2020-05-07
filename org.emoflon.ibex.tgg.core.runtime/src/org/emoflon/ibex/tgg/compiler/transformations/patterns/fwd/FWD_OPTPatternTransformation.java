@@ -1,20 +1,20 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDOptBlackPatternName;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperator;
-import static org.emoflon.ibex.tgg.core.util.TGGModelUtils.getEdgesByOperatorAndDomain;
-import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperator;
-import static  org.emoflon.ibex.tgg.core.util.TGGModelUtils.getNodesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperator;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperator;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
 import java.util.List;
 
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
-import IBeXLanguage.IBeXContextPattern;
 import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
@@ -23,8 +23,8 @@ import language.TGGRuleNode;
 
 public class FWD_OPTPatternTransformation extends OperationalPatternTransformation {
 
-	public FWD_OPTPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
-		super(parent, options, rule);
+	public FWD_OPTPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+		super(parent, options, rule, filterNACAnalysis);
 	}
 
 	@Override
@@ -56,8 +56,7 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(DomainType.SRC, rule, options);
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates()) {
+		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
 			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 	}

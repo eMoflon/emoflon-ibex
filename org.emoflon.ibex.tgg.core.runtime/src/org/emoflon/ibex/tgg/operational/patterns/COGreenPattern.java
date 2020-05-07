@@ -45,6 +45,6 @@ public class COGreenPattern extends IbexGreenPattern {
 	
 	@Override
 	public Collection<TGGRuleEdge> getCorrEdges() {
-		return factory.getGreenCorrEdgesInRule();
+		return Collections.emptyList();
 	}
 }

@@ -1,14 +1,14 @@
 Manifest-Version: 1.0
-Automatic-Module-Name: org.emoflon.ibex.tgg.core.language
+Automatic-Module-Name: org.emoflon.ibex.tgg.language
 Bundle-SymbolicName: org.emoflon.ibex.tgg.language;singleton:=true
 Export-Package: language,
  language.impl,
  language.repair,
- language.util,
- org.emoflon.ibex.tgg.core.transformation,
- org.emoflon.ibex.tgg.core.util,
+ language.repair.impl,
  language.repair.util,
- language.repair.impl
+ language.util,
+ org.emoflon.ibex.tgg.transformation,
+ org.emoflon.ibex.tgg.util
 Bundle-Name: eMoflon::IBeX Bidirectional Model Transformation via Trip
  le Graph Grammars - Language
 Bundle-Version: 1.0.0.qualifier

@@ -1,13 +1,13 @@
 package org.emoflon.ibex.common.visualization
 
-import IBeXLanguage.IBeXContextPattern
-import IBeXLanguage.IBeXCreatePattern
-import IBeXLanguage.IBeXDeletePattern
-import IBeXLanguage.IBeXEdge
-import IBeXLanguage.IBeXPatternSet
-import IBeXLanguage.IBeXNode
 
 import org.eclipse.emf.common.util.EList
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge
 
 /**
  * Utility methods to generate PlantUML code.

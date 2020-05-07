@@ -12,13 +12,13 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
-import org.emoflon.ibex.tgg.core.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import language.BindingType;
 import language.DomainType;
@@ -31,14 +31,14 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	protected IGreenPatternFactory factory;
 	private IbexOptions options;
 	private TGGResourceHandler resourceHandler;
-	private boolean optimizeMarkerCreation;
+	private boolean optimizeMarkerCreation = false;
 	private Map<TGGRuleNode, EReference> name2ref = new HashMap<>();
 	
 	public IbexGreenPattern(IGreenPatternFactory factory) {
 		this.factory = factory;
 		options = factory.getOptions();
 		resourceHandler = options.resourceHandler();
-		optimizeMarkerCreation = false;
+		optimizeMarkerCreation = options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("HiPE");
 	}
 	
 	@Override

@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
+import org.emoflon.ibex.gt.arithmetics.Probability;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
@@ -49,7 +51,13 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * The number of rule applications until now.
 	 */
 	private int ruleApplicationCount = 0;
-
+	
+	/**
+	 * The probability that the rule will be applied
+	 */
+	private Optional<Probability<M, P>> probability;
+	
+	private Random rnd = new Random();
 	/**
 	 * Creates a new executable rule.
 	 * 
@@ -63,8 +71,9 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 *            the name of the rule
 	 */
 	public GraphTransformationRule(final GraphTransformationAPI api, final GraphTransformationInterpreter interpreter,
-			final String ruleName) {
+			final String ruleName, Optional<Probability<M, P>> probability) {
 		super(api, interpreter, ruleName);
+		this.probability = probability;
 	}
 
 	/**
@@ -105,7 +114,10 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	public final P setSPO() {
 		return setPushoutApproach(PushoutApproach.SPO);
 	}
-
+	
+	public final Optional<Probability<M,P>> getProbability() {
+		return probability;	
+	}
 	/**
 	 * Checks whether the rule is applicable.
 	 * 
@@ -127,7 +139,26 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 		}
 		return apply(match.get());
 	}
-
+	
+	/**
+	 * If the rule has a probability, it applies the rule on an arbitrary 
+	 * match with the given probability if a match can be found; else it will return apply()
+	 * 
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> applyStochastic(){
+		Optional <M> match = findAnyMatch();
+		if(probability.isPresent()) {
+			if(match.isPresent()) {
+				if(rnd.nextDouble() < probability.get().getProbability(match.get())) {
+					return apply(match.get());
+				}
+			}
+			return Optional.empty();			
+		}
+		else return apply();
+	}
+	
 	/**
 	 * Applies the rule on the given match.
 	 * 
@@ -145,7 +176,25 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 		});
 		return comatch;
 	}
-
+	
+	/**
+	 * If the rule has a probability, then it applies the rule on the given match 
+	 * with the rule probability; else returns an empty Optional<M>
+	 * If the rule has no probability, it will use apply(match)
+	 * 
+	 * @param match
+	 * 			the match
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> applyStochastic(final M match){
+		if(probability.isPresent()) {
+			if(rnd.nextDouble() < probability.get().getProbability(match)) {
+				return apply(match);
+			}
+			return Optional.empty();			
+		}
+		else return apply(match);
+	}
 	/**
 	 * Applies the rule on at most <code>max</code> arbitrary matches.
 	 * 
@@ -156,7 +205,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	public final Collection<M> apply(final int max) {
 		return apply(matches -> matches.size() < max && hasMatches());
 	}
-
+	
 	/**
 	 * Applies the rule as long as the given condition is fulfilled.
 	 * 

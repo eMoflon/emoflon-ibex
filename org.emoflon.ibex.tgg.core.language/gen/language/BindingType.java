@@ -58,13 +58,13 @@ public enum BindingType implements Enumerator {
 	 */
 	NEGATIVE(3, "NEGATIVE", "NEGATIVE"),
 	/**
-	* The '<em><b>RELAXED</b></em>' literal object.
-	* <!-- begin-user-doc -->
+	 * The '<em><b>RELAXED</b></em>' literal object.
+	 * <!-- begin-user-doc -->
 	* <!-- end-user-doc -->
-	* @see #RELAXED_VALUE
-	* @generated
-	* @ordered
-	*/
+	 * @see #RELAXED_VALUE
+	 * @generated
+	 * @ordered
+	 */
 	RELAXED(4, "RELAXED", "RELAXED");
 
 	/**

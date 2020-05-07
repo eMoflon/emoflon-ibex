@@ -22,10 +22,10 @@ import runtime.TGGRuleApplication;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link runtime.impl.TGGRuleApplicationImpl#getProtocol <em>Protocol</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -54,10 +54,11 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Protocol getProtocol() {
 		if (eContainerFeatureID() != RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL)
 			return null;
-		return (Protocol) eContainer();
+		return (Protocol) eInternalContainer();
 	}
 
 	/**
@@ -75,20 +76,24 @@ public class TGGRuleApplicationImpl extends EObjectImpl implements TGGRuleApplic
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setProtocol(Protocol newProtocol) {
-		if (newProtocol != eInternalContainer() || (eContainerFeatureID() != RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL && newProtocol != null)) {
+		if (newProtocol != eInternalContainer()
+				|| (eContainerFeatureID() != RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL && newProtocol != null)) {
 			if (EcoreUtil.isAncestor(this, newProtocol))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
 			NotificationChain msgs = null;
 			if (eInternalContainer() != null)
 				msgs = eBasicRemoveFromContainer(msgs);
 			if (newProtocol != null)
-				msgs = ((InternalEObject) newProtocol).eInverseAdd(this, RuntimePackage.PROTOCOL__STEPS, Protocol.class, msgs);
+				msgs = ((InternalEObject) newProtocol).eInverseAdd(this, RuntimePackage.PROTOCOL__STEPS, Protocol.class,
+						msgs);
 			msgs = basicSetProtocol(newProtocol, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL, newProtocol, newProtocol));
+			eNotify(new ENotificationImpl(this, Notification.SET, RuntimePackage.TGG_RULE_APPLICATION__PROTOCOL,
+					newProtocol, newProtocol));
 	}
 
 	/**
