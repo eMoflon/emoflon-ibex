@@ -6,12 +6,6 @@ public abstract class Conflict {
 
 	private ITGGMatch match;
 	
-	public class ConflResStratToken {
-		private ConflResStratToken() {
-		}
-	}
-	protected final ConflResStratToken TOKEN = new ConflResStratToken();
-	
 	public Conflict(ITGGMatch match) {
 		this.match = match;
 	}

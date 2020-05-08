@@ -5,9 +5,8 @@ import java.util.Set;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 
 /**
  * A {@link DeleteConflictResStrategy} that completely revokes the deletion to
@@ -18,8 +17,8 @@ public class RevokeDeletionCRS extends DeleteConflictResStrategy {
 
 	protected Set<ITGGMatch> restored;
 
-	public RevokeDeletionCRS(DeleteConflict conflict, ConflResStratToken token) {
-		super(conflict, token);
+	public RevokeDeletionCRS(DeleteConflict conflict) {
+		super(conflict);
 	}
 
 	@Override

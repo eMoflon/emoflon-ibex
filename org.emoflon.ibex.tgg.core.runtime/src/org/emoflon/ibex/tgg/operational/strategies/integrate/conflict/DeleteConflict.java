@@ -42,7 +42,7 @@ public class DeleteConflict extends Conflict {
 	 * @return the conflict resolution strategy
 	 */
 	public DeleteConflictResStrategy preserveDeletion() {
-		return new PreserveDeletionCRS(this, TOKEN);
+		return new PreserveDeletionCRS(this);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class DeleteConflict extends Conflict {
 	 * @return the conflict resolution strategy
 	 */
 	public DeleteConflictResStrategy revokeDeletion() {
-		return new RevokeDeletionCRS(this, TOKEN);
+		return new RevokeDeletionCRS(this);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class DeleteConflict extends Conflict {
 	 * @return the conflict resolution strategy
 	 */
 	public DeleteConflictResStrategy makeCompromise() {
-		return new CompromiseCRS(this, TOKEN);
+		return new CompromiseCRS(this);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class DeleteConflict extends Conflict {
 	 * @return the conflict resolution strategy
 	 */
 	public DeleteConflictResStrategy actAndLetRepairRule(BiConsumer<EObject, EObject> delta) {
-		return new ActAndLetRepairCRS(this, TOKEN, delta);
+		return new ActAndLetRepairCRS(this, delta);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class DeleteConflict extends Conflict {
 	 * @return the conflict resolution strategy
 	 */
 	public DeleteConflictResStrategy actAndLetRepairRule(DeltaContainer delta) {
-		return new ActAndLetRepairCRS(this, TOKEN, delta);
+		return new ActAndLetRepairCRS(this, delta);
 	}
 
 }

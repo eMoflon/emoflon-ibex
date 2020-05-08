@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
 
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 
@@ -12,8 +11,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
  */
 public class PreserveDeletionCRS extends DeleteConflictResStrategy {
 
-	public PreserveDeletionCRS(DeleteConflict conflict, ConflResStratToken token) {
-		super(conflict, token);
+	public PreserveDeletionCRS(DeleteConflict conflict) {
+		super(conflict);
 	}
 
 	@Override

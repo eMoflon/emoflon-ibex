@@ -10,7 +10,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 
@@ -20,9 +19,6 @@ import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 public abstract class ConflictResolutionStrategy {
-
-	public ConflictResolutionStrategy(ConflResStratToken token) {
-	}
 
 	protected void restoreMatch(INTEGRATE integrate, ITGGMatch match) {
 		Set<TGGRuleElement> elements = integrate.getMatchAnalyser().getElts(match, new EltFilter().create());

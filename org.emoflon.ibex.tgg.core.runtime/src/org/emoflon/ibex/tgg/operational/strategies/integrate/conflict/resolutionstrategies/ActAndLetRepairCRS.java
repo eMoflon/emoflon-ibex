@@ -6,7 +6,6 @@ import java.util.function.BiConsumer;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.Conflict.ConflResStratToken;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.provider.IntegrationFragmentProvider;
 
@@ -23,13 +22,13 @@ public class ActAndLetRepairCRS extends DeleteConflictResStrategy {
 	private BiConsumer<EObject, EObject> deltaConsumer = null;
 	private DeltaContainer deltaContainer = null;
 
-	public ActAndLetRepairCRS(DeleteConflict conflict, ConflResStratToken token, BiConsumer<EObject, EObject> delta) {
-		super(conflict, token);
+	public ActAndLetRepairCRS(DeleteConflict conflict, BiConsumer<EObject, EObject> delta) {
+		super(conflict);
 		this.deltaConsumer = delta;
 	}
 
-	public ActAndLetRepairCRS(DeleteConflict conflict, ConflResStratToken token, DeltaContainer delta) {
-		super(conflict, token);
+	public ActAndLetRepairCRS(DeleteConflict conflict, DeltaContainer delta) {
+		super(conflict);
 		this.deltaContainer = delta;
 	}
 
