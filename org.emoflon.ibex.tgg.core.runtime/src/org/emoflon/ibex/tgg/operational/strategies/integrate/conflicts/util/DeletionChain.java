@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +22,7 @@ public class DeletionChain {
 	private ITGGMatch first;
 	private Set<ITGGMatch> last;
 
-	DeletionChain(INTEGRATE integrate, ITGGMatch brokenMatch) {
+	public DeletionChain(INTEGRATE integrate, ITGGMatch brokenMatch) {
 		this.matchContainer = integrate.getIntegrMatchContainer();
 		this.chain = new LinkedHashMap<>();
 		this.first = brokenMatch;

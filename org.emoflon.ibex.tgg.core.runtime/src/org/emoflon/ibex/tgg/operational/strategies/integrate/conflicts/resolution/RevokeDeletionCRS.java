@@ -1,23 +1,23 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 
 /**
- * A {@link DeleteConflictResStrategy} that completely revokes the deletion to
+ * A {@link DeletePropCRS} that completely revokes the deletion to
  * resolve the conflict.
  *
  */
-public class RevokeDeletionCRS extends DeleteConflictResStrategy {
+public class RevokeDeletionCRS extends DeletePropCRS {
 
 	protected Set<ITGGMatch> restored;
 
-	public RevokeDeletionCRS(DeleteConflict conflict) {
+	public RevokeDeletionCRS(DeletePropConflict conflict) {
 		super(conflict);
 	}
 

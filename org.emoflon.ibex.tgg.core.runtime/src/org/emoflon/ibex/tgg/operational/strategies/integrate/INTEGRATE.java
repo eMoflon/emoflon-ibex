@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -32,8 +33,10 @@ import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrateg
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Mismatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictDetector;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.HierarchicalConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.MatchConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
@@ -67,7 +70,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	protected Set<ITGGMatch> filterNacMatches;
 	protected Map<ITGGMatch, Mismatch> mismatches;
-	protected Map<ITGGMatch, DeleteConflict> conflicts;
+	protected Set<GeneralConflict> conflicts;
+	protected Map<ITGGMatch, MatchConflict> match2conflicts;
 
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
@@ -77,7 +81,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	private void init() throws IOException {
 		filterNacMatches = new HashSet<>();
 		mismatches = new HashMap<>();
-		conflicts = new HashMap<>();
+		conflicts = new HashSet<>();
+		match2conflicts = new HashMap<>();
 
 		matchAnalyser = new MatchAnalyser(this);
 		modelChangeProtocol = new ModelChangeProtocol( //
@@ -132,7 +137,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
 				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
 		mismatches = new HashMap<>();
-		conflicts = new HashMap<>();
+		conflicts = new HashSet<>();
+		match2conflicts = new HashMap<>();
 	}
 
 	protected void classifyMatches() {
@@ -152,8 +158,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void detectConflicts() {
 		matchDistributor.updateMatches();
 		getIntegrMatchContainer().update();
-		conflicts = conflictDetector.detectDeleteConflicts().stream()
-				.collect(Collectors.toMap(c -> c.getMatch(), c -> c));
+
+		conflicts = conflictDetector.detectConflicts();
+
+		match2conflicts = conflicts.stream() //
+				.flatMap(gc -> {
+					if (gc instanceof HierarchicalConflict)
+						return ((HierarchicalConflict) gc).getConflictDependency().stream();
+					return Stream.of((MatchConflict) gc);
+				}) //
+				.collect(Collectors.toMap(mc -> mc.getMatch(), mc -> mc));
 	}
 
 	protected void translateConflictFreeElements() {
@@ -265,7 +279,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
 		long tic = System.nanoTime();
-		
+
 		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty())
 			return false;
@@ -305,7 +319,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	@Override
 	protected boolean repairBrokenMatches() {
 		long tic = System.nanoTime();
-		
+
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
 		for (AbstractRepairStrategy rStrategy : repairStrategies) {
 			// TODO adrianm: also use attribute repair strategy for integrate
@@ -335,7 +349,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				}
 			}
 		}
-		
+
 		repairTime += System.nanoTime() - tic;
 		return !alreadyProcessed.isEmpty();
 	}
@@ -419,8 +433,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return mismatches;
 	}
 
-	public Map<ITGGMatch, DeleteConflict> getConflicts() {
-		return conflicts;
+	public Map<ITGGMatch, MatchConflict> getConflicts() {
+		return match2conflicts;
 	}
 
 	public ModelChanges getUserModelChanges() {

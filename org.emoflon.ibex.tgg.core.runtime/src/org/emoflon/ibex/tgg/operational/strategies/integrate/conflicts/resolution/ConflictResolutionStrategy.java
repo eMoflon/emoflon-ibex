@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution;
 
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Conflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 
@@ -18,7 +19,13 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
-public abstract class ConflictResolutionStrategy {
+public abstract class ConflictResolutionStrategy<C extends Conflict> {
+	
+	protected final C conflict;
+	
+	public ConflictResolutionStrategy(C conflict) {
+		this.conflict = conflict;
+	}
 
 	protected void restoreMatch(INTEGRATE integrate, ITGGMatch match) {
 		Set<TGGRuleElement> elements = integrate.getMatchAnalyser().getElts(match, new EltFilter().create());

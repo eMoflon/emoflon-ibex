@@ -1,7 +1,7 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.resolutionstrategies;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution;
 
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DeleteConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
@@ -9,13 +9,13 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 import language.TGGRuleNode;
 
 /**
- * A {@link DeleteConflictResStrategy} that revokes as few as possible deletions
+ * A {@link DeletePropCRS} that revokes as few as possible deletions
  * to resolve the conflict.
  *
  */
-public class CompromiseCRS extends DeleteConflictResStrategy {
+public class MergeAndPreserveCRS extends DeletePropCRS {
 
-	public CompromiseCRS(DeleteConflict conflict) {
+	public MergeAndPreserveCRS(DeletePropConflict conflict) {
 		super(conflict);
 	}
 

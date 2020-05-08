@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
 import java.io.IOException;
 
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 
@@ -41,8 +42,9 @@ public interface IntegrationFragment {
 		public void apply(INTEGRATE i) throws IOException {
 			i.classifyMatches();
 			i.detectConflicts();
-			i.conflicts.values().forEach(
-					conflict -> i.getOptions().integration.conflictSolver().resolveDeleteConflict(conflict).apply(i));
+			for (GeneralConflict c : i.conflicts) {
+				i.getOptions().integration.conflictSolver().resolveConflict(c).forEach(crs -> crs.apply(i));
+			}
 		}
 	}
 
