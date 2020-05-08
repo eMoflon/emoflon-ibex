@@ -20,4 +20,10 @@ public class IbexBuilderExtension implements BuilderExtension {
 				() -> new EditorTGGtoInternalTGG().generateInternalModels(editorModel, flattenedEditorModel, builder.getProject()));
 		internalModel.ifPresent(m -> new AttrCondDefLibraryProvider().generateAttrCondLibsAndStubs(m, builder.getProject()));
 	}
+	
+	@Override
+	public int getPriority() {
+		// TODO Auto-generated method stub
+		return 10;
+	}
 }
