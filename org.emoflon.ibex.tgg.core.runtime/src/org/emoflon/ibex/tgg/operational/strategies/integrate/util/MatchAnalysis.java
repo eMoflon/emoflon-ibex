@@ -9,12 +9,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchModification;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
 
 import language.BindingType;
@@ -77,13 +79,36 @@ public class MatchAnalysis {
 	private void getDeletions() {
 		deletedElements.clear();
 		nodeToEObject.forEach((node, obj) -> {
-			if (opStrat.getGeneralModelChanges().isDeleted(obj))
+			Resource res = obj.eResource();
+			if (res == null || !isValidResource(res))
 				deletedElements.add(node);
 		});
 		edgeToEMFEdge.forEach((edge, emfEdge) -> {
-			if (opStrat.getGeneralModelChanges().isDeleted(emfEdge))
+			if (edgeIsDeleted(edge, emfEdge))
 				deletedElements.add(edge);
 		});
+	}
+	
+	private boolean isValidResource(Resource resource) {
+		TGGResourceHandler resourceHandler = opStrat.getOptions().resourceHandler();
+		if (resource.equals(resourceHandler.getSourceResource()))
+			return true;
+		if (resource.equals(resourceHandler.getTargetResource()))
+			return true;
+		if (resource.equals(resourceHandler.getCorrResource()))
+			return true;
+		return false;
+	}
+
+	private boolean edgeIsDeleted(TGGRuleEdge edge, EMFEdge emfEdge) {
+		if (deletedElements.contains(edge.getSrcNode()) || deletedElements.contains(edge.getTrgNode()))
+			return true;
+		Object value = emfEdge.getSource().eGet(emfEdge.getType());
+		if (value == null)
+			return true;
+		if (value instanceof List && !((List<?>) value).contains(emfEdge.getTarget()))
+			return true;
+		return false;
 	}
 
 	boolean isElementDeleted(TGGRuleElement element) {
