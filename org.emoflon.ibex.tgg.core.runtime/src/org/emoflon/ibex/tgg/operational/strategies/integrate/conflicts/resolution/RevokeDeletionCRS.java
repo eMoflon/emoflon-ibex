@@ -35,7 +35,7 @@ public class RevokeDeletionCRS extends DeletePropCRS {
 
 	protected void restoreMatchesBasedOn(INTEGRATE integrate, ITGGMatch match) {
 		IntegrateMatchContainer matchContainer = integrate.getIntegrMatchContainer();
-		matchContainer.getNode(match).getBaseFor().forEach(n -> {
+		matchContainer.getNode(match).getRequiredBy().forEach(n -> {
 			if (n.isBroken()) {
 				ITGGMatch m = matchContainer.getMatch(n);
 				if (!restored.contains(m)) {

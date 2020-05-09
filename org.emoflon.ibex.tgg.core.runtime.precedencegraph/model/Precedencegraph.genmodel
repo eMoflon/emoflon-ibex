@@ -13,8 +13,6 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Precedencegraph.ecore#//PrecedenceNode/broken"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Precedencegraph.ecore#//PrecedenceNode/requires"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Precedencegraph.ecore#//PrecedenceNode/requiredBy"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Precedencegraph.ecore#//PrecedenceNode/basedOn"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Precedencegraph.ecore#//PrecedenceNode/baseFor"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Precedencegraph.ecore#//PrecedenceNode/matchAsString"/>
     </genClasses>
   </genPackages>

@@ -38,7 +38,7 @@ public class DeletionChain {
 		chain.computeIfAbsent(currentMatch, m -> {
 			Set<ITGGMatch> set = new HashSet<>();
 			PrecedenceNode currentNode = matchContainer.getNode(currentMatch);
-			currentNode.getBasedOn().forEach(n -> {
+			currentNode.getRequires().forEach(n -> {
 				if (n.isBroken())
 					set.add(matchContainer.getMatch(n));
 			});

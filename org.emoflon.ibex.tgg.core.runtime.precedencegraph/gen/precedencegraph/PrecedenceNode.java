@@ -18,8 +18,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link precedencegraph.PrecedenceNode#isBroken <em>Broken</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getRequires <em>Requires</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getRequiredBy <em>Required By</em>}</li>
- *   <li>{@link precedencegraph.PrecedenceNode#getBasedOn <em>Based On</em>}</li>
- *   <li>{@link precedencegraph.PrecedenceNode#getBaseFor <em>Base For</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getMatchAsString <em>Match As String</em>}</li>
  * </ul>
  *
@@ -77,34 +75,6 @@ public interface PrecedenceNode extends EObject {
 	 * @generated
 	 */
 	EList<PrecedenceNode> getRequiredBy();
-
-	/**
-	 * Returns the value of the '<em><b>Based On</b></em>' reference list.
-	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
-	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getBaseFor <em>Base For</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Based On</em>' reference list.
-	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_BasedOn()
-	 * @see precedencegraph.PrecedenceNode#getBaseFor
-	 * @model opposite="baseFor"
-	 * @generated
-	 */
-	EList<PrecedenceNode> getBasedOn();
-
-	/**
-	 * Returns the value of the '<em><b>Base For</b></em>' reference list.
-	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
-	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getBasedOn <em>Based On</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Base For</em>' reference list.
-	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_BaseFor()
-	 * @see precedencegraph.PrecedenceNode#getBasedOn
-	 * @model opposite="basedOn"
-	 * @generated
-	 */
-	EList<PrecedenceNode> getBaseFor();
 
 	/**
 	 * Returns the value of the '<em><b>Match As String</b></em>' attribute.
