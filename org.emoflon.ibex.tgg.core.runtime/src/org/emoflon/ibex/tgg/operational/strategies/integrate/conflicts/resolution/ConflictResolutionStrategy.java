@@ -36,7 +36,7 @@ public abstract class ConflictResolutionStrategy<C extends Conflict> {
 		elements.forEach(elt -> {
 			if (elt instanceof TGGRuleEdge) {
 				EMFEdge edge = getRuntimeEdge(match, (TGGRuleEdge) elt);
-				if (integrate.getUserModelChanges().isDeleted(edge))
+				if (integrate.getGeneralModelChanges().isDeleted(edge))
 					if (edge.getType().isContainment())
 						deletedContainmentEdges.add(edge);
 					else
@@ -48,11 +48,11 @@ public abstract class ConflictResolutionStrategy<C extends Conflict> {
 			}
 		});
 		TGGRuleApplication ruleApplication = integrate.getRuleApplicationNode(match);
-		deletedCrossEdges.addAll(integrate.getUserModelChanges().getDeletedEdges(ruleApplication));
+		deletedCrossEdges.addAll(integrate.getGeneralModelChanges().getDeletedEdges(ruleApplication));
 
 		deletedContainmentEdges.forEach(edge -> ModelChangeUtil.createEdge(edge));
 		deletedNodes.forEach(node -> {
-			Resource resource = integrate.getUserModelChanges().containedInResource(node);
+			Resource resource = integrate.getGeneralModelChanges().containedInResource(node);
 			if (resource != null)
 				resource.getContents().add(node);
 		});

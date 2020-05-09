@@ -46,9 +46,9 @@ public class ConflictDetector {
 
 		brokenMatch.getClassifiedNodes().forEach((element, classifier) -> {
 			if (deleteConflictCandidates.contains(classifier)) {
-				ModelChanges userChanges = integrate.getUserModelChanges();
-				Set<EMFEdge> conflEdges = userChanges.getCreatedEdges(element);
-				Set<AttributeChange> conflAttrChanges = userChanges.getAttributeChanges(element);
+				ModelChanges changes = integrate.getGeneralModelChanges();
+				Set<EMFEdge> conflEdges = changes.getCreatedEdges(element);
+				Set<AttributeChange> conflAttrChanges = changes.getAttributeChanges(element);
 				if (!conflEdges.isEmpty())
 					edgeConflElts.add(new EdgeConflictingElt(element, conflEdges));
 				if (!conflAttrChanges.isEmpty())

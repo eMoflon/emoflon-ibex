@@ -67,6 +67,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected DeltaContainer userDeltaContainer;
 	protected BiConsumer<EObject, EObject> userDeltaBiConsumer;
 	protected ChangeKey userDeltaKey;
+	protected ChangeKey generalDeltaKey;
 
 	protected Set<ITGGMatch> filterNacMatches;
 	protected Map<ITGGMatch, BrokenMatch> brokenMatches;
@@ -115,12 +116,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	@Override
 	public void run() throws IOException {
 		initialize();
-		modelChangeProtocol.registerKey(userDeltaKey);
-
 		for (IntegrationFragment fragment : options.integration.pattern().getIntegrationFragments())
 			fragment.apply(this);
-
-		modelChangeProtocol.deregisterKey(userDeltaKey);
 		cleanUp();
 	}
 
@@ -130,9 +127,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		getIntegrMatchContainer().update();
 		modelChangeProtocol.attachAdapter();
 		userDeltaKey = new ChangeKey();
+		generalDeltaKey = new ChangeKey();
+		modelChangeProtocol.registerKey(generalDeltaKey);
 	}
 
 	protected void cleanUp() {
+		modelChangeProtocol.deregisterKey(generalDeltaKey);
 		modelChangeProtocol.detachAdapter();
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
 				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
@@ -439,6 +439,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	public ModelChanges getUserModelChanges() {
 		return modelChangeProtocol.getModelChanges(userDeltaKey);
+	}
+	
+	public ModelChanges getGeneralModelChanges() {
+		return modelChangeProtocol.getModelChanges(generalDeltaKey);
 	}
 
 	/**

@@ -15,6 +15,8 @@ public interface IntegrationFragment {
 	public static class ApplyUserDelta implements IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			i.modelChangeProtocol.registerKey(i.userDeltaKey);
+			
 			if (i.userDeltaContainer != null) {
 				ModelChangeUtil.applyUserDelta(i.userDeltaContainer);
 				i.userDeltaContainer = null;
@@ -23,6 +25,8 @@ public interface IntegrationFragment {
 						i.getResourceHandler().getTargetResource().getContents().get(0));
 				i.userDeltaBiConsumer = null;
 			}
+			
+			i.modelChangeProtocol.deregisterKey(i.userDeltaKey);
 		}
 	}
 
