@@ -21,14 +21,14 @@ import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
 
-public class MatchAnalyser {
+public class TGGMatchUtil {
 
 	private final INTEGRATE integrate;
 
 	private Map<String, TGGRule> nameToRules;
 	private Map<ITGGMatch, MatchAnalysis> matchToAnalysis;
 
-	public MatchAnalyser(INTEGRATE integrate) {
+	public TGGMatchUtil(INTEGRATE integrate) {
 		this.integrate = integrate;
 		init();
 	}
@@ -93,7 +93,13 @@ public class MatchAnalyser {
 		return getNodeStream(match, filter).collect(Collectors.toSet());
 	}
 
-	public Stream<TGGRuleEdge> getEdgeStream(ITGGMatch match, EltFilter filter) {
+	public Set<EObject> getObjects(ITGGMatch match, EltFilter filter) {
+		return getNodeStream(match, filter) //
+				.map(n -> (EObject) match.get(n.getName())) //
+				.collect(Collectors.toSet());
+	}
+
+	Stream<TGGRuleEdge> getEdgeStream(ITGGMatch match, EltFilter filter) {
 		return getElts(match, filter).stream() //
 				.filter(elt -> elt instanceof TGGRuleEdge) //
 				.map(elt -> (TGGRuleEdge) elt);
@@ -101,12 +107,6 @@ public class MatchAnalyser {
 
 	public Set<TGGRuleEdge> getEdges(ITGGMatch match, EltFilter filter) {
 		return getEdgeStream(match, filter).collect(Collectors.toSet());
-	}
-
-	public Set<EObject> getObjects(ITGGMatch match, EltFilter filter) {
-		return getNodeStream(match, filter) //
-				.map(n -> (EObject) match.get(n.getName())) //
-				.collect(Collectors.toSet());
 	}
 
 	public Set<EMFEdge> getEMFEdges(ITGGMatch match, EltFilter filter) {

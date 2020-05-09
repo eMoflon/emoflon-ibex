@@ -1,10 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.COMPL_DEL;
 import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.PART_DEL;
 import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.UNCHANGED;
 import static org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification.UNSPECIFIED;
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
 import java.util.Set;
@@ -12,9 +12,7 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 
 import language.DomainType;
 import language.TGGRuleEdge;
@@ -23,9 +21,9 @@ import language.TGGRuleNode;
 
 public abstract class MatchClassifier {
 
-	abstract public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis);
+	abstract public BrokenMatch classify(BrokenMatch brokenMatch);
 
-	abstract public boolean isApplicable(MatchAnalysis analysis);
+	abstract public boolean isApplicable(BrokenMatch brokenMatch);
 
 	protected DomainType oppositeOf(DomainType type) {
 		switch (type) {
@@ -40,8 +38,7 @@ public abstract class MatchClassifier {
 		}
 	}
 
-	protected void classifyElts(INTEGRATE integrate, BrokenMatch brokenMatch, Set<TGGRuleElement> elements,
-			ElementClassifier classifier) {
+	protected void classifyElts(BrokenMatch brokenMatch, Set<TGGRuleElement> elements, ElementClassifier classifier) {
 		elements.forEach(elt -> {
 			if (elt instanceof TGGRuleNode) {
 				EObject node = (EObject) brokenMatch.getMatch().get(elt.getName());
@@ -61,30 +58,30 @@ public abstract class MatchClassifier {
 	public static class CREATE_FilterNac extends MatchClassifier {
 
 		@Override
-		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, getPropDirection(analysis));
+		public BrokenMatch classify(BrokenMatch brokenMatch) {
+			setPropDirection(brokenMatch);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef), ElementClassifier.USE);
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef), ElementClassifier.USE);
 
 			return brokenMatch;
 		}
 
-		private PropagationDirection getPropDirection(MatchAnalysis analysis) {
+		private void setPropDirection(BrokenMatch brokenMatch) {
 			PropagationDirection propDir = PropagationDirection.UNDEFINED;
-			Collection<DomainType> domains = analysis.getFilterNacViolations().values();
+			Collection<DomainType> domains = brokenMatch.getFilterNacViolations().values();
 			if (domains.contains(DomainType.SRC))
 				propDir = PropagationDirection.FORWARD;
 			if (domains.contains(DomainType.TRG) && propDir != PropagationDirection.FORWARD)
 				propDir = PropagationDirection.BACKWARD;
 			else
 				propDir = PropagationDirection.UNDEFINED;
-			return propDir;
+			brokenMatch.setPropagationDirection(propDir);
 		}
 
 		@Override
-		public boolean isApplicable(MatchAnalysis analysis) {
-			return !analysis.getFilterNacViolations().isEmpty();
+		public boolean isApplicable(BrokenMatch brokenMatch) {
+			return !brokenMatch.getFilterNacViolations().isEmpty();
 		}
 
 	}
@@ -100,18 +97,16 @@ public abstract class MatchClassifier {
 				COMPL_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED);
 
 		@Override
-		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
-
+		public BrokenMatch classify(BrokenMatch brokenMatch) {
 			EltFilter ef = new EltFilter().srcAndTrg().create();
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef), ElementClassifier.NO_USE);
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef), ElementClassifier.NO_USE);
 
 			return brokenMatch;
 		}
 
 		@Override
-		public boolean isApplicable(MatchAnalysis analysis) {
-			return pattern.matches(analysis.getModPattern());
+		public boolean isApplicable(BrokenMatch brokenMatch) {
+			return pattern.matches(brokenMatch.getModPattern());
 		}
 
 	}
@@ -127,18 +122,16 @@ public abstract class MatchClassifier {
 				UNCHANGED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNCHANGED, UNSPECIFIED);
 
 		@Override
-		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
-
+		public BrokenMatch classify(BrokenMatch brokenMatch) {
 			EltFilter ef = new EltFilter().srcAndTrg().create();
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef), ElementClassifier.USE);
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef), ElementClassifier.USE);
 
 			return brokenMatch;
 		}
 
 		@Override
-		public boolean isApplicable(MatchAnalysis analysis) {
-			return pattern.matches(analysis.getModPattern());
+		public boolean isApplicable(BrokenMatch brokenMatch) {
+			return pattern.matches(brokenMatch.getModPattern());
 		}
 
 	}
@@ -156,31 +149,31 @@ public abstract class MatchClassifier {
 				UNCHANGED, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED);
 
 		@Override
-		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+		public BrokenMatch classify(BrokenMatch brokenMatch) {
 			DomainType delSide;
 			PropagationDirection propDir;
-			if (fwdPattern.matches(analysis.getModPattern())) {
+			if (fwdPattern.matches(brokenMatch.getModPattern())) {
 				delSide = DomainType.SRC;
 				propDir = PropagationDirection.FORWARD;
-			} else if (bwdPattern.matches(analysis.getModPattern())) {
+			} else if (bwdPattern.matches(brokenMatch.getModPattern())) {
 				delSide = DomainType.TRG;
 				propDir = PropagationDirection.BACKWARD;
 			} else
 				return null;
 
-			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, propDir);
+			brokenMatch.setPropagationDirection(propDir);
 
 			EltFilter ef = new EltFilter().create();
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(oppositeOf(delSide))),
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.domains(oppositeOf(delSide))),
 					ElementClassifier.PENAL_USE);
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(delSide)), ElementClassifier.NO_USE);
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.domains(delSide)), ElementClassifier.NO_USE);
 
 			return brokenMatch;
 		}
 
 		@Override
-		public boolean isApplicable(MatchAnalysis analysis) {
-			return fwdPattern.matches(analysis.getModPattern()) || bwdPattern.matches(analysis.getModPattern());
+		public boolean isApplicable(BrokenMatch brokenMatch) {
+			return fwdPattern.matches(brokenMatch.getModPattern()) || bwdPattern.matches(brokenMatch.getModPattern());
 		}
 
 	}
@@ -198,33 +191,33 @@ public abstract class MatchClassifier {
 				PART_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED);
 
 		@Override
-		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+		public BrokenMatch classify(BrokenMatch brokenMatch) {
 			DomainType partlySide;
 			PropagationDirection propDir;
-			if (fwdPattern.matches(analysis.getModPattern())) {
+			if (fwdPattern.matches(brokenMatch.getModPattern())) {
 				partlySide = DomainType.TRG;
 				propDir = PropagationDirection.FORWARD;
-			} else if (bwdPattern.matches(analysis.getModPattern())) {
+			} else if (bwdPattern.matches(brokenMatch.getModPattern())) {
 				partlySide = DomainType.SRC;
 				propDir = PropagationDirection.BACKWARD;
 			} else
 				return null;
 
-			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, propDir);
+			brokenMatch.setPropagationDirection(propDir);
 
 			EltFilter ef = new EltFilter().create();
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(oppositeOf(partlySide))),
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.domains(oppositeOf(partlySide))),
 					ElementClassifier.PENAL_USE);
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(partlySide).deleted()),
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.domains(partlySide).deleted()),
 					ElementClassifier.PENAL_USE);
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.notDeleted()), ElementClassifier.REWARDLESS_USE);
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.notDeleted()), ElementClassifier.REWARDLESS_USE);
 
 			return brokenMatch;
 		}
 
 		@Override
-		public boolean isApplicable(MatchAnalysis analysis) {
-			return fwdPattern.matches(analysis.getModPattern()) || bwdPattern.matches(analysis.getModPattern());
+		public boolean isApplicable(BrokenMatch brokenMatch) {
+			return fwdPattern.matches(brokenMatch.getModPattern()) || bwdPattern.matches(brokenMatch.getModPattern());
 		}
 
 	}
@@ -240,19 +233,17 @@ public abstract class MatchClassifier {
 				PART_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, PART_DEL, UNSPECIFIED);
 
 		@Override
-		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
-
+		public BrokenMatch classify(BrokenMatch brokenMatch) {
 			EltFilter ef = new EltFilter().srcAndTrg().create();
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.deleted()), ElementClassifier.REWARDLESS_USE);
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.notDeleted()), ElementClassifier.POTENTIAL_USE);
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.deleted()), ElementClassifier.REWARDLESS_USE);
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.notDeleted()), ElementClassifier.POTENTIAL_USE);
 
 			return brokenMatch;
 		}
 
 		@Override
-		public boolean isApplicable(MatchAnalysis analysis) {
-			return pattern.matches(analysis.getModPattern());
+		public boolean isApplicable(BrokenMatch brokenMatch) {
+			return pattern.matches(brokenMatch.getModPattern());
 		}
 
 	}
@@ -270,33 +261,33 @@ public abstract class MatchClassifier {
 				UNCHANGED, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, PART_DEL, UNSPECIFIED);
 
 		@Override
-		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+		public BrokenMatch classify(BrokenMatch brokenMatch) {
 			DomainType delSide;
 			PropagationDirection propDir;
-			if (fwdPattern.matches(analysis.getModPattern())) {
+			if (fwdPattern.matches(brokenMatch.getModPattern())) {
 				delSide = DomainType.SRC;
 				propDir = PropagationDirection.FORWARD;
-			} else if (bwdPattern.matches(analysis.getModPattern())) {
+			} else if (bwdPattern.matches(brokenMatch.getModPattern())) {
 				delSide = DomainType.TRG;
 				propDir = PropagationDirection.BACKWARD;
 			} else
 				return null;
 
-			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, propDir);
+			brokenMatch.setPropagationDirection(propDir);
 
 			EltFilter ef = new EltFilter().create();
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(oppositeOf(delSide))),
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.domains(oppositeOf(delSide))),
 					ElementClassifier.POTENTIAL_USE);
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(delSide).deleted()),
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.domains(delSide).deleted()),
 					ElementClassifier.REWARDLESS_USE);
-			classifyElts(integrate, brokenMatch, analysis.getElts(ef.notDeleted()), ElementClassifier.POTENTIAL_USE);
+			classifyElts(brokenMatch, brokenMatch.util().getElts(ef.notDeleted()), ElementClassifier.POTENTIAL_USE);
 
 			return brokenMatch;
 		}
 
 		@Override
-		public boolean isApplicable(MatchAnalysis analysis) {
-			return fwdPattern.matches(analysis.getModPattern()) || bwdPattern.matches(analysis.getModPattern());
+		public boolean isApplicable(BrokenMatch brokenMatch) {
+			return fwdPattern.matches(brokenMatch.getModPattern()) || bwdPattern.matches(brokenMatch.getModPattern());
 		}
 
 	}

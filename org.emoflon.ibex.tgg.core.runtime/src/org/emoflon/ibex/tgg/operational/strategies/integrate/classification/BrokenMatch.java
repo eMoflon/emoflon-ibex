@@ -12,22 +12,45 @@ import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
+import language.DomainType;
+
 public class BrokenMatch {
 
+	private final INTEGRATE integrate;
+
 	private final ITGGMatch match;
-	private final MatchClassifier matchClassifier;
-	private final PropagationDirection propDirection;
+	private final MatchAnalysis util;
+
+	private final MatchModification modificationPattern;
+	private final Map<ITGGMatch, DomainType> filterNacViolations;
+
+	private MatchClassifier matchClassifier;
+	private PropagationDirection propDirection;
 
 	private final Map<EObject, ElementClassifier> classifiedNodes;
 	private final Map<EMFEdge, ElementClassifier> classifiedEdges;
 
-	public BrokenMatch(ITGGMatch match, MatchClassifier matchClassifier, PropagationDirection propDirection) {
+	public BrokenMatch(INTEGRATE integrate, ITGGMatch match) {
+		this.integrate = integrate;
 		this.match = match;
-		this.matchClassifier = matchClassifier;
-		this.propDirection = propDirection;
+		this.util = integrate.getMatchUtil().getAnalysis(match);
+		this.modificationPattern = util.createModPattern();
+		this.filterNacViolations = util.analyseFilterNACViolations();
+		this.propDirection = PropagationDirection.UNDEFINED;
 
 		classifiedNodes = new HashMap<>();
 		classifiedEdges = new HashMap<>();
+
+		classify();
+	}
+
+	private void classify() {
+		for (MatchClassifier matchClassifier : integrate.getOptions().integration.pattern().getMatchClassifier()) {
+			if (matchClassifier.isApplicable(this)) {
+				matchClassifier.classify(this);
+				break;
+			}
+		}
 	}
 
 	public ITGGMatch getMatch() {
@@ -40,6 +63,18 @@ public class BrokenMatch {
 
 	public PropagationDirection getPropagationDirection() {
 		return propDirection;
+	}
+
+	public void setPropagationDirection(PropagationDirection propDirection) {
+		this.propDirection = propDirection;
+	}
+
+	public MatchModification getModPattern() {
+		return modificationPattern;
+	}
+
+	public Map<ITGGMatch, DomainType> getFilterNacViolations() {
+		return filterNacViolations;
 	}
 
 	public Map<EObject, ElementClassifier> getClassifiedNodes() {
@@ -58,18 +93,21 @@ public class BrokenMatch {
 		classifiedEdges.put(edge, classifier);
 	}
 
-	public void resolveMismatch(INTEGRATE integrate) {
+	public MatchAnalysis util() {
+		return util;
+	}
+
+	public void resolveBrokenMatch() {
 		integrate.deleteGreenCorrs(match);
 
-		MatchAnalysis analysis = integrate.getMatchAnalyser().getAnalysis(match);
 		Set<EObject> nodesToBeDeleted = new HashSet<>();
 		Set<EMFEdge> edgesToBeDeleted = new HashSet<>();
 		classifiedNodes.forEach((n, cl) -> {
-			if (isDeleteClassifier(cl) && !analysis.isElementDeleted(analysis.getNode(n)))
+			if (isDeleteClassifier(cl) && !integrate.getGeneralModelChanges().isDeleted(n))
 				nodesToBeDeleted.add(n);
 		});
 		classifiedEdges.forEach((e, cl) -> {
-			if (isDeleteClassifier(cl) && !analysis.isElementDeleted(analysis.getEdge(e)))
+			if (isDeleteClassifier(cl) && !integrate.getGeneralModelChanges().isDeleted(e))
 				edgesToBeDeleted.add(e);
 		});
 		integrate.getRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
@@ -90,4 +128,34 @@ public class BrokenMatch {
 			return false;
 		}
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("MatchAnalysis [\n");
+		builder.append("  " + print().replace("\n", "\n  "));
+		builder.append("\n]");
+		return builder.toString();
+	}
+
+	private String print() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Match [\n");
+		builder.append("  " + match.getPatternName());
+		builder.append("\n]\n");
+		builder.append(modificationPattern.toString() + "\n");
+		builder.append("FilterNAC Violations [\n");
+		builder.append("  " + printFilterNacViolations().replace("\n", "\n  "));
+		builder.append("\n]");
+		return builder.toString();
+	}
+
+	private String printFilterNacViolations() {
+		StringBuilder builder = new StringBuilder();
+		for (ITGGMatch fnm : filterNacViolations.keySet()) {
+			builder.append(fnm.getRuleName() + "\n");
+		}
+		return builder.length() == 0 ? builder.toString() : builder.substring(0, builder.length() - 1);
+	}
+
 }

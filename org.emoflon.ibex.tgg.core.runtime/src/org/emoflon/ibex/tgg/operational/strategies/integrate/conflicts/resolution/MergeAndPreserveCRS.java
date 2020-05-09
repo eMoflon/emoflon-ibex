@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resoluti
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import language.TGGRuleNode;
@@ -21,7 +21,7 @@ public class MergeAndPreserveCRS extends DeletePropCRS {
 
 	@Override
 	public void apply(INTEGRATE integrate) {
-		MatchAnalysis analysis = integrate.getMatchAnalyser().getAnalysis(conflict.getMatch());
+		MatchAnalysis analysis = integrate.getMatchUtil().getAnalysis(conflict.getMatch());
 
 		conflict.getDeletionChain().foreachReverse(m -> restoreMatch(integrate, m));
 

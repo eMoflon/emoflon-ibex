@@ -31,7 +31,6 @@ import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.HierarchicalConflict;
@@ -43,9 +42,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ConflictFreeElementsUpdatePolicy;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
 import org.emoflon.ibex.tgg.operational.strategies.opt.LocalCC;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
@@ -58,7 +56,7 @@ import runtime.TGGRuleApplication;
 public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	//// TOOLS ////
-	protected MatchAnalyser matchAnalyser;
+	protected TGGMatchUtil matchUtil;
 	protected ModelChangeProtocol modelChangeProtocol;
 	protected ConflictDetector conflictDetector;
 	protected CC consistencyChecker;
@@ -85,7 +83,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
 
-		matchAnalyser = new MatchAnalyser(this);
+		matchUtil = new TGGMatchUtil(this);
 		modelChangeProtocol = new ModelChangeProtocol( //
 				resourceHandler.getSourceResource(), resourceHandler.getTargetResource(), //
 				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
@@ -101,9 +99,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
-		Set<EObject> ccObjects = matchAnalyser.getObjects(ccMatch, new EltFilter().srcAndTrg());
+		Set<EObject> ccObjects = matchUtil.getObjects(ccMatch, new EltFilter().srcAndTrg());
 		for (ITGGMatch brokenMatch : brokenRuleApplications.values()) {
-			Set<EObject> brokenObjects = matchAnalyser.getObjects(brokenMatch, new EltFilter().srcAndTrg().deleted());
+			Set<EObject> brokenObjects = matchUtil.getObjects(brokenMatch, new EltFilter().srcAndTrg().deleted());
 			if (!Sets.intersection(ccObjects, brokenObjects).isEmpty())
 				removeBrokenMatch(brokenMatch);
 		}
@@ -144,14 +142,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void classifyBrokenMatches() {
 		matchDistributor.updateMatches();
 		brokenMatches.clear();
-		for (ITGGMatch brokenMatch : brokenRuleApplications.values()) {
-			MatchAnalysis analysis = matchAnalyser.getAnalysis(brokenMatch);
-			for (MatchClassifier matchClassifier : options.integration.pattern().getMatchClassifier()) {
-				if (matchClassifier.isApplicable(analysis)) {
-					brokenMatches.put(analysis.getMatch(), matchClassifier.classify(this, analysis));
-					break;
-				}
-			}
+		for (ITGGMatch match : brokenRuleApplications.values()) {
+			brokenMatches.put(match, new BrokenMatch(this, match));
 		}
 	}
 
@@ -177,7 +169,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void resolveBrokenMatches() {
-		brokenMatches.values().forEach(mismatch -> mismatch.resolveMismatch(this));
+		brokenMatches.values().forEach(brokenMatch -> brokenMatch.resolveBrokenMatch());
 	}
 
 	protected ChangeKey revokeBrokenCorrsAndRuleApplNodes() {
@@ -234,14 +226,14 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param edgesToRevoke
 	 */
 	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		matchAnalyser.getObjects(match, new EltFilter().corr().create())
+		matchUtil.getObjects(match, new EltFilter().corr().create())
 				.forEach(obj -> getIbexRedInterpreter().revokeCorr(obj, nodesToRevoke, edgesToRevoke));
 	}
 
 	protected void restoreBrokenCorrsAndRuleApplNodes(ChangeKey key) {
 		matchDistributor.updateMatches();
 		ModelChanges changes = modelChangeProtocol.getModelChanges(key);
-		brokenRuleApplications.forEach((ra, m) -> matchAnalyser.getObjects(m, new EltFilter().corr().create())
+		brokenRuleApplications.forEach((ra, m) -> matchUtil.getObjects(m, new EltFilter().corr().create())
 				.forEach(obj -> restoreNode(changes, obj)));
 		brokenRuleApplications.forEach((ra, m) -> restoreNode(changes, ra));
 	}
@@ -393,8 +385,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			return super.removeOperationalRuleMatch(match);
 	}
 
-	public MatchAnalyser getMatchAnalyser() {
-		return matchAnalyser;
+	public TGGMatchUtil getMatchUtil() {
+		return matchUtil;
 	}
 
 	public IntegrateMatchContainer getIntegrMatchContainer() {

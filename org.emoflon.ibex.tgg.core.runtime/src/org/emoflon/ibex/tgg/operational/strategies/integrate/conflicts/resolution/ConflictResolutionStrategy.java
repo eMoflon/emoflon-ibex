@@ -12,7 +12,7 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Conflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -28,7 +28,7 @@ public abstract class ConflictResolutionStrategy<C extends Conflict> {
 	}
 
 	protected void restoreMatch(INTEGRATE integrate, ITGGMatch match) {
-		Set<TGGRuleElement> elements = integrate.getMatchAnalyser().getElts(match, new EltFilter().create());
+		Set<TGGRuleElement> elements = integrate.getMatchUtil().getElts(match, new EltFilter().create());
 
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EObject> deletedNodes = new HashSet<>();
