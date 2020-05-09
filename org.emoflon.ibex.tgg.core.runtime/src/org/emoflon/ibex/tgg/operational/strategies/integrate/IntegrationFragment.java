@@ -30,7 +30,7 @@ public interface IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
 			do {
-				i.classifyMatches();
+				i.classifyBrokenMatches();
 				i.detectConflicts();
 				i.translateConflictFreeElements();
 			} while (i.repairBrokenMatches());
@@ -40,7 +40,7 @@ public interface IntegrationFragment {
 	public static class ResolveConflicts implements IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
-			i.classifyMatches();
+			i.classifyBrokenMatches();
 			i.detectConflicts();
 			for (GeneralConflict c : i.conflicts) {
 				i.getOptions().integration.conflictSolver().resolveConflict(c).forEach(crs -> crs.apply(i));
@@ -52,9 +52,9 @@ public interface IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
 			do {
-				i.classifyMatches();
-				i.resolveMismatches();
-			} while (!i.getMismatches().isEmpty());
+				i.classifyBrokenMatches();
+				i.resolveBrokenMatches();
+			} while (!i.getBrokenMatches().isEmpty());
 		}
 	}
 
@@ -70,7 +70,7 @@ public interface IntegrationFragment {
 	public static class Translate implements IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
-			i.classifyMatches();
+			i.classifyBrokenMatches();
 			i.detectConflicts();
 			i.translateConflictFreeElements();
 		}

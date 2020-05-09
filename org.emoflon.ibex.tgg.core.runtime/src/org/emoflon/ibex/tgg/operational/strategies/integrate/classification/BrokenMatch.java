@@ -12,7 +12,7 @@ import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
-public class Mismatch {
+public class BrokenMatch {
 
 	private final ITGGMatch match;
 	private final MatchClassifier matchClassifier;
@@ -21,7 +21,7 @@ public class Mismatch {
 	private final Map<EObject, ElementClassifier> classifiedNodes;
 	private final Map<EMFEdge, ElementClassifier> classifiedEdges;
 
-	public Mismatch(ITGGMatch match, MatchClassifier matchClassifier, PropagationDirection propDirection) {
+	public BrokenMatch(ITGGMatch match, MatchClassifier matchClassifier, PropagationDirection propDirection) {
 		this.match = match;
 		this.matchClassifier = matchClassifier;
 		this.propDirection = propDirection;

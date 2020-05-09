@@ -23,7 +23,7 @@ import language.TGGRuleNode;
 
 public abstract class MatchClassifier {
 
-	abstract public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis);
+	abstract public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis);
 
 	abstract public boolean isApplicable(MatchAnalysis analysis);
 
@@ -40,15 +40,15 @@ public abstract class MatchClassifier {
 		}
 	}
 
-	protected void classifyElts(INTEGRATE integrate, Mismatch mismatch, Set<TGGRuleElement> elements,
+	protected void classifyElts(INTEGRATE integrate, BrokenMatch brokenMatch, Set<TGGRuleElement> elements,
 			ElementClassifier classifier) {
 		elements.forEach(elt -> {
 			if (elt instanceof TGGRuleNode) {
-				EObject node = (EObject) mismatch.getMatch().get(elt.getName());
-				mismatch.addClassification(node, classifier);
+				EObject node = (EObject) brokenMatch.getMatch().get(elt.getName());
+				brokenMatch.addClassification(node, classifier);
 			} else if (elt instanceof TGGRuleEdge) {
-				EMFEdge edge = getRuntimeEdge(mismatch.getMatch(), (TGGRuleEdge) elt);
-				mismatch.addClassification(edge, classifier);
+				EMFEdge edge = getRuntimeEdge(brokenMatch.getMatch(), (TGGRuleEdge) elt);
+				brokenMatch.addClassification(edge, classifier);
 			}
 		});
 	}
@@ -61,13 +61,13 @@ public abstract class MatchClassifier {
 	public static class CREATE_FilterNac extends MatchClassifier {
 
 		@Override
-		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, getPropDirection(analysis));
+		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, getPropDirection(analysis));
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
-			classifyElts(integrate, mismatch, analysis.getElts(ef), ElementClassifier.USE);
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef), ElementClassifier.USE);
 
-			return mismatch;
+			return brokenMatch;
 		}
 
 		private PropagationDirection getPropDirection(MatchAnalysis analysis) {
@@ -100,13 +100,13 @@ public abstract class MatchClassifier {
 				COMPL_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED);
 
 		@Override
-		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
+		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
-			classifyElts(integrate, mismatch, analysis.getElts(ef), ElementClassifier.NO_USE);
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef), ElementClassifier.NO_USE);
 
-			return mismatch;
+			return brokenMatch;
 		}
 
 		@Override
@@ -127,13 +127,13 @@ public abstract class MatchClassifier {
 				UNCHANGED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNCHANGED, UNSPECIFIED);
 
 		@Override
-		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
+		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
-			classifyElts(integrate, mismatch, analysis.getElts(ef), ElementClassifier.USE);
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef), ElementClassifier.USE);
 
-			return mismatch;
+			return brokenMatch;
 		}
 
 		@Override
@@ -156,7 +156,7 @@ public abstract class MatchClassifier {
 				UNCHANGED, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED);
 
 		@Override
-		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType delSide;
 			PropagationDirection propDir;
 			if (fwdPattern.matches(analysis.getModPattern())) {
@@ -168,14 +168,14 @@ public abstract class MatchClassifier {
 			} else
 				return null;
 
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, propDir);
+			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, propDir);
 
 			EltFilter ef = new EltFilter().create();
-			classifyElts(integrate, mismatch, analysis.getElts(ef.domains(oppositeOf(delSide))),
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(oppositeOf(delSide))),
 					ElementClassifier.PENAL_USE);
-			classifyElts(integrate, mismatch, analysis.getElts(ef.domains(delSide)), ElementClassifier.NO_USE);
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(delSide)), ElementClassifier.NO_USE);
 
-			return mismatch;
+			return brokenMatch;
 		}
 
 		@Override
@@ -198,7 +198,7 @@ public abstract class MatchClassifier {
 				PART_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, COMPL_DEL, UNSPECIFIED);
 
 		@Override
-		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType partlySide;
 			PropagationDirection propDir;
 			if (fwdPattern.matches(analysis.getModPattern())) {
@@ -210,16 +210,16 @@ public abstract class MatchClassifier {
 			} else
 				return null;
 
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, propDir);
+			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, propDir);
 
 			EltFilter ef = new EltFilter().create();
-			classifyElts(integrate, mismatch, analysis.getElts(ef.domains(oppositeOf(partlySide))),
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(oppositeOf(partlySide))),
 					ElementClassifier.PENAL_USE);
-			classifyElts(integrate, mismatch, analysis.getElts(ef.domains(partlySide).deleted()),
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(partlySide).deleted()),
 					ElementClassifier.PENAL_USE);
-			classifyElts(integrate, mismatch, analysis.getElts(ef.notDeleted()), ElementClassifier.REWARDLESS_USE);
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.notDeleted()), ElementClassifier.REWARDLESS_USE);
 
-			return mismatch;
+			return brokenMatch;
 		}
 
 		@Override
@@ -240,14 +240,14 @@ public abstract class MatchClassifier {
 				PART_DEL, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, PART_DEL, UNSPECIFIED);
 
 		@Override
-		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
+		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, PropagationDirection.UNDEFINED);
 
 			EltFilter ef = new EltFilter().srcAndTrg().create();
-			classifyElts(integrate, mismatch, analysis.getElts(ef.deleted()), ElementClassifier.REWARDLESS_USE);
-			classifyElts(integrate, mismatch, analysis.getElts(ef.notDeleted()), ElementClassifier.POTENTIAL_USE);
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.deleted()), ElementClassifier.REWARDLESS_USE);
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.notDeleted()), ElementClassifier.POTENTIAL_USE);
 
-			return mismatch;
+			return brokenMatch;
 		}
 
 		@Override
@@ -270,7 +270,7 @@ public abstract class MatchClassifier {
 				UNCHANGED, UNSPECIFIED, UNSPECIFIED, UNSPECIFIED, PART_DEL, UNSPECIFIED);
 
 		@Override
-		public Mismatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
+		public BrokenMatch classify(INTEGRATE integrate, MatchAnalysis analysis) {
 			DomainType delSide;
 			PropagationDirection propDir;
 			if (fwdPattern.matches(analysis.getModPattern())) {
@@ -282,16 +282,16 @@ public abstract class MatchClassifier {
 			} else
 				return null;
 
-			Mismatch mismatch = new Mismatch(analysis.getMatch(), this, propDir);
+			BrokenMatch brokenMatch = new BrokenMatch(analysis.getMatch(), this, propDir);
 
 			EltFilter ef = new EltFilter().create();
-			classifyElts(integrate, mismatch, analysis.getElts(ef.domains(oppositeOf(delSide))),
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(oppositeOf(delSide))),
 					ElementClassifier.POTENTIAL_USE);
-			classifyElts(integrate, mismatch, analysis.getElts(ef.domains(delSide).deleted()),
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.domains(delSide).deleted()),
 					ElementClassifier.REWARDLESS_USE);
-			classifyElts(integrate, mismatch, analysis.getElts(ef.notDeleted()), ElementClassifier.POTENTIAL_USE);
+			classifyElts(integrate, brokenMatch, analysis.getElts(ef.notDeleted()), ElementClassifier.POTENTIAL_USE);
 
-			return mismatch;
+			return brokenMatch;
 		}
 
 		@Override
