@@ -58,7 +58,7 @@ public interface IntegrationFragment {
 			do {
 				i.classifyBrokenMatches();
 				i.resolveBrokenMatches();
-			} while (!i.getBrokenMatches().isEmpty());
+			} while (!i.getClassifiedBrokenMatches().isEmpty());
 		}
 	}
 

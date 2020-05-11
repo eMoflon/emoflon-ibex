@@ -4,10 +4,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ElementClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ElementClassifier;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Conflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropAttrConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropEdgeConflict;
@@ -18,8 +20,14 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.Attr
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
+
+import language.TGGAttributeExpression;
+import language.TGGParamValue;
 
 public class ConflictDetector {
+
+	protected final static Logger logger = Logger.getLogger(ConflictDetector.class);
 
 	private INTEGRATE integrate;
 
@@ -32,10 +40,11 @@ public class ConflictDetector {
 
 	public Set<GeneralConflict> detectConflicts() {
 		Set<GeneralConflict> conflicts = new HashSet<>();
-		for (BrokenMatch brokenMatch : integrate.getBrokenMatches().values()) {
-			MatchConflict possibleConflict = detectMatchConflict(brokenMatch);
-			if (possibleConflict != null)
-				conflicts.add(possibleConflict);
+		for (BrokenMatch brokenMatch : integrate.getClassifiedBrokenMatches().values()) {
+			MatchConflict possibleMatchConflict = detectMatchConflict(brokenMatch);
+			if (possibleMatchConflict != null)
+				conflicts.add(possibleMatchConflict);
+			conflicts.addAll(detectAttributeConflict(brokenMatch));
 		}
 		return conflicts;
 	}
@@ -68,6 +77,41 @@ public class ConflictDetector {
 		if (relatedConflicts.size() == 1)
 			return relatedConflicts.iterator().next();
 		return null;
+	}
+
+	private Set<AttributeConflict> detectAttributeConflict(BrokenMatch brokenMatch) {
+		Set<AttributeConflict> attrConflicts = new HashSet<>();
+
+		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
+			if (constrAttrChanges.constraint.getParameters().size() > 2) {
+				logger.error("Conflicted AttributeConstraints with more than 2 parameters are currently not supported!");
+				continue;
+			}
+
+			if (constrAttrChanges.affectedParams.size() > 1) {
+				AttributeChange srcChange = null;
+				AttributeChange trgChange = null;
+
+				for (TGGAttributeExpression param : constrAttrChanges.affectedParams.keySet()) {
+					switch (param.getObjectVar().getDomainType()) {
+					case SRC:
+						srcChange = constrAttrChanges.affectedParams.get(param);
+						break;
+					case TRG:
+						trgChange = constrAttrChanges.affectedParams.get(param);
+					default:
+						break;
+					}
+				}
+
+				if (srcChange == null || trgChange == null)
+					logger.error("User attribute edit was not domain conform!");
+
+				attrConflicts.add(new AttributeConflict(brokenMatch.getMatch(), constrAttrChanges, srcChange, trgChange));
+			}
+		}
+
+		return attrConflicts;
 	}
 
 }

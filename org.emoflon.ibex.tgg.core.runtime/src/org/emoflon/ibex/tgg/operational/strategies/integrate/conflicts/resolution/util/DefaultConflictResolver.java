@@ -8,7 +8,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 public class DefaultConflictResolver implements ConflictResolver {
 
 	@Override
-	public List<ConflictResolutionStrategy> resolveConflict(GeneralConflict conflict) {
+	public List<ConflictResolutionStrategy<?>> resolveConflict(GeneralConflict conflict) {
 		// TODO adrianm: implement
 		return null;
 	}

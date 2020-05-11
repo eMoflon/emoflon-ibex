@@ -12,13 +12,13 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 
 public class CRSHelper {
 
-	public static <T extends Conflict> List<ConflictResolutionStrategy> forEachResolve(GeneralConflict conflict,
+	public static <T extends Conflict> List<ConflictResolutionStrategy<?>> forEachResolve(GeneralConflict conflict,
 			Class<T> conflictClass, Class<? extends ConflictResolutionStrategy<T>> crsClass) {
-		List<ConflictResolutionStrategy> crsList = new LinkedList<>();
+		List<ConflictResolutionStrategy<?>> crsList = new LinkedList<>();
 		if (conflict instanceof HierarchicalConflict) {
-
+			// TODO adrianm: implement
 		} else if (conflict instanceof RelatedConflict) {
-
+			// TODO adrianm: implement
 		} else if (conflict instanceof Conflict) {
 			if (conflictClass.isInstance(conflict)) {
 				try {

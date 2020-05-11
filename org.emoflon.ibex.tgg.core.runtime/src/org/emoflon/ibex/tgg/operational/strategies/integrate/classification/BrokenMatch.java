@@ -11,6 +11,7 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
 
 import language.DomainType;
 
@@ -23,8 +24,9 @@ public class BrokenMatch {
 
 	private final MatchModification modificationPattern;
 	private final Map<ITGGMatch, DomainType> filterNacViolations;
+	private final Set<ConstrainedAttributeChanges> constrainedAttrChanges;
 
-	private MatchClassifier matchClassifier;
+	private MatchClassifier matchClassifier = null;
 	private PropagationDirection propDirection;
 
 	private final Map<EObject, ElementClassifier> classifiedNodes;
@@ -35,7 +37,8 @@ public class BrokenMatch {
 		this.match = match;
 		this.util = integrate.getMatchUtil().getAnalysis(match);
 		this.modificationPattern = util.createModPattern();
-		this.filterNacViolations = util.analyseFilterNACViolations();
+		this.filterNacViolations = util.analyzeFilterNACViolations();
+		this.constrainedAttrChanges = util.analyzeAttributeChanges();
 		this.propDirection = PropagationDirection.UNDEFINED;
 
 		classifiedNodes = new HashMap<>();
@@ -48,6 +51,7 @@ public class BrokenMatch {
 		for (MatchClassifier matchClassifier : integrate.getOptions().integration.pattern().getMatchClassifier()) {
 			if (matchClassifier.isApplicable(this)) {
 				matchClassifier.classify(this);
+				this.matchClassifier = matchClassifier;
 				break;
 			}
 		}
@@ -75,6 +79,10 @@ public class BrokenMatch {
 
 	public Map<ITGGMatch, DomainType> getFilterNacViolations() {
 		return filterNacViolations;
+	}
+
+	public Set<ConstrainedAttributeChanges> getConstrainedAttrChanges() {
+		return constrainedAttrChanges;
 	}
 
 	public Map<EObject, ElementClassifier> getClassifiedNodes() {
@@ -132,20 +140,20 @@ public class BrokenMatch {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("MatchAnalysis [\n");
-		builder.append("  " + print().replace("\n", "\n  "));
+		builder.append("BrokenMatch [");
+		builder.append("\n  " + print().replace("\n", "\n  "));
 		builder.append("\n]");
 		return builder.toString();
 	}
 
 	private String print() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Match [\n");
-		builder.append("  " + match.getPatternName());
+		builder.append("Match [");
+		builder.append("\n  " + match.getPatternName());
 		builder.append("\n]\n");
-		builder.append(modificationPattern.toString() + "\n");
-		builder.append("FilterNAC Violations [\n");
-		builder.append("  " + printFilterNacViolations().replace("\n", "\n  "));
+		builder.append(modificationPattern.toString());
+		builder.append("\nFilterNAC Violations [");
+		builder.append("\n  " + printFilterNacViolations().replace("\n", "\n  "));
 		builder.append("\n]");
 		return builder.toString();
 	}

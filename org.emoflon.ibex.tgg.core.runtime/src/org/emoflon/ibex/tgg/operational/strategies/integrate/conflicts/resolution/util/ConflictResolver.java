@@ -7,6 +7,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 
 public interface ConflictResolver {
 	
-	List<ConflictResolutionStrategy> resolveConflict(GeneralConflict conflict);
+	List<ConflictResolutionStrategy<?>> resolveConflict(GeneralConflict conflict);
 	
 }

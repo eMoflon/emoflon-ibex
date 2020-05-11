@@ -29,6 +29,7 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
@@ -68,7 +69,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected ChangeKey generalDeltaKey;
 
 	protected Set<ITGGMatch> filterNacMatches;
-	protected Map<ITGGMatch, BrokenMatch> brokenMatches;
+	protected Map<ITGGMatch, BrokenMatch> classifiedBrokenMatches;
 	protected Set<GeneralConflict> conflicts;
 	protected Map<ITGGMatch, MatchConflict> match2conflicts;
 
@@ -79,7 +80,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	private void init() throws IOException {
 		filterNacMatches = new HashSet<>();
-		brokenMatches = new HashMap<>();
+		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
 
@@ -134,16 +135,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol.detachAdapter();
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
 				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
-		brokenMatches = new HashMap<>();
+		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
 	}
 
 	protected void classifyBrokenMatches() {
 		matchDistributor.updateMatches();
-		brokenMatches.clear();
+		classifiedBrokenMatches.clear();
 		for (ITGGMatch match : brokenRuleApplications.values()) {
-			brokenMatches.put(match, new BrokenMatch(this, match));
+			classifiedBrokenMatches.put(match, new BrokenMatch(this, match));
 		}
 	}
 
@@ -169,7 +170,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void resolveBrokenMatches() {
-		brokenMatches.values().forEach(brokenMatch -> brokenMatch.resolveBrokenMatch());
+		classifiedBrokenMatches.values().forEach(brokenMatch -> brokenMatch.resolveBrokenMatch());
 	}
 
 	protected ChangeKey revokeBrokenCorrsAndRuleApplNodes() {
@@ -323,11 +324,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					continue;
 
 				ITGGMatch repairedMatch = null;
-				BrokenMatch mismatch = brokenMatches.get(repairCandidate);
-				if (mismatch != null)
-					repairedMatch = repairOneMatch(rStrategy, repairCandidate, mismatch.getPropagationDirection());
-				else
-					repairedMatch = repairOneMatch(rStrategy, repairCandidate, PropagationDirection.UNDEFINED);
+				BrokenMatch brokenMatch = classifiedBrokenMatches.get(repairCandidate);
+				repairedMatch = repairOneMatch(rStrategy, repairCandidate, brokenMatch.getPropagationDirection());
 
 				if (repairedMatch != null) {
 					alreadyProcessed.add(repairCandidate);
@@ -346,15 +344,14 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return !alreadyProcessed.isEmpty();
 	}
 
-	private ITGGMatch repairOneMatch(AbstractRepairStrategy rStrategy, ITGGMatch match,
-			PropagationDirection propDirection) {
+	public ITGGMatch repairOneMatch(AbstractRepairStrategy rStrat, ITGGMatch match, PropagationDirection propDirection) {
 		ITGGMatch repairedMatch = null;
 		if (propDirection == PropagationDirection.UNDEFINED) {
-			repairedMatch = rStrategy.repair(match, PropagationDirection.FORWARD);
+			repairedMatch = rStrat.repair(match, PropagationDirection.FORWARD);
 			if (repairedMatch == null)
-				repairedMatch = rStrategy.repair(match, PropagationDirection.BACKWARD);
+				repairedMatch = rStrat.repair(match, PropagationDirection.BACKWARD);
 		} else
-			repairedMatch = rStrategy.repair(match, propDirection);
+			repairedMatch = rStrat.repair(match, propDirection);
 		return repairedMatch;
 	}
 
@@ -421,8 +418,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return filterNacMatches;
 	}
 
-	public Map<ITGGMatch, BrokenMatch> getBrokenMatches() {
-		return brokenMatches;
+	public Map<ITGGMatch, BrokenMatch> getClassifiedBrokenMatches() {
+		return classifiedBrokenMatches;
 	}
 
 	public Map<ITGGMatch, MatchConflict> getConflicts() {
@@ -432,9 +429,19 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	public ModelChanges getUserModelChanges() {
 		return modelChangeProtocol.getModelChanges(userDeltaKey);
 	}
-	
+
 	public ModelChanges getGeneralModelChanges() {
 		return modelChangeProtocol.getModelChanges(generalDeltaKey);
+	}
+
+	public ShortcutRepairStrategy getShortcutRepairStrategy() {
+		return (ShortcutRepairStrategy) repairStrategies.stream() //
+				.filter(r -> r instanceof ShortcutRepairStrategy).findFirst().get();
+	}
+
+	public AttributeRepairStrategy getAttributeRepairStrategy() {
+		return (AttributeRepairStrategy) repairStrategies.stream() //
+				.filter(r -> r instanceof AttributeRepairStrategy).findFirst().get();
 	}
 
 	/**
