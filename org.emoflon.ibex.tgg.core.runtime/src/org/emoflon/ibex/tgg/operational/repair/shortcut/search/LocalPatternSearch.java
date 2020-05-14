@@ -114,11 +114,9 @@ public class LocalPatternSearch {
 		if (osr.getScRule().getPreservedNodes().contains(mergedNode))
 			switch (mergedNode.getDomainType()) {
 			case SRC:
-				if (osr.getDirection() == PropagationDirection.BACKWARD)
-					return true;
+				return osr.getDirection() == PropagationDirection.BACKWARD;
 			case TRG:
-				if (osr.getDirection() == PropagationDirection.FORWARD)
-					return true;
+				return osr.getDirection() == PropagationDirection.FORWARD;
 			default:
 				return false;
 			}

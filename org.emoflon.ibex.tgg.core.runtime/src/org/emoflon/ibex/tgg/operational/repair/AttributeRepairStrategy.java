@@ -60,7 +60,7 @@ public class AttributeRepairStrategy implements AbstractRepairStrategy {
 		if (csp.solve()) {
 			csp.applyCSPValues(repairCandidate);
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-					"Repaired: " + repairCandidate.getPatternName() + " (" + repairCandidate.hashCode() + ")");
+					"Repaired Attributes: " + repairCandidate.getPatternName() + " (" + repairCandidate.hashCode() + ")");
 			return repairCandidate;
 		}
 		return null;
