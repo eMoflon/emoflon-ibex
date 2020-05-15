@@ -136,9 +136,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		if (isPatternRelevantForInterpreter(match.getType()) && matchIsDomainConform(match)) {
 			operationalMatchContainer.addMatch(match);
-			LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received and added " + match.getPatternName());
+			LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received and added " + match.getPatternName() + "(" + match.hashCode() + ")");
 		} else
-			LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received but rejected " + match.getPatternName());
+			LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received but rejected " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	protected void addConsistencyMatch(ITGGMatch match) {
@@ -208,10 +208,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Processing match: " + match);
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as it has just been applied: ");
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as it has just been applied: " + match.getPatternName() + "(" + match.hashCode() + ")");
 		} else
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: ");
-		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "" + match);
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: " + match.getPatternName() + "(" + match.hashCode() + ")");
 		return true;
 	}
 
@@ -242,7 +241,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Optional<ITGGMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 		
 		comatch.ifPresent(cm -> {
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Successfully applied: " + match.getPatternName());
+			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Successfully applied: " + match.getPatternName() + "(" + match.hashCode() + ")");
 			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
 			
