@@ -144,7 +144,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected void addConsistencyMatch(ITGGMatch match) {
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		consistencyMatches.put(ruleAppNode, match);
-		LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received and added consistency match: " + match.getPatternName() + "(" + match.hashCode() + ")");
+		LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received and added consistency match: " + match);
 	}
 
 	protected boolean removeOperationalRuleMatch(ITGGMatch match) {
