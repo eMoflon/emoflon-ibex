@@ -151,9 +151,10 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			Set<TGGRuleApplication> revoked = cfactory.createObjectSet();
 
 			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
-				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
+				ITGGMatch match = brokenRuleApplications.get(ra);
+				redInterpreter.revokeOperationalRule(match);
 				revoked.add(ra);
-
+				LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Rollback match: " + match);
 			}
 			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);

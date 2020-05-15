@@ -141,7 +141,7 @@ public class MatchDistributor implements IMatchObserver {
 		if (consumers != null) {
 			consumers.forEach(c -> c.accept(tggMatch));
 			LoggerConfig.log(LoggerConfig.log_all(), () ->
-					"Removed due to delete event from pattern matcher: " + match.getPatternName());
+					"Removed due to delete event from pattern matcher: " + match.getPatternName() + "(" + match.hashCode() + ")");
 		}
 	}
 

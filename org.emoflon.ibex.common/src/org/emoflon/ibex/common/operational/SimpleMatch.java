@@ -94,7 +94,7 @@ public class SimpleMatch implements IMatch {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("IMatch for ").append(getPatternName()).append(" {").append(System.lineSeparator());
+		s.append("IMatch for ").append(getPatternName()).append("(" + this.hashCode()+ ") {").append(System.lineSeparator());
 
 		for (final String parameterName : getParameterNames()) {
 			s.append("	").append(parameterName);
