@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +31,10 @@ import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_OneSideIncompl;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_Partly;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_PartlyOneSided;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.HierarchicalConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.MatchConflict;
@@ -43,6 +45,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ConflictFreeElementsUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
@@ -52,6 +55,7 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 import com.google.common.collect.Sets;
 
 import delta.DeltaContainer;
+import language.TGGAttributeExpression;
 import runtime.TGGRuleApplication;
 
 public class INTEGRATE extends PropagatingOperationalStrategy {
@@ -310,48 +314,89 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	@Override
+	public Set<PatternType> getShortcutPatternTypes() {
+		Set<PatternType> set = new HashSet<>();
+		set.add(PatternType.FWD);
+		set.add(PatternType.BWD);
+		set.add(PatternType.CC);
+		return set;
+	}
+
+	@Override
 	protected boolean repairBrokenMatches() {
 		long tic = System.nanoTime();
 
-		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
-		for (AbstractRepairStrategy rStrategy : repairStrategies) {
-			// TODO adrianm: also use attribute repair strategy for integrate
-			if (rStrategy instanceof AttributeRepairStrategy)
-				continue;
-
-			for (ITGGMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
-				if (alreadyProcessed.contains(repairCandidate))
-					continue;
-
-				ITGGMatch repairedMatch = null;
-				BrokenMatch brokenMatch = classifiedBrokenMatches.get(repairCandidate);
-				repairedMatch = repairOneMatch(rStrategy, repairCandidate, brokenMatch.getPropagationDirection());
-
-				if (repairedMatch != null) {
-					alreadyProcessed.add(repairCandidate);
-
-					TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
-					brokenRuleApplications.remove(oldRa);
-
-					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
-					brokenRuleApplications.put(newRa, repairedMatch);
-					alreadyProcessed.add(repairedMatch);
-				}
-			}
+		boolean repairedSth = false;
+		for (BrokenMatch brokenMatch : classifiedBrokenMatches.values()) {
+			if(repairAttributes(brokenMatch))
+				repairedSth = true;
+			if(repairViaShortcut(brokenMatch))
+				repairedSth = true;
 		}
 
 		repairTime += System.nanoTime() - tic;
-		return !alreadyProcessed.isEmpty();
+		return repairedSth;
 	}
 
-	public ITGGMatch repairOneMatch(AbstractRepairStrategy rStrat, ITGGMatch match, PropagationDirection propDirection) {
+	private boolean repairAttributes(BrokenMatch brokenMatch) {
+		Set<ConstrainedAttributeChanges> attrChanges = brokenMatch.getConstrainedAttrChanges();
+		if (attrChanges.isEmpty())
+			return false;
+
+		for (ConstrainedAttributeChanges attrCh : attrChanges) {
+			boolean srcChange = false;
+			boolean trgChange = false;
+			for (TGGAttributeExpression param : attrCh.affectedParams.keySet()) {
+				switch (param.getObjectVar().getDomainType()) {
+				case SRC:
+					srcChange = true;
+					break;
+				case TRG:
+					trgChange = true;
+				default:
+					break;
+				}
+			}
+			if (srcChange ^ trgChange) {
+				PatternType type = srcChange ? PatternType.FWD : PatternType.BWD;
+				ITGGMatch repairedMatch = repairOneMatch(getAttributeRepairStrategy(), brokenMatch.getMatch(), type);
+				return repairedMatch != null;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean repairViaShortcut(BrokenMatch brokenMatch) {
+		MatchClassifier mc = brokenMatch.getMatchClassifier();
+		if (mc instanceof DEL_OneSideIncompl || mc instanceof DEL_Partly) {
+			ITGGMatch repairedMatch = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), PatternType.CC);
+			return repairedMatch != null;
+		} else if (mc instanceof DEL_PartlyOneSided) {
+			PatternType type = brokenMatch.getPropagationDirection() == PropagationDirection.FORWARD ? //
+					PatternType.FWD : PatternType.BWD;
+			ITGGMatch repairedMatch = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), type);
+			if(repairedMatch == null) {
+				ITGGMatch repairedMatch2 = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), PatternType.CC);
+				return repairedMatch2 != null;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public ITGGMatch repairOneMatch(AbstractRepairStrategy rStrat, ITGGMatch repairCandidate, PatternType type) {
 		ITGGMatch repairedMatch = null;
-		if (propDirection == PropagationDirection.UNDEFINED) {
-			repairedMatch = rStrat.repair(match, PropagationDirection.FORWARD);
-			if (repairedMatch == null)
-				repairedMatch = rStrat.repair(match, PropagationDirection.BACKWARD);
-		} else
-			repairedMatch = rStrat.repair(match, propDirection);
+		if (type != null)
+			repairedMatch = rStrat.repair(repairCandidate, type);
+
+		if (repairedMatch != null) {
+			TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
+			brokenRuleApplications.remove(oldRa);
+			TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
+			brokenRuleApplications.put(newRa, repairedMatch);
+		}
+
 		return repairedMatch;
 	}
 

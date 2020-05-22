@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,6 +67,13 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		if (options.repair.repairAttributes()) {
 			repairStrategies.add(new AttributeRepairStrategy(this));
 		}
+	}
+	
+	public Set<PatternType> getShortcutPatternTypes() {
+		Set<PatternType> set = new HashSet<>();
+		set.add(PatternType.FWD);
+		set.add(PatternType.BWD);
+		return set;
 	}
 
 	protected boolean repairBrokenMatches() {

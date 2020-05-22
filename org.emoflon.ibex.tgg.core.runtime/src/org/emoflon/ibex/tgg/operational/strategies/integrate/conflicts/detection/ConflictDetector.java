@@ -23,7 +23,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
 
 import language.TGGAttributeExpression;
-import language.TGGParamValue;
 
 public class ConflictDetector {
 

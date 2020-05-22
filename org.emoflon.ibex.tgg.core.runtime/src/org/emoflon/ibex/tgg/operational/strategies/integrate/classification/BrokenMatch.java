@@ -27,6 +27,7 @@ public class BrokenMatch {
 	private final Set<ConstrainedAttributeChanges> constrainedAttrChanges;
 
 	private MatchClassifier matchClassifier = null;
+	// TODO adrianm: move this into MatchClassifier
 	private PropagationDirection propDirection;
 
 	private final Map<EObject, ElementClassifier> classifiedNodes;
