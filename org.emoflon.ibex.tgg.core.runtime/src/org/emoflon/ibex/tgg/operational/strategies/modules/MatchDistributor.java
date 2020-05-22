@@ -123,10 +123,10 @@ public class MatchDistributor implements IMatchObserver {
 		if (consumers != null) {
 			matchCounter++;
 			if (currentIntervalStart == -1) {
-				LoggerConfig.log(LoggerConfig.log_all(), () -> "Now collecting matches...");
+				LoggerConfig.log(LoggerConfig.log_all(), () -> "Pattern Matcher: now collecting matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			} else if (System.currentTimeMillis() - currentIntervalStart > INTERVAL_LENGTH) {
-				LoggerConfig.log(LoggerConfig.log_all(), () -> "Collected " + matchCounter + " matches...");
+				LoggerConfig.log(LoggerConfig.log_all(), () -> "Pattern Matcher: collected " + matchCounter + " matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			}
 

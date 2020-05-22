@@ -27,6 +27,7 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
+import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import runtime.TGGRuleApplication;
 
@@ -162,7 +163,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 				ITGGMatch match = brokenRuleApplications.get(ra);
 				redInterpreter.revokeOperationalRule(match);
 				revoked.add(ra);
-				LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Rollback match: " + match);
+				LoggerConfig.log(LoggerConfig.log_matchApplication(),
+						() -> "Rollback match: " + ConsoleUtil.indent(match.toString(), 80));
 			}
 			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);
@@ -199,7 +201,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		if (brokenRuleApplications.containsKey(ruleAppNode)) {
 			LoggerConfig.log(LoggerConfig.log_matchApplication(),
-					() -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
+					() -> "Repair confirmation: " + match.getPatternName() + "(" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 			options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
 		}
