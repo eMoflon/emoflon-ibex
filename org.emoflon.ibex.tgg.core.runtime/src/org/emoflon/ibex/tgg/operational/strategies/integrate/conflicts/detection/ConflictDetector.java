@@ -9,12 +9,18 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ElementClassifier;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.CREATE_FilterNac;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_OneSideIncompl;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_Partly;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_PartlyOneSided;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Conflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropAttrConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropEdgeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.MatchConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.PartlyDelConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.RelatedConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
@@ -84,8 +90,9 @@ public class ConflictDetector {
 
 		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
 			TGGAttributeConstraintDefinition def = constrAttrChanges.constraint.getDefinition();
-			if(def.isUserDefined() || !def.getName().startsWith("eq_")) {
-				logger.error("Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
+			if (def.isUserDefined() || !def.getName().startsWith("eq_")) {
+				logger.error(
+						"Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
 				continue;
 			}
 			if (constrAttrChanges.constraint.getParameters().size() > 2) {
@@ -112,11 +119,21 @@ public class ConflictDetector {
 				if (srcChange == null || trgChange == null)
 					logger.error("User attribute edit was not domain conform!");
 
-				attrConflicts.add(new AttributeConflict(brokenMatch.getMatch(), constrAttrChanges, srcChange, trgChange));
+				attrConflicts.add(
+						new AttributeConflict(integrate, brokenMatch.getMatch(), constrAttrChanges, srcChange, trgChange));
 			}
 		}
 
 		return attrConflicts;
+	}
+
+	private PartlyDelConflict inconsistentDelConflict(BrokenMatch brokenMatch) {
+		MatchClassifier mc = brokenMatch.getMatchClassifier();
+		if (mc instanceof DEL_Partly || mc instanceof DEL_PartlyOneSided || mc instanceof DEL_OneSideIncompl
+				|| mc instanceof CREATE_FilterNac) {
+
+		}
+		return null;
 	}
 
 }

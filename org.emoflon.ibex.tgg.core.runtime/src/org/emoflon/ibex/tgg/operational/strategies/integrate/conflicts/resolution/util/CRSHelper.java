@@ -1,8 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.function.Consumer;
 
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Conflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
@@ -13,37 +11,35 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 
 public class CRSHelper {
 
-	public static <T extends Conflict> List<ConflictResolutionStrategy<?>> forEachResolve(GeneralConflict conflict,
-			Class<T> conflictClass, Class<? extends ConflictResolutionStrategy<T>> crsClass) {
-		List<ConflictResolutionStrategy<?>> crsList = new LinkedList<>();
+	public static <S extends ConflictResolutionStrategy, C extends S> void forEachResolve(GeneralConflict conflict,
+			Class<C> conflictClass, Consumer<S> crs) {
 		if (conflict instanceof HierarchicalConflict) {
 			for (MatchConflict mConfl : ((HierarchicalConflict) conflict).getConflictDependency()) {
-				if(mConfl instanceof RelatedConflict) {
+				if (mConfl instanceof RelatedConflict) {
 					for (Conflict confl : ((RelatedConflict) mConfl).getRelatedConflicts()) {
-						forConflict(crsList, confl, conflictClass, crsClass);
+						forConflict(confl, conflictClass, crs);
 					}
 				} else if (mConfl instanceof Conflict) {
-					forConflict(crsList, mConfl, conflictClass, crsClass);
+					forConflict((Conflict) mConfl, conflictClass, crs);
 				}
 			}
 		} else if (conflict instanceof RelatedConflict) {
 			for (Conflict confl : ((RelatedConflict) conflict).getRelatedConflicts()) {
-				forConflict(crsList, confl, conflictClass, crsClass);
+				forConflict(confl, conflictClass, crs);
 			}
 		} else if (conflict instanceof Conflict) {
-			forConflict(crsList, conflict, conflictClass, crsClass);
+			forConflict((Conflict) conflict, conflictClass, crs);
 		}
-		return crsList;
 	}
 
-	private static <T extends Conflict> void forConflict(List<ConflictResolutionStrategy<?>> crsList,
-			GeneralConflict conflict, Class<T> conflictClass, Class<? extends ConflictResolutionStrategy<T>> crsClass) {
+	@SuppressWarnings("unchecked")
+	private static <S extends ConflictResolutionStrategy, C extends S> void forConflict(Conflict conflict,
+			Class<C> conflictClass, Consumer<S> crs) {
 		if (conflictClass.isInstance(conflict)) {
 			try {
-				crsList.add(crsClass.getConstructor(conflictClass).newInstance(conflict));
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				e.printStackTrace();
+				crs.accept((S) conflict);
+			} catch (ClassCastException e) {
+				return;
 			}
 		}
 	}

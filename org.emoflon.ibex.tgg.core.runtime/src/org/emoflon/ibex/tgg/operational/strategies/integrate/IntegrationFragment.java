@@ -47,7 +47,7 @@ public interface IntegrationFragment {
 			i.classifyBrokenMatches();
 			i.detectConflicts();
 			for (GeneralConflict c : i.conflicts) {
-				i.getOptions().integration.conflictSolver().resolveConflict(c).forEach(crs -> crs.apply(i));
+				i.getOptions().integration.conflictSolver().resolveConflict(c);
 			}
 		}
 	}
