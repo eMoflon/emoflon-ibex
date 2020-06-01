@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -55,6 +57,7 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 import com.google.common.collect.Sets;
 
 import delta.DeltaContainer;
+import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
 import runtime.TGGRuleApplication;
 
@@ -359,7 +362,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			}
 			if (srcChange ^ trgChange) {
 				PatternType type = srcChange ? PatternType.FWD : PatternType.BWD;
-				ITGGMatch repairedMatch = repairOneMatch(getAttributeRepairStrategy(), brokenMatch.getMatch(), type);
+				List<TGGAttributeConstraint> constraints = new LinkedList<>();
+				constraints.add(attrCh.constraint);
+				ITGGMatch repairedMatch = getAttributeRepairStrategy().repair(constraints, brokenMatch.getMatch(), type);
 				return repairedMatch != null;
 			}
 		}

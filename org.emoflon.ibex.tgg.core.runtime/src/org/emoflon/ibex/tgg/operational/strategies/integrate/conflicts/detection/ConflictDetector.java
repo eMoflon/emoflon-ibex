@@ -22,6 +22,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.Attribu
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
 
+import language.TGGAttributeConstraintDefinition;
 import language.TGGAttributeExpression;
 
 public class ConflictDetector {
@@ -82,6 +83,11 @@ public class ConflictDetector {
 		Set<AttributeConflict> attrConflicts = new HashSet<>();
 
 		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
+			TGGAttributeConstraintDefinition def = constrAttrChanges.constraint.getDefinition();
+			if(def.isUserDefined() || !def.getName().startsWith("eq_")) {
+				logger.error("Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
+				continue;
+			}
 			if (constrAttrChanges.constraint.getParameters().size() > 2) {
 				logger.error("Conflicted AttributeConstraints with more than 2 parameters are currently not supported!");
 				continue;

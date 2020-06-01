@@ -26,7 +26,6 @@ import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
 import language.BindingType;
 import language.DomainType;
 import language.TGGAttributeConstraint;
-import language.TGGAttributeConstraintDefinition;
 import language.TGGAttributeExpression;
 import language.TGGParamValue;
 import language.TGGRule;
@@ -162,10 +161,6 @@ public class MatchAnalysis {
 		Set<ConstrainedAttributeChanges> constrainedAttrChanges = new HashSet<>();
 		
 		for(TGGAttributeConstraint constr : rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
-			TGGAttributeConstraintDefinition def = constr.getDefinition();
-			if(def.isUserDefined() || !def.getName().startsWith("eq_"))
-				continue;
-			
 			IRuntimeTGGAttrConstrContainer runtimeAttrConstr = getRuntimeAttrConstraint(constr, match);
 			if(runtimeAttrConstr.solve())
 				continue;
