@@ -9,7 +9,9 @@ public class RepairOptions extends IbexSubOptions {
 	private boolean repairAttributes;
 	private boolean useShortcutRules;
 	private boolean relaxedSCPatternMatching;
-	private boolean advancedOverlapStrategies;
+	private boolean disableInjectivity;
+	private boolean omitUnnecessaryContext;
+ 	private boolean advancedOverlapStrategies;
 	private IShortcutRuleUpdatePolicy scrUpdatePolicy;
 
 	public RepairOptions(IbexOptions options) {
@@ -19,6 +21,8 @@ public class RepairOptions extends IbexSubOptions {
 		useShortcutRules = false;
 		relaxedSCPatternMatching = true;
 		advancedOverlapStrategies = false;
+		disableInjectivity = false;
+		omitUnnecessaryContext = false;
 		scrUpdatePolicy = new DefaultSCRUpdatePolicy();
 	}
 
@@ -46,6 +50,24 @@ public class RepairOptions extends IbexSubOptions {
 
 	public IbexOptions repairAttributes(boolean repairAttributes) {
 		this.repairAttributes = repairAttributes;
+		return options;
+	}
+	
+	public boolean disableInjectivity() {
+		return disableInjectivity;
+	}
+
+	public IbexOptions disableInjectivity(boolean disableInjectivity) {
+		this.disableInjectivity = disableInjectivity;
+		return options;
+	}
+	
+	public boolean omitUnnecessaryContext() {
+		return omitUnnecessaryContext;
+	}
+
+	public IbexOptions omitUnnecessaryContext(boolean omitUnnecessaryContext) {
+		this.omitUnnecessaryContext = omitUnnecessaryContext;
 		return options;
 	}
 	

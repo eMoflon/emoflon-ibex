@@ -53,7 +53,7 @@ public class OverlapUtil {
 
 	public Collection<ShortcutRule> calculateShortcutRules(TGG tgg) {
 		return calculateOverlaps(tgg).stream() //
-				.map(overlap -> new ShortcutRule(overlap, options.repair.relaxedSCPatternMatching())) //
+				.map(overlap -> new ShortcutRule(overlap, options)) //
 				.collect(Collectors.toList());
 	}
 
