@@ -65,6 +65,7 @@ Running ```Testsuite_CBC.launch``` requires Google OR tools (see installation st
     - PlantUML: http://hallvard.github.io/plantuml/
     - HiPE: https://hipe-devops.github.io/HiPE-Updatesite/hipe.updatesite/
     - Viatra: http://download.eclipse.org/viatra/updates/release/latest
+5. Retry step 3.
     
 Now you are ready to use eMoflon::IBeX.
 
