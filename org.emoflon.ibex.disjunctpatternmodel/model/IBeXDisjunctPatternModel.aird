@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:diagram="http://www.eclipse.org/sirius/diagram/1.1.0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" xsi:schemaLocation="http://www.eclipse.org/sirius/description/1.1.0 http://www.eclipse.org/sirius/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description">
+  <viewpoint:DAnalysis uid="_zXBEgI71EeqGsLs8T3aMeg" selectedViews="_zkhVAI71EeqGsLs8T3aMeg" version="14.1.0.201810161215">
+    <semanticResources>IBeXDisjunctPatternModel.ecore</semanticResources>
+    <semanticResources>IBeXDisjunctPatternModel.genmodel</semanticResources>
+    <semanticResources>platform:/resource/org.emoflon.ibex.patternmodel/model/IBeXPatternModel.genmodel</semanticResources>
+    <semanticResources>platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.genmodel</semanticResources>
+    <semanticResources>platform:/resource/org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore</semanticResources>
+    <semanticResources>platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore</semanticResources>
+    <ownedViews xmi:type="viewpoint:DView" uid="_zkhVAI71EeqGsLs8T3aMeg">
+      <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']"/>
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_zt7vsI71EeqGsLs8T3aMeg" name="disjunctpatternmodel" repPath="#_zrvXUI71EeqGsLs8T3aMeg">
+        <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']"/>
+        <target xmi:type="ecore:EPackage" href="disjunctpatternmodel.ecore#/"/>
+      </ownedRepresentationDescriptors>
+    </ownedViews>
+  </viewpoint:DAnalysis>
+  <diagram:DSemanticDiagram uid="_zrvXUI71EeqGsLs8T3aMeg" name="disjunctpatternmodel">
+    <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_zt3eQI71EeqGsLs8T3aMeg" source="DANNOTATION_CUSTOMIZATION_KEY">
+      <data xmi:type="diagram:ComputedStyleDescriptionRegistry" uid="_zt4FUI71EeqGsLs8T3aMeg"/>
+    </ownedAnnotationEntries>
+    <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_zuV_YI71EeqGsLs8T3aMeg" source="GMF_DIAGRAMS">
+      <data xmi:type="notation:Diagram" xmi:id="_zuV_YY71EeqGsLs8T3aMeg" type="Sirius" element="_zrvXUI71EeqGsLs8T3aMeg" measurementUnit="Pixel">
+        <styles xmi:type="notation:DiagramStyle" xmi:id="_zuV_Yo71EeqGsLs8T3aMeg"/>
+      </data>
+    </ownedAnnotationEntries>
+    <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']"/>
+    <filterVariableHistory xmi:type="diagram:FilterVariableHistory" uid="_zsJnAI71EeqGsLs8T3aMeg"/>
+    <activatedLayers xmi:type="description_1:Layer" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer"/>
+    <activatedLayers xmi:type="description_1:AdditionalLayer" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@additionalLayers[name='Package']"/>
+    <activatedLayers xmi:type="description_1:AdditionalLayer" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@additionalLayers[name='Validation']"/>
+    <target xmi:type="ecore:EPackage" href="disjunctpatternmodel.ecore#/"/>
+  </diagram:DSemanticDiagram>
+</xmi:XMI>

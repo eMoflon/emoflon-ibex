@@ -20,6 +20,8 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
+import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctPatternModelPackage;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
@@ -43,7 +45,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * The pattern set containing the patterns.
 	 */
 	private IBeXPatternSet patternSet;
-
+	/**
+	 * The pattern set containing the disjunct patterns.
+	 */
+	private List<IBeXDisjunctContextPattern> disjunctContextPatternSet;
 	/**
 	 * The pattern matching engine.
 	 */
@@ -175,6 +180,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 
 			// Transform into patterns of the concrete engine.
 			patternSet = (IBeXPatternSet) resourceContent;
+			//changes the pattern that is given to the interpreter; only gives the subpatterns of the IBeXDisjunctPatternContextPattern to the interpreter
+			disjunctContextPatternSet = IBeXPatternUtils.transformIBeXPatternSet(patternSet);
 			contextPatternInterpreter.initPatterns(patternSet);
 			contextPatternInterpreter.monitor(model);
 		} else {
@@ -192,7 +199,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		ResourceSet rs = new ResourceSetImpl();
 		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 		rs.getPackageRegistry().putAll(model.getPackageRegistry());
-		rs.getPackageRegistry().put(IBeXPatternModelPackage.eNS_URI, IBeXPatternModelPackage.eINSTANCE);
+		rs.getPackageRegistry().put(IBeXDisjunctPatternModelPackage.eNS_URI, IBeXDisjunctPatternModelPackage.eINSTANCE);
 		Resource ibexPatternResource = rs.getResource(uri, true);
 		EcoreUtil.resolveAll(rs);
 		loadPatternSet(ibexPatternResource);
@@ -259,12 +266,53 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
 		updateMatches();
 
-		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
+		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, disjunctContextPatternSet, patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			return Stream.of(createEmptyMatchForCreatePattern(patternName));
 		}
-
 		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches);
+	}
+	
+	/**
+	 * count the number of matches for the pattern
+	 * 
+	 * @param patternName 
+	 * 			the name of the pattern
+	 * @param parameters 
+	 * 			the parameters
+	 * @return the number of matches
+	 */
+	public final long countMatches(final String patternName, final Map<String, Object> parameters) {
+		
+		
+		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, disjunctContextPatternSet, patternName);
+		if(pattern instanceof IBeXDisjunctContextPattern) {
+			updateMatches();
+			
+			return GraphTransformationDisjunctPatternInterpreter.calculateMatchCount((IBeXDisjunctContextPattern) pattern, 
+					MatchFilter.getFilteredMatchList((IBeXDisjunctContextPattern) pattern, parameters, matches));
+		}
+		else {
+			return matchStream(patternName, parameters).count();
+		}
+	}
+	
+	/**
+	 * Finds and returns an arbitrary match for the pattern if a match exists.
+	 * 
+	 * @return an {@link Optional} for the match
+	 */
+	public final Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters) {		
+		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, disjunctContextPatternSet, patternName);
+		if(pattern instanceof IBeXDisjunctContextPattern) {
+			updateMatches();
+			
+			return GraphTransformationDisjunctPatternInterpreter.findAnyMatch((IBeXDisjunctContextPattern) pattern, 
+					MatchFilter.getFilteredMatchList((IBeXDisjunctContextPattern) pattern, parameters, matches)); 
+		}
+		else {
+			return matchStream(patternName, parameters).findAny();
+		}
 	}
 
 	/**
@@ -467,5 +515,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 
 	public IBeXPatternSet getPatternSet() {
 		return patternSet;
+	}
+	
+	public boolean isDisjunct(final String patternName) {
+		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, disjunctContextPatternSet, patternName);
+		return pattern instanceof IBeXDisjunctContextPattern;
 	}
 }

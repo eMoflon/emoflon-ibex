@@ -190,7 +190,7 @@ public class EditorToIBeXAttributeHelper {
 	 *            the relation from the editor model
 	 * @return the IBeXRelation
 	 */
-	private static IBeXRelation convertRelation(final EditorRelation relation) {
+	public static IBeXRelation convertRelation(final EditorRelation relation) {
 		switch (relation) {
 		case GREATER:
 			return IBeXRelation.GREATER;
@@ -338,7 +338,7 @@ public class EditorToIBeXAttributeHelper {
 	 * @param expression the arithmetic expression
 	 * @return the IBeXArithmeticValue
 	 */
-	private static IBeXArithmeticValue convertAttributeValue(final ArithmeticCalculationExpression expression) {
+	public static IBeXArithmeticValue convertAttributeValue(final ArithmeticCalculationExpression expression) {
 		IBeXArithmeticValue value= IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();		;
 		value.setExpression(EditorToArithmeticExtensionHelper.transformToGTArithmetics(expression.getExpression()));
 		return value;

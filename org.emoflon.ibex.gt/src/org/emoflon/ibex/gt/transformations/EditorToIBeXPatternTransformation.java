@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
@@ -15,6 +17,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorOperator;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
+import org.emoflon.ibex.gt.editor.utils.GTDisjunctPatternFinder;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
@@ -25,6 +28,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
+
+import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 
 /**
  * Transformation from the editor model to IBeX Patterns.
@@ -54,10 +59,16 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * Mapping between pattern names and the context patterns.
 	 */
 	private HashMap<String, IBeXContext> nameToPattern = new HashMap<String, IBeXContext>();
-
+	
+	/**
+	 * A copy of the original file. Necessary for the DisjunctPatternTransformation
+	 */
+	private EditorGTFile originalFile;
+	
 	@Override
 	public IBeXPatternSet transform(final EditorGTFile file) {
 		Objects.requireNonNull(file, "The editor file must not be null!");
+		originalFile = EcoreUtil.copy(file);
 		file.getPatterns().stream() //
 				.filter(p -> !p.isAbstract()) //
 				.forEach(editorPattern -> transformPattern(editorPattern));
@@ -70,6 +81,13 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * @return the IBeXPatternSet
 	 */
 	private IBeXPatternSet createSortedPatternSet() {
+		//rename all IBeXDisjunctContextPatterns and remove all IBeXContextPatterns when they have an IBeXDisjunctContextPattern with the same name
+		ibexContextPatterns.stream().filter(pattern -> pattern instanceof IBeXDisjunctContextPattern)
+				.forEach(pattern -> pattern.setName(pattern.getName().replaceFirst("DISJUNCT_", "")));
+		List<String> disjunctPatternNames = ibexContextPatterns.stream().filter(pattern -> pattern instanceof IBeXDisjunctContextPattern)
+				.map(pattern -> pattern.getName()).collect(Collectors.toList());
+		ibexContextPatterns.removeIf(pattern -> disjunctPatternNames.contains(pattern.getName()) && pattern instanceof IBeXContextPattern);
+		
 		ibexContextPatterns.sort(IBeXPatternUtils.sortByName);
 		ibexCreatePatterns.sort(IBeXPatternUtils.sortByName);
 		ibexDeletePatterns.sort(IBeXPatternUtils.sortByName);
@@ -81,22 +99,42 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		return ibexPatternSet;
 	}
 
-	/**chrome
+	/**
 	 * Transforms the given pattern to a context, a create and a delete pattern.
 	 * 
 	 * @param editorPattern
 	 *            the editor pattern to transform
 	 */
-	private void transformPattern(final EditorPattern editorPattern) {
+	private void transformPattern(EditorPattern editorPattern) {
 		Objects.requireNonNull(editorPattern, "The pattern must not be null!");
 
 		if (nameToPattern.containsKey(editorPattern.getName())) {
 			// Already transformed.
 			return;
 		}
-
-		getFlattenedPattern(editorPattern).ifPresent(flattenedPattern -> {
-			transformToContextPattern(flattenedPattern);
+		//for disjunctPatternTransformation the GTEditorFile needs to be copied since the original file is changed when transforming it to IBeXPattern :(
+		List<EditorPattern> copiedPattern = EcoreUtil.copy(originalFile)
+				.getPatterns().stream().filter(n -> editorPattern.getName().equals(n.getName())).collect(Collectors.toList());
+			
+		if(copiedPattern.size() == 1) {
+			if(getFlattenedPattern(copiedPattern.get(0)).isPresent()) {
+				EditorPattern copiedFlattenedPattern = getFlattenedPattern(copiedPattern.get(0)).get();
+				GTDisjunctPatternFinder disjunctPattern = new GTDisjunctPatternFinder(copiedFlattenedPattern);
+				if(disjunctPattern.isDisjunct() && !nameToPattern.containsKey("DISJUNCT_" + editorPattern.getName())) {
+					try {
+						addContextPattern(new EditorToIBeXDisjunctContextPatternTransformation(this, disjunctPattern, copiedFlattenedPattern)
+							.transformToContextPattern(editorNode -> EditorModelUtils.isLocal(editorNode)));
+					}
+					catch(IllegalArgumentException e) {
+						//when something goes wrong proceed normally
+						//logError("disjunct pattern '%s' could not be partitioned. Pattern will be proceeded normally", editorPattern.getName());
+					}
+				}
+			}
+		}
+		getFlattenedPattern(editorPattern).ifPresent(flattenedPattern -> {		
+			//normal context patterns are also created when they are disjunct for if the pattern is also a condition for another pattern
+			transformToContextPattern(flattenedPattern);							
 			if (editorPattern.getType() == EditorPatternType.RULE) {
 				transformToCreatePattern(flattenedPattern);
 				transformToDeletePattern(flattenedPattern);
@@ -117,7 +155,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		if (ibexPattern instanceof IBeXContextAlternatives) {
 			ibexContextPatterns.removeAll(((IBeXContextAlternatives) ibexPattern).getAlternativePatterns());
 		}
-
 		nameToPattern.put(ibexPattern.getName(), ibexPattern);
 	}
 
@@ -145,13 +182,13 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	private void transformToContextPattern(final EditorPattern editorPattern) {
 		if (editorPattern.getConditions().size() > 1) {
 			transformToAlternatives(editorPattern);
-		} else {
+		} else {					
 			IBeXContextPattern ibexPattern = transformToContextPattern(editorPattern, editorPattern.getName(),
-					editorNode -> EditorModelUtils.isLocal(editorNode));
-			if (editorPattern.getConditions().size() == 1) {
-				EditorCondition editorCondition = editorPattern.getConditions().get(0);
+				editorNode -> EditorModelUtils.isLocal(editorNode));
+		 	if (editorPattern.getConditions().size() == 1) {
+		 		EditorCondition editorCondition = editorPattern.getConditions().get(0);
 				new EditorToIBeXConditionHelper(this, ibexPattern).transformCondition(editorCondition);
-			}
+			 }
 		}
 	}
 

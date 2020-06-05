@@ -7,6 +7,7 @@ Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Require-Bundle: org.emoflon.ibex.patternmodel;bundle-version="0.1.0";visibility:=reexport,
+ org.emoflon.ibex.disjunctpatternmodel;bundle-version="0.1.0";visibility:=reexport,
  net.sourceforge.plantuml.eclipse,
  org.eclipse.jface,
  org.eclipse.emf.ecore,

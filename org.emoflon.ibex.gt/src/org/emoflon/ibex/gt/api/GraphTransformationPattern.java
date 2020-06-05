@@ -122,9 +122,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return an {@link Optional} for the match
 	 */
 	public final Optional<M> findAnyMatch() {
-		return untypedMatchStream() //
-				.findAny() //
-				.map(m -> convertMatch(m));
+		return interpreter.findAnyMatch(patternName, getParameters()).map(m -> convertMatch(m));
 	}
 
 	/**
@@ -181,7 +179,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the number of matches
 	 */
 	public final long countMatches() {
-		return untypedMatchStream().count();
+		return interpreter.countMatches(patternName, getParameters());
 	}
 
 	/**
@@ -296,5 +294,9 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	
 	public String getPatternName() {
 		return patternName;
+	}
+	
+	public boolean isDisjunct() {
+		return interpreter.isDisjunct(patternName);
 	}
 }

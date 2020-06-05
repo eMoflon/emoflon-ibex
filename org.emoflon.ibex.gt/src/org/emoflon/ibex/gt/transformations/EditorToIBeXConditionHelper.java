@@ -19,6 +19,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 
+import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
+
 /**
  * Helper to transform conditions from the editor to the IBeX model.
  */

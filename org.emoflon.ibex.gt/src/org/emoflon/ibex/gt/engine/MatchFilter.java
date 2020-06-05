@@ -1,9 +1,11 @@
 package org.emoflon.ibex.gt.engine;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,6 +20,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 
+import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
+
 /**
  * Utility methods to filter match streams.
  */
@@ -28,7 +32,7 @@ public class MatchFilter {
 	 * the matches are equal to the given parameters.
 	 * 
 	 * @param pattern
-	 *            the context pattern or context alternatives
+	 *            the context pattern, context alternatives or disjunct context patterns
 	 * @param parameters
 	 *            the parameter map
 	 * @param matches
@@ -53,10 +57,37 @@ public class MatchFilter {
 				matchStream = Stream.concat(matchStream, matchesForAlterative);
 			}
 			return matchStream.distinct();
+		} else if(pattern instanceof IBeXDisjunctContextPattern) {
+			
+			IBeXDisjunctContextPattern disjunctPattern = (IBeXDisjunctContextPattern) pattern;
+			//disjunct matches are merged	
+			return GraphTransformationDisjunctPatternInterpreter.joinDisjunctSubpatterns(disjunctPattern, 
+					getFilteredMatchList(disjunctPattern, parameters, matches));
 		}
 		throw new IllegalArgumentException("Invalid pattern " + pattern);
 	}
-
+	
+	/**
+	 * Returns a List of match-set of the subpatterns for the pattern that is a disjunctContextPattern
+	 * 
+	 * @param pattern
+	 *            the disjunct context pattern
+	 * @param parameters
+	 *            the parameter map
+	 * @param matches
+	 *            the matches
+	 * @return a list containing a set of the submatches
+	 */
+	public static final Map<IBeXContextPattern, Set<IMatch>> getFilteredMatchList(final IBeXDisjunctContextPattern pattern, final Map<String, Object> parameters,
+			final Map<String, Collection<IMatch>> matches){
+		IBeXDisjunctContextPattern disjunctPattern = (IBeXDisjunctContextPattern) pattern;
+		Map<IBeXContextPattern, Set<IMatch>> submatchesMap = new HashMap<IBeXContextPattern, Set<IMatch>>();
+		for(IBeXContextPattern subpattern: disjunctPattern.getSubpatterns()) {
+			submatchesMap.put(subpattern, MatchFilter.getFilteredMatchStream(subpattern, parameters, matches).collect(Collectors.toSet()));
+		}
+		return submatchesMap;
+	}
+	
 	/**
 	 * Returns a stream of matches for the pattern such that the parameter values of
 	 * the matches are equal to the given parameters.

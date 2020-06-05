@@ -48,16 +48,16 @@
         eType="#//GTRule" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTProbability">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="function" eType="ecore:EClass platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTStochasticFunction"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="function" eType="ecore:EClass ../../org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTStochasticFunction"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" eType="ecore:EClass platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTArithmetics"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" eType="ecore:EClass ../../org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTArithmetics"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTArithmeticConstraint">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" eType="ecore:EClass platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTAttribute"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" eType="ecore:EClass ../../org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTAttribute"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" eType="ecore:EClass platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTArithmetics"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" eType="ecore:EClass ../../org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTArithmetics"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="relation" eType="ecore:EEnum platform:/resource/org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTRelation"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="relation" eType="ecore:EEnum ../../org.emoflon.ibex.gt.sgtpatternmodel/model/SGTPatternModel.ecore#//GTRelation"/>
   </eClassifiers>
 </ecore:EPackage>

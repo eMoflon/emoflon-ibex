@@ -29,7 +29,8 @@ Require-Bundle: org.apache.log4j,
  org.moflon.core.utilities,
  org.emoflon.ibex.gt.sgtpatternmodel;bundle-version="0.1.0",
  org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:=reexport,
- org.emoflon.ibex.patternmodel
+ org.emoflon.ibex.patternmodel,
+ org.emoflon.ibex.disjunctpatternmodel;bundle-version="0.1.0";visibility:=reexport
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
