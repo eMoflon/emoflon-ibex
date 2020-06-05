@@ -21,8 +21,8 @@ public class RepairOptions extends IbexSubOptions {
 		useShortcutRules = false;
 		relaxedSCPatternMatching = true;
 		advancedOverlapStrategies = false;
-		disableInjectivity = false;
-		omitUnnecessaryContext = false;
+		disableInjectivity = true;
+		omitUnnecessaryContext = true;
 		scrUpdatePolicy = new DefaultSCRUpdatePolicy();
 	}
 

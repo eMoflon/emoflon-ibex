@@ -80,8 +80,8 @@ public class ShortcutPatternTool {
 		
 		rule2matcher = new HashMap<>();
 		
-		tggRule2fwdSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
-		tggRule2bwdSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
+		tggRule2fwdSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r, strategy.getOptions())));
+		tggRule2bwdSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r, strategy.getOptions())));
 		
 		greenInterpreter = strategy.getGreenInterpreter();
 		redInterpreter = strategy.getRedInterpreter();
@@ -174,7 +174,7 @@ public class ShortcutPatternTool {
 		Map<String, EObject> name2entryNodeElem = new HashMap<>();	
 		for(String param : brokenMatch.getParameterNames()) {
 			TGGRuleNode scNode = osr.getScRule().mapOriginalToSCNodeNode(param);
-			if(scNode == null || !osr.getScRule().getMergedNodes().contains(scNode))
+			if(scNode == null) // || !osr.getScRule().getMergedNodes().contains(scNode))
 				continue;
 			
 			name2entryNodeElem.put(scNode.getName(), (EObject) brokenMatch.get(param));

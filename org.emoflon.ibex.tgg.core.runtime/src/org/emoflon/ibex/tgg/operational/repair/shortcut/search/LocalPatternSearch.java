@@ -1,16 +1,21 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.search;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
@@ -18,6 +23,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 
 import language.BindingType;
+import language.TGGRule;
 import language.TGGRuleNode;
 
 /**
@@ -35,16 +41,19 @@ import language.TGGRuleNode;
  */
 public class LocalPatternSearch {
 
+	private IbexOptions options;
 	private OperationalShortcutRule osr;
 	private SearchPlan searchPlan;
 	private Set<EObject> currentCandidates;
 	private Map<String, EObject> name2candidates;
 
 	private Component firstComponent;
+	private Collection<String> filteredNames;
 
-	public LocalPatternSearch(OperationalShortcutRule osr) {
+	public LocalPatternSearch(OperationalShortcutRule osr, IbexOptions options) {
 		this.osr = osr;
 		this.searchPlan = osr.createSearchPlan();
+		this.options = options;
 
 		// TODO lfritsche: clear up
 		if (searchPlan != null)
@@ -129,7 +138,7 @@ public class LocalPatternSearch {
 
 		this.name2candidates = name2entryNodeElem;
 		this.currentCandidates = new HashSet<>();
-		currentCandidates.addAll(name2candidates.values());
+		currentCandidates.addAll(calculateCurrentCandidates(name2entryNodeElem));
 
 		switch (firstComponent.apply()) {
 		case SUCCESS:
@@ -141,6 +150,35 @@ public class LocalPatternSearch {
 		default:
 			return null;
 		}
+	}
+	
+	// This method returns the set of current candidates. If disableInjectivity is activated, it will 
+	// calculcate the set of candidates by omitting context originating from the original rule.
+	private Collection<EObject> calculateCurrentCandidates(Map<String, EObject> name2entryNodeElem) {
+		if(!options.repair.disableInjectivity())
+			return name2entryNodeElem.values();
+		
+		if(filteredNames == null) 
+			filteredNames = new LinkedList<>();
+		else
+			return filteredNames.stream().map(name2entryNodeElem::get).collect(Collectors.toList());
+		
+		filteredNames.addAll(name2entryNodeElem.keySet());
+		
+		ShortcutRule scRule = osr.getScRule();
+		TGGRule originalRule = scRule.getOriginalRule();
+		for(TGGRuleNode node : originalRule.getNodes()) {
+			if(node.getBindingType() == BindingType.CREATE) 
+				continue;
+			
+			TGGRuleNode scNode = scRule.mapOriginalToSCNodeNode(node.getName());
+			if(scNode == null)
+				continue;
+			
+			filteredNames.remove(scNode.getName());
+		}
+		
+		return filteredNames.stream().map(name2entryNodeElem::get).collect(Collectors.toList());
 	}
 
 	private abstract class Component {

@@ -74,7 +74,9 @@ public class OverlapUtil {
 					if(isAxiomatic(originalRule))
 						continue;
 					overlaps.add(createOverlap(originalRule, replacingRule, false, OverlapCategory.MOVER));
-					if (options.repair.advancedOverlapStrategies())
+
+					// only generate rules with overlapped context if injectivity is checked!
+					if (options.repair.advancedOverlapStrategies() && !options.repair.disableInjectivity())
 						overlaps.addAll(createAdvancedOverlaps(originalRule));
 				} else if (rulesMatch(originalRule, replacingRule)) {
 					boolean isOrigAxio = isAxiomatic(originalRule);
@@ -85,8 +87,11 @@ public class OverlapUtil {
 						overlaps.add(createOverlap(replacingRule, originalRule, false,
 								isReplAxio ? OverlapCategory.JOINER : OverlapCategory.CUTTER));
 					} else {
-						overlaps.add(createOverlap(originalRule, replacingRule, true, OverlapCategory.CHANGER));
-						overlaps.add(createOverlap(replacingRule, originalRule, true, OverlapCategory.CHANGER));
+						// only generate rules with overlapped context if injectivity is checked!
+						if(!options.repair.disableInjectivity()) {
+							overlaps.add(createOverlap(originalRule, replacingRule, true, OverlapCategory.CHANGER));
+							overlaps.add(createOverlap(replacingRule, originalRule, true, OverlapCategory.CHANGER));
+						}
 						overlaps.add(createOverlap(originalRule, replacingRule, false, OverlapCategory.COMBI));
 						overlaps.add(createOverlap(replacingRule, originalRule, false, OverlapCategory.COMBI));
 					}

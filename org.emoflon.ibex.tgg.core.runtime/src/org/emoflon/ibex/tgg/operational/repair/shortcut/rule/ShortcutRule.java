@@ -20,6 +20,7 @@ import language.LanguageFactory;
 import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGRule;
+import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -142,8 +143,15 @@ public class ShortcutRule {
 				boolean isNecessary = overlap.deletions.stream().anyMatch(e -> oldNode.getIncomingEdges().contains(e) || oldNode.getOutgoingEdges().contains(e));
 				if(isNecessary)
 					createNewNode(oldNode, binding, scInput);
+				else {
+					// this only works for original nodes as they are processed first
+					// block this name of this node
+					name2newNode.put(oldNode.getName(), null);
+				}
 			}
 		}
+		else
+			createNewNode(oldNode, binding, scInput);
 	}
 
 	private void createNewNode(TGGRuleNode oldNode, BindingType binding, SCInputRule scInput) {
@@ -185,8 +193,7 @@ public class ShortcutRule {
 			preservedNodes.add(newNode);
 	}
 
-	private TGGRuleNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type,
-			List<TGGInplaceAttributeExpression> attrExprs) {
+	private TGGRuleNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type, List<TGGInplaceAttributeExpression> attrExprs) {
 		TGGRuleNode node = (TGGRuleNode) LanguageFactory.eINSTANCE.create(nodeType);
 
 		String adjustedName = name;
@@ -223,10 +230,20 @@ public class ShortcutRule {
 	private void createNewEdge(TGGRuleEdge edge, BindingType binding, SCInputRule scInput) {
 		TGGRuleNode srcSCRuleNode = mapRuleNodeToSCRuleNode(edge.getSrcNode(), scInput);
 		TGGRuleNode trgSCRuleNode = mapRuleNodeToSCRuleNode(edge.getTrgNode(), scInput);
+		
+		// if src or trg rule were not generated due to optimization, do not create this edge
 		if(srcSCRuleNode == null || trgSCRuleNode == null) 
 			if(options.repair.omitUnnecessaryContext())
 				return;
-		
+			else
+				throw new RuntimeException("Cannot create edge in short-cut rule because src or target are null!");
+		else {
+			// if this edge originates from the original rule and is context, we may also omit it
+			if(options.repair.omitUnnecessaryContext() && scInput == SCInputRule.ORIGINAL) {
+				if(edge.getBindingType() == BindingType.CONTEXT)
+					return;
+			}
+		}
 		TGGRuleEdge newEdge = LanguageFactoryImpl.eINSTANCE.createTGGRuleEdge();
 		newEdge.setBindingType(binding);
 		newEdge.setDomainType(edge.getDomainType());
