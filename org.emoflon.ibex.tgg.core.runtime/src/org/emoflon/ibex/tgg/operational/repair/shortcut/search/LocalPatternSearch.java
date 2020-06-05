@@ -7,15 +7,15 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 
 import language.BindingType;
 import language.TGGRuleNode;
@@ -114,9 +114,9 @@ public class LocalPatternSearch {
 		if (osr.getScRule().getPreservedNodes().contains(mergedNode))
 			switch (mergedNode.getDomainType()) {
 			case SRC:
-				return osr.getDirection() == PropagationDirection.BACKWARD;
+				return osr.getType() == PatternType.BWD;
 			case TRG:
-				return osr.getDirection() == PropagationDirection.FORWARD;
+				return osr.getType() == PatternType.FWD;
 			default:
 				return false;
 			}

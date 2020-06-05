@@ -12,10 +12,6 @@
         eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/requiredBy"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="requiredBy" upperBound="-1"
         eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/requires"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="basedOn" upperBound="-1"
-        eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/baseFor"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="baseFor" upperBound="-1"
-        eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/basedOn"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="matchAsString" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
 </ecore:EPackage>

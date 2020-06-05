@@ -131,31 +131,13 @@ public interface PrecedencegraphPackage extends EPackage {
 	int PRECEDENCE_NODE__REQUIRED_BY = 2;
 
 	/**
-	 * The feature id for the '<em><b>Based On</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PRECEDENCE_NODE__BASED_ON = 3;
-
-	/**
-	 * The feature id for the '<em><b>Base For</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PRECEDENCE_NODE__BASE_FOR = 4;
-
-	/**
 	 * The feature id for the '<em><b>Match As String</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PRECEDENCE_NODE__MATCH_AS_STRING = 5;
+	int PRECEDENCE_NODE__MATCH_AS_STRING = 3;
 
 	/**
 	 * The number of structural features of the '<em>Precedence Node</em>' class.
@@ -164,7 +146,7 @@ public interface PrecedencegraphPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PRECEDENCE_NODE_FEATURE_COUNT = 6;
+	int PRECEDENCE_NODE_FEATURE_COUNT = 4;
 
 	/**
 	 * The number of operations of the '<em>Precedence Node</em>' class.
@@ -238,28 +220,6 @@ public interface PrecedencegraphPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getPrecedenceNode_RequiredBy();
-
-	/**
-	 * Returns the meta object for the reference list '{@link precedencegraph.PrecedenceNode#getBasedOn <em>Based On</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Based On</em>'.
-	 * @see precedencegraph.PrecedenceNode#getBasedOn()
-	 * @see #getPrecedenceNode()
-	 * @generated
-	 */
-	EReference getPrecedenceNode_BasedOn();
-
-	/**
-	 * Returns the meta object for the reference list '{@link precedencegraph.PrecedenceNode#getBaseFor <em>Base For</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Base For</em>'.
-	 * @see precedencegraph.PrecedenceNode#getBaseFor()
-	 * @see #getPrecedenceNode()
-	 * @generated
-	 */
-	EReference getPrecedenceNode_BaseFor();
 
 	/**
 	 * Returns the meta object for the attribute '{@link precedencegraph.PrecedenceNode#getMatchAsString <em>Match As String</em>}'.
@@ -346,22 +306,6 @@ public interface PrecedencegraphPackage extends EPackage {
 		 * @generated
 		 */
 		EReference PRECEDENCE_NODE__REQUIRED_BY = eINSTANCE.getPrecedenceNode_RequiredBy();
-
-		/**
-		 * The meta object literal for the '<em><b>Based On</b></em>' reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference PRECEDENCE_NODE__BASED_ON = eINSTANCE.getPrecedenceNode_BasedOn();
-
-		/**
-		 * The meta object literal for the '<em><b>Base For</b></em>' reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference PRECEDENCE_NODE__BASE_FOR = eINSTANCE.getPrecedenceNode_BaseFor();
 
 		/**
 		 * The meta object literal for the '<em><b>Match As String</b></em>' attribute feature.

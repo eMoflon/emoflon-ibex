@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
 import java.io.IOException;
 
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 
@@ -14,6 +15,8 @@ public interface IntegrationFragment {
 	public static class ApplyUserDelta implements IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			i.modelChangeProtocol.registerKey(i.userDeltaKey);
+			
 			if (i.userDeltaContainer != null) {
 				ModelChangeUtil.applyUserDelta(i.userDeltaContainer);
 				i.userDeltaContainer = null;
@@ -22,6 +25,8 @@ public interface IntegrationFragment {
 						i.getResourceHandler().getTargetResource().getContents().get(0));
 				i.userDeltaBiConsumer = null;
 			}
+			
+			i.modelChangeProtocol.deregisterKey(i.userDeltaKey);
 		}
 	}
 
@@ -29,7 +34,7 @@ public interface IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
 			do {
-				i.classifyMatches();
+				i.classifyBrokenMatches();
 				i.detectConflicts();
 				i.translateConflictFreeElements();
 			} while (i.repairBrokenMatches());
@@ -39,10 +44,11 @@ public interface IntegrationFragment {
 	public static class ResolveConflicts implements IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
-			i.classifyMatches();
+			i.classifyBrokenMatches();
 			i.detectConflicts();
-			i.conflicts.values().forEach(
-					conflict -> i.getOptions().integration.conflictSolver().resolveDeleteConflict(conflict).apply(i));
+			for (GeneralConflict c : i.conflicts) {
+				i.getOptions().integration.conflictSolver().resolveConflict(c);
+			}
 		}
 	}
 
@@ -50,9 +56,9 @@ public interface IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
 			do {
-				i.classifyMatches();
-				i.resolveMismatches();
-			} while (!i.getMismatches().isEmpty());
+				i.classifyBrokenMatches();
+				i.resolveBrokenMatches();
+			} while (!i.getClassifiedBrokenMatches().isEmpty());
 		}
 	}
 
@@ -68,7 +74,7 @@ public interface IntegrationFragment {
 	public static class Translate implements IntegrationFragment {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
-			i.classifyMatches();
+			i.classifyBrokenMatches();
 			i.detectConflicts();
 			i.translateConflictFreeElements();
 		}

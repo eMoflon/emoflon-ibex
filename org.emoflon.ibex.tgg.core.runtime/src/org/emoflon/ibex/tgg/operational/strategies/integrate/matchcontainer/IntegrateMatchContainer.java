@@ -113,18 +113,18 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 		PrecedenceNode node = matchToNode.get(match);
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 
-		Set<Object> eltsBasedOn = new HashSet<>();
-		gFactory.getBlackSrcNodesInRule().forEach(n -> eltsBasedOn.add(match.get(n.getName())));
-		gFactory.getBlackTrgNodesInRule().forEach(n -> eltsBasedOn.add(match.get(n.getName())));
-		gFactory.getBlackSrcEdgesInRule().forEach(e -> eltsBasedOn.add(getRuntimeEdge(match, e)));
-		gFactory.getBlackTrgEdgesInRule().forEach(e -> eltsBasedOn.add(getRuntimeEdge(match, e)));
+		Set<Object> requiringElts = new HashSet<>();
+		gFactory.getBlackSrcNodesInRule().forEach(n -> requiringElts.add(match.get(n.getName())));
+		gFactory.getBlackTrgNodesInRule().forEach(n -> requiringElts.add(match.get(n.getName())));
+		gFactory.getBlackSrcEdgesInRule().forEach(e -> requiringElts.add(getRuntimeEdge(match, e)));
+		gFactory.getBlackTrgEdgesInRule().forEach(e -> requiringElts.add(getRuntimeEdge(match, e)));
 
-		for (Object elt : eltsBasedOn) {
+		for (Object elt : requiringElts) {
 			raToTranslated.forEach((ra, objs) -> {
 				if (objs.contains(elt)) {
-					PrecedenceNode nodeBasedOn = matchToNode.get(raToMatch.get(ra));
-					if (nodeBasedOn != null)
-						node.getBasedOn().add(nodeBasedOn);
+					PrecedenceNode requiringNode = matchToNode.get(raToMatch.get(ra));
+					if (requiringNode != null)
+						node.getRequires().add(requiringNode);
 				}
 			});
 		}

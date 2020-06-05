@@ -15,21 +15,21 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchKey;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
@@ -61,7 +61,7 @@ public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
 
 	protected PropagatingOperationalStrategy strategy;
-	protected PropagationDirection direction;
+	protected PatternType type;
 	protected ShortcutRule scRule;
 
 	protected Collection<TGGRuleElement> markedElements;
@@ -74,10 +74,10 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, PropagationDirection direction,
+	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, PatternType type,
 			ShortcutRule scRule) {
 		this.scRule = scRule;
-		this.direction = direction;
+		this.type = type;
 
 		this.markedElements = new HashSet<>();
 		this.key2lookup = cfactory.createObjectToObjectHashMap();
@@ -424,8 +424,8 @@ public abstract class OperationalShortcutRule {
 		return key2lookup;
 	}
 
-	public PropagationDirection getDirection() {
-		return direction;
+	public PatternType getType() {
+		return type;
 	}
 
 	public String getName() {

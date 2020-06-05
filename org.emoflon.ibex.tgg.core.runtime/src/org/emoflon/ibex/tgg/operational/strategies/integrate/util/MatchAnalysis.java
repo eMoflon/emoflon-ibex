@@ -1,9 +1,8 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
-
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,15 +12,22 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
+import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchModification;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalyser.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchModification;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
 
 import language.BindingType;
 import language.DomainType;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeExpression;
+import language.TGGParamValue;
 import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
@@ -29,7 +35,7 @@ import language.TGGRuleNode;
 
 public class MatchAnalysis {
 
-	private final INTEGRATE opStrat;
+	private final INTEGRATE integrate;
 	private final ITGGMatch match;
 	private final TGGRule rule;
 
@@ -42,11 +48,9 @@ public class MatchAnalysis {
 	Map<DomainType, Map<BindingType, List<TGGRuleElement>>> groupedElements;
 
 	private Set<TGGRuleElement> deletedElements;
-	private Map<ITGGMatch, DomainType> filterNacViolations;
-	private MatchModification pattern;
 
-	MatchAnalysis(INTEGRATE opStrat, ITGGMatch match, TGGRule rule) {
-		this.opStrat = opStrat;
+	MatchAnalysis(INTEGRATE integrate, ITGGMatch match, TGGRule rule) {
+		this.integrate = integrate;
 		this.match = match;
 		this.rule = rule;
 		init();
@@ -59,7 +63,7 @@ public class MatchAnalysis {
 		nodeToEObject.forEach((n, o) -> eObjectToNode.put(o, n));
 
 		this.edgeToEMFEdge = rule.getEdges().stream() //
-				.collect(Collectors.toMap(e -> e, e -> getRuntimeEdge(match, e)));
+				.collect(Collectors.toMap(e -> e, e -> TGGEdgeUtil.getRuntimeEdge(match, e)));
 		this.emfEdgeToEdge = new HashMap<>();
 		edgeToEMFEdge.forEach((e, f) -> emfEdgeToEdge.put(f, e));
 
@@ -72,17 +76,14 @@ public class MatchAnalysis {
 		));
 
 		this.deletedElements = new HashSet<>();
-		this.filterNacViolations = new HashMap<>();
 	}
 
 	MatchAnalysis update() {
-		analyseDeletions();
-		createModPattern();
-		analyseFilterNACViolations();
+		getDeletions();
 		return this;
 	}
 
-	private void analyseDeletions() {
+	private void getDeletions() {
 		deletedElements.clear();
 		nodeToEObject.forEach((node, obj) -> {
 			Resource res = obj.eResource();
@@ -96,7 +97,7 @@ public class MatchAnalysis {
 	}
 
 	private boolean isValidResource(Resource resource) {
-		TGGResourceHandler resourceHandler = opStrat.getOptions().resourceHandler();
+		TGGResourceHandler resourceHandler = integrate.getOptions().resourceHandler();
 		if (resource.equals(resourceHandler.getSourceResource()))
 			return true;
 		if (resource.equals(resourceHandler.getTargetResource()))
@@ -117,8 +118,13 @@ public class MatchAnalysis {
 		return false;
 	}
 
-	private void createModPattern() {
-		pattern = new MatchModification(DomainModification.UNCHANGED);
+	boolean isElementDeleted(TGGRuleElement element) {
+		return deletedElements.contains(element);
+	}
+
+	public MatchModification createModPattern() {
+		getDeletions();
+		MatchModification pattern = new MatchModification(DomainModification.UNCHANGED);
 		Predicate<TGGRuleElement> isDel = e -> isElementDeleted(e);
 		groupedElements.forEach((domain, bindingMap) -> {
 			bindingMap.forEach((binding, elements) -> {
@@ -132,10 +138,11 @@ public class MatchAnalysis {
 				pattern.setModType(domain, binding, mod);
 			});
 		});
+		return pattern;
 	}
 
-	private void analyseFilterNACViolations() {
-		filterNacViolations = opStrat.getFilterNacMatches().stream() //
+	public Map<ITGGMatch, DomainType> analyzeFilterNACViolations() {
+		return integrate.getFilterNacMatches().stream() //
 				.filter(fnm -> fnm.getRuleName().startsWith(match.getRuleName())) //
 				.filter(fnm -> belongsToMatch(fnm, match)) //
 				.collect(Collectors.toMap(fnm -> fnm,
@@ -149,39 +156,73 @@ public class MatchAnalysis {
 		}
 		return true;
 	}
+
+	public Set<ConstrainedAttributeChanges> analyzeAttributeChanges() {
+		Set<ConstrainedAttributeChanges> constrainedAttrChanges = new HashSet<>();
+		
+		for(TGGAttributeConstraint constr : rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
+			IRuntimeTGGAttrConstrContainer runtimeAttrConstr = getRuntimeAttrConstraint(constr, match);
+			if(runtimeAttrConstr.solve())
+				continue;
+			
+			Map<TGGAttributeExpression, AttributeChange> affectedParams = new HashMap<>();
+			
+			for (TGGParamValue param : constr.getParameters()) {
+				if(param instanceof TGGAttributeExpression) {
+					TGGAttributeExpression attrExpr = (TGGAttributeExpression) param;
+					EObject obj = getObject(attrExpr.getObjectVar());
+					Set<AttributeChange> attrChanges = integrate.getGeneralModelChanges().getAttributeChanges(obj);
+					for (AttributeChange attrChange : attrChanges) {
+						if(attrChange.getAttribute().equals(attrExpr.getAttribute())) {
+							affectedParams.put(attrExpr, attrChange);
+							break;
+						}
+					}
+				}
+			}
+			
+			if(!affectedParams.isEmpty())
+				constrainedAttrChanges.add(new ConstrainedAttributeChanges(constr, affectedParams));
+		}
+		
+		return constrainedAttrChanges;
+	}
 	
-	public ITGGMatch getMatch() {
-		return match;
+	private IRuntimeTGGAttrConstrContainer getRuntimeAttrConstraint(TGGAttributeConstraint constraint,
+			ITGGMatch match) {
+		List<TGGAttributeConstraint> constraints = new LinkedList<>();
+		constraints.add(constraint);
+		return new RuntimeTGGAttributeConstraintContainer(constraint.getParameters(), //
+				constraints, match, integrate.getOptions().csp.constraintProvider());
 	}
 
-	public MatchModification getModPattern() {
-		return pattern;
+	public class ConstrainedAttributeChanges {
+		public final TGGAttributeConstraint constraint;
+		public final Map<TGGAttributeExpression, AttributeChange> affectedParams;
+
+		public ConstrainedAttributeChanges(TGGAttributeConstraint constraint,
+				Map<TGGAttributeExpression, AttributeChange> affectedParams) {
+			this.constraint = constraint;
+			this.affectedParams = affectedParams;
+		}
 	}
-	
-	public Map<ITGGMatch, DomainType> getFilterNacViolations() {
-		return filterNacViolations;
-	}
-	
+
 	public Set<TGGRuleElement> getElts(EltFilter filter) {
-		return opStrat.getMatchAnalyser().getElts(this, filter);
+		return integrate.getMatchUtil().getElts(this, filter);
 	}
 
-	public boolean isElementDeleted(TGGRuleElement element) {
-		return deletedElements.contains(element);
-	}
-	
 	public Set<TGGRuleNode> getNodes() {
 		return nodeToEObject.keySet();
 	}
-	
+
 	public Set<TGGRuleEdge> getEdges() {
 		return edgeToEMFEdge.keySet();
 	}
-	
+
 	public Set<EObject> getObjects() {
 		return eObjectToNode.keySet();
 	}
-	
+
 	public Set<EMFEdge> getEMFEdges() {
 		return emfEdgeToEdge.keySet();
 	}
@@ -201,50 +242,21 @@ public class MatchAnalysis {
 	public Map<EMFEdge, TGGRuleEdge> getEmfEdgeToEdge() {
 		return emfEdgeToEdge;
 	}
-	
+
 	public TGGRuleNode getNode(EObject object) {
 		return eObjectToNode.get(object);
 	}
-	
+
 	public EObject getObject(TGGRuleNode node) {
 		return nodeToEObject.get(node);
 	}
-	
+
 	public TGGRuleEdge getEdge(EMFEdge emfEdge) {
 		return emfEdgeToEdge.get(emfEdge);
 	}
-	
+
 	public EMFEdge getEMFEdge(TGGRuleEdge edge) {
 		return edgeToEMFEdge.get(edge);
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("MatchAnalysis [\n");
-		builder.append("  " + print().replace("\n", "\n  "));
-		builder.append("\n]");
-		return builder.toString();
-	}
-
-	private String print() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Match [\n");
-		builder.append("  " + match.getPatternName());
-		builder.append("\n]\n");
-		builder.append(pattern.toString() + "\n");
-		builder.append("FilterNAC Violations [\n");
-		builder.append("  " + printFilterNacViolations().replace("\n", "\n  "));
-		builder.append("\n]");
-		return builder.toString();
-	}
-
-	private String printFilterNacViolations() {
-		StringBuilder builder = new StringBuilder();
-		for (ITGGMatch fnm : filterNacViolations.keySet()) {
-			builder.append(fnm.getRuleName() + "\n");
-		}
-		return builder.length() == 0 ? builder.toString() : builder.substring(0, builder.length() - 1);
 	}
 
 }
