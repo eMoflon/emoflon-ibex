@@ -3,32 +3,31 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.pattern;
 import java.util.List;
 
 import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.provider.IntegrationFragmentProvider;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.provider.MatchClassifierProvider;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
 
 public class IntegrationPattern {
 
-	private final List<MatchClassifier> matchClassifier;
+	private final List<DeletionType> deletionTypes;
 	private final List<IntegrationFragment> fragments;
 
-	public IntegrationPattern(List<IntegrationFragment> fragments, List<MatchClassifier> matchClassifier) {
+	public IntegrationPattern(List<IntegrationFragment> fragments, List<DeletionType> matchClassifier) {
 		this.fragments = fragments;
-		this.matchClassifier = matchClassifier;
+		this.deletionTypes = matchClassifier;
 	}
 	
 	public IntegrationPattern(List<IntegrationFragment> fragments) {
 		this.fragments = fragments;
-		this.matchClassifier = MatchClassifierProvider.getDefaultMatchClassifier();
+		this.deletionTypes = DeletionType.getDefaultDeletionTypes();
 	}
 
 	public IntegrationPattern() {
 		this.fragments = IntegrationFragmentProvider.getDefaultIntegrationFragments();
-		this.matchClassifier = MatchClassifierProvider.getDefaultMatchClassifier();
+		this.deletionTypes = DeletionType.getDefaultDeletionTypes();
 	}
 
-	public List<MatchClassifier> getMatchClassifier() {
-		return matchClassifier;
+	public List<DeletionType> getDeletionTypes() {
+		return deletionTypes;
 	}
 
 	public List<IntegrationFragment> getIntegrationFragments() {

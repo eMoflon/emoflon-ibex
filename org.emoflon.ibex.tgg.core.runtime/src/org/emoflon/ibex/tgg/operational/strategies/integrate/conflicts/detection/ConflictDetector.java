@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,12 +7,7 @@ import org.apache.log4j.Logger;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ElementClassifier;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.CREATE_FilterNac;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_OneSideIncompl;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_Partly;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_PartlyOneSided;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Conflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropAttrConflict;
@@ -27,6 +21,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.Edge
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 
 import language.TGGAttributeConstraintDefinition;
 import language.TGGAttributeExpression;
@@ -36,9 +31,6 @@ public class ConflictDetector {
 	protected final static Logger logger = Logger.getLogger(ConflictDetector.class);
 
 	private INTEGRATE integrate;
-
-	private final Set<ElementClassifier> deleteConflictCandidates = new HashSet<ElementClassifier>(
-			Arrays.asList(ElementClassifier.NO_USE, ElementClassifier.PENAL_USE));
 
 	public ConflictDetector(INTEGRATE integrate) {
 		this.integrate = integrate;
@@ -56,19 +48,25 @@ public class ConflictDetector {
 	}
 
 	private MatchConflict detectMatchConflict(BrokenMatch brokenMatch) {
+		EltFilter filter = new EltFilter().create().notDeleted();
+		if (DeletionType.getPropFWDCandidates().contains(brokenMatch.getDeletionType()))
+			filter.trg();
+		else if (DeletionType.getPropBWDCandidates().contains(brokenMatch.getDeletionType()))
+			filter.src();
+		else
+			return null;
+
 		Set<EdgeConflictingElt> edgeConflElts = new HashSet<>();
 		Set<AttrConflictingElt> attrConflElts = new HashSet<>();
+		ModelChanges changes = integrate.getGeneralModelChanges();
 
-		brokenMatch.getClassifiedNodes().forEach((element, classifier) -> {
-			if (deleteConflictCandidates.contains(classifier)) {
-				ModelChanges changes = integrate.getGeneralModelChanges();
-				Set<EMFEdge> conflEdges = changes.getCreatedEdges(element);
-				Set<AttributeChange> conflAttrChanges = changes.getAttributeChanges(element);
-				if (!conflEdges.isEmpty())
-					edgeConflElts.add(new EdgeConflictingElt(element, conflEdges));
-				if (!conflAttrChanges.isEmpty())
-					attrConflElts.add(new AttrConflictingElt(element, conflAttrChanges));
-			}
+		integrate.getMatchUtil().getObjects(brokenMatch.getMatch(), filter).forEach(element -> {
+			Set<EMFEdge> conflEdges = changes.getCreatedEdges(element);
+			Set<AttributeChange> conflAttrChanges = changes.getAttributeChanges(element);
+			if (!conflEdges.isEmpty())
+				edgeConflElts.add(new EdgeConflictingElt(element, conflEdges));
+			if (!conflAttrChanges.isEmpty())
+				attrConflElts.add(new AttrConflictingElt(element, conflAttrChanges));
 		});
 
 		Set<Conflict> relatedConflicts = new HashSet<>();
@@ -128,11 +126,8 @@ public class ConflictDetector {
 	}
 
 	private PartlyDelConflict inconsistentDelConflict(BrokenMatch brokenMatch) {
-		MatchClassifier mc = brokenMatch.getMatchClassifier();
-		if (mc instanceof DEL_Partly || mc instanceof DEL_PartlyOneSided || mc instanceof DEL_OneSideIncompl
-				|| mc instanceof CREATE_FilterNac) {
+		brokenMatch.getDeletionType();
 
-		}
 		return null;
 	}
 

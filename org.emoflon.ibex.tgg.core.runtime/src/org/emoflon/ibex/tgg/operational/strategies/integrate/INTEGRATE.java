@@ -31,12 +31,8 @@ import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_OneSideIncompl;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_Partly;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier.DEL_PartlyOneSided;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.HierarchicalConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.MatchConflict;
@@ -177,7 +173,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void resolveBrokenMatches() {
-		classifiedBrokenMatches.values().forEach(brokenMatch -> brokenMatch.resolveBrokenMatch());
+		classifiedBrokenMatches.values().forEach(brokenMatch -> brokenMatch.rollbackBrokenMatch());
 	}
 
 	protected ChangeKey revokeBrokenCorrsAndRuleApplNodes() {
@@ -373,13 +369,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private boolean repairViaShortcut(BrokenMatch brokenMatch) {
-		MatchClassifier mc = brokenMatch.getMatchClassifier();
-		if (mc instanceof DEL_OneSideIncompl || mc instanceof DEL_Partly) {
+		DeletionType delType = brokenMatch.getDeletionType();
+		if(DeletionType.getShortcutCCCandidates().contains(delType)) {
 			ITGGMatch repairedMatch = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), PatternType.CC);
 			return repairedMatch != null;
-		} else if (mc instanceof DEL_PartlyOneSided) {
-			PatternType type = brokenMatch.getPropagationDirection() == PropagationDirection.FORWARD ? //
-					PatternType.FWD : PatternType.BWD;
+		} else if (DeletionType.getShortcutPropCandidates().contains(delType)) {
+			PatternType type = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
 			ITGGMatch repairedMatch = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), type);
 			if(repairedMatch == null) {
 				ITGGMatch repairedMatch2 = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), PatternType.CC);

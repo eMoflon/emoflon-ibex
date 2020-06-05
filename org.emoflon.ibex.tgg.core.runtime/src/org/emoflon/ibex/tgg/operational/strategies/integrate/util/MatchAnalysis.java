@@ -17,7 +17,7 @@ import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContain
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchModification;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
@@ -122,9 +122,9 @@ public class MatchAnalysis {
 		return deletedElements.contains(element);
 	}
 
-	public MatchModification createModPattern() {
+	public DeletionPattern createDelPattern() {
 		getDeletions();
-		MatchModification pattern = new MatchModification(DomainModification.UNCHANGED);
+		DeletionPattern pattern = new DeletionPattern(DomainModification.UNCHANGED);
 		Predicate<TGGRuleElement> isDel = e -> isElementDeleted(e);
 		groupedElements.forEach((domain, bindingMap) -> {
 			bindingMap.forEach((binding, elements) -> {
