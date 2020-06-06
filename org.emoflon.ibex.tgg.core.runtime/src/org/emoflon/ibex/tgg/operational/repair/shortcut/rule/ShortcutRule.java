@@ -114,12 +114,12 @@ public class ShortcutRule {
 	}
 
 	private void initializeContext() {
+		for (TGGRuleNode node : extractNodes(overlap.mappings.keySet()))
+			createNewMergedNode(node, (TGGRuleNode) overlap.mappings.get(node));
 		for (TGGRuleNode node : extractNodes(overlap.unboundOriginalContext))
 			createNewNodeIfNecessary(node, relaxedPatternMatching ? BindingType.RELAXED : BindingType.CONTEXT, SCInputRule.ORIGINAL);
 		for (TGGRuleNode node : extractNodes(overlap.unboundReplacingContext))
 			createNewNode(node, BindingType.CONTEXT, SCInputRule.REPLACING);
-		for (TGGRuleNode node : extractNodes(overlap.mappings.keySet()))
-			createNewMergedNode(node, (TGGRuleNode) overlap.mappings.get(node));
 
 		for (TGGRuleEdge edge : extractEdges(overlap.unboundOriginalContext))
 			createNewEdge(edge, relaxedPatternMatching ? BindingType.RELAXED : BindingType.CONTEXT, SCInputRule.ORIGINAL);
