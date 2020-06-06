@@ -40,6 +40,7 @@ import language.BindingType;
 import language.DomainType;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 
 /**
@@ -131,6 +132,8 @@ public class ShortcutPatternTool {
 				copiedRules.remove(osr);
 				continue;
 			}
+
+			processDeletions(osr, newMatch);
 			
 			Optional<ITGGMatch> newCoMatch = processCreations(osr, newMatch);
 			if(!newCoMatch.isPresent()) {
@@ -138,7 +141,6 @@ public class ShortcutPatternTool {
 				continue;
 			}
 
-			processDeletions(osr, newMatch);
 			
 			processAttributes(osr, newMatch, objDomain);
 			
@@ -174,10 +176,13 @@ public class ShortcutPatternTool {
 		Map<String, EObject> name2entryNodeElem = new HashMap<>();	
 		for(String param : brokenMatch.getParameterNames()) {
 			TGGRuleNode scNode = osr.getScRule().mapOriginalToSCNodeNode(param);
-			if(scNode == null) // || !osr.getScRule().getMergedNodes().contains(scNode))
-				continue;
+			if(scNode == null) {
+				// special case is the rule application node which we add here!
+				if(!((EObject) brokenMatch.get(param) instanceof TGGRuleApplication))
+					continue;
+			}
 			
-			name2entryNodeElem.put(scNode.getName(), (EObject) brokenMatch.get(param));
+			name2entryNodeElem.put(param, (EObject) brokenMatch.get(param));
 		}
 		return rule2matcher.get(osr).findMatch(name2entryNodeElem);
 	}

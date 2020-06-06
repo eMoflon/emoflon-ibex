@@ -146,7 +146,7 @@ public class ShortcutRule {
 				else {
 					// this only works for original nodes as they are processed first
 					// block this name of this node
-					name2newNode.put(oldNode.getName(), null);
+					nodeNames.add(oldNode.getName());
 				}
 			}
 		}
