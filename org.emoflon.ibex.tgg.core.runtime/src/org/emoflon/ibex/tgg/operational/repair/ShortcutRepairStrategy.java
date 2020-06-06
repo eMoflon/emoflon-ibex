@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -13,7 +14,6 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
@@ -35,7 +35,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	private PropagatingOperationalStrategy opStrat;
 	private IbexOptions options;
 	private ShortcutPatternTool scTool;
-	private PropagationDirection syncDirection;
+	private PatternType syncDirection;
 
 	public ShortcutRepairStrategy(PropagatingOperationalStrategy opStrat) {
 		this.opStrat = opStrat;
@@ -49,12 +49,12 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 	private void initialize() {
 		Collection<ShortcutRule> shortcutRules = new OverlapUtil(opStrat.getOptions()) //
 				.calculateShortcutRules(opStrat.getOptions().tgg.flattenedTGG());
-		
+
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generated " + shortcutRules.size() + " Short-Cut Rules:");
 		for (ShortcutRule scRule : shortcutRules)
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> "  " + scRule.getName());
-		
-		scTool = new ShortcutPatternTool(opStrat, shortcutRules);
+
+		scTool = new ShortcutPatternTool(opStrat, shortcutRules, opStrat.getShortcutPatternTypes());
 		updateDirection();
 	}
 
@@ -81,8 +81,9 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 		return repairedMatch;
 	}
 
-	public ITGGMatch repair(ITGGMatch repairCandidate, PropagationDirection direction) {
-		ITGGMatch repairedMatch = scTool.processBrokenMatch(direction, repairCandidate);
+	@Override
+	public ITGGMatch repair(ITGGMatch repairCandidate, PatternType type) {
+		ITGGMatch repairedMatch = scTool.processBrokenMatch(type, repairCandidate);
 		if (repairedMatch != null)
 			logSuccessfulRepair(repairCandidate, repairedMatch);
 		return repairedMatch;
@@ -90,10 +91,9 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 	private void updateDirection() {
 		if (opStrat instanceof SYNC)
-			syncDirection = ((SYNC) opStrat).getSyncStrategy() instanceof FWD_Strategy ? //
-					PropagationDirection.FORWARD : PropagationDirection.BACKWARD;
+			syncDirection = ((SYNC) opStrat).getSyncStrategy() instanceof FWD_Strategy ? PatternType.FWD : PatternType.BWD;
 		else
-			syncDirection = PropagationDirection.UNDEFINED;
+			syncDirection = null;
 	}
 
 	public int countDeletedElements() {

@@ -32,8 +32,6 @@ import precedencegraph.PrecedencegraphPackage;
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#isBroken <em>Broken</em>}</li>
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getRequires <em>Requires</em>}</li>
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getRequiredBy <em>Required By</em>}</li>
- *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getBasedOn <em>Based On</em>}</li>
- *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getBaseFor <em>Base For</em>}</li>
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getMatchAsString <em>Match As String</em>}</li>
  * </ul>
  *
@@ -79,26 +77,6 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * @ordered
 	 */
 	protected EList<PrecedenceNode> requiredBy;
-
-	/**
-	 * The cached value of the '{@link #getBasedOn() <em>Based On</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getBasedOn()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<PrecedenceNode> basedOn;
-
-	/**
-	 * The cached value of the '{@link #getBaseFor() <em>Base For</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getBaseFor()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<PrecedenceNode> baseFor;
 
 	/**
 	 * The default value of the '{@link #getMatchAsString() <em>Match As String</em>}' attribute.
@@ -199,34 +177,6 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	 * @generated
 	 */
 	@Override
-	public EList<PrecedenceNode> getBasedOn() {
-		if (basedOn == null) {
-			basedOn = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class, this,
-					PrecedencegraphPackage.PRECEDENCE_NODE__BASED_ON, PrecedencegraphPackage.PRECEDENCE_NODE__BASE_FOR);
-		}
-		return basedOn;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EList<PrecedenceNode> getBaseFor() {
-		if (baseFor == null) {
-			baseFor = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class, this,
-					PrecedencegraphPackage.PRECEDENCE_NODE__BASE_FOR, PrecedencegraphPackage.PRECEDENCE_NODE__BASED_ON);
-		}
-		return baseFor;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public String getMatchAsString() {
 		return matchAsString;
 	}
@@ -258,10 +208,6 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getRequires()).basicAdd(otherEnd, msgs);
 		case PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY:
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getRequiredBy()).basicAdd(otherEnd, msgs);
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASED_ON:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getBasedOn()).basicAdd(otherEnd, msgs);
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASE_FOR:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getBaseFor()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -278,10 +224,6 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 			return ((InternalEList<?>) getRequires()).basicRemove(otherEnd, msgs);
 		case PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY:
 			return ((InternalEList<?>) getRequiredBy()).basicRemove(otherEnd, msgs);
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASED_ON:
-			return ((InternalEList<?>) getBasedOn()).basicRemove(otherEnd, msgs);
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASE_FOR:
-			return ((InternalEList<?>) getBaseFor()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -300,10 +242,6 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 			return getRequires();
 		case PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY:
 			return getRequiredBy();
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASED_ON:
-			return getBasedOn();
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASE_FOR:
-			return getBaseFor();
 		case PrecedencegraphPackage.PRECEDENCE_NODE__MATCH_AS_STRING:
 			return getMatchAsString();
 		}
@@ -330,14 +268,6 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 			getRequiredBy().clear();
 			getRequiredBy().addAll((Collection<? extends PrecedenceNode>) newValue);
 			return;
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASED_ON:
-			getBasedOn().clear();
-			getBasedOn().addAll((Collection<? extends PrecedenceNode>) newValue);
-			return;
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASE_FOR:
-			getBaseFor().clear();
-			getBaseFor().addAll((Collection<? extends PrecedenceNode>) newValue);
-			return;
 		case PrecedencegraphPackage.PRECEDENCE_NODE__MATCH_AS_STRING:
 			setMatchAsString((String) newValue);
 			return;
@@ -362,12 +292,6 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 		case PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY:
 			getRequiredBy().clear();
 			return;
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASED_ON:
-			getBasedOn().clear();
-			return;
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASE_FOR:
-			getBaseFor().clear();
-			return;
 		case PrecedencegraphPackage.PRECEDENCE_NODE__MATCH_AS_STRING:
 			setMatchAsString(MATCH_AS_STRING_EDEFAULT);
 			return;
@@ -389,10 +313,6 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 			return requires != null && !requires.isEmpty();
 		case PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY:
 			return requiredBy != null && !requiredBy.isEmpty();
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASED_ON:
-			return basedOn != null && !basedOn.isEmpty();
-		case PrecedencegraphPackage.PRECEDENCE_NODE__BASE_FOR:
-			return baseFor != null && !baseFor.isEmpty();
 		case PrecedencegraphPackage.PRECEDENCE_NODE__MATCH_AS_STRING:
 			return MATCH_AS_STRING_EDEFAULT == null ? matchAsString != null
 					: !MATCH_AS_STRING_EDEFAULT.equals(matchAsString);

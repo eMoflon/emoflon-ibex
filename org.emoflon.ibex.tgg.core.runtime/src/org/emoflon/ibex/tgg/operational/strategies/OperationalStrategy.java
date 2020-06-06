@@ -32,6 +32,7 @@ import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
+import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import language.TGG;
 import language.TGGRuleNode;
@@ -144,7 +145,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected void addConsistencyMatch(ITGGMatch match) {
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		consistencyMatches.put(ruleAppNode, match);
-		LoggerConfig.log(LoggerConfig.log_incomingMatches(), () -> "Received and added consistency match: " + match);
+		LoggerConfig.log(LoggerConfig.log_incomingMatches(),
+				() -> "Received and added consistency match: " + ConsoleUtil.indent(match.toString(), 80));
 	}
 
 	protected boolean removeOperationalRuleMatch(ITGGMatch match) {
