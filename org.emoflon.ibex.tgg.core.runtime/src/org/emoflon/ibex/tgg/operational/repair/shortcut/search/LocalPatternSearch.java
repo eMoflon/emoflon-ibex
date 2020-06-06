@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;

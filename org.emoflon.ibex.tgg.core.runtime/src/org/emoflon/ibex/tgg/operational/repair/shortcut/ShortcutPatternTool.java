@@ -83,7 +83,7 @@ public class ShortcutPatternTool {
 		tggRule2opSCRule.values().stream() //
 				.flatMap(m -> m.values().stream()) //
 				.flatMap(c -> c.stream()) //
-				.forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
+				.forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r, strategy.getOptions())));
 
 		greenInterpreter = strategy.getGreenInterpreter();
 		redInterpreter = strategy.getRedInterpreter();
