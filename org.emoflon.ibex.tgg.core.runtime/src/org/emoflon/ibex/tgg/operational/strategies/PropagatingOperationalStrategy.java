@@ -82,21 +82,29 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
 		for (AbstractRepairStrategy rStrategy : repairStrategies) {
-			for (ITGGMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
-				if (alreadyProcessed.contains(repairCandidate))
-					continue;
-
-				ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
-				if (repairedMatch != null) {
+			
+			// TODO lfritsche, amoeller: refactor this -> applying repairs can occasionally invalidate other consistency matches
+			boolean processedOnce = true;
+			while(processedOnce)  {
+				processedOnce = false;
+				for (ITGGMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
+					if (alreadyProcessed.contains(repairCandidate))
+						continue;
+	
+					processedOnce = true;
+					ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
 					alreadyProcessed.add(repairCandidate);
-
-					TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
-					brokenRuleApplications.remove(oldRa);
-
-					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
-					brokenRuleApplications.put(newRa, repairedMatch);
-					alreadyProcessed.add(repairedMatch);
+					if (repairedMatch != null) {
+	
+						TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
+						brokenRuleApplications.remove(oldRa);
+	
+						TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
+						brokenRuleApplications.put(newRa, repairedMatch);
+						alreadyProcessed.add(repairedMatch);
+					}
 				}
+				matchDistributor.updateMatches();
 			}
 		}
 		repairTime += System.nanoTime() - tic;

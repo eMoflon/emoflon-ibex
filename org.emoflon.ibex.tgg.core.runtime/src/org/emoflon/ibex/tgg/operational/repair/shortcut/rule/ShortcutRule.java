@@ -93,9 +93,9 @@ public class ShortcutRule {
 	}
 
 	private void initialize() {
+		initializeDelete();
 		initializeContext();
 		initializeCreate();
-		initializeDelete();
 		adaptInplaceAttrExprs();
 	}
 
