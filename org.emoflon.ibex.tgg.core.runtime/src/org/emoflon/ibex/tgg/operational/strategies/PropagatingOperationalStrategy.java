@@ -81,19 +81,17 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		long tic = System.nanoTime();
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
-		for (AbstractRepairStrategy rStrategy : repairStrategies) {
-			
-			// TODO lfritsche, amoeller: refactor this -> applying repairs can occasionally invalidate other consistency matches
-			boolean processedOnce = true;
-			while(processedOnce)  {
-				processedOnce = false;
+		boolean processedOnce = true;
+		while(processedOnce)  {
+			processedOnce = false;
+			for (AbstractRepairStrategy rStrategy : repairStrategies) {
+				// TODO lfritsche, amoeller: refactor this -> applying repairs can occasionally invalidate other consistency matches
 				for (ITGGMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
 					if (alreadyProcessed.contains(repairCandidate))
 						continue;
 	
 					processedOnce = true;
 					ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
-					alreadyProcessed.add(repairCandidate);
 					if (repairedMatch != null) {
 	
 						TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
@@ -104,8 +102,9 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 						alreadyProcessed.add(repairedMatch);
 					}
 				}
-				matchDistributor.updateMatches();
 			}
+			alreadyProcessed.addAll(brokenRuleApplications.values());
+			matchDistributor.updateMatches();
 		}
 		repairTime += System.nanoTime() - tic;
 		return !alreadyProcessed.isEmpty();

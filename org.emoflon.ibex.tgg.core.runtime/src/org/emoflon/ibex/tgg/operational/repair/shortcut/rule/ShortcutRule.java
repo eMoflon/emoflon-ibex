@@ -93,27 +93,38 @@ public class ShortcutRule {
 	}
 
 	private void initialize() {
-		initializeDelete();
-		initializeContext();
-		initializeCreate();
+		initializeDeleteNodes();
+		initializeContextNodes();
+		initializeCreateNodes();
+		
+		initializeDeleteEdges();
+		initializeContextEdges();
+		initializeCreateEdges();
+		
 		adaptInplaceAttrExprs();
 	}
 
-	private void initializeDelete() {
+	private void initializeDeleteNodes() {
 		for (TGGRuleNode node : extractNodes(overlap.deletions))
 			createNewNode(node, BindingType.DELETE, SCInputRule.ORIGINAL);
+	}
+	
+	private void initializeDeleteEdges() {
 		for (TGGRuleEdge edge : extractEdges(overlap.deletions))
 			createNewEdge(edge, BindingType.DELETE, SCInputRule.ORIGINAL);
 	}
 
-	private void initializeCreate() {
+	private void initializeCreateNodes() {
 		for (TGGRuleNode node : extractNodes(overlap.creations))
 			createNewNode(node, BindingType.CREATE, SCInputRule.REPLACING);
+	}
+	
+	private void initializeCreateEdges() {
 		for (TGGRuleEdge edge : extractEdges(overlap.creations))
 			createNewEdge(edge, BindingType.CREATE, SCInputRule.REPLACING);
 	}
 
-	private void initializeContext() {
+	private void initializeContextNodes() {
 		for (TGGRuleNode node : extractNodes(overlap.mappings.keySet()))
 			createNewMergedNode(node, (TGGRuleNode) overlap.mappings.get(node));
 		for (TGGRuleNode node : extractNodes(overlap.unboundOriginalContext))
@@ -121,6 +132,9 @@ public class ShortcutRule {
 		for (TGGRuleNode node : extractNodes(overlap.unboundReplacingContext))
 			createNewNode(node, BindingType.CONTEXT, SCInputRule.REPLACING);
 
+	}
+	
+	private void initializeContextEdges() {
 		for (TGGRuleEdge edge : extractEdges(overlap.unboundOriginalContext))
 			createNewEdge(edge, relaxedPatternMatching ? BindingType.RELAXED : BindingType.CONTEXT, SCInputRule.ORIGINAL);
 		for (TGGRuleEdge edge : extractEdges(overlap.unboundReplacingContext))
