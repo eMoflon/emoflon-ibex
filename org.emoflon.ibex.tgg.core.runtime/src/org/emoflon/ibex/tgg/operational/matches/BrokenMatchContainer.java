@@ -177,7 +177,7 @@ public class BrokenMatchContainer extends LoggingMatchContainer implements IMatc
 						// TODO lfritsche, amoeller: hopefully we do not have too many matches...
 						boolean foundNoDependentMatch = requiredElts.stream().allMatch(e -> !translatedBy.containsKey(e) || translatedBy.get(e).isEmpty());
 						if(foundNoDependentMatch)
-							readySet.add(dependentMatch);
+							readySet.add(dependentMatch); 
 					}
 				}
 			}
