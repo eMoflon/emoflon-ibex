@@ -27,7 +27,7 @@ public class IntegrationFragmentProvider {
 	private static final List<IntegrationFragment> DEFAULT_FRAGMENTS = Arrays.asList( //
 			APPLY_USER_DELTA, //
 			REPAIR, //
-			CHECK_LOCAL_CONSISTENCY, //
+//			CHECK_LOCAL_CONSISTENCY, //
 			RESOLVE_CONFLICTS, //
 			RESOLVE_BROKEN_MATCHES, //
 			TRANSLATE, //

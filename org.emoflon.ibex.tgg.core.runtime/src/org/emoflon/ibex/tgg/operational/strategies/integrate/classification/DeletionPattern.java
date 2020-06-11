@@ -9,13 +9,13 @@ import java.util.Map;
 import language.BindingType;
 import language.DomainType;
 
-public class MatchModification {
+public class DeletionPattern {
 
 	private final int initMapCapacity = 8;
 
 	private Map<DomainType, Map<BindingType, DomainModification>> pattern = new HashMap<>(initMapCapacity);
 
-	public MatchModification(DomainModification initialMod) {
+	public DeletionPattern(DomainModification initialMod) {
 		pattern.put(DomainType.SRC, new HashMap<>(initMapCapacity));
 		pattern.put(DomainType.TRG, new HashMap<>(initMapCapacity));
 		pattern.put(DomainType.CORR, new HashMap<>(initMapCapacity));
@@ -33,7 +33,7 @@ public class MatchModification {
 	 * @param trgCre  Modification of green part in target domain
 	 * @param trgCon  Modification of black part in target domain
 	 */
-	public MatchModification(DomainModification srcCre, DomainModification srcCon, //
+	public DeletionPattern(DomainModification srcCre, DomainModification srcCon, //
 			DomainModification corrCre, DomainModification corrCon, //
 			DomainModification trgCre, DomainModification trgCon) {
 		Map<BindingType, DomainModification> src = new HashMap<>(initMapCapacity);
@@ -60,19 +60,19 @@ public class MatchModification {
 		return pattern.get(domain).get(binding);
 	}
 
-	public boolean matches(MatchModification pattern) {
+	public boolean matches(DeletionPattern pattern) {
 		List<DomainModification> thisPattern = this.serialise();
 		List<DomainModification> otherPattern = pattern.serialise();
+
+		if (thisPattern.size() != otherPattern.size())
+			throw new RuntimeException("DeletionPattern matching: patterns must have the same size!");
 
 		for (int i = 0; i < thisPattern.size(); i++) {
 			DomainModification thisMod = thisPattern.get(i);
 			DomainModification otherMod = otherPattern.get(i);
-			if (!thisMod.equals(otherMod)) {
-				if (!thisMod.equals(DomainModification.UNSPECIFIED) && !otherMod.equals(DomainModification.UNSPECIFIED))
-					return false;
-			}
+			if (!thisMod.covers(otherMod) && !otherMod.covers(thisMod))
+				return false;
 		}
-
 		return true;
 	}
 
