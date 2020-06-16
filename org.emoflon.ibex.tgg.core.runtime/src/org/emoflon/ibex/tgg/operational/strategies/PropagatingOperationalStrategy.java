@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
+import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.MarkingMatchContainer;
@@ -81,23 +82,41 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		long tic = System.nanoTime();
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
-		for (AbstractRepairStrategy rStrategy : repairStrategies) {
-			for (ITGGMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
-				if (alreadyProcessed.contains(repairCandidate))
-					continue;
+		BrokenMatchContainer dependencyContainer = new BrokenMatchContainer(this);
+		brokenRuleApplications.values().forEach(dependencyContainer::addMatch);
 
-				ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
-				if (repairedMatch != null) {
-					alreadyProcessed.add(repairCandidate);
+		boolean processedOnce = true;
+		while (processedOnce) {
+			processedOnce = false;
+			// TODO lfritsche, amoeller: refactor this -> applying repairs can occasionally invalidate other consistency matches
+			while (!dependencyContainer.isEmpty()) {
+				ITGGMatch repairCandidate = dependencyContainer.getNext();
+				processedOnce = true;
 
-					TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
-					brokenRuleApplications.remove(oldRa);
+				for (AbstractRepairStrategy rStrategy : repairStrategies) {
+					if (alreadyProcessed.contains(repairCandidate)) {
+						continue;
+					}
 
-					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
-					brokenRuleApplications.put(newRa, repairedMatch);
-					alreadyProcessed.add(repairedMatch);
+					ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
+					if (repairedMatch != null) {
+
+						TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
+						brokenRuleApplications.remove(oldRa);
+
+						TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
+						brokenRuleApplications.put(newRa, repairedMatch);
+						alreadyProcessed.add(repairCandidate);
+						alreadyProcessed.add(repairedMatch);
+					}
 				}
+				dependencyContainer.matchApplied(repairCandidate);
 			}
+			alreadyProcessed.addAll(brokenRuleApplications.values());
+			matchDistributor.updateMatches();
+			brokenRuleApplications.values().stream() //
+					.filter(m -> !alreadyProcessed.contains(m)) //
+					.forEach(dependencyContainer::addMatch);
 		}
 		repairTime += System.nanoTime() - tic;
 		return !alreadyProcessed.isEmpty();

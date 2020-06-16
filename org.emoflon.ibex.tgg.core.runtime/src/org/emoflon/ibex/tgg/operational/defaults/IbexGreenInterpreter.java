@@ -21,6 +21,7 @@ import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.GreenSCPattern;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
@@ -50,14 +51,16 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private int numOfCreatedNodes = 0;
 	private int numOfCreatedCorrNodes = 0;
 	private long creationTime = 0;
+	private IbexOptions options;
 	
 	private boolean optimizeCreation;
 
 	private TGGResourceHandler resourceHandler;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
-		resourceHandler = operationalStrategy.getOptions().resourceHandler();
-		optimizeCreation = operationalStrategy.getOptions().blackInterpreter() != null && operationalStrategy.getOptions().blackInterpreter().getClass().getName().contains("HiPE");
+		options = operationalStrategy.getOptions();
+		resourceHandler = options.resourceHandler();
+		optimizeCreation = options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("HiPE");
 	}
 
 	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
@@ -173,7 +176,8 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	public Optional<ITGGMatch> apply(IGreenPattern greenPattern, String ruleName, ITGGMatch match) {
 		long tic = System.nanoTime();
 		// Check if match is valid
-		if (matchIsInvalid(ruleName, greenPattern, match)) {
+		// TODO lfritsche, amoeller: this can maybe make problems? here the problem is that we create before deleting 
+		if (matchIsInvalid(ruleName, greenPattern, match) && !(options.repair.disableInjectivity() && match instanceof SCMatch)) {
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Blocking application as match is invalid.");
 			return Optional.empty();
 		}

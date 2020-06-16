@@ -39,6 +39,7 @@ import language.BindingType;
 import language.DomainType;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 
 /**
@@ -82,7 +83,7 @@ public class ShortcutPatternTool {
 		tggRule2opSCRule.values().stream() //
 				.flatMap(m -> m.values().stream()) //
 				.flatMap(c -> c.stream()) //
-				.forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
+				.forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r, strategy.getOptions())));
 
 		greenInterpreter = strategy.getGreenInterpreter();
 		redInterpreter = strategy.getRedInterpreter();
@@ -132,7 +133,9 @@ public class ShortcutPatternTool {
 				copiedRules.remove(osr);
 				continue;
 			}
-			
+
+			// TODO lfritsche, amoeller: we have to make sure that we do not delete elements that are used (context) or will be recreated
+			// this is due to the missing injectivity checks
 			Optional<ITGGMatch> newCoMatch = processCreations(osr, newMatch);
 			if(!newCoMatch.isPresent()) {
 				copiedRules.remove(osr);
@@ -147,6 +150,22 @@ public class ShortcutPatternTool {
 			
 		} while (!copiedRules.isEmpty());
 		return null;
+	}
+	
+
+	private ITGGMatch processBrokenMatch(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
+		Map<String, EObject> name2entryNodeElem = new HashMap<>();	
+		for(String param : brokenMatch.getParameterNames()) {
+			TGGRuleNode scNode = osr.getScRule().mapOriginalToSCNodeNode(param);
+			if(scNode == null) {
+				// special case is the rule application node which we add here!
+				if(!((EObject) brokenMatch.get(param) instanceof TGGRuleApplication))
+					continue;
+			}
+			
+			name2entryNodeElem.put(param, (EObject) brokenMatch.get(param));
+		}
+		return rule2matcher.get(osr).findMatch(name2entryNodeElem);
 	}
 	
 	/**
@@ -171,28 +190,29 @@ public class ShortcutPatternTool {
 		return newMatch;
 	}
 
-	private ITGGMatch processBrokenMatch(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
-		Map<String, EObject> name2entryNodeElem = new HashMap<>();	
-		for(String param : brokenMatch.getParameterNames()) {
-			TGGRuleNode scNode = osr.getScRule().mapOriginalToSCNodeNode(param);
-			if(scNode == null || !osr.getScRule().getMergedNodes().contains(scNode))
-				continue;
-			
-			name2entryNodeElem.put(scNode.getName(), (EObject) brokenMatch.get(param));
-		}
-		return rule2matcher.get(osr).findMatch(name2entryNodeElem);
-	}
-
 	private void processDeletions(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
 		Collection<TGGRuleNode> deletedRuleNodes = TGGFilterUtil.filterNodes(osr.getScRule().getNodes(), BindingType.DELETE);
 		Collection<TGGRuleEdge> deletedRuleEdges = TGGFilterUtil.filterEdges(osr.getScRule().getEdges(), BindingType.DELETE);
+		Collection<TGGRuleEdge> createdRuleEdges = TGGFilterUtil.filterEdges(osr.getScRule().getEdges(), BindingType.CREATE);
 		
 		Set<EMFEdge> edgesToRevoke = new HashSet<>();
 		// Collect edges to revoke.
 		deletedRuleEdges.forEach(e -> {
-			EMFEdge runtimeEdge = getRuntimeEdge(brokenMatch, e);
-			if (runtimeEdge.getSource() != null && runtimeEdge.getTarget() != null)
-				edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
+			EMFEdge toBeDeletedRuntimeEdge = getRuntimeEdge(brokenMatch, e);
+
+			if(strategy.getOptions().repair.disableInjectivity()) {
+				// we have to handle cases here where deletions should not be performed if the edge was just created
+				Collection<TGGRuleEdge> conflictingEdges = createdRuleEdges.stream().filter(edge -> edge.getType().equals(e.getType())).collect(Collectors.toList());
+				for(TGGRuleEdge conflictingEdge : conflictingEdges) {
+					EMFEdge toBeCreatedRuntimeEdge = getRuntimeEdge(brokenMatch, conflictingEdge);
+					if(toBeCreatedRuntimeEdge.equals(toBeDeletedRuntimeEdge)) {
+						return;
+					}
+				}
+			} 
+			
+			if (toBeDeletedRuntimeEdge.getSource() != null && toBeDeletedRuntimeEdge.getTarget() != null)
+				edgesToRevoke.add(new EMFEdge(toBeDeletedRuntimeEdge.getSource(), toBeDeletedRuntimeEdge.getTarget(), toBeDeletedRuntimeEdge.getType()));
 		});
 		
 		Set<EObject> nodesToRevoke = new HashSet<>();

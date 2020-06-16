@@ -41,6 +41,7 @@ import language.TGGLiteralExpression;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import runtime.RuntimePackage;
 
 /**
  * 
@@ -94,13 +95,15 @@ public abstract class OperationalShortcutRule {
 		Collection<TGGRuleNode> uncheckedRelaxedNodes = new ArrayList<>();
 		scRule.getNodes().stream() //
 				.filter(n -> !scRule.getMergedNodes().contains(n)) //
+				.filter(n -> !scRule.getNewOriginalNodes().contains(n)) //
+				.filter(n -> !RuntimePackage.eINSTANCE.getTGGRuleApplication().isSuperTypeOf(n.getType())) //
 				.filter(n -> n.getBindingType() != BindingType.NEGATIVE) //
 				.filter(n -> n.getBindingType() != BindingType.CREATE) //
-				.forEach(n -> //
-				(n.getBindingType() == BindingType.RELAXED ? uncheckedRelaxedNodes : uncheckedNodes).add(n));
+				.filter(n -> n.getBindingType() != BindingType.RELAXED) //
+				.forEach(n -> uncheckedNodes.add(n));
 
 		Collection<TGGRuleEdge> uncheckedEdges = scRule.getEdges().stream() //
-				.collect(Collectors.toList());
+				.sorted((e1, e2) -> e1.getBindingType() == BindingType.NEGATIVE ? 1 : -1).collect(Collectors.toList());
 
 		List<SearchKey> uncheckedSearchKeys = key2lookup.keySet().stream() //
 				.filter(key -> key.edge.getBindingType() != BindingType.NEGATIVE) //
@@ -124,23 +127,6 @@ public abstract class OperationalShortcutRule {
 			searchPlan.add(Pair.of(nextKey, key2lookup.get(nextKey)));
 
 			uncheckedNodes.remove(nextKey.reverse ? nextKey.sourceNode : nextKey.targetNode);
-			uncheckedEdges.remove(nextKey.edge);
-			uncheckedSearchKeys.remove(nextKey);
-		}
-
-		// then calculate lookups for relaxed nodes
-		while (!uncheckedRelaxedNodes.isEmpty()) {
-			List<SearchKey> nextSearchKeys = //
-					filterKeys(uncheckedSearchKeys, uncheckedNodes, uncheckedRelaxedNodes, true);
-			if (nextSearchKeys.isEmpty()) {
-				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + scRule.getName());
-				return null;
-			}
-
-			SearchKey nextKey = nextSearchKeys.iterator().next();
-			searchPlan.add(Pair.of(nextKey, key2lookup.get(nextKey)));
-
-			uncheckedRelaxedNodes.remove(nextKey.reverse ? nextKey.sourceNode : nextKey.targetNode);
 			uncheckedEdges.remove(nextKey.edge);
 			uncheckedSearchKeys.remove(nextKey);
 		}

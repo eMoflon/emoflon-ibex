@@ -92,34 +92,50 @@ public class BrokenMatch {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("BrokenMatch [");
-		builder.append("\n  " + print().replace("\n", "\n  "));
-		builder.append("\n]");
-		return builder.toString();
+		StringBuilder b = new StringBuilder();
+		b.append("BrokenMatch | ");
+		b.append(match.getPatternName());
+		b.append("(");
+		b.append(match.hashCode());
+		b.append(") [");
+		b.append("\n  " + print().replace("\n", "\n  "));
+		b.append("\n]");
+		return b.toString();
 	}
 
 	private String print() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Match [");
-		builder.append("\n  " + match.getPatternName());
-		builder.append("\n]\n");
-		builder.append(deletionPattern.toString());
-		builder.append("\nDeletion Type [");
-		builder.append("\n  " + deletionType);
-		builder.append("\n]");
-		builder.append("\nFilterNAC Violations [");
-		builder.append("\n  " + printFilterNacViolations().replace("\n", "\n  "));
-		builder.append("\n]");
-		return builder.toString();
+		StringBuilder b = new StringBuilder();
+		b.append("DeletionType [ ");
+		b.append(deletionType);
+		b.append(" ]\n");
+		b.append(deletionPattern.toString());
+		b.append("\n");
+		b.append("FilterNACViolations [");
+		b.append("\n  " + printFilterNacViolations().replace("\n", "\n  "));
+		b.append("\n]");
+		b.append("\n");
+		b.append("ConstrainedAttributeChanges [");
+		b.append("\n  " + printConstrAttrChanges().replace("\n", "\n  "));
+		b.append("\n]");
+		return b.toString();
 	}
 
 	private String printFilterNacViolations() {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder b = new StringBuilder();
 		for (ITGGMatch fnm : filterNacViolations.keySet()) {
-			builder.append(fnm.getRuleName() + "\n");
+			b.append(fnm.getRuleName());
+			b.append("\n");
 		}
-		return builder.length() == 0 ? builder.toString() : builder.substring(0, builder.length() - 1);
+		return b.length() == 0 ? b.toString() : b.substring(0, b.length() - 1);
+	}
+	
+	private String printConstrAttrChanges() {
+		StringBuilder b = new StringBuilder();
+		for (ConstrainedAttributeChanges c : constrainedAttrChanges) {
+			b.append(c.toString());
+			b.append("\n");
+		}
+		return b.length() == 0 ? b.toString() : b.substring(0, b.length() - 1);
 	}
 
 }

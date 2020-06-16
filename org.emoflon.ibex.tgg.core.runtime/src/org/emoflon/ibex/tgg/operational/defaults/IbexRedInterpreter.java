@@ -156,7 +156,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 				numOfDeletedCorrNodes++;
 		});
 		
-		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> resourceHandler.addToTrash(node));
+		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> resourceHandler.addToTrash(node), false);
 	}
 
 	@Override

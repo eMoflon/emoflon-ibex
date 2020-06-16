@@ -188,8 +188,7 @@ public class MatchAnalysis {
 		return constrainedAttrChanges;
 	}
 	
-	private IRuntimeTGGAttrConstrContainer getRuntimeAttrConstraint(TGGAttributeConstraint constraint,
-			ITGGMatch match) {
+	private IRuntimeTGGAttrConstrContainer getRuntimeAttrConstraint(TGGAttributeConstraint constraint, ITGGMatch match) {
 		List<TGGAttributeConstraint> constraints = new LinkedList<>();
 		constraints.add(constraint);
 		return new RuntimeTGGAttributeConstraintContainer(constraint.getParameters(), //
@@ -204,6 +203,27 @@ public class MatchAnalysis {
 				Map<TGGAttributeExpression, AttributeChange> affectedParams) {
 			this.constraint = constraint;
 			this.affectedParams = affectedParams;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder b = new StringBuilder();
+			b.append(constraint.getDefinition().getName());
+			b.append(" ");
+			affectedParams.forEach((p, ac) -> {
+				b.append("(");
+				b.append(p.getObjectVar().getName());
+				b.append(":");
+				b.append(p.getObjectVar().getType().getName());
+				b.append("#");
+				b.append(p.getAttribute().getName());
+				b.append(", '");
+				b.append(ac.getOldValue());
+				b.append("'->'");
+				b.append(ac.getNewValue());
+				b.append("') ");
+			});
+			return b.toString();
 		}
 	}
 
