@@ -17,7 +17,7 @@ import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContain
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchModification;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
@@ -122,9 +122,9 @@ public class MatchAnalysis {
 		return deletedElements.contains(element);
 	}
 
-	public MatchModification createModPattern() {
+	public DeletionPattern createDelPattern() {
 		getDeletions();
-		MatchModification pattern = new MatchModification(DomainModification.UNCHANGED);
+		DeletionPattern pattern = new DeletionPattern(DomainModification.UNCHANGED);
 		Predicate<TGGRuleElement> isDel = e -> isElementDeleted(e);
 		groupedElements.forEach((domain, bindingMap) -> {
 			bindingMap.forEach((binding, elements) -> {
@@ -188,8 +188,7 @@ public class MatchAnalysis {
 		return constrainedAttrChanges;
 	}
 	
-	private IRuntimeTGGAttrConstrContainer getRuntimeAttrConstraint(TGGAttributeConstraint constraint,
-			ITGGMatch match) {
+	private IRuntimeTGGAttrConstrContainer getRuntimeAttrConstraint(TGGAttributeConstraint constraint, ITGGMatch match) {
 		List<TGGAttributeConstraint> constraints = new LinkedList<>();
 		constraints.add(constraint);
 		return new RuntimeTGGAttributeConstraintContainer(constraint.getParameters(), //
@@ -204,6 +203,27 @@ public class MatchAnalysis {
 				Map<TGGAttributeExpression, AttributeChange> affectedParams) {
 			this.constraint = constraint;
 			this.affectedParams = affectedParams;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder b = new StringBuilder();
+			b.append(constraint.getDefinition().getName());
+			b.append(" ");
+			affectedParams.forEach((p, ac) -> {
+				b.append("(");
+				b.append(p.getObjectVar().getName());
+				b.append(":");
+				b.append(p.getObjectVar().getType().getName());
+				b.append("#");
+				b.append(p.getAttribute().getName());
+				b.append(", '");
+				b.append(ac.getOldValue());
+				b.append("'->'");
+				b.append(ac.getNewValue());
+				b.append("') ");
+			});
+			return b.toString();
 		}
 	}
 
