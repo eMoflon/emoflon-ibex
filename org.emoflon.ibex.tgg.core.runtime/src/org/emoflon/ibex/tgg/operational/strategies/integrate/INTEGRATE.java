@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +26,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
+import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
@@ -40,6 +43,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ConflictFreeElementsUpdatePolicy;
@@ -325,23 +329,59 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected boolean repairBrokenMatches() {
 		long tic = System.nanoTime();
 
-		boolean repairedSth = false;
-		for (BrokenMatch brokenMatch : classifiedBrokenMatches.values()) {
-			if(repairAttributes(brokenMatch))
-				repairedSth = true;
-			if(repairViaShortcut(brokenMatch))
-				repairedSth = true;
+		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
+		BrokenMatchContainer dependencyContainer = new BrokenMatchContainer(this);
+		brokenRuleApplications.values().forEach(dependencyContainer::addMatch);
+
+		boolean processedOnce = true;
+		while (processedOnce) {
+			processedOnce = false;
+			while (!dependencyContainer.isEmpty()) {
+				processedOnce = true;
+				ITGGMatch repairCandidate = dependencyContainer.getNext();
+
+				if (alreadyProcessed.contains(repairCandidate))
+					continue;
+
+				boolean repairedSth = false;
+				BrokenMatch brokenMatch = classifiedBrokenMatches.get(repairCandidate);
+
+				ITGGMatch repairedMatch = repairAttributes(brokenMatch);
+				if (repairedMatch != null) {
+					repairedSth = true;
+				}
+
+				repairedMatch = repairViaShortcut(brokenMatch);
+				if (repairedMatch != null) {
+					repairedSth = true;
+
+					brokenRuleApplications.remove(getRuleApplicationNode(repairCandidate));
+					brokenRuleApplications.put(getRuleApplicationNode(repairedMatch), repairedMatch);
+					alreadyProcessed.add(repairedMatch);
+				}
+
+				if (repairedSth)
+					alreadyProcessed.add(repairCandidate);
+				dependencyContainer.matchApplied(repairCandidate);
+			}
+			alreadyProcessed.addAll(brokenRuleApplications.values());
+			matchDistributor.updateMatches();
+			classifyBrokenMatches();
+			brokenRuleApplications.values().stream() //
+					.filter(m -> !alreadyProcessed.contains(m)) //
+					.forEach(dependencyContainer::addMatch);
 		}
 
 		repairTime += System.nanoTime() - tic;
-		return repairedSth;
+		return !alreadyProcessed.isEmpty();
 	}
 
-	private boolean repairAttributes(BrokenMatch brokenMatch) {
+	private ITGGMatch repairAttributes(BrokenMatch brokenMatch) {
 		Set<ConstrainedAttributeChanges> attrChanges = brokenMatch.getConstrainedAttrChanges();
 		if (attrChanges.isEmpty())
-			return false;
+			return null;
 
+		boolean repairedSth = false;
 		for (ConstrainedAttributeChanges attrCh : attrChanges) {
 			boolean srcChange = false;
 			boolean trgChange = false;
@@ -361,28 +401,27 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				List<TGGAttributeConstraint> constraints = new LinkedList<>();
 				constraints.add(attrCh.constraint);
 				ITGGMatch repairedMatch = getAttributeRepairStrategy().repair(constraints, brokenMatch.getMatch(), type);
-				return repairedMatch != null;
+				if (repairedMatch != null)
+					repairedSth = true;
 			}
 		}
 
-		return false;
+		return repairedSth ? brokenMatch.getMatch() : null;
 	}
 
-	private boolean repairViaShortcut(BrokenMatch brokenMatch) {
+	private ITGGMatch repairViaShortcut(BrokenMatch brokenMatch) {
 		DeletionType delType = brokenMatch.getDeletionType();
-		if(DeletionType.getShortcutCCCandidates().contains(delType)) {
-			ITGGMatch repairedMatch = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), PatternType.CC);
-			return repairedMatch != null;
+		if (DeletionType.getShortcutCCCandidates().contains(delType)) {
+			return repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), PatternType.CC);
 		} else if (DeletionType.getShortcutPropCandidates().contains(delType)) {
 			PatternType type = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
 			ITGGMatch repairedMatch = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), type);
-			if(repairedMatch == null) {
-				ITGGMatch repairedMatch2 = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), PatternType.CC);
-				return repairedMatch2 != null;
+			if (repairedMatch == null) {
+				repairedMatch = repairOneMatch(getShortcutRepairStrategy(), brokenMatch.getMatch(), PatternType.CC);
 			}
-			return true;
+			return repairedMatch;
 		}
-		return false;
+		return null;
 	}
 
 	public ITGGMatch repairOneMatch(AbstractRepairStrategy rStrat, ITGGMatch repairCandidate, PatternType type) {

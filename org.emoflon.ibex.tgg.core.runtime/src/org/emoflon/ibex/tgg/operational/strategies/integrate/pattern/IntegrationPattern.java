@@ -2,9 +2,8 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.pattern;
 
 import java.util.List;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.IntegrationFragment;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.FragmentProvider;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.provider.IntegrationFragmentProvider;
 
 public class IntegrationPattern {
 
@@ -22,7 +21,7 @@ public class IntegrationPattern {
 	}
 
 	public IntegrationPattern() {
-		this.fragments = IntegrationFragmentProvider.getDefaultIntegrationFragments();
+		this.fragments = FragmentProvider.DEFAULT_FRAGMENTS;
 		this.deletionTypes = DeletionType.getDefaultDeletionTypes();
 	}
 

@@ -6,9 +6,9 @@ import java.util.function.BiConsumer;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.FragmentProvider;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_ActAndLetRepair;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.provider.IntegrationFragmentProvider;
 
 import delta.DeltaContainer;
 
@@ -40,8 +40,8 @@ public class PartlyDelConflict extends Conflict implements CRS_ActAndLetRepair {
 
 	private void repair() {
 		try {
-			IntegrationFragmentProvider.APPLY_USER_DELTA.apply(integrate);
-			IntegrationFragmentProvider.REPAIR.apply(integrate);
+			FragmentProvider.APPLY_USER_DELTA.apply(integrate);
+			FragmentProvider.REPAIR.apply(integrate);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
