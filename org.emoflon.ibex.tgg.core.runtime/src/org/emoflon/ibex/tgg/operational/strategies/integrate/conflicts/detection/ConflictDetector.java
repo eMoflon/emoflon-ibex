@@ -12,7 +12,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Attribute
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropAttrConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropEdgeConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.PartlyDelConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;

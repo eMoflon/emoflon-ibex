@@ -16,7 +16,7 @@ public class PartlyDelConflict extends Conflict implements CRS_ActAndLetRepair {
 		super(container);
 	}
 
-	// TODO adrianm: implement
+	// TODO adrianm: finish implementation
 
 	//// CRS ////
 
