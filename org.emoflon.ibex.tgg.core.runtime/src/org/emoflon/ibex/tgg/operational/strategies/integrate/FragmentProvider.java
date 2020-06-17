@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
 
 public class FragmentProvider {
 
@@ -73,7 +73,7 @@ public class FragmentProvider {
 		public void apply(INTEGRATE i) throws IOException {
 			i.classifyBrokenMatches();
 			i.detectConflicts();
-			for (GeneralConflict c : i.conflicts) {
+			for (ConflictContainer c : i.conflicts) {
 				i.getOptions().integration.conflictSolver().resolveConflict(c);
 			}
 		}

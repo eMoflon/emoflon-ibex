@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_MergeAndPreserve;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeAddition;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeDeletion;
@@ -21,9 +20,9 @@ public abstract class DeletePropConflict extends Conflict
 
 	protected final DeletionChain deletionChain;
 
-	public DeletePropConflict(INTEGRATE integrate, ITGGMatch match) {
-		super(integrate, match);
-		this.deletionChain = new DeletionChain(integrate, match);
+	public DeletePropConflict(ConflictContainer container) {
+		super(container);
+		this.deletionChain = new DeletionChain(integrate(), getMatch());
 	}
 
 	public DeletionChain getDeletionChain() {
@@ -34,7 +33,7 @@ public abstract class DeletePropConflict extends Conflict
 
 	@Override
 	public void crs_mergeAndPreserve() {
-		MatchAnalysis analysis = integrate.getMatchUtil().getAnalysis(match);
+		MatchAnalysis analysis = integrate().getMatchUtil().getAnalysis(getMatch());
 
 		deletionChain.foreachReverse(m -> restoreMatch(m));
 
@@ -63,7 +62,7 @@ public abstract class DeletePropConflict extends Conflict
 	}
 	
 	protected void restoreMatchesBasedOn(ITGGMatch match) {
-		IntegrateMatchContainer matchContainer = integrate.getIntegrMatchContainer();
+		IntegrateMatchContainer matchContainer = integrate().getIntegrMatchContainer();
 		matchContainer.getNode(match).getRequiredBy().forEach(n -> {
 			if (n.isBroken()) {
 				ITGGMatch m = matchContainer.getMatch(n);

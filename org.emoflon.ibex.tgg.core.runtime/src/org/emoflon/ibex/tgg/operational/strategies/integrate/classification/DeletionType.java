@@ -86,17 +86,22 @@ public enum DeletionType {
 	public static Set<DeletionType> getShortcutCCCandidates() {
 		return new HashSet<>(Arrays.asList(SRC_PARTLY_TRG_PARTLY, SRC_PARTLY_TRG_FULL, SRC_FULL_TRG_PARTLY));
 	}
-	
+
 	public static Set<DeletionType> getShortcutPropCandidates() {
 		return new HashSet<DeletionType>(Arrays.asList(SRC_PARTLY_TRG_NOT, SRC_NOT_TRG_PARTLY));
 	}
-	
+
 	public static Set<DeletionType> getPropFWDCandidates() {
 		return new HashSet<DeletionType>(Arrays.asList(SRC_PARTLY_TRG_NOT, SRC_FULL_TRG_NOT));
 	}
-	
+
 	public static Set<DeletionType> getPropBWDCandidates() {
 		return new HashSet<DeletionType>(Arrays.asList(SRC_NOT_TRG_PARTLY, SRC_NOT_TRG_FULL));
+	}
+
+	public static Set<DeletionType> getInconsDelCandidates() {
+		return new HashSet<DeletionType>(Arrays.asList(SRC_FULL_TRG_PARTLY, SRC_PARTLY_TRG_FULL, SRC_PARTLY_TRG_NOT,
+				SRC_NOT_TRG_PARTLY, SRC_PARTLY_TRG_PARTLY));
 	}
 
 }

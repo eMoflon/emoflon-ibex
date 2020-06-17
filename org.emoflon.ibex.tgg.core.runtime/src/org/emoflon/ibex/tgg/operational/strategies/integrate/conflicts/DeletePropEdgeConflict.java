@@ -2,8 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 
@@ -11,8 +9,8 @@ public class DeletePropEdgeConflict extends DeletePropConflict {
 
 	private final Set<EdgeConflictingElt> subjects;
 
-	public DeletePropEdgeConflict(INTEGRATE integrate, ITGGMatch match, Set<EdgeConflictingElt> subjects) {
-		super(integrate, match);
+	public DeletePropEdgeConflict(ConflictContainer container, Set<EdgeConflictingElt> subjects) {
+		super(container);
 		this.subjects = subjects;
 	}
 

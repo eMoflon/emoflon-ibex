@@ -18,23 +18,25 @@ import language.TGGRuleElement;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
-public abstract class Conflict implements MatchConflict {
+public abstract class Conflict {
 
-	protected final INTEGRATE integrate;
-	protected final ITGGMatch match;
-	
-	public Conflict(INTEGRATE integrate, ITGGMatch match) {
-		this.integrate = integrate;
-		this.match = match;
+	protected ConflictContainer container;
+
+	public Conflict(ConflictContainer container) {
+		this.container = container;
+		container.addConflict(this);
 	}
 
-	@Override
 	public ITGGMatch getMatch() {
-		return match;
+		return container.getMatch();
 	}
-	
+
+	protected INTEGRATE integrate() {
+		return container.integrate;
+	}
+
 	protected void restoreMatch(ITGGMatch match) {
-		Set<TGGRuleElement> elements = integrate.getMatchUtil().getElts(match, new EltFilter().create());
+		Set<TGGRuleElement> elements = integrate().getMatchUtil().getElts(match, new EltFilter().create());
 
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EObject> deletedNodes = new HashSet<>();
@@ -42,23 +44,23 @@ public abstract class Conflict implements MatchConflict {
 		elements.forEach(elt -> {
 			if (elt instanceof TGGRuleEdge) {
 				EMFEdge edge = getRuntimeEdge(match, (TGGRuleEdge) elt);
-				if (integrate.getGeneralModelChanges().isDeleted(edge))
+				if (integrate().getGeneralModelChanges().isDeleted(edge))
 					if (edge.getType().isContainment())
 						deletedContainmentEdges.add(edge);
 					else
 						deletedCrossEdges.add(edge);
 			} else if (elt instanceof TGGRuleNode) {
 				EObject node = (EObject) match.get(elt.getName());
-				if (integrate.getUserModelChanges().isDeleted(node))
+				if (integrate().getUserModelChanges().isDeleted(node))
 					deletedNodes.add(node);
 			}
 		});
-		TGGRuleApplication ruleApplication = integrate.getRuleApplicationNode(match);
-		deletedCrossEdges.addAll(integrate.getGeneralModelChanges().getDeletedEdges(ruleApplication));
+		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(match);
+		deletedCrossEdges.addAll(integrate().getGeneralModelChanges().getDeletedEdges(ruleApplication));
 
 		deletedContainmentEdges.forEach(edge -> ModelChangeUtil.createEdge(edge));
 		deletedNodes.forEach(node -> {
-			Resource resource = integrate.getGeneralModelChanges().containedInResource(node);
+			Resource resource = integrate().getGeneralModelChanges().containedInResource(node);
 			if (resource != null)
 				resource.getContents().add(node);
 		});

@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -36,16 +34,14 @@ import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.HierarchicalConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.MatchConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ConflictFreeElementsUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
@@ -77,8 +73,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	protected Set<ITGGMatch> filterNacMatches;
 	protected Map<ITGGMatch, BrokenMatch> classifiedBrokenMatches;
-	protected Set<GeneralConflict> conflicts;
-	protected Map<ITGGMatch, MatchConflict> match2conflicts;
+	protected Set<ConflictContainer> conflicts;
+	protected Map<ITGGMatch, ConflictContainer> match2conflicts;
 
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
@@ -161,13 +157,13 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		conflicts = conflictDetector.detectConflicts();
 
-		match2conflicts = conflicts.stream() //
-				.flatMap(gc -> {
-					if (gc instanceof HierarchicalConflict)
-						return ((HierarchicalConflict) gc).getConflictDependency().stream();
-					return Stream.of((MatchConflict) gc);
-				}) //
-				.collect(Collectors.toMap(mc -> mc.getMatch(), mc -> mc));
+//		match2conflicts = conflicts.stream() //
+//				.flatMap(gc -> {
+//					if (gc instanceof HierarchicalConflict)
+//						return ((HierarchicalConflict) gc).getConflictDependency().stream();
+//					return Stream.of((MatchConflict) gc);
+//				}) //
+//				.collect(Collectors.toMap(mc -> mc.getMatch(), mc -> mc));
 	}
 
 	protected void translateConflictFreeElements() {
@@ -506,7 +502,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return classifiedBrokenMatches;
 	}
 
-	public Map<ITGGMatch, MatchConflict> getConflicts() {
+	public Map<ITGGMatch, ConflictContainer> getConflicts() {
 		return match2conflicts;
 	}
 

@@ -6,7 +6,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.MatchConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
@@ -15,7 +15,7 @@ import precedencegraph.PrecedenceNode;
 public class ConflictFreeElementsUpdatePolicy implements IUpdatePolicy {
 
 	private IntegrateMatchContainer imc;
-	private Map<ITGGMatch, MatchConflict> conflicts;
+	private Map<ITGGMatch, ConflictContainer> conflicts;
 
 	public ConflictFreeElementsUpdatePolicy(INTEGRATE opStrat) {
 		this.imc = opStrat.getIntegrMatchContainer();

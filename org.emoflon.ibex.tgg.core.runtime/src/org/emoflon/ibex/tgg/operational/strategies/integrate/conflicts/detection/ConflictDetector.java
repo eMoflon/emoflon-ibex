@@ -9,13 +9,10 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Conflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropAttrConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropEdgeConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.GeneralConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.MatchConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.PartlyDelConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.RelatedConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
@@ -36,25 +33,35 @@ public class ConflictDetector {
 		this.integrate = integrate;
 	}
 
-	public Set<GeneralConflict> detectConflicts() {
-		Set<GeneralConflict> conflicts = new HashSet<>();
+	public Set<ConflictContainer> detectConflicts() {
+		Set<ConflictContainer> conflicts = new HashSet<>();
 		for (BrokenMatch brokenMatch : integrate.getClassifiedBrokenMatches().values()) {
-			MatchConflict possibleMatchConflict = detectMatchConflict(brokenMatch);
-			if (possibleMatchConflict != null)
-				conflicts.add(possibleMatchConflict);
-			conflicts.addAll(detectAttributeConflict(brokenMatch));
+			ConflictContainer container = detectMatchConflicts(brokenMatch);
+			if (container != null)
+				conflicts.add(container);
 		}
 		return conflicts;
 	}
 
-	private MatchConflict detectMatchConflict(BrokenMatch brokenMatch) {
+	private ConflictContainer detectMatchConflicts(BrokenMatch brokenMatch) {
+		ConflictContainer container = new ConflictContainer(integrate, brokenMatch.getMatch());
+		detectDeletePreserveConflicts(container, brokenMatch);
+		detectAttributeConflicts(container, brokenMatch);
+		detectInconsistentDelConflict(container, brokenMatch);
+
+		if (!container.getConflicts().isEmpty())
+			return container;
+		return null;
+	}
+
+	private void detectDeletePreserveConflicts(ConflictContainer container, BrokenMatch brokenMatch) {
 		EltFilter filter = new EltFilter().create().notDeleted();
 		if (DeletionType.getPropFWDCandidates().contains(brokenMatch.getDeletionType()))
 			filter.trg();
 		else if (DeletionType.getPropBWDCandidates().contains(brokenMatch.getDeletionType()))
 			filter.src();
 		else
-			return null;
+			return;
 
 		Set<EdgeConflictingElt> edgeConflElts = new HashSet<>();
 		Set<AttrConflictingElt> attrConflElts = new HashSet<>();
@@ -69,23 +76,13 @@ public class ConflictDetector {
 				attrConflElts.add(new AttrConflictingElt(element, conflAttrChanges));
 		});
 
-		Set<Conflict> relatedConflicts = new HashSet<>();
-
 		if (!edgeConflElts.isEmpty())
-			relatedConflicts.add(new DeletePropEdgeConflict(integrate, brokenMatch.getMatch(), edgeConflElts));
+			new DeletePropEdgeConflict(container, edgeConflElts);
 		if (!attrConflElts.isEmpty())
-			relatedConflicts.add(new DeletePropAttrConflict(integrate, brokenMatch.getMatch(), attrConflElts));
-
-		if (relatedConflicts.size() > 1)
-			return new RelatedConflict(relatedConflicts);
-		if (relatedConflicts.size() == 1)
-			return relatedConflicts.iterator().next();
-		return null;
+			new DeletePropAttrConflict(container, attrConflElts);
 	}
 
-	private Set<AttributeConflict> detectAttributeConflict(BrokenMatch brokenMatch) {
-		Set<AttributeConflict> attrConflicts = new HashSet<>();
-
+	private void detectAttributeConflicts(ConflictContainer container, BrokenMatch brokenMatch) {
 		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
 			TGGAttributeConstraintDefinition def = constrAttrChanges.constraint.getDefinition();
 			if (def.isUserDefined() || !def.getName().startsWith("eq_")) {
@@ -117,18 +114,14 @@ public class ConflictDetector {
 				if (srcChange == null || trgChange == null)
 					logger.error("User attribute edit was not domain conform!");
 
-				attrConflicts.add(
-						new AttributeConflict(integrate, brokenMatch.getMatch(), constrAttrChanges, srcChange, trgChange));
+				new AttributeConflict(container, constrAttrChanges, srcChange, trgChange);
 			}
 		}
-
-		return attrConflicts;
 	}
 
-	private PartlyDelConflict inconsistentDelConflict(BrokenMatch brokenMatch) {
-		brokenMatch.getDeletionType();
-
-		return null;
+	private void detectInconsistentDelConflict(ConflictContainer container, BrokenMatch brokenMatch) {
+//		if (DeletionType.getInconsDelCandidates().contains(brokenMatch.getDeletionType()))
+//			new PartlyDelConflict(container);
 	}
 
 }
