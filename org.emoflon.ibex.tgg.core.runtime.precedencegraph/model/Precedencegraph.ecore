@@ -13,5 +13,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="requiredBy" upperBound="-1"
         eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/requires"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="matchAsString" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rollbackCauses" upperBound="-1"
+        eType="#//PrecedenceNode"/>
   </eClassifiers>
 </ecore:EPackage>

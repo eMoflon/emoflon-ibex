@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link precedencegraph.PrecedenceNode#getRequires <em>Requires</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getRequiredBy <em>Required By</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getMatchAsString <em>Match As String</em>}</li>
+ *   <li>{@link precedencegraph.PrecedenceNode#getRollbackCauses <em>Rollback Causes</em>}</li>
  * </ul>
  *
  * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode()
@@ -97,5 +98,17 @@ public interface PrecedenceNode extends EObject {
 	 * @generated
 	 */
 	void setMatchAsString(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Rollback Causes</b></em>' reference list.
+	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Rollback Causes</em>' reference list.
+	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_RollbackCauses()
+	 * @model
+	 * @generated
+	 */
+	EList<PrecedenceNode> getRollbackCauses();
 
 } // PrecedenceNode

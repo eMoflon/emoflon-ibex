@@ -7,10 +7,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.FragmentProvider;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_ActAndLetRepair;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 
 import delta.DeltaContainer;
 
-public class PartlyDelConflict extends Conflict implements CRS_ActAndLetRepair {
+public class PartlyDelConflict extends Conflict implements CRS_ActAndLetRepair, CRS_PreferSource, CRS_PreferTarget {
 
 	public PartlyDelConflict(ConflictContainer container) {
 		super(container);
@@ -43,6 +45,18 @@ public class PartlyDelConflict extends Conflict implements CRS_ActAndLetRepair {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void crs_preferSource() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void crs_preferTarget() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

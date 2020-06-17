@@ -140,13 +140,22 @@ public interface PrecedencegraphPackage extends EPackage {
 	int PRECEDENCE_NODE__MATCH_AS_STRING = 3;
 
 	/**
+	 * The feature id for the '<em><b>Rollback Causes</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PRECEDENCE_NODE__ROLLBACK_CAUSES = 4;
+
+	/**
 	 * The number of structural features of the '<em>Precedence Node</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PRECEDENCE_NODE_FEATURE_COUNT = 4;
+	int PRECEDENCE_NODE_FEATURE_COUNT = 5;
 
 	/**
 	 * The number of operations of the '<em>Precedence Node</em>' class.
@@ -233,6 +242,17 @@ public interface PrecedencegraphPackage extends EPackage {
 	EAttribute getPrecedenceNode_MatchAsString();
 
 	/**
+	 * Returns the meta object for the reference list '{@link precedencegraph.PrecedenceNode#getRollbackCauses <em>Rollback Causes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Rollback Causes</em>'.
+	 * @see precedencegraph.PrecedenceNode#getRollbackCauses()
+	 * @see #getPrecedenceNode()
+	 * @generated
+	 */
+	EReference getPrecedenceNode_RollbackCauses();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -314,6 +334,14 @@ public interface PrecedencegraphPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute PRECEDENCE_NODE__MATCH_AS_STRING = eINSTANCE.getPrecedenceNode_MatchAsString();
+
+		/**
+		 * The meta object literal for the '<em><b>Rollback Causes</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PRECEDENCE_NODE__ROLLBACK_CAUSES = eINSTANCE.getPrecedenceNode_RollbackCauses();
 
 	}
 

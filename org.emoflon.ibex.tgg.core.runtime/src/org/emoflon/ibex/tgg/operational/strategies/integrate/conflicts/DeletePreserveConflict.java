@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_MergeAndPreserve;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeAddition;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeDeletion;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.DeletionChain;
@@ -16,7 +18,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.E
 import language.TGGRuleNode;
 
 public abstract class DeletePreserveConflict extends Conflict
-		implements CRS_MergeAndPreserve, CRS_RevokeDeletion, CRS_RevokeAddition {
+		implements CRS_MergeAndPreserve, CRS_RevokeDeletion, CRS_RevokeAddition, CRS_PreferSource, CRS_PreferTarget {
 
 	protected final DeletionChain deletionChain;
 
@@ -73,6 +75,18 @@ public abstract class DeletePreserveConflict extends Conflict
 				}
 			}
 		});
+	}
+
+	@Override
+	public void crs_preferSource() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void crs_preferTarget() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

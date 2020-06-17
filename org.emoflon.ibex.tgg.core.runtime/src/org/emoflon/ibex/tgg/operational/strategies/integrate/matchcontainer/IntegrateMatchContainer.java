@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -50,8 +51,11 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	public void matchApplied(ITGGMatch match) {
 		super.matchApplied(match);
 		if (match.getType() == PatternType.CONSISTENCY) {
-			if (matchToNode.containsKey(match) && getNode(match).isBroken())
-				getNode(match).setBroken(false);
+			PrecedenceNode node = getNode(match);
+			if (matchToNode.containsKey(match) && node.isBroken()) {
+				node.setBroken(false);
+				updateRollbackImpact(node);
+			}
 		}
 	}
 
@@ -76,7 +80,11 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 		});
 		matches.forEach(m -> createNode(m));
 		matches.forEach(m -> updateNode(m));
-		restoredMatches.forEach(m -> getNode(m).setBroken(false));
+		restoredMatches.forEach(m -> {
+			PrecedenceNode node = getNode(m);
+			node.setBroken(false);
+			updateRollbackImpact(node);
+		});
 	}
 
 	public ITGGMatch getMatch(PrecedenceNode node) {
@@ -96,9 +104,11 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	}
 
 	public void removeBrokenMatch(ITGGMatch match) {
-		if (getNode(match).isBroken()) {
+		PrecedenceNode node = getNode(match);
+		if (node.isBroken()) {
+			updateRollbackImpact(node);
 			deleteNode(match);
-			
+
 			IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 			Collection<Object> translatedElts = new ArrayList<>();
 			gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
@@ -157,10 +167,26 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 
 	private void handleBrokenConsistencyMatch(ITGGMatch match) {
 		PrecedenceNode node = matchToNode.get(match);
-		if (node != null)
+		if (node != null) {
 			node.setBroken(true);
+			updateRollbackImpact(node);
+		}
 
 		readySet.remove(match);
+	}
+
+	private void updateRollbackImpact(PrecedenceNode node) {
+		if (node.isBroken()) {
+			forAllRequiredBy(node, n -> {
+				n.getRollbackCauses().add(node);
+				return true;
+			});
+		} else {
+			forAllRequiredBy(node, n -> {
+				n.getRollbackCauses().remove(node);
+				return true;
+			});
+		}
 	}
 
 	private void deleteNode(ITGGMatch match) {
@@ -175,6 +201,38 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	private void prepareResource() {
 		if (precedenceGraph.getContents().isEmpty())
 			precedenceGraph.getContents().add(nodes);
+	}
+
+	public void forAllRequires(PrecedenceNode node, Predicate<? super PrecedenceNode> action) {
+		Set<PrecedenceNode> processed = cfactory.createObjectSet();
+		forAllRequires(node, action, processed);
+	}
+
+	private void forAllRequires(PrecedenceNode node, Predicate<? super PrecedenceNode> action,
+			Set<PrecedenceNode> processed) {
+		for (PrecedenceNode n : node.getRequires()) {
+			if (!processed.contains(n)) {
+				processed.add(n);
+				if (action.test(n))
+					forAllRequires(n, action, processed);
+			}
+		}
+	}
+
+	public void forAllRequiredBy(PrecedenceNode node, Predicate<? super PrecedenceNode> action) {
+		Set<PrecedenceNode> processed = cfactory.createObjectSet();
+		forAllRequiredBy(node, action, processed);
+	}
+
+	private void forAllRequiredBy(PrecedenceNode node, Predicate<? super PrecedenceNode> action,
+			Set<PrecedenceNode> processed) {
+		for (PrecedenceNode n : node.getRequiredBy()) {
+			if (!processed.contains(n)) {
+				processed.add(n);
+				if (action.test(n))
+					forAllRequiredBy(n, action, processed);
+			}
+		}
 	}
 
 }
