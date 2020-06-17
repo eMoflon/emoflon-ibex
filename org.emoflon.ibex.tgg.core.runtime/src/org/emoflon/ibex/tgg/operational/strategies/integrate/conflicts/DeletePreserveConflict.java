@@ -15,12 +15,12 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.E
 
 import language.TGGRuleNode;
 
-public abstract class DeletePropConflict extends Conflict
+public abstract class DeletePreserveConflict extends Conflict
 		implements CRS_MergeAndPreserve, CRS_RevokeDeletion, CRS_RevokeAddition {
 
 	protected final DeletionChain deletionChain;
 
-	public DeletePropConflict(ConflictContainer container) {
+	public DeletePreserveConflict(ConflictContainer container) {
 		super(container);
 		this.deletionChain = new DeletionChain(integrate(), getMatch());
 	}
@@ -28,7 +28,7 @@ public abstract class DeletePropConflict extends Conflict
 	public DeletionChain getDeletionChain() {
 		return deletionChain;
 	}
-	
+
 	//// CRS ////
 
 	@Override
@@ -46,7 +46,7 @@ public abstract class DeletePropConflict extends Conflict
 			}
 		});
 	}
-	
+
 	private Set<ITGGMatch> restored;
 
 	@Override
@@ -60,7 +60,7 @@ public abstract class DeletePropConflict extends Conflict
 			}
 		});
 	}
-	
+
 	protected void restoreMatchesBasedOn(ITGGMatch match) {
 		IntegrateMatchContainer matchContainer = integrate().getIntegrMatchContainer();
 		matchContainer.getNode(match).getRequiredBy().forEach(n -> {

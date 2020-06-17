@@ -10,8 +10,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Brok
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropAttrConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePropEdgeConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveAttrConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveEdgeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
@@ -76,9 +76,9 @@ public class ConflictDetector {
 		});
 
 		if (!edgeConflElts.isEmpty())
-			new DeletePropEdgeConflict(container, edgeConflElts);
+			new DelPreserveEdgeConflict(container, edgeConflElts);
 		if (!attrConflElts.isEmpty())
-			new DeletePropAttrConflict(container, attrConflElts);
+			new DelPreserveAttrConflict(container, attrConflElts);
 	}
 
 	private void detectAttributeConflicts(ConflictContainer container, BrokenMatch brokenMatch) {

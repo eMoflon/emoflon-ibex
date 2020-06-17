@@ -5,11 +5,11 @@ import java.util.Set;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 
-public class DeletePropAttrConflict extends DeletePropConflict {
+public class DelPreserveAttrConflict extends DeletePreserveConflict {
 
 	private final Set<AttrConflictingElt> subjects;
 
-	public DeletePropAttrConflict(ConflictContainer container, Set<AttrConflictingElt> subjects) {
+	public DelPreserveAttrConflict(ConflictContainer container, Set<AttrConflictingElt> subjects) {
 		super(container);
 		this.subjects = subjects;
 	}
