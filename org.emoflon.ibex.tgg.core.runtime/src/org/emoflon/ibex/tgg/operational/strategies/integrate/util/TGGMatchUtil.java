@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -114,67 +113,6 @@ public class TGGMatchUtil {
 		return getEdgeStream(match, filter) //
 				.map(e -> analysis.getEMFEdge(e)) //
 				.collect(Collectors.toSet());
-	}
-
-	public static class EltFilter {
-
-		private List<DomainType> domainTypes = Arrays.asList(DomainType.SRC, DomainType.CORR, DomainType.TRG);
-		private List<BindingType> bindingTypes = Arrays.asList(BindingType.CONTEXT, BindingType.CREATE);
-
-		private boolean all = true;
-		private boolean deleted;
-
-		public EltFilter domains(DomainType... domainTypes) {
-			this.domainTypes = Arrays.asList(domainTypes);
-			return this;
-		}
-
-		public EltFilter src() {
-			this.domainTypes = Arrays.asList(DomainType.SRC);
-			return this;
-		}
-
-		public EltFilter trg() {
-			this.domainTypes = Arrays.asList(DomainType.TRG);
-			return this;
-		}
-
-		public EltFilter corr() {
-			this.domainTypes = Arrays.asList(DomainType.CORR);
-			return this;
-		}
-
-		public EltFilter srcAndTrg() {
-			this.domainTypes = Arrays.asList(DomainType.SRC, DomainType.TRG);
-			return this;
-		}
-
-		public EltFilter bindings(BindingType... bindingTypes) {
-			this.bindingTypes = Arrays.asList(bindingTypes);
-			return this;
-		}
-
-		public EltFilter create() {
-			this.bindingTypes = Arrays.asList(BindingType.CREATE);
-			return this;
-		}
-
-		public EltFilter context() {
-			this.bindingTypes = Arrays.asList(BindingType.CONTEXT);
-			return this;
-		}
-
-		public EltFilter deleted() {
-			this.all = false;
-			this.deleted = true;
-			return this;
-		}
-
-		public EltFilter notDeleted() {
-			this.all = false;
-			this.deleted = false;
-			return this;
-		}
 	}
 
 }

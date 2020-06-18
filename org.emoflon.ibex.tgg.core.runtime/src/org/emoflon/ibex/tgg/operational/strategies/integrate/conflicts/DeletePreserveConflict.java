@@ -14,8 +14,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeDeletion;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 
 import language.DomainType;
 import language.TGGRuleNode;
@@ -49,7 +49,7 @@ public abstract class DeletePreserveConflict extends Conflict
 	public void crs_mergeAndPreserve() {
 		MatchAnalysis analysis = integrate().getMatchUtil().getAnalysis(getBrokenMatch().getMatch());
 
-		causingMatches.forEach(m -> restoreMatch(m));
+		causingMatches.forEach(m -> restoreMatch(integrate().getClassifiedBrokenMatches().get(m)));
 
 		analysis.getElts(new EltFilter().srcAndTrg().create().deleted()).forEach(elt -> {
 			if (elt instanceof TGGRuleNode) {
@@ -68,7 +68,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		restored = new HashSet<>();
 		causingMatches.forEach(match -> {
 			if (!restored.contains(match)) {
-				restoreMatch(match);
+				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
 				restored.add(match);
 				restoreMatchesBasedOn(match);
 			}
@@ -81,7 +81,7 @@ public abstract class DeletePreserveConflict extends Conflict
 			if (n.isBroken()) {
 				ITGGMatch m = matchContainer.getMatch(n);
 				if (!restored.contains(m)) {
-					restoreMatch(m);
+					restoreMatch(integrate().getClassifiedBrokenMatches().get(m));
 					restored.add(m);
 					restoreMatchesBasedOn(m);
 				}
@@ -91,14 +91,28 @@ public abstract class DeletePreserveConflict extends Conflict
 
 	@Override
 	public void crs_preferSource() {
-		// TODO Auto-generated method stub
-
+		switch (domainToBePreserved) {
+		case SRC:
+			crs_revokeDeletion();
+			break;
+		case TRG:
+			crs_revokeAddition();
+		default:
+			break;
+		}
 	}
 
 	@Override
 	public void crs_preferTarget() {
-		// TODO Auto-generated method stub
-
+		switch (domainToBePreserved) {
+		case SRC:
+			crs_revokeAddition();
+			break;
+		case TRG:
+			crs_revokeDeletion();
+		default:
+			break;
+		}
 	}
 
 }

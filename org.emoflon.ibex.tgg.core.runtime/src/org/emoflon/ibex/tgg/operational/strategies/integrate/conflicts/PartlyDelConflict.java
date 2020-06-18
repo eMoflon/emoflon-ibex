@@ -11,14 +11,13 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 
 import delta.DeltaContainer;
+import language.DomainType;
 
 public class PartlyDelConflict extends Conflict implements CRS_ActAndLetRepair, CRS_PreferSource, CRS_PreferTarget {
 
 	public PartlyDelConflict(ConflictContainer container) {
 		super(container);
 	}
-
-	// TODO adrianm: finish implementation
 
 	//// CRS ////
 
@@ -49,14 +48,12 @@ public class PartlyDelConflict extends Conflict implements CRS_ActAndLetRepair, 
 
 	@Override
 	public void crs_preferSource() {
-		// TODO Auto-generated method stub
-
+		restoreDomain(getBrokenMatch(), DomainType.TRG);
 	}
 
 	@Override
 	public void crs_preferTarget() {
-		// TODO Auto-generated method stub
-
+		restoreDomain(getBrokenMatch(), DomainType.SRC);
 	}
 
 }
