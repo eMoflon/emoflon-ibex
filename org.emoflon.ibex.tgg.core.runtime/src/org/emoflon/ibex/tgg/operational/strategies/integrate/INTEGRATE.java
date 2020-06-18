@@ -171,7 +171,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					collectSubContainer(set, cc);
 					return set.stream();
 				}) //
-				.collect(Collectors.toMap(cc -> cc.getMatch(), cc -> cc));
+				.collect(Collectors.toMap(cc -> cc.getBrokenMatch().getMatch(), cc -> cc));
 	}
 
 	private void collectSubContainer(Set<ConflictContainer> containerSet, ConflictContainer container) {

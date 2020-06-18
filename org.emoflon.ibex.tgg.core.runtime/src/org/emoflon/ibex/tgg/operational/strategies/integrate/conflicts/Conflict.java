@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 
@@ -27,8 +28,8 @@ public abstract class Conflict {
 		container.addConflict(this);
 	}
 
-	public ITGGMatch getMatch() {
-		return container.getMatch();
+	public BrokenMatch getBrokenMatch() {
+		return container.getBrokenMatch();
 	}
 
 	protected INTEGRATE integrate() {

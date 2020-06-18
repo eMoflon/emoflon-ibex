@@ -46,7 +46,7 @@ public class ConflictDetector {
 	}
 
 	private ConflictContainer detectMatchConflicts(BrokenMatch brokenMatch) {
-		ConflictContainer container = new ConflictContainer(integrate, brokenMatch.getMatch());
+		ConflictContainer container = new ConflictContainer(integrate, brokenMatch);
 		detectDeletePreserveConflicts(container, brokenMatch);
 		detectAttributeConflicts(container, brokenMatch);
 		detectInconsistentDelConflict(container, brokenMatch);

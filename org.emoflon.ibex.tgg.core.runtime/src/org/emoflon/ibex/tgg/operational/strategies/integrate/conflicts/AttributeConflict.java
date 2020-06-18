@@ -38,13 +38,13 @@ public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS
 	@Override
 	public void crs_preferSource() {
 		ModelChangeUtil.revertAttributeChange(trgChange);
-		integrate().repairOneMatch(integrate().getAttributeRepairStrategy(), getMatch(), PatternType.FWD);
+		integrate().repairOneMatch(integrate().getAttributeRepairStrategy(), getBrokenMatch().getMatch(), PatternType.FWD);
 	}
 
 	@Override
 	public void crs_preferTarget() {
 		ModelChangeUtil.revertAttributeChange(srcChange);
-		integrate().repairOneMatch(integrate().getAttributeRepairStrategy(), getMatch(), PatternType.BWD);
+		integrate().repairOneMatch(integrate().getAttributeRepairStrategy(), getBrokenMatch().getMatch(), PatternType.BWD);
 	}
 
 }
