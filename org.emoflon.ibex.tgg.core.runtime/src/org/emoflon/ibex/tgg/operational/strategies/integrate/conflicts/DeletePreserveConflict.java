@@ -15,16 +15,19 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 
+import language.DomainType;
 import language.TGGRuleNode;
 
 public abstract class DeletePreserveConflict extends Conflict
 		implements CRS_MergeAndPreserve, CRS_RevokeDeletion, CRS_RevokeAddition, CRS_PreferSource, CRS_PreferTarget {
 
 	protected final DeletionChain deletionChain;
+	protected final DomainType domainToBePreserved;
 
-	public DeletePreserveConflict(ConflictContainer container) {
+	public DeletePreserveConflict(ConflictContainer container, DomainType domainToBePreserved) {
 		super(container);
 		this.deletionChain = new DeletionChain(integrate(), getMatch());
+		this.domainToBePreserved = domainToBePreserved;
 	}
 
 	public DeletionChain getDeletionChain() {

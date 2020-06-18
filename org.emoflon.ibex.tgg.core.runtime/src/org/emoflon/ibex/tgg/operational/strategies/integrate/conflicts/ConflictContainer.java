@@ -29,11 +29,6 @@ public class ConflictContainer {
 		conflicts.add(conflict);
 	}
 
-//	public ConflictContainer addAllConflicts(Collection<Conflict> conflicts) {
-//		conflicts.forEach(this::addConflict);
-//		return this;
-//	}
-
 	public Set<Conflict> getConflicts() {
 		return conflicts;
 	}

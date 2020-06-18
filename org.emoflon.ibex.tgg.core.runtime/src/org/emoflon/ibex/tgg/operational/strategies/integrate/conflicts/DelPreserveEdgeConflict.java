@@ -5,12 +5,15 @@ import java.util.Set;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 
+import language.DomainType;
+
 public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 
 	private final Set<EdgeConflictingElt> subjects;
 
-	public DelPreserveEdgeConflict(ConflictContainer container, Set<EdgeConflictingElt> subjects) {
-		super(container);
+	public DelPreserveEdgeConflict(ConflictContainer container, Set<EdgeConflictingElt> subjects,
+			DomainType domainToBePreserved) {
+		super(container, domainToBePreserved);
 		this.subjects = subjects;
 	}
 

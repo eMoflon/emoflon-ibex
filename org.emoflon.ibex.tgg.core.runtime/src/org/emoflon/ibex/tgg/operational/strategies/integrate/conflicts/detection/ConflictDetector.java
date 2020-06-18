@@ -14,13 +14,16 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreser
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveEdgeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil.EltFilter;
 
+import language.DomainType;
 import language.TGGAttributeConstraintDefinition;
 import language.TGGAttributeExpression;
+import precedencegraph.PrecedenceNode;
 
 public class ConflictDetector {
 
@@ -54,17 +57,36 @@ public class ConflictDetector {
 	}
 
 	private void detectDeletePreserveConflicts(ConflictContainer container, BrokenMatch brokenMatch) {
+		detectDeletePreserveConflict(container, brokenMatch, DomainType.SRC);
+		detectDeletePreserveConflict(container, brokenMatch, DomainType.TRG);
+	}
+
+	private void detectDeletePreserveConflict(ConflictContainer container, BrokenMatch brokenMatch,
+			DomainType domainToBePreserved) {
+		IntegrateMatchContainer matchContainer = integrate.getIntegrMatchContainer();
+
 		EltFilter filter = new EltFilter().create().notDeleted();
-		if (DeletionType.getPropFWDCandidates().contains(brokenMatch.getDeletionType()))
-			filter.trg();
-		else if (DeletionType.getPropBWDCandidates().contains(brokenMatch.getDeletionType()))
+		if (domainToBePreserved == DomainType.SRC)
 			filter.src();
 		else
+			filter.trg();
+
+		boolean deletionAffected = false;
+		PrecedenceNode node = matchContainer.getNode(brokenMatch.getMatch());
+		for (PrecedenceNode cn : node.getRollbackCauses()) {
+			BrokenMatch cMatch = integrate.getClassifiedBrokenMatches().get(matchContainer.getMatch(cn));
+			if (hasDomainSpecificViolations(cMatch, oppositeOf(domainToBePreserved))) {
+				deletionAffected = true;
+				break;
+			}
+		}
+
+		if (!deletionAffected)
 			return;
 
+		ModelChanges changes = integrate.getGeneralModelChanges();
 		Set<EdgeConflictingElt> edgeConflElts = new HashSet<>();
 		Set<AttrConflictingElt> attrConflElts = new HashSet<>();
-		ModelChanges changes = integrate.getGeneralModelChanges();
 
 		integrate.getMatchUtil().getObjects(brokenMatch.getMatch(), filter).forEach(element -> {
 			Set<EMFEdge> conflEdges = changes.getCreatedEdges(element);
@@ -76,9 +98,44 @@ public class ConflictDetector {
 		});
 
 		if (!edgeConflElts.isEmpty())
-			new DelPreserveEdgeConflict(container, edgeConflElts);
+			new DelPreserveEdgeConflict(container, edgeConflElts, domainToBePreserved);
 		if (!attrConflElts.isEmpty())
-			new DelPreserveAttrConflict(container, attrConflElts);
+			new DelPreserveAttrConflict(container, attrConflElts, domainToBePreserved);
+	}
+
+	private boolean hasDomainSpecificViolations(BrokenMatch cMatch, DomainType domain) {
+		switch (domain) {
+		case SRC:
+			if (DeletionType.getSrcDelCandidates().contains(cMatch.getDeletionType()))
+				return true;
+			break;
+		case TRG:
+			if (DeletionType.getTrgDelCandidates().contains(cMatch.getDeletionType()))
+				return true;
+			break;
+		default:
+			break;
+		}
+
+		if (cMatch.getFilterNacViolations().containsValue(domain))
+			return true;
+
+		// TODO adrianm: check attributes
+
+		return false;
+	}
+
+	private DomainType oppositeOf(DomainType type) {
+		switch (type) {
+		case SRC:
+			return DomainType.TRG;
+		case TRG:
+			return DomainType.SRC;
+		case CORR:
+			return DomainType.CORR;
+		default:
+			return null;
+		}
 	}
 
 	private void detectAttributeConflicts(ConflictContainer container, BrokenMatch brokenMatch) {

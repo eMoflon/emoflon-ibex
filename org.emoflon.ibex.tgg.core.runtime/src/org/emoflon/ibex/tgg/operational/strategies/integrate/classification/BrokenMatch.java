@@ -21,14 +21,18 @@ public class BrokenMatch {
 	private final ITGGMatch match;
 	private final MatchAnalysis util;
 
+	private final boolean broken;
 	private final DeletionPattern deletionPattern;
+	
 	private DeletionType deletionType;
 	private final Map<ITGGMatch, DomainType> filterNacViolations;
 	private final Set<ConstrainedAttributeChanges> constrainedAttrChanges;
+	// TODO adrianm: add violated in-place attribute expressions
 
-	public BrokenMatch(INTEGRATE integrate, ITGGMatch match) {
+	public BrokenMatch(INTEGRATE integrate, ITGGMatch match, boolean broken) {
 		this.integrate = integrate;
 		this.match = match;
+		this.broken = broken;
 		this.util = integrate.getMatchUtil().getAnalysis(match);
 		this.deletionPattern = util.createDelPattern();
 		this.filterNacViolations = util.analyzeFilterNACViolations();
@@ -61,6 +65,10 @@ public class BrokenMatch {
 
 	public Set<ConstrainedAttributeChanges> getConstrainedAttrChanges() {
 		return constrainedAttrChanges;
+	}
+	
+	public boolean isBroken() {
+		return broken;
 	}
 
 	public MatchAnalysis util() {

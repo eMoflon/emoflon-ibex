@@ -59,7 +59,7 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 		}
 	}
 
-	public PrecedenceNodeContainer getExtGraph() {
+	public PrecedenceNodeContainer getGraph() {
 		return nodes;
 	}
 
@@ -159,7 +159,7 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createPrecedenceNode();
 		node.setBroken(false);
 		nodes.getNodes().add(node);
-		node.setMatchAsString(match.getPatternName());
+		node.setMatchAsString(match.getPatternName() + "(" + match.hashCode() + ")");
 
 		matchToNode.put(match, node);
 		nodeToMatch.put(node, match);
@@ -177,11 +177,13 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 
 	private void updateRollbackImpact(PrecedenceNode node) {
 		if (node.isBroken()) {
+			node.getRollbackCauses().add(node);
 			forAllRequiredBy(node, n -> {
 				n.getRollbackCauses().add(node);
 				return true;
 			});
 		} else {
+			node.getRollbackCauses().remove(node);
 			forAllRequiredBy(node, n -> {
 				n.getRollbackCauses().remove(node);
 				return true;

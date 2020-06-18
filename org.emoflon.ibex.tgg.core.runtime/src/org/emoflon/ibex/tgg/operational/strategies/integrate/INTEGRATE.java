@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -55,6 +56,7 @@ import com.google.common.collect.Sets;
 import delta.DeltaContainer;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
+import precedencegraph.PrecedenceNode;
 import runtime.TGGRuleApplication;
 
 public class INTEGRATE extends PropagatingOperationalStrategy {
@@ -144,10 +146,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void classifyBrokenMatches() {
+		IntegrateMatchContainer matchContainer = getIntegrMatchContainer();
+
 		matchDistributor.updateMatches();
+		matchContainer.update();
 		classifiedBrokenMatches.clear();
-		for (ITGGMatch match : brokenRuleApplications.values()) {
-			classifiedBrokenMatches.put(match, new BrokenMatch(this, match));
+		for (PrecedenceNode node : matchContainer.getGraph().getNodes()) {
+			if (node.isBroken() || !node.getRollbackCauses().isEmpty()) {
+				ITGGMatch match = matchContainer.getMatch(node);
+				classifiedBrokenMatches.put(match, new BrokenMatch(this, match, node.isBroken()));
+			}
 		}
 	}
 
@@ -157,13 +165,18 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		conflicts = conflictDetector.detectConflicts();
 
-//		match2conflicts = conflicts.stream() //
-//				.flatMap(gc -> {
-//					if (gc instanceof HierarchicalConflict)
-//						return ((HierarchicalConflict) gc).getConflictDependency().stream();
-//					return Stream.of((MatchConflict) gc);
-//				}) //
-//				.collect(Collectors.toMap(mc -> mc.getMatch(), mc -> mc));
+		match2conflicts = conflicts.stream() //
+				.flatMap(cc -> {
+					Set<ConflictContainer> set = cfactory.createObjectSet();
+					collectSubContainer(set, cc);
+					return set.stream();
+				}) //
+				.collect(Collectors.toMap(cc -> cc.getMatch(), cc -> cc));
+	}
+
+	private void collectSubContainer(Set<ConflictContainer> containerSet, ConflictContainer container) {
+		containerSet.add(container);
+		container.getSubContainers().forEach(subC -> collectSubContainer(containerSet, subC));
 	}
 
 	protected void translateConflictFreeElements() {
@@ -352,6 +365,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					repairedSth = true;
 
 					brokenRuleApplications.remove(getRuleApplicationNode(repairCandidate));
+					getIntegrMatchContainer().removeBrokenMatch(repairCandidate);
 					brokenRuleApplications.put(getRuleApplicationNode(repairedMatch), repairedMatch);
 					alreadyProcessed.add(repairedMatch);
 				}

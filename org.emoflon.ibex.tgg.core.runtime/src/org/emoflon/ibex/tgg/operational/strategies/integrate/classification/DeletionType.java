@@ -79,7 +79,7 @@ public enum DeletionType {
 	}
 
 	public static List<DeletionType> getDefaultDeletionTypes() {
-		return Arrays.asList(CORR_FULL, NOTHING, COMPLETELY, SRC_FULL_TRG_NOT, SRC_NOT_TRG_FULL, SRC_FULL_TRG_PARTLY,
+		return Arrays.asList(NOTHING, COMPLETELY, SRC_FULL_TRG_NOT, SRC_NOT_TRG_FULL, SRC_FULL_TRG_PARTLY,
 				SRC_PARTLY_TRG_FULL, SRC_PARTLY_TRG_NOT, SRC_NOT_TRG_PARTLY, SRC_PARTLY_TRG_PARTLY);
 	}
 
@@ -102,6 +102,16 @@ public enum DeletionType {
 	public static Set<DeletionType> getInconsDelCandidates() {
 		return new HashSet<DeletionType>(Arrays.asList(SRC_FULL_TRG_PARTLY, SRC_PARTLY_TRG_FULL, SRC_PARTLY_TRG_NOT,
 				SRC_NOT_TRG_PARTLY, SRC_PARTLY_TRG_PARTLY));
+	}
+
+	public static Set<DeletionType> getSrcDelCandidates() {
+		return new HashSet<DeletionType>(Arrays.asList(COMPLETELY, SRC_FULL_TRG_NOT, SRC_FULL_TRG_PARTLY,
+				SRC_PARTLY_TRG_FULL, SRC_PARTLY_TRG_NOT, SRC_PARTLY_TRG_PARTLY));
+	}
+
+	public static Set<DeletionType> getTrgDelCandidates() {
+		return new HashSet<DeletionType>(Arrays.asList(COMPLETELY, SRC_NOT_TRG_FULL, SRC_FULL_TRG_PARTLY,
+				SRC_PARTLY_TRG_FULL, SRC_NOT_TRG_PARTLY, SRC_PARTLY_TRG_PARTLY));
 	}
 
 }
