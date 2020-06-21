@@ -25,6 +25,7 @@ public class InconsDelConflict extends Conflict implements CRS_ActAndLetRepair, 
 	public void crs_actAndLetRepair(BiConsumer<EObject, EObject> delta) {
 		integrate().applyDelta(delta);
 		repair();
+		resolved = true;
 	}
 
 	@Override
@@ -35,6 +36,7 @@ public class InconsDelConflict extends Conflict implements CRS_ActAndLetRepair, 
 		} catch (InvalidDeltaException e) {
 			e.printStackTrace();
 		}
+		resolved = true;
 	}
 
 	private void repair() {
@@ -49,11 +51,13 @@ public class InconsDelConflict extends Conflict implements CRS_ActAndLetRepair, 
 	@Override
 	public void crs_preferSource() {
 		restoreDomain(getBrokenMatch(), DomainType.TRG);
+		resolved = true;
 	}
 
 	@Override
 	public void crs_preferTarget() {
 		restoreDomain(getBrokenMatch(), DomainType.SRC);
+		resolved = true;
 	}
 
 }

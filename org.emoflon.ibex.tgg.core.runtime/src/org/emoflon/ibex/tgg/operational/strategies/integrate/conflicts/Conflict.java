@@ -19,14 +19,20 @@ import runtime.TGGRuleApplication;
 public abstract class Conflict {
 
 	protected ConflictContainer container;
+	protected boolean resolved;
 
 	public Conflict(ConflictContainer container) {
 		this.container = container;
+		this.resolved = false;
 		container.addConflict(this);
 	}
 
 	public BrokenMatch getBrokenMatch() {
 		return container.getBrokenMatch();
+	}
+
+	public boolean isResolved() {
+		return resolved;
 	}
 
 	protected INTEGRATE integrate() {

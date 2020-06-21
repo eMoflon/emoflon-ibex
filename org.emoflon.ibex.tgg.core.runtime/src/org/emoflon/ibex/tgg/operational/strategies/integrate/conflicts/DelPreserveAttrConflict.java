@@ -26,6 +26,7 @@ public class DelPreserveAttrConflict extends DeletePreserveConflict {
 	@Override
 	public void crs_revokeAddition() {
 		subjects.forEach(subject -> subject.getAttributeChanges().forEach(ac -> ModelChangeUtil.revertAttributeChange(ac)));
+		resolved = true;
 	}
 
 }

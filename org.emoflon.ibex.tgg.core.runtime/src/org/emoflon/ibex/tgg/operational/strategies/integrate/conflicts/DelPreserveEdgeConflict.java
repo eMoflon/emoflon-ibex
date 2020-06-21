@@ -34,6 +34,7 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 				}
 			});
 		});
+		resolved = true;
 	}
 
 }

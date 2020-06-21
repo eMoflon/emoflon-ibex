@@ -59,6 +59,7 @@ public abstract class DeletePreserveConflict extends Conflict
 				});
 			}
 		});
+		resolved = true;
 	}
 
 	private Set<ITGGMatch> restored;
@@ -73,6 +74,7 @@ public abstract class DeletePreserveConflict extends Conflict
 				restoreMatchesBasedOn(match);
 			}
 		});
+		resolved = true;
 	}
 
 	protected void restoreMatchesBasedOn(ITGGMatch match) {
@@ -100,6 +102,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		default:
 			break;
 		}
+		resolved = true;
 	}
 
 	@Override
@@ -113,6 +116,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		default:
 			break;
 		}
+		resolved = true;
 	}
 
 }
