@@ -12,6 +12,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Attribute
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveAttrConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveEdgeConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsDelConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
@@ -42,6 +43,7 @@ public class ConflictDetector {
 			if (container != null)
 				conflicts.add(container);
 		}
+		
 		return conflicts;
 	}
 
@@ -177,7 +179,7 @@ public class ConflictDetector {
 
 	private void detectInconsistentDelConflict(ConflictContainer container, BrokenMatch brokenMatch) {
 //		if (DeletionType.getInconsDelCandidates().contains(brokenMatch.getDeletionType()))
-//			new PartlyDelConflict(container);
+//			new InconsDelConflict(container);
 	}
 
 }

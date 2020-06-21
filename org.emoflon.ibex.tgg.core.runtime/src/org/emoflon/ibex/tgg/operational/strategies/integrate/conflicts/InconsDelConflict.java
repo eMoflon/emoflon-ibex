@@ -13,9 +13,9 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 import delta.DeltaContainer;
 import language.DomainType;
 
-public class PartlyDelConflict extends Conflict implements CRS_ActAndLetRepair, CRS_PreferSource, CRS_PreferTarget {
+public class InconsDelConflict extends Conflict implements CRS_ActAndLetRepair, CRS_PreferSource, CRS_PreferTarget {
 
-	public PartlyDelConflict(ConflictContainer container) {
+	public InconsDelConflict(ConflictContainer container) {
 		super(container);
 	}
 

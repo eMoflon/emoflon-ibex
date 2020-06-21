@@ -163,20 +163,27 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		matchDistributor.updateMatches();
 		getIntegrMatchContainer().update();
 
-		conflicts = conflictDetector.detectConflicts();
-
-		match2conflicts = conflicts.stream() //
-				.flatMap(cc -> {
-					Set<ConflictContainer> set = cfactory.createObjectSet();
-					collectSubContainer(set, cc);
-					return set.stream();
-				}) //
+		match2conflicts = conflictDetector.detectConflicts().stream() //
 				.collect(Collectors.toMap(cc -> cc.getBrokenMatch().getMatch(), cc -> cc));
+		buildContainerHierarchy();
 	}
 
-	private void collectSubContainer(Set<ConflictContainer> containerSet, ConflictContainer container) {
-		containerSet.add(container);
-		container.getSubContainers().forEach(subC -> collectSubContainer(containerSet, subC));
+	private void buildContainerHierarchy() {
+		IntegrateMatchContainer mContainer = getIntegrMatchContainer();
+		Set<ConflictContainer> conflicts = new HashSet<>(match2conflicts.values());
+		for (ITGGMatch match : match2conflicts.keySet()) {
+			mContainer.forAllRequiredBy(mContainer.getNode(match), n -> {
+				ITGGMatch m = mContainer.getMatch(n);
+				if(match2conflicts.containsKey(m)) {
+					ConflictContainer cc = match2conflicts.get(m);
+					match2conflicts.get(match).getSubContainers().add(cc);
+					conflicts.remove(cc);
+					return false;
+				}
+				return true;
+			});
+		}
+		this.conflicts = conflicts;
 	}
 
 	protected void translateConflictFreeElements() {
