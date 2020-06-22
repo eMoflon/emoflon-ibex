@@ -19,7 +19,7 @@ public enum PatternType {
 		types.add(PatternType.FWD);
 		types.add(PatternType.BWD);
 		types.add(PatternType.CONSISTENCY);
-		types.add(PatternType.CC);
+//		types.add(PatternType.CC);
 		types.add(PatternType.FILTER_NAC);
 		return types;
 	}
