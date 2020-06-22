@@ -130,40 +130,36 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 
 	private void updateNode(ITGGMatch match) {
 		PrecedenceNode node = matchToNode.get(match);
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 
-		Set<Object> requiringElts = new HashSet<>();
-		gFactory.getBlackSrcNodesInRule().forEach(n -> requiringElts.add(match.get(n.getName())));
-		gFactory.getBlackTrgNodesInRule().forEach(n -> requiringElts.add(match.get(n.getName())));
-		gFactory.getBlackSrcEdgesInRule().forEach(e -> requiringElts.add(getRuntimeEdge(match, e)));
-		gFactory.getBlackTrgEdgesInRule().forEach(e -> requiringElts.add(getRuntimeEdge(match, e)));
-
-		for (Object elt : requiringElts) {
-			// that looks VERY expensive. why do we have to go over ALL rule applications? there is a requiredBy map which is exactly for this purpose to also navigate back!
-			// TODO lfritsche, amoeller
-			raToTranslated.forEach((ra, objs) -> {
-				if (objs.contains(elt)) {
-					PrecedenceNode requiringNode = matchToNode.get(raToMatch.get(ra));
-					if (requiringNode != null)
-						node.getRequires().add(requiringNode);
-				}
-			});
-		}
-
-		Collection<Object> requiredObjs = requires.get(match);
-		if (requiredObjs != null && !requiredObjs.isEmpty()) {
-			for (Object reqObj : requiredObjs) {
-				Collection<ITGGMatch> requiredMatches = translatedBy.get(reqObj);
-				if (requiredMatches != null && !requiredMatches.isEmpty()) {
-					for (ITGGMatch reqMatch : requiredMatches) {
-						PrecedenceNode nodeReq = matchToNode.get(reqMatch);
-						if (nodeReq != null) {
-							node.getRequires().add(nodeReq);
-						}
-					}
-				}
+		Collection<Object> required = requires.get(match);
+		if(required != null)
+			for (Object elt : required) {
+				// that looks VERY expensive. why do we have to go over ALL rule applications? there is a requiredBy map which is exactly for this purpose to also navigate back!
+				// TODO lfritsche, amoeller
+				Collection<ITGGMatch> translatingMatches = translatedBy.get(elt); 
+				if(translatingMatches == null)
+					continue;
+				
+				translatingMatches.forEach(m -> {
+						PrecedenceNode requiredNode = matchToNode.get(m);
+						if (requiredNode != null)
+							node.getRequires().add(requiredNode);
+				});
 			}
-		}
+
+		Collection<Object> translated = translates.get(match);
+		if(translated != null)
+			for(Object elt : translates.get(match)) {
+				Collection<ITGGMatch> requiringMatches = requiredBy.get(elt);
+				if(requiringMatches.isEmpty())
+					continue;
+				
+				requiringMatches.forEach(m -> {
+					PrecedenceNode requiringNode = matchToNode.get(m);
+					if (requiringNode != null)
+						requiringNode.getRequires().add(node);
+				});
+			}
 	}
 
 	private void createNode(ITGGMatch match) {
