@@ -94,14 +94,13 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				resourceHandler.getSourceResource(), resourceHandler.getTargetResource(), //
 				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
 		conflictDetector = new ConflictDetector(this);
-		consistencyChecker = new LocalCC(options) {
-			@Override
-			protected void processValidMatch(ITGGMatch match) {
-				removeBrokenMatchesAfterCCMatchApplication(match);
-			}
-		};
+//		consistencyChecker = new LocalCC(options) {
+//			@Override
+//			protected void processValidMatch(ITGGMatch match) {
+//				removeBrokenMatchesAfterCCMatchApplication(match);
+//			}
+//		};
 		options.executable(this);
-
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
@@ -462,7 +461,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		case FWD:
 		case BWD:
 		case CONSISTENCY:
-		case CC:
+//		case CC:
 		case FILTER_NAC:
 			return true;
 		default:
