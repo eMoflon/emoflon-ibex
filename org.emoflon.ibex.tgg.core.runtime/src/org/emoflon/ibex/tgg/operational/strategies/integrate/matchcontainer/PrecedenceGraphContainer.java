@@ -35,24 +35,66 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 	//// Precedence Graph ////
 
 	protected Resource precedenceGraph;
-	protected PrecedenceNodeContainer nodes;
-	protected Map<ITGGMatch, PrecedenceNode> matchToNode = cfactory.createObjectToObjectHashMap();
-	protected Map<PrecedenceNode, ITGGMatch> nodeToMatch = cfactory.createObjectToObjectHashMap();
+	protected PrecedenceNodeContainer container;
+	protected Map<ITGGMatch, PrecedenceNode> match2node = cfactory.createObjectToObjectHashMap();
+	protected Map<PrecedenceNode, ITGGMatch> node2match = cfactory.createObjectToObjectHashMap();
 	protected Set<PrecedenceNode> brokenNodes = cfactory.createObjectSet();
 
 	public PrecedenceGraphContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
 		this.precedenceGraph = strategy.getOptions().resourceHandler().getPrecedenceResource();
-		nodes = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
-		precedenceGraph.getContents().add(nodes);
+		container = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
+		precedenceGraph.getContents().add(container);
 	}
 
-	public void addMatch(ITGGMatch match) {
+	public void notifyAddedMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.CONSISTENCY)
 			addConsistencyMatch(match);
 	}
 
-	protected void addConsistencyMatch(ITGGMatch match) {
+	public void notifyRemovedMatch(ITGGMatch match) {
+		if (match.getType() == PatternType.CONSISTENCY)
+			handleBrokenConsistencyMatch(match);
+	}
+
+	public void clearBrokenMatches() {
+		brokenNodes.forEach(node -> removeConsistencyMatch(getMatch(node), node));
+		brokenNodes.clear();
+	}
+
+	public void removeMatch(ITGGMatch match) {
+		PrecedenceNode node = getNode(match);
+		removeConsistencyMatch(match, node);
+		brokenNodes.remove(node);
+	}
+
+	public ITGGMatch getMatch(PrecedenceNode node) {
+		ITGGMatch match = node2match.get(node);
+		if (match == null)
+			throw new RuntimeException("No consistency match found for precedence node!");
+		return match;
+	}
+
+	public PrecedenceNode getNode(ITGGMatch match) {
+		PrecedenceNode node = match2node.get(match);
+		if (node == null)
+			throw new RuntimeException("No precedence node found for consistency match!");
+		return node;
+	}
+
+	public PrecedenceNodeContainer getGraph() {
+		return container;
+	}
+
+	private void addConsistencyMatch(ITGGMatch match) {
+		PrecedenceNode node = match2node.get(match);
+		if (node != null && node.isBroken()) {
+			node.setBroken(false);
+			brokenNodes.remove(node);
+			updateImplicitBrokenNodes(node);
+			return;
+		}
+
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 
 		Collection<Object> requiredElts = cfactory.createObjectSet();
@@ -68,7 +110,7 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 		gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
 
 		// Create node
-		PrecedenceNode node = createNode(match);
+		node = createNode(match);
 
 		// Register elements
 		for (Object elt : requiredElts) {
@@ -101,19 +143,9 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 		}
 	}
 
-	public void notifyRemoveMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.CONSISTENCY)
-			handleBrokenConsistencyMatch(match);
-	}
-
-	private void removeMatch(ITGGMatch match) {
-		PrecedenceNode node = matchToNode.get(match);
-		if (node == null)
-			throw new RuntimeException("No PrecedenceNode found for consistency match!");
-
+	private void removeConsistencyMatch(ITGGMatch match, PrecedenceNode node) {
 		updateImplicitBrokenNodes(node);
 		deleteNode(match, node);
-//		brokenNodes.remove(node);
 
 		Collection<Object> dependentElts = requires.remove(node);
 		if (dependentElts != null) {
@@ -134,45 +166,26 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 		}
 	}
 
-	public void clearBrokenMatches() {
-		
-	}
-
-	public ITGGMatch getMatch(PrecedenceNode node) {
-		return nodeToMatch.get(node);
-	}
-
-	public PrecedenceNode getNode(ITGGMatch match) {
-		return matchToNode.get(match);
-	}
-
-	public PrecedenceNodeContainer getGraph() {
-		return nodes;
-	}
-
 	private PrecedenceNode createNode(ITGGMatch match) {
 		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createPrecedenceNode();
 		node.setBroken(false);
-		nodes.getNodes().add(node);
+		container.getNodes().add(node);
 		node.setMatchAsString(match.getPatternName() + "(" + match.hashCode() + ")");
 
-		matchToNode.put(match, node);
-		nodeToMatch.put(node, match);
+		match2node.put(match, node);
+		node2match.put(node, match);
 
 		return node;
 	}
 
 	private void deleteNode(ITGGMatch match, PrecedenceNode node) {
 		EcoreUtil.delete(node, true);
-		matchToNode.remove(match);
-		nodeToMatch.remove(node);
+		match2node.remove(match);
+		node2match.remove(node);
 	}
 
 	private void handleBrokenConsistencyMatch(ITGGMatch match) {
-		PrecedenceNode node = matchToNode.get(match);
-		if (node == null)
-			throw new RuntimeException("No PrecedenceNode found for consistency match!");
-
+		PrecedenceNode node = getNode(match);
 		node.setBroken(true);
 		brokenNodes.add(node);
 		updateImplicitBrokenNodes(node);

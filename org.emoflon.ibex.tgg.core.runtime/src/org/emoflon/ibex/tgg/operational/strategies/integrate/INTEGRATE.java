@@ -29,6 +29,7 @@ import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
+import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
@@ -37,7 +38,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Brok
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.ConflictDetector;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraphContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
@@ -48,7 +49,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
-import org.emoflon.ibex.tgg.operational.strategies.opt.LocalCC;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 import com.google.common.collect.Sets;
@@ -66,6 +66,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected ModelChangeProtocol modelChangeProtocol;
 	protected ConflictDetector conflictDetector;
 	protected CC consistencyChecker;
+	protected PrecedenceGraphContainer precedenceGraph;
 
 	//// DATA ////
 	protected DeltaContainer userDeltaContainer;
@@ -101,6 +102,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 //			}
 //		};
 		options.executable(this);
+		this.precedenceGraph = new PrecedenceGraphContainer(this);
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
@@ -127,7 +129,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void initialize() {
 		initializeRepairStrategy(options);
 		matchDistributor.updateMatches();
-		getIntegrMatchContainer().update();
 		modelChangeProtocol.attachAdapter();
 		userDeltaKey = new ChangeKey();
 		generalDeltaKey = new ChangeKey();
@@ -145,14 +146,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void classifyBrokenMatches() {
-		IntegrateMatchContainer matchContainer = getIntegrMatchContainer();
-
 		matchDistributor.updateMatches();
-		matchContainer.update();
 		classifiedBrokenMatches.clear();
-		for (PrecedenceNode node : matchContainer.getGraph().getNodes()) {
+		for (PrecedenceNode node : precedenceGraph.getGraph().getNodes()) {
 			if (node.isBroken() || !node.getRollbackCauses().isEmpty()) {
-				ITGGMatch match = matchContainer.getMatch(node);
+				ITGGMatch match = precedenceGraph.getMatch(node);
 				classifiedBrokenMatches.put(match, new BrokenMatch(this, match, node.isBroken()));
 			}
 		}
@@ -160,7 +158,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	protected void detectConflicts() {
 		matchDistributor.updateMatches();
-		getIntegrMatchContainer().update();
 
 		match2conflicts = conflictDetector.detectConflicts().stream() //
 				.collect(Collectors.toMap(cc -> cc.getBrokenMatch().getMatch(), cc -> cc));
@@ -168,11 +165,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void buildContainerHierarchy() {
-		IntegrateMatchContainer mContainer = getIntegrMatchContainer();
+		PrecedenceGraphContainer matchContainer = getPrecedenceGraphContainer();
 		Set<ConflictContainer> conflicts = new HashSet<>(match2conflicts.values());
 		for (ITGGMatch match : match2conflicts.keySet()) {
-			mContainer.forAllRequiredBy(mContainer.getNode(match), n -> {
-				ITGGMatch m = mContainer.getMatch(n);
+			matchContainer.forAllRequiredBy(matchContainer.getNode(match), n -> {
+				ITGGMatch m = matchContainer.getMatch(n);
 				if(match2conflicts.containsKey(m)) {
 					ConflictContainer cc = match2conflicts.get(m);
 					match2conflicts.get(match).getSubContainers().add(cc);
@@ -186,9 +183,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void translateConflictFreeElements() {
-		setUpdatePolicy(new ConflictFreeElementsUpdatePolicy(this));
+//		setUpdatePolicy(new ConflictFreeElementsUpdatePolicy(this));
 		translate();
-		setUpdatePolicy(new NextMatchUpdatePolicy());
+//		setUpdatePolicy(new NextMatchUpdatePolicy());
 	}
 
 	protected void resolveBrokenMatches() {
@@ -288,7 +285,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	protected IMatchContainer createMatchContainer() {
-		return new IntegrateMatchContainer(this);
+		return new PrecedenceMatchContainer(this);
 	}
 
 	@Override
@@ -321,14 +318,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	@Override
 	protected ITGGMatch chooseOneMatch() {
 		return this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
-	}
-
-	@Override
-	protected void addOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.FILTER_NAC)
-			filterNacMatches.add((ITGGMatch) match);
-		else
-			super.addOperationalRuleMatch(match);
 	}
 
 	@Override
@@ -371,7 +360,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					repairedSth = true;
 
 					brokenRuleApplications.remove(getRuleApplicationNode(repairCandidate));
-					getIntegrMatchContainer().removeBrokenMatch(repairCandidate);
+					precedenceGraph.removeMatch(repairCandidate);
 					brokenRuleApplications.put(getRuleApplicationNode(repairedMatch), repairedMatch);
 					alreadyProcessed.add(repairedMatch);
 				}
@@ -475,23 +464,31 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	@Override
+	protected void addOperationalRuleMatch(ITGGMatch match) {
+		if (match.getType() == PatternType.FILTER_NAC)
+			filterNacMatches.add((ITGGMatch) match);
+		else {
+			precedenceGraph.notifyAddedMatch(match);
+			super.addOperationalRuleMatch(match);
+		}
+	}
+
+	@Override
 	public boolean removeOperationalRuleMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.FILTER_NAC)
 			return filterNacMatches.remove(match);
-		else
+		else {
+			precedenceGraph.notifyRemovedMatch(match);
 			return super.removeOperationalRuleMatch(match);
+		}
 	}
 
 	public TGGMatchUtil getMatchUtil() {
 		return matchUtil;
 	}
 
-	public IntegrateMatchContainer getIntegrMatchContainer() {
-		try {
-			return (IntegrateMatchContainer) operationalMatchContainer;
-		} catch (Exception e) {
-			throw new RuntimeException("ExtPrecedenceGraph implementation is needed", e);
-		}
+	public PrecedenceGraphContainer getPrecedenceGraphContainer() {
+		return precedenceGraph;
 	}
 
 	public ModelChangeProtocol getModelChangeProtocol() {
@@ -509,8 +506,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	public void removeBrokenMatch(ITGGMatch brokenMatch) {
 		TGGRuleApplication ra = getRuleApplicationNode(brokenMatch);
 		brokenRuleApplications.remove(ra);
-		EcoreUtil.delete(ra, true);
-		getIntegrMatchContainer().removeBrokenMatch(brokenMatch);
+		EcoreUtil.delete(ra, false);
+		precedenceGraph.removeMatch(brokenMatch);
 
 	}
 

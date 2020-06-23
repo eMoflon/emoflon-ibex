@@ -15,7 +15,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreser
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsDelConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraphContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
@@ -65,7 +65,7 @@ public class ConflictDetector {
 
 	private void detectDeletePreserveConflict(ConflictContainer container, BrokenMatch brokenMatch,
 			DomainType domainToBePreserved) {
-		IntegrateMatchContainer matchContainer = integrate.getIntegrMatchContainer();
+		PrecedenceGraphContainer matchContainer = integrate.getPrecedenceGraphContainer();
 
 		EltFilter filter = new EltFilter().create().notDeleted();
 		if (domainToBePreserved == DomainType.SRC)

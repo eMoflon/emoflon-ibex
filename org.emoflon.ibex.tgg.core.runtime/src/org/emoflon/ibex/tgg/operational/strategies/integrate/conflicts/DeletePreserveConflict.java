@@ -12,7 +12,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeAddition;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeDeletion;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraphContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
@@ -34,7 +34,7 @@ public abstract class DeletePreserveConflict extends Conflict
 	}
 
 	private List<ITGGMatch> getAndSortCausingMatches() {
-		IntegrateMatchContainer matchContainer = integrate().getIntegrMatchContainer();
+		PrecedenceGraphContainer matchContainer = integrate().getPrecedenceGraphContainer();
 		PrecedenceNode node = matchContainer.getNode(getBrokenMatch().getMatch());
 
 		return new LinkedList<>(node.getRollbackCauses()).stream() //
@@ -78,7 +78,7 @@ public abstract class DeletePreserveConflict extends Conflict
 	}
 
 	protected void restoreMatchesBasedOn(ITGGMatch match) {
-		IntegrateMatchContainer matchContainer = integrate().getIntegrMatchContainer();
+		PrecedenceGraphContainer matchContainer = integrate().getPrecedenceGraphContainer();
 		matchContainer.getNode(match).getRequiredBy().forEach(n -> {
 			if (n.isBroken()) {
 				ITGGMatch m = matchContainer.getMatch(n);
