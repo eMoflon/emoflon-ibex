@@ -146,10 +146,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void classifyBrokenMatches() {
 		matchDistributor.updateMatches();
 		classifiedBrokenMatches.clear();
-		for (PrecedenceNode node : precedenceGraph.getGraph().getNodes()) {
+		for (PrecedenceNode node : precedenceGraph.getNodes()) {
 			if (node.isBroken() || !node.getRollbackCauses().isEmpty()) {
 				ITGGMatch match = precedenceGraph.getMatch(node);
-				classifiedBrokenMatches.put(match, new BrokenMatch(this, match, node.isBroken()));
+				classifiedBrokenMatches.put(match, new BrokenMatch(this, match, !node.isBroken()));
 			}
 		}
 	}

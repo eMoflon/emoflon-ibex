@@ -39,6 +39,7 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 	protected Map<ITGGMatch, PrecedenceNode> match2node = cfactory.createObjectToObjectHashMap();
 	protected Map<PrecedenceNode, ITGGMatch> node2match = cfactory.createObjectToObjectHashMap();
 	protected Set<PrecedenceNode> brokenNodes = cfactory.createObjectSet();
+	protected Set<PrecedenceNode> implicitBrokenNodes = cfactory.createObjectSet();
 
 	public PrecedenceGraphContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
@@ -82,8 +83,16 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 		return node;
 	}
 
-	public PrecedenceNodeContainer getGraph() {
-		return container;
+	public Collection<PrecedenceNode> getNodes() {
+		return container.getNodes();
+	}
+	
+	public Collection<PrecedenceNode> getBrokenNodes() {
+		return brokenNodes;
+	}
+	
+	public Collection<PrecedenceNode> getImplicitBrokenNodes() {
+		return implicitBrokenNodes;
 	}
 
 	private void addConsistencyMatch(ITGGMatch match) {
@@ -196,12 +205,15 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 			node.getRollbackCauses().add(node);
 			forAllRequiredBy(node, n -> {
 				n.getRollbackCauses().add(node);
+				implicitBrokenNodes.add(n);
 				return true;
 			});
 		} else {
 			node.getRollbackCauses().remove(node);
 			forAllRequiredBy(node, n -> {
 				n.getRollbackCauses().remove(node);
+				if(n.getRollbackCauses().isEmpty())
+					implicitBrokenNodes.remove(n);
 				return true;
 			});
 		}
