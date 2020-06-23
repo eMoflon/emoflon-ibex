@@ -76,6 +76,9 @@ public class BrokenMatch {
 	}
 
 	public void rollbackBrokenMatch() {
+		if(implicitBroken)
+			return;
+		
 		integrate.deleteGreenCorrs(match);
 
 		Set<EObject> nodesToBeDeleted = new HashSet<>();
