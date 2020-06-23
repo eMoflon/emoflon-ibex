@@ -44,12 +44,10 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.ConflictFreeElementsUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
-import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
 
 import com.google.common.collect.Sets;
 
@@ -158,7 +156,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	protected void detectConflicts() {
 		matchDistributor.updateMatches();
-
 		match2conflicts = conflictDetector.detectConflicts().stream() //
 				.collect(Collectors.toMap(cc -> cc.getBrokenMatch().getMatch(), cc -> cc));
 		buildContainerHierarchy();
@@ -170,7 +167,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		for (ITGGMatch match : match2conflicts.keySet()) {
 			matchContainer.forAllRequiredBy(matchContainer.getNode(match), n -> {
 				ITGGMatch m = matchContainer.getMatch(n);
-				if(match2conflicts.containsKey(m)) {
+				if (match2conflicts.containsKey(m)) {
 					ConflictContainer cc = match2conflicts.get(m);
 					match2conflicts.get(match).getSubContainers().add(cc);
 					conflicts.remove(cc);
@@ -190,6 +187,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	protected void resolveBrokenMatches() {
 		classifiedBrokenMatches.values().forEach(brokenMatch -> brokenMatch.rollbackBrokenMatch());
+		((PrecedenceMatchContainer) operationalMatchContainer).clearPendingElements();
 	}
 
 	protected ChangeKey revokeBrokenCorrsAndRuleApplNodes() {
@@ -405,7 +403,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				PatternType type = srcChange ? PatternType.FWD : PatternType.BWD;
 				List<TGGAttributeConstraint> constraints = new LinkedList<>();
 				constraints.add(attrCh.constraint);
-				ITGGMatch repairedMatch = getAttributeRepairStrategy().repair(constraints, brokenMatch.getMatch(), type);
+				ITGGMatch repairedMatch = getAttributeRepairStrategy().repair(constraints, brokenMatch.getMatch(),
+						type);
 				if (repairedMatch != null)
 					repairedSth = true;
 			}
@@ -508,7 +507,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		brokenRuleApplications.remove(ra);
 		EcoreUtil.delete(ra, false);
 		precedenceGraph.removeMatch(brokenMatch);
-
 	}
 
 	public Set<ITGGMatch> getFilterNacMatches() {
