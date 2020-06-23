@@ -143,14 +143,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		match2conflicts = new HashMap<>();
 	}
 
-	protected void classifyBrokenMatches() {
+	protected void classifyBrokenMatches(boolean includeImplicitBroken) {
 		matchDistributor.updateMatches();
 		classifiedBrokenMatches.clear();
-		for (PrecedenceNode node : precedenceGraph.getNodes()) {
-			if (node.isBroken() || !node.getRollbackCauses().isEmpty()) {
+
+		Collection<PrecedenceNode> brokenNodes = new HashSet<>(precedenceGraph.getBrokenNodes());
+		if (includeImplicitBroken)
+			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes());
+		for (PrecedenceNode node : brokenNodes) {
 				ITGGMatch match = precedenceGraph.getMatch(node);
 				classifiedBrokenMatches.put(match, new BrokenMatch(this, match, !node.isBroken()));
-			}
 		}
 	}
 
@@ -369,7 +371,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			}
 			alreadyProcessed.addAll(brokenRuleApplications.values());
 			matchDistributor.updateMatches();
-			classifyBrokenMatches();
+			classifyBrokenMatches(true);
 			brokenRuleApplications.values().stream() //
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);

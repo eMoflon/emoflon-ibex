@@ -113,6 +113,9 @@ public class BrokenMatch {
 
 	private String print() {
 		StringBuilder b = new StringBuilder();
+		b.append("IsImplicitBroken [ ");
+		b.append(implicitBroken);
+		b.append(" ]\n");
 		b.append("DeletionType [ ");
 		b.append(deletionType);
 		b.append(" ]\n");

@@ -86,11 +86,11 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 	public Collection<PrecedenceNode> getNodes() {
 		return container.getNodes();
 	}
-	
+
 	public Collection<PrecedenceNode> getBrokenNodes() {
 		return brokenNodes;
 	}
-	
+
 	public Collection<PrecedenceNode> getImplicitBrokenNodes() {
 		return implicitBrokenNodes;
 	}
@@ -153,6 +153,7 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 	}
 
 	private void removeConsistencyMatch(ITGGMatch match, PrecedenceNode node) {
+		node.setBroken(false);
 		updateImplicitBrokenNodes(node);
 		deleteNode(match, node);
 
@@ -197,6 +198,7 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 		PrecedenceNode node = getNode(match);
 		node.setBroken(true);
 		brokenNodes.add(node);
+		implicitBrokenNodes.remove(node);
 		updateImplicitBrokenNodes(node);
 	}
 
@@ -205,14 +207,15 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 			node.getRollbackCauses().add(node);
 			forAllRequiredBy(node, n -> {
 				n.getRollbackCauses().add(node);
-				implicitBrokenNodes.add(n);
+				if (!n.isBroken())
+					implicitBrokenNodes.add(n);
 				return true;
 			});
 		} else {
 			node.getRollbackCauses().remove(node);
 			forAllRequiredBy(node, n -> {
 				n.getRollbackCauses().remove(node);
-				if(n.getRollbackCauses().isEmpty())
+				if (n.getRollbackCauses().isEmpty())
 					implicitBrokenNodes.remove(n);
 				return true;
 			});
