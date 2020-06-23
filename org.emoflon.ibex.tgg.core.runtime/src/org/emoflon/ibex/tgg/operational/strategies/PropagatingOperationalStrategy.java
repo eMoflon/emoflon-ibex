@@ -16,6 +16,7 @@ import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
+import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
@@ -79,7 +80,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	}
 
 	protected boolean repairBrokenMatches() {
-		long tic = System.nanoTime();
+		Timer.start();
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
 		BrokenMatchContainer dependencyContainer = new BrokenMatchContainer(this);
@@ -118,12 +119,12 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);
 		}
-		repairTime += System.nanoTime() - tic;
+		repairTime += Timer.stop();
 		return !alreadyProcessed.isEmpty();
 	}
 
 	protected void translate() {
-		long tic = System.nanoTime();
+		Timer.start();
 		if (options.propagate.applyConcurrently()) {
 			matchDistributor.updateMatches();
 
@@ -141,23 +142,23 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			} while (processOneOperationalRuleMatch());
 		}
 
-		translateTime += System.nanoTime() - tic;
+		translateTime += Timer.stop();
 	}
 
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
-		long tic = System.nanoTime();
+		Timer.start();
 		boolean b = super.processOneOperationalRuleMatch();
-		matchApplicationTime += System.nanoTime() - tic;
+		matchApplicationTime += Timer.stop();
 		return b;
 	}
 
 	protected void rollBack() {
-		long tic = System.nanoTime();
+		Timer.start();
 		do
 			matchDistributor.updateMatches();
 		while (revokeBrokenMatches());
-		removeTime += System.nanoTime() - tic;
+		removeTime += Timer.stop();
 	}
 
 	protected boolean revokeBrokenMatches() {

@@ -23,6 +23,7 @@ import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
@@ -290,7 +291,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
-		long tic = System.nanoTime();
+		Timer.start();
 
 		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty())
@@ -311,7 +312,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: ");
 		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "" + match);
 
-		matchApplicationTime += System.nanoTime() - tic;
+		matchApplicationTime += Timer.stop();
 		return true;
 	}
 
@@ -331,7 +332,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	protected boolean repairBrokenMatches() {
-		long tic = System.nanoTime();
+		Timer.start();
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
 		BrokenMatchContainer dependencyContainer = new BrokenMatchContainer(this);
@@ -377,7 +378,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					.forEach(dependencyContainer::addMatch);
 		}
 
-		repairTime += System.nanoTime() - tic;
+		repairTime += Timer.stop();
 		return !alreadyProcessed.isEmpty();
 	}
 

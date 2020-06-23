@@ -17,6 +17,7 @@ import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
@@ -61,9 +62,9 @@ public class MatchDistributor implements IMatchObserver {
 	}
 	
 	public void updateMatches() {
-		long tic = System.nanoTime();
+		Timer.start();
 		blackInterpreter.updateMatches();
-		time = getTime() + System.nanoTime() - tic;
+		time = getTime() + Timer.stop();
 	}
 	
 	@Override

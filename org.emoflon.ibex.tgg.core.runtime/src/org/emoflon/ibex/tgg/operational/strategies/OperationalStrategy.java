@@ -15,8 +15,8 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
-import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.DefaultMatchContainer;
@@ -76,7 +76,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 	
 	private void initialize(IbexOptions options, IUpdatePolicy policy) {
-		BenchmarkLogger.startTimer();
+		Timer.start();
 		this.notifyStartInit();
 		
 		options.executable(this);
@@ -102,15 +102,12 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		consistencyMatches = cfactory.createObjectToObjectHashMap();
 		
-		options.debug.benchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
-		
 		this.operationalMatchContainer = createMatchContainer();
 		domainsHaveNoSharedTypes = getTGG().getSrc().stream().noneMatch(getTGG().getTrg()::contains);
 		
 		
 		this.notifyDoneInit();
-		
-		options.debug.benchmarkLogger().addToInitTime(BenchmarkLogger.stopTimer());
+		options.debug.benchmarkLogger().addToInitTime(Timer.stop());
 	}
 
 	/***** Resource management *****/
@@ -199,10 +196,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
-		long tic = System.nanoTime();
+		Timer.start();
 		ITGGMatch match = chooseOneMatch();
 		String ruleName = match.getRuleName();
-		chooseMatchTime += System.nanoTime() - tic;
+		chooseMatchTime += Timer.stop();
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
@@ -227,7 +224,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected Optional<ITGGMatch> processOperationalRuleMatch(String ruleName, ITGGMatch match) {
 		//generatedPatternsSizeObserver.setNodes(match);
-		long tic = System.nanoTime();
+		Timer.start();
 
 		if (getBlockedMatches().containsKey(match)) { 
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Application blocked by update policy.");
@@ -238,7 +235,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		IGreenPattern greenPattern = factory.create(match.getType());
 
 		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
-		initMatchApplicationTime += System.nanoTime() - tic;
+		initMatchApplicationTime += Timer.stop();
 
 		Optional<ITGGMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 		
@@ -247,9 +244,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
 			
-			long l_tic = System.nanoTime();
+			Timer.start();
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
-			finishRuleApplicationTime += System.nanoTime() - l_tic;
+			finishRuleApplicationTime += Timer.stop();
 		});
 
 		return comatch;
