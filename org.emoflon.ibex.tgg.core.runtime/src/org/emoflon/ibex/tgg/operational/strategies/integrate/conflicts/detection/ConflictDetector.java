@@ -178,8 +178,8 @@ public class ConflictDetector {
 	}
 
 	private void detectInconsistentDelConflict(ConflictContainer container, BrokenMatch brokenMatch) {
-//		if (DeletionType.getInconsDelCandidates().contains(brokenMatch.getDeletionType()))
-//			new InconsDelConflict(container);
+		if (DeletionType.getInconsDelCandidates().contains(brokenMatch.getDeletionType()))
+			new InconsDelConflict(container);
 	}
 
 }
