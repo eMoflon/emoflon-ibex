@@ -40,7 +40,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Brok
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.ConflictDetector;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraphContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
@@ -56,7 +57,6 @@ import com.google.common.collect.Sets;
 import delta.DeltaContainer;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
-import precedencegraph.PrecedenceNode;
 import runtime.TGGRuleApplication;
 
 public class INTEGRATE extends PropagatingOperationalStrategy {
@@ -66,7 +66,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected ModelChangeProtocol modelChangeProtocol;
 	protected ConflictDetector conflictDetector;
 	protected CC consistencyChecker;
-	protected PrecedenceGraphContainer precedenceGraph;
+	protected PrecedenceGraph precedenceGraph;
 
 	//// DATA ////
 	protected DeltaContainer userDeltaContainer;
@@ -102,7 +102,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 //			}
 //		};
 		options.executable(this);
-		this.precedenceGraph = new PrecedenceGraphContainer(this);
+		this.precedenceGraph = new PrecedenceGraph(this);
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
@@ -127,7 +127,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void initialize() {
-		precedenceGraph.initialize();
 		initializeRepairStrategy(options);
 		matchDistributor.updateMatches();
 		modelChangeProtocol.attachAdapter();
@@ -154,7 +153,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		if (includeImplicitBroken)
 			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes());
 		for (PrecedenceNode node : brokenNodes) {
-			ITGGMatch match = precedenceGraph.getMatch(node);
+			ITGGMatch match = node.getMatch();
 			classifiedBrokenMatches.put(match, new BrokenMatch(this, match, !node.isBroken()));
 		}
 	}
@@ -167,11 +166,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void buildContainerHierarchy() {
-		PrecedenceGraphContainer matchContainer = getPrecedenceGraphContainer();
 		Set<ConflictContainer> conflicts = new HashSet<>(match2conflicts.values());
 		for (ITGGMatch match : match2conflicts.keySet()) {
-			matchContainer.forAllRequiredBy(matchContainer.getNode(match), n -> {
-				ITGGMatch m = matchContainer.getMatch(n);
+			precedenceGraph.forAllRequiredBy(precedenceGraph.getNode(match), n -> {
+				ITGGMatch m = n.getMatch();
 				if (match2conflicts.containsKey(m)) {
 					ConflictContainer cc = match2conflicts.get(m);
 					match2conflicts.get(match).getSubContainers().add(cc);
@@ -491,7 +489,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return matchUtil;
 	}
 
-	public PrecedenceGraphContainer getPrecedenceGraphContainer() {
+	public PrecedenceGraph getPrecedenceGraph() {
 		return precedenceGraph;
 	}
 
@@ -514,7 +512,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		for (EReference ref : ra.eClass().getEReferences()) {
 			ra.eSet(ref, null);
 		}
-		
+
 		precedenceGraph.removeMatch(brokenMatch);
 	}
 
