@@ -1,5 +1,6 @@
 package org.emoflon.ibex.common.emf;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -135,7 +136,15 @@ public class EMFManipulationUtils {
 			if(!node.eContents().isEmpty() && recursive)
 				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction, recursive);
 		}
-		EcoreUtil.deleteAll(nodesToDelete, false);
+//		EcoreUtil.deleteAll(nodesToDelete, false);
+		for (EObject eObject : nodesToDelete) {
+			for (EReference ref : eObject.eClass().getEReferences()) {
+				if(ref.isMany())
+					((List<?>) eObject.eGet(ref)).clear();
+				else
+					eObject.eSet(ref, null);
+			}
+		}
 	}
 	
 	/**

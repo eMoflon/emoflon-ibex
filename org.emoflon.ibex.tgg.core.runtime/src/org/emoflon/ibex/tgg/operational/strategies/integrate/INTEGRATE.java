@@ -16,6 +16,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.delta.validation.DeltaValidator;
@@ -509,7 +510,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	public void removeBrokenMatch(ITGGMatch brokenMatch) {
 		TGGRuleApplication ra = getRuleApplicationNode(brokenMatch);
 		brokenRuleApplications.remove(ra);
-		EcoreUtil.delete(ra, false);
+		ra.setProtocol(null);
+		for (EReference ref : ra.eClass().getEReferences()) {
+			ra.eSet(ref, null);
+		}
+		
 		precedenceGraph.removeMatch(brokenMatch);
 	}
 

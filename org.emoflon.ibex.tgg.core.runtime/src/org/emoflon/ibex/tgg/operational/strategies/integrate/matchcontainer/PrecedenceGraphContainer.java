@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.collections.CollectionFactory;
@@ -34,7 +35,6 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 	protected Map<Object, Collection<PrecedenceNode>> translatedBy = cfactory.createObjectToObjectHashMap();
 
 	//// Precedence Graph ////
-
 	protected Resource precedenceGraph;
 	protected PrecedenceNodeContainer container;
 	protected Map<ITGGMatch, PrecedenceNode> match2node = cfactory.createObjectToObjectHashMap();
@@ -196,7 +196,10 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 	}
 
 	private void deleteNode(ITGGMatch match, PrecedenceNode node) {
-		EcoreUtil.delete(node, true);
+		node.setPrecedencenodecontainer(null);
+		node.getRequiredBy().clear();
+		node.getRequires().clear();
+		
 		match2node.remove(match);
 		node2match.remove(node);
 	}
