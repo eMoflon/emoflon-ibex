@@ -126,6 +126,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void initialize() {
+		precedenceGraph.initialize();
 		initializeRepairStrategy(options);
 		matchDistributor.updateMatches();
 		modelChangeProtocol.attachAdapter();
@@ -152,8 +153,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		if (includeImplicitBroken)
 			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes());
 		for (PrecedenceNode node : brokenNodes) {
-				ITGGMatch match = precedenceGraph.getMatch(node);
-				classifiedBrokenMatches.put(match, new BrokenMatch(this, match, !node.isBroken()));
+			ITGGMatch match = precedenceGraph.getMatch(node);
+			classifiedBrokenMatches.put(match, new BrokenMatch(this, match, !node.isBroken()));
 		}
 	}
 

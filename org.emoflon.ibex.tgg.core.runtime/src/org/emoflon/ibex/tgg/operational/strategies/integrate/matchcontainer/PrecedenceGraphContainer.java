@@ -26,6 +26,7 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 	public static final CollectionFactory cfactory = new JDKCollectionFactory();
 
 	protected final PropagatingOperationalStrategy strategy;
+	protected boolean initialized = false;
 
 	protected Map<PrecedenceNode, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
 	protected Map<Object, Collection<PrecedenceNode>> requiredBy = cfactory.createObjectToObjectHashMap();
@@ -43,9 +44,15 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 
 	public PrecedenceGraphContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
-		this.precedenceGraph = strategy.getOptions().resourceHandler().getPrecedenceResource();
-		container = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
-		precedenceGraph.getContents().add(container);
+	}
+
+	public void initialize() {
+		if (!initialized) {
+			this.precedenceGraph = strategy.getOptions().resourceHandler().getPrecedenceResource();
+			this.container = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
+			precedenceGraph.getContents().add(container);
+			initialized = true;
+		}
 	}
 
 	public void notifyAddedMatch(ITGGMatch match) {
