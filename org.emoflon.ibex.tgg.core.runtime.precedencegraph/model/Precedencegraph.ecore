@@ -4,7 +4,7 @@
     nsPrefix="precedencegraph">
   <eClassifiers xsi:type="ecore:EClass" name="PrecedenceNodeContainer">
     <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
-        eType="#//PrecedenceNode" containment="true"/>
+        eType="#//PrecedenceNode" containment="true" eOpposite="#//PrecedenceNode/precedenceNodeContainer"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="PrecedenceNode">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="broken" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
@@ -14,6 +14,10 @@
         eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/requires"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="matchAsString" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rollbackCauses" upperBound="-1"
-        eType="#//PrecedenceNode"/>
+        eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/rollesBack"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rollesBack" upperBound="-1"
+        eType="#//PrecedenceNode" eOpposite="#//PrecedenceNode/rollbackCauses"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precedenceNodeContainer"
+        eType="#//PrecedenceNodeContainer" eOpposite="#//PrecedenceNodeContainer/nodes"/>
   </eClassifiers>
 </ecore:EPackage>

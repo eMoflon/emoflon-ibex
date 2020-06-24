@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
@@ -160,8 +158,6 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 	}
 
 	private void removeConsistencyMatch(ITGGMatch match, PrecedenceNode node) {
-		node.setBroken(false);
-		updateImplicitBrokenNodes(node);
 		deleteNode(match, node);
 
 		Collection<Object> dependentElts = requires.remove(node);
@@ -196,12 +192,16 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 	}
 
 	private void deleteNode(ITGGMatch match, PrecedenceNode node) {
-		node.setPrecedencenodecontainer(null);
+		node.setPrecedenceNodeContainer(null);
 		node.getRequiredBy().clear();
 		node.getRequires().clear();
+		node.getRollesBack().clear();
+		node.getRollbackCauses().clear();
 		
 		match2node.remove(match);
 		node2match.remove(node);
+		brokenNodes.remove(node);
+		implicitBrokenNodes.remove(node);
 	}
 
 	private void handleBrokenConsistencyMatch(ITGGMatch match) {
@@ -221,15 +221,8 @@ public class PrecedenceGraphContainer extends LoggingMatchContainer {
 					implicitBrokenNodes.add(n);
 				return true;
 			});
-		} else {
-			node.getRollbackCauses().remove(node);
-			forAllRequiredBy(node, n -> {
-				n.getRollbackCauses().remove(node);
-				if (n.getRollbackCauses().isEmpty())
-					implicitBrokenNodes.remove(n);
-				return true;
-			});
-		}
+		} else
+			node.getRollesBack().clear();
 	}
 
 	public void forAllRequires(PrecedenceNode node, Predicate<? super PrecedenceNode> action) {

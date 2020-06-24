@@ -175,7 +175,7 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 	 * @generated
 	 */
 	@Override
-	public EReference getPrecedenceNode_Precedencenodecontainer() {
+	public EReference getPrecedenceNode_RollbackCauses() {
 		return (EReference) precedenceNodeEClass.getEStructuralFeatures().get(4);
 	}
 
@@ -185,7 +185,7 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 	 * @generated
 	 */
 	@Override
-	public EReference getPrecedenceNode_RollbackCauses() {
+	public EReference getPrecedenceNode_RollesBack() {
 		return (EReference) precedenceNodeEClass.getEStructuralFeatures().get(5);
 	}
 
@@ -195,7 +195,7 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 	 * @generated
 	 */
 	@Override
-	public EReference getPrecedenceNode_Rolledback() {
+	public EReference getPrecedenceNode_PrecedenceNodeContainer() {
 		return (EReference) precedenceNodeEClass.getEStructuralFeatures().get(6);
 	}
 
@@ -237,9 +237,9 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__REQUIRES);
 		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__REQUIRED_BY);
 		createEAttribute(precedenceNodeEClass, PRECEDENCE_NODE__MATCH_AS_STRING);
-		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__PRECEDENCENODECONTAINER);
 		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__ROLLBACK_CAUSES);
-		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__ROLLEDBACK);
+		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__ROLLES_BACK);
+		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER);
 	}
 
 	/**
@@ -276,7 +276,7 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 		initEClass(precedenceNodeContainerEClass, PrecedenceNodeContainer.class, "PrecedenceNodeContainer",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getPrecedenceNodeContainer_Nodes(), this.getPrecedenceNode(),
-				this.getPrecedenceNode_Precedencenodecontainer(), "nodes", null, 0, -1, PrecedenceNodeContainer.class,
+				this.getPrecedenceNode_PrecedenceNodeContainer(), "nodes", null, 0, -1, PrecedenceNodeContainer.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -294,18 +294,18 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 		initEAttribute(getPrecedenceNode_MatchAsString(), ecorePackage.getEString(), "matchAsString", null, 0, 1,
 				PrecedenceNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
-		initEReference(getPrecedenceNode_Precedencenodecontainer(), this.getPrecedenceNodeContainer(),
-				this.getPrecedenceNodeContainer_Nodes(), "precedencenodecontainer", null, 0, 1, PrecedenceNode.class,
+		initEReference(getPrecedenceNode_RollbackCauses(), this.getPrecedenceNode(),
+				this.getPrecedenceNode_RollesBack(), "rollbackCauses", null, 0, -1, PrecedenceNode.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getPrecedenceNode_RollesBack(), this.getPrecedenceNode(),
+				this.getPrecedenceNode_RollbackCauses(), "rollesBack", null, 0, -1, PrecedenceNode.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getPrecedenceNode_PrecedenceNodeContainer(), this.getPrecedenceNodeContainer(),
+				this.getPrecedenceNodeContainer_Nodes(), "precedenceNodeContainer", null, 0, 1, PrecedenceNode.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getPrecedenceNode_RollbackCauses(), this.getPrecedenceNode(),
-				this.getPrecedenceNode_Rolledback(), "rollbackCauses", null, 0, -1, PrecedenceNode.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getPrecedenceNode_Rolledback(), this.getPrecedenceNode(),
-				this.getPrecedenceNode_RollbackCauses(), "rolledback", null, 0, -1, PrecedenceNode.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

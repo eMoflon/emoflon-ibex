@@ -74,7 +74,7 @@ public class PrecedenceNodeContainerImpl extends EObjectImpl implements Preceden
 		if (nodes == null) {
 			nodes = new EObjectContainmentWithInverseEList<PrecedenceNode>(PrecedenceNode.class, this,
 					PrecedencegraphPackage.PRECEDENCE_NODE_CONTAINER__NODES,
-					PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCENODECONTAINER);
+					PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER);
 		}
 		return nodes;
 	}
