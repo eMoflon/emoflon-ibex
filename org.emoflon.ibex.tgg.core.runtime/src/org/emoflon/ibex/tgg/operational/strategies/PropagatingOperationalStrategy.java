@@ -3,14 +3,12 @@ package org.emoflon.ibex.tgg.operational.strategies;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
@@ -37,14 +35,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	// Repair
 	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
 
-	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = CollectionFactory.cfactory
-			.createObjectToObjectHashMap();
+	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = cfactory.createObjectToObjectHashMap();
 	protected IRedInterpreter redInterpreter;
-
-	protected long repairTime = 0;
-	protected long translateTime = 0;
-	protected long removeTime = 0;
-	protected long matchApplicationTime = 0;
 
 	/***** Constructors *****/
 
@@ -118,12 +110,14 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);
 		}
-		repairTime += Timer.stop();
+		
+		times.addTo("repair", Timer.stop());
 		return !alreadyProcessed.isEmpty();
 	}
 
 	protected void translate() {
 		Timer.start();
+		
 		if (options.propagate.applyConcurrently()) {
 			matchDistributor.updateMatches();
 
@@ -132,8 +126,10 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 				}
 				matchDistributor.updateMatches();
-				if (!processOneOperationalRuleMatch())
+				if (!processOneOperationalRuleMatch()) {
+					times.addTo("translate", Timer.stop());
 					return;
+				}
 			}
 		} else {
 			do {
@@ -141,23 +137,17 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			} while (processOneOperationalRuleMatch());
 		}
 
-		translateTime += Timer.stop();
-	}
-
-	@Override
-	protected boolean processOneOperationalRuleMatch() {
-		Timer.start();
-		boolean b = super.processOneOperationalRuleMatch();
-		matchApplicationTime += Timer.stop();
-		return b;
+		times.addTo("translate", Timer.stop());
 	}
 
 	protected void rollBack() {
 		Timer.start();
+		
 		do
 			matchDistributor.updateMatches();
 		while (revokeBrokenMatches());
-		removeTime += Timer.stop();
+		
+		times.addTo("revoke", Timer.stop());
 	}
 
 	protected boolean revokeBrokenMatches() {
@@ -261,18 +251,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 	@Override
 	public void terminate() throws IOException {
-		DecimalFormat df = new DecimalFormat("0.#####");
-		df.setMaximumFractionDigits(5);
-		LoggerConfig.log(LoggerConfig.log_translationTime(), 		() -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_repairTime(), 			() -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_removalTime(), 			() -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)) + " -> {");
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Init time:            " + df.format((double) initMatchApplicationTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Choose match time:    " + df.format((double) chooseMatchTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Create elements time: " + df.format((double) ((IbexGreenInterpreter) greenInterpreter).getCreationTime() / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Finalize time:        " + df.format((double) finishRuleApplicationTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "}");
-		LoggerConfig.log(LoggerConfig.log_collectMatchTime(), 		() -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
+		times.set("createElements", ((IbexGreenInterpreter) greenInterpreter).getCreationTime());
+		times.set("matchCollection", matchDistributor.getTime());
 		super.terminate();
 	}
 

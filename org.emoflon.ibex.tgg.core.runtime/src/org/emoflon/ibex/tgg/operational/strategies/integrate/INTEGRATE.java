@@ -312,7 +312,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: ");
 		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "" + match);
 
-		matchApplicationTime += Timer.stop();
+		times.addTo("ruleApplication", Timer.stop());
 		return true;
 	}
 
@@ -378,7 +378,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					.forEach(dependencyContainer::addMatch);
 		}
 
-		repairTime += Timer.stop();
+		times.addTo("repair", Timer.stop());
 		return !alreadyProcessed.isEmpty();
 	}
 
