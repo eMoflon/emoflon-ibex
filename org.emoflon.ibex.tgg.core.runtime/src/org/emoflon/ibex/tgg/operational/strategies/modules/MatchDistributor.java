@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
@@ -43,6 +44,7 @@ public class MatchDistributor implements IMatchObserver {
 	protected long time;
 	
 	private boolean initialized = false;
+	private boolean useTrashResource;
 	
 	public MatchDistributor(IbexOptions options) {
 		this.options = options;
@@ -74,6 +76,8 @@ public class MatchDistributor implements IMatchObserver {
 	
 	protected void initialiseBlackInterpreter(IbexExecutable executable) throws IOException {		
 		blackInterpreter = options.blackInterpreter();
+		useTrashResource = options.blackInterpreter().getClass().getName().contains("Democles");
+
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
 			blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
@@ -81,8 +85,16 @@ public class MatchDistributor implements IMatchObserver {
 			initExcep = Optional.of(e);
 		}
 
+		Collection<Resource> resources = new LinkedList<>();
+		resources.add(options.resourceHandler().source);
+		resources.add(options.resourceHandler().corr);
+		resources.add(options.resourceHandler().target);
+		resources.add(options.resourceHandler().protocol);
+		if(useTrashResource)
+			resources.add(options.resourceHandler().getTrashResource());
+
 		try {
-			blackInterpreter.monitor(rs);
+			blackInterpreter.monitor(resources);
 		} finally {
 			if (initExcep.isPresent())
 				throw initExcep.get();
@@ -99,7 +111,16 @@ public class MatchDistributor implements IMatchObserver {
 		this.removeBlackInterpreter();
 		this.blackInterpreter = newBlackInterpreter;
 		this.blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
-		this.blackInterpreter.monitor(rs);
+		
+		Collection<Resource> resources = new LinkedList<>();
+		resources.add(options.resourceHandler().source);
+		resources.add(options.resourceHandler().corr);
+		resources.add(options.resourceHandler().target);
+		resources.add(options.resourceHandler().protocol);
+		if(useTrashResource)
+			resources.add(options.resourceHandler().getTrashResource());
+		
+		this.blackInterpreter.monitor(resources);
 	}
 	
 	/**

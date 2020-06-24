@@ -176,7 +176,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Transform into patterns of the concrete engine.
 			patternSet = (IBeXPatternSet) resourceContent;
 			contextPatternInterpreter.initPatterns(patternSet);
-			contextPatternInterpreter.monitor(model);
+			contextPatternInterpreter.monitor(model.getResources());
 		} else {
 			throw new IllegalArgumentException("Expecting a IBeXPatternSet root element!");
 		}
