@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
@@ -20,7 +19,7 @@ import precedencegraph.PrecedenceNode;
 import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphFactory;
 
-public class PrecedenceGraphContainer extends LoggingMatchContainer {
+public class PrecedenceGraphContainer {
 
 	public static final CollectionFactory cfactory = new JDKCollectionFactory();
 

@@ -237,7 +237,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 			pending.removeAll(notPendingMatches);
 		Set<ITGGMatch> validate = validate(readySet);
 
-		times.addTo("getMatch", Timer.stop());
+		times.addTo("getMatches", Timer.stop());
 		return validate;
 	}
 

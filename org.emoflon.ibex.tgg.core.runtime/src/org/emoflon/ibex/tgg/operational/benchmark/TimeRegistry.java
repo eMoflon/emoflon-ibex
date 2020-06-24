@@ -10,8 +10,8 @@ import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 /**
- * This class is a central registry for for all times that are going to be
- * measured.<br>
+ * This class is a central registry for all classes that are going to measure
+ * times.<br>
  * To register a class and measure times proceed as follows:
  * <ol>
  * <li>Let the class implement {@link TimeMeasurable}.</li>
@@ -44,12 +44,12 @@ public class TimeRegistry {
 		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> {
 			StringBuffer b = new StringBuffer();
 
-			b.append("Measured Times (sec) {\n");
+			b.append("\nMeasured Times (sec) {\n");
 			for (TimeMeasurable obj : registry) {
 				b.append(ConsoleUtil.indent(print(obj), 2, true));
 				b.append("\n");
 			}
-			b.append("}");
+			b.append("}\n");
 
 			return b.toString();
 		});
