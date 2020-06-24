@@ -138,12 +138,13 @@ public class EMFManipulationUtils {
 		}
 //		EcoreUtil.deleteAll(nodesToDelete, false);
 		for (EObject eObject : nodesToDelete) {
-			for (EReference ref : eObject.eClass().getEReferences()) {
+			for (EReference ref : eObject.eClass().getEAllReferences()) {
 				if(ref.isMany())
 					((List<?>) eObject.eGet(ref)).clear();
 				else
 					eObject.eSet(ref, null);
 			}
+			EcoreUtil.remove(eObject);
 		}
 	}
 	
