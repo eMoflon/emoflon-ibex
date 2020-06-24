@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
+import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
@@ -30,22 +31,22 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 
 	@Override
 	public void addMatch(ITGGMatch match) {
-		long tic = System.nanoTime();
+		Timer.start();
 		matches.add(match);
-		addMatchTime += System.nanoTime() - tic;
+		addMatchTime += Timer.stop();
 	}
 
 	@Override
 	public boolean removeMatch(ITGGMatch match) {
-		long tic = System.nanoTime();
+		Timer.start();
 		if (match.getType() == PatternType.CONSISTENCY) {
 			boolean removed = removeConsistencyMatch(match);
-			removeMatchTime += System.nanoTime() - tic;
+			removeMatchTime += Timer.stop();
 			return removed;
 		}
 		else {
 			matches.remove(match);
-			removeMatchTime += System.nanoTime() - tic;
+			removeMatchTime += Timer.stop();
 			return true;
 		}
 	}
@@ -57,7 +58,7 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 
 	@Override
 	public ITGGMatch getNext() {
-		long tic = System.nanoTime();
+		Timer.start();
 		List<ITGGMatch> notApplicable = new LinkedList<>();
 		ITGGMatch match = null;
 
@@ -78,13 +79,13 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 			}
 		}
 		matches.addAll(notApplicable);
-		getMatchTime += System.nanoTime() - tic;
+		getMatchTime += Timer.stop();
 		return match;
 	}
 
 	@Override
 	public Set<ITGGMatch> getMatches() {
-		long tic = System.nanoTime();
+		Timer.start();
 		Collection<ITGGMatch> neverApplicable = new LinkedList<>();
 
 		Set<ITGGMatch> nextMatches = matches.stream() //
@@ -100,7 +101,7 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 				.collect(Collectors.toSet());
 
 		matches.removeAll(neverApplicable);
-		getMatchTime += System.nanoTime() - tic;
+		getMatchTime += Timer.stop();
 		return nextMatches;
 	}
 
@@ -117,12 +118,12 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 
 	@Override
 	public void matchApplied(ITGGMatch match) {
-		long tic = System.nanoTime();
+		Timer.start();
 		if (match.getType() == PatternType.CONSISTENCY)
 			consistencyMatchApplied(match);
 		else
 			matches.remove(match);
-		matchAppliedTime += System.nanoTime() - tic;
+		matchAppliedTime += Timer.stop();
 	}
 
 	private boolean removeConsistencyMatch(ITGGMatch match) {
