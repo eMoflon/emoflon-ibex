@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.ArrayList;
@@ -67,14 +68,16 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 		prepareResource();
 
 		Set<ITGGMatch> matches = new HashSet<>(getMatches());
-		// this is bad. basically you use the NEW matches and then to add ALL those that you already found to them
+		// this is bad. basically you use the NEW matches and then to add ALL those that
+		// you already found to them
 		// TODO lfritsche, amoeller
 		matches.addAll(raToMatch.values());
 		matches.removeIf(m -> m.getType() == PatternType.CC);
 
 		Set<ITGGMatch> restoredMatches = new HashSet<>();
-		
-		// what does this mean? what are restored matches? isn't this something that I can check on the newly added matches? old ones should still be broken
+
+		// what does this mean? what are restored matches? isn't this something that I
+		// can check on the newly added matches? old ones should still be broken
 		// TODO lfritsche, amoeller
 		matches.removeIf(m -> {
 			if (!matchToNode.containsKey(m))
@@ -83,9 +86,9 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 				restoredMatches.add(m);
 			return true;
 		});
-		
+
 		matches.forEach(m -> createNode(m));
-		
+
 		// hotspot but probably because of the upper stuff?
 		// TODO lfritsche, amoeller
 		matches.forEach(m -> updateNode(m));
@@ -139,7 +142,9 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 		gFactory.getBlackTrgEdgesInRule().forEach(e -> requiringElts.add(getRuntimeEdge(match, e)));
 
 		for (Object elt : requiringElts) {
-			// that looks VERY expensive. why do we have to go over ALL rule applications? there is a requiredBy map which is exactly for this purpose to also navigate back!
+			// that looks VERY expensive. why do we have to go over ALL rule applications?
+			// there is a requiredBy map which is exactly for this purpose to also navigate
+			// back!
 			// TODO lfritsche, amoeller
 			raToTranslated.forEach((ra, objs) -> {
 				if (objs.contains(elt)) {
@@ -169,8 +174,9 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	private void createNode(ITGGMatch match) {
 		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createPrecedenceNode();
 		node.setBroken(false);
-		
-		// this is probably bad. make this a hashset and use addall perfore persisting the pg
+
+		// this is probably bad. make this a hashset and use addall perfore persisting
+		// the pg
 		// TODO lfritsche, amoeller
 		nodes.getNodes().add(node);
 		node.setMatchAsString(match.getPatternName() + "(" + match.hashCode() + ")");

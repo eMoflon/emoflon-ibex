@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.debug;
+package org.emoflon.ibex.tgg.operational.benchmark;
 
 import java.util.Stack;
 

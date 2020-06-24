@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;

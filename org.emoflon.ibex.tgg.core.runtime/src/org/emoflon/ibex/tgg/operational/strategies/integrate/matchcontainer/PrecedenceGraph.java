@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
@@ -7,17 +8,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.emoflon.ibex.common.collections.CollectionFactory;
-import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
-public class PrecedenceGraph extends LoggingMatchContainer {
+public class PrecedenceGraph implements TimeMeasurable {
 
-	public static final CollectionFactory cfactory = new JDKCollectionFactory();
+	protected final Times times = new Times();
 
 	protected final PropagatingOperationalStrategy strategy;
 
@@ -34,16 +36,25 @@ public class PrecedenceGraph extends LoggingMatchContainer {
 
 	public PrecedenceGraph(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
+		TimeRegistry.register(this);
 	}
 
 	public void notifyAddedMatch(ITGGMatch match) {
+		Timer.start();
+
 		if (match.getType() == PatternType.CONSISTENCY)
 			addConsistencyMatch(match);
+
+		times.addTo("notifyAdded", Timer.stop());
 	}
 
 	public void notifyRemovedMatch(ITGGMatch match) {
+		Timer.start();
+
 		if (match.getType() == PatternType.CONSISTENCY)
 			handleBrokenConsistencyMatch(match);
+
+		times.addTo("notifyRemoved", Timer.stop());
 	}
 
 	public void clearBrokenMatches() {
@@ -225,6 +236,11 @@ public class PrecedenceGraph extends LoggingMatchContainer {
 					forAllRequiredBy(n, action, processed);
 			}
 		}
+	}
+
+	@Override
+	public Times getTimes() {
+		return times;
 	}
 
 }

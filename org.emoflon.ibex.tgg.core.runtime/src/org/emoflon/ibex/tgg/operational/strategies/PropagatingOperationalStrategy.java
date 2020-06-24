@@ -14,9 +14,9 @@ import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
-import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
@@ -184,7 +184,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 				redInterpreter.revokeOperationalRule(match);
 				revoked.add(ra);
 				LoggerConfig.log(LoggerConfig.log_matchApplication(),
-						() -> "Rollback match: " + ConsoleUtil.indent(match.toString(), 80));
+						() -> "Rollback match: " + ConsoleUtil.indent(match.toString(), 80, false));
 			}
 			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);

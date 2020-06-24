@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
-import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 

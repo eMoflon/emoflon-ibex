@@ -15,8 +15,8 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
-import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.DefaultMatchContainer;
@@ -143,7 +143,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		consistencyMatches.put(ruleAppNode, match);
 		LoggerConfig.log(LoggerConfig.log_incomingMatches(),
-				() -> "Received and added consistency match: " + ConsoleUtil.indent(match.toString(), 80));
+				() -> "Received and added consistency match: " + ConsoleUtil.indent(match.toString(), 80, false));
 	}
 
 	protected boolean removeOperationalRuleMatch(ITGGMatch match) {
@@ -204,7 +204,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
-		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Processing match: " + ConsoleUtil.indent(match.toString(), 80));
+		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Processing match: " + ConsoleUtil.indent(match.toString(), 80, false));
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as it has just been applied: " + match.getPatternName() + "(" + match.hashCode() + ")");
