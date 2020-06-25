@@ -196,8 +196,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Timer.start();
 		
 		this.updateBlockedMatches();
-		if (operationalMatchContainer.isEmpty())
+		if (operationalMatchContainer.isEmpty()) {
+			times.addTo("ruleApplication", Timer.stop());
 			return false;
+		}
 
 		Timer.start();
 		ITGGMatch match = chooseOneMatch();

@@ -34,6 +34,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 	// Repair
 	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
+	protected BrokenMatchContainer dependencyContainer;
 
 	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = cfactory.createObjectToObjectHashMap();
 	protected IRedInterpreter redInterpreter;
@@ -43,6 +44,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	public PropagatingOperationalStrategy(IbexOptions options) throws IOException {
 		super(options);
 		redInterpreter = new IbexRedInterpreter(this);
+		dependencyContainer = new BrokenMatchContainer(this);
 	}
 
 	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
@@ -74,7 +76,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		Timer.start();
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
-		BrokenMatchContainer dependencyContainer = new BrokenMatchContainer(this);
+		dependencyContainer.reset();
 		brokenRuleApplications.values().forEach(dependencyContainer::addMatch);
 
 		boolean processedOnce = true;
@@ -252,7 +254,6 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	@Override
 	public void terminate() throws IOException {
 		times.set("createElements", ((IbexGreenInterpreter) greenInterpreter).getCreationTime());
-		times.set("matchCollection", matchDistributor.getTime());
 		super.terminate();
 	}
 

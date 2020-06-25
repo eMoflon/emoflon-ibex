@@ -46,6 +46,22 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		this.strategy = strategy;
 		TimeRegistry.register(this);
 	}
+	
+	public void reset() {
+		translated = cfactory.createObjectSet();
+		pendingElts = cfactory.createObjectSet();
+		pending = cfactory.createObjectSet();
+
+		requires = cfactory.createObjectToObjectHashMap();
+		requiredBy = cfactory.createObjectToObjectHashMap();
+		translates = cfactory.createObjectToObjectHashMap();
+		translatedBy = cfactory.createObjectToObjectHashMap();
+
+		raToTranslated = cfactory.createObjectToObjectHashMap();
+		raToMatch = cfactory.createObjectToObjectHashMap();
+		
+		readySet = cfactory.createObjectSet();
+	}
 
 	@Override
 	public void addMatch(ITGGMatch match) {
@@ -164,8 +180,10 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		
 		readySet.remove(m);
 		
-		if (!translates.containsKey(m))
+		if (!translates.containsKey(m)) {
+			times.addTo("matchApplied", Timer.stop());
 			return;
+		}
 
 		Collection<Object> translatedElts = translates.get(m);
 		for (Object translatedElement : translatedElts) {

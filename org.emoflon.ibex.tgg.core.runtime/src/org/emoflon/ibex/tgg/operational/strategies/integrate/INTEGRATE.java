@@ -27,7 +27,6 @@ import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
-import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
@@ -294,12 +293,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Timer.start();
 
 		this.updateBlockedMatches();
-		if (operationalMatchContainer.isEmpty())
+		if (operationalMatchContainer.isEmpty()) {
+			times.addTo("ruleApplication", Timer.stop());
 			return false;
+		}
 
 		ITGGMatch match = chooseOneMatch();
-		if (match == null)
+		if (match == null) {
+			times.addTo("ruleApplication", Timer.stop());
 			return false;
+		}
 		String ruleName = match.getRuleName();
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
@@ -335,7 +338,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Timer.start();
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
-		BrokenMatchContainer dependencyContainer = new BrokenMatchContainer(this);
+		dependencyContainer.reset();
 		brokenRuleApplications.values().forEach(dependencyContainer::addMatch);
 
 		boolean processedOnce = true;
@@ -372,7 +375,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			}
 			alreadyProcessed.addAll(brokenRuleApplications.values());
 			matchDistributor.updateMatches();
-			classifyBrokenMatches(true);
+			classifyBrokenMatches(false);
 			brokenRuleApplications.values().stream() //
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);

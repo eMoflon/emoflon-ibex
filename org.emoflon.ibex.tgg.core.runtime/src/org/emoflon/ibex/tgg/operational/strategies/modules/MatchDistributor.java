@@ -17,13 +17,18 @@ import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-public class MatchDistributor implements IMatchObserver {
+public class MatchDistributor implements IMatchObserver, TimeMeasurable {
+	
+	protected final Times times = new Times();
 
 	private final long INTERVAL_LENGTH = 5000;
 	private long currentIntervalStart = -1;
@@ -41,13 +46,12 @@ public class MatchDistributor implements IMatchObserver {
 	private IBlackInterpreter blackInterpreter;
 	private ResourceSet rs;
 	
-	protected long time;
-	
 	private boolean initialized = false;
 	private boolean useTrashResource;
 	
 	public MatchDistributor(IbexOptions options) {
 		this.options = options;
+		TimeRegistry.register(this);
 	}
 	
 	public void initialize() throws IOException {
@@ -65,8 +69,10 @@ public class MatchDistributor implements IMatchObserver {
 	
 	public void updateMatches() {
 		Timer.start();
+		
 		blackInterpreter.updateMatches();
-		time = getTime() + Timer.stop();
+		
+		times.addTo("updateMatches", Timer.stop());
 	}
 	
 	@Override
@@ -195,7 +201,9 @@ public class MatchDistributor implements IMatchObserver {
 		return type2addMatch.keySet();
 	}
 
-	public long getTime() {
-		return time;
+	@Override
+	public Times getTimes() {
+		return times;
 	}
+
 }

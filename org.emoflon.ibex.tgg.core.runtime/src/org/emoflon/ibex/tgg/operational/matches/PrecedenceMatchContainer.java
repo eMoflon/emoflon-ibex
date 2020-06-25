@@ -150,11 +150,14 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 
 		if (m.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
 			consistencyMatchApplied(m);
+			times.addTo("matchApplied", Timer.stop());
 			return;
 		}
 
-		if (!translates.containsKey(m))
+		if (!translates.containsKey(m)) {
+			times.addTo("matchApplied", Timer.stop());
 			return;
+		}
 
 		Collection<Object> translatedElts = translates.get(m);
 		for (Object translatedElement : translatedElts) {
