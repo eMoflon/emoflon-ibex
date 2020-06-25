@@ -1,12 +1,11 @@
 package org.emoflon.ibex.tgg.operational.benchmark;
 
-import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Times {
 
-	private final Map<String, Long> times = cfactory.createObjectToObjectHashMap();
+	private final Map<String, Long> times = new TreeMap<>();
 
 	public void addTo(String name, long time) {
 		if (times.containsKey(name))
