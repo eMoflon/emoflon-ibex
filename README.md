@@ -54,4 +54,4 @@ Running ```Testsuite_CBC.launch``` requires Google OR tools (see installation st
 
 ## How to install
 
-eMoflon::IBeX can also be installied via https://github.com/eMoflon/emoflon-ibex-updatesite
+eMoflon::IBeX can be installed via https://github.com/eMoflon/emoflon-ibex-updatesite
