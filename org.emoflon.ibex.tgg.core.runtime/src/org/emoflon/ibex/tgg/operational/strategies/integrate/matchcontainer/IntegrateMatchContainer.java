@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.ArrayList;
@@ -67,14 +68,16 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 		prepareResource();
 
 		Set<ITGGMatch> matches = new HashSet<>(getMatches());
-		// this is bad. basically you use the NEW matches and then to add ALL those that you already found to them
+		// this is bad. basically you use the NEW matches and then to add ALL those that
+		// you already found to them
 		// TODO lfritsche, amoeller
 		matches.addAll(raToMatch.values());
 		matches.removeIf(m -> m.getType() == PatternType.CC);
 
 		Set<ITGGMatch> restoredMatches = new HashSet<>();
-		
-		// what does this mean? what are restored matches? isn't this something that I can check on the newly added matches? old ones should still be broken
+
+		// what does this mean? what are restored matches? isn't this something that I
+		// can check on the newly added matches? old ones should still be broken
 		// TODO lfritsche, amoeller
 		matches.removeIf(m -> {
 			if (!matchToNode.containsKey(m))
@@ -83,9 +86,9 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 				restoredMatches.add(m);
 			return true;
 		});
-		
+
 		matches.forEach(m -> createNode(m));
-		
+
 		// hotspot but probably because of the upper stuff?
 		// TODO lfritsche, amoeller
 		matches.forEach(m -> updateNode(m));
@@ -130,43 +133,50 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 
 	private void updateNode(ITGGMatch match) {
 		PrecedenceNode node = matchToNode.get(match);
+		IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 
-		Collection<Object> required = requires.get(match);
-		if(required != null)
-			for (Object elt : required) {
-				// that looks VERY expensive. why do we have to go over ALL rule applications? there is a requiredBy map which is exactly for this purpose to also navigate back!
-				// TODO lfritsche, amoeller
-				Collection<ITGGMatch> translatingMatches = translatedBy.get(elt); 
-				if(translatingMatches == null)
-					continue;
-				
-				translatingMatches.forEach(m -> {
-						PrecedenceNode requiredNode = matchToNode.get(m);
-						if (requiredNode != null)
-							node.getRequires().add(requiredNode);
-				});
-			}
+		Set<Object> requiringElts = new HashSet<>();
+		gFactory.getBlackSrcNodesInRule().forEach(n -> requiringElts.add(match.get(n.getName())));
+		gFactory.getBlackTrgNodesInRule().forEach(n -> requiringElts.add(match.get(n.getName())));
+		gFactory.getBlackSrcEdgesInRule().forEach(e -> requiringElts.add(getRuntimeEdge(match, e)));
+		gFactory.getBlackTrgEdgesInRule().forEach(e -> requiringElts.add(getRuntimeEdge(match, e)));
 
-		Collection<Object> translated = translates.get(match);
-		if(translated != null)
-			for(Object elt : translates.get(match)) {
-				Collection<ITGGMatch> requiringMatches = requiredBy.get(elt);
-				if(requiringMatches.isEmpty())
-					continue;
-				
-				requiringMatches.forEach(m -> {
-					PrecedenceNode requiringNode = matchToNode.get(m);
+		for (Object elt : requiringElts) {
+			// that looks VERY expensive. why do we have to go over ALL rule applications?
+			// there is a requiredBy map which is exactly for this purpose to also navigate
+			// back!
+			// TODO lfritsche, amoeller
+			raToTranslated.forEach((ra, objs) -> {
+				if (objs.contains(elt)) {
+					PrecedenceNode requiringNode = matchToNode.get(raToMatch.get(ra));
 					if (requiringNode != null)
-						requiringNode.getRequires().add(node);
-				});
+						node.getRequires().add(requiringNode);
+				}
+			});
+		}
+
+		Collection<Object> requiredObjs = requires.get(match);
+		if (requiredObjs != null && !requiredObjs.isEmpty()) {
+			for (Object reqObj : requiredObjs) {
+				Collection<ITGGMatch> requiredMatches = translatedBy.get(reqObj);
+				if (requiredMatches != null && !requiredMatches.isEmpty()) {
+					for (ITGGMatch reqMatch : requiredMatches) {
+						PrecedenceNode nodeReq = matchToNode.get(reqMatch);
+						if (nodeReq != null) {
+							node.getRequires().add(nodeReq);
+						}
+					}
+				}
 			}
+		}
 	}
 
 	private void createNode(ITGGMatch match) {
 		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createPrecedenceNode();
 		node.setBroken(false);
-		
-		// this is probably bad. make this a hashset and use addall perfore persisting the pg
+
+		// this is probably bad. make this a hashset and use addall perfore persisting
+		// the pg
 		// TODO lfritsche, amoeller
 		nodes.getNodes().add(node);
 		node.setMatchAsString(match.getPatternName() + "(" + match.hashCode() + ")");

@@ -149,13 +149,31 @@ public interface PrecedencegraphPackage extends EPackage {
 	int PRECEDENCE_NODE__ROLLBACK_CAUSES = 4;
 
 	/**
+	 * The feature id for the '<em><b>Rolles Back</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PRECEDENCE_NODE__ROLLES_BACK = 5;
+
+	/**
+	 * The feature id for the '<em><b>Precedence Node Container</b></em>' container reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER = 6;
+
+	/**
 	 * The number of structural features of the '<em>Precedence Node</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PRECEDENCE_NODE_FEATURE_COUNT = 5;
+	int PRECEDENCE_NODE_FEATURE_COUNT = 7;
 
 	/**
 	 * The number of operations of the '<em>Precedence Node</em>' class.
@@ -253,6 +271,28 @@ public interface PrecedencegraphPackage extends EPackage {
 	EReference getPrecedenceNode_RollbackCauses();
 
 	/**
+	 * Returns the meta object for the reference list '{@link precedencegraph.PrecedenceNode#getRollesBack <em>Rolles Back</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Rolles Back</em>'.
+	 * @see precedencegraph.PrecedenceNode#getRollesBack()
+	 * @see #getPrecedenceNode()
+	 * @generated
+	 */
+	EReference getPrecedenceNode_RollesBack();
+
+	/**
+	 * Returns the meta object for the container reference '{@link precedencegraph.PrecedenceNode#getPrecedenceNodeContainer <em>Precedence Node Container</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the container reference '<em>Precedence Node Container</em>'.
+	 * @see precedencegraph.PrecedenceNode#getPrecedenceNodeContainer()
+	 * @see #getPrecedenceNode()
+	 * @generated
+	 */
+	EReference getPrecedenceNode_PrecedenceNodeContainer();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -342,6 +382,22 @@ public interface PrecedencegraphPackage extends EPackage {
 		 * @generated
 		 */
 		EReference PRECEDENCE_NODE__ROLLBACK_CAUSES = eINSTANCE.getPrecedenceNode_RollbackCauses();
+
+		/**
+		 * The meta object literal for the '<em><b>Rolles Back</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PRECEDENCE_NODE__ROLLES_BACK = eINSTANCE.getPrecedenceNode_RollesBack();
+
+		/**
+		 * The meta object literal for the '<em><b>Precedence Node Container</b></em>' container reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER = eINSTANCE.getPrecedenceNode_PrecedenceNodeContainer();
 
 	}
 

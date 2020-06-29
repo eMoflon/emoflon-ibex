@@ -27,8 +27,6 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.moflon.core.utilities.MoflonUtil;
 
-import com.google.common.base.Optional;
-
 import language.TGG;
 import language.impl.LanguagePackageImpl;
 import runtime.RuntimeFactory;
@@ -371,5 +369,9 @@ public class TGGResourceHandler {
 
 	public Resource getPrecedenceResource() {
 		return precedence;
+	}
+	
+	public Resource getTrashResource() {
+		return trash;
 	}
 }

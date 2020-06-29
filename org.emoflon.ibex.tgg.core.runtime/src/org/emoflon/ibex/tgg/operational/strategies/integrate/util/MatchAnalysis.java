@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -141,11 +142,9 @@ public class MatchAnalysis {
 	}
 
 	public Map<ITGGMatch, DomainType> analyzeFilterNACViolations() {
-		return integrate.getFilterNacMatches().stream() //
-				.filter(fnm -> fnm.getRuleName().startsWith(match.getRuleName())) //
-				.filter(fnm -> belongsToMatch(fnm, match)) //
+		return integrate.getFilterNacMatches(match.getPatternName(), match).stream() //
 				.collect(Collectors.toMap(fnm -> fnm,
-						fnm -> fnm.getRuleName().endsWith("SRC") ? DomainType.SRC : DomainType.TRG));
+						fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SRC : DomainType.TRG));
 	}
 
 	private boolean belongsToMatch(ITGGMatch filterNacMatch, ITGGMatch match) {

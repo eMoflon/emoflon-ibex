@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import precedencegraph.PrecedenceNode;
@@ -71,10 +72,26 @@ public class PrecedenceNodeContainerImpl extends EObjectImpl implements Preceden
 	@Override
 	public EList<PrecedenceNode> getNodes() {
 		if (nodes == null) {
-			nodes = new EObjectContainmentEList<PrecedenceNode>(PrecedenceNode.class, this,
-					PrecedencegraphPackage.PRECEDENCE_NODE_CONTAINER__NODES);
+			nodes = new EObjectContainmentWithInverseEList<PrecedenceNode>(PrecedenceNode.class, this,
+					PrecedencegraphPackage.PRECEDENCE_NODE_CONTAINER__NODES,
+					PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER);
 		}
 		return nodes;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case PrecedencegraphPackage.PRECEDENCE_NODE_CONTAINER__NODES:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getNodes()).basicAdd(otherEnd, msgs);
+		}
+		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**

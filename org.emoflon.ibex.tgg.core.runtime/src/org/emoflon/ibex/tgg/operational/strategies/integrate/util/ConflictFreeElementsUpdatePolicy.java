@@ -7,39 +7,33 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
-
-import precedencegraph.PrecedenceNode;
 
 public class ConflictFreeElementsUpdatePolicy implements IUpdatePolicy {
 
-	private IntegrateMatchContainer imc;
+	private PrecedenceGraph pg;
 	private Map<ITGGMatch, ConflictContainer> conflicts;
 
-	public ConflictFreeElementsUpdatePolicy(INTEGRATE opStrat) {
-		this.imc = opStrat.getIntegrMatchContainer();
-		this.conflicts = opStrat.getConflicts();
+	public ConflictFreeElementsUpdatePolicy(INTEGRATE integrate) {
+		this.pg = integrate.getPrecedenceGraph();
+		this.conflicts = integrate.getConflicts();
 	}
 
 	@Override
 	public ITGGMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
-		imc.update();
 		for (ITGGMatch match : matchContainer.getMatches()) {
 			if (match.getType() != PatternType.FWD && match.getType() != PatternType.BWD)
 				continue;
 
-			PrecedenceNode node = imc.getNode(match);
-			if (node == null)
-				throw new RuntimeException("There has to be a PrecedenceNode for each Match in the MatchContainer!");
-
 			boolean conflicted = false;
-			for (PrecedenceNode requiredNode : node.getRequires())
-				if (conflicts.containsKey(imc.getMatch(requiredNode))) {
+			for (PrecedenceNode requiredNode : pg.getNode(match).getRequires())
+				if (conflicts.containsKey(requiredNode.getMatch())) {
 					conflicted = true;
 					break;
 				}
-			if(conflicted)
+			if (conflicted)
 				continue;
 
 			return match;

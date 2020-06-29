@@ -15,7 +15,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreser
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsDelConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.IntegrateMatchContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
@@ -24,7 +25,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.
 import language.DomainType;
 import language.TGGAttributeConstraintDefinition;
 import language.TGGAttributeExpression;
-import precedencegraph.PrecedenceNode;
 
 public class ConflictDetector {
 
@@ -65,7 +65,7 @@ public class ConflictDetector {
 
 	private void detectDeletePreserveConflict(ConflictContainer container, BrokenMatch brokenMatch,
 			DomainType domainToBePreserved) {
-		IntegrateMatchContainer matchContainer = integrate.getIntegrMatchContainer();
+		PrecedenceGraph pg = integrate.getPrecedenceGraph();
 
 		EltFilter filter = new EltFilter().create().notDeleted();
 		if (domainToBePreserved == DomainType.SRC)
@@ -74,9 +74,9 @@ public class ConflictDetector {
 			filter.trg();
 
 		boolean deletionAffected = false;
-		PrecedenceNode node = matchContainer.getNode(brokenMatch.getMatch());
+		PrecedenceNode node = pg.getNode(brokenMatch.getMatch());
 		for (PrecedenceNode cn : node.getRollbackCauses()) {
-			BrokenMatch cMatch = integrate.getClassifiedBrokenMatches().get(matchContainer.getMatch(cn));
+			BrokenMatch cMatch = integrate.getClassifiedBrokenMatches().get(cn.getMatch());
 			if (hasDomainSpecificViolations(cMatch, oppositeOf(domainToBePreserved))) {
 				deletionAffected = true;
 				break;
@@ -178,8 +178,8 @@ public class ConflictDetector {
 	}
 
 	private void detectInconsistentDelConflict(ConflictContainer container, BrokenMatch brokenMatch) {
-//		if (DeletionType.getInconsDelCandidates().contains(brokenMatch.getDeletionType()))
-//			new InconsDelConflict(container);
+		if (DeletionType.getInconsDelCandidates().contains(brokenMatch.getDeletionType()))
+			new InconsDelConflict(container);
 	}
 
 }

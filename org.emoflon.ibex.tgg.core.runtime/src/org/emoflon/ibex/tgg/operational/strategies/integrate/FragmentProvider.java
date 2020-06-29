@@ -58,7 +58,7 @@ public class FragmentProvider {
 		}
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
-			i.classifyBrokenMatches();
+			i.classifyBrokenMatches(true);
 			i.detectConflicts();
 			i.translateConflictFreeElements();
 			i.repairBrokenMatches();
@@ -71,7 +71,7 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
-			i.classifyBrokenMatches();
+			i.classifyBrokenMatches(true);
 			i.detectConflicts();
 			for (ConflictContainer c : i.conflicts) {
 				i.getOptions().integration.conflictSolver().resolveConflict(c);
@@ -86,7 +86,7 @@ public class FragmentProvider {
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
 			do {
-				i.classifyBrokenMatches();
+				i.classifyBrokenMatches(false);
 				i.resolveBrokenMatches();
 			} while (!i.getClassifiedBrokenMatches().isEmpty());
 		}
@@ -110,7 +110,7 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
-			i.classifyBrokenMatches();
+			i.classifyBrokenMatches(true);
 			i.detectConflicts();
 			i.translateConflictFreeElements();
 		}

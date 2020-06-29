@@ -49,12 +49,12 @@ public class ConsoleUtil {
 		System.setOut(currentPrintStream);
 	}
 	
-	public static String indent(String s, int indent) {
+	public static String indent(String s, int indent, boolean indentFirstLine) {
 		String i = "";
 		for (int j = 0; j < indent; j++) {
 			i += " ";
 		}
-		return s.replace("\n", "\n" + i);
+		return (indentFirstLine ? i : "") + s.replace("\n", "\n" + i);
 	}
 
 }

@@ -2,11 +2,8 @@ package org.emoflon.ibex.tgg.operational.benchmark;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public abstract class BenchmarkLogger {
-
-	private static Stack<Long> timerStack = new Stack<>();
 	
 	// Run logs
 	protected final List<BenchmarkRunLog> runLogs = new ArrayList<>();
@@ -14,16 +11,6 @@ public abstract class BenchmarkLogger {
 	
 	// Timing in milliseconds
 	protected long initTime = 0;	
-
-	public static void startTimer() {
-		timerStack.push(System.currentTimeMillis());
-	}
-
-	public static long stopTimer() {
-		if (timerStack.isEmpty())
-			return 0;
-		return System.currentTimeMillis() - timerStack.pop();
-	}
 
 	public abstract boolean isLoggingEnabled();
 

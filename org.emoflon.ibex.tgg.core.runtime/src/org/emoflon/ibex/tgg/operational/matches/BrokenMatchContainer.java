@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.matches;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
@@ -7,10 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.common.collections.CollectionFactory;
-import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
@@ -20,8 +22,9 @@ import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 
-public class BrokenMatchContainer extends LoggingMatchContainer implements IMatchContainer {
-	public static final CollectionFactory cfactory = new JDKCollectionFactory();
+public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
+	
+	protected final Times times = new Times();
 
 	protected PropagatingOperationalStrategy strategy;
 
@@ -41,13 +44,32 @@ public class BrokenMatchContainer extends LoggingMatchContainer implements IMatc
 
 	public BrokenMatchContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
+		TimeRegistry.register(this);
+	}
+	
+	public void reset() {
+		translated = cfactory.createObjectSet();
+		pendingElts = cfactory.createObjectSet();
+		pending = cfactory.createObjectSet();
+
+		requires = cfactory.createObjectToObjectHashMap();
+		requiredBy = cfactory.createObjectToObjectHashMap();
+		translates = cfactory.createObjectToObjectHashMap();
+		translatedBy = cfactory.createObjectToObjectHashMap();
+
+		raToTranslated = cfactory.createObjectToObjectHashMap();
+		raToMatch = cfactory.createObjectToObjectHashMap();
+		
+		readySet = cfactory.createObjectSet();
 	}
 
 	@Override
 	public void addMatch(ITGGMatch match) {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		pending.add(match);
-		addMatchTime += System.nanoTime() - tic;
+		
+		times.addTo("addMatch", Timer.stop());
 	}
 
 	private void handleMatch(ITGGMatch m) {
@@ -154,12 +176,14 @@ public class BrokenMatchContainer extends LoggingMatchContainer implements IMatc
 
 	@Override
 	public void matchApplied(ITGGMatch m) {
-		long tic = System.nanoTime();
+		Timer.start();
 		
 		readySet.remove(m);
 		
-		if (!translates.containsKey(m))
+		if (!translates.containsKey(m)) {
+			times.addTo("matchApplied", Timer.stop());
 			return;
+		}
 
 		Collection<Object> translatedElts = translates.get(m);
 		for (Object translatedElement : translatedElts) {
@@ -194,7 +218,7 @@ public class BrokenMatchContainer extends LoggingMatchContainer implements IMatc
 
 		translated.addAll(translatedElts);
 		
-		matchAppliedTime += System.nanoTime() - tic;
+		times.addTo("matchApplied", Timer.stop());
 	}
 	
 	public void clearPendingElements() {
@@ -203,7 +227,8 @@ public class BrokenMatchContainer extends LoggingMatchContainer implements IMatc
 
 	@Override
 	public Set<ITGGMatch> getMatches() {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toList());
 		notPendingMatches.forEach(this::handleMatch);
 		if(notPendingMatches.size() == pending.size())
@@ -211,7 +236,8 @@ public class BrokenMatchContainer extends LoggingMatchContainer implements IMatc
 		else
 			pending.removeAll(notPendingMatches);
 		Set<ITGGMatch> validate = validate(readySet);
-		getMatchTime += System.nanoTime() - tic;
+		
+		times.addTo("getMatches", Timer.stop());
 		return validate;
 	}
 	
@@ -230,19 +256,19 @@ public class BrokenMatchContainer extends LoggingMatchContainer implements IMatc
  
 	@Override
 	public boolean removeMatch(ITGGMatch match) {
-		long tic = System.nanoTime();
+		Timer.start();
 		
 		if (match.getType() == PatternType.CONSISTENCY) {
 			boolean removed = removeConsistencyMatch(match);
 			
-			removeMatchTime += System.nanoTime() - tic;
+			times.addTo("removeMatch", Timer.stop());
 			return removed;
 		}
 		
 		if (pending.contains(match)) {
 			pending.remove(match);
 			
-			removeMatchTime += System.nanoTime() - tic;
+			times.addTo("removeMatch", Timer.stop());
 			return true;
 		}
 
@@ -267,7 +293,7 @@ public class BrokenMatchContainer extends LoggingMatchContainer implements IMatc
 
 		readySet.remove(match);
 		
-		removeMatchTime += System.nanoTime() - tic;
+		times.addTo("removeMatch", Timer.stop());
 		return true;
 	}
 	
@@ -297,6 +323,11 @@ public class BrokenMatchContainer extends LoggingMatchContainer implements IMatc
 		translates.clear();
 
 		readySet.clear();
+	}
+
+	@Override
+	public Times getTimes() {
+		return times;
 	}
 
 }

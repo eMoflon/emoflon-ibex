@@ -17,9 +17,11 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import precedencegraph.PrecedenceNode;
+import precedencegraph.PrecedenceNodeContainer;
 import precedencegraph.PrecedencegraphPackage;
 
 /**
@@ -35,6 +37,8 @@ import precedencegraph.PrecedencegraphPackage;
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getRequiredBy <em>Required By</em>}</li>
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getMatchAsString <em>Match As String</em>}</li>
  *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getRollbackCauses <em>Rollback Causes</em>}</li>
+ *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getRollesBack <em>Rolles Back</em>}</li>
+ *   <li>{@link precedencegraph.impl.PrecedenceNodeImpl#getPrecedenceNodeContainer <em>Precedence Node Container</em>}</li>
  * </ul>
  *
  * @generated
@@ -111,6 +115,16 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	protected EList<PrecedenceNode> rollbackCauses;
 
 	/**
+	 * The cached value of the '{@link #getRollesBack() <em>Rolles Back</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getRollesBack()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<PrecedenceNode> rollesBack;
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -149,8 +163,8 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 		boolean oldBroken = broken;
 		broken = newBroken;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PrecedencegraphPackage.PRECEDENCE_NODE__BROKEN, oldBroken,
-					broken));
+			eNotify(new ENotificationImpl(this, Notification.SET, PrecedencegraphPackage.PRECEDENCE_NODE__BROKEN,
+					oldBroken, broken));
 	}
 
 	/**
@@ -162,7 +176,8 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	public EList<PrecedenceNode> getRequires() {
 		if (requires == null) {
 			requires = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class, this,
-					PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRES, PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY);
+					PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRES,
+					PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY);
 		}
 		return requires;
 	}
@@ -176,7 +191,8 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	public EList<PrecedenceNode> getRequiredBy() {
 		if (requiredBy == null) {
 			requiredBy = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class, this,
-					PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY, PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRES);
+					PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY,
+					PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRES);
 		}
 		return requiredBy;
 	}
@@ -201,8 +217,8 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 		String oldMatchAsString = matchAsString;
 		matchAsString = newMatchAsString;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PrecedencegraphPackage.PRECEDENCE_NODE__MATCH_AS_STRING,
-					oldMatchAsString, matchAsString));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					PrecedencegraphPackage.PRECEDENCE_NODE__MATCH_AS_STRING, oldMatchAsString, matchAsString));
 	}
 
 	/**
@@ -213,10 +229,77 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 	@Override
 	public EList<PrecedenceNode> getRollbackCauses() {
 		if (rollbackCauses == null) {
-			rollbackCauses = new EObjectResolvingEList<PrecedenceNode>(PrecedenceNode.class, this,
-					PrecedencegraphPackage.PRECEDENCE_NODE__ROLLBACK_CAUSES);
+			rollbackCauses = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class,
+					this, PrecedencegraphPackage.PRECEDENCE_NODE__ROLLBACK_CAUSES,
+					PrecedencegraphPackage.PRECEDENCE_NODE__ROLLES_BACK);
 		}
 		return rollbackCauses;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EList<PrecedenceNode> getRollesBack() {
+		if (rollesBack == null) {
+			rollesBack = new EObjectWithInverseResolvingEList.ManyInverse<PrecedenceNode>(PrecedenceNode.class, this,
+					PrecedencegraphPackage.PRECEDENCE_NODE__ROLLES_BACK,
+					PrecedencegraphPackage.PRECEDENCE_NODE__ROLLBACK_CAUSES);
+		}
+		return rollesBack;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public PrecedenceNodeContainer getPrecedenceNodeContainer() {
+		if (eContainerFeatureID() != PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER)
+			return null;
+		return (PrecedenceNodeContainer) eInternalContainer();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetPrecedenceNodeContainer(PrecedenceNodeContainer newPrecedenceNodeContainer,
+			NotificationChain msgs) {
+		msgs = eBasicSetContainer((InternalEObject) newPrecedenceNodeContainer,
+				PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER, msgs);
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setPrecedenceNodeContainer(PrecedenceNodeContainer newPrecedenceNodeContainer) {
+		if (newPrecedenceNodeContainer != eInternalContainer()
+				|| (eContainerFeatureID() != PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER
+						&& newPrecedenceNodeContainer != null)) {
+			if (EcoreUtil.isAncestor(this, newPrecedenceNodeContainer))
+				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
+			NotificationChain msgs = null;
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			if (newPrecedenceNodeContainer != null)
+				msgs = ((InternalEObject) newPrecedenceNodeContainer).eInverseAdd(this,
+						PrecedencegraphPackage.PRECEDENCE_NODE_CONTAINER__NODES, PrecedenceNodeContainer.class, msgs);
+			msgs = basicSetPrecedenceNodeContainer(newPrecedenceNodeContainer, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER, newPrecedenceNodeContainer,
+					newPrecedenceNodeContainer));
 	}
 
 	/**
@@ -232,6 +315,14 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getRequires()).basicAdd(otherEnd, msgs);
 		case PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY:
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getRequiredBy()).basicAdd(otherEnd, msgs);
+		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLBACK_CAUSES:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getRollbackCauses()).basicAdd(otherEnd, msgs);
+		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLES_BACK:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getRollesBack()).basicAdd(otherEnd, msgs);
+		case PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER:
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			return basicSetPrecedenceNodeContainer((PrecedenceNodeContainer) otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -248,8 +339,29 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 			return ((InternalEList<?>) getRequires()).basicRemove(otherEnd, msgs);
 		case PrecedencegraphPackage.PRECEDENCE_NODE__REQUIRED_BY:
 			return ((InternalEList<?>) getRequiredBy()).basicRemove(otherEnd, msgs);
+		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLBACK_CAUSES:
+			return ((InternalEList<?>) getRollbackCauses()).basicRemove(otherEnd, msgs);
+		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLES_BACK:
+			return ((InternalEList<?>) getRollesBack()).basicRemove(otherEnd, msgs);
+		case PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER:
+			return basicSetPrecedenceNodeContainer(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
+		switch (eContainerFeatureID()) {
+		case PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER:
+			return eInternalContainer().eInverseRemove(this, PrecedencegraphPackage.PRECEDENCE_NODE_CONTAINER__NODES,
+					PrecedenceNodeContainer.class, msgs);
+		}
+		return super.eBasicRemoveFromContainerFeature(msgs);
 	}
 
 	/**
@@ -270,6 +382,10 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 			return getMatchAsString();
 		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLBACK_CAUSES:
 			return getRollbackCauses();
+		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLES_BACK:
+			return getRollesBack();
+		case PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER:
+			return getPrecedenceNodeContainer();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -301,6 +417,13 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 			getRollbackCauses().clear();
 			getRollbackCauses().addAll((Collection<? extends PrecedenceNode>) newValue);
 			return;
+		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLES_BACK:
+			getRollesBack().clear();
+			getRollesBack().addAll((Collection<? extends PrecedenceNode>) newValue);
+			return;
+		case PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER:
+			setPrecedenceNodeContainer((PrecedenceNodeContainer) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -328,6 +451,12 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLBACK_CAUSES:
 			getRollbackCauses().clear();
 			return;
+		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLES_BACK:
+			getRollesBack().clear();
+			return;
+		case PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER:
+			setPrecedenceNodeContainer((PrecedenceNodeContainer) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -351,6 +480,10 @@ public class PrecedenceNodeImpl extends EObjectImpl implements PrecedenceNode {
 					: !MATCH_AS_STRING_EDEFAULT.equals(matchAsString);
 		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLBACK_CAUSES:
 			return rollbackCauses != null && !rollbackCauses.isEmpty();
+		case PrecedencegraphPackage.PRECEDENCE_NODE__ROLLES_BACK:
+			return rollesBack != null && !rollesBack.isEmpty();
+		case PrecedencegraphPackage.PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER:
+			return getPrecedenceNodeContainer() != null;
 		}
 		return super.eIsSet(featureID);
 	}

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +12,7 @@ import language.DomainType;
 
 public class DeletionPattern {
 
+	private List<DomainModification> result;
 	private final int initMapCapacity = 8;
 
 	private Map<DomainType, Map<BindingType, DomainModification>> pattern = new HashMap<>(initMapCapacity);
@@ -76,8 +78,11 @@ public class DeletionPattern {
 		return true;
 	}
 
-	List<DomainModification> serialise() {
-		List<DomainModification> result = new LinkedList<>();
+	synchronized List<DomainModification> serialise() {
+		if(result != null)
+			return result;
+		
+		result = new LinkedList<>();
 
 		List<DomainType> domains = Arrays.asList(DomainType.SRC, DomainType.CORR, DomainType.TRG);
 		List<BindingType> bindings = Arrays.asList(BindingType.CREATE, BindingType.CONTEXT);
