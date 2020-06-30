@@ -158,7 +158,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Collection<PrecedenceNode> brokenNodes = new HashSet<>(precedenceGraph.getBrokenNodes());
 		if (includeImplicitBroken)
 			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes());
-		classifiedBrokenMatches = brokenNodes.parallelStream().collect( //
+		classifiedBrokenMatches = brokenNodes.stream().collect( //
 			Collectors.toMap( //
 				node -> node.getMatch(), //
 				node -> new BrokenMatch(this, node.getMatch(), !node.isBroken())));
@@ -352,8 +352,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		brokenRuleApplications.values().stream() //
 				.filter(m -> {
 					DeletionPattern pattern = classifiedBrokenMatches.get(m).getDeletionPattern();
-					return !(pattern.getModType(DomainType.SRC, BindingType.CREATE) == DomainModification.COMPL_DEL || //
-							pattern.getModType(DomainType.TRG, BindingType.CREATE) == DomainModification.COMPL_DEL);
+					DomainModification srcModType = pattern.getModType(DomainType.SRC, BindingType.CREATE);
+					DomainModification trgModType = pattern.getModType(DomainType.TRG, BindingType.CREATE);
+					return !(srcModType == DomainModification.COMPL_DEL  && trgModType == DomainModification.UNCHANGED ||//
+							srcModType == DomainModification.UNCHANGED && trgModType == DomainModification.COMPL_DEL);
 				}) //
 				.forEach(dependencyContainer::addMatch);
 
