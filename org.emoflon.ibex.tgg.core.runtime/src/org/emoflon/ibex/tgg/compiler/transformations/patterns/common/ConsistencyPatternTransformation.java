@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns.common;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
@@ -38,11 +39,14 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
-		for (TGGRuleEdge edge : rule.getEdges())
-			parent.transformEdge(rule.getEdges(), edge, ibexPattern);
-
+		//TODO why is this needed with pattern invocation
+		if(!options.invocation.usePatternInvocation())
+			for (TGGRuleEdge edge : rule.getEdges()) 
+				parent.transformEdge(rule.getEdges(), edge, ibexPattern);
+//			
 		// Create protocol node and connections to nodes in pattern
 		parent.createAndConnectProtocolNode(rule, ibexPattern);
+//		}
 
 	}
 

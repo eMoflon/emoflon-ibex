@@ -126,6 +126,36 @@ public class PatternSuffixes {
 	public static final String GENForCO = SEP + "GenForCO";
 	
 	/**
+	 * Used for pattern invocation. Represents the source part of the rule
+	 */
+	public static final String SRC = SEP + "SRC";
+	
+	/**
+	 * Used for pattern invocation. Represents the target part of the rule
+	 */
+	public static final String TRG = SEP + "TRG";
+	
+	/**
+	 * Used for pattern invocation. Represents the context part of the rule
+	 */
+	public static final String CONTEXT = SEP + "CONTEXT";
+	
+	/**
+	 * Used for pattern invocation. Represents the create correspondence part of the rule
+	 */
+	public static final String GREENCORR = SEP + "GREENCORR";
+	
+	/**
+	 * Used for pattern invocation. Represents a FWD-pattern and a GEN-pattern
+	 */
+	public static final String FWD_GREENCORR = SEP + "FWD_GREENCORR";
+	
+	/**
+	 * Used for pattern invocation. Represents a BWD-pattern and a GEN-pattern
+	 */
+	public static final String BWD_GREENCORR = SEP + "BWD_GREENCORR";
+	
+	/**
 	 * Removes the suffix of a given pattern name.
 	 * 
 	 * @param name Name of the pattern
@@ -160,6 +190,11 @@ public class PatternSuffixes {
 		case GENForCC: return PatternType.GENForCC;
 		case CO: return PatternType.CO;
 		case GENForCO: return PatternType.GENForCO;
+		case SRC: return PatternType.SRC;
+		case TRG: return PatternType.TRG;
+		case CONTEXT: return PatternType.CONTEXT;
+		case FWD_GREENCORR: return PatternType.FWD_GREENCORR;
+		case BWD_GREENCORR: return PatternType.BWD_GREENCORR;
 		default: throw new RuntimeException(suffix + "is an unknown suffix for TGG patterns");
 		}
 	}

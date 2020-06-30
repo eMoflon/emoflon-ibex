@@ -5,6 +5,7 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWDO
 import java.util.List;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
@@ -48,8 +49,9 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
 		edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
 
-		for (TGGRuleEdge edge : edges)
+		for (TGGRuleEdge edge : edges) 
 			parent.transformEdge(edges, edge, ibexPattern);
+		
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import static org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper.addI
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFilterNACPatternName;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +24,11 @@ import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
+import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
+import language.DomainType;
 import language.TGG;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
@@ -49,6 +52,7 @@ public abstract class OperationalPatternTransformation {
 		this.options = options;
 		this.rule = rule;
 		this.filterNACAnalysis = filterNACAnalysis;
+//		testIfNACsAreEqual();
 	}
 
 	protected abstract String getPatternName();
@@ -268,5 +272,40 @@ public abstract class OperationalPatternTransformation {
 	private EClass getOtherNodeType(FilterNACCandidate candidate) {
 		return candidate.getEDirection() == EdgeDirection.OUTGOING ? (EClass) candidate.getEdgeType().getEType()
 				: (EClass) candidate.getEdgeType().eContainer();
+	}
+	
+	private void testIfNACsAreEqual() {
+		PACAnalysis pacAnalysis = new PACAnalysis(options.tgg.flattenedTGG(), options);
+		LinkedList<FilterNACCandidate> pacCandidates = new LinkedList<FilterNACCandidate>(pacAnalysis.computeFilterNACCandidates(rule, DomainType.SRC));
+		LinkedList<FilterNACCandidate> equalCandidates = new LinkedList<FilterNACCandidate>();
+		for(FilterNACCandidate candidate: filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
+			for(FilterNACCandidate pacCandidate : pacCandidates) {
+				if(candidate.getEdgeType() == pacCandidate.getEdgeType() && candidate.getEDirection() == pacCandidate.getEDirection()) {
+					equalCandidates.add(pacCandidate);
+					break;
+				}
+					
+			}
+		}
+		if(equalCandidates.size() == pacCandidates.size()) {
+			System.err.println(rule.getName() + " : NACs aus PACAnalysis und FilterNacAnalysis sind für SRC identisch");
+		}
+		else System.err.println(rule.getName() + " : ERROR: NACs aus PACAnalysis und FilterNacAnalysis sind für SRC NICHT identisch");
+		
+		pacCandidates = new LinkedList<FilterNACCandidate>(pacAnalysis.computeFilterNACCandidates(rule, DomainType.TRG));
+		equalCandidates.clear();
+		for(FilterNACCandidate candidate: filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
+			for(FilterNACCandidate pacCandidate : pacCandidates) {
+				if(candidate.getEdgeType() == pacCandidate.getEdgeType() && candidate.getEDirection() == pacCandidate.getEDirection()) {
+					equalCandidates.add(pacCandidate);
+					break;
+				}
+					
+			}
+		}
+		if(equalCandidates.size() == pacCandidates.size()) {
+			System.err.println(rule.getName() + " : NACs aus PACAnalysis und FilterNacAnalysis sind für TRG identisch");
+		}
+		else System.err.println(rule.getName() + " : ERROR: NACs aus PACAnalysis und FilterNacAnalysis sind für TRG NICHT identisch");
 	}
 }

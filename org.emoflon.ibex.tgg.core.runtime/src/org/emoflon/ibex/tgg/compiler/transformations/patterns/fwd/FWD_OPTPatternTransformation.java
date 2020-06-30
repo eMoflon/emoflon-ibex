@@ -9,6 +9,7 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomai
 import java.util.List;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
