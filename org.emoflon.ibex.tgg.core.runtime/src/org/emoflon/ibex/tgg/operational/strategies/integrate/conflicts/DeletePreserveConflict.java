@@ -119,4 +119,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		resolved = true;
 	}
 
+	public DomainType getDomainToBePreserved() {
+		return domainToBePreserved;
+	}
 }
