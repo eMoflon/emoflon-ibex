@@ -247,13 +247,20 @@ public abstract class OperationalShortcutRule {
 				return (EObject) n.eContainer();
 			});
 		} else {
+			if(edgeRef.getEOpposite() != null) {
+				key2lookup.put(key, n -> {
+					return n.eGet(edgeRef.getEOpposite());
+				});
+			}
+			else {
+				key2lookup.put(key, n -> {
+					Class<?> instanceClass = key.sourceNode.getType().getInstanceClass();
+					if (instanceClass != null)
+						return eMoflonEMFUtil.getOppositeReference(n, instanceClass, key.edge.getType().getName());
+					return EMFNavigationUtil.getOppositeReference(n, key.sourceNode.getType(), key.edge.getType().getName());
+				});
+			}
 			// TODO lfritsche : implement reverse navigation
-			key2lookup.put(key, n -> {
-				Class<?> instanceClass = key.sourceNode.getType().getInstanceClass();
-				if (instanceClass != null)
-					return eMoflonEMFUtil.getOppositeReference(n, instanceClass, key.edge.getType().getName());
-				return EMFNavigationUtil.getOppositeReference(n, key.sourceNode.getType(), key.edge.getType().getName());
-			});
 		}
 	}
 
