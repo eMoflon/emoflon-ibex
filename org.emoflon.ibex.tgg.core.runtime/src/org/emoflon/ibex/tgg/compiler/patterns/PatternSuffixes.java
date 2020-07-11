@@ -162,7 +162,7 @@ public class PatternSuffixes {
 		case GENForCC: return PatternType.GENForCC;
 		case CO: return PatternType.CO;
 		case GENForCO: return PatternType.GENForCO;
-		default: throw new RuntimeException(suffix + "is an unknown suffix for TGG patterns");
+		default: throw new RuntimeException(suffix + " is an unknown suffix for TGG patterns");
 		}
 	}
 }

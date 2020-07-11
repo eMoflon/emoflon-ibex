@@ -2,8 +2,6 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns.common;
 
 import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWithName;
 import static org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper.addInjectivityConstraintIfNecessary;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFilterNACSRCPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFilterNACTRGPatternName;
 
 import java.util.ArrayList;
 import java.util.List;
