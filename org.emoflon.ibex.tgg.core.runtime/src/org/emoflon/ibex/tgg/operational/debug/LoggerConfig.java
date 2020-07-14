@@ -6,9 +6,6 @@ import java.util.Collections;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
-
 /**
  * This is the configuration class for console logs. It can be configured by
  * using the Environment Variable "log" and a list of options as value.
@@ -35,8 +32,6 @@ import org.apache.log4j.Logger;
  *
  */
 public final class LoggerConfig {
-
-	private static Logger logger = Logger.getRootLogger();
 
 	private static Collection<String> envVars = getEnvironmentVariables();
 
@@ -66,7 +61,7 @@ public final class LoggerConfig {
 	public static boolean log_allTimes() {
 		return log_all || log_allTimes;
 	}
-	
+
 	public static boolean log_incomingMatches() {
 		return log_all || log_incomingMatches;
 	}
@@ -108,10 +103,8 @@ public final class LoggerConfig {
 	}
 
 	public static void log(boolean apply, Supplier<String> output) {
-		BasicConfigurator.resetConfiguration();
-		BasicConfigurator.configure();
 		if (apply)
-			logger.debug(output.get());
+			System.out.println(output.get());
 	}
 
 	private static Collection<String> getEnvironmentVariables() {

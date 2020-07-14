@@ -11,6 +11,7 @@ import language.DomainType;
 
 public class DeletionPattern {
 
+	private List<DomainModification> serialized;
 	private final int initMapCapacity = 8;
 
 	private Map<DomainType, Map<BindingType, DomainModification>> pattern = new HashMap<>(initMapCapacity);
@@ -61,8 +62,8 @@ public class DeletionPattern {
 	}
 
 	public boolean matches(DeletionPattern pattern) {
-		List<DomainModification> thisPattern = this.serialise();
-		List<DomainModification> otherPattern = pattern.serialise();
+		List<DomainModification> thisPattern = this.serialize();
+		List<DomainModification> otherPattern = pattern.serialize();
 
 		if (thisPattern.size() != otherPattern.size())
 			throw new RuntimeException("DeletionPattern matching: patterns must have the same size!");
@@ -76,18 +77,21 @@ public class DeletionPattern {
 		return true;
 	}
 
-	List<DomainModification> serialise() {
-		List<DomainModification> result = new LinkedList<>();
+	synchronized List<DomainModification> serialize() {
+		if(serialized != null)
+			return serialized;
+		
+		serialized = new LinkedList<>();
 
 		List<DomainType> domains = Arrays.asList(DomainType.SRC, DomainType.CORR, DomainType.TRG);
 		List<BindingType> bindings = Arrays.asList(BindingType.CREATE, BindingType.CONTEXT);
 		domains.forEach(domain -> {
 			bindings.forEach(binding -> {
-				result.add(getModType(domain, binding));
+				serialized.add(getModType(domain, binding));
 			});
 		});
 
-		return result;
+		return serialized;
 	}
 
 	@Override

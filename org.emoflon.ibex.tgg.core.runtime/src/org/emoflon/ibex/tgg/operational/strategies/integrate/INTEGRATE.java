@@ -18,16 +18,14 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.delta.validation.DeltaValidator;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
-import org.emoflon.ibex.tgg.operational.debug.Timer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
-import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
@@ -37,10 +35,13 @@ import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.ConflictDetector;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraphContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
@@ -48,15 +49,17 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.NACOverlap;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
 
 import com.google.common.collect.Sets;
 
 import delta.DeltaContainer;
+import language.BindingType;
+import language.DomainType;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
-import precedencegraph.PrecedenceNode;
 import runtime.TGGRuleApplication;
 
 public class INTEGRATE extends PropagatingOperationalStrategy {
@@ -66,7 +69,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected ModelChangeProtocol modelChangeProtocol;
 	protected ConflictDetector conflictDetector;
 	protected CC consistencyChecker;
-	protected PrecedenceGraphContainer precedenceGraph;
+	protected PrecedenceGraph precedenceGraph;
 
 	//// DATA ////
 	protected DeltaContainer userDeltaContainer;
@@ -74,7 +77,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected ChangeKey userDeltaKey;
 	protected ChangeKey generalDeltaKey;
 
-	protected Set<ITGGMatch> filterNacMatches;
+	protected Map<String, Map<NACOverlap, Collection<ITGGMatch>>> pattern2filterNacMatches;
+	protected Map<String, Collection<String>> filterNacPattern2nodeNames;
 	protected Map<ITGGMatch, BrokenMatch> classifiedBrokenMatches;
 	protected Set<ConflictContainer> conflicts;
 	protected Map<ITGGMatch, ConflictContainer> match2conflicts;
@@ -85,7 +89,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void init() throws IOException {
-		filterNacMatches = new HashSet<>();
+		pattern2filterNacMatches = new HashMap<>();
+		filterNacPattern2nodeNames = new HashMap<>();
 		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
@@ -102,7 +107,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 //			}
 //		};
 		options.executable(this);
-		this.precedenceGraph = new PrecedenceGraphContainer(this);
+		this.precedenceGraph = new PrecedenceGraph(this);
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
@@ -127,7 +132,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void initialize() {
-		precedenceGraph.initialize();
 		initializeRepairStrategy(options);
 		matchDistributor.updateMatches();
 		modelChangeProtocol.attachAdapter();
@@ -153,10 +157,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Collection<PrecedenceNode> brokenNodes = new HashSet<>(precedenceGraph.getBrokenNodes());
 		if (includeImplicitBroken)
 			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes());
-		for (PrecedenceNode node : brokenNodes) {
-			ITGGMatch match = precedenceGraph.getMatch(node);
-			classifiedBrokenMatches.put(match, new BrokenMatch(this, match, !node.isBroken()));
-		}
+		classifiedBrokenMatches = brokenNodes.stream().collect( //
+			Collectors.toMap( //
+				node -> node.getMatch(), //
+				node -> new BrokenMatch(this, node.getMatch(), !node.isBroken())));
+		
 	}
 
 	protected void detectConflicts() {
@@ -167,11 +172,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void buildContainerHierarchy() {
-		PrecedenceGraphContainer matchContainer = getPrecedenceGraphContainer();
 		Set<ConflictContainer> conflicts = new HashSet<>(match2conflicts.values());
 		for (ITGGMatch match : match2conflicts.keySet()) {
-			matchContainer.forAllRequiredBy(matchContainer.getNode(match), n -> {
-				ITGGMatch m = matchContainer.getMatch(n);
+			precedenceGraph.forAllRequiredBy(precedenceGraph.getNode(match), n -> {
+				ITGGMatch m = n.getMatch();
 				if (match2conflicts.containsKey(m)) {
 					ConflictContainer cc = match2conflicts.get(m);
 					match2conflicts.get(match).getSubContainers().add(cc);
@@ -214,7 +218,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			return false;
 		brokenRuleApplications.forEach((ra, m) -> {
 			deleteGreenCorrs(m);
-			EcoreUtil.delete(ra, true);
+//			EcoreUtil.delete(ra, true);
+//			ra.setProtocol(null);
+			ra.eClass().getEAllReferences().forEach(r -> ra.eSet(r, null));
+			ra.eResource().getContents().remove(ra);
 		});
 		processed.putAll(brokenRuleApplications);
 		brokenRuleApplications.clear();
@@ -296,12 +303,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Timer.start();
 
 		this.updateBlockedMatches();
-		if (operationalMatchContainer.isEmpty())
+		if (operationalMatchContainer.isEmpty()) {
+			times.addTo("ruleApplication", Timer.stop());
 			return false;
+		}
 
 		ITGGMatch match = chooseOneMatch();
-		if (match == null)
+		if (match == null) {
+			times.addTo("ruleApplication", Timer.stop());
 			return false;
+		}
 		String ruleName = match.getRuleName();
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
@@ -314,7 +325,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: ");
 		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "" + match);
 
-		matchApplicationTime += Timer.stop();
+		times.addTo("ruleApplication", Timer.stop());
 		return true;
 	}
 
@@ -337,8 +348,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Timer.start();
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
-		BrokenMatchContainer dependencyContainer = new BrokenMatchContainer(this);
-		brokenRuleApplications.values().forEach(dependencyContainer::addMatch);
+		dependencyContainer.reset();
+		brokenRuleApplications.values().stream() //
+				.filter(m -> {
+					DeletionPattern pattern = classifiedBrokenMatches.get(m).getDeletionPattern();
+					DomainModification srcModType = pattern.getModType(DomainType.SRC, BindingType.CREATE);
+					DomainModification trgModType = pattern.getModType(DomainType.TRG, BindingType.CREATE);
+					return !(srcModType == DomainModification.COMPL_DEL  && trgModType == DomainModification.UNCHANGED ||//
+							srcModType == DomainModification.UNCHANGED && trgModType == DomainModification.COMPL_DEL);
+				}) //
+				.forEach(dependencyContainer::addMatch);
 
 		boolean processedOnce = true;
 		while (processedOnce) {
@@ -365,6 +384,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					brokenRuleApplications.remove(getRuleApplicationNode(repairCandidate));
 					precedenceGraph.removeMatch(repairCandidate);
 					brokenRuleApplications.put(getRuleApplicationNode(repairedMatch), repairedMatch);
+					precedenceGraph.notifyAddedMatch(repairedMatch);
+					precedenceGraph.notifyRemovedMatch(repairedMatch);
 					alreadyProcessed.add(repairedMatch);
 				}
 
@@ -374,13 +395,13 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			}
 			alreadyProcessed.addAll(brokenRuleApplications.values());
 			matchDistributor.updateMatches();
-			classifyBrokenMatches(true);
+			classifyBrokenMatches(false);
 			brokenRuleApplications.values().stream() //
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);
 		}
 
-		repairTime += Timer.stop();
+		times.addTo("repair", Timer.stop());
 		return !alreadyProcessed.isEmpty();
 	}
 
@@ -438,11 +459,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		if (type != null)
 			repairedMatch = rStrat.repair(repairCandidate, type);
 
+		// TODO adrianm: remove this
 		if (repairedMatch != null) {
-			TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
-			brokenRuleApplications.remove(oldRa);
-			TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
-			brokenRuleApplications.put(newRa, repairedMatch);
+//			TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
+//			brokenRuleApplications.remove(oldRa);
+//			TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
+//			brokenRuleApplications.put(newRa, repairedMatch);
 		}
 
 		return repairedMatch;
@@ -455,7 +477,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		case BWD:
 		case CONSISTENCY:
 //		case CC:
-		case FILTER_NAC:
+		case FILTER_NAC_SRC:
+		case FILTER_NAC_TRG:
 			return true;
 		default:
 			return false;
@@ -469,18 +492,35 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	protected void addOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.FILTER_NAC)
-			filterNacMatches.add((ITGGMatch) match);
+		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
+			addFilterNacMatch(match);
 		else {
 			precedenceGraph.notifyAddedMatch(match);
 			super.addOperationalRuleMatch(match);
 		}
 	}
 
+	private void addFilterNacMatch(ITGGMatch match) {
+		if(!pattern2filterNacMatches.containsKey(match.getPatternName())) {
+			pattern2filterNacMatches.put(match.getPatternName(), new HashMap<>());
+			filterNacPattern2nodeNames.put(match.getPatternName(), match.getParameterNames());
+		}
+		Map<NACOverlap, Collection<ITGGMatch>> overlap2match = pattern2filterNacMatches.get(match.getPatternName());
+		NACOverlap overlap = new NACOverlap(match);
+		// the number of matches per overlap should not exceed a certain number
+		overlap2match.putIfAbsent(overlap, new LinkedList<>());
+		overlap2match.get(overlap).add(match);
+	}
+
+	private boolean removeFilterNacMatch(ITGGMatch match) {
+		NACOverlap overlap = new NACOverlap(match);
+		return pattern2filterNacMatches.get(match.getPatternName()).get(overlap).remove(match);
+	}
+
 	@Override
 	public boolean removeOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.FILTER_NAC)
-			return filterNacMatches.remove(match);
+		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
+			return removeFilterNacMatch(match);
 		else {
 			precedenceGraph.notifyRemovedMatch(match);
 			return super.removeOperationalRuleMatch(match);
@@ -491,7 +531,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return matchUtil;
 	}
 
-	public PrecedenceGraphContainer getPrecedenceGraphContainer() {
+	public PrecedenceGraph getPrecedenceGraph() {
 		return precedenceGraph;
 	}
 
@@ -514,12 +554,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		for (EReference ref : ra.eClass().getEReferences()) {
 			ra.eSet(ref, null);
 		}
-		
+
 		precedenceGraph.removeMatch(brokenMatch);
 	}
 
-	public Set<ITGGMatch> getFilterNacMatches() {
-		return filterNacMatches;
+	public Collection<ITGGMatch> getFilterNacMatches(String nacPatternName, ITGGMatch match) {
+		Map<NACOverlap, Collection<ITGGMatch>> overlap2matches = pattern2filterNacMatches.get(nacPatternName);
+		if(overlap2matches == null)
+			return Collections.emptyList();
+		NACOverlap overlap = new NACOverlap(match, filterNacPattern2nodeNames.get(nacPatternName));
+		return overlap2matches.get(overlap);
 	}
 
 	public Map<ITGGMatch, BrokenMatch> getClassifiedBrokenMatches() {

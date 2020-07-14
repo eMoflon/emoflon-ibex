@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
@@ -7,24 +8,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.common.collections.CollectionFactory;
-import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 
-import precedencegraph.PrecedenceNode;
-import precedencegraph.PrecedenceNodeContainer;
-import precedencegraph.PrecedencegraphFactory;
+public class PrecedenceGraph implements TimeMeasurable {
 
-public class PrecedenceGraphContainer {
-
-	public static final CollectionFactory cfactory = new JDKCollectionFactory();
+	protected final Times times = new Times();
 
 	protected final PropagatingOperationalStrategy strategy;
-	protected boolean initialized = false;
 
 	protected Map<PrecedenceNode, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
 	protected Map<Object, Collection<PrecedenceNode>> requiredBy = cfactory.createObjectToObjectHashMap();
@@ -32,38 +29,36 @@ public class PrecedenceGraphContainer {
 	protected Map<Object, Collection<PrecedenceNode>> translatedBy = cfactory.createObjectToObjectHashMap();
 
 	//// Precedence Graph ////
-	protected Resource precedenceGraph;
-	protected PrecedenceNodeContainer container;
+	protected Set<PrecedenceNode> nodes = cfactory.createObjectSet();
 	protected Map<ITGGMatch, PrecedenceNode> match2node = cfactory.createObjectToObjectHashMap();
-	protected Map<PrecedenceNode, ITGGMatch> node2match = cfactory.createObjectToObjectHashMap();
 	protected Set<PrecedenceNode> brokenNodes = cfactory.createObjectSet();
 	protected Set<PrecedenceNode> implicitBrokenNodes = cfactory.createObjectSet();
 
-	public PrecedenceGraphContainer(PropagatingOperationalStrategy strategy) {
+	public PrecedenceGraph(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
-	}
-
-	public void initialize() {
-		if (!initialized) {
-			this.precedenceGraph = strategy.getOptions().resourceHandler().getPrecedenceResource();
-			this.container = PrecedencegraphFactory.eINSTANCE.createPrecedenceNodeContainer();
-			precedenceGraph.getContents().add(container);
-			initialized = true;
-		}
+		TimeRegistry.register(this);
 	}
 
 	public void notifyAddedMatch(ITGGMatch match) {
+		Timer.start();
+
 		if (match.getType() == PatternType.CONSISTENCY)
 			addConsistencyMatch(match);
+
+		times.addTo("notifyAdded", Timer.stop());
 	}
 
 	public void notifyRemovedMatch(ITGGMatch match) {
+		Timer.start();
+
 		if (match.getType() == PatternType.CONSISTENCY)
 			handleBrokenConsistencyMatch(match);
+
+		times.addTo("notifyRemoved", Timer.stop());
 	}
 
 	public void clearBrokenMatches() {
-		brokenNodes.forEach(node -> removeConsistencyMatch(getMatch(node), node));
+		brokenNodes.forEach(node -> removeConsistencyMatch(node.getMatch(), node));
 		brokenNodes.clear();
 	}
 
@@ -71,13 +66,6 @@ public class PrecedenceGraphContainer {
 		PrecedenceNode node = getNode(match);
 		removeConsistencyMatch(match, node);
 		brokenNodes.remove(node);
-	}
-
-	public ITGGMatch getMatch(PrecedenceNode node) {
-		ITGGMatch match = node2match.get(node);
-		if (match == null)
-			throw new RuntimeException("No consistency match found for precedence node!");
-		return match;
 	}
 
 	public PrecedenceNode getNode(ITGGMatch match) {
@@ -88,7 +76,7 @@ public class PrecedenceGraphContainer {
 	}
 
 	public Collection<PrecedenceNode> getNodes() {
-		return container.getNodes();
+		return nodes;
 	}
 
 	public Collection<PrecedenceNode> getBrokenNodes() {
@@ -144,14 +132,14 @@ public class PrecedenceGraphContainer {
 			Collection<PrecedenceNode> requiredNode = translatedBy.get(elt);
 			if (requiredNode != null) {
 				for (PrecedenceNode reqNode : requiredNode)
-					node.getRequires().add(reqNode);
+					node.addRequires(reqNode);
 			}
 		}
 		for (Object elt : translatedElts) {
 			Collection<PrecedenceNode> dependentNodes = requiredBy.get(elt);
 			if (dependentNodes != null) {
 				for (PrecedenceNode depNode : dependentNodes)
-					node.getRequiredBy().add(depNode);
+					node.addRequiredBy(depNode);
 			}
 		}
 	}
@@ -179,26 +167,20 @@ public class PrecedenceGraphContainer {
 	}
 
 	private PrecedenceNode createNode(ITGGMatch match) {
-		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createPrecedenceNode();
-		node.setBroken(false);
-		container.getNodes().add(node);
-		node.setMatchAsString(match.getPatternName() + "(" + match.hashCode() + ")");
-
+		PrecedenceNode node = new PrecedenceNode(match);
+		nodes.add(node);
 		match2node.put(match, node);
-		node2match.put(node, match);
-
 		return node;
 	}
 
 	private void deleteNode(ITGGMatch match, PrecedenceNode node) {
-		node.setPrecedenceNodeContainer(null);
-		node.getRequiredBy().clear();
-		node.getRequires().clear();
-		node.getRollesBack().clear();
-		node.getRollbackCauses().clear();
-		
+		nodes.remove(node);
+		node.clearRequires();
+		node.clearRequiredBy();
+		node.clearRollbackCauses();
+		node.clearRollsBack();
+
 		match2node.remove(match);
-		node2match.remove(node);
 		brokenNodes.remove(node);
 		implicitBrokenNodes.remove(node);
 	}
@@ -213,15 +195,15 @@ public class PrecedenceGraphContainer {
 
 	private void updateImplicitBrokenNodes(PrecedenceNode node) {
 		if (node.isBroken()) {
-			node.getRollbackCauses().add(node);
+			node.addRollbackCause(node);
 			forAllRequiredBy(node, n -> {
-				n.getRollbackCauses().add(node);
+				n.addRollbackCause(node);
 				if (!n.isBroken())
 					implicitBrokenNodes.add(n);
 				return true;
 			});
 		} else
-			node.getRollesBack().clear();
+			node.clearRollsBack();
 	}
 
 	public void forAllRequires(PrecedenceNode node, Predicate<? super PrecedenceNode> action) {
@@ -254,6 +236,11 @@ public class PrecedenceGraphContainer {
 					forAllRequiredBy(n, action, processed);
 			}
 		}
+	}
+
+	@Override
+	public Times getTimes() {
+		return times;
 	}
 
 }

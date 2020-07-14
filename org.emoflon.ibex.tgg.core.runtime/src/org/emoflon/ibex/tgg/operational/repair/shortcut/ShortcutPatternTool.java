@@ -22,6 +22,7 @@ import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
+import org.emoflon.ibex.tgg.operational.matches.TGGMatchParameterOrderProvider;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalSCFactory;
@@ -177,15 +178,21 @@ public class ShortcutPatternTool {
 	 * @return
 	 */
 	private ITGGMatch transformToReplacingMatch(OperationalShortcutRule osr, ITGGMatch scMatch) {
-		ITGGMatch newMatch = new SimpleTGGMatch(osr.getScRule().getReplacingRule().getName() + PatternSuffixes.CONSISTENCY);
+		ITGGMatch tempMatch = new SimpleTGGMatch(osr.getScRule().getReplacingRule().getName() + PatternSuffixes.CONSISTENCY);
 		
 		osr.getScRule().getReplacingRule().getNodes().forEach(n -> 
-			newMatch.put(n.getName(), scMatch.get(osr.getScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.REPLACING).getName()))
+			tempMatch.put(n.getName(), scMatch.get(osr.getScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.REPLACING).getName()))
 		);
 		
 		IGreenPatternFactory greenFactory = strategy.getGreenFactory(osr.getScRule().getReplacingRule().getName());
 		IGreenPattern greenPattern = greenFactory.create(PatternType.FWD);
-		greenPattern.createMarkers(osr.getScRule().getReplacingRule().getName(), newMatch);
+		greenPattern.createMarkers(osr.getScRule().getReplacingRule().getName(), tempMatch);
+		
+		ITGGMatch newMatch = new SimpleTGGMatch(tempMatch.getPatternName());
+		for(String p : TGGMatchParameterOrderProvider.getParams(PatternSuffixes.removeSuffix(tempMatch.getPatternName()))) {
+			if (tempMatch.getParameterNames().contains(p))
+				newMatch.put(p, tempMatch.get(p));
+		}
 		
 		return newMatch;
 	}
@@ -199,17 +206,18 @@ public class ShortcutPatternTool {
 		// Collect edges to revoke.
 		deletedRuleEdges.forEach(e -> {
 			EMFEdge toBeDeletedRuntimeEdge = getRuntimeEdge(brokenMatch, e);
+			boolean isSingle = !toBeDeletedRuntimeEdge.getType().isMany();
 
-			if(strategy.getOptions().repair.disableInjectivity()) {
+			Collection<TGGRuleEdge> conflictingEdges = createdRuleEdges.stream() //
+					.filter(edge -> edge.getType().equals(e.getType())).collect(Collectors.toList());
+			for (TGGRuleEdge conflictingEdge : conflictingEdges) {
+				EMFEdge toBeCreatedRuntimeEdge = getRuntimeEdge(brokenMatch, conflictingEdge);
 				// we have to handle cases here where deletions should not be performed if the edge was just created
-				Collection<TGGRuleEdge> conflictingEdges = createdRuleEdges.stream().filter(edge -> edge.getType().equals(e.getType())).collect(Collectors.toList());
-				for(TGGRuleEdge conflictingEdge : conflictingEdges) {
-					EMFEdge toBeCreatedRuntimeEdge = getRuntimeEdge(brokenMatch, conflictingEdge);
-					if(toBeCreatedRuntimeEdge.equals(toBeDeletedRuntimeEdge)) {
-						return;
-					}
-				}
-			} 
+				if (isSingle && toBeCreatedRuntimeEdge.getSource().equals(toBeDeletedRuntimeEdge.getSource()))
+					return;
+				if (strategy.getOptions().repair.disableInjectivity() && toBeCreatedRuntimeEdge.equals(toBeDeletedRuntimeEdge))
+					return;
+			}
 			
 			if (toBeDeletedRuntimeEdge.getSource() != null && toBeDeletedRuntimeEdge.getTarget() != null)
 				edgesToRevoke.add(new EMFEdge(toBeDeletedRuntimeEdge.getSource(), toBeDeletedRuntimeEdge.getTarget(), toBeDeletedRuntimeEdge.getType()));

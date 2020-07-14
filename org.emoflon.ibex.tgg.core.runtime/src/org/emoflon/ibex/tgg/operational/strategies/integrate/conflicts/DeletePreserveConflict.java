@@ -12,14 +12,14 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeAddition;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeDeletion;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraphContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import language.DomainType;
 import language.TGGRuleNode;
-import precedencegraph.PrecedenceNode;
 
 public abstract class DeletePreserveConflict extends Conflict
 		implements CRS_MergeAndPreserve, CRS_RevokeDeletion, CRS_RevokeAddition, CRS_PreferSource, CRS_PreferTarget {
@@ -34,12 +34,12 @@ public abstract class DeletePreserveConflict extends Conflict
 	}
 
 	private List<ITGGMatch> getAndSortCausingMatches() {
-		PrecedenceGraphContainer matchContainer = integrate().getPrecedenceGraphContainer();
-		PrecedenceNode node = matchContainer.getNode(getBrokenMatch().getMatch());
+		PrecedenceGraph pg = integrate().getPrecedenceGraph();
+		PrecedenceNode node = pg.getNode(getBrokenMatch().getMatch());
 
 		return new LinkedList<>(node.getRollbackCauses()).stream() //
 				.sorted((n1, n2) -> n1.getRollbackCauses().size() - n2.getRollbackCauses().size()) //
-				.map(n -> matchContainer.getMatch(n)) //
+				.map(n -> n.getMatch()) //
 				.collect(Collectors.toList());
 	}
 
@@ -78,10 +78,10 @@ public abstract class DeletePreserveConflict extends Conflict
 	}
 
 	protected void restoreMatchesBasedOn(ITGGMatch match) {
-		PrecedenceGraphContainer matchContainer = integrate().getPrecedenceGraphContainer();
-		matchContainer.getNode(match).getRequiredBy().forEach(n -> {
+		PrecedenceGraph pg = integrate().getPrecedenceGraph();
+		pg.getNode(match).getRequiredBy().forEach(n -> {
 			if (n.isBroken()) {
-				ITGGMatch m = matchContainer.getMatch(n);
+				ITGGMatch m = n.getMatch();
 				if (!restored.contains(m)) {
 					restoreMatch(integrate().getClassifiedBrokenMatches().get(m));
 					restored.add(m);
@@ -119,4 +119,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		resolved = true;
 	}
 
+	public DomainType getDomainToBePreserved() {
+		return domainToBePreserved;
+	}
 }

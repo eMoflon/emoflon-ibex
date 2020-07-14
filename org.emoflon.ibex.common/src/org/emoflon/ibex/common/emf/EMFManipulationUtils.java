@@ -136,16 +136,16 @@ public class EMFManipulationUtils {
 			if(!node.eContents().isEmpty() && recursive)
 				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction, recursive);
 		}
-		EcoreUtil.deleteAll(nodesToDelete, false);
-//		for (EObject eObject : nodesToDelete) {
-//			for (EReference ref : eObject.eClass().getEAllReferences()) {
-//				if(ref.isMany())
-//					((List<?>) eObject.eGet(ref)).clear();
-//				else
-//					eObject.eSet(ref, null);
-//			}
-//			EcoreUtil.remove(eObject);
-//		}
+//		EcoreUtil.deleteAll(nodesToDelete, false);
+		for (EObject eObject : nodesToDelete) {
+			for (EReference ref : eObject.eClass().getEAllReferences()) {
+				if(ref.isMany())
+					((List<?>) eObject.eGet(ref)).clear();
+				else
+					eObject.eSet(ref, null);
+			}
+			EcoreUtil.remove(eObject);
+		}
 	}
 	
 	/**

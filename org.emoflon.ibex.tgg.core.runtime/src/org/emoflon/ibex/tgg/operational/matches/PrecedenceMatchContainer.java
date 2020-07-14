@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.matches;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
@@ -7,12 +8,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.common.collections.CollectionFactory;
-import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
-import org.emoflon.ibex.tgg.operational.debug.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
@@ -21,9 +22,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
-public class PrecedenceMatchContainer extends LoggingMatchContainer implements IMatchContainer {
-
-	public static final CollectionFactory cfactory = new JDKCollectionFactory();
+public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable {
+	
+	protected final Times times = new Times();
 
 	protected PropagatingOperationalStrategy strategy;
 
@@ -43,13 +44,14 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 
 	public PrecedenceMatchContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
+		TimeRegistry.register(this);
 	}
 
 	@Override
 	public void addMatch(ITGGMatch match) {
 		Timer.start();
 		pending.add(match);
-		addMatchTime += Timer.stop();
+		times.addTo("addMatch", Timer.stop());
 	}
 
 	private void handleMatch(ITGGMatch m) {
@@ -148,11 +150,14 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 
 		if (m.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
 			consistencyMatchApplied(m);
+			times.addTo("matchApplied", Timer.stop());
 			return;
 		}
 
-		if (!translates.containsKey(m))
+		if (!translates.containsKey(m)) {
+			times.addTo("matchApplied", Timer.stop());
 			return;
+		}
 
 		Collection<Object> translatedElts = translates.get(m);
 		for (Object translatedElement : translatedElts) {
@@ -180,7 +185,7 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 
 		translated.addAll(translatedElts);
 
-		matchAppliedTime += Timer.stop();
+		times.addTo("matchApplied", Timer.stop());
 	}
 
 	private void consistencyMatchApplied(ITGGMatch m) {
@@ -225,7 +230,7 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 	@Override
 	public Set<ITGGMatch> getMatches() {
 		Timer.start();
-		
+
 		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending)
 				.collect(Collectors.toList());
 		notPendingMatches.forEach(this::handleMatch);
@@ -234,8 +239,8 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 		else
 			pending.removeAll(notPendingMatches);
 		Set<ITGGMatch> validate = validate(readySet);
-		
-		getMatchTime += Timer.stop();
+
+		times.addTo("getMatches", Timer.stop());
 		return validate;
 	}
 
@@ -259,14 +264,14 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 		if (match.getType() == PatternType.CONSISTENCY) {
 			boolean removed = removeConsistencyMatch(match);
 
-			removeMatchTime += Timer.stop();
+			times.addTo("removeMatch", Timer.stop());
 			return removed;
 		}
 
 		if (pending.contains(match)) {
 			pending.remove(match);
 
-			removeMatchTime += Timer.stop();
+			times.addTo("removeMatch", Timer.stop());
 			return true;
 		}
 
@@ -291,7 +296,8 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 
 		readySet.remove(match);
 
-		removeMatchTime += Timer.stop();
+		
+		times.addTo("removeMatch", Timer.stop());
 		return true;
 	}
 
@@ -321,6 +327,11 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 		translates.clear();
 
 		readySet.clear();
+	}
+
+	@Override
+	public Times getTimes() {
+		return times;
 	}
 
 }
