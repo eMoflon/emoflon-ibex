@@ -219,8 +219,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		brokenRuleApplications.forEach((ra, m) -> {
 			deleteGreenCorrs(m);
 //			EcoreUtil.delete(ra, true);
-			ra.setProtocol(null);
+//			ra.setProtocol(null);
 			ra.eClass().getEAllReferences().forEach(r -> ra.eSet(r, null));
+			ra.eResource().getContents().remove(ra);
 		});
 		processed.putAll(brokenRuleApplications);
 		brokenRuleApplications.clear();
@@ -460,10 +461,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		// TODO adrianm: remove this
 		if (repairedMatch != null) {
-			TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
-			brokenRuleApplications.remove(oldRa);
-			TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
-			brokenRuleApplications.put(newRa, repairedMatch);
+//			TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
+//			brokenRuleApplications.remove(oldRa);
+//			TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
+//			brokenRuleApplications.put(newRa, repairedMatch);
 		}
 
 		return repairedMatch;
