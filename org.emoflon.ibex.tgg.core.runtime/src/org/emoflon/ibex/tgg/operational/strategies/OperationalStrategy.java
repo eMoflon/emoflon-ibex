@@ -26,6 +26,7 @@ import org.emoflon.ibex.tgg.operational.matches.DefaultMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
+import org.emoflon.ibex.tgg.operational.matches.TGGMatchParameterOrderProvider;
 import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -106,6 +107,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		this.operationalMatchContainer = createMatchContainer();
 		domainsHaveNoSharedTypes = getTGG().getSrc().stream().noneMatch(getTGG().getTrg()::contains);
 		
+		TGGMatchParameterOrderProvider.init(options.tgg.flattenedTGG());
 		
 		this.notifyDoneInit();
 		options.debug.benchmarkLogger().addToInitTime(Timer.stop());

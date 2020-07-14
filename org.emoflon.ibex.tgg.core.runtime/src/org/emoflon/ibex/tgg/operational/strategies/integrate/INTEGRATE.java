@@ -383,6 +383,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					brokenRuleApplications.remove(getRuleApplicationNode(repairCandidate));
 					precedenceGraph.removeMatch(repairCandidate);
 					brokenRuleApplications.put(getRuleApplicationNode(repairedMatch), repairedMatch);
+					precedenceGraph.notifyAddedMatch(repairedMatch);
+					precedenceGraph.notifyRemovedMatch(repairedMatch);
 					alreadyProcessed.add(repairedMatch);
 				}
 
@@ -456,6 +458,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		if (type != null)
 			repairedMatch = rStrat.repair(repairCandidate, type);
 
+		// TODO adrianm: remove this
 		if (repairedMatch != null) {
 			TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
 			brokenRuleApplications.remove(oldRa);
