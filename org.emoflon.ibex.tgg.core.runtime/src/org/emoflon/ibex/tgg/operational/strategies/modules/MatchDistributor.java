@@ -37,8 +37,10 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 
 	protected Map<IMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
-	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2addMatch = new HashMap<>();;
+	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2addMatch = new HashMap<>();
 	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2removeMatch = new HashMap<>();
+	
+	protected Collection<Runnable> afterUpdateActions = new LinkedList<>();
 	
 	private IbexOptions options;
 	
@@ -71,6 +73,8 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 		Timer.start();
 		
 		blackInterpreter.updateMatches();
+		for (Runnable action : afterUpdateActions)
+			action.run();
 		
 		times.addTo("updateMatches", Timer.stop());
 	}
@@ -195,6 +199,10 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 			}
 			removeConsumers.add(removeMatch);
 		}
+	}
+	
+	public void registerAfterUpdateAction(Runnable action) {
+		afterUpdateActions.add(action);
 	}
 
 	public Collection<PatternType> getPatternRelevantForCompiler() {

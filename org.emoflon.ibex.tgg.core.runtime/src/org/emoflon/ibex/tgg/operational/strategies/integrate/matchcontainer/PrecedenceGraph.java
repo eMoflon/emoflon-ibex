@@ -4,6 +4,8 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -32,7 +34,9 @@ public class PrecedenceGraph implements TimeMeasurable {
 	protected Set<PrecedenceNode> nodes = cfactory.createObjectSet();
 	protected Map<ITGGMatch, PrecedenceNode> match2node = cfactory.createObjectToObjectHashMap();
 	protected Set<PrecedenceNode> brokenNodes = cfactory.createObjectSet();
-	protected Set<PrecedenceNode> implicitBrokenNodes = cfactory.createObjectSet();
+	protected Set<PrecedenceNode> implicitBrokenNodes = Collections.synchronizedSet(cfactory.createObjectSet());
+	
+	protected Set<PrecedenceNode> nodesToBeUpdated = cfactory.createObjectSet();
 
 	public PrecedenceGraph(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
@@ -55,6 +59,15 @@ public class PrecedenceGraph implements TimeMeasurable {
 			handleBrokenConsistencyMatch(match);
 
 		times.addTo("notifyRemoved", Timer.stop());
+	}
+	
+	public void updateImplicitBrokenNodes() {
+		nodesToBeUpdated.parallelStream().forEach(this::updateImplicitBrokenNodes);
+		for (Iterator<PrecedenceNode> it = implicitBrokenNodes.iterator(); it.hasNext();) {
+			PrecedenceNode node = (PrecedenceNode) it.next();
+			if(node.getRollbackCauses().isEmpty())
+				it.remove();
+		}
 	}
 
 	public void clearBrokenMatches() {
@@ -92,7 +105,9 @@ public class PrecedenceGraph implements TimeMeasurable {
 		if (node != null && node.isBroken()) {
 			node.setBroken(false);
 			brokenNodes.remove(node);
-			updateImplicitBrokenNodes(node);
+			if(!node.getRollbackCauses().isEmpty())
+				implicitBrokenNodes.add(node);
+			nodesToBeUpdated.add(node);
 			return;
 		}
 
@@ -190,7 +205,7 @@ public class PrecedenceGraph implements TimeMeasurable {
 		node.setBroken(true);
 		brokenNodes.add(node);
 		implicitBrokenNodes.remove(node);
-		updateImplicitBrokenNodes(node);
+		nodesToBeUpdated.add(node);
 	}
 
 	private void updateImplicitBrokenNodes(PrecedenceNode node) {

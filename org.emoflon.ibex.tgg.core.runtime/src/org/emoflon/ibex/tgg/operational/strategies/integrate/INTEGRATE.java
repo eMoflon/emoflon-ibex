@@ -108,6 +108,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 //		};
 		options.executable(this);
 		this.precedenceGraph = new PrecedenceGraph(this);
+		this.matchDistributor.registerAfterUpdateAction(precedenceGraph::updateImplicitBrokenNodes);		
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
