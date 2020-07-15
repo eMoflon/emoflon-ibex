@@ -6,9 +6,6 @@ public class DefaultConflictResolver implements ConflictResolver {
 
 	@Override
 	public void resolveConflict(ConflictContainer conflict) {
-		// NO-OP
 	}
-
-	
 
 }
