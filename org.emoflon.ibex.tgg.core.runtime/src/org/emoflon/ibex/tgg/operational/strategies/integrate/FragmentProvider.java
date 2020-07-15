@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
@@ -38,6 +39,8 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			Timer.start();
+			
 			i.modelChangeProtocol.registerKey(i.userDeltaKey);
 
 			if (i.userDeltaContainer != null) {
@@ -50,6 +53,8 @@ public class FragmentProvider {
 			}
 
 			i.modelChangeProtocol.deregisterKey(i.userDeltaKey);
+			
+			i.getTimes().addTo("fragments:ApplyUserDelta", Timer.stop());
 		}
 	}
 
@@ -58,10 +63,14 @@ public class FragmentProvider {
 		}
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			Timer.start();
+			
 			i.classifyBrokenMatches(true);
 			i.detectConflicts();
 			i.translateConflictFreeElements();
 			i.repairBrokenMatches();
+			
+			i.getTimes().addTo("fragments:Repair", Timer.stop());
 		}
 	}
 
@@ -71,11 +80,15 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			Timer.start();
+			
 			i.classifyBrokenMatches(true);
 			i.detectConflicts();
 			for (ConflictContainer c : i.conflicts) {
 				i.getOptions().integration.conflictSolver().resolveConflict(c);
 			}
+			
+			i.getTimes().addTo("fragments:ResolveConflicts", Timer.stop());
 		}
 	}
 
@@ -85,10 +98,14 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			Timer.start();
+			
 			do {
 				i.classifyBrokenMatches(false);
 				i.resolveBrokenMatches();
 			} while (!i.getClassifiedBrokenMatches().isEmpty());
+			
+			i.getTimes().addTo("fragments:ResolveBrokenMatches", Timer.stop());
 		}
 	}
 
@@ -98,9 +115,13 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			Timer.start();
+			
 			ChangeKey key = i.revokeBrokenCorrsAndRuleApplNodes();
 			i.consistencyChecker.run();
 			i.restoreBrokenCorrsAndRuleApplNodes(key);
+			
+			i.getTimes().addTo("fragments:LocalCC", Timer.stop());
 		}
 	}
 
@@ -110,9 +131,13 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			Timer.start();
+			
 			i.classifyBrokenMatches(true);
 			i.detectConflicts();
 			i.translateConflictFreeElements();
+			
+			i.getTimes().addTo("fragments:Translate", Timer.stop());
 		}
 
 	}
@@ -123,7 +148,11 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			Timer.start();
+			
 			i.revokeBrokenCorrsAndRuleApplNodes();
+			
+			i.getTimes().addTo("fragments:RevokeBrokenCorrs", Timer.stop());
 		}
 	}
 
@@ -133,9 +162,13 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			Timer.start();
+			
 			i.revokeBrokenCorrsAndRuleApplNodes();
 			i.clearBrokenRuleApplications();
 			i.revokeUntranslatedElements();
+			
+			i.getTimes().addTo("fragments:CleanUp", Timer.stop());
 		}
 	}
 

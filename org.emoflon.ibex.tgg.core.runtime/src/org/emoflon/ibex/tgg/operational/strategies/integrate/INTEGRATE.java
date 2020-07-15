@@ -125,22 +125,36 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
+		Timer.start();
+		
 		initialize();
+		
+		Timer.start();
 		for (IntegrationFragment fragment : options.integration.pattern().getIntegrationFragments())
 			fragment.apply(this);
+		times.addTo("run:fragments", Timer.stop());
+		
 		cleanUp();
+		
+		times.addTo("run", Timer.stop());
 	}
 
 	protected void initialize() {
+		Timer.start();
+		
 		initializeRepairStrategy(options);
 		matchDistributor.updateMatches();
 		modelChangeProtocol.attachAdapter();
 		userDeltaKey = new ChangeKey();
 		generalDeltaKey = new ChangeKey();
 		modelChangeProtocol.registerKey(generalDeltaKey);
+		
+		times.addTo("run:initialize", Timer.stop());
 	}
 
 	protected void cleanUp() {
+		Timer.start();
+		
 		modelChangeProtocol.deregisterKey(generalDeltaKey);
 		modelChangeProtocol.detachAdapter();
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
@@ -148,10 +162,15 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
+		
+		times.addTo("run:cleanUp", Timer.stop());
 	}
 
 	protected void classifyBrokenMatches(boolean includeImplicitBroken) {
 		matchDistributor.updateMatches();
+		
+		Timer.start();
+		
 		classifiedBrokenMatches.clear();
 
 		Collection<PrecedenceNode> brokenNodes = new HashSet<>(precedenceGraph.getBrokenNodes());
@@ -162,13 +181,19 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				node -> node.getMatch(), //
 				node -> new BrokenMatch(this, node.getMatch(), !node.isBroken())));
 		
+		times.addTo("operations:classifyBrokenMatches", Timer.stop());
 	}
 
 	protected void detectConflicts() {
 		matchDistributor.updateMatches();
+		
+		Timer.start();
+		
 		match2conflicts = conflictDetector.detectConflicts().stream() //
 				.collect(Collectors.toMap(cc -> cc.getBrokenMatch().getMatch(), cc -> cc));
 		buildContainerHierarchy();
+		
+		times.addTo("operations:detectConflicts", Timer.stop());
 	}
 
 	private void buildContainerHierarchy() {
@@ -195,8 +220,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void resolveBrokenMatches() {
+		Timer.start();
+		
 		classifiedBrokenMatches.values().forEach(brokenMatch -> brokenMatch.rollbackBrokenMatch());
 		((PrecedenceMatchContainer) operationalMatchContainer).clearPendingElements();
+		
+		times.addTo("operations:resolveBrokenMatches", Timer.stop());
 	}
 
 	protected ChangeKey revokeBrokenCorrsAndRuleApplNodes() {
@@ -394,14 +423,15 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				dependencyContainer.matchApplied(repairCandidate);
 			}
 			alreadyProcessed.addAll(brokenRuleApplications.values());
-			matchDistributor.updateMatches();
+			Timer.start();
 			classifyBrokenMatches(false);
+			times.subtractFrom("operations:repairBrokenMatches", Timer.stop());
 			brokenRuleApplications.values().stream() //
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);
 		}
 
-		times.addTo("repair", Timer.stop());
+		times.addTo("operations:repairBrokenMatches", Timer.stop());
 		return !alreadyProcessed.isEmpty();
 	}
 

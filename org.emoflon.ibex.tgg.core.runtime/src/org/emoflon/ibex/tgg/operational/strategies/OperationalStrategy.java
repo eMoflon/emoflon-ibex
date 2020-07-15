@@ -199,14 +199,14 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		
 		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty()) {
-			times.addTo("ruleApplication", Timer.stop());
+			times.addTo("translate:ruleApplication", Timer.stop());
 			return false;
 		}
 
 		Timer.start();
 		ITGGMatch match = chooseOneMatch();
 		String ruleName = match.getRuleName();
-		times.addTo("ruleAppl-chooseMatch", Timer.stop());
+		times.addTo("ruleApplication:chooseMatch", Timer.stop());
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
@@ -218,7 +218,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		} else
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: " + match.getPatternName() + "(" + match.hashCode() + ")");
 		
-		times.addTo("ruleApplication", Timer.stop());
+		times.addTo("translate:ruleApplication", Timer.stop());
 		return true;
 	}
 
@@ -236,7 +236,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Timer.start();
 		if (getBlockedMatches().containsKey(match)) { 
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Application blocked by update policy.");
-			times.addTo("ruleAppl-init", Timer.stop());
+			times.addTo("ruleApplication:init", Timer.stop());
 			return Optional.empty();
 		}
 
@@ -244,7 +244,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		IGreenPattern greenPattern = factory.create(match.getType());
 
 		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
-		times.addTo("ruleAppl-init", Timer.stop());
+		times.addTo("ruleApplication:init", Timer.stop());
 
 		Optional<ITGGMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
 		
@@ -255,7 +255,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			
 			Timer.start();
 			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
-			times.addTo("ruleAppl-finish", Timer.stop());
+			times.addTo("ruleApplication:finish", Timer.stop());
 		});
 
 		return comatch;
