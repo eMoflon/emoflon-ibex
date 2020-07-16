@@ -177,7 +177,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Collection<PrecedenceNode> brokenNodes = new HashSet<>(precedenceGraph.getBrokenNodes());
 		if (includeImplicitBroken)
 			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes());
-		classifiedBrokenMatches = brokenNodes.stream().collect( //
+		classifiedBrokenMatches = brokenNodes.parallelStream().collect( //
 				Collectors.toMap( //
 						node -> node.getMatch(), //
 						node -> new BrokenMatch(this, node.getMatch(), !node.isBroken())));
