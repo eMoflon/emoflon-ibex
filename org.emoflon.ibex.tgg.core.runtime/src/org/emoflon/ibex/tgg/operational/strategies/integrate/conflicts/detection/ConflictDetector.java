@@ -12,7 +12,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Attribute
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveAttrConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveEdgeConflict;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsDelConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsDomainChangesConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ContradictingChangesConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
@@ -43,15 +44,15 @@ public class ConflictDetector {
 			if (container != null)
 				conflicts.add(container);
 		}
-		
+
 		return conflicts;
 	}
 
 	private ConflictContainer detectMatchConflicts(BrokenMatch brokenMatch) {
 		ConflictContainer container = new ConflictContainer(integrate, brokenMatch);
-		detectDeletePreserveConflicts(container, brokenMatch);
+		if (!detectInconsistentChangesConflict(container, brokenMatch))
+			detectDeletePreserveConflicts(container, brokenMatch);
 		detectAttributeConflicts(container, brokenMatch);
-		detectInconsistentDelConflict(container, brokenMatch);
 
 		if (!container.getConflicts().isEmpty())
 			return container;
@@ -149,7 +150,8 @@ public class ConflictDetector {
 				continue;
 			}
 			if (constrAttrChanges.constraint.getParameters().size() > 2) {
-				logger.error("Conflicted AttributeConstraints with more than 2 parameters are currently not supported!");
+				logger.error(
+						"Conflicted AttributeConstraints with more than 2 parameters are currently not supported!");
 				continue;
 			}
 
@@ -177,9 +179,51 @@ public class ConflictDetector {
 		}
 	}
 
-	private void detectInconsistentDelConflict(ConflictContainer container, BrokenMatch brokenMatch) {
-		if (DeletionType.getInconsDelCandidates().contains(brokenMatch.getDeletionType()))
-			new InconsDelConflict(container);
+	private boolean detectInconsistentChangesConflict(ConflictContainer container, BrokenMatch brokenMatch) {
+		if (DeletionType.getInconsDelsCandidates().contains(brokenMatch.getDeletionType())) {
+			if (brokenMatch.getDeletionType() == DeletionType.SRC_PARTLY_TRG_NOT) {
+				new InconsDomainChangesConflict(container, DomainType.SRC);
+				detectDeletePreserveConflict(container, brokenMatch, DomainType.TRG);
+				return true;
+			}
+			if (brokenMatch.getDeletionType() == DeletionType.SRC_NOT_TRG_PARTLY) {
+				new InconsDomainChangesConflict(container, DomainType.TRG);
+				detectDeletePreserveConflict(container, brokenMatch, DomainType.SRC);
+				return true;
+			}
+			new ContradictingChangesConflict(container);
+			return true;
+		}
+
+		if (brokenMatch.getFilterNacViolations().isEmpty())
+			return false;
+
+		boolean nacAtSrc = brokenMatch.getFilterNacViolations().containsValue(DomainType.SRC);
+		boolean nacAtTrg = brokenMatch.getFilterNacViolations().containsValue(DomainType.TRG);
+		if (nacAtSrc && nacAtTrg) {
+			new ContradictingChangesConflict(container);
+			return true;
+		}
+		if (nacAtSrc) {
+			if (DeletionType.getPropBWDCandidates().contains(brokenMatch.getDeletionType())) {
+				new ContradictingChangesConflict(container);
+				return true;
+			}
+			new InconsDomainChangesConflict(container, DomainType.SRC);
+			detectDeletePreserveConflict(container, brokenMatch, DomainType.TRG);
+			return true;
+		}
+		if (nacAtTrg) {
+			if (DeletionType.getPropFWDCandidates().contains(brokenMatch.getDeletionType())) {
+				new ContradictingChangesConflict(container);
+				return true;
+			}
+			new InconsDomainChangesConflict(container, DomainType.TRG);
+			detectDeletePreserveConflict(container, brokenMatch, DomainType.SRC);
+			return true;
+		}
+
+		return false;
 	}
 
 }

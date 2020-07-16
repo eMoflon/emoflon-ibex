@@ -69,6 +69,8 @@ public abstract class Conflict {
 	}
 
 	protected void restoreDomain(BrokenMatch brokenMatch, DomainType domain) {
+		// TODO adrianm: fix filterNAC violations!
+		
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EObject> deletedNodes = new HashSet<>();
 		Set<EMFEdge> deletedCrossEdges = new HashSet<>();

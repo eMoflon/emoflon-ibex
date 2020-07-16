@@ -7,19 +7,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.FragmentProvider;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_ActAndLetRepair;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 
 import delta.DeltaContainer;
-import language.DomainType;
 
-public class InconsDelConflict extends Conflict implements CRS_ActAndLetRepair, CRS_PreferSource, CRS_PreferTarget {
+public abstract class InconsistentChangesConflict extends Conflict implements CRS_ActAndLetRepair {
 
-	public InconsDelConflict(ConflictContainer container) {
+	public InconsistentChangesConflict(ConflictContainer container) {
 		super(container);
 	}
-
-	//// CRS ////
 
 	@Override
 	public void crs_actAndLetRepair(BiConsumer<EObject, EObject> delta) {
@@ -39,25 +34,13 @@ public class InconsDelConflict extends Conflict implements CRS_ActAndLetRepair, 
 		resolved = true;
 	}
 
-	private void repair() {
+	protected void repair() {
 		try {
 			FragmentProvider.APPLY_USER_DELTA.apply(integrate());
 			FragmentProvider.REPAIR.apply(integrate());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void crs_preferSource() {
-		restoreDomain(getBrokenMatch(), DomainType.TRG);
-		resolved = true;
-	}
-
-	@Override
-	public void crs_preferTarget() {
-		restoreDomain(getBrokenMatch(), DomainType.SRC);
-		resolved = true;
 	}
 
 }
