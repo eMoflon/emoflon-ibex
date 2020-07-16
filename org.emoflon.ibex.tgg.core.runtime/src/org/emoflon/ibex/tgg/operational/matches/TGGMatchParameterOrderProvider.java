@@ -12,7 +12,8 @@ import language.TGGRule;
 
 public class TGGMatchParameterOrderProvider {
 
-	private static Map<String, LinkedList<String>> ruleName2params = null;
+	private static Map<String, LinkedList<String>> ruleName2params = new HashMap<>();
+	private static boolean initialized = false;
 
 	public static void init(TGG tgg) {
 		ruleName2params = new HashMap<>();
@@ -29,10 +30,15 @@ public class TGGMatchParameterOrderProvider {
 			params.add(TGGPatternUtil.getProtocolNodeName(rule.getName()));
 			ruleName2params.put(rule.getName(), params);
 		}
+		initialized = true;
 	}
 
 	public static LinkedList<String> getParams(String ruleName) {
 		return ruleName2params.get(ruleName);
+	}
+	
+	public static boolean isInitialized() {
+		return initialized;
 	}
 
 }
