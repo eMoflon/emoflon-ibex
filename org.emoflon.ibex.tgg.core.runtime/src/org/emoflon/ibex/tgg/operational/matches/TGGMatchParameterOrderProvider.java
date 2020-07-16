@@ -32,6 +32,10 @@ public class TGGMatchParameterOrderProvider {
 		}
 		initialized = true;
 	}
+	
+	public static boolean isInitialized() {
+		return ruleName2params != null;
+	}
 
 	public static LinkedList<String> getParams(String ruleName) {
 		return ruleName2params.get(ruleName);
