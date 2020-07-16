@@ -67,7 +67,7 @@ public class FragmentProvider {
 			
 			i.classifyBrokenMatches(true);
 			i.detectConflicts();
-			i.translateConflictFreeElements();
+			i.translateConflictFree();
 			i.repairBrokenMatches();
 			
 			i.getTimes().addTo("fragments:Repair", Timer.stop());
@@ -135,7 +135,7 @@ public class FragmentProvider {
 			
 			i.classifyBrokenMatches(true);
 			i.detectConflicts();
-			i.translateConflictFreeElements();
+			i.translateConflictFree();
 			
 			i.getTimes().addTo("fragments:Translate", Timer.stop());
 		}

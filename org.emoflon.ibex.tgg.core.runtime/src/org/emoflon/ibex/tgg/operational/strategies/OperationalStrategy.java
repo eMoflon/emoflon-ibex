@@ -246,7 +246,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Attempting to apply: " + match.getPatternName() + "(" + match.hashCode() + ") with " + greenPattern);
 		times.addTo("ruleApplication:init", Timer.stop());
 
+		Timer.start();
 		Optional<ITGGMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
+		times.addTo("ruleApplication:createElements", Timer.stop());
 		
 		comatch.ifPresent(cm -> {
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Successfully applied: " + match.getPatternName() + "(" + match.hashCode() + ")");

@@ -60,10 +60,10 @@ public class TimeRegistry {
 			return b.toString();
 		});
 
-		clear();
+		reset();
 	}
 	
-	public static void clear() {
+	public static void reset() {
 		registry.forEach(tm -> tm.getTimes().clear());
 	}
 
