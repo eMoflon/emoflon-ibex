@@ -92,6 +92,15 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	public ResourceSet getModel() {
 		return resourceSet;
 	}
+	
+	/**
+	 * Sets the model.
+	 * 
+	 * @param the model
+	 */
+	public void setModel(final ResourceSet model) {
+		resourceSet = model;
+	}
 
 	/**
 	 * Saves all resources in the resource set.
