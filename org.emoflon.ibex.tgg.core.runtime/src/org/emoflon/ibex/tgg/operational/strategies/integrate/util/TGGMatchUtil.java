@@ -43,6 +43,7 @@ public class TGGMatchUtil {
 	}
 
 	private MatchAnalysis getRawAnalysis(ITGGMatch match) {
+		// FIXME adrianm: make this thread safe!
 		return matchToAnalysis.computeIfAbsent(match, k -> analyseMatch(match));
 	}
 
