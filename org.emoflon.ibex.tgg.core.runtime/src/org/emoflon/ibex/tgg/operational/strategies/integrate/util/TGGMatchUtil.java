@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +36,7 @@ public class TGGMatchUtil {
 	private void init() {
 		nameToRules = integrate.getOptions().tgg.flattenedTGG().getRules().stream() //
 				.collect(Collectors.toMap(rule -> rule.getName(), rule -> rule));
-		matchToAnalysis = new HashMap<>();
+		matchToAnalysis = Collections.synchronizedMap(new HashMap<>());
 	}
 
 	public MatchAnalysis getAnalysis(ITGGMatch match) {
@@ -43,8 +44,12 @@ public class TGGMatchUtil {
 	}
 
 	private MatchAnalysis getRawAnalysis(ITGGMatch match) {
-		// FIXME adrianm: make this thread safe!
-		return matchToAnalysis.computeIfAbsent(match, k -> analyseMatch(match));
+		if(!matchToAnalysis.containsKey(match)) {
+			MatchAnalysis analyseMatch = analyseMatch(match);
+			matchToAnalysis.put(match, analyseMatch);
+			return analyseMatch;
+		}
+		return matchToAnalysis.get(match);
 	}
 
 	private MatchAnalysis analyseMatch(ITGGMatch match) {
