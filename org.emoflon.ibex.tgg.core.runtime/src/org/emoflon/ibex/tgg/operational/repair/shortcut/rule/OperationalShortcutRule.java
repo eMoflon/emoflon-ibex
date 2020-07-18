@@ -170,14 +170,23 @@ public abstract class OperationalShortcutRule {
 
 	private List<SearchKey> filterKeys(List<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes,
 			Collection<TGGRuleNode> uncheckedRelaxedNodes, boolean relaxed) {
-		Stream<SearchKey> filteredKeys = keys.stream() //
-				.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k));
+		Collection<SearchKey> filteredKeys = keys.stream() //
+				.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k, false)).collect(Collectors.toList());
+		
+		// if no navigable edge was found -> allow to navigate backwards
+		if(filteredKeys.isEmpty()) {
+			filteredKeys = keys.stream() //
+			.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k, true)).collect(Collectors.toList());
+		}
+		
+		Stream<SearchKey> filteredKeysStream = filteredKeys.stream();
 		if (!relaxed) {
-			filteredKeys = filteredKeys //
+			filteredKeysStream = filteredKeysStream //
 					.filter(k -> (k.reverse ? k.sourceNode : k.targetNode).getBindingType() != BindingType.RELAXED) //
 					.filter(k -> k.edge.getBindingType() != BindingType.RELAXED);
 		} else {
-			filteredKeys = filteredKeys.sorted((a, b) -> {
+			// sort relaxed to the end of this list
+			filteredKeysStream = filteredKeysStream.sorted((a, b) -> {
 				if (a.sourceNode.getBindingType() == b.sourceNode.getBindingType())
 					return 0;
 				if ((a.reverse ? a.targetNode : a.sourceNode).getBindingType() != BindingType.RELAXED)
@@ -185,19 +194,20 @@ public abstract class OperationalShortcutRule {
 				return 1;
 			});
 		}
-		return filteredKeys.collect(Collectors.toList());
+		return filteredKeysStream.collect(Collectors.toList());
 	}
 
 	// a valid lookup key is a key where source xor target has already been checked
 	private boolean validLookupKey(Collection<TGGRuleNode> uncheckedNodes, Collection<TGGRuleNode> uncheckedRelaxedNodes,
-			SearchKey key) {
+			SearchKey key, boolean allowBackNavigate) {
 		boolean srcChecked = !uncheckedNodes.contains(key.sourceNode) && !uncheckedRelaxedNodes.contains(key.sourceNode);
 		boolean trgChecked = !uncheckedNodes.contains(key.targetNode) && !uncheckedRelaxedNodes.contains(key.targetNode);
 		
 		boolean notReverse = !key.reverse &&  srcChecked && !trgChecked;
 		boolean reverse    =  key.reverse && !srcChecked &&  trgChecked;
+		boolean backward = allowBackNavigate || key.edge.getType().getEOpposite() != null;
 		
-		return notReverse || reverse;
+		return notReverse || reverse && backward;
 	}
 
 	protected void createConstraintChecks() {
