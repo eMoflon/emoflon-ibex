@@ -52,8 +52,11 @@ public class ConflictDetector {
 
 	private ConflictContainer detectMatchConflicts(BrokenMatch brokenMatch) {
 		ConflictContainer container = new ConflictContainer(integrate, brokenMatch);
-		if (!detectInconsistentChangesConflict(container, brokenMatch))
-			detectDeletePreserveConflicts(container, brokenMatch);
+		
+		// TODO lfritsche, adrianM: this is a hotfix!
+		detectInconsistentChangesConflict(container, brokenMatch);
+//		if (!detectInconsistentChangesConflict(container, brokenMatch))
+		detectDeletePreserveConflicts(container, brokenMatch);
 		detectAttributeConflicts(container, brokenMatch);
 
 		if (!container.getConflicts().isEmpty())
@@ -185,12 +188,12 @@ public class ConflictDetector {
 		if (DeletionType.getInconsDelsCandidates().contains(brokenMatch.getDeletionType())) {
 			if (brokenMatch.getDeletionType() == DeletionType.SRC_PARTLY_TRG_NOT) {
 				new InconsDomainChangesConflict(container, DomainType.SRC);
-				detectDeletePreserveConflict(container, brokenMatch, DomainType.TRG);
+//				detectDeletePreserveConflict(container, brokenMatch, DomainType.TRG);
 				return true;
 			}
 			if (brokenMatch.getDeletionType() == DeletionType.SRC_NOT_TRG_PARTLY) {
 				new InconsDomainChangesConflict(container, DomainType.TRG);
-				detectDeletePreserveConflict(container, brokenMatch, DomainType.SRC);
+//				detectDeletePreserveConflict(container, brokenMatch, DomainType.SRC);
 				return true;
 			}
 			new ContradictingChangesConflict(container);

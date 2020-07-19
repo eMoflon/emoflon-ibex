@@ -70,6 +70,7 @@ public abstract class Conflict {
 
 	protected void restoreDomain(BrokenMatch brokenMatch, DomainType domain) {
 		// TODO adrianm: fix filterNAC violations!
+		// TODO adrianm: avoid eopposites!
 		
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EObject> deletedNodes = new HashSet<>();
@@ -82,8 +83,11 @@ public abstract class Conflict {
 					deletedContainmentEdges.add(edge);
 				} else {
 					TGGRuleEdge tggEdge = brokenMatch.util().getEdge(edge);
-					if (tggEdge.getDomainType() != DomainType.CORR || tggEdge.getTrgNode().getDomainType() == domain)
+					
+					// restore only those corr edges that point to the restored domain
+					if (tggEdge.getDomainType() != DomainType.CORR || tggEdge.getTrgNode().getDomainType() == domain) {
 						deletedCrossEdges.add(edge);
+					}
 				}
 		});
 		integrate().getMatchUtil().getObjects(brokenMatch.getMatch(), filter).forEach(node -> {
