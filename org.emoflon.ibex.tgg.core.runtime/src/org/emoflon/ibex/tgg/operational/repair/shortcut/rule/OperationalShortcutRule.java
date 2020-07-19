@@ -110,8 +110,13 @@ public abstract class OperationalShortcutRule {
 				.filter(n -> n.getBindingType() != BindingType.RELAXED) //
 				.forEach(n -> uncheckedNodes.add(n));
 
-		Collection<TGGRuleEdge> uncheckedEdges = scRule.getEdges().stream() //
-				.sorted((e1, e2) -> e1.getBindingType() == BindingType.NEGATIVE ? 1 : -1).collect(Collectors.toList());
+		LinkedList<TGGRuleEdge> uncheckedEdges = new LinkedList<>();
+		for (TGGRuleEdge edge : scRule.getEdges()) {
+			if(edge.getBindingType() == BindingType.NEGATIVE)
+				uncheckedEdges.addLast(edge);
+			else
+				uncheckedEdges.addFirst(edge);
+		}
 
 		List<SearchKey> uncheckedSearchKeys = key2lookup.keySet().stream() //
 				.filter(key -> key.edge.getBindingType() != BindingType.NEGATIVE) //
