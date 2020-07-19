@@ -87,8 +87,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	public void createCorrs(ITGGMatch comatch, Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		for (TGGRuleCorr c : greenCorrs) {
-			comatch.put(c.getName(), createCorr(comatch, c, comatch.get(c.getSource().getName()),
-					comatch.get(c.getTarget().getName())));
+			EObject createCorr = createCorr(comatch, c, comatch.get(c.getSource().getName()),
+					comatch.get(c.getTarget().getName()));
+			resourceHandler.addCorrCaching(createCorr);
+			comatch.put(c.getName(), createCorr);
 		}
 	}
 

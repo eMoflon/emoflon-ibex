@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,12 +39,13 @@ public class ConflictDetector {
 	}
 
 	public Set<ConflictContainer> detectConflicts() {
-		Set<ConflictContainer> conflicts = new HashSet<>();
-		for (BrokenMatch brokenMatch : integrate.getClassifiedBrokenMatches().values()) {
+		Set<ConflictContainer> conflicts = Collections.synchronizedSet(new HashSet<>());
+//		for (BrokenMatch brokenMatch : integrate.getClassifiedBrokenMatches().values()) {
+		integrate.getClassifiedBrokenMatches().values().parallelStream().forEach(brokenMatch -> {
 			ConflictContainer container = detectMatchConflicts(brokenMatch);
 			if (container != null)
 				conflicts.add(container);
-		}
+		});
 
 		return conflicts;
 	}

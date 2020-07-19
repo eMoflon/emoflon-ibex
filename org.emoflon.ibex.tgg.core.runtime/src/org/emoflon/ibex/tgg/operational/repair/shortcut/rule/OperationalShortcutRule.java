@@ -4,8 +4,10 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,6 +32,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
@@ -38,6 +41,7 @@ import language.TGGAttributeExpression;
 import language.TGGEnumExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
+import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -62,6 +66,7 @@ public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
 
 	protected PropagatingOperationalStrategy strategy;
+	private TGGResourceHandler resourceHandler;
 	protected PatternType type;
 	protected ShortcutRule scRule;
 
@@ -75,8 +80,11 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
+
 	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, PatternType type,
 			ShortcutRule scRule) {
+		this.strategy = strategy;
+		this.resourceHandler = strategy.getResourceHandler();
 		this.scRule = scRule;
 		this.type = type;
 
@@ -172,12 +180,14 @@ public abstract class OperationalShortcutRule {
 			Collection<TGGRuleNode> uncheckedRelaxedNodes, boolean relaxed) {
 		Collection<SearchKey> filteredKeys = keys.stream() //
 				.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k, false)).collect(Collectors.toList());
-		
+
 		// if no navigable edge was found -> allow to navigate backwards
 		if(filteredKeys.isEmpty()) {
 			filteredKeys = keys.stream() //
 			.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k, true)).collect(Collectors.toList());
 		}
+		
+		filteredKeys = optimizeNextEdges(filteredKeys);
 		
 		Stream<SearchKey> filteredKeysStream = filteredKeys.stream();
 		if (!relaxed) {
@@ -197,6 +207,23 @@ public abstract class OperationalShortcutRule {
 		return filteredKeysStream.collect(Collectors.toList());
 	}
 
+	private Collection<SearchKey> optimizeNextEdges(Collection<SearchKey> keys) {
+		Collection<SearchKey> corrs = keys.stream().filter(k -> {
+			return k.sourceNode instanceof TGGRuleCorr;
+		}).collect(Collectors.toList());
+		
+		Collection<SearchKey> non_containment = keys.stream().filter(k -> {
+			EReference type = k.edge.getType();
+			return !type.isContainment() && type.getEOpposite() != null ? !type.getEOpposite().isContainment() : true;
+		}).collect(Collectors.toList());
+		
+		Collection<SearchKey> filteredKeys = new LinkedList<>();
+		filteredKeys.addAll(corrs);
+		filteredKeys.addAll(non_containment);
+		
+		return filteredKeys.isEmpty() ? keys : filteredKeys;
+	}
+
 	// a valid lookup key is a key where source xor target has already been checked
 	private boolean validLookupKey(Collection<TGGRuleNode> uncheckedNodes, Collection<TGGRuleNode> uncheckedRelaxedNodes,
 			SearchKey key, boolean allowBackNavigate) {
@@ -205,7 +232,7 @@ public abstract class OperationalShortcutRule {
 		
 		boolean notReverse = !key.reverse &&  srcChecked && !trgChecked;
 		boolean reverse    =  key.reverse && !srcChecked &&  trgChecked;
-		boolean backward = allowBackNavigate || key.edge.getType().getEOpposite() != null;
+		boolean backward = allowBackNavigate || key.edge.getType().getEOpposite() != null || key.sourceNode instanceof TGGRuleCorr;
 		
 		return notReverse || reverse && backward;
 	}
@@ -263,12 +290,20 @@ public abstract class OperationalShortcutRule {
 				});
 			}
 			else {
-				key2lookup.put(key, n -> {
-					Class<?> instanceClass = key.sourceNode.getType().getInstanceClass();
-					if (instanceClass != null)
-						return eMoflonEMFUtil.getOppositeReference(n, instanceClass, key.edge.getType().getName());
-					return EMFNavigationUtil.getOppositeReference(n, key.sourceNode.getType(), key.edge.getType().getName());
-				});
+				if(key.sourceNode instanceof TGGRuleCorr) {
+					key2lookup.put(key, n -> {
+						// make sure that we only get the correct corrs with the right type
+						Collection<EObject> corrs = resourceHandler.getCorrCaching().getOrDefault(n, Collections.emptyList());
+						return corrs.stream().filter(c -> c.eGet(key.edge.getType()).equals(n)).collect(Collectors.toList());
+					});
+				}
+				else
+					key2lookup.put(key, n -> {
+						Class<?> instanceClass = key.sourceNode.getType().getInstanceClass();
+						if (instanceClass != null)
+							return eMoflonEMFUtil.getOppositeReference(n, instanceClass, key.edge.getType().getName());
+						return EMFNavigationUtil.getOppositeReference(n, key.sourceNode.getType(), key.edge.getType().getName());
+					});
 			}
 			// TODO lfritsche : implement reverse navigation
 		}

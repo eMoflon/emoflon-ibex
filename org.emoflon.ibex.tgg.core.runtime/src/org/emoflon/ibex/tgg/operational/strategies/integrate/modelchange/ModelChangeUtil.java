@@ -20,26 +20,20 @@ public class ModelChangeUtil {
 			return;
 		
 		if (deleteContainedChildren) {
-			deleteElementAndContainedChildren(element);
-		} else {
-			element.eClass().getEAllContainments().forEach(feature -> {
-				Object content = element.eGet(feature);
-				if (content instanceof Collection) {
-					Collection<EObject> contentList = (Collection<EObject>) content;
-					element.eResource().getContents().addAll(contentList);
-					contentList.clear();
-				} else if (content instanceof EObject) {
-					element.eResource().getContents().add((EObject) content);
-					element.eSet(feature, null);
-				}
-			});
-			EcoreUtil.delete(element, false);
+			element.eContents().forEach(child -> deleteElement(child, deleteContainedChildren));
 		}
-	}
-
-	private static void deleteElementAndContainedChildren(EObject element) {
-		element.eContents().forEach(child -> deleteElementAndContainedChildren(child));
-		EcoreUtil.delete(element, false);
+			
+		element.eClass().getEAllReferences().forEach(feature -> {
+			Object content = element.eGet(feature);
+			if (content instanceof Collection) {
+				Collection<EObject> contentList = (Collection<EObject>) content;
+				element.eResource().getContents().addAll(contentList);
+				contentList.clear();
+			} else if (content instanceof EObject) {
+				element.eResource().getContents().add((EObject) content);
+				element.eSet(feature, null);
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")
