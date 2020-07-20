@@ -31,13 +31,13 @@ public interface IBeXDisjunctPatternModelFactory extends EFactory {
 	IBeXDisjunctContextPattern createIBeXDisjunctContextPattern();
 
 	/**
-	 * Returns a new object of class '<em>IBe XDisjunct Attributes</em>'.
+	 * Returns a new object of class '<em>IBe XDisjunct Attribute</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XDisjunct Attributes</em>'.
+	 * @return a new object of class '<em>IBe XDisjunct Attribute</em>'.
 	 * @generated
 	 */
-	IBeXDisjunctAttributes createIBeXDisjunctAttributes();
+	IBeXDisjunctAttribute createIBeXDisjunctAttribute();
 
 	/**
 	 * Returns a new object of class '<em>IBe XDependent Injectivity Constraints</em>'.
@@ -56,6 +56,15 @@ public interface IBeXDisjunctPatternModelFactory extends EFactory {
 	 * @generated
 	 */
 	IBexDisjunctInjectivityConstraint createIBexDisjunctInjectivityConstraint();
+
+	/**
+	 * Returns a new object of class '<em>IBe XDependent Disjunct Attribute</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XDependent Disjunct Attribute</em>'.
+	 * @generated
+	 */
+	IBeXDependentDisjunctAttribute createIBeXDependentDisjunctAttribute();
 
 	/**
 	 * Returns the package supported by this factory.

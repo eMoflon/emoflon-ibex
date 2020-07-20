@@ -54,7 +54,7 @@ public interface IBeXDisjunctContextPattern extends EObject, IBeXContext {
 
 	/**
 	 * Returns the value of the '<em><b>Attributes Constraints</b></em>' containment reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes}.
+	 * The list contents are of type {@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Attributes Constraints</em>' containment reference list.
@@ -62,6 +62,6 @@ public interface IBeXDisjunctContextPattern extends EObject, IBeXContext {
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<IBeXDisjunctAttributes> getAttributesConstraints();
+	EList<IBeXDependentDisjunctAttribute> getAttributesConstraints();
 
 } // IBeXDisjunctContextPattern

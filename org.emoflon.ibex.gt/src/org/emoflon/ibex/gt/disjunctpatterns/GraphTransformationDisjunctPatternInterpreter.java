@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.engine;
+package org.emoflon.ibex.gt.disjunctpatterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,19 +8,25 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.emf.ecore.util.EcoreUtil;
+
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints;
+import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBexDisjunctInjectivityConstraint;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.SimpleMatch;
+import org.emoflon.ibex.gt.transformations.Pair;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+
 
 /**
  * The GraphTransformationDisjunctPatternInterpreter calculates matches of all disjunct patterns
@@ -28,35 +34,93 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 public class GraphTransformationDisjunctPatternInterpreter {
 	
 	/**
-	 * calculates all matches of a pattern
-	 * 
-	 * @param pattern the pattern
-	 * @param submatches a list with matches for all subpatterns
-	 * @return the number of matches
+	 * the old matches
 	 */
-	public static long calculateMatchCount(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap) {
-		//matchCount is one for multiplication purposes; the submatch list size should be bigger than one anyway
-		int matchCount = 1;
-		List<Long> submatchCount = new ArrayList<Long>();
-		//name all subpatterns that have injecitivity constraints
-		List<String> constraintPatterns = new ArrayList<String>();
-		for(IBeXDependentInjectivityConstraints constraint: pattern.getInjectivityConstraints()) {
-			constraintPatterns.addAll(constraint.getPatterns());
-		}
-		//find all subpatterns that do not have any injectivity constraints
-		submatchCount = submatchesMap.entrySet().stream().filter(entry -> !constraintPatterns.contains(entry.getKey().getName()))
-		.map(entry -> (long) entry.getValue().size()).collect(Collectors.toList());
-		
-		//find the match count of all from each other independent subpatterns
-		submatchCount.addAll(pattern.getInjectivityConstraints().stream().map(constraint -> calculateSubmatchCount(pattern, constraint, submatchesMap))
-				.collect(Collectors.toList()));
-		
-		for(Long submatches: submatchCount) {
-			matchCount *=submatches;
-		}
-		return matchCount;
-	}
+	private Map<IBeXContextPattern, Set<IMatch>> oldMatches;
 	
+	/**
+	 * the old injectivity constraints
+	 */
+	private Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>> oldInjectivityConstraints;
+	
+	/**
+	 * the old calculated cartesian products for the injectivity constraints
+	 */
+	private Map<IBeXDependentInjectivityConstraints, Set<IMatch>> oldCartesianProducts;
+	
+	/**
+	 * the old attribute constraints
+	 */
+	private Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> oldAttributeConstraints;
+	
+	/**
+	 * the comparators for the attribute constraints
+	 */
+	private Map<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>> attributeComparators;
+	
+	/**
+	 * the sorted source matches for the attribute constraints
+	 */
+	private Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> sourceMatchSets;
+	
+	/**
+	 * the source and target sets for the attribute constraints sorted by the respective attribute; left = target; right = source
+	 */
+	private Map<SubmatchAttributeComparator, Pair<TreeSet<IMatch>, TreeSet<IMatch>>> sortedSets;
+	
+	/**
+	 * the pattern sequence for the calculation of the cartesian products
+	 */
+	private Map<IBeXDependentInjectivityConstraints, List<IBeXContextPattern>> injectivityPatternSequence;
+	private Map<IBeXDependentDisjunctAttribute, List<IBeXContextPattern>> attributePatternSequence;
+	/**
+	 * the notification adapter
+	 */
+	IBeXDisjunctContentAdapter adapter; 
+	
+	public GraphTransformationDisjunctPatternInterpreter(IBeXDisjunctContextPattern contextPattern, ResourceSet rsSet) {
+		
+		oldMatches = new HashMap<IBeXContextPattern, Set<IMatch>>();
+		adapter = new IBeXDisjunctContentAdapter(rsSet);
+		
+		for(IBeXContextPattern subpattern: contextPattern.getSubpatterns()) {
+			oldMatches.put(subpattern, new HashSet<IMatch>());
+		}		
+
+		
+		oldInjectivityConstraints = new HashMap<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>>();
+		oldAttributeConstraints = new HashMap<IBeXDependentDisjunctAttribute, Map<IMatch,Set<IMatch>>>();
+		attributeComparators = new HashMap<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>>();
+		sourceMatchSets = new HashMap<IBeXDependentDisjunctAttribute, Map<IMatch,Set<IMatch>>>();
+		sortedSets = new HashMap<SubmatchAttributeComparator, Pair<TreeSet<IMatch>,TreeSet<IMatch>>>();
+		injectivityPatternSequence = new HashMap<IBeXDependentInjectivityConstraints, List<IBeXContextPattern>>();
+		attributePatternSequence = new HashMap<IBeXDependentDisjunctAttribute, List<IBeXContextPattern>>();
+		oldCartesianProducts = new HashMap<IBeXDependentInjectivityConstraints, Set<IMatch>>();
+		
+		for(IBeXDependentInjectivityConstraints subpatternConstraint: contextPattern.getInjectivityConstraints()) {
+			oldInjectivityConstraints.put(subpatternConstraint, 
+				new Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>(new HashMap<IMatch, Set<IMatch>>(), new HashMap<IMatch, Set<IMatch>>()));
+		}
+		for(IBeXDependentDisjunctAttribute attribute: contextPattern.getAttributesConstraints()) {
+			List<SubmatchAttributeComparator> comparators = new ArrayList<SubmatchAttributeComparator>();			
+			for(IBeXDisjunctAttribute subattribute: attribute.getAttributes()) {
+				for(IBeXAttributeConstraint constraint: subattribute.getDisjunctAttribute()) {
+					SubmatchAttributeComparator comparator = new SubmatchAttributeComparator(constraint, subattribute.getTargetPattern().getName());
+					comparators.add(comparator);
+					sortedSets.put(comparator, new Pair<TreeSet<IMatch>, TreeSet<IMatch>>(new TreeSet<IMatch>(comparator),new TreeSet<IMatch>(comparator)));
+				}	
+				attributeComparators.put(subattribute, comparators);				
+			}
+
+
+			oldAttributeConstraints.put(attribute, new HashMap<IMatch, Set<IMatch>>());
+			sourceMatchSets.put(attribute, new HashMap<IMatch,Set<IMatch>>());
+		}
+
+		
+
+	}
+
 	/**
 	 * finds any match of the pattern
 	 * 
@@ -64,56 +128,146 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	 * @param submatches the submatches
 	 * @return a random match of the pattern
 	 */
-	public static Optional<IMatch> findAnyMatch(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap){		
+	public final Optional<IMatch> findAnyMatch(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap){		
 
 		if(calculateMatchCount(pattern, submatchesMap)>0) {
 			
-			IMatch match = new SimpleMatch(pattern.getName());
 			//sorts from the smallest submatch to the biggest
-			List<List<IMatch>> submatches = submatchesMap.values().stream().map(matches -> new ArrayList<IMatch>(matches)).collect(Collectors.toList());
-			submatches.sort(new SubmatchComparator());
-			
-			for(int i = 0; i<submatches.size(); i++) {
-				
-				IMatch submatch;	
-				boolean merged = false;
-				Collection<IMatch> matches = submatches.get(i);
-				Iterator<IMatch> iterator = matches.iterator();
-				
-				while(iterator.hasNext()) {
-					//search for any submatch of the submatches til it finds one that is disjunct with the current match
-					submatch = iterator.next();
-					
-					if(isDisjunct(match, submatch)) {
-						match = merge(match, submatch, pattern.getName());
-						merged = true;
-						break;
-					}
-				}
-				if(merged) continue;
-				else {
-					//if there is no disjunct pattern in this subpattern, then try again
-					i = 0;
-					match = new SimpleMatch(pattern.getName());
-				}
-				
-			}
-			return Optional.of(match);
+			List<Set<IMatch>> submatches = new ArrayList<Set<IMatch>>(submatchesMap.values());
+			submatches.sort(new SubmatchSizeComparator());
+			//a map of the attribute constraints
+			Map<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>> attributes = pattern.getAttributesConstraints().stream()
+					.flatMap(attribute -> attribute.getAttributes().stream()).collect(Collectors.toMap(c -> c, c -> attributeComparators.get(c)));
+			//recursively generate a new match
+			return calculateAnyMatch(pattern, submatches, pattern.getName(), new SimpleMatch(pattern.getName()), attributes);
 		}
 		else {
 			return Optional.empty();
 		}
-
-
 	}
 	
+	/**
+	 * recursive function that finds a random match in the pattern
+	 */
+	private final Optional<IMatch> calculateAnyMatch(final IBeXDisjunctContextPattern pattern, final List<Set<IMatch>> submatches, 
+			final String patternName, final IMatch match, final Map<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>> attributes){		
+		if(!submatches.isEmpty()) {
+			IMatch submatch;
+			//the merged submatch
+			IMatch newMatch = new SimpleMatch(patternName);
+			
+			boolean merged = false;
+			
+			Collection<IMatch> matches = submatches.get(0);
+			Iterator<IMatch> iterator = matches.iterator();
+	
+				while(iterator.hasNext()) {
+					//search for any submatch of the submatches til it finds one that is disjunct with the current match
+					submatch = iterator.next();
+					
+					if(DisjunctPatternHelper.isDisjunct(match, submatch) && DisjunctPatternHelper.checkAttributeConstraint(match, submatch, attributes)) {
+						//if there is a subpattern left -> create recursively a match with the other subpatterns and see if they are not disjunct
+						if(submatches.size()>1) {
+							Optional<IMatch> calculatedMatch = calculateAnyMatch(pattern, submatches.subList(1, submatches.size()), patternName, submatch, attributes);
+							if(calculatedMatch.isPresent()) {
+								if(DisjunctPatternHelper.isDisjunct(match, calculatedMatch.get()) 
+										&& DisjunctPatternHelper.checkAttributeConstraint(match, calculatedMatch.get(), attributes)) {
+									newMatch = DisjunctPatternHelper.merge(match, calculatedMatch.get(), patternName);
+									merged = true;
+									break;
+								}				
+							}						
+						}
+						else {
+							newMatch = DisjunctPatternHelper.merge(match, submatch, patternName);
+							merged = true;
+							break;
+						}
+					}
+				}
+				if(!merged) {
+					return Optional.empty();
+				}
+				return Optional.of(newMatch);				
+			}
+			
+		return Optional.empty();
+	}
+	/**
+	 * calculates all matches of a pattern
+	 * 
+	 * @param pattern the pattern
+	 * @param submatches a list with matches for all subpatterns
+	 * @return the number of matches
+	 */
+	public long calculateMatchCount(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap) {
+		//matchCount is one for multiplication purposes; the submatch list size should be bigger than one anyway
+		int matchCount = 1;
+		
+		//no submatch can be empty
+		if(submatchesMap.values().stream().anyMatch(matches -> matches.isEmpty())) return 0;
+		
+		//name all subpatterns that have injectivity constraints
+		List<IBeXContextPattern> constraintPatterns = pattern.getInjectivityConstraints().stream()
+				.flatMap(constraint -> constraint.getPatterns().stream()).collect(Collectors.toList());
+		
+		//name all subpatterns that have attribute constraints
+		List<IBeXContextPattern> attributePatterns = pattern.getAttributesConstraints().stream()
+				.flatMap(constraint -> constraint.getDependentPatterns().stream()).collect(Collectors.toList());		
+		
+		//find all subpatterns that do not have any injectivity constraints or attribute constraints with other patterns
+		List<Long> submatchCount = submatchesMap.entrySet().stream()
+				.filter(subpattern -> !constraintPatterns.contains(subpattern.getKey())&& !attributePatterns.contains(subpattern.getKey()))
+				.map(subpattern -> (long) subpattern.getValue().size()).collect(Collectors.toList());
+
+		//find the match count of all subpatterns that have injectivity constraints
+		for(IBeXDependentInjectivityConstraints constraint: pattern.getInjectivityConstraints()) {
+			if(!injectivityPatternSequence.containsKey(constraint)) {
+				injectivityPatternSequence.put(constraint, DisjunctInjectivityCalculationHelper.findPatternFrequency(constraint, submatchesMap));
+			}
+			submatchCount.add(DisjunctInjectivityCalculationHelper
+					.calculateSubmatchCount(pattern, constraint, submatchesMap, oldMatches, injectivityPatternSequence.get(constraint),
+					oldCartesianProducts, attributeComparators, oldInjectivityConstraints, oldAttributeConstraints, sourceMatchSets, sortedSets, adapter.getChangedObjects()));
+		}
+
+		
+		//find the match count of all subpatterns that have attribute constraints
+		List<IBeXDependentDisjunctAttribute> attributes = pattern.getAttributesConstraints().stream().filter(constraint -> {
+			for(IBeXContextPattern subpattern: constraint.getDependentPatterns()) {
+				if(constraintPatterns.contains(subpattern)) return false;
+			}
+			return true;
+		}).collect(Collectors.toList());
+		
+		for(IBeXDependentDisjunctAttribute constraint: attributes) {
+			if(!attributePatternSequence.containsKey(constraint)) {
+				attributePatternSequence.put(constraint, DisjunctAttributeCalculationHelper.findPatternFrequency(constraint, submatchesMap));
+			}
+			submatchCount.add(DisjunctAttributeCalculationHelper.calculateForbiddenConstraintMatches(pattern, constraint, submatchesMap, 
+					getAttributeConstrainst(pattern), oldMatches, oldAttributeConstraints.get(constraint), sourceMatchSets.get(constraint), 
+					adapter.getChangedObjects(), sortedSets, attributePatternSequence.get(constraint)));
+		}
+		
+		//calculate the match count
+		for(Long submatches: submatchCount) {
+			matchCount *= submatches;
+		}
+
+		//update the matches
+		for(Entry<IBeXContextPattern, Set<IMatch>> submatches: submatchesMap.entrySet()) {
+			oldMatches.put(submatches.getKey(), submatches.getValue());
+		}
+		
+		adapter.cleanUpdatedSets();
+		return matchCount;
+	}
 	/**
 	 * calculates all matches of a disjunct pattern
 	 * @param submatches the submatches of a pattern
 	 * @return the matches
 	 */
-	public static final Stream<IMatch> joinDisjunctSubpatterns(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap){
-		return joinDisjunctSubMatches(new ArrayList<Set<IMatch>>(submatchesMap.values()), pattern.getName()).stream();
+	public final Stream<IMatch> matchStream(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap){
+		return joinDisjunctSubMatches(pattern, new ArrayList<Set<IMatch>>(submatchesMap.values()), pattern.getName()).stream();
 	}
 	
 	/**
@@ -122,7 +276,7 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	 * @param submatches the submatches
 	 * @return the all computed matches
 	 */
-	private static final Set<IMatch> joinDisjunctSubMatches(final List<Set<IMatch>> submatches, final String name){
+	private final Set<IMatch> joinDisjunctSubMatches(final IBeXDisjunctContextPattern pattern, final List<Set<IMatch>> submatches, final String name){
 		if(submatches.size() == 0) {
 			throw new IllegalArgumentException("the list of subpatterns should not be empty");
 		}
@@ -131,221 +285,60 @@ public class GraphTransformationDisjunctPatternInterpreter {
 		}
 		else if(submatches.size() == 2) {
 			//calculate the cartesian product of the submatches
-			return cartesianProduct(submatches.get(0), submatches.get(1), name);
+			return DisjunctPatternHelper.cartesianProduct(submatches.get(0), submatches.get(1), name, getAttributeConstrainst(pattern));
 		}
 		else {
 			//divide the list into two sublists and then merge them
-			return cartesianProduct(joinDisjunctSubMatches(submatches.subList(0, submatches.size()/2),name), 
-					joinDisjunctSubMatches(submatches.subList(submatches.size()/2, submatches.size()), name), name);
+			return DisjunctPatternHelper.cartesianProduct(joinDisjunctSubMatches(pattern, submatches.subList(0, submatches.size()/2),name), 
+					joinDisjunctSubMatches(pattern, submatches.subList(submatches.size()/2, submatches.size()), name), name, getAttributeConstrainst(pattern));
 		}
 	}
+	
 	/**
-	 * calculates the match count for dependent subpatterns
+	 * calculates all the matches that contain the specific submatch
+
 	 */
-	private static long calculateSubmatchCount(final IBeXDisjunctContextPattern pattern, 
-			final IBeXDependentInjectivityConstraints constraints, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap) {
-		
-		List<String> parameter1 = new ArrayList<String>();
-		List<String> parameter2 = new ArrayList<String>();
-		
-		if(constraints.getPatterns().size()>2) {
-			//sort from smallest to biggest
-			List<Set<IMatch>> submatches = new ArrayList<Set<IMatch>>(submatchesMap.values());
-			List<String> calculatedMatches = new ArrayList<String>();
-			//to know which final sets are calculated
-			Set<IMatch> cartesianProduct = new HashSet<IMatch>();
-			Set<IMatch> lastMatch = new HashSet<IMatch>();
-			
-			for(int i = 0; i<constraints.getPatterns().size()-2; i++) {
-				//iterate through n-1 patterns and calculate the cartesian product to have two patterns at the end
-				cartesianProduct = cartesianProduct(submatches.get(i), submatches.get(i+1), pattern.getName());
-				lastMatch = submatches.get(i+2);
-				submatches.add(cartesianProduct);
-				//find the name of the two subpatterns
-				calculatedMatches.addAll(submatchesMap.entrySet().stream()
-						.filter(entry -> entry.getValue().equals(submatches.get(0)) || entry.getValue().equals(submatches.get(1)))
-				.map(entry -> entry.getKey().getName()).collect(Collectors.toList()));					
-			}
-			
-			//find the constraints between the new pattern and the other subpattern
-			for(IBexDisjunctInjectivityConstraint constraint: constraints.getInjectivityConstraints()) {
-				if(calculatedMatches.contains(constraint.getPattern1().getName())&& calculatedMatches.contains(constraint.getPattern2().getName())) {
-					//this constraint was already solved
+	public final Set<IMatch> createMatchesWithThisSubmatch(final IBeXDisjunctContextPattern pattern, final IMatch match, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap, 
+			final String name){
+		Set<IMatch> cartesianProduct = new HashSet<IMatch>();
+		cartesianProduct.add(match);
+		for(Set<IMatch> matches: submatchesMap.values()) {
+			if(!matches.isEmpty()) {
+				if(!matches.iterator().next().getPatternName().equals(match.getPatternName())) {
+					cartesianProduct = DisjunctPatternHelper.cartesianProduct(cartesianProduct, matches, name, getAttributeConstrainst(pattern));
+				}else {
 					continue;
 				}
-				if(calculatedMatches.contains(constraint.getPattern1().getName())) {
-					parameter1.addAll(constraint.getNode1().stream()
-							.map(node -> node.getName()).collect(Collectors.toList()));
-					parameter2.addAll(constraint.getNode2().stream()
-							.map(node -> node.getName()).collect(Collectors.toList()));
-				}
-				if(calculatedMatches.contains(constraint.getPattern2().getName())) {
-					parameter1.addAll(constraint.getNode2().stream()
-							.map(node -> node.getName()).collect(Collectors.toList()));
-					parameter2.addAll(constraint.getNode1().stream()
-							.map(node -> node.getName()).collect(Collectors.toList()));
-				}
-			}
-			
-			return  ((long) cartesianProduct.size())*((long) lastMatch.size()) -
-					findForbiddenMatches(parameter1, parameter2, 
-					cartesianProduct, lastMatch);	
-		}
-		else {
-			//only two patterns are dependent of each other
-			 IBexDisjunctInjectivityConstraint constraint = constraints.getInjectivityConstraints().get(0);
-			 
-		//name of the nodes that may break the injectivity constraint
-			 parameter1 = constraint.getNode1().stream().map(node -> node.getName()).collect(Collectors.toList());
-			 parameter2 = constraint.getNode2().stream().map(node -> node.getName()).collect(Collectors.toList());		
-			 
-		return  ((long) submatchesMap.get(constraint.getPattern1()).size())*((long) submatchesMap.get(constraint.getPattern2()).size()) -
-					findForbiddenMatches(parameter1, parameter2, 
-					submatchesMap.get(constraint.getPattern1()), submatchesMap.get(constraint.getPattern2()));			 
-		}
-	}
-	
-	/**
-	 * find all Objects in the match that break the injectivity constraints
-	 * 
-	 * @param match1 the first match
-	 * @param match2 the second match
-	 * @param constraints the constraints between the two submatches
-	 * @return the sum of forbidden matches
-	 */
-	private static final long findForbiddenMatches(final List<String> parameter1, final List<String> parameter2,
-			final Set<IMatch> match1, final Set<IMatch> match2){		
-		//convert the sets
-		Set<Object> set1 = new HashSet<Object>();
-		Set<Object> set2 = new HashSet<Object>();
-		
-		//the size of all parameters in the matches
-		int patternSize1 = match1.iterator().next().getParameterNames().size();
-		int patternSize2 = match2.iterator().next().getParameterNames().size();
-		
-		//get all nodes that could break the injectivity constraints
-		for(IMatch match: match1) {
-			for(String parameter: parameter1) {
-				set1.add(match.get(parameter));
-			}
-			
-		}
-		for(IMatch match: match2) {
-			for(String parameter: parameter2) {
-				set2.add(match.get(parameter));
-			}
-			
-		}
-		
-		Set<Object> intersection = new HashSet<Object>();
-		//calculate the intersection
-		for(Object object: set1) {
-			if(set2.contains(object)) {
-				intersection.add(object);
-			}
-		}
-		//calculate the match count for forbidden matches		
-		long matchCount = 0;
-		//when the pattern only has one node then the size of matches with the node that breaks the injectivity constraint is the size
-		//of the intersection
-		if(patternSize1 == 1) {
-			if(patternSize2 == 1) {
-				//the number of forbidden matches is the size of the intersection
-				matchCount = intersection.size();
+				
 			}else {
-				Map<Object, Long> map2 = calculateMatchMap(match2, intersection, parameter2);
-				for(Object object: intersection) {
-					//the size of forbidden matches for each object is map2.get(object)*1
-					matchCount += map2.get(object);
-				}
+				return new HashSet<IMatch>();
 			}
-		}else {
-			Map<Object, Long> map1 = calculateMatchMap(match1, intersection, parameter1);
-			if(patternSize2 == 1) {
-				for(Object object: intersection) {
-					matchCount += map1.get(object);
-				}			
-			}else {
-				Map<Object, Long> map2 = calculateMatchMap(match2, intersection, parameter2);
-				//the sum of forbidden matches is sum(sum(objects in submatches1)*sum(objects in submatches2))
-				for(Object object: intersection) {
-					matchCount += map1.get(object)*map2.get(object);
-				}
-			}
+			
 		}
-		return matchCount;		
+		return cartesianProduct;
 	}
 	
 	/**
-	 * find all matches that contain objects from the intersection
+	 * returns all attribute constraints with this pattern
 	 */
-	private static final Map<Object, Long> calculateMatchMap(final Set<IMatch> matches, final Set<Object> intersection, final List<String> parameters){
-		Map<Object, Long> matchMap = new HashMap<Object, Long>();
-		for(IMatch match: matches) {
-			for(String parameter: parameters) {
-				if(intersection.contains(match.get(parameter))) {
-					matchMap.compute(match.get(parameter), (k, v) -> (v == null)? v = (long) 1: (long) v+1);
-				}
+	public final Map<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>> getAttributeConstrainst(IBeXDisjunctContextPattern pattern) {
+		Map<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>> constraintMap = new HashMap<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>>();
+		for(IBeXDependentDisjunctAttribute attribute: pattern.getAttributesConstraints()) {
+			for(IBeXDisjunctAttribute subattribute: attribute.getAttributes()) {
+				constraintMap.put(subattribute, attributeComparators.get(subattribute));
 			}
 		}
-		return matchMap;
+		return constraintMap;
 	}
+
 	/**
-	 * calculates the cartesian product between two matches
-	 * 
-	 * @param match1 the first matchSet
-	 * @param match2 the second matchSet
-	 * @return the cartesian product
-	 */
-	private static final Set<IMatch> cartesianProduct(final Set<IMatch> match1, final Set<IMatch> match2, final String name){
-		Set<IMatch> newSubMatches = new HashSet<IMatch>();
-		for(IMatch firstMatch: match1){
-			for(IMatch secondMatch: match2) {
-				if(isDisjunct(firstMatch, secondMatch)) {
-					newSubMatches.add(merge(firstMatch, secondMatch, name));
-				}		
-			}
-		}
-		return newSubMatches;
-	}
-	
-	/**
-	 * check if two submatches are disjunct
-	 */
-	private static boolean isDisjunct(IMatch match1, final IMatch match2) {
-		for(String name1: match1.getParameterNames()) {
-			for(String name2: match2.getParameterNames()) {
-				if(match1.get(name1).equals(match2.get(name2))) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * merge two submatches to a bigger match
-	 * 
-	 * @param match1 the first match
-	 * @param match2 the second match
-	 * @return the bigger match
-	 */
-	private static final IMatch merge(final IMatch match1, final IMatch match2, final String name) {
-		IMatch newMatch = new SimpleMatch(match1);
-		newMatch.setPatternName(name);
-		match2.getParameterNames().forEach(parameterName -> newMatch.put(parameterName, match2.get(parameterName)));
-		return newMatch;
-	}
-	
-	/**
-	 * Helper class for sorting subpatterns
+	 * Helper class for sorting subpatterns by size
 	 *
 	 */
-	private static class SubmatchComparator implements Comparator<Collection<IMatch>>{
+	private static class SubmatchSizeComparator implements Comparator<Collection<IMatch>>{
 		@Override
 		public int compare(Collection<IMatch> o1, Collection<IMatch> o2) {
 			return o1.size()-o2.size();
-		}
-		
+		}		
 	}
 }

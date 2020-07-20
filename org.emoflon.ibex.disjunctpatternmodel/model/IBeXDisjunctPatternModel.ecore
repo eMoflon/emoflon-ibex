@@ -11,20 +11,23 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
         upperBound="-1" eType="#//IBeXDependentInjectivityConstraints" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributesConstraints"
-        upperBound="-1" eType="#//IBeXDisjunctAttributes" containment="true"/>
+        upperBound="-1" eType="#//IBeXDependentDisjunctAttribute" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXDisjunctAttributes">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourcePattern" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="targetPattern" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="disjunctAttributes" upperBound="-1"
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXDisjunctAttribute">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetPattern" eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXContextPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="disjunctAttribute" upperBound="-1"
         eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXAttributeConstraint"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePattern" upperBound="-1"
+        eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXContextPattern"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXDependentInjectivityConstraints">
     <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
         upperBound="-1" eType="#//IBexDisjunctInjectivityConstraint" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="patterns" upperBound="-1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patterns" upperBound="-1"
+        eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXContextPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" upperBound="-1"
+        eType="#//IBeXDependentDisjunctAttribute" eOpposite="#//IBeXDependentDisjunctAttribute/injectivityConstraints"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBexDisjunctInjectivityConstraint">
     <eStructuralFeatures xsi:type="ecore:EReference" name="pattern1" eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXContextPattern"/>
@@ -33,5 +36,13 @@
         eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="node2" upperBound="-1"
         eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXNode"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXDependentDisjunctAttribute">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
+        eType="#//IBeXDisjunctAttribute" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependentPatterns" upperBound="-1"
+        eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXContextPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
+        eType="#//IBeXDependentInjectivityConstraints" eOpposite="#//IBeXDependentInjectivityConstraints/attributeConstraints"/>
   </eClassifiers>
 </ecore:EPackage>

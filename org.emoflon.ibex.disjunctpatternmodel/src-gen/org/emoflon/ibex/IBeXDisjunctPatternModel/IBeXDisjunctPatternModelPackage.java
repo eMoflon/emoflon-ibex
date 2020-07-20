@@ -2,7 +2,6 @@
  */
 package org.emoflon.ibex.IBeXDisjunctPatternModel;
 
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -126,59 +125,59 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 	int IBE_XDISJUNCT_CONTEXT_PATTERN_OPERATION_COUNT = IBeXPatternModelPackage.IBE_XCONTEXT_OPERATION_COUNT + 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctAttributesImpl <em>IBe XDisjunct Attributes</em>}' class.
+	 * The meta object id for the '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctAttributeImpl <em>IBe XDisjunct Attribute</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctAttributesImpl
-	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctPatternModelPackageImpl#getIBeXDisjunctAttributes()
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctAttributeImpl
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctPatternModelPackageImpl#getIBeXDisjunctAttribute()
 	 * @generated
 	 */
-	int IBE_XDISJUNCT_ATTRIBUTES = 1;
+	int IBE_XDISJUNCT_ATTRIBUTE = 1;
 
 	/**
-	 * The feature id for the '<em><b>Source Pattern</b></em>' attribute.
+	 * The feature id for the '<em><b>Target Pattern</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XDISJUNCT_ATTRIBUTES__SOURCE_PATTERN = 0;
+	int IBE_XDISJUNCT_ATTRIBUTE__TARGET_PATTERN = 0;
 
 	/**
-	 * The feature id for the '<em><b>Target Pattern</b></em>' attribute.
+	 * The feature id for the '<em><b>Disjunct Attribute</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XDISJUNCT_ATTRIBUTES__TARGET_PATTERN = 1;
+	int IBE_XDISJUNCT_ATTRIBUTE__DISJUNCT_ATTRIBUTE = 1;
 
 	/**
-	 * The feature id for the '<em><b>Disjunct Attributes</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Source Pattern</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XDISJUNCT_ATTRIBUTES__DISJUNCT_ATTRIBUTES = 2;
+	int IBE_XDISJUNCT_ATTRIBUTE__SOURCE_PATTERN = 2;
 
 	/**
-	 * The number of structural features of the '<em>IBe XDisjunct Attributes</em>' class.
+	 * The number of structural features of the '<em>IBe XDisjunct Attribute</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XDISJUNCT_ATTRIBUTES_FEATURE_COUNT = 3;
+	int IBE_XDISJUNCT_ATTRIBUTE_FEATURE_COUNT = 3;
 
 	/**
-	 * The number of operations of the '<em>IBe XDisjunct Attributes</em>' class.
+	 * The number of operations of the '<em>IBe XDisjunct Attribute</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XDISJUNCT_ATTRIBUTES_OPERATION_COUNT = 0;
+	int IBE_XDISJUNCT_ATTRIBUTE_OPERATION_COUNT = 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDependentInjectivityConstraintsImpl <em>IBe XDependent Injectivity Constraints</em>}' class.
@@ -200,7 +199,7 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 	int IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS__INJECTIVITY_CONSTRAINTS = 0;
 
 	/**
-	 * The feature id for the '<em><b>Patterns</b></em>' attribute list.
+	 * The feature id for the '<em><b>Patterns</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -209,13 +208,22 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 	int IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS__PATTERNS = 1;
 
 	/**
+	 * The feature id for the '<em><b>Attribute Constraints</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS__ATTRIBUTE_CONSTRAINTS = 2;
+
+	/**
 	 * The number of structural features of the '<em>IBe XDependent Injectivity Constraints</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS_FEATURE_COUNT = 2;
+	int IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS_FEATURE_COUNT = 3;
 
 	/**
 	 * The number of operations of the '<em>IBe XDependent Injectivity Constraints</em>' class.
@@ -290,6 +298,61 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 	 */
 	int IBEX_DISJUNCT_INJECTIVITY_CONSTRAINT_OPERATION_COUNT = 0;
 
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDependentDisjunctAttributeImpl <em>IBe XDependent Disjunct Attribute</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDependentDisjunctAttributeImpl
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctPatternModelPackageImpl#getIBeXDependentDisjunctAttribute()
+	 * @generated
+	 */
+	int IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE = 4;
+
+	/**
+	 * The feature id for the '<em><b>Attributes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE__ATTRIBUTES = 0;
+
+	/**
+	 * The feature id for the '<em><b>Dependent Patterns</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE__DEPENDENT_PATTERNS = 1;
+
+	/**
+	 * The feature id for the '<em><b>Injectivity Constraints</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE__INJECTIVITY_CONSTRAINTS = 2;
+
+	/**
+	 * The number of structural features of the '<em>IBe XDependent Disjunct Attribute</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE_FEATURE_COUNT = 3;
+
+	/**
+	 * The number of operations of the '<em>IBe XDependent Disjunct Attribute</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE_OPERATION_COUNT = 0;
+
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern <em>IBe XDisjunct Context Pattern</em>}'.
@@ -335,47 +398,47 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 	EReference getIBeXDisjunctContextPattern_AttributesConstraints();
 
 	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes <em>IBe XDisjunct Attributes</em>}'.
+	 * Returns the meta object for class '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute <em>IBe XDisjunct Attribute</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>IBe XDisjunct Attributes</em>'.
-	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes
+	 * @return the meta object for class '<em>IBe XDisjunct Attribute</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute
 	 * @generated
 	 */
-	EClass getIBeXDisjunctAttributes();
+	EClass getIBeXDisjunctAttribute();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes#getSourcePattern <em>Source Pattern</em>}'.
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute#getTargetPattern <em>Target Pattern</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Source Pattern</em>'.
-	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes#getSourcePattern()
-	 * @see #getIBeXDisjunctAttributes()
+	 * @return the meta object for the reference '<em>Target Pattern</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute#getTargetPattern()
+	 * @see #getIBeXDisjunctAttribute()
 	 * @generated
 	 */
-	EAttribute getIBeXDisjunctAttributes_SourcePattern();
+	EReference getIBeXDisjunctAttribute_TargetPattern();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes#getTargetPattern <em>Target Pattern</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute#getDisjunctAttribute <em>Disjunct Attribute</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Target Pattern</em>'.
-	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes#getTargetPattern()
-	 * @see #getIBeXDisjunctAttributes()
+	 * @return the meta object for the containment reference list '<em>Disjunct Attribute</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute#getDisjunctAttribute()
+	 * @see #getIBeXDisjunctAttribute()
 	 * @generated
 	 */
-	EAttribute getIBeXDisjunctAttributes_TargetPattern();
+	EReference getIBeXDisjunctAttribute_DisjunctAttribute();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes#getDisjunctAttributes <em>Disjunct Attributes</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute#getSourcePattern <em>Source Pattern</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Disjunct Attributes</em>'.
-	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes#getDisjunctAttributes()
-	 * @see #getIBeXDisjunctAttributes()
+	 * @return the meta object for the reference list '<em>Source Pattern</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute#getSourcePattern()
+	 * @see #getIBeXDisjunctAttribute()
 	 * @generated
 	 */
-	EReference getIBeXDisjunctAttributes_DisjunctAttributes();
+	EReference getIBeXDisjunctAttribute_SourcePattern();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints <em>IBe XDependent Injectivity Constraints</em>}'.
@@ -388,17 +451,6 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 	EClass getIBeXDependentInjectivityConstraints();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints#getPatterns <em>Patterns</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Patterns</em>'.
-	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints#getPatterns()
-	 * @see #getIBeXDependentInjectivityConstraints()
-	 * @generated
-	 */
-	EAttribute getIBeXDependentInjectivityConstraints_Patterns();
-
-	/**
 	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints#getInjectivityConstraints <em>Injectivity Constraints</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -408,6 +460,28 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBeXDependentInjectivityConstraints_InjectivityConstraints();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints#getPatterns <em>Patterns</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Patterns</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints#getPatterns()
+	 * @see #getIBeXDependentInjectivityConstraints()
+	 * @generated
+	 */
+	EReference getIBeXDependentInjectivityConstraints_Patterns();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints#getAttributeConstraints <em>Attribute Constraints</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Attribute Constraints</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints#getAttributeConstraints()
+	 * @see #getIBeXDependentInjectivityConstraints()
+	 * @generated
+	 */
+	EReference getIBeXDependentInjectivityConstraints_AttributeConstraints();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBexDisjunctInjectivityConstraint <em>IBex Disjunct Injectivity Constraint</em>}'.
@@ -462,6 +536,49 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBexDisjunctInjectivityConstraint_Node2();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute <em>IBe XDependent Disjunct Attribute</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XDependent Disjunct Attribute</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute
+	 * @generated
+	 */
+	EClass getIBeXDependentDisjunctAttribute();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute#getAttributes <em>Attributes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Attributes</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute#getAttributes()
+	 * @see #getIBeXDependentDisjunctAttribute()
+	 * @generated
+	 */
+	EReference getIBeXDependentDisjunctAttribute_Attributes();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute#getDependentPatterns <em>Dependent Patterns</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Dependent Patterns</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute#getDependentPatterns()
+	 * @see #getIBeXDependentDisjunctAttribute()
+	 * @generated
+	 */
+	EReference getIBeXDependentDisjunctAttribute_DependentPatterns();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute#getInjectivityConstraints <em>Injectivity Constraints</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Injectivity Constraints</em>'.
+	 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute#getInjectivityConstraints()
+	 * @see #getIBeXDependentDisjunctAttribute()
+	 * @generated
+	 */
+	EReference getIBeXDependentDisjunctAttribute_InjectivityConstraints();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -521,38 +638,38 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 		EReference IBE_XDISJUNCT_CONTEXT_PATTERN__ATTRIBUTES_CONSTRAINTS = eINSTANCE.getIBeXDisjunctContextPattern_AttributesConstraints();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctAttributesImpl <em>IBe XDisjunct Attributes</em>}' class.
+		 * The meta object literal for the '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctAttributeImpl <em>IBe XDisjunct Attribute</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctAttributesImpl
-		 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctPatternModelPackageImpl#getIBeXDisjunctAttributes()
+		 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctAttributeImpl
+		 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctPatternModelPackageImpl#getIBeXDisjunctAttribute()
 		 * @generated
 		 */
-		EClass IBE_XDISJUNCT_ATTRIBUTES = eINSTANCE.getIBeXDisjunctAttributes();
+		EClass IBE_XDISJUNCT_ATTRIBUTE = eINSTANCE.getIBeXDisjunctAttribute();
 
 		/**
-		 * The meta object literal for the '<em><b>Source Pattern</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Target Pattern</b></em>' reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute IBE_XDISJUNCT_ATTRIBUTES__SOURCE_PATTERN = eINSTANCE.getIBeXDisjunctAttributes_SourcePattern();
+		EReference IBE_XDISJUNCT_ATTRIBUTE__TARGET_PATTERN = eINSTANCE.getIBeXDisjunctAttribute_TargetPattern();
 
 		/**
-		 * The meta object literal for the '<em><b>Target Pattern</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Disjunct Attribute</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute IBE_XDISJUNCT_ATTRIBUTES__TARGET_PATTERN = eINSTANCE.getIBeXDisjunctAttributes_TargetPattern();
+		EReference IBE_XDISJUNCT_ATTRIBUTE__DISJUNCT_ATTRIBUTE = eINSTANCE.getIBeXDisjunctAttribute_DisjunctAttribute();
 
 		/**
-		 * The meta object literal for the '<em><b>Disjunct Attributes</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Source Pattern</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference IBE_XDISJUNCT_ATTRIBUTES__DISJUNCT_ATTRIBUTES = eINSTANCE.getIBeXDisjunctAttributes_DisjunctAttributes();
+		EReference IBE_XDISJUNCT_ATTRIBUTE__SOURCE_PATTERN = eINSTANCE.getIBeXDisjunctAttribute_SourcePattern();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDependentInjectivityConstraintsImpl <em>IBe XDependent Injectivity Constraints</em>}' class.
@@ -565,20 +682,28 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 		EClass IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS = eINSTANCE.getIBeXDependentInjectivityConstraints();
 
 		/**
-		 * The meta object literal for the '<em><b>Patterns</b></em>' attribute list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS__PATTERNS = eINSTANCE.getIBeXDependentInjectivityConstraints_Patterns();
-
-		/**
 		 * The meta object literal for the '<em><b>Injectivity Constraints</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
 		EReference IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS__INJECTIVITY_CONSTRAINTS = eINSTANCE.getIBeXDependentInjectivityConstraints_InjectivityConstraints();
+
+		/**
+		 * The meta object literal for the '<em><b>Patterns</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS__PATTERNS = eINSTANCE.getIBeXDependentInjectivityConstraints_Patterns();
+
+		/**
+		 * The meta object literal for the '<em><b>Attribute Constraints</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS__ATTRIBUTE_CONSTRAINTS = eINSTANCE.getIBeXDependentInjectivityConstraints_AttributeConstraints();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBexDisjunctInjectivityConstraintImpl <em>IBex Disjunct Injectivity Constraint</em>}' class.
@@ -621,6 +746,40 @@ public interface IBeXDisjunctPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBEX_DISJUNCT_INJECTIVITY_CONSTRAINT__NODE2 = eINSTANCE.getIBexDisjunctInjectivityConstraint_Node2();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDependentDisjunctAttributeImpl <em>IBe XDependent Disjunct Attribute</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDependentDisjunctAttributeImpl
+		 * @see org.emoflon.ibex.IBeXDisjunctPatternModel.impl.IBeXDisjunctPatternModelPackageImpl#getIBeXDependentDisjunctAttribute()
+		 * @generated
+		 */
+		EClass IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE = eINSTANCE.getIBeXDependentDisjunctAttribute();
+
+		/**
+		 * The meta object literal for the '<em><b>Attributes</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE__ATTRIBUTES = eINSTANCE.getIBeXDependentDisjunctAttribute_Attributes();
+
+		/**
+		 * The meta object literal for the '<em><b>Dependent Patterns</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE__DEPENDENT_PATTERNS = eINSTANCE.getIBeXDependentDisjunctAttribute_DependentPatterns();
+
+		/**
+		 * The meta object literal for the '<em><b>Injectivity Constraints</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE__INJECTIVITY_CONSTRAINTS = eINSTANCE.getIBeXDependentDisjunctAttribute_InjectivityConstraints();
 
 	}
 

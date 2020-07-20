@@ -15,8 +15,8 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
+import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttributes;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctPatternModelPackage;
 
@@ -68,7 +68,7 @@ public class IBeXDisjunctContextPatternImpl extends IBeXContextImpl implements I
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<IBeXDisjunctAttributes> attributesConstraints;
+	protected EList<IBeXDependentDisjunctAttribute> attributesConstraints;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -121,9 +121,9 @@ public class IBeXDisjunctContextPatternImpl extends IBeXContextImpl implements I
 	 * @generated
 	 */
 	@Override
-	public EList<IBeXDisjunctAttributes> getAttributesConstraints() {
+	public EList<IBeXDependentDisjunctAttribute> getAttributesConstraints() {
 		if (attributesConstraints == null) {
-			attributesConstraints = new EObjectContainmentEList<IBeXDisjunctAttributes>(IBeXDisjunctAttributes.class, this, IBeXDisjunctPatternModelPackage.IBE_XDISJUNCT_CONTEXT_PATTERN__ATTRIBUTES_CONSTRAINTS);
+			attributesConstraints = new EObjectContainmentEList<IBeXDependentDisjunctAttribute>(IBeXDependentDisjunctAttribute.class, this, IBeXDisjunctPatternModelPackage.IBE_XDISJUNCT_CONTEXT_PATTERN__ATTRIBUTES_CONSTRAINTS);
 		}
 		return attributesConstraints;
 	}
@@ -181,7 +181,7 @@ public class IBeXDisjunctContextPatternImpl extends IBeXContextImpl implements I
 				return;
 			case IBeXDisjunctPatternModelPackage.IBE_XDISJUNCT_CONTEXT_PATTERN__ATTRIBUTES_CONSTRAINTS:
 				getAttributesConstraints().clear();
-				getAttributesConstraints().addAll((Collection<? extends IBeXDisjunctAttributes>)newValue);
+				getAttributesConstraints().addAll((Collection<? extends IBeXDependentDisjunctAttribute>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);

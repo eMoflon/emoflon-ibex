@@ -71,7 +71,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		originalFile = EcoreUtil.copy(file);
 		file.getPatterns().stream() //
 				.filter(p -> !p.isAbstract()) //
-				.forEach(editorPattern -> transformPattern(editorPattern));
+				.forEach(editorPattern -> transformPattern(editorPattern, true));
 		return createSortedPatternSet();
 	}
 
@@ -104,8 +104,9 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * 
 	 * @param editorPattern
 	 *            the editor pattern to transform
+	 * @param canBeDisjunct if the pattern can be a ibexDisjunctContextPattern
 	 */
-	private void transformPattern(EditorPattern editorPattern) {
+	private void transformPattern(EditorPattern editorPattern, boolean canBeDisjunct) {
 		Objects.requireNonNull(editorPattern, "The pattern must not be null!");
 
 		if (nameToPattern.containsKey(editorPattern.getName())) {
@@ -116,7 +117,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		List<EditorPattern> copiedPattern = EcoreUtil.copy(originalFile)
 				.getPatterns().stream().filter(n -> editorPattern.getName().equals(n.getName())).collect(Collectors.toList());
 			
-		if(copiedPattern.size() == 1) {
+		if(copiedPattern.size() == 1 && !editorPattern.isNotDisjunct() && canBeDisjunct) {
 			if(getFlattenedPattern(copiedPattern.get(0)).isPresent()) {
 				EditorPattern copiedFlattenedPattern = getFlattenedPattern(copiedPattern.get(0)).get();
 				GTDisjunctPatternFinder disjunctPattern = new GTDisjunctPatternFinder(copiedFlattenedPattern);
@@ -164,11 +165,12 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * 
 	 * @param editorPattern
 	 *            the editor pattern
+	 * @param canBeDisjunct if the pattern can be disjunct; only used for editorConditions
 	 * @return the IBeXContextPattern
 	 */
-	public IBeXContext getContextPattern(final EditorPattern editorPattern) {
+	public IBeXContext getContextPattern(final EditorPattern editorPattern, boolean canBeDisjunct) {
 		if (!nameToPattern.containsKey(editorPattern.getName())) {
-			transformPattern(editorPattern);
+			transformPattern(editorPattern, canBeDisjunct);
 		}
 		return nameToPattern.get(editorPattern.getName());
 	}

@@ -3,24 +3,24 @@ package org.emoflon.ibex.gt.transformations;
 /**
  * Helper class to save multiple values under the same key in the graph map; only used in the IBeXDisjunctPatternTransformation classes
  */
-class Pair<K, V>{
+public class Pair<K, V>{
 	K left;
 	V right;
 	
-	public Pair(K left, V right){
+	public Pair(final K left, final V right){
 		this.left = left;
 		this.right = right;
 	}
-	public K getLeft() {
+	public final K getLeft() {
 		return left;
 	}
-	public V getRight() {
+	public final V getRight() {
 		return right;
 	}
-	public void setLeft(K newLeft) {
+	public void setLeft(final K newLeft) {
 		left = newLeft;
 	}
-	public void setRight(V newRight) {
+	public void setRight(final V newRight) {
 		right = newRight;
 	}
 }

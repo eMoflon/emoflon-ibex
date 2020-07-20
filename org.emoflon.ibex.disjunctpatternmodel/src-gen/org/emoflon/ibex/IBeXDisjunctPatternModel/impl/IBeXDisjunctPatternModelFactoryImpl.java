@@ -57,9 +57,10 @@ public class IBeXDisjunctPatternModelFactoryImpl extends EFactoryImpl implements
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
 			case IBeXDisjunctPatternModelPackage.IBE_XDISJUNCT_CONTEXT_PATTERN: return createIBeXDisjunctContextPattern();
-			case IBeXDisjunctPatternModelPackage.IBE_XDISJUNCT_ATTRIBUTES: return createIBeXDisjunctAttributes();
+			case IBeXDisjunctPatternModelPackage.IBE_XDISJUNCT_ATTRIBUTE: return createIBeXDisjunctAttribute();
 			case IBeXDisjunctPatternModelPackage.IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS: return createIBeXDependentInjectivityConstraints();
 			case IBeXDisjunctPatternModelPackage.IBEX_DISJUNCT_INJECTIVITY_CONSTRAINT: return createIBexDisjunctInjectivityConstraint();
+			case IBeXDisjunctPatternModelPackage.IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE: return createIBeXDependentDisjunctAttribute();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -82,9 +83,9 @@ public class IBeXDisjunctPatternModelFactoryImpl extends EFactoryImpl implements
 	 * @generated
 	 */
 	@Override
-	public IBeXDisjunctAttributes createIBeXDisjunctAttributes() {
-		IBeXDisjunctAttributesImpl iBeXDisjunctAttributes = new IBeXDisjunctAttributesImpl();
-		return iBeXDisjunctAttributes;
+	public IBeXDisjunctAttribute createIBeXDisjunctAttribute() {
+		IBeXDisjunctAttributeImpl iBeXDisjunctAttribute = new IBeXDisjunctAttributeImpl();
+		return iBeXDisjunctAttribute;
 	}
 
 	/**
@@ -107,6 +108,17 @@ public class IBeXDisjunctPatternModelFactoryImpl extends EFactoryImpl implements
 	public IBexDisjunctInjectivityConstraint createIBexDisjunctInjectivityConstraint() {
 		IBexDisjunctInjectivityConstraintImpl iBexDisjunctInjectivityConstraint = new IBexDisjunctInjectivityConstraintImpl();
 		return iBexDisjunctInjectivityConstraint;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXDependentDisjunctAttribute createIBeXDependentDisjunctAttribute() {
+		IBeXDependentDisjunctAttributeImpl iBeXDependentDisjunctAttribute = new IBeXDependentDisjunctAttributeImpl();
+		return iBeXDependentDisjunctAttribute;
 	}
 
 	/**

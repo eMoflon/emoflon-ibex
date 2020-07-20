@@ -10,34 +10,17 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.gt.editor.gT.AddExpression;
-import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
-import org.emoflon.ibex.gt.editor.gT.ArithmeticExpression;
-import org.emoflon.ibex.gt.editor.gT.ArithmeticNodeAttribute;
 import org.emoflon.ibex.gt.editor.gT.EditorApplicationCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
-import org.emoflon.ibex.gt.editor.gT.EditorAttributeExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
-import org.emoflon.ibex.gt.editor.gT.EditorParameter;
-import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
-import org.emoflon.ibex.gt.editor.gT.EditorRelation;
-import org.emoflon.ibex.gt.editor.gT.ExpExpression;
 import org.emoflon.ibex.gt.editor.gT.GTFactory;
-import org.emoflon.ibex.gt.editor.gT.MultExpression;
-import org.emoflon.ibex.gt.editor.gT.OneParameterArithmetics;
 import org.emoflon.ibex.gt.editor.utils.GTConditionHelper;
 import org.emoflon.ibex.gt.editor.utils.GTDisjunctPatternFinder;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
-import org.moflon.core.utilities.EcoreUtils;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctPatternModelFactory;
 
@@ -50,7 +33,7 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 	Map<Set<EditorNode>, EditorPattern> dividedPatterns;
 	GTDisjunctPatternFinder patternfinder;
 	List<Set<EditorNode>> subpatterns;
-	List<IBeXAttributeConstraint> disjunctAttributeConditions;
+	List<Pair<EditorNode, List<EditorAttribute>>> disjunctAttributeConditions;
 	EditorPattern editorPattern;
 	Map<Pair<String, String>, List<Pair<EditorNode, EditorNode>>> injectivityConstraints;
 	
@@ -60,7 +43,7 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 		this.transformation = transformation;
 		this.patternfinder = patternfinder;
 		dividedPatterns = new HashMap<Set<EditorNode>, EditorPattern>();
-		disjunctAttributeConditions = new ArrayList<IBeXAttributeConstraint>();
+		disjunctAttributeConditions = new ArrayList<Pair<EditorNode,List<EditorAttribute>>>();
 		subpatterns = patternfinder.getSubpatterns();
 		this.editorPattern = editorPattern;
 		injectivityConstraints = new HashMap<Pair<String,String>, List<Pair<EditorNode,EditorNode>>>();
@@ -83,7 +66,10 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 		divideContextPatterns(isLocalCheck);
 		
 		//find attributeConstraints between transformed disjunct subpatterns
-		dividedPatterns.forEach((k, v) -> EditorToIBeXDisjunctPatternHelper.findDisjunctAttributeConstraints(k, v));
+		disjunctAttributeConditions = dividedPatterns.entrySet().stream()
+				.flatMap(entrySet -> EditorToIBeXDisjunctPatternHelper.findDisjunctAttributeConstraints(entrySet.getKey(), entrySet.getValue()).stream())
+				.collect(Collectors.toList());
+
 		
 		//transform all subpatterns and their conditions
 		ibexPattern.getSubpatterns().addAll(dividedPatterns.values().stream().map(pattern -> {
@@ -97,7 +83,8 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 		
 		ibexPattern.getInjectivityConstraints().addAll(EditorToIBeXDisjunctPatternHelper.transformInjectivityConstraints(ibexPattern.getSubpatterns(), injectivityConstraints));
 		
-//		ibexPattern.getDisjunctAttributes().addAll(disjunctAttributeConditions);
+		ibexPattern.getAttributesConstraints().addAll(EditorToIBeXDisjunctPatternHelper 
+				.transformDisjunctAttributes(ibexPattern.getSubpatterns(), dividedPatterns.keySet(), disjunctAttributeConditions, ibexPattern.getInjectivityConstraints()));
 		return ibexPattern;
 	}
 	
@@ -158,6 +145,7 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 			
 			Map<Set<EditorNode>, EditorApplicationCondition> simpleConditionSubpatterns = computeConditionSubmap(simpleCondition, signatureNodes);
 			List<EditorPattern> conditionPatterns = simpleConditionSubpatterns.values().stream().map(c -> c.getPattern()).collect(Collectors.toList());
+			
 			//find out if the different subpatterns of the conditions have injectivity constraint; they will only have valid constraints if they are mapped with signature nodes
 			EditorToIBeXDisjunctPatternHelper.findInjectivityConstraints(conditionPatterns, n -> !signatureNodes.contains(n));
 			
@@ -173,7 +161,7 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 					EditorCondition newCondition =  GTFactory.eINSTANCE.createEditorCondition();
 					newCondition.getConditions().add(conditionSubmap.getValue());
 					//all conditions need a different name so that they are not recognized as the same condition by the IBeXToPatternTransformation class
-					newCondition.setName(patternName + "_" + condition.getName() + "_" + conditionNr++);	
+					newCondition.setName("DisjunctCondition_" + patternName + "_" + condition.getName() + "_" + conditionNr++);	
 					conditionMap.put(conditionSubmap.getKey(), newCondition);
 				}
 			}				

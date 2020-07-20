@@ -90,7 +90,7 @@ public class EditorToIBeXConditionHelper {
 	 *            negative invocation
 	 */
 	private void transformPattern(final EditorPattern editorPattern, final boolean invocationType) {
-		IBeXContext contextPattern = transformation.getContextPattern(editorPattern);
+		IBeXContext contextPattern = transformation.getContextPattern(editorPattern, false);
 		if (!(contextPattern instanceof IBeXContextPattern)) {
 			transformation.logError("%s not allowed in condition.", editorPattern.getName());
 			return;

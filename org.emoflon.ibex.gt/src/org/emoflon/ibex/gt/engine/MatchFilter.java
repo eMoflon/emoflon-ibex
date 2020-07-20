@@ -2,6 +2,7 @@ package org.emoflon.ibex.gt.engine;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +14,15 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.gt.arithmetics.IBeXArithmeticsCalculatorHelper;
+import org.emoflon.ibex.gt.disjunctpatterns.GraphTransformationDisjunctPatternInterpreter;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
-
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 
 /**
@@ -40,7 +43,7 @@ public class MatchFilter {
 	 * @return a stream containing matches
 	 */
 	public static Stream<IMatch> getFilteredMatchStream(final IBeXContext pattern, final Map<String, Object> parameters,
-			final Map<String, Collection<IMatch>> matches) {
+			final Map<String, Collection<IMatch>> matches, final Map<IBeXDisjunctContextPattern, GraphTransformationDisjunctPatternInterpreter> disjunctPatternInterpreter) {
 		if (pattern instanceof IBeXContextPattern) {
 			return MatchFilter.getFilteredMatchStream((IBeXContextPattern) pattern, parameters, matches);
 		} else if (pattern instanceof IBeXContextAlternatives) {
@@ -61,14 +64,14 @@ public class MatchFilter {
 			
 			IBeXDisjunctContextPattern disjunctPattern = (IBeXDisjunctContextPattern) pattern;
 			//disjunct matches are merged	
-			return GraphTransformationDisjunctPatternInterpreter.joinDisjunctSubpatterns(disjunctPattern, 
+			return disjunctPatternInterpreter.get(pattern).matchStream(disjunctPattern, 
 					getFilteredMatchList(disjunctPattern, parameters, matches));
 		}
 		throw new IllegalArgumentException("Invalid pattern " + pattern);
 	}
 	
 	/**
-	 * Returns a List of match-set of the subpatterns for the pattern that is a disjunctContextPattern
+	 * Returns a map of filtered match-set of the subpatterns for the pattern that is a disjunctContextPattern
 	 * 
 	 * @param pattern
 	 *            the disjunct context pattern
@@ -82,8 +85,33 @@ public class MatchFilter {
 			final Map<String, Collection<IMatch>> matches){
 		IBeXDisjunctContextPattern disjunctPattern = (IBeXDisjunctContextPattern) pattern;
 		Map<IBeXContextPattern, Set<IMatch>> submatchesMap = new HashMap<IBeXContextPattern, Set<IMatch>>();
+		
 		for(IBeXContextPattern subpattern: disjunctPattern.getSubpatterns()) {
 			submatchesMap.put(subpattern, MatchFilter.getFilteredMatchStream(subpattern, parameters, matches).collect(Collectors.toSet()));
+		}
+		return submatchesMap;
+	}
+	
+	/**
+	 * Returns a map of match-sets of the subpatterns for the pattern that is a disjunctContextPattern
+	 * 
+	 * @param pattern
+	 *            the disjunct context pattern
+	 * @param matches
+	 *            the matches
+	 * @return a list containing a set of the submatches
+	 */
+	public static final Map<IBeXContextPattern, Set<IMatch>> getUnfilteredMatchList(final IBeXDisjunctContextPattern pattern,
+			final Map<String, Collection<IMatch>> matches){
+		IBeXDisjunctContextPattern disjunctPattern = (IBeXDisjunctContextPattern) pattern;
+		Map<IBeXContextPattern, Set<IMatch>> submatchesMap = new HashMap<IBeXContextPattern, Set<IMatch>>();
+		for(IBeXContextPattern subpattern: disjunctPattern.getSubpatterns()) {
+			if(matches.containsKey(subpattern.getName())) {
+				submatchesMap.put(subpattern, new HashSet<IMatch>(matches.get(subpattern.getName())));
+			}
+			else {
+				submatchesMap.put(subpattern, new HashSet<IMatch>());
+			}
 		}
 		return submatchesMap;
 	}
@@ -109,6 +137,10 @@ public class MatchFilter {
 		Stream<IMatch> matchesForPattern = matches.get(pattern.getName()).stream();
 		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, pattern, parameters);
 		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, pattern, parameters);
+		
+		//filter for artihmetic attribute constraints
+		matchesForPattern = MatchFilter.filterArithmeticAttributeConstraints(matchesForPattern, pattern);
+		
 		return matchesForPattern;
 	}
 
@@ -171,7 +203,36 @@ public class MatchFilter {
 		}
 		return matches;
 	}
-
+	
+	/**
+	 * Filters the matches for the ones which fulfill the arithmetic
+	 * constraints of the pattern.
+	 * 
+	 * @param matches
+	 *            the matches for the pattern
+	 * @param pattern
+	 *            the pattern
+	 * @param constraints
+	 *            the arithmetic constraints
+	 * @return the filtered stream
+	 */
+	public static Stream<IMatch> filterArithmeticAttributeConstraints(Stream<IMatch> matches,
+			final IBeXContextPattern pattern){
+		
+		for(IBeXAttributeConstraint constraint: pattern.getAttributeConstraint()) {
+			if(constraint.getValue() instanceof IBeXArithmeticValue) {
+				String nodeName = constraint.getNode().getName();
+				matches = matches.filter(m -> {
+					EObject node = (EObject) m.get(nodeName);
+					Object currentValue = node.eGet(constraint.getType());
+					return compare(currentValue, IBeXArithmeticsCalculatorHelper.getValue((IBeXArithmeticValue) constraint.getValue(), 
+							m, constraint.getType().getEAttributeType()), constraint.getRelation());
+				});			
+			}
+		}
+		return matches;
+	}
+	
 	/**
 	 * Compares two objects according to the given relation.
 	 * 
@@ -183,7 +244,7 @@ public class MatchFilter {
 	 *            the relation
 	 * @return the result of the comparison
 	 */
-	private static boolean compare(final Object a, final Object b, final IBeXRelation relation) {
+	public static boolean compare(final Object a, final Object b, final IBeXRelation relation) {
 		switch (relation) {
 		case GREATER_OR_EQUAL:
 			return compareTo(a, b, x -> x >= 0);
