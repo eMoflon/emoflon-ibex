@@ -1,10 +1,13 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 
 import delta.AttributeDelta;
 import delta.Delta;
@@ -19,21 +22,25 @@ public class ModelChangeUtil {
 		if(isDangling(element))
 			return;
 		
+		Set<EObject> nodesToDelete = new HashSet<>();
+		nodesToDelete.add(element);
+		
 		if (deleteContainedChildren) {
-			element.eContents().forEach(child -> deleteElement(child, deleteContainedChildren));
+			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, o -> {}, true);
+		} else {
+			element.eClass().getEAllContainments().forEach(feature -> {
+				Object content = element.eGet(feature);
+				if (content instanceof Collection) {
+					Collection<EObject> contentList = (Collection<EObject>) content;
+					element.eResource().getContents().addAll(contentList);
+					contentList.clear();
+				} else if (content instanceof EObject) {
+					element.eResource().getContents().add((EObject) content);
+					element.eSet(feature, null);
+				}
+			});
+			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, o -> {}, false);
 		}
-			
-		element.eClass().getEAllReferences().forEach(feature -> {
-			Object content = element.eGet(feature);
-			if (content instanceof Collection) {
-				Collection<EObject> contentList = (Collection<EObject>) content;
-				element.eResource().getContents().addAll(contentList);
-				contentList.clear();
-			} else if (content instanceof EObject) {
-				element.eResource().getContents().add((EObject) content);
-				element.eSet(feature, null);
-			}
-		});
 	}
 
 	@SuppressWarnings("unchecked")

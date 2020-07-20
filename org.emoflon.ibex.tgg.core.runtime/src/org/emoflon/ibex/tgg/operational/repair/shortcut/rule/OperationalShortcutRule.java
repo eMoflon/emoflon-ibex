@@ -310,7 +310,6 @@ public abstract class OperationalShortcutRule {
 						return EMFNavigationUtil.getOppositeReference(n, key.sourceNode.getType(), key.edge.getType().getName());
 					});
 			}
-			// TODO lfritsche : implement reverse navigation
 		}
 	}
 
