@@ -289,20 +289,18 @@ public abstract class OperationalShortcutRule {
 				return (EObject) n.eContainer();
 			});
 		} else {
-			if(edgeRef.getEOpposite() != null) {
+			if (edgeRef.getEOpposite() != null) {
 				key2lookup.put(key, n -> {
 					return n.eGet(edgeRef.getEOpposite());
 				});
-			}
-			else {
-				if(key.sourceNode instanceof TGGRuleCorr) {
+			} else {
+				if (key.sourceNode instanceof TGGRuleCorr) {
 					key2lookup.put(key, n -> {
 						// make sure that we only get the correct corrs with the right type
 						Collection<EObject> corrs = resourceHandler.getCorrCaching().getOrDefault(n, Collections.emptyList());
-						return corrs.stream().filter(c -> c.eGet(key.edge.getType()).equals(n)).collect(Collectors.toList());
+						return corrs.stream().filter(c -> n.equals(c.eGet(key.edge.getType()))).collect(Collectors.toList());
 					});
-				}
-				else
+				} else
 					key2lookup.put(key, n -> {
 						Class<?> instanceClass = key.sourceNode.getType().getInstanceClass();
 						if (instanceClass != null)
