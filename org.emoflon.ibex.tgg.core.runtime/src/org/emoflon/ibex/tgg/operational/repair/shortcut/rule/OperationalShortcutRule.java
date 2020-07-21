@@ -344,6 +344,9 @@ public abstract class OperationalShortcutRule {
 			Object subjectAttr = node.eGet(inplAttrExpr.getAttribute());
 
 			if (inplAttrExpr.getValueExpr() instanceof TGGLiteralExpression) {
+				if (subjectAttr == null)
+					return false;
+
 				TGGLiteralExpression litExpr = (TGGLiteralExpression) inplAttrExpr.getValueExpr();
 				Object literal = String2EPrimitive.convertLiteral( //
 						litExpr.getValue(), inplAttrExpr.getAttribute().getEAttributeType());
@@ -383,6 +386,9 @@ public abstract class OperationalShortcutRule {
 					break;
 				}
 			} else if (inplAttrExpr.getValueExpr() instanceof TGGEnumExpression) {
+				if (subjectAttr == null)
+					return false;
+
 				TGGEnumExpression enumExpr = (TGGEnumExpression) inplAttrExpr.getValueExpr();
 				if (!subjectAttr.equals(enumExpr.getLiteral().getInstance()))
 					return false;
@@ -392,7 +398,11 @@ public abstract class OperationalShortcutRule {
 				if (obj == null)
 					return false;
 				Object objectAttr = obj.eGet(attrExpr.getAttribute());
-				if (!subjectAttr.equals(objectAttr))
+
+				if (subjectAttr == null) {
+					if (objectAttr != null)
+						return false;
+				} else if (!subjectAttr.equals(objectAttr))
 					return false;
 			}
 		}
