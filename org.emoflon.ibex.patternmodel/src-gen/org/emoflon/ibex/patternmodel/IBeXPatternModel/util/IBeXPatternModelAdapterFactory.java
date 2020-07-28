@@ -11,6 +11,8 @@ import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
 
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.*;
 
 /**
@@ -186,6 +188,21 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseIBeXArithmeticValue(IBeXArithmeticValue object) {
 			return createIBeXArithmeticValueAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXMatchCount(IBeXMatchCount object) {
+			return createIBeXMatchCountAdapter();
+		}
+
+		@Override
+		public Adapter caseGTArithmetics(GTArithmetics object) {
+			return createGTArithmeticsAdapter();
+		}
+
+		@Override
+		public Adapter caseGTOneParameterCalculation(GTOneParameterCalculation object) {
+			return createGTOneParameterCalculationAdapter();
 		}
 
 		@Override
@@ -540,6 +557,48 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXArithmeticValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount <em>IBe XMatch Count</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount
+	 * @generated
+	 */
+	public Adapter createIBeXMatchCountAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics <em>GT Arithmetics</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics
+	 * @generated
+	 */
+	public Adapter createGTArithmeticsAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation <em>GT One Parameter Calculation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation
+	 * @generated
+	 */
+	public Adapter createGTOneParameterCalculationAdapter() {
 		return null;
 	}
 

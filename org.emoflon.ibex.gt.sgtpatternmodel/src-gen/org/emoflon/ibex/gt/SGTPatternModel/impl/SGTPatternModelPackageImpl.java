@@ -657,6 +657,7 @@ public class SGTPatternModelPackageImpl extends EPackageImpl implements SGTPatte
 		addEEnumLiteral(oneParameterOperatorEEnum, OneParameterOperator.LOGARITHMUS);
 		addEEnumLiteral(oneParameterOperatorEEnum, OneParameterOperator.NATLOG);
 		addEEnumLiteral(oneParameterOperatorEEnum, OneParameterOperator.BRACKET);
+		addEEnumLiteral(oneParameterOperatorEEnum, OneParameterOperator.COUNT);
 
 		initEEnum(gtRelationEEnum, GTRelation.class, "GTRelation");
 		addEEnumLiteral(gtRelationEEnum, GTRelation.GREATER_OR_EQUAL);

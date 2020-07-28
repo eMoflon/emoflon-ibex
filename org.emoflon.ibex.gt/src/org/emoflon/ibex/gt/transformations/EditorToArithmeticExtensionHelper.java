@@ -1,5 +1,9 @@
 package org.emoflon.ibex.gt.transformations;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
 import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute;
 import org.emoflon.ibex.gt.SGTPatternModel.GTNumber;
@@ -13,10 +17,19 @@ import org.emoflon.ibex.gt.editor.gT.AddOperator;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticAttribute;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticExpression;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticNodeAttribute;
+import org.emoflon.ibex.gt.editor.gT.EditorCountExpression;
 import org.emoflon.ibex.gt.editor.gT.ExpExpression;
 import org.emoflon.ibex.gt.editor.gT.MultExpression;
 import org.emoflon.ibex.gt.editor.gT.OneParameterArithmetics;
 import org.emoflon.ibex.gt.editor.utils.GTArithmeticsCalculatorUtil;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 
 public class EditorToArithmeticExtensionHelper {
 	
@@ -27,7 +40,7 @@ public class EditorToArithmeticExtensionHelper {
 	 * @param expression the ArithmeticExpression
 	 * @return the transformed GTArithmetics
 	 */
-	public static GTArithmetics transformToGTArithmetics(final ArithmeticExpression expression) {
+	public static GTArithmetics transformToGTArithmetics(final ArithmeticExpression expression, final IBeXPattern ibexPattern, final EditorToIBeXPatternTransformation transformation) {
 		//if the expression has two parameters and one operator
 		if(expression instanceof AddExpression || expression instanceof MultExpression || 
 				expression instanceof ExpExpression) {
@@ -40,8 +53,8 @@ public class EditorToArithmeticExtensionHelper {
 				try {
 					return tryToParseExpression(expression);
 				} catch(IllegalArgumentException e) {
-					calculation.setLeft(transformToGTArithmetics(((AddExpression) expression).getLeft()));
-					calculation.setRight(transformToGTArithmetics(((AddExpression) expression).getRight()));								
+					calculation.setLeft(transformToGTArithmetics(((AddExpression) expression).getLeft(), ibexPattern, transformation));
+					calculation.setRight(transformToGTArithmetics(((AddExpression) expression).getRight(), ibexPattern, transformation));								
 					if(((AddExpression) expression).getAddOperator() == AddOperator.ADDITION) {
 						calculation.setOperator(TwoParameterOperator.ADDITION);
 					}else {
@@ -53,8 +66,8 @@ public class EditorToArithmeticExtensionHelper {
 				try {
 					return tryToParseExpression(expression);
 				} catch(IllegalArgumentException e) {
-					calculation.setLeft(transformToGTArithmetics(((MultExpression) expression).getLeft()));
-					calculation.setRight(transformToGTArithmetics(((MultExpression) expression).getRight()));								
+					calculation.setLeft(transformToGTArithmetics(((MultExpression) expression).getLeft(), ibexPattern, transformation));
+					calculation.setRight(transformToGTArithmetics(((MultExpression) expression).getRight(), ibexPattern, transformation));								
 					switch(((MultExpression) expression).getMultOperator()) {
 						case DIVISION:  	calculation.setOperator(TwoParameterOperator.DIVISION);
 											break;
@@ -70,8 +83,8 @@ public class EditorToArithmeticExtensionHelper {
 				try {
 					return tryToParseExpression(expression);
 				} catch(IllegalArgumentException e) {
-					calculation.setLeft(transformToGTArithmetics(((ExpExpression) expression).getLeft()));
-					calculation.setRight(transformToGTArithmetics(((ExpExpression) expression).getRight()));								
+					calculation.setLeft(transformToGTArithmetics(((ExpExpression) expression).getLeft(), ibexPattern, transformation));
+					calculation.setRight(transformToGTArithmetics(((ExpExpression) expression).getRight(), ibexPattern, transformation));								
 					calculation.setOperator(TwoParameterOperator.EXPONENTIAL);	
 				}	
 			}
@@ -83,7 +96,7 @@ public class EditorToArithmeticExtensionHelper {
 				return tryToParseExpression(expression);
 			} catch(IllegalArgumentException e) {
 				GTOneParameterCalculation calculation = SGTPatternModelFactory.eINSTANCE.createGTOneParameterCalculation();
-				calculation.setValue(transformToGTArithmetics(((OneParameterArithmetics) expression).getExpression()));
+				calculation.setValue(transformToGTArithmetics(((OneParameterArithmetics) expression).getExpression(), ibexPattern, transformation));
 				switch(((OneParameterArithmetics) expression).getOperator()) {
 					case ABSOLUTE: 	calculation.setOperator(OneParameterOperator.ABSOLUTE);
 									break;
@@ -119,6 +132,9 @@ public class EditorToArithmeticExtensionHelper {
 			calculation.setNegative(((ArithmeticNodeAttribute) expression).isNegative());
 			return calculation;
 		}
+		else if(expression instanceof EditorCountExpression) {
+			return transformToGTArithmetics((EditorCountExpression)expression, ibexPattern, transformation);
+		}
 		//if the attribute is a number
 		else {
 			GTNumber calculation = SGTPatternModelFactory.eINSTANCE.createGTNumber();
@@ -136,5 +152,34 @@ public class EditorToArithmeticExtensionHelper {
 			GTNumber number = SGTPatternModelFactory.eINSTANCE.createGTNumber();
 			number.setNumber(value);
 			return number;
+	}
+	
+	public static GTArithmetics transformToGTArithmetics(final EditorCountExpression expression, final IBeXPattern ibexPattern, final EditorToIBeXPatternTransformation transformation) {
+		IBeXMatchCount matchCount = IBeXPatternModelFactory.eINSTANCE.createIBeXMatchCount();
+//		TODO?
+//		matchCount.setNegative(value);
+		matchCount.setOperator(OneParameterOperator.COUNT);
+		GTNumber number = SGTPatternModelFactory.eINSTANCE.createGTNumber();
+		number.setNumber(0.0);
+		matchCount.setValue(number);
+		
+		IBeXContext invContext = transformation.getPattern(expression.getInvokedPatten().getName());
+		if(invContext instanceof IBeXContextAlternatives) {
+//			TODO
+		} else {
+			IBeXContextPattern invPattern = (IBeXContextPattern)invContext;
+			IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
+			invocation.setPositive(true);
+
+			Map<IBeXNode, IBeXNode> nodeMap = new HashMap<IBeXNode, IBeXNode>();
+			for (final IBeXNode nodeInPattern : IBeXPatternUtils.getAllNodes((IBeXContextPattern) ibexPattern)) {
+				IBeXPatternUtils.findIBeXNodeWithName(invPattern, nodeInPattern.getName())
+						.ifPresent(nodeInInvokedPattern -> nodeMap.put(nodeInPattern, nodeInInvokedPattern));
+			}
+			invocation.setInvokedPattern(invPattern);
+			EditorToIBeXPatternHelper.addNodeMapping(invocation, nodeMap);
+			matchCount.setInvocation(invocation);
+		}
+		return matchCount;
 	}
 }

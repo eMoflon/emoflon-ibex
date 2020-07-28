@@ -54,6 +54,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * Mapping between pattern names and the context patterns.
 	 */
 	private HashMap<String, IBeXContext> nameToPattern = new HashMap<String, IBeXContext>();
+	
+	public IBeXContext getPattern(final String patternName) {
+		return nameToPattern.get(patternName);
+	}
 
 	@Override
 	public IBeXPatternSet transform(final EditorGTFile file) {

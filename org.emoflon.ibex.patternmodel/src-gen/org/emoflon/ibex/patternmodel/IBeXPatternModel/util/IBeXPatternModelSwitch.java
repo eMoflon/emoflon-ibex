@@ -9,6 +9,8 @@ import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
+import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
+import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.*;
 
 /**
@@ -279,6 +281,17 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 			T result = caseIBeXArithmeticValue(iBeXArithmeticValue);
 			if (result == null)
 				result = caseIBeXAttributeValue(iBeXArithmeticValue);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XMATCH_COUNT: {
+			IBeXMatchCount iBeXMatchCount = (IBeXMatchCount) theEObject;
+			T result = caseIBeXMatchCount(iBeXMatchCount);
+			if (result == null)
+				result = caseGTOneParameterCalculation(iBeXMatchCount);
+			if (result == null)
+				result = caseGTArithmetics(iBeXMatchCount);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -645,6 +658,51 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXArithmeticValue(IBeXArithmeticValue object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XMatch Count</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XMatch Count</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXMatchCount(IBeXMatchCount object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>GT Arithmetics</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>GT Arithmetics</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseGTArithmetics(GTArithmetics object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>GT One Parameter Calculation</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>GT One Parameter Calculation</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseGTOneParameterCalculation(GTOneParameterCalculation object) {
 		return null;
 	}
 

@@ -13,6 +13,7 @@ import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
 import org.emoflon.ibex.gt.editor.gT.EditorAttributeExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorCountExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
@@ -31,6 +32,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
@@ -233,7 +235,9 @@ public class EditorToIBeXAttributeHelper {
 		} else if(value instanceof StochasticFunctionExpression) {
 			return Optional.of(convertAttributeValue((StochasticFunctionExpression) value));
 		} else if(value instanceof ArithmeticCalculationExpression) {
-			return Optional.of(convertAttributeValue((ArithmeticCalculationExpression) value));
+			return Optional.of(convertAttributeValue((ArithmeticCalculationExpression) value, ibexPattern, transformation));
+		} else if(value instanceof EditorCountExpression) {
+			return Optional.of(convertAttributeValue((EditorCountExpression) value, ibexPattern, transformation));
 		}
 		else {
 			transformation.logError("Invalid attribute value: %s", editorAttribute.getValue());
@@ -338,9 +342,17 @@ public class EditorToIBeXAttributeHelper {
 	 * @param expression the arithmetic expression
 	 * @return the IBeXArithmeticValue
 	 */
-	private static IBeXArithmeticValue convertAttributeValue(final ArithmeticCalculationExpression expression) {
-		IBeXArithmeticValue value= IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();		;
-		value.setExpression(EditorToArithmeticExtensionHelper.transformToGTArithmetics(expression.getExpression()));
+	private static IBeXArithmeticValue convertAttributeValue(final ArithmeticCalculationExpression expression, final IBeXPattern ibexPattern, final EditorToIBeXPatternTransformation transformation) {
+		IBeXArithmeticValue value= IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();
+		value.setExpression(EditorToArithmeticExtensionHelper.transformToGTArithmetics(expression.getExpression(), ibexPattern, transformation));
+		return value;
+	}
+	
+
+	private static IBeXArithmeticValue convertAttributeValue(EditorCountExpression expression, final IBeXPattern ibexPattern, final EditorToIBeXPatternTransformation transformation) {
+		IBeXArithmeticValue value = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();
+		IBeXMatchCount matchCount = (IBeXMatchCount) EditorToArithmeticExtensionHelper.transformToGTArithmetics(expression, ibexPattern, transformation);
+		value.setExpression(matchCount);
 		return value;
 	}
 }

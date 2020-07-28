@@ -106,7 +106,16 @@ public enum OneParameterOperator implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	BRACKET(8, "BRACKET", "BRACKET");
+	BRACKET(8, "BRACKET", "BRACKET"),
+	/**
+	* The '<em><b>COUNT</b></em>' literal object.
+	* <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	* @see #COUNT_VALUE
+	* @generated
+	* @ordered
+	*/
+	COUNT(9, "COUNT", "COUNT");
 
 	/**
 	 * The '<em><b>ROOT</b></em>' literal value.
@@ -208,13 +217,24 @@ public enum OneParameterOperator implements Enumerator {
 	public static final int BRACKET_VALUE = 8;
 
 	/**
+	 * The '<em><b>COUNT</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #COUNT
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int COUNT_VALUE = 9;
+
+	/**
 	 * An array of all the '<em><b>One Parameter Operator</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	private static final OneParameterOperator[] VALUES_ARRAY = new OneParameterOperator[] { ROOT, ABSOLUTE, SIN, COS,
-			TAN, EEXPONENTIAL, LOGARITHMUS, NATLOG, BRACKET, };
+			TAN, EEXPONENTIAL, LOGARITHMUS, NATLOG, BRACKET, COUNT, };
 
 	/**
 	 * A public read-only list of all the '<em><b>One Parameter Operator</b></em>' enumerators.
@@ -288,6 +308,8 @@ public enum OneParameterOperator implements Enumerator {
 			return NATLOG;
 		case BRACKET_VALUE:
 			return BRACKET;
+		case COUNT_VALUE:
+			return COUNT;
 		}
 		return null;
 	}

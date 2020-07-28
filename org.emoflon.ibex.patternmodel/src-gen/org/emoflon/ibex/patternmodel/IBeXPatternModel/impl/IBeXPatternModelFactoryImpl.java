@@ -99,6 +99,8 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 			return createIBeXStochasticAttributeValue();
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE:
 			return createIBeXArithmeticValue();
+		case IBeXPatternModelPackage.IBE_XMATCH_COUNT:
+			return createIBeXMatchCount();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -351,6 +353,17 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXArithmeticValue createIBeXArithmeticValue() {
 		IBeXArithmeticValueImpl iBeXArithmeticValue = new IBeXArithmeticValueImpl();
 		return iBeXArithmeticValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXMatchCount createIBeXMatchCount() {
+		IBeXMatchCountImpl iBeXMatchCount = new IBeXMatchCountImpl();
+		return iBeXMatchCount;
 	}
 
 	/**

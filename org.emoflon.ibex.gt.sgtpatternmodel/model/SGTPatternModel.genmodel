@@ -40,6 +40,7 @@
       <genEnumLiterals ecoreEnumLiteral="SGTPatternModel.ecore#//OneParameterOperator/LOGARITHMUS"/>
       <genEnumLiterals ecoreEnumLiteral="SGTPatternModel.ecore#//OneParameterOperator/NATLOG"/>
       <genEnumLiterals ecoreEnumLiteral="SGTPatternModel.ecore#//OneParameterOperator/BRACKET"/>
+      <genEnumLiterals ecoreEnumLiteral="SGTPatternModel.ecore#//OneParameterOperator/COUNT"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="SGTPatternModel.ecore#//GTRelation">
       <genEnumLiterals ecoreEnumLiteral="SGTPatternModel.ecore#//GTRelation/GREATER_OR_EQUAL"/>

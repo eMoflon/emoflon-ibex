@@ -109,5 +109,8 @@
     <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXArithmeticValue">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXArithmeticValue/expression"/>
     </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXMatchCount">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXMatchCount/invocation"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

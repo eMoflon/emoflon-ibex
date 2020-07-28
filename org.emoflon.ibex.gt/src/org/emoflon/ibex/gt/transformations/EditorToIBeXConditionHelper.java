@@ -110,7 +110,7 @@ public class EditorToIBeXConditionHelper {
 			});
 		}
 	}
-
+	
 	/**
 	 * Check which nodes from the context pattern can be mapped to the invoked
 	 * pattern based on the equal name convention.
