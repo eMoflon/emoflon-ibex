@@ -43,6 +43,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternUtil;
@@ -56,6 +57,7 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_GREENCORRP
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_OPTPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.CONTEXTPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.DomainTypePatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.GREENCORRPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.SRCPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.SplitUpPatternTransformation;
@@ -103,8 +105,11 @@ public class ContextPatternTransformation {
 		this.options = options;
 		this.USE_INVOCATIONS_FOR_REFERENCES = options.patterns.useEdgePatterns();
 		this.distributor = distributor;
-		this.filterNacAnalysis = new FilterNACAnalysis(options.tgg.flattenedTGG(), options);
-//		this.filterNacAnalysis = new PACAnalysis(options.tgg.flattenedTGG(), options);
+
+		if(options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS))
+			this.filterNacAnalysis = new PACAnalysis(options.tgg.flattenedTGG(), options);
+		else this.filterNacAnalysis = new FilterNACAnalysis(options.tgg.flattenedTGG(), options);
+
 	}
 
 	public IBeXPatternSet transform() {
@@ -191,13 +196,13 @@ public class ContextPatternTransformation {
 	}
 	
 	private void createSRCPattern(TGGRule rule) {
-		SRCPatternTransformation transformer = new SRCPatternTransformation(this, options, rule);
-		transformer.createSRCPattern();
+		DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(this, options, rule, DomainType.SRC);
+		transformer.createDomainTypePattern();
 	}
 	
 	private void createTRGPattern(TGGRule rule) {
-		TRGPatternTransformation transformer = new TRGPatternTransformation(this, options, rule);
-		transformer.createTRGPattern();
+		DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(this, options, rule, DomainType.TRG);
+		transformer.createDomainTypePattern();
 	}
 	
 	private void createGRENNCORRPattern(TGGRule rule) {

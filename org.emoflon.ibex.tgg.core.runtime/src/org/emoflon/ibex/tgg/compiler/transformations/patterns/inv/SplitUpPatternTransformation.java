@@ -18,6 +18,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import language.BindingType;
@@ -26,7 +27,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class SplitUpPatternTransformation {
+public class SplitUpPatternTransformation extends OperationalPatternTransformation{
 	
 	protected ContextPatternTransformation parent;
 	protected IbexOptions options;
@@ -36,18 +37,19 @@ public class SplitUpPatternTransformation {
 	LinkedList<TGGRuleEdge> patternEdges = new LinkedList<TGGRuleEdge>();
 	
 	public SplitUpPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
+		super(parent, options, rule, null);
 		this.parent = parent;
 		this.options = options;
 		this.rule = rule;
 	}
 	
-//	protected abstract String getPatternName();
-	
-	public void createPatternFromBindingAndDomain(BindingType binding, DomainType domain, String name) {
+	public IBeXContextPattern createPatternFromBindingAndDomain(BindingType binding, DomainType domain, String name) {
 		LinkedList<TGGRuleNode> ruleNodesByOperatorAndDomain = new LinkedList<TGGRuleNode>(getNodesByOperatorAndDomain(rule, binding, domain));
 		LinkedList<? extends TGGRuleEdge> ruleEdgesByOperatorAndDomain = new LinkedList<TGGRuleEdge>(getEdgesByOperatorAndDomain(rule, binding, domain));
 //		buildPattern(ruleNodesByOperatorAndDomain, ruleEdgesByOperatorAndDomain, name, 0);
-		transform(ruleNodesByOperatorAndDomain, ruleEdgesByOperatorAndDomain, name).ifPresent(parent::addContextPattern);
+		Optional<IBeXContextPattern> pattern = transform(ruleNodesByOperatorAndDomain, ruleEdgesByOperatorAndDomain, name);
+		pattern.ifPresent(parent::addContextPattern);
+		return pattern.get();
 	}
 	
 	public void createPatternFromBinding(BindingType binding, String name) {
@@ -191,5 +193,28 @@ public class SplitUpPatternTransformation {
 				}
 			}
 		}
+	}
+
+	@Override
+	protected String getPatternName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected void transformNodes(IBeXContextPattern ibexPattern) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void transformEdges(IBeXContextPattern ibexPattern) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void transformNACs(IBeXContextPattern ibexPattern) {
+		// TODO Auto-generated method stub
 	}
 }

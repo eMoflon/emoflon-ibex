@@ -20,12 +20,15 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.ConclusionRule;
 import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.DomainTypePatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import language.DomainType;
@@ -52,7 +55,6 @@ public abstract class OperationalPatternTransformation {
 		this.options = options;
 		this.rule = rule;
 		this.filterNACAnalysis = filterNACAnalysis;
-//		testIfNACsAreEqual();
 	}
 
 	protected abstract String getPatternName();
@@ -274,38 +276,60 @@ public abstract class OperationalPatternTransformation {
 				: (EClass) candidate.getEdgeType().eContainer();
 	}
 	
-	private void testIfNACsAreEqual() {
-		PACAnalysis pacAnalysis = new PACAnalysis(options.tgg.flattenedTGG(), options);
-		LinkedList<FilterNACCandidate> pacCandidates = new LinkedList<FilterNACCandidate>(pacAnalysis.computeFilterNACCandidates(rule, DomainType.SRC));
-		LinkedList<FilterNACCandidate> equalCandidates = new LinkedList<FilterNACCandidate>();
-		for(FilterNACCandidate candidate: filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
-			for(FilterNACCandidate pacCandidate : pacCandidates) {
-				if(candidate.getEdgeType() == pacCandidate.getEdgeType() && candidate.getEDirection() == pacCandidate.getEDirection()) {
-					equalCandidates.add(pacCandidate);
-					break;
+	protected IBeXContextPattern createPAC(IBeXContextPattern ibexPattern, DomainType domain, PACCandidate pacCandidate) {
+			IBeXContextPattern premisePattern = createFilterNAC(ibexPattern, pacCandidate.getPremise());
+//			premisePattern.setName(rule.getName() + "_" + pacCandidate.getPremise() + "__PAC");
+			//if there is only one conclusion there is no need for a extra PAC-Pattern, a single negative pattern invocation is enough
+			if(pacCandidate.getConclusionRules().size() == 1) {
+				ConclusionRule conclusion = pacCandidate.getConclusionRules().get(0);
+				IBeXContextPattern conclusionPattern = parent.getPattern(conclusion.getConclusionRule().getName() + "__" + domain);
+				if(conclusionPattern == null) {
+					return premisePattern;
 				}
-					
-			}
-		}
-		if(equalCandidates.size() == pacCandidates.size()) {
-			System.err.println(rule.getName() + " : NACs aus PACAnalysis und FilterNacAnalysis sind für SRC identisch");
-		}
-		else System.err.println(rule.getName() + " : ERROR: NACs aus PACAnalysis und FilterNacAnalysis sind für SRC NICHT identisch");
-		
-		pacCandidates = new LinkedList<FilterNACCandidate>(pacAnalysis.computeFilterNACCandidates(rule, DomainType.TRG));
-		equalCandidates.clear();
-		for(FilterNACCandidate candidate: filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
-			for(FilterNACCandidate pacCandidate : pacCandidates) {
-				if(candidate.getEdgeType() == pacCandidate.getEdgeType() && candidate.getEDirection() == pacCandidate.getEDirection()) {
-					equalCandidates.add(pacCandidate);
-					break;
+				else {
+					createPACPatternInvocation(conclusionPattern, premisePattern, pacCandidate, conclusion);
 				}
-					
 			}
-		}
-		if(equalCandidates.size() == pacCandidates.size()) {
-			System.err.println(rule.getName() + " : NACs aus PACAnalysis und FilterNacAnalysis sind für TRG identisch");
-		}
-		else System.err.println(rule.getName() + " : ERROR: NACs aus PACAnalysis und FilterNacAnalysis sind für TRG NICHT identisch");
+			else if(pacCandidate.getConclusionRules().size() > 1) {
+				IBeXContextPattern pacPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
+				pacPattern.setName(rule.getName() + "_" + pacCandidate.getPremise() + "__PAC");
+				IBeXPatternInvocation pacInv = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
+				pacInv.setPositive(true);
+				pacInv.setInvokedPattern(pacPattern);
+				pacInv.setInvokedBy(premisePattern);
+				
+				for(ConclusionRule conclusionRule : pacCandidate.getConclusionRules()) {
+					if(!parent.isTransformed(conclusionRule.getConclusionRule().getName() + "__" + domain)) {
+						DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(parent, options, conclusionRule.getConclusionRule(), domain);
+						transformer.createDomainTypePattern();
+					}
+					IBeXContextPattern conclusionPattern = parent.getPattern(conclusionRule.getConclusionRule().getName() + "__" + domain);
+					IBeXNode pacNode = IBeXPatternModelFactory.eINSTANCE.createIBeXNode();
+					pacNode.setName(pacCandidate.getPremise().getNodeInRule().getName());
+					pacNode.setType(pacCandidate.getPremise().getNodeInRule().getType());
+					pacPattern.getSignatureNodes().add(pacNode);
+					Optional<IBeXNode> premiseNode = IBeXPatternUtils.findIBeXNodeWithName(pacPattern, pacCandidate.getPremise().getNodeInRule().getName());
+					if(premiseNode.isPresent())
+						pacInv.getMapping().put(premiseNode.get(), pacNode);
+					premisePattern.getInvocations().add(pacInv);
+					createPACPatternInvocation(conclusionPattern, pacPattern, pacCandidate, conclusionRule);
+				}
+				parent.addContextPattern(pacPattern);
+			}
+			return premisePattern;		
+	}
+	/*
+	 * creates a negative Pattern Invocation from the Pac used Pattern with the conclusion and connects the necessary node
+	 */
+	private void createPACPatternInvocation(IBeXContextPattern conclusionPattern, IBeXContextPattern pacPattern, PACCandidate pacCandidate, ConclusionRule conclusionRule) {
+		IBeXPatternInvocation inv = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
+		inv.setPositive(false);
+		inv.setInvokedPattern(conclusionPattern);
+		inv.setInvokedBy(pacPattern);
+		Optional<IBeXNode> pacNode = IBeXPatternUtils.findIBeXNodeWithName(pacPattern, pacCandidate.getPremise().getNodeInRule().getName());
+		Optional<IBeXNode> conclusionNode = IBeXPatternUtils.findIBeXNodeWithName(conclusionPattern, conclusionRule.getPremiseConclusionNode().getName());
+		if(pacNode.isPresent() && conclusionNode.isPresent())
+			inv.getMapping().put(pacNode.get(), conclusionNode.get());
+		pacPattern.getInvocations().add(inv);
 	}
 }
