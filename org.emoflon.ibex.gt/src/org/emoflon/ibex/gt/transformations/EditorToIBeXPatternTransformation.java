@@ -127,8 +127,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 							.transformToContextPattern(editorNode -> EditorModelUtils.isLocal(editorNode)));
 					}
 					catch(IllegalArgumentException e) {
-						//when something goes wrong proceed normally
-						//logError("disjunct pattern '%s' could not be partitioned. Pattern will be proceeded normally", editorPattern.getName());
+						//when something goes wrong proceed normally and remove already transformed patterns
+						ibexContextPatterns.removeIf(pattern -> pattern.getName().contains(copiedPattern.get(0).getName()+"_"));
 					}
 				}
 			}

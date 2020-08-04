@@ -2,7 +2,6 @@ package org.emoflon.ibex.gt.transformations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,7 +30,6 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 	
 	EditorToIBeXPatternTransformation transformation;
 	Map<Set<EditorNode>, EditorPattern> dividedPatterns;
-	GTDisjunctPatternFinder patternfinder;
 	List<Set<EditorNode>> subpatterns;
 	List<Pair<EditorNode, List<EditorAttribute>>> disjunctAttributeConditions;
 	EditorPattern editorPattern;
@@ -41,7 +39,6 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 	public EditorToIBeXDisjunctContextPatternTransformation(final EditorToIBeXPatternTransformation transformation, 
 			final GTDisjunctPatternFinder patternfinder, final EditorPattern editorPattern) {
 		this.transformation = transformation;
-		this.patternfinder = patternfinder;
 		dividedPatterns = new HashMap<Set<EditorNode>, EditorPattern>();
 		disjunctAttributeConditions = new ArrayList<Pair<EditorNode,List<EditorAttribute>>>();
 		subpatterns = patternfinder.getSubpatterns();
@@ -63,7 +60,11 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 		
 		//divide the EditorPattern in sub-EditorPatterns; The transformation of the subpatterns is done by the main IBeXTransformation class so that the 
 		//subpatterns themselves do not have errors
-		divideContextPatterns(isLocalCheck);
+		dividedPatterns = divideContextPatterns(editorPattern, isLocalCheck);
+		
+
+		//find injectivity constraints in the subpatterns
+		injectivityConstraints = EditorToIBeXDisjunctPatternHelper.findInjectivityConstraints(new ArrayList<EditorPattern>(dividedPatterns.values()), isLocalCheck);
 		
 		//find attributeConstraints between transformed disjunct subpatterns
 		disjunctAttributeConditions = dividedPatterns.entrySet().stream()
@@ -91,139 +92,83 @@ public class EditorToIBeXDisjunctContextPatternTransformation extends EditorToIB
 	/**
 	 * divides a disjunct editorPattern in different subpatterns; not supported until now: EditorPatternAttributeCondition(?)
 	 */
-	private void divideContextPatterns(final Predicate<EditorNode> isLocalCheck) {
-		List<EditorNode> editorNodes = EditorModelUtils.getNodesByOperator(editorPattern, EditorOperator.CONTEXT,
-				EditorOperator.DELETE);	
-			
-		//divide the nodes in the pattern
-		for(int i = 0; i< subpatterns.size(); i++) {
-			//create new subpatterns that are later transformed into IBeXPattern; consistency of the pattern can be generated this way
-			Set<EditorNode> currentSubpattern = subpatterns.get(i);
-			EditorPattern newSubpattern = GTFactory.eINSTANCE.createEditorPattern();
-			newSubpattern.setName(editorPattern.getName() + "_"+ i);
-			List<EditorNode> subpatternNodes = currentSubpattern.stream().filter(n -> editorNodes.contains(n)).collect(Collectors.toList());
-			newSubpattern.getNodes().addAll(subpatternNodes);
-			newSubpattern.setType(editorPattern.getType());
-			dividedPatterns.put(subpatterns.get(i), newSubpattern);
+	private Map<Set<EditorNode>, EditorPattern> divideContextPatterns(final EditorPattern pattern, final Predicate<EditorNode> isLocalCheck) {
+		
+		List<EditorNode> editorNodes = new ArrayList<EditorNode>(EditorModelUtils.getNodesByOperator(pattern, EditorOperator.CONTEXT,
+				EditorOperator.DELETE));	
+		Map<Set<EditorNode>, EditorPattern> dividedPatterns = new HashMap<Set<EditorNode>, EditorPattern>();
+		
+		//see if there are any nodes that do not belong to any subpattern
+		List<EditorNode> independentNodes = new ArrayList<EditorNode>(editorNodes);
+		for(Set<EditorNode> subpattern: subpatterns) {
+			independentNodes.removeIf(n -> subpattern.contains(n));
+		}
+		if(!independentNodes.isEmpty()) {
+			throw new IllegalArgumentException("there is a node that does not belong to any subpattern");
 		}
 		
-		//find injectivity constraints in the subpatterns
-		injectivityConstraints = EditorToIBeXDisjunctPatternHelper.findInjectivityConstraints(new ArrayList<EditorPattern>(dividedPatterns.values()), isLocalCheck);
+		int i = 0;
+		//divide the nodes in the pattern
+		for(Set<EditorNode> subpattern: subpatterns) {
+			if(subpattern.containsAll(editorNodes)) {
+				dividedPatterns.put(subpattern, pattern);
+				break;
+			}
+			List<EditorNode> subpatternNodes = editorNodes.stream().filter(n -> subpattern.contains(n)).collect(Collectors.toList());
+			if(subpatternNodes.isEmpty()) {
+				continue;
+			}
+			EditorPattern newSubpattern = GTFactory.eINSTANCE.createEditorPattern();
+			newSubpattern.setName(pattern.getName() + "_"+ i++);
+			newSubpattern.getNodes().addAll(subpatternNodes);
+			newSubpattern.setType(pattern.getType());
+			dividedPatterns.put(subpattern, newSubpattern);
+		}
+
+		//find illegal injectivity constraints in the subpatterns
+		EditorToIBeXDisjunctPatternHelper.findInjectivityConstraints(new ArrayList<EditorPattern>(dividedPatterns.values()), isLocalCheck);
 		
-		if(!editorPattern.getConditions().isEmpty()) {
+		if(!pattern.getConditions().isEmpty()) {
 			//divide the conditions and add them to the divided editorPatterns
-			divideConditions(editorPattern.getConditions().get(0), editorNodes.stream().filter(isLocalCheck.negate()).collect(Collectors.toList()), editorPattern.getName())
-			.forEach((k, v) -> {
-				dividedPatterns.compute(k, (otherK, otherV) -> {
-					if(otherV == null) {
-						//there should be a disjunct editorPattern under this subpattern; if not then something went wrong and the pattern is dealt with in the original way
-						throw new IllegalArgumentException("something went wrong when diving the subconditions");
+			if(pattern.getConditions().size()>1) throw new IllegalArgumentException("conditions can not be partitioned");
+			
+			Map<Set<EditorNode>, EditorCondition> conditionSubmap = new HashMap<Set<EditorNode>, EditorCondition>();
+			
+			for(EditorApplicationCondition simpleCondition: new GTConditionHelper(pattern.getConditions().get(0)).getApplicationConditions()) {
+				List<EditorNode> signatureNodes = editorNodes.stream().filter(isLocalCheck.negate()).collect(Collectors.toList());
+				Map<Set<EditorNode>, EditorPattern> dividedConditions = divideContextPatterns(simpleCondition.getPattern(), 
+						n -> !signatureNodes.contains(n));
+				int j = 0;
+				
+				for(Entry<Set<EditorNode>, EditorPattern> entry: dividedConditions.entrySet()) {
+					if(!conditionSubmap.containsKey(entry.getKey())) {
+						EditorCondition condition = GTFactory.eINSTANCE.createEditorCondition();
+						condition.setName(pattern.getConditions().get(0).getName() + "_" + j++);
+						conditionSubmap.put(entry.getKey(), condition);
+
 					}
-					else {
-						otherV.getConditions().add(v);
-						return otherV;						
-					}
-				});
-			});	
-		}		
-	}
-
-
-
-	/**
-	 * divides the conditions in the corresponding subpatterns
-	 * 
-	 * @param condition the current condition that needs to be separated
-	 * @param signatureNodes the 
-	 * @return a map with the subpatterns and the corresponding EditorConditions
-	 */
-	private Map<Set<EditorNode>, EditorCondition> divideConditions(final EditorCondition condition, final List<EditorNode> signatureNodes, String patternName){
-		Map<Set<EditorNode>, EditorCondition> conditionMap = new LinkedHashMap<Set<EditorNode>, EditorCondition>();
-		int conditionNr = 0;
-		
-		for(EditorApplicationCondition simpleCondition: new GTConditionHelper(condition).getApplicationConditions()) {
+					EditorApplicationCondition subcondition = GTFactory.eINSTANCE.createEditorApplicationCondition();
+					subcondition.setType(simpleCondition.getType());
+					subcondition.setPattern(entry.getValue());
+					conditionSubmap.get(entry.getKey()).getConditions().add(subcondition);
+				}
+				
+			}
 			
-			Map<Set<EditorNode>, EditorApplicationCondition> simpleConditionSubpatterns = computeConditionSubmap(simpleCondition, signatureNodes);
-			List<EditorPattern> conditionPatterns = simpleConditionSubpatterns.values().stream().map(c -> c.getPattern()).collect(Collectors.toList());
-			
-			//find out if the different subpatterns of the conditions have injectivity constraint; they will only have valid constraints if they are mapped with signature nodes
-			EditorToIBeXDisjunctPatternHelper.findInjectivityConstraints(conditionPatterns, n -> !signatureNodes.contains(n));
-			
-			for(Entry<Set<EditorNode>, EditorApplicationCondition> conditionSubmap: simpleConditionSubpatterns.entrySet()) {
-				// add the new subconditions to the corresponding Editorconditions
-				if(conditionMap.containsKey(conditionSubmap.getKey())) {
-					conditionMap.computeIfPresent(conditionSubmap.getKey(),(k, v) -> {
-						v.getConditions().add(conditionSubmap.getValue());
-						return v;
-					});
+			for(Entry<Set<EditorNode>, EditorCondition> entry: conditionSubmap.entrySet()) {
+				if(dividedPatterns.get(entry.getKey()) == null) {
+					//there should be a disjunct editorPattern under this subpattern; if not then something went wrong and the pattern is dealt with in the original way
+					throw new IllegalArgumentException("something went wrong when diving the subconditions");
 				}
 				else {
-					EditorCondition newCondition =  GTFactory.eINSTANCE.createEditorCondition();
-					newCondition.getConditions().add(conditionSubmap.getValue());
-					//all conditions need a different name so that they are not recognized as the same condition by the IBeXToPatternTransformation class
-					newCondition.setName("DisjunctCondition_" + patternName + "_" + condition.getName() + "_" + conditionNr++);	
-					conditionMap.put(conditionSubmap.getKey(), newCondition);
-				}
-			}				
-		}
-		return  conditionMap;
-	}
-	
-	/**
-	 * computes the subpatterns for the specific condition
-	 * 
-	 * @param condition the specific condition
-	 * @param signatureNodes the signatureNodes of the pattern
-	 * @return the computed subpattern
-	 */
-	private Map<Set<EditorNode>, EditorApplicationCondition> computeConditionSubmap(final EditorApplicationCondition condition, final List<EditorNode> signatureNodes){
-		Map<Set<EditorNode>, EditorApplicationCondition> applicationConditionMap = new HashMap<Set<EditorNode>, EditorApplicationCondition>();
-		//indexNr for the condition naming
-		int conditionNr = 0;
-		if(getFlattenedPattern(condition.getPattern()).isPresent()) {
-			//see if the whole condition fits in one subpattern; then it does not need to be partitioned
-			for(Set<EditorNode> subpattern: subpatterns) {
-				if(subpattern.containsAll(EditorModelUtils.getNodesByOperator(getFlattenedPattern(condition.getPattern()).get(), EditorOperator.CONTEXT))) {
-					applicationConditionMap.put(subpattern, condition);
-					return applicationConditionMap;
-				}
-			}
-			
-			//else the pattern needs to be partitioned
-			for(EditorNode node: EditorModelUtils.getNodesByOperator(getFlattenedPattern(condition.getPattern()).get(), EditorOperator.CONTEXT)) {
-				boolean inASubbpattern = false;
-				
-				//find out to which subpattern do the nodes in the condition belong to; node can be saved directly in the subpattern or indirectly as a signature node
-				for(Set<EditorNode> subpattern: subpatterns) {
-					if(subpattern.contains(node)) {					
-						if(applicationConditionMap.containsKey(subpattern)) {
-							applicationConditionMap.computeIfPresent(subpattern, (k, v) -> {
-								v.getPattern().getNodes().add(node);
-								return v;
-							});
-						}
-						else {
-							/* creates a new partitioned simpleCondition for the specific subpattern; all subconditions need different names so
-							 * that they can be seen as different patterns by the EditorToIBeXPatternTransformator
-							 */
-							EditorApplicationCondition newCondition = GTFactory.eINSTANCE.createEditorApplicationCondition();
-							EditorPattern pattern  = GTFactory.eINSTANCE.createEditorPattern();
-							pattern.getNodes().add(node);
-							pattern.setName(condition.getPattern().getName() + "_" + conditionNr++);
-							pattern.setAbstract(condition.getPattern().isAbstract());
-							newCondition.setPattern(pattern);
-							newCondition.setType(condition.getType());
-							applicationConditionMap.put(subpattern, newCondition);
-						}
-						inASubbpattern = true;
+					if(conditionSubmap.size()==1) {
+						entry.getValue().setName(pattern.getConditions().get(0).getName());
 					}
-				}
-				if(!inASubbpattern) {
-					// if it is not in a subpattern, then it is disjunct => all disjunct subconditions will be saved and dealt with somewhere else
-					throw new IllegalArgumentException("condition could not be partioned");
+					dividedPatterns.get(entry.getKey()).getConditions().add(entry.getValue());
 				}
 			}
 		}
-		return applicationConditionMap;
+		return dividedPatterns;
 	}
+
 }

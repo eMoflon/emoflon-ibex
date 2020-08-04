@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBexDisjunctInjectivityConstraint;
 import org.emoflon.ibex.common.operational.IMatch;
@@ -28,159 +27,125 @@ public class DisjunctInjectivityCalculationHelper {
 	 */
 	public static long calculateSubmatchCount(final IBeXDisjunctContextPattern pattern, 
 			final IBeXDependentInjectivityConstraints constraints, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap, final Map<IBeXContextPattern, Set<IMatch>> oldMatches, 
-			final List<IBeXContextPattern> cartesianSequence, final Map<IBeXDependentInjectivityConstraints, Set<IMatch>> oldCartesianProducts, 
-			final Map<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>> attributes, 
+			final Pair<List<IBeXContextPattern>,List<IBeXContextPattern>> cartesianSequence, final Map<IBeXDependentInjectivityConstraints, Pair<Set<IMatch>, Set<IMatch>>> oldCartesianProducts, 
+			final List<SubmatchAttributeComparator> comparators, 
 			final Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>> oldInjectivityConstraints,
 			final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> targetMap, final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> sourceMap, 
 			final Map<SubmatchAttributeComparator, Pair<TreeSet<IMatch>, TreeSet<IMatch>>> sourceNeededSets, Set<Object> changedNodes) {
 		
-		IBeXContextPattern targetPattern;
-		
-		Optional<IBeXContextPattern> possibleTargetPattern = constraints.getPatterns().stream().filter(subpattern -> !cartesianSequence.contains(subpattern)).findFirst();
-		if(possibleTargetPattern.isEmpty() && constraints.getAttributeConstraints() != null) {
-			for(IBeXDependentDisjunctAttribute attribute: constraints.getAttributeConstraints()) {
-				possibleTargetPattern = attribute.getDependentPatterns().stream().filter(subpattern -> !cartesianSequence.contains(subpattern)).findFirst();
-				if(possibleTargetPattern.isPresent()) break;			
-			}
-		}
-		if(possibleTargetPattern.isEmpty()) throw new IllegalArgumentException("target pattern was not found");
-		targetPattern = possibleTargetPattern.get();
-		
-		//find the new target matches 
 		//the parameter names
 		List<String> parameter1 = new ArrayList<String>(constraints.getInjectivityConstraints().stream()
-				.filter(constraint -> !cartesianSequence.contains(constraint.getPattern1())||!cartesianSequence.contains(constraint.getPattern2()))
+				.filter(constraint -> cartesianSequence.getRight().contains(constraint.getPattern1()) && cartesianSequence.getLeft().contains(constraint.getPattern2())
+						|| cartesianSequence.getRight().contains(constraint.getPattern2()) && cartesianSequence.getLeft().contains(constraint.getPattern1()))
 				.flatMap(constraint -> {
-					if(!cartesianSequence.contains(constraint.getPattern1())) return constraint.getNode1().stream().map(node -> node.getName());
+					if(!cartesianSequence.getRight().contains(constraint.getPattern1())) return constraint.getNode1().stream().map(node -> node.getName());
 					else return constraint.getNode2().stream().map(node -> node.getName());
 				}).collect(Collectors.toSet()));
 		
 		List<String> parameter2 = new ArrayList<String>(constraints.getInjectivityConstraints().stream()
 				.filter(constraint -> {
-					return cartesianSequence.contains(constraint.getPattern1()) && !cartesianSequence.contains(constraint.getPattern2()) 
-							|| cartesianSequence.contains(constraint.getPattern2()) && !cartesianSequence.contains(constraint.getPattern1());
+					return cartesianSequence.getLeft().contains(constraint.getPattern1()) && cartesianSequence.getRight().contains(constraint.getPattern2()) 
+							|| cartesianSequence.getLeft().contains(constraint.getPattern2()) && cartesianSequence.getRight().contains(constraint.getPattern1());
 				}).flatMap(constraint -> {
-					if(cartesianSequence.contains(constraint.getPattern1())) return constraint.getNode1().stream().map(node -> node.getName());
+					if(!cartesianSequence.getLeft().contains(constraint.getPattern1())) return constraint.getNode1().stream().map(node -> node.getName());
 					else return constraint.getNode2().stream().map(node -> node.getName());
 				}).collect(Collectors.toSet()));
 		
-		Set<IMatch> cartesianProduct = new HashSet<IMatch>();
-		Set<IMatch> oldTargetMatch = oldMatches.get(targetPattern);
-		Set<IMatch> newTargetMatches = submatchesMap.get(targetPattern).parallelStream().filter(match -> !oldTargetMatch.contains(match)).collect(Collectors.toSet());
+		//find the necessary submatch comparators for the cartesian products
+		List<SubmatchAttributeComparator> cartesianSourceComparators = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
+				.filter(c -> cartesianSequence.getRight().contains(c.getTargetPattern()) && cartesianSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+
+		List<SubmatchAttributeComparator> cartesianTargetComparators = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
+				.filter(c -> cartesianSequence.getLeft().contains(c.getTargetPattern()) && cartesianSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+
+		Set<IMatch> cartesianTargetProduct = new HashSet<IMatch>();
+		Set<IMatch> oldTargetMatches;		
 		
-		
-		Map<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>> comparators = new HashMap<IBeXDisjunctAttribute, List<SubmatchAttributeComparator>>();
-		//find the necessary submatch comparators
-		if(constraints.getAttributeConstraints() != null) {
-			for(IBeXDependentDisjunctAttribute attribute: constraints.getAttributeConstraints()) {			
-			comparators.putAll(attributes.entrySet().stream().filter(entry -> attribute.getAttributes().contains(entry.getKey()))
-					.collect(Collectors.toMap(c->c.getKey(), c->c.getValue().stream().filter(comparator -> !comparator.getTargetPatternName().equals(targetPattern.getName())).collect(Collectors.toList()))));
-			}
-		}
-		Map<IBeXContextPattern, Set<IMatch>> newSubmatches = new HashMap<IBeXContextPattern, Set<IMatch>>();
-		Map<IBeXContextPattern, Set<IMatch>>  oldSubmatches = new HashMap<IBeXContextPattern, Set<IMatch>>();
-		//find the matches which were added and removed
-		for(IBeXContextPattern subpattern: cartesianSequence) {
-			Set<IMatch> newMatch = submatchesMap.get(subpattern);
-			Set<IMatch> oldMatch = oldMatches.get(subpattern);
-			newSubmatches.put(subpattern, newMatch.parallelStream().filter(match -> !oldMatch.contains(match)).collect(Collectors.toSet()));
-			oldSubmatches.put(subpattern, oldMatch.parallelStream().filter(match -> !newMatch.contains(match)).collect(Collectors.toSet()));
-		}
-		Set<IMatch> oldCalculatedSourceMatches = new HashSet<IMatch>();
-		Set<IMatch> newCalculatedSourceMatches = new HashSet<IMatch>();
-		Set<IMatch> oldSourceMatches;
-		if(cartesianSequence.size()>1) {
-			//update the cartesian product
-			if(!oldCartesianProducts.containsKey(constraints)) {
-				oldCartesianProducts.put(constraints, new HashSet<IMatch>());
-			}
-			cartesianProduct = new HashSet<IMatch>(oldCartesianProducts.get(constraints));
-			for(IBeXContextPattern subpattern: cartesianSequence) {
-				newCalculatedSourceMatches.addAll(DisjunctPatternHelper.createUpdatedCartesianProduct(pattern, cartesianSequence, subpattern, newSubmatches.get(subpattern), submatchesMap, comparators));
-				oldCalculatedSourceMatches.addAll(DisjunctPatternHelper.createUpdatedCartesianProduct(pattern, cartesianSequence, subpattern, oldSubmatches.get(subpattern), oldMatches, comparators));
-			}
-			oldSourceMatches = oldCartesianProducts.get(constraints);
-			cartesianProduct.addAll(newCalculatedSourceMatches);
-			cartesianProduct.removeAll(oldCalculatedSourceMatches);
+		if(cartesianSequence.getLeft().size()>1) {
+			oldTargetMatches = oldCartesianProducts.get(constraints).getLeft();
+			cartesianTargetProduct = new HashSet<IMatch>(oldCartesianProducts.get(constraints).getLeft());
 		}
 		else {
-			cartesianProduct.addAll(submatchesMap.get(cartesianSequence.get(0)));
-			newCalculatedSourceMatches.addAll(newSubmatches.get(cartesianSequence.get(0)));
-			oldCalculatedSourceMatches.addAll(oldSubmatches.get(cartesianSequence.get(0)));
-			oldSourceMatches = oldMatches.get(cartesianSequence.get(0));
-		}
+			oldTargetMatches = oldMatches.get(cartesianSequence.getLeft().get(0));
+			cartesianTargetProduct.addAll(submatchesMap.get(cartesianSequence.getLeft().get(0)));
+		}			
+		//find the matches which were added and removed
+		List<Set<IMatch>> calculatedTargetMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, cartesianSequence.getLeft(), submatchesMap, oldMatches, 
+				cartesianTargetComparators);
+		Set<IMatch> oldCalculatedTargetMatches = calculatedTargetMatches.get(1);
+		Set<IMatch> newCalculatedTargetMatches = calculatedTargetMatches.get(0);
+		cartesianTargetProduct.addAll(newCalculatedTargetMatches);
+		cartesianTargetProduct.removeAll(oldCalculatedTargetMatches);
 		
-		Map<IMatch, Set<IMatch>> injectivityMap = findForbiddenMatches(constraints, oldMatches.get(targetPattern), oldSourceMatches,parameter1, parameter2, 
-				submatchesMap.get(targetPattern), cartesianProduct, oldInjectivityConstraints);
+		Set<IMatch> cartesianSourceProduct = new HashSet<IMatch>();
+		Set<IMatch> oldSourceMatches;		
+		
+		if(cartesianSequence.getRight().size()>1) {
+			oldSourceMatches = oldCartesianProducts.get(constraints).getRight();
+			cartesianSourceProduct = new HashSet<IMatch>(oldCartesianProducts.get(constraints).getRight());
+		}
+		else {
+			oldSourceMatches = oldMatches.get(cartesianSequence.getRight().get(0));
+			cartesianSourceProduct.addAll(submatchesMap.get(cartesianSequence.getRight().get(0)));
+		}			
+		//find the matches which were added and removed
+		List<Set<IMatch>> calculatedSourceMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, cartesianSequence.getRight(), submatchesMap, oldMatches, 
+				cartesianSourceComparators);
+		Set<IMatch> oldCalculatedSourceMatches = calculatedSourceMatches.get(1);
+		Set<IMatch> newCalculatedSourceMatches = calculatedSourceMatches.get(0);
+		cartesianSourceProduct.addAll(newCalculatedSourceMatches);
+		cartesianSourceProduct.removeAll(oldCalculatedSourceMatches);
+		
+		Map<IMatch, Set<IMatch>> injectivityMap = findForbiddenMatches(constraints, oldTargetMatches, oldSourceMatches,parameter1, parameter2, 
+				cartesianTargetProduct, cartesianSourceProduct, oldInjectivityConstraints);
 		
 		//find the updated matches if it is necessary
 		if(!constraints.getAttributeConstraints().isEmpty()) {
 			
-			Optional<IBeXDisjunctAttribute> attribute = constraints.getAttributeConstraints().stream().flatMap(subattribute -> subattribute.getAttributes().stream())
-					.filter(subattribute -> subattribute.getTargetPattern().equals(targetPattern)).findAny();	
+			//find out which comparators are needed for the forbidden constraints
+			List<SubmatchAttributeComparator> constraintComparators = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
+					.filter(c -> cartesianSequence.getLeft().contains(c.getTargetPattern()) && !cartesianSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+			
+			//find the reverse comparators (source -> target) if there are any; necessary for cyclic dependencies
+			List<SubmatchAttributeComparator> reverseComparator = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
+					.filter(c -> cartesianSequence.getRight().contains(c.getTargetPattern()) && !cartesianSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+			
 			//if it is not present than it was already solved when calculating the attribute constraints
-			if(attribute.isPresent()) {
-				Optional<IBeXDependentDisjunctAttribute> dependentAttribute = constraints.getAttributeConstraints().stream()
-						.filter(subattribute -> subattribute.getAttributes().contains(attribute.get())).findFirst();
-				Set<IMatch> currentTargetMatch = submatchesMap.get(targetPattern);
-				Set<IMatch> exclusiveOldTargetMatch = oldTargetMatch.parallelStream().filter(match -> !currentTargetMatch.contains(match)).collect(Collectors.toSet());
-				//changed target matches
-				Set<IMatch> changedTargetMatches = currentTargetMatch.parallelStream().filter(match -> {
-					if(!oldTargetMatch.contains(match)) return false;
-					for(String parameter: match.getParameterNames()) {
-						if(changedNodes.contains(match.get(parameter))) {
-							return true;
+			if(!constraintComparators.isEmpty() || !reverseComparator.isEmpty()) {
+				
+				//find the attribute constraint value
+				IBeXDependentDisjunctAttribute dependentAttribute = null;
+				for(IBeXDependentDisjunctAttribute attr: constraints.getAttributeConstraints()) {
+					for(IBeXContextPattern subpattern: attr.getDependentPatterns()) {
+						if(cartesianSequence.getLeft().contains(subpattern)) {
+							dependentAttribute = attr;
+							break;
 						}
 					}
-					return false;
-				}).collect(Collectors.toSet());
-				//find the changed matches
-				Map<IBeXContextPattern, Set<IMatch>> changedSourceMatches = new HashMap<IBeXContextPattern, Set<IMatch>>();
-				for(IBeXContextPattern subpattern: cartesianSequence) {
-					Set<IMatch> matches = oldMatches.get(subpattern);
-					Set<IMatch> newMatches = submatchesMap.get(subpattern);
-					changedSourceMatches.put(subpattern, newMatches.parallelStream().filter(match -> {
-						if(matches.contains(match)) return false;
-						for(String parameter: match.getParameterNames()) {
-							if(changedNodes.contains(match.get(parameter))) {
-								return true;
-							}
-						}
-						return false;
-					}).collect(Collectors.toSet()));
+					if(dependentAttribute != null) break;
 				}
+
+				//changed target matches
+				Set<IMatch> changedTargetMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, cartesianSequence.getLeft(), changedNodes, oldMatches, submatchesMap, newCalculatedTargetMatches, 
+						cartesianTargetComparators);
+
 				//add the changed matches to the new matches and to the changed match set
-				Set<IMatch> changedMatches = new HashSet<IMatch>();
-				for(IBeXContextPattern subpattern: cartesianSequence) {
-					newCalculatedSourceMatches.addAll(DisjunctPatternHelper.createUpdatedCartesianProduct(pattern, cartesianSequence, subpattern, changedSourceMatches.get(subpattern), submatchesMap, comparators));
-					changedMatches.addAll(DisjunctPatternHelper.createUpdatedCartesianProduct(pattern, cartesianSequence, subpattern, changedSourceMatches.get(subpattern), oldMatches, comparators));
-				}
-				//find out which comparators are needed for the forbidden constraints
-				Set<SubmatchAttributeComparator> tempComparator = new HashSet<SubmatchAttributeComparator>();
-				List<SubmatchAttributeComparator> constraintComparators = new ArrayList<SubmatchAttributeComparator>();
-				for(SubmatchAttributeComparator comparator: attributes.get(attribute.get())) {
-					if(comparator.getTargetPatternName().equals(targetPattern.getName())) {
-						tempComparator.add(comparator);
-					}					
-				}		
-				constraintComparators.addAll(tempComparator);
-	
-				//find the ibexdisjunctattribute with the target pattern as target
-				long matchsum = submatchesMap.get(targetPattern).size()*cartesianProduct.size();
-				
-				long forbiddenMatches = DisjunctAttributeCalculationHelper.calculateForbiddenConstraintWithInjectivityMatches(pattern, attribute.get(), constraintComparators, exclusiveOldTargetMatch, 
-						changedTargetMatches, newTargetMatches, targetMap.get(dependentAttribute.get()), oldCalculatedSourceMatches, changedMatches, newCalculatedSourceMatches, 
-						sourceMap.get(dependentAttribute.get()), injectivityMap, sourceNeededSets);				
-				return matchsum - forbiddenMatches;
+				Set<IMatch> changedSourceMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, cartesianSequence.getRight(), changedNodes, oldMatches, submatchesMap, newCalculatedSourceMatches, 
+						cartesianSourceComparators);
+
+				return DisjunctAttributeCalculationHelper.calculateForbiddenConstraintWithInjectivityMatches(constraintComparators, reverseComparator, oldCalculatedTargetMatches, 
+						changedTargetMatches, newCalculatedTargetMatches, targetMap.get(dependentAttribute), oldCalculatedSourceMatches, changedSourceMatches, newCalculatedSourceMatches, 
+						sourceMap.get(dependentAttribute), injectivityMap, sourceNeededSets);				
 				}
 		}
 
-		if(cartesianSequence.size() > 1) {
+		if(cartesianSequence.getRight().size() > 1 || cartesianSequence.getLeft().size() > 1) {
 			//update the cartesian product
-			oldCartesianProducts.put(constraints, cartesianProduct);			
+			oldCartesianProducts.get(constraints).setLeft(cartesianTargetProduct);
+			oldCartesianProducts.get(constraints).setRight(cartesianSourceProduct);
 		}	
 		
-		long matchsum = submatchesMap.get(targetPattern).size()*cartesianProduct.size();
+		long matchsum = cartesianTargetProduct.size()*cartesianSourceProduct.size();
 		
 		return matchsum - injectivityMap.values().parallelStream().mapToLong(constraint -> constraint.size()).sum();					
 	}
@@ -300,102 +265,63 @@ public class DisjunctInjectivityCalculationHelper {
 	 * @param constraint the constraint
 	 * @return the list of the subpatterns that should be used for the cartesian product calculation
 	 */
-	public static final List<IBeXContextPattern> findPatternFrequency(final IBeXDependentInjectivityConstraints constraint, Map<IBeXContextPattern, Set<IMatch>> submatchesMap){
+	public static final Pair<List<IBeXContextPattern>, List<IBeXContextPattern>> findPatternFrequency(final IBeXDependentInjectivityConstraints constraint, Map<IBeXContextPattern, Set<IMatch>> submatchesMap){
 		
-		Map<IBeXContextPattern, Integer> patternFrequency = new HashMap<IBeXContextPattern, Integer>();
-		Set<IBeXContextPattern> cartesianPatterns = new HashSet<IBeXContextPattern>();
-		
+		Map<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer> patternFrequency = new HashMap<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer>();
 		//searches for the patterns with attribute constraints
-		if(constraint.getAttributeConstraints() != null) {
+		if(!constraint.getAttributeConstraints().isEmpty()) {
 			for(IBeXDependentDisjunctAttribute subattribute: constraint.getAttributeConstraints()) {
-				Map<IBeXContextPattern, Integer> map = DisjunctAttributeCalculationHelper.findAttributeConstraintFrequency(subattribute);
-				for(Entry<IBeXContextPattern, Integer> entry: map.entrySet()) {
-					patternFrequency.compute(entry.getKey(), (k, v)-> (v==null)? entry.getValue() : entry.getValue() + v);
-				}
+				patternFrequency.putAll(DisjunctAttributeCalculationHelper.findAttributeConstraintFrequency(subattribute));
 			}
+			if(patternFrequency.isEmpty()) throw new IllegalArgumentException("the subpatterns can not be divided into two "
+					+ "subpatterns that can be calculated without the cartesian product; please make the rule @notDisjoint");
 		} 
-		
-		Map<IBeXContextPattern, Integer> otherPatternFrequency = new HashMap<IBeXContextPattern, Integer>();
 		//search for the pattern with the least dependencies
-		Optional<Entry<IBeXContextPattern, Integer>> min = patternFrequency.entrySet().stream()
-        .min(Comparator.comparingInt(Map.Entry::getValue));
-		if(min.isPresent()) {
-			for(Entry<IBeXContextPattern, Integer> entry: patternFrequency.entrySet()) {
-				//remove all patterns that are not of interest
-				if(entry.getValue()==min.get().getValue()) {
-					otherPatternFrequency.put(entry.getKey(), entry.getValue());
-				}
-			}
-		}
-		//if there is only one -> return all others as cartesian products
-		if(otherPatternFrequency.size() == 1) {
-			IBeXContextPattern pattern = otherPatternFrequency.entrySet().iterator().next().getKey();
-			cartesianPatterns.addAll(constraint.getPatterns().stream().filter(otherpattern -> !otherpattern.equals(pattern)).collect(Collectors.toList()));
-			if(constraint.getAttributeConstraints() != null) {
-				for(IBeXDependentDisjunctAttribute attributes: constraint.getAttributeConstraints()) {
-					cartesianPatterns.addAll(attributes.getDependentPatterns().stream().filter(otherpattern -> !otherpattern.equals(pattern)).collect(Collectors.toList()));
-				}
-			}
-			return new ArrayList<IBeXContextPattern>(cartesianPatterns);
-		}
-		//search for the pattern with the least injectivity dependencies
-		for(IBeXContextPattern pattern: constraint.getPatterns()) {
-			if(!otherPatternFrequency.isEmpty()) {
-				for(IBexDisjunctInjectivityConstraint subconstraint: constraint.getInjectivityConstraints()) {
-					if(otherPatternFrequency.containsKey(pattern) && (subconstraint.getPattern1().equals(pattern) || subconstraint.getPattern2().equals(pattern))) {
-						otherPatternFrequency.compute(pattern, (k, v) -> (v==null)? 1: Integer.valueOf(v+1));
-					}
-				}				
-			}
-			else {
-				for(IBexDisjunctInjectivityConstraint subconstraint: constraint.getInjectivityConstraints()) {
-					if((subconstraint.getPattern1().equals(pattern) || subconstraint.getPattern2().equals(pattern))) {
-						otherPatternFrequency.compute(pattern, (k, v) -> (v==null)? 1: Integer.valueOf(v+1));
-					}
-				}	
-			}
-		}
-
-		//search for the pattern with the least dependencies
-		Optional<Entry<IBeXContextPattern, Integer>> newmin = otherPatternFrequency.entrySet().stream()
-        .min(Comparator.comparingInt(Map.Entry::getValue));
-	
-		Map<IBeXContextPattern, Integer> lastPatternFrequency = new HashMap<IBeXContextPattern, Integer>();
-		if(newmin.isPresent()) {
-			for(Entry<IBeXContextPattern, Integer> entry: otherPatternFrequency.entrySet()) {
-				//remove all patterns that are not of interest
-				if(entry.getValue()==newmin.get().getValue()) {
-					lastPatternFrequency.put(entry.getKey(), entry.getValue());
-				}
-			}
-		}
-		if(lastPatternFrequency.size() == 1) {
-			IBeXContextPattern pattern = otherPatternFrequency.entrySet().iterator().next().getKey();
-			cartesianPatterns.addAll(constraint.getPatterns().stream().filter(otherpattern -> !otherpattern.equals(pattern)).collect(Collectors.toList()));
-			if(constraint.getAttributeConstraints() != null) {
-				for(IBeXDependentDisjunctAttribute attributes: constraint.getAttributeConstraints()) {
-					cartesianPatterns.addAll(attributes.getDependentPatterns().stream().filter(otherpattern -> !otherpattern.equals(pattern)).collect(Collectors.toList()));
-				}
-			}
-			return new ArrayList<IBeXContextPattern>(cartesianPatterns);
-		}
-		//if nothing else -> sort by size of the matches
-		Optional<Entry<IBeXContextPattern, Set<IMatch>>> endValues = submatchesMap.entrySet().stream().filter(pattern -> lastPatternFrequency.containsKey(pattern.getKey()))
-				.min(((e1, e2) -> e1.getValue().size()- e2.getValue().size()));
+		Optional<Entry<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer>> newmin = patternFrequency.entrySet().stream()
+        .min(Comparator.comparingInt(Map.Entry::getValue));		
+		patternFrequency.entrySet().removeIf(entry -> !entry.getValue().equals(newmin.get().getValue()));
 		
-		if(endValues.isPresent()) {
-			IBeXContextPattern pattern = endValues.get().getKey();
-			cartesianPatterns.addAll(constraint.getPatterns().stream().filter(otherpattern -> !otherpattern.equals(pattern)).collect(Collectors.toList()));
-			if(constraint.getAttributeConstraints() != null) {
-				for(IBeXDependentDisjunctAttribute attributes: constraint.getAttributeConstraints()) {
-					cartesianPatterns.addAll(attributes.getDependentPatterns().stream().filter(otherpattern -> !otherpattern.equals(pattern)).collect(Collectors.toList()));
-				}
-			}
-			return new ArrayList<IBeXContextPattern>(cartesianPatterns);
+		//if there is only one -> return the two pattern sequences
+		if(patternFrequency.size() == 1) {
+			return patternFrequency.entrySet().stream().findAny().get().getKey();
 		}
 		else {
-			throw new IllegalArgumentException("pattern for cartesian product could not be found");
+			if(patternFrequency.isEmpty()) {
+				List<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>> patternCombinations = DisjunctPatternHelper
+						.calculatePatternCombinations(constraint.getPatterns(), new HashSet<List<IBeXContextPattern>>());
+				patternCombinations.forEach(c -> patternFrequency.put(c, Integer.valueOf(0)));
+			}
+			//search for the pattern with the least injectivity dependencies
+			for(IBexDisjunctInjectivityConstraint subconstraint: constraint.getInjectivityConstraints()) {
+				for(Entry<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer> entry: patternFrequency.entrySet()) {
+					boolean isPartial = entry.getKey().getLeft().contains(subconstraint.getPattern1()) && !entry.getKey().getLeft().contains(subconstraint.getPattern2()) ||
+							entry.getKey().getLeft().contains(subconstraint.getPattern2()) && !entry.getKey().getLeft().contains(subconstraint.getPattern1());
+					if(isPartial) {
+						entry.setValue(Integer.valueOf(entry.getValue().intValue()+1));
+					}
+				}
+			}	
 		}
-			
+		
+		Optional<Entry<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer>> newInjectivityMin = patternFrequency.entrySet().stream()
+        .min(Comparator.comparingInt(Map.Entry::getValue));
+		patternFrequency.entrySet().removeIf(entry -> !entry.getValue().equals(newInjectivityMin.get().getValue()));
+		
+		if(patternFrequency.size() == 1) {
+			return patternFrequency.entrySet().stream().findAny().get().getKey();
+		}
+		
+		//if nothing else -> sort by size of the matches
+		Map<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer> sizeMap = new HashMap<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer>();
+		
+		for(Entry<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer> entry: patternFrequency.entrySet()) {
+			int sizeValue = entry.getKey().getLeft().stream().mapToInt(pattern -> submatchesMap.get(pattern).size()).reduce(1, (a, b) -> a*b);
+			sizeValue += entry.getKey().getRight().stream().mapToInt(pattern -> submatchesMap.get(pattern).size()).reduce(1, (a, b) -> a*b);
+			sizeMap.put(entry.getKey(), Integer.valueOf(sizeValue));
+		}
+		
+		Optional<Entry<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer>> newSizeMin = sizeMap.entrySet().stream()
+		        .min(Comparator.comparingInt(Map.Entry::getValue));
+		return newSizeMin.get().getKey();	
 	}
 }

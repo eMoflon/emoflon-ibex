@@ -1,6 +1,7 @@
 package org.emoflon.ibex.gt.disjunctpatterns;
 
 import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
@@ -9,6 +10,7 @@ import org.emoflon.ibex.gt.engine.MatchFilter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 
 /**
@@ -20,14 +22,16 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 	private IBeXAttributeConstraint attribute;
 	private boolean notArithmetic;
 	private IBeXRelation relation;
-	private String targetPatternName;
+	private List<IBeXContextPattern> sourcePatterns;
+	private IBeXContextPattern targetPattern;
 	
-	public SubmatchAttributeComparator(final IBeXAttributeConstraint attribute, String targetPatternName) {
+	public SubmatchAttributeComparator(final IBeXAttributeConstraint attribute, List<IBeXContextPattern> sourcePatterns, IBeXContextPattern targetPattern) {
 		this.attribute = attribute;
 		//it is sorted from smallest to biggest
 		relation = attribute.getRelation();
 		notArithmetic = !(attribute.getValue() instanceof IBeXArithmeticValue);
-		this.targetPatternName = targetPatternName;
+		this.sourcePatterns = sourcePatterns;
+		this.targetPattern = targetPattern;
 	}
 	
 
@@ -49,7 +53,7 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 	 * compare the value between two matches; is 0 when the value is equal, not when the objects are equal
 	 */
 	public int compareValue(final IMatch o1, final IMatch o2) {
-		if(o1.getPatternName().equals(o2.getPatternName())&& o1.getPatternName().equals(targetPatternName)) {
+		if(DisjunctPatternHelper.matchFromSubpattern(o1, targetPattern) && DisjunctPatternHelper.matchFromSubpattern(o2, targetPattern)) {
 			Object newO1= ((EObject) o1.get(attribute.getNode().getName())).eGet(attribute.getType());
 			Object newO2 = ((EObject) o2.get(attribute.getNode().getName())).eGet(attribute.getType());
 			
@@ -58,7 +62,7 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 				return MatchFilter.compare(newO1, newO2, IBeXRelation.SMALLER)? -1: 1;
 			}
 		}
-		else if(o1.getPatternName().equals(o2.getPatternName())&& !o1.getPatternName().equals(targetPatternName)) {
+		else if(!DisjunctPatternHelper.matchFromSubpattern(o1, targetPattern) &&  !DisjunctPatternHelper.matchFromSubpattern(o2, targetPattern)) {
 			Object newO1= calculateSourceValue(o1);
 			Object newO2 = calculateSourceValue(o2);
 			
@@ -68,7 +72,7 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 			}
 			
 		}
-		else if(o1.getPatternName().equals(targetPatternName)) {
+		else if(DisjunctPatternHelper.matchFromSubpattern(o1, targetPattern)) {
 			Object newO1= ((EObject) o1.get(attribute.getNode().getName())).eGet(attribute.getType());
 			Object newO2 = calculateSourceValue(o2);
 			
@@ -113,10 +117,11 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 	 * checks if a match has a valid value; mainly used for arithmetic values
 	 */
 	public boolean isLegal(final IMatch o) {
-		if(o.getPatternName().equals(targetPatternName)) {
+		if(DisjunctPatternHelper.matchFromSubpattern(o, targetPattern) ) {
 			return true;
 		}
 		else {
+			if(notArithmetic) return true;
 			try {
 				calculateSourceValue(o);
 				return true;
@@ -130,7 +135,11 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 		return relation;
 	}
 	
-	public final String getTargetPatternName() {
-		return targetPatternName;
+	public final List<IBeXContextPattern> getSourcePatterns(){
+		return sourcePatterns;
+	}
+	
+	public final IBeXContextPattern getTargetPattern() {
+		return targetPattern;
 	}
 }

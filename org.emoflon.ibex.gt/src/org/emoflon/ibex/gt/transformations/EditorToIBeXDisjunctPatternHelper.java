@@ -53,7 +53,8 @@ public class EditorToIBeXDisjunctPatternHelper {
 	 * @param patternList all patterns
 	 * @return a map with the subpattern names and their injectivity constraints
 	 */
-	public static final Map<Pair<String, String>, List<Pair<EditorNode, EditorNode>>> findInjectivityConstraints(final List<EditorPattern> patternList, final Predicate<EditorNode> isLocalCheck) {
+	public static final Map<Pair<String, String>, List<Pair<EditorNode, EditorNode>>> findInjectivityConstraints(final List<EditorPattern> patternList, 
+			final Predicate<EditorNode> isLocalCheck) {
 		Map<Pair<String, String>, List<Pair<EditorNode, EditorNode>>> constraintMap = new HashMap<Pair<String,String>, List<Pair<EditorNode,EditorNode>>>();
 		//iterate through all subpatterns and find the injectivity constraints between them
 		for(int i = 0; i < patternList.size(); i++) {
