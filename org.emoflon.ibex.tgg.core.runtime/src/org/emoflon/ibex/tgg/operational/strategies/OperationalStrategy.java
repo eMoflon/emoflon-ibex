@@ -94,6 +94,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		this.notifyStartLoading();
 		resourceHandler.initialize();
 		this.notifyLoadingFinished();
+		
+		this.operationalMatchContainer = createMatchContainer();
+		
 		try {
 			matchDistributor.initialize();
 		} catch (IOException e) {
@@ -104,7 +107,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		consistencyMatches = cfactory.createObjectToObjectHashMap();
 		
-		this.operationalMatchContainer = createMatchContainer();
 		domainsHaveNoSharedTypes = getTGG().getSrc().stream().noneMatch(getTGG().getTrg()::contains);
 		
 		TGGMatchParameterOrderProvider.init(options.tgg.flattenedTGG());
