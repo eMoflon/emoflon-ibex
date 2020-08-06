@@ -80,7 +80,6 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-
 	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, PatternType type,
 			ShortcutRule scRule) {
 		this.strategy = strategy;
