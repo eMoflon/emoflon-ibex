@@ -78,7 +78,10 @@ public class DisjunctAttributeCalculationHelper {
 		return matchCount - forbiddenMatches;
 			
 	}
-
+	
+	/**
+	 * updates the old attribute matches and calculates the constraints between two submatches dependent of the injectivity constraints between them 
+	 */
 	public static final long calculateForbiddenConstraintWithInjectivityMatches(final List<SubmatchAttributeComparator> comparators, 
 			final List<SubmatchAttributeComparator> reverseComparators, final Set<IMatch> oldTargetMatches, final Set<IMatch> changedTargetMatches, 
 			final Set<IMatch> newTargetMatches, final Map<IMatch, Set<IMatch>> targetMap, final Set<IMatch> oldCartesianMatches, 
@@ -96,11 +99,10 @@ public class DisjunctAttributeCalculationHelper {
 				 sourceMap.get(sourceMatches).remove(match);
 			 }
 		 }
-		 
-		 long matchsum = sourceMap.keySet().size()*targetMap.keySet().size();		
+		 	
 		 long constraintValue =  targetMap.values().parallelStream().mapToLong(matches -> (long) matches.size()).sum();
 		 constraintValue += injectivityConstraintMap.values().parallelStream().mapToLong(matches -> (long) matches.size()).sum();
-		 return matchsum - constraintValue;
+		 return constraintValue;
 	}
 	
 	/**

@@ -132,8 +132,14 @@ public class DisjunctInjectivityCalculationHelper {
 				//add the changed matches to the new matches and to the changed match set
 				Set<IMatch> changedSourceMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, cartesianSequence.getRight(), changedNodes, oldMatches, submatchesMap, newCalculatedSourceMatches, 
 						cartesianSourceComparators);
-
-				return DisjunctAttributeCalculationHelper.calculateForbiddenConstraintWithInjectivityMatches(constraintComparators, reverseComparator, oldCalculatedTargetMatches, 
+				
+				if(cartesianSequence.getRight().size() > 1 || cartesianSequence.getLeft().size() > 1) {
+					//update the cartesian product
+					oldCartesianProducts.get(constraints).setLeft(cartesianTargetProduct);
+					oldCartesianProducts.get(constraints).setRight(cartesianSourceProduct);
+				}	
+				
+				return cartesianTargetProduct.size()*cartesianSourceProduct.size() - DisjunctAttributeCalculationHelper.calculateForbiddenConstraintWithInjectivityMatches(constraintComparators, reverseComparator, oldCalculatedTargetMatches, 
 						changedTargetMatches, newCalculatedTargetMatches, targetMap.get(dependentAttribute), oldCalculatedSourceMatches, changedSourceMatches, newCalculatedSourceMatches, 
 						sourceMap.get(dependentAttribute), injectivityMap, sourceNeededSets);				
 				}

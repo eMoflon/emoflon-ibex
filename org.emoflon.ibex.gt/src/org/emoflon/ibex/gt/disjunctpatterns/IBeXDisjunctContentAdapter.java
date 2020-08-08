@@ -18,13 +18,13 @@ public class IBeXDisjunctContentAdapter extends EContentAdapter {
 	private Set<Object> changedObjects;
 	public IBeXDisjunctContentAdapter(ResourceSet rsSet) {
 		
+		changedObjects = new HashSet<Object>();		
+		
 		for(Resource r : rsSet.getResources()) {
 			r.eAdapters().add(this);
 			Notification notification = new ENotificationImpl(null, Notification.ADD, null, null, r);
 			notifyChanged(notification);
 		}
-		
-		changedObjects = new HashSet<Object>();
 		
 	}
 	

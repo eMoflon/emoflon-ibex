@@ -71,10 +71,10 @@ public class DisjunctPatternHelper {
 			List<SubmatchAttributeComparator> afterMergeComp = new ArrayList<SubmatchAttributeComparator>();
 			//find all necessary attributes for the calculation of the cartesian product
 			for(SubmatchAttributeComparator comp: attributes) {
-				boolean firstIsTarget = false;
-				boolean secondIsTarget = false;
-				if(matchFromSubpattern(firstMatch, comp.getTargetPattern())) firstIsTarget = true;
-				else if(matchFromSubpattern(secondMatch, comp.getTargetPattern())) secondIsTarget = true;
+				boolean firstIsTarget = true;
+				boolean secondIsTarget = true;
+				if(!matchFromSubpattern(firstMatch, comp.getTargetPattern())) firstIsTarget = false;
+				if(!matchFromSubpattern(secondMatch, comp.getTargetPattern())) secondIsTarget = false;
 				if(!firstIsTarget && !secondIsTarget) continue;
 				//find the source match
 				boolean firstIsSource = true;
@@ -89,13 +89,15 @@ public class DisjunctPatternHelper {
 				if(!firstIsSource && !secondIsSource && !bothAreSource) continue;
 				else if(bothAreSource && !firstIsSource && !secondIsSource) afterMergeComp.add(comp);
 				else {
-					if(firstIsSource) secondIsTargetComp.add(comp);
-					else if(secondIsSource) firstIsTargetComp.add(comp);
+					//other constraints were already solved
+					if(firstIsTarget && secondIsSource) firstIsTargetComp.add(comp);
+					else if(secondIsTarget && firstIsSource) secondIsTargetComp.add(comp);
 				}
 			}
 
 			for(IMatch match: match1) {
-				newSubMatches.addAll(match2.parallelStream().filter(otherMatch -> {
+				//parallel stream does not work here and I don't know why
+				newSubMatches.addAll(match2.stream().filter(otherMatch -> {
 					boolean valid = isDisjunct(match, otherMatch);
 					if(!valid) return false;
 					for(SubmatchAttributeComparator comp: firstIsTargetComp) {
@@ -280,27 +282,35 @@ public class DisjunctPatternHelper {
 	public static boolean compare(final IMatch match1, final IMatch match2, final SubmatchAttributeComparator comparator) {
 		//find target match
 		IMatch targetMatch;
-		if(matchFromSubpattern(match1, comparator.getTargetPattern())) targetMatch = match1;
-		else if(matchFromSubpattern(match2, comparator.getTargetPattern())) targetMatch = match2;
-		else {
-			return true;
-		}
-		IMatch sourceMatch;
+		boolean firstIsTarget = true;
+		boolean secondIsTarget = true;
+		if(!matchFromSubpattern(match1, comparator.getTargetPattern())) firstIsTarget = false;
+		if(!matchFromSubpattern(match2, comparator.getTargetPattern())) secondIsTarget = false;
+		if(!firstIsTarget && !secondIsTarget) return true;
+		
+		if(firstIsTarget) targetMatch = match1;
+		else targetMatch = match2;
+		
+		IMatch mergedMatch = merge(match1, match2, match1.getPatternName());
 		//find the source match
 		boolean match1IsSource = true;
 		boolean match2IsSource = true;
+		boolean bothAreSource = true;
 		for(IBeXContextPattern pattern: comparator.getSourcePatterns()) {
 			if(!matchFromSubpattern(match1, pattern)) match1IsSource = false;
 			if(!matchFromSubpattern(match2, pattern)) match2IsSource = false;
+			if(!matchFromSubpattern(mergedMatch, pattern)) bothAreSource = false;
 		}
-		if(match1IsSource && match2IsSource){
-			sourceMatch = merge(match1, match2, match1.getPatternName());
-			if(comparator.isLegal(sourceMatch)){
-				return comparator.compareWithEquals(targetMatch, sourceMatch);
+		if(!match1IsSource && !match2IsSource && bothAreSource){
+			if(comparator.isLegal(mergedMatch)){
+				return comparator.compareWithEquals(mergedMatch, mergedMatch);
 			}
 			else {
 				return false;
 			}
+		}
+		if(!match1IsSource && !match2IsSource && !bothAreSource) {
+			return true;
 		}
 		if(match1IsSource) {
 			if(comparator.isLegal(match1)){
