@@ -78,6 +78,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected ChangeKey userDeltaKey;
 	protected ChangeKey generalDeltaKey;
 
+	protected Map<String, Collection<String>> ruleName2filterNacPatternNames;
 	protected Map<String, Map<NACOverlap, Collection<ITGGMatch>>> pattern2filterNacMatches;
 	protected Map<String, Collection<String>> filterNacPattern2nodeNames;
 	protected Map<ITGGMatch, BrokenMatch> classifiedBrokenMatches;
@@ -90,6 +91,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void init() throws IOException {
+		ruleName2filterNacPatternNames = this.options.tgg.getFlattenedConcreteTGGRules().stream() //
+				.collect(Collectors.toMap(r -> r.getName(), r -> new LinkedList<>()));
 		pattern2filterNacMatches = new HashMap<>();
 		filterNacPattern2nodeNames = new HashMap<>();
 		classifiedBrokenMatches = new HashMap<>();
@@ -158,8 +161,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		modelChangeProtocol.deregisterKey(generalDeltaKey);
 		modelChangeProtocol.detachAdapter();
-		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(),
-				resourceHandler.getTargetResource(), resourceHandler.getCorrResource());
+		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(), resourceHandler.getTargetResource(),
+				resourceHandler.getCorrResource());
 		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
@@ -293,8 +296,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void restoreBrokenCorrsAndRuleApplNodes(ChangeKey key) {
 		matchDistributor.updateMatches();
 		ModelChanges changes = modelChangeProtocol.getModelChanges(key);
-		brokenRuleApplications.forEach((ra, m) -> matchUtil.getObjects(m, new EltFilter().corr().create())
-				.forEach(obj -> restoreNode(changes, obj)));
+		brokenRuleApplications.forEach((ra, m) -> matchUtil.getObjects(m, new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj)));
 		brokenRuleApplications.forEach((ra, m) -> restoreNode(changes, ra));
 	}
 
@@ -317,8 +319,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Set<EObject> untranslated = new HashSet<>();
 		resourceHandler.getSourceResource().getAllContents().forEachRemaining(n -> untranslated.add(n));
 		resourceHandler.getTargetResource().getAllContents().forEachRemaining(n -> untranslated.add(n));
-		resourceHandler.getProtocolResource().getContents()
-				.forEach(ra -> ra.eCrossReferences().forEach(obj -> untranslated.remove(obj)));
+		resourceHandler.getProtocolResource().getContents().forEach(ra -> ra.eCrossReferences().forEach(obj -> untranslated.remove(obj)));
 
 		getRedInterpreter().revoke(untranslated, Collections.emptySet());
 	}
@@ -348,8 +349,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
-		LoggerConfig.log(LoggerConfig.log_matchApplication(),
-				() -> "Processing match: " + ConsoleUtil.indent(match.toString(), 80, false));
+		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Processing match: " + ConsoleUtil.indent(match.toString(), 80, false));
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
 			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as it has just been applied: " //
@@ -536,9 +536,13 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	private void addFilterNacMatch(ITGGMatch match) {
 		if (!pattern2filterNacMatches.containsKey(match.getPatternName())) {
+			String ruleName = match.getRuleName().split("_")[0];
+			ruleName2filterNacPatternNames.get(ruleName).add(match.getPatternName());
+
 			pattern2filterNacMatches.put(match.getPatternName(), new HashMap<>());
 			filterNacPattern2nodeNames.put(match.getPatternName(), match.getParameterNames());
 		}
+
 		Map<NACOverlap, Collection<ITGGMatch>> overlap2match = pattern2filterNacMatches.get(match.getPatternName());
 		NACOverlap overlap = new NACOverlap(match);
 		// the number of matches per overlap should not exceed a certain number
@@ -592,12 +596,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		precedenceGraph.removeMatch(brokenMatch);
 	}
 
-	public Collection<ITGGMatch> getFilterNacMatches(String nacPatternName, ITGGMatch match) {
-		Map<NACOverlap, Collection<ITGGMatch>> overlap2matches = pattern2filterNacMatches.get(nacPatternName);
-		if (overlap2matches == null)
-			return Collections.emptyList();
-		NACOverlap overlap = new NACOverlap(match, filterNacPattern2nodeNames.get(nacPatternName));
-		return overlap2matches.get(overlap);
+	public Collection<ITGGMatch> getFilterNacMatches(ITGGMatch match) {
+		Collection<ITGGMatch> filterNacMatches = new LinkedList<>();
+		for (String nacPatternName : ruleName2filterNacPatternNames.getOrDefault(match.getRuleName(), new LinkedList<>())) {
+			Map<NACOverlap, Collection<ITGGMatch>> overlap2matches = pattern2filterNacMatches.get(nacPatternName);
+			if (overlap2matches == null)
+				continue;
+			NACOverlap overlap = new NACOverlap(match, filterNacPattern2nodeNames.get(nacPatternName));
+			filterNacMatches.addAll(overlap2matches.getOrDefault(overlap, new LinkedList<>()));
+		}
+		return filterNacMatches;
 	}
 
 	public Map<ITGGMatch, BrokenMatch> getClassifiedBrokenMatches() {

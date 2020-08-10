@@ -34,7 +34,7 @@ public class TGGMatchUtil {
 	}
 
 	private void init() {
-		nameToRules = integrate.getOptions().tgg.flattenedTGG().getRules().stream() //
+		nameToRules = integrate.getOptions().tgg.getFlattenedConcreteTGGRules().stream() //
 				.collect(Collectors.toMap(rule -> rule.getName(), rule -> rule));
 		matchToAnalysis = Collections.synchronizedMap(new HashMap<>());
 	}
