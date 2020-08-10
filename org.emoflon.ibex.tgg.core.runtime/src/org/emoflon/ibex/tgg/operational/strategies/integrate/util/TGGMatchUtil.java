@@ -88,7 +88,7 @@ public class TGGMatchUtil {
 		return getElts(analysis, filter);
 	}
 
-	Stream<TGGRuleNode> getNodeStream(ITGGMatch match, EltFilter filter) {
+	public Stream<TGGRuleNode> getNodeStream(ITGGMatch match, EltFilter filter) {
 		return getElts(match, filter).stream() //
 				.filter(elt -> elt instanceof TGGRuleNode) //
 				.map(elt -> (TGGRuleNode) elt);
@@ -97,14 +97,16 @@ public class TGGMatchUtil {
 	public Set<TGGRuleNode> getNodes(ITGGMatch match, EltFilter filter) {
 		return getNodeStream(match, filter).collect(Collectors.toSet());
 	}
-
-	public Set<EObject> getObjects(ITGGMatch match, EltFilter filter) {
-		return getNodeStream(match, filter) //
-				.map(n -> (EObject) match.get(n.getName())) //
-				.collect(Collectors.toSet());
+	
+	public Stream<EObject> getObjectStream(ITGGMatch match, EltFilter filter) {
+		return getNodeStream(match, filter).map(n -> (EObject) match.get(n.getName()));
 	}
 
-	Stream<TGGRuleEdge> getEdgeStream(ITGGMatch match, EltFilter filter) {
+	public Set<EObject> getObjects(ITGGMatch match, EltFilter filter) {
+		return getObjectStream(match, filter).collect(Collectors.toSet());
+	}
+
+	public Stream<TGGRuleEdge> getEdgeStream(ITGGMatch match, EltFilter filter) {
 		return getElts(match, filter).stream() //
 				.filter(elt -> elt instanceof TGGRuleEdge) //
 				.map(elt -> (TGGRuleEdge) elt);
@@ -113,12 +115,14 @@ public class TGGMatchUtil {
 	public Set<TGGRuleEdge> getEdges(ITGGMatch match, EltFilter filter) {
 		return getEdgeStream(match, filter).collect(Collectors.toSet());
 	}
+	
+	public Stream<EMFEdge> getEMFEdgeStream(ITGGMatch match, EltFilter filter) {
+		MatchAnalysis analysis = getRawAnalysis(match);
+		return getEdgeStream(match, filter).map(e -> analysis.getEMFEdge(e));
+	}
 
 	public Set<EMFEdge> getEMFEdges(ITGGMatch match, EltFilter filter) {
-		MatchAnalysis analysis = getRawAnalysis(match);
-		return getEdgeStream(match, filter) //
-				.map(e -> analysis.getEMFEdge(e)) //
-				.collect(Collectors.toSet());
+		return getEMFEdgeStream(match, filter).collect(Collectors.toSet());
 	}
 
 }

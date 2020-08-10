@@ -6,8 +6,11 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.ConflictElements;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.ConflictEltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 
@@ -21,22 +24,47 @@ public abstract class Conflict {
 	protected ConflictContainer container;
 	protected boolean resolved;
 
+	protected Set<ITGGMatch> conflictMatches;
+	protected Set<ITGGMatch> scopeMatches;
+
 	public Conflict(ConflictContainer container) {
 		this.container = container;
 		this.resolved = false;
 		container.addConflict(this);
+		// TODO adrianm: init conflict/scope matches
 	}
 
 	public BrokenMatch getBrokenMatch() {
 		return container.getBrokenMatch();
 	}
 
+	public Set<ITGGMatch> getConflictMatches() {
+		return conflictMatches;
+	}
+
+	public Set<ITGGMatch> getScopeMatches() {
+		return scopeMatches;
+	}
+
 	public boolean isResolved() {
 		return resolved;
 	}
 
-	protected INTEGRATE integrate() {
+	public INTEGRATE integrate() {
 		return container.integrate;
+	}
+
+	/**
+	 * Collects and filters the elements involved in this conflict.
+	 * 
+	 * @param filter       used to filter the elements by different criteria described in
+	 *                     {@link ConflictEltFilter}
+	 * @param includeScope if <code>true</code>, the result includes the elements from the conflict
+	 *                     scope
+	 * @return a container that contains the filtered objects and edges
+	 */
+	public ConflictElements filterConflictElements(ConflictEltFilter filter, boolean includeScope) {
+		return new ConflictElements(this, filter, includeScope);
 	}
 
 	protected void restoreMatch(BrokenMatch brokenMatch) {
@@ -71,7 +99,7 @@ public abstract class Conflict {
 	protected void restoreDomain(BrokenMatch brokenMatch, DomainType domain) {
 		// TODO adrianm: fix filterNAC violations!
 		// TODO adrianm: avoid eopposites!
-		
+
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EObject> deletedNodes = new HashSet<>();
 		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
@@ -95,12 +123,12 @@ public abstract class Conflict {
 		});
 		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(brokenMatch.getMatch());
 		integrate().getGeneralModelChanges().getDeletedEdges(ruleApplication).stream() //
-		.filter(edge -> {
-			TGGRuleNode trgNode = brokenMatch.util().getNode(edge.getTarget());
-			return trgNode.getDomainType() == domain;
-		}) //
-		.forEach(edge -> deletedCrossEdges.add(edge));
-		
+				.filter(edge -> {
+					TGGRuleNode trgNode = brokenMatch.util().getNode(edge.getTarget());
+					return trgNode.getDomainType() == domain;
+				}) //
+				.forEach(edge -> deletedCrossEdges.add(edge));
+
 		// Restore elements
 		deletedContainmentEdges.forEach(edge -> ModelChangeUtil.createEdge(edge));
 		deletedNodes.forEach(node -> {
