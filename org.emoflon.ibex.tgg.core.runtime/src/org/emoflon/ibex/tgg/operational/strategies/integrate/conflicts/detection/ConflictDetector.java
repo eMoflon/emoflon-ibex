@@ -69,8 +69,7 @@ public class ConflictDetector {
 		detectDeletePreserveConflict(container, brokenMatch, DomainType.TRG);
 	}
 
-	private void detectDeletePreserveConflict(ConflictContainer container, BrokenMatch brokenMatch,
-			DomainType domainToBePreserved) {
+	private void detectDeletePreserveConflict(ConflictContainer container, BrokenMatch brokenMatch, DomainType domainToBePreserved) {
 		PrecedenceGraph pg = integrate.getPrecedenceGraph();
 
 		EltFilter filter = new EltFilter().create().notDeleted();
@@ -150,13 +149,11 @@ public class ConflictDetector {
 		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
 			TGGAttributeConstraintDefinition def = constrAttrChanges.constraint.getDefinition();
 			if (def.isUserDefined() || !def.getName().startsWith("eq_")) {
-				logger.error(
-						"Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
+				logger.error("Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
 				continue;
 			}
 			if (constrAttrChanges.constraint.getParameters().size() > 2) {
-				logger.error(
-						"Conflicted AttributeConstraints with more than 2 parameters are currently not supported!");
+				logger.error("Conflicted AttributeConstraints with more than 2 parameters are currently not supported!");
 				continue;
 			}
 

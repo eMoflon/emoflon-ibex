@@ -76,6 +76,7 @@ public abstract class Conflict {
 		Set<EObject> deletedNodes = new HashSet<>();
 		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
 
+		// Collect elements to restore
 		EltFilter filter = new EltFilter().create().domains(domain, DomainType.CORR);
 		integrate().getMatchUtil().getEMFEdges(brokenMatch.getMatch(), filter).forEach(edge -> {
 			if (integrate().getGeneralModelChanges().isDeleted(edge))
@@ -83,11 +84,9 @@ public abstract class Conflict {
 					deletedContainmentEdges.add(edge);
 				} else {
 					TGGRuleEdge tggEdge = brokenMatch.util().getEdge(edge);
-					
-					// restore only those corr edges that point to the restored domain
-					if (tggEdge.getDomainType() != DomainType.CORR || tggEdge.getTrgNode().getDomainType() == domain) {
+					// Restore only those corr edges that point to the restored domain
+					if (tggEdge.getDomainType() != DomainType.CORR || tggEdge.getTrgNode().getDomainType() == domain)
 						deletedCrossEdges.add(edge);
-					}
 				}
 		});
 		integrate().getMatchUtil().getObjects(brokenMatch.getMatch(), filter).forEach(node -> {
@@ -102,6 +101,7 @@ public abstract class Conflict {
 		}) //
 		.forEach(edge -> deletedCrossEdges.add(edge));
 		
+		// Restore elements
 		deletedContainmentEdges.forEach(edge -> ModelChangeUtil.createEdge(edge));
 		deletedNodes.forEach(node -> {
 			Resource resource = integrate().getGeneralModelChanges().containedInResource(node);
