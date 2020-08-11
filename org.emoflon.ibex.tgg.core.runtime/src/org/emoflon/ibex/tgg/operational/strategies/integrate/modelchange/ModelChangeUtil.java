@@ -1,10 +1,13 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 
 import delta.AttributeDelta;
 import delta.Delta;
@@ -19,8 +22,11 @@ public class ModelChangeUtil {
 		if(isDangling(element))
 			return;
 		
+		Set<EObject> nodesToDelete = new HashSet<>();
+		nodesToDelete.add(element);
+		
 		if (deleteContainedChildren) {
-			deleteElementAndContainedChildren(element);
+			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, o -> {}, true);
 		} else {
 			element.eClass().getEAllContainments().forEach(feature -> {
 				Object content = element.eGet(feature);
@@ -33,13 +39,8 @@ public class ModelChangeUtil {
 					element.eSet(feature, null);
 				}
 			});
-			EcoreUtil.delete(element, false);
+			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, o -> {}, false);
 		}
-	}
-
-	private static void deleteElementAndContainedChildren(EObject element) {
-		element.eContents().forEach(child -> deleteElementAndContainedChildren(child));
-		EcoreUtil.delete(element, false);
 	}
 
 	@SuppressWarnings("unchecked")

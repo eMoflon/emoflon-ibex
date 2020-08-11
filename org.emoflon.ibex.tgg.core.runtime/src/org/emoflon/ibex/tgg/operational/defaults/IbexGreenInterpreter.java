@@ -50,7 +50,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	 */
 	private int numOfCreatedNodes = 0;
 	private int numOfCreatedCorrNodes = 0;
-	private long creationTime = 0;
 	private IbexOptions options;
 	
 	private boolean optimizeCreation;
@@ -88,8 +87,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	public void createCorrs(ITGGMatch comatch, Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		for (TGGRuleCorr c : greenCorrs) {
-			comatch.put(c.getName(), createCorr(comatch, c, comatch.get(c.getSource().getName()),
-					comatch.get(c.getTarget().getName())));
+			EObject createCorr = createCorr(comatch, c, comatch.get(c.getSource().getName()),
+					comatch.get(c.getTarget().getName()));
+			resourceHandler.addCorrCaching(createCorr);
+			comatch.put(c.getName(), createCorr);
 		}
 	}
 
@@ -174,7 +175,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	@Override
 	public Optional<ITGGMatch> apply(IGreenPattern greenPattern, String ruleName, ITGGMatch match) {
-		long tic = System.nanoTime();
 		// Check if match is valid
 		// TODO lfritsche, amoeller: this can maybe make problems? here the problem is that we create before deleting 
 		if (matchIsInvalid(ruleName, greenPattern, match) && !(options.repair.disableInjectivity() && match instanceof SCMatch)) {
@@ -220,8 +220,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));	
 			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));	
 		}
-		
-		creationTime += System.nanoTime() - tic;
 		
 		return Optional.of(comatch);
 	}
@@ -387,9 +385,5 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	@Override
 	public int getNumOfCreatedCorrNodes() {
 		return numOfCreatedCorrNodes;
-	}
-
-	public long getCreationTime() {
-		return creationTime;
 	}
 }
