@@ -46,7 +46,7 @@ public class FWD_GREENCORRPatternTransformation {
 				createInvocation(ibexPattern, tmp);
 			}
 			for(int i = 1; ; i++) {
-				tmp = parent.getPattern(rule.getName() + PatternSuffixes.GREENCORR + "__" + i);
+				tmp = parent.getPattern(rule.getName() + "_" + i + PatternSuffixes.GREENCORR);
 				if(tmp == null)
 					break;
 				createInvocation(ibexPattern, tmp);

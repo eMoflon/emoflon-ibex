@@ -327,13 +327,15 @@ public class ContextPatternTransformation {
 	}
 
 	public void optimizeSyncPatterns(TGGRule rule) {
+		
+		//Avoid double pattern-invocation 
+		//invocations are created inside the Class ConsistencyPatternTransformation
+		if(options.invocation.usePatternInvocation()) {
+			return;
+		}
 		if (!options.propagate.optimizeSyncPattern())
 			return;
-		IBeXContextPattern fwdPattern;
-		boolean optionsInv = options.invocation.usePatternInvocation();
-		if(!optionsInv)
-			fwdPattern = getPattern(generateFWDBlackPatternName(rule.getName()));
-		else fwdPattern = getPattern(generateFWD_GREENCORRBlackPatternName(rule.getName()));
+		IBeXContextPattern fwdPattern = getPattern(generateFWDBlackPatternName(rule.getName()));
 		IBeXContextPattern bwdPattern = getPattern(generateBWDBlackPatternName(rule.getName()));
 		IBeXContextPattern consistencyPattern = getPattern(getConsistencyPatternName(rule.getName()));
  
