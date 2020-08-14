@@ -15,11 +15,11 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 
 import language.BindingType;
 import language.DomainType;
@@ -44,8 +44,8 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 	
 	private FilterNACAnalysis filterNACAnalysis;
 
-	public InterfaceShortcutRule(PropagatingOperationalStrategy strategy, PropagationDirection direction, ShortcutRule scRule, FilterNACAnalysis filterNACAnalysis) {
-		super(strategy, direction, scRule.copy());
+	public InterfaceShortcutRule(PropagatingOperationalStrategy strategy, PatternType type, ShortcutRule scRule, FilterNACAnalysis filterNACAnalysis) {
+		super(strategy, type, scRule.copy());
 		this.strategy = strategy;
 		this.filterNACAnalysis = filterNACAnalysis;
 
@@ -57,16 +57,16 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 	protected void operationalize() {
 		//TODO lfritsche : extend to correspondence interfaces
 //		removeNodes(TGGCollectionUtil.filterNodes(scRule.getNodes(), DomainType.CORR, BindingType.CONTEXT));
-		switch(direction) {
-		case FORWARD:
+		switch(type) {
+		case FWD:
 			createFilterNacs(scRule.getReplacingRule(), DomainType.SRC);
 
 			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
-			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.RELAXED), BindingType.CONTEXT);
+//			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.RELAXED), BindingType.CONTEXT);
 			transformInterfaceEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE), BindingType.NEGATIVE);
 			
 			transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
-			transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.RELAXED), BindingType.CONTEXT);
+//			transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.RELAXED), BindingType.CONTEXT);
 			
 			removeEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE));
 			removeNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.DELETE));
@@ -74,15 +74,15 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 			// Note: at the moment not required -> maybe use it if there are problems with already created green edges
 			// addNACforCreatedInterface(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG));
 			break;
-		case BACKWARD:
+		case BWD:
 			createFilterNacs(scRule.getReplacingRule(), DomainType.TRG);
 
 			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
-			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.RELAXED), BindingType.CONTEXT);
+//			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.RELAXED), BindingType.CONTEXT);
 			transformInterfaceEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE), BindingType.NEGATIVE);
 			
 			transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
-			transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.RELAXED), BindingType.CONTEXT);
+//			transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.RELAXED), BindingType.CONTEXT);
 			
 			removeEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE));
 			removeNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.DELETE));
@@ -90,8 +90,27 @@ public class InterfaceShortcutRule extends OperationalShortcutRule {
 			// Note: at the moment not required -> maybe use it if there are problems with already created green edges
 			// addNACforCreatedInterface(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC));
 			break;
+		case CC:
+			createFilterNacs(scRule.getReplacingRule(), DomainType.SRC);
+			createFilterNacs(scRule.getReplacingRule(), DomainType.TRG);
+			
+			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
+			transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
+			
+			transformInterfaceEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE), BindingType.NEGATIVE);
+			transformInterfaceEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE), BindingType.NEGATIVE);
+			
+			transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
+			transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
+			
+			removeEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.DELETE));
+			removeEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE));
+			
+			removeNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.DELETE));
+			removeNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.DELETE));
+			break;
 		default:
-			throw new RuntimeException("Shortcut Rules can only be operationalized for FORWARD and BACKWARD operations");
+			throw new RuntimeException("Shortcut Rules can only be operationalized for FWD, BWD and CC operations"); 
 		}
 		createRuleApplicationNode();
 	}

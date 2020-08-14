@@ -1,23 +1,29 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.search;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 
 import language.BindingType;
+import language.TGGRule;
 import language.TGGRuleNode;
 
 /**
@@ -35,16 +41,20 @@ import language.TGGRuleNode;
  */
 public class LocalPatternSearch {
 
+	private IbexOptions options;
 	private OperationalShortcutRule osr;
 	private SearchPlan searchPlan;
 	private Set<EObject> currentCandidates;
 	private Map<String, EObject> name2candidates;
+	private Set<FoundEdge> foundEdges;
 
 	private Component firstComponent;
+	private Collection<String> filteredNames;
 
-	public LocalPatternSearch(OperationalShortcutRule osr) {
+	public LocalPatternSearch(OperationalShortcutRule osr, IbexOptions options) {
 		this.osr = osr;
 		this.searchPlan = osr.createSearchPlan();
+		this.options = options;
 
 		// TODO lfritsche: clear up
 		if (searchPlan != null)
@@ -78,19 +88,30 @@ public class LocalPatternSearch {
 
 		for (SearchKey key : searchPlan.key2nacNodeCheck.keySet()) {
 			Component nacNodeCheckComp = new NACNodeCheckComponent(searchPlan.key2nacNodeCheck.get(key), key);
-			lastComponent.setNextComponent(nacNodeCheckComp);
+			if (firstComponent == null)
+				firstComponent = nacNodeCheckComp;
+			else
+				lastComponent.setNextComponent(nacNodeCheckComp);
 			lastComponent = nacNodeCheckComp;
 		}
 
-		for (SearchKey key : searchPlan.key2edgeCheck.keySet()) {
+		List<SearchKey> edgeChecks = new LinkedList<>(searchPlan.key2edgeCheck.keySet());
+		edgeChecks.sort((a, b) -> a.edge.getBindingType() == BindingType.NEGATIVE ? 1 : -1);
+		for (SearchKey key : edgeChecks) {
 			Component edgeNodeCheckComp = new EdgeCheckComponent(searchPlan.key2edgeCheck.get(key), key);
-			lastComponent.setNextComponent(edgeNodeCheckComp);
+			if (firstComponent == null)
+				firstComponent = edgeNodeCheckComp;
+			else
+				lastComponent.setNextComponent(edgeNodeCheckComp);
 
 			lastComponent = edgeNodeCheckComp;
 		}
 
 		for (Component comp : attrCheckComponents) {
-			lastComponent.setNextComponent(comp);
+			if (firstComponent == null)
+				firstComponent = comp;
+			else
+				lastComponent.setNextComponent(comp);
 			lastComponent = comp;
 		}
 
@@ -114,11 +135,9 @@ public class LocalPatternSearch {
 		if (osr.getScRule().getPreservedNodes().contains(mergedNode))
 			switch (mergedNode.getDomainType()) {
 			case SRC:
-				if (osr.getDirection() == PropagationDirection.BACKWARD)
-					return true;
+				return osr.getType() == PatternType.BWD;
 			case TRG:
-				if (osr.getDirection() == PropagationDirection.FORWARD)
-					return true;
+				return osr.getType() == PatternType.FWD;
 			default:
 				return false;
 			}
@@ -129,9 +148,10 @@ public class LocalPatternSearch {
 		if (firstComponent == null)
 			throw new RuntimeException("No components found for pattern matching!");
 
-		this.name2candidates = name2entryNodeElem;
-		this.currentCandidates = new HashSet<>();
-		currentCandidates.addAll(name2candidates.values());
+		name2candidates = name2entryNodeElem;
+		currentCandidates = new HashSet<>();
+		foundEdges = new HashSet<>();
+		currentCandidates.addAll(calculateCurrentCandidates(name2entryNodeElem));
 
 		switch (firstComponent.apply()) {
 		case SUCCESS:
@@ -143,6 +163,35 @@ public class LocalPatternSearch {
 		default:
 			return null;
 		}
+	}
+	
+	// This method returns the set of current candidates. If disableInjectivity is activated, it will 
+	// calculcate the set of candidates by omitting context originating from the original rule.
+	private Collection<EObject> calculateCurrentCandidates(Map<String, EObject> name2entryNodeElem) {
+		if(!options.repair.disableInjectivity())
+			return name2entryNodeElem.values();
+		
+		if(filteredNames == null) 
+			filteredNames = new LinkedList<>();
+		else
+			return filteredNames.stream().map(name2entryNodeElem::get).collect(Collectors.toList());
+		
+		filteredNames.addAll(name2entryNodeElem.keySet());
+		
+		ShortcutRule scRule = osr.getScRule();
+		TGGRule originalRule = scRule.getOriginalRule();
+		for(TGGRuleNode node : originalRule.getNodes()) {
+			if(node.getBindingType() == BindingType.CREATE) 
+				continue;
+			
+			TGGRuleNode scNode = scRule.mapOriginalToSCNodeNode(node.getName());
+			if(scNode == null)
+				continue;
+			
+			filteredNames.remove(scNode.getName());
+		}
+		
+		return filteredNames.stream().map(name2entryNodeElem::get).collect(Collectors.toList());
 	}
 
 	private abstract class Component {
@@ -159,6 +208,7 @@ public class LocalPatternSearch {
 	}
 
 	private class LookupComponent extends Component {
+		SearchKey key;
 		Lookup lookup;
 		String lookupSourceName;
 		String lookupTargetName;
@@ -171,6 +221,7 @@ public class LocalPatternSearch {
 			TGGRuleNode sourceNode = key.reverse ? key.targetNode : key.sourceNode;
 			TGGRuleNode targetNode = key.reverse ? key.sourceNode : key.targetNode;
 
+			this.key = key;
 			this.lookup = lookup;
 			this.lookupSourceName = sourceNode.getName();
 			this.lookupTargetName = targetNode.getName();
@@ -197,19 +248,23 @@ public class LocalPatternSearch {
 					if (currentCandidates.contains(candidate))
 						continue;
 
+					FoundEdge edge = new FoundEdge(key.reverse ? candidate : oldCandidate, key.reverse ? oldCandidate : candidate, key.edge.getType());
 					currentCandidates.add(candidate);
 					name2candidates.put(lookupTargetName, candidate);
+					foundEdges.add(edge);
 
 					switch (nextComponent.apply()) {
 					case SUCCESS:
 						return ReturnState.SUCCESS;
 					case NEGATIVE:
 						currentCandidates.remove(candidate);
+						foundEdges.remove(edge);
 						if (isNegative)
 							return ReturnState.NEGATIVE;
 						continue;
 					case FAILURE:
 						currentCandidates.remove(candidate);
+						foundEdges.remove(edge);
 						continue;
 					}
 				}
@@ -219,12 +274,16 @@ public class LocalPatternSearch {
 			if (currentCandidates.contains((EObject) lookupTarget))
 				return ReturnState.FAILURE;
 
+			FoundEdge edge = new FoundEdge(key.reverse ? lookupTarget : oldCandidate, key.reverse ? oldCandidate : lookupTarget, key.edge.getType());
 			name2candidates.put(lookupTargetName, (EObject) lookupTarget);
 			currentCandidates.add((EObject) lookupTarget);
+			foundEdges.add(edge);
 
 			ReturnState state = nextComponent.apply();
-			if (state != ReturnState.SUCCESS)
+			if (state != ReturnState.SUCCESS) {
 				currentCandidates.remove(lookupTarget);
+				foundEdges.remove(edge);
+			}
 
 			return state;
 		}
@@ -276,6 +335,7 @@ public class LocalPatternSearch {
 	}
 
 	private class EdgeCheckComponent extends Component {
+		SearchKey key;
 		EdgeCheck check;
 		String sourceName;
 		String targetName;
@@ -285,6 +345,7 @@ public class LocalPatternSearch {
 
 		public EdgeCheckComponent(EdgeCheck check, SearchKey key) {
 			super();
+			this.key = key;
 			this.check = check;
 			this.sourceName = key.sourceNode.getName();
 			this.targetName = key.targetNode.getName();
@@ -309,10 +370,18 @@ public class LocalPatternSearch {
 				else
 					return ReturnState.FAILURE;
 
-			if (check.checkConstraint(srcCandidate, trgCandidate)) {
+			FoundEdge edge = new FoundEdge(srcCandidate, trgCandidate, key.edge.getType());
+			if (isNegative && foundEdges.contains(edge) || check.checkConstraint(srcCandidate, trgCandidate)) {
+				foundEdges.add(edge);
+
 				if (nextComponent == null)
 					return ReturnState.SUCCESS;
-				return nextComponent.apply();
+				
+				ReturnState state = nextComponent.apply();
+				if (state != ReturnState.SUCCESS) {
+					foundEdges.remove(edge);
+				}
+				return state;
 			}
 			return isNegative ? ReturnState.NEGATIVE : ReturnState.FAILURE;
 		}

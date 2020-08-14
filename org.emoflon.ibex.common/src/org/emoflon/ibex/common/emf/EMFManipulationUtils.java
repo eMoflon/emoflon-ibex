@@ -1,5 +1,6 @@
 package org.emoflon.ibex.common.emf;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -109,9 +110,14 @@ public class EMFManipulationUtils {
 	 */
 	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
 			final Consumer<EObject> danglingNodeAction) {
+		delete(nodesToDelete, edgesToDelete, danglingNodeAction, false);
+	}
+	
+	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
+			final Consumer<EObject> danglingNodeAction, boolean recursive) {
 		deleteEdges(edgesToDelete, danglingNodeAction, false);
 		deleteEdges(edgesToDelete, danglingNodeAction, true);
-		deleteNodes(nodesToDelete, danglingNodeAction);
+		deleteNodes(nodesToDelete, danglingNodeAction, recursive);
 	}
 
 	/**
@@ -122,15 +128,25 @@ public class EMFManipulationUtils {
 	 * @param danglingNodeAction
 	 *            the action to execute for dangling nodes
 	 */
-	private static void deleteNodes(final Set<EObject> nodesToDelete, final Consumer<EObject> danglingNodeAction) {
+	private static void deleteNodes(final Set<EObject> nodesToDelete, final Consumer<EObject> danglingNodeAction, boolean recursive) {
 		for (EObject node : nodesToDelete) {
 			if (isDanglingNode(node)) {
 				danglingNodeAction.accept(node);
 			}
-			if(!node.eContents().isEmpty())
-				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction);
+			if(!node.eContents().isEmpty() && recursive)
+				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction, recursive);
 		}
 		EcoreUtil.deleteAll(nodesToDelete, false);
+		//TODO: Fix for all use-cases (GT tests tend to throw errors when enabled)
+//		for (EObject eObject : nodesToDelete) {
+//			for (EReference ref : eObject.eClass().getEAllReferences()) {
+//				if(ref.isMany())
+//					((List<?>) eObject.eGet(ref)).clear();
+//				else
+//					eObject.eSet(ref, null);
+//			}
+//			EcoreUtil.remove(eObject);
+//		}
 	}
 	
 	/**

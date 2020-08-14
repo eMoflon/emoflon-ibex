@@ -48,5 +48,13 @@ public class ConsoleUtil {
 		operation.get();
 		System.setOut(currentPrintStream);
 	}
+	
+	public static String indent(String s, int indent, boolean indentFirstLine) {
+		String i = "";
+		for (int j = 0; j < indent; j++) {
+			i += " ";
+		}
+		return (indentFirstLine ? i : "") + s.replace("\n", "\n" + i);
+	}
 
 }

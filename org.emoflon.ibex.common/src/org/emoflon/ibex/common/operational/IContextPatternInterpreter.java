@@ -1,6 +1,9 @@
 package org.emoflon.ibex.common.operational;
 
+import java.util.Collection;
+
 import org.eclipse.emf.ecore.EPackage.Registry;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 
@@ -38,12 +41,12 @@ public interface IContextPatternInterpreter {
 	public ResourceSet createAndPrepareResourceSet(String workspacePath);
 
 	/**
-	 * Monitors the given resource set.
+	 * Monitors the given resources.
 	 * 
 	 * @param resourceSet
 	 *            the resource set to observe
 	 */
-	public void monitor(ResourceSet resourceSet);
+	public void monitor(Collection<Resource> resources);
 
 	/**
 	 * Updates the matches.

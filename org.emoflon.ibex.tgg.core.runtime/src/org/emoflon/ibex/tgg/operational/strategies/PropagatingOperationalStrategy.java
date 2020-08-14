@@ -3,21 +3,21 @@ package org.emoflon.ibex.tgg.operational.strategies;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
-import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
+import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.MarkingMatchContainer;
@@ -26,6 +26,7 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
+import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import runtime.TGGRuleApplication;
 
@@ -33,21 +34,17 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 	// Repair
 	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
+	protected BrokenMatchContainer dependencyContainer;
 
-	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = CollectionFactory.cfactory
-			.createObjectToObjectHashMap();
+	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = cfactory.createObjectToObjectHashMap();
 	protected IRedInterpreter redInterpreter;
-
-	protected long repairTime = 0;
-	protected long translateTime = 0;
-	protected long removeTime = 0;
-	protected long matchApplicationTime = 0;
 
 	/***** Constructors *****/
 
 	public PropagatingOperationalStrategy(IbexOptions options) throws IOException {
 		super(options);
 		redInterpreter = new IbexRedInterpreter(this);
+		dependencyContainer = new BrokenMatchContainer(this);
 	}
 
 	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
@@ -67,35 +64,62 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			repairStrategies.add(new AttributeRepairStrategy(this));
 		}
 	}
+	
+	public Set<PatternType> getShortcutPatternTypes() {
+		Set<PatternType> set = new HashSet<>();
+		set.add(PatternType.FWD);
+		set.add(PatternType.BWD);
+		return set;
+	}
 
 	protected boolean repairBrokenMatches() {
-		long tic = System.nanoTime();
+		Timer.start();
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
-		for (AbstractRepairStrategy rStrategy : repairStrategies) {
-			for (ITGGMatch repairCandidate : rStrategy.chooseMatches(brokenRuleApplications)) {
-				if (alreadyProcessed.contains(repairCandidate))
-					continue;
+		dependencyContainer.reset();
+		brokenRuleApplications.values().forEach(dependencyContainer::addMatch);
 
-				ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
-				if (repairedMatch != null) {
-					alreadyProcessed.add(repairCandidate);
+		boolean processedOnce = true;
+		while (processedOnce) {
+			processedOnce = false;
+			// TODO lfritsche, amoeller: refactor this -> applying repairs can occasionally invalidate other consistency matches
+			while (!dependencyContainer.isEmpty()) {
+				ITGGMatch repairCandidate = dependencyContainer.getNext();
+				processedOnce = true;
 
-					TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
-					brokenRuleApplications.remove(oldRa);
+				for (AbstractRepairStrategy rStrategy : repairStrategies) {
+					if (alreadyProcessed.contains(repairCandidate)) {
+						continue;
+					}
 
-					TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
-					brokenRuleApplications.put(newRa, repairedMatch);
-					alreadyProcessed.add(repairedMatch);
+					ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
+					if (repairedMatch != null) {
+
+						TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
+						brokenRuleApplications.remove(oldRa);
+
+						TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
+						brokenRuleApplications.put(newRa, repairedMatch);
+						alreadyProcessed.add(repairCandidate);
+						alreadyProcessed.add(repairedMatch);
+					}
 				}
+				dependencyContainer.matchApplied(repairCandidate);
 			}
+			alreadyProcessed.addAll(brokenRuleApplications.values());
+			matchDistributor.updateMatches();
+			brokenRuleApplications.values().stream() //
+					.filter(m -> !alreadyProcessed.contains(m)) //
+					.forEach(dependencyContainer::addMatch);
 		}
-		repairTime += System.nanoTime() - tic;
+		
+		times.addTo("repair", Timer.stop());
 		return !alreadyProcessed.isEmpty();
 	}
 
 	protected void translate() {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		if (options.propagate.applyConcurrently()) {
 			matchDistributor.updateMatches();
 
@@ -104,8 +128,10 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 				}
 				matchDistributor.updateMatches();
-				if (!processOneOperationalRuleMatch())
+				if (!processOneOperationalRuleMatch()) {
+					times.addTo("translate", Timer.stop());
 					return;
+				}
 			}
 		} else {
 			do {
@@ -113,23 +139,17 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			} while (processOneOperationalRuleMatch());
 		}
 
-		translateTime += System.nanoTime() - tic;
-	}
-
-	@Override
-	protected boolean processOneOperationalRuleMatch() {
-		long tic = System.nanoTime();
-		boolean b = super.processOneOperationalRuleMatch();
-		matchApplicationTime += System.nanoTime() - tic;
-		return b;
+		times.addTo("translate", Timer.stop());
 	}
 
 	protected void rollBack() {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		do
 			matchDistributor.updateMatches();
 		while (revokeBrokenMatches());
-		removeTime += System.nanoTime() - tic;
+		
+		times.addTo("revoke", Timer.stop());
 	}
 
 	protected boolean revokeBrokenMatches() {
@@ -151,9 +171,11 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			Set<TGGRuleApplication> revoked = cfactory.createObjectSet();
 
 			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
-				redInterpreter.revokeOperationalRule(brokenRuleApplications.get(ra));
+				ITGGMatch match = brokenRuleApplications.get(ra);
+				redInterpreter.revokeOperationalRule(match);
 				revoked.add(ra);
-
+				LoggerConfig.log(LoggerConfig.log_matchApplication(),
+						() -> "Rollback match: " + ConsoleUtil.indent(match.toString(), 80, false));
 			}
 			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);
@@ -190,7 +212,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		if (brokenRuleApplications.containsKey(ruleAppNode)) {
 			LoggerConfig.log(LoggerConfig.log_matchApplication(),
-					() -> match.getPatternName() + " (" + match.hashCode() + ") appears to be fixed.");
+					() -> "Repair confirmation: " + match.getPatternName() + "(" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 			options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
 		}
@@ -231,21 +253,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 	@Override
 	public void terminate() throws IOException {
-		DecimalFormat df = new DecimalFormat("0.#####");
-		df.setMaximumFractionDigits(5);
-		LoggerConfig.log(LoggerConfig.log_translationTime(), 		() -> "Translation time: " + df.format((double) translateTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_repairTime(), 			() -> "Repair time: " + df.format((double) repairTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_removalTime(), 			() -> "Remove time: " + df.format((double) removeTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "Match application time: " + df.format((double) matchApplicationTime / (double) (1000 * 1000 * 1000)) + " -> {");
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Init time:            " + df.format((double) initMatchApplicationTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Choose match time:    " + df.format((double) chooseMatchTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Create elements time: " + df.format((double) ((IbexGreenInterpreter) greenInterpreter).getCreationTime() / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "     Finalize time:        " + df.format((double) finishRuleApplicationTime / (double) (1000 * 1000 * 1000)));
-		LoggerConfig.log(LoggerConfig.log_matchApplicationTime(), 	() -> "}");
-		LoggerConfig.log(LoggerConfig.log_collectMatchTime(), 		() -> "Match collection time: " + df.format((double) matchDistributor.getTime() / (double) (1000 * 1000 * 1000)));
-
-		if (operationalMatchContainer instanceof LoggingMatchContainer)
-			((LoggingMatchContainer) operationalMatchContainer).log();
+		times.set("createElements", ((IbexGreenInterpreter) greenInterpreter).getCreationTime());
 		super.terminate();
 	}
 

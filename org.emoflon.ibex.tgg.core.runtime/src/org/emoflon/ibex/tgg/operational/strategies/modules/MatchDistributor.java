@@ -11,17 +11,24 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-public class MatchDistributor implements IMatchObserver {
+public class MatchDistributor implements IMatchObserver, TimeMeasurable {
+	
+	protected final Times times = new Times();
 
 	private final long INTERVAL_LENGTH = 5000;
 	private long currentIntervalStart = -1;
@@ -39,12 +46,12 @@ public class MatchDistributor implements IMatchObserver {
 	private IBlackInterpreter blackInterpreter;
 	private ResourceSet rs;
 	
-	protected long time;
-	
 	private boolean initialized = false;
+	private boolean useTrashResource;
 	
 	public MatchDistributor(IbexOptions options) {
 		this.options = options;
+		TimeRegistry.register(this);
 	}
 	
 	public void initialize() throws IOException {
@@ -61,9 +68,11 @@ public class MatchDistributor implements IMatchObserver {
 	}
 	
 	public void updateMatches() {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		blackInterpreter.updateMatches();
-		time = getTime() + System.nanoTime() - tic;
+		
+		times.addTo("updateMatches", Timer.stop());
 	}
 	
 	@Override
@@ -73,6 +82,8 @@ public class MatchDistributor implements IMatchObserver {
 	
 	protected void initialiseBlackInterpreter(IbexExecutable executable) throws IOException {		
 		blackInterpreter = options.blackInterpreter();
+		useTrashResource = options.blackInterpreter().getClass().getName().contains("Democles");
+
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
 			blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
@@ -80,8 +91,16 @@ public class MatchDistributor implements IMatchObserver {
 			initExcep = Optional.of(e);
 		}
 
+		Collection<Resource> resources = new LinkedList<>();
+		resources.add(options.resourceHandler().source);
+		resources.add(options.resourceHandler().corr);
+		resources.add(options.resourceHandler().target);
+		resources.add(options.resourceHandler().protocol);
+		if(useTrashResource)
+			resources.add(options.resourceHandler().getTrashResource());
+
 		try {
-			blackInterpreter.monitor(rs);
+			blackInterpreter.monitor(resources);
 		} finally {
 			if (initExcep.isPresent())
 				throw initExcep.get();
@@ -98,7 +117,16 @@ public class MatchDistributor implements IMatchObserver {
 		this.removeBlackInterpreter();
 		this.blackInterpreter = newBlackInterpreter;
 		this.blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
-		this.blackInterpreter.monitor(rs);
+		
+		Collection<Resource> resources = new LinkedList<>();
+		resources.add(options.resourceHandler().source);
+		resources.add(options.resourceHandler().corr);
+		resources.add(options.resourceHandler().target);
+		resources.add(options.resourceHandler().protocol);
+		if(useTrashResource)
+			resources.add(options.resourceHandler().getTrashResource());
+		
+		this.blackInterpreter.monitor(resources);
 	}
 	
 	/**
@@ -123,10 +151,10 @@ public class MatchDistributor implements IMatchObserver {
 		if (consumers != null) {
 			matchCounter++;
 			if (currentIntervalStart == -1) {
-				LoggerConfig.log(LoggerConfig.log_all(), () -> "Now collecting matches...");
+				LoggerConfig.log(LoggerConfig.log_all(), () -> "Pattern Matcher: now collecting matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			} else if (System.currentTimeMillis() - currentIntervalStart > INTERVAL_LENGTH) {
-				LoggerConfig.log(LoggerConfig.log_all(), () -> "Collected " + matchCounter + " matches...");
+				LoggerConfig.log(LoggerConfig.log_all(), () -> "Pattern Matcher: collected " + matchCounter + " matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			}
 
@@ -141,7 +169,7 @@ public class MatchDistributor implements IMatchObserver {
 		if (consumers != null) {
 			consumers.forEach(c -> c.accept(tggMatch));
 			LoggerConfig.log(LoggerConfig.log_all(), () ->
-					"Removed due to delete event from pattern matcher: " + match.getPatternName());
+					"Removed due to delete event from pattern matcher: " + match.getPatternName() + "(" + match.hashCode() + ")");
 		}
 	}
 
@@ -173,7 +201,9 @@ public class MatchDistributor implements IMatchObserver {
 		return type2addMatch.keySet();
 	}
 
-	public long getTime() {
-		return time;
+	@Override
+	public Times getTimes() {
+		return times;
 	}
+
 }

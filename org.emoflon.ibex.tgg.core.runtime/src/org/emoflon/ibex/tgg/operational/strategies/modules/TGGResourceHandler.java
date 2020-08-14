@@ -370,4 +370,8 @@ public class TGGResourceHandler {
 	public Resource getPrecedenceResource() {
 		return precedence;
 	}
+	
+	public Resource getTrashResource() {
+		return trash;
+	}
 }

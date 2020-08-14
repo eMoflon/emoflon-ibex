@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.patterns;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -39,8 +40,17 @@ public class CCGreenPattern extends IbexGreenPattern {
 	}
 
 	@Override
+	public Collection<TGGRuleNode> getNodesMarkedByPattern() {
+		Collection<TGGRuleNode> greenNodesInRule = factory.getGreenSrcNodesInRule().stream().collect(Collectors.toList());
+		greenNodesInRule.addAll(factory.getGreenTrgNodesInRule());
+		return greenNodesInRule;
+	}
+	
+	@Override
 	public Collection<TGGRuleNode> getMarkedContextNodes() {
-		return Collections.emptyList();
+		Collection<TGGRuleNode> blackNodesInRule = factory.getBlackSrcNodesInRule().stream().collect(Collectors.toList());
+		blackNodesInRule.addAll(factory.getBlackTrgNodesInRule());
+		return blackNodesInRule;
 	}
 	
 	@Override

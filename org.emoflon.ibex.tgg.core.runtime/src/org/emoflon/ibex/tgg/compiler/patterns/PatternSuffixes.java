@@ -27,7 +27,8 @@ public class PatternSuffixes {
 	/** Used for user-defined NACs */
 	public static final String USER_NAC = SEP + "USER_NAC";
 
-	public static final String FILTER_NAC = SEP + "FILTER_NAC";
+	public static final String FILTER_NAC_SRC = SEP + "FILTER_NAC_SRC";
+	public static final String FILTER_NAC_TRG = SEP + "FILTER_NAC_TRG";
 	
 	/** Used for edge patterns */
 	public static final String EDGE = SEP + "EDGE";
@@ -174,7 +175,8 @@ public class PatternSuffixes {
 		String suffix = name.substring(name.lastIndexOf(SEP));
 		switch(suffix) {
 		case USER_NAC: return PatternType.USER_NAC;
-		case FILTER_NAC: return PatternType.FILTER_NAC;
+		case FILTER_NAC_SRC: return PatternType.FILTER_NAC_SRC;
+		case FILTER_NAC_TRG: return PatternType.FILTER_NAC_TRG;
 		case EDGE: return PatternType.EDGE;
 		case GEN_REFINEMENT_INVOCATIONS: return PatternType.GEN_REFINEMENT_INVOCATIONS;
 		case GEN: return PatternType.GEN;
@@ -196,7 +198,7 @@ public class PatternSuffixes {
 		case FWD_GREENCORR: return PatternType.FWD_GREENCORR;
 		case BWD_GREENCORR: return PatternType.BWD_GREENCORR;
 		case GREENCORR: return PatternType.GREENCORR;
-		default: throw new RuntimeException(suffix + "is an unknown suffix for TGG patterns");
+		default: throw new RuntimeException(suffix + " is an unknown suffix for TGG patterns");
 		}
 	}
 }

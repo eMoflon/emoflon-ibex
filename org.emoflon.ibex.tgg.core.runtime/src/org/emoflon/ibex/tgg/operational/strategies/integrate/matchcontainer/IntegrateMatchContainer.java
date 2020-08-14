@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -50,12 +52,15 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	public void matchApplied(ITGGMatch match) {
 		super.matchApplied(match);
 		if (match.getType() == PatternType.CONSISTENCY) {
-			if (matchToNode.containsKey(match) && getNode(match).isBroken())
-				getNode(match).setBroken(false);
+			PrecedenceNode node = getNode(match);
+			if (matchToNode.containsKey(match) && node.isBroken()) {
+				node.setBroken(false);
+				updateRollbackImpact(node);
+			}
 		}
 	}
 
-	public PrecedenceNodeContainer getExtGraph() {
+	public PrecedenceNodeContainer getGraph() {
 		return nodes;
 	}
 
@@ -63,10 +68,17 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 		prepareResource();
 
 		Set<ITGGMatch> matches = new HashSet<>(getMatches());
+		// this is bad. basically you use the NEW matches and then to add ALL those that
+		// you already found to them
+		// TODO lfritsche, amoeller
 		matches.addAll(raToMatch.values());
 		matches.removeIf(m -> m.getType() == PatternType.CC);
 
 		Set<ITGGMatch> restoredMatches = new HashSet<>();
+
+		// what does this mean? what are restored matches? isn't this something that I
+		// can check on the newly added matches? old ones should still be broken
+		// TODO lfritsche, amoeller
 		matches.removeIf(m -> {
 			if (!matchToNode.containsKey(m))
 				return false;
@@ -74,9 +86,17 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 				restoredMatches.add(m);
 			return true;
 		});
+
 		matches.forEach(m -> createNode(m));
+
+		// hotspot but probably because of the upper stuff?
+		// TODO lfritsche, amoeller
 		matches.forEach(m -> updateNode(m));
-		restoredMatches.forEach(m -> getNode(m).setBroken(false));
+		restoredMatches.forEach(m -> {
+			PrecedenceNode node = getNode(m);
+			node.setBroken(false);
+			updateRollbackImpact(node);
+		});
 	}
 
 	public ITGGMatch getMatch(PrecedenceNode node) {
@@ -96,9 +116,11 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	}
 
 	public void removeBrokenMatch(ITGGMatch match) {
-		if (getNode(match).isBroken()) {
+		PrecedenceNode node = getNode(match);
+		if (node.isBroken()) {
+			updateRollbackImpact(node);
 			deleteNode(match);
-			
+
 			IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 			Collection<Object> translatedElts = new ArrayList<>();
 			gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
@@ -113,18 +135,22 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 		PrecedenceNode node = matchToNode.get(match);
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 
-		Set<Object> eltsBasedOn = new HashSet<>();
-		gFactory.getBlackSrcNodesInRule().forEach(n -> eltsBasedOn.add(match.get(n.getName())));
-		gFactory.getBlackTrgNodesInRule().forEach(n -> eltsBasedOn.add(match.get(n.getName())));
-		gFactory.getBlackSrcEdgesInRule().forEach(e -> eltsBasedOn.add(getRuntimeEdge(match, e)));
-		gFactory.getBlackTrgEdgesInRule().forEach(e -> eltsBasedOn.add(getRuntimeEdge(match, e)));
+		Set<Object> requiringElts = new HashSet<>();
+		gFactory.getBlackSrcNodesInRule().forEach(n -> requiringElts.add(match.get(n.getName())));
+		gFactory.getBlackTrgNodesInRule().forEach(n -> requiringElts.add(match.get(n.getName())));
+		gFactory.getBlackSrcEdgesInRule().forEach(e -> requiringElts.add(getRuntimeEdge(match, e)));
+		gFactory.getBlackTrgEdgesInRule().forEach(e -> requiringElts.add(getRuntimeEdge(match, e)));
 
-		for (Object elt : eltsBasedOn) {
+		for (Object elt : requiringElts) {
+			// that looks VERY expensive. why do we have to go over ALL rule applications?
+			// there is a requiredBy map which is exactly for this purpose to also navigate
+			// back!
+			// TODO lfritsche, amoeller
 			raToTranslated.forEach((ra, objs) -> {
 				if (objs.contains(elt)) {
-					PrecedenceNode nodeBasedOn = matchToNode.get(raToMatch.get(ra));
-					if (nodeBasedOn != null)
-						node.getBasedOn().add(nodeBasedOn);
+					PrecedenceNode requiringNode = matchToNode.get(raToMatch.get(ra));
+					if (requiringNode != null)
+						node.getRequires().add(requiringNode);
 				}
 			});
 		}
@@ -148,8 +174,12 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	private void createNode(ITGGMatch match) {
 		PrecedenceNode node = PrecedencegraphFactory.eINSTANCE.createPrecedenceNode();
 		node.setBroken(false);
+
+		// this is probably bad. make this a hashset and use addall perfore persisting
+		// the pg
+		// TODO lfritsche, amoeller
 		nodes.getNodes().add(node);
-		node.setMatchAsString(match.getPatternName());
+		node.setMatchAsString(match.getPatternName() + "(" + match.hashCode() + ")");
 
 		matchToNode.put(match, node);
 		nodeToMatch.put(node, match);
@@ -157,10 +187,28 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 
 	private void handleBrokenConsistencyMatch(ITGGMatch match) {
 		PrecedenceNode node = matchToNode.get(match);
-		if (node != null)
+		if (node != null) {
 			node.setBroken(true);
+			updateRollbackImpact(node);
+		}
 
 		readySet.remove(match);
+	}
+
+	private void updateRollbackImpact(PrecedenceNode node) {
+		if (node.isBroken()) {
+			node.getRollbackCauses().add(node);
+			forAllRequiredBy(node, n -> {
+				n.getRollbackCauses().add(node);
+				return true;
+			});
+		} else {
+			node.getRollbackCauses().remove(node);
+			forAllRequiredBy(node, n -> {
+				n.getRollbackCauses().remove(node);
+				return true;
+			});
+		}
 	}
 
 	private void deleteNode(ITGGMatch match) {
@@ -175,6 +223,38 @@ public class IntegrateMatchContainer extends PrecedenceMatchContainer {
 	private void prepareResource() {
 		if (precedenceGraph.getContents().isEmpty())
 			precedenceGraph.getContents().add(nodes);
+	}
+
+	public void forAllRequires(PrecedenceNode node, Predicate<? super PrecedenceNode> action) {
+		Set<PrecedenceNode> processed = cfactory.createObjectSet();
+		forAllRequires(node, action, processed);
+	}
+
+	private void forAllRequires(PrecedenceNode node, Predicate<? super PrecedenceNode> action,
+			Set<PrecedenceNode> processed) {
+		for (PrecedenceNode n : node.getRequires()) {
+			if (!processed.contains(n)) {
+				processed.add(n);
+				if (action.test(n))
+					forAllRequires(n, action, processed);
+			}
+		}
+	}
+
+	public void forAllRequiredBy(PrecedenceNode node, Predicate<? super PrecedenceNode> action) {
+		Set<PrecedenceNode> processed = cfactory.createObjectSet();
+		forAllRequiredBy(node, action, processed);
+	}
+
+	private void forAllRequiredBy(PrecedenceNode node, Predicate<? super PrecedenceNode> action,
+			Set<PrecedenceNode> processed) {
+		for (PrecedenceNode n : node.getRequiredBy()) {
+			if (!processed.contains(n)) {
+				processed.add(n);
+				if (action.test(n))
+					forAllRequiredBy(n, action, processed);
+			}
+		}
 	}
 
 }

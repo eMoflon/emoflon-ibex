@@ -2,15 +2,13 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns.common;
 
 import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWithName;
 import static org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper.addInjectivityConstraintIfNecessary;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getFilterNACPatternName;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
@@ -18,17 +16,16 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
-import org.emoflon.ibex.tgg.compiler.patterns.ConclusionRule;
 import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.DomainTypePatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -165,9 +162,16 @@ public abstract class OperationalPatternTransformation {
 	}
 
 	protected IBeXContextPattern createFilterNAC(IBeXContextPattern ibexPattern, FilterNACCandidate candidate) {
+		TGGRuleNode firstNode = candidate.getNodeInRule();
 		
-		if(parent.isTransformed(getFilterNACPatternName(candidate, rule))) {
-			IBeXContextPattern nacPattern =  parent.getPattern(getFilterNACPatternName(candidate, rule));
+		BiFunction<FilterNACCandidate, TGGRule, String> getFilterNACPatterName;
+		if(firstNode.getDomainType() == DomainType.SRC)
+			getFilterNACPatterName = TGGPatternUtil::getFilterNACSRCPatternName;
+		else 
+			getFilterNACPatterName = TGGPatternUtil::getFilterNACTRGPatternName;
+		
+		if(parent.isTransformed(getFilterNACPatterName.apply(candidate, rule))) {
+			IBeXContextPattern nacPattern =  parent.getPattern(getFilterNACPatterName.apply(candidate, rule));
 			createNegativeInvocation(ibexPattern, nacPattern);
 			return nacPattern;
 		}
@@ -176,7 +180,6 @@ public abstract class OperationalPatternTransformation {
 		IBeXContextPattern nacPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
 
 		// Transform nodes
-		TGGRuleNode firstNode = candidate.getNodeInRule();
 		IBeXNode firstIBeXNode = parent.transformNode(nacPattern, firstNode);
 
 		addNodesOfSameTypeFromInvoker(nacPattern, candidate, firstIBeXNode);
@@ -190,7 +193,7 @@ public abstract class OperationalPatternTransformation {
 		else
 			parent.transformEdge(candidate.getEdgeType(), secondIBeXNode, firstIBeXNode, nacPattern, false);
 
-		nacPattern.setName(getFilterNACPatternName(candidate, rule));
+		nacPattern.setName(getFilterNACPatterName.apply(candidate, rule));
 
 		// Invoke NAC from parent: nodes with/without pre-image are signature/local
 		createNegativeInvocation(ibexPattern, nacPattern);

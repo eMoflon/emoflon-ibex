@@ -34,4 +34,20 @@ public class AttributeChange {
 		return newValue;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AttributeChange [");
+		builder.append("\n  element:   ");
+		builder.append(element);
+		builder.append("\n  attribute: ");
+		builder.append(attribute);
+		builder.append("\n  value:     '");
+		builder.append(oldValue);
+		builder.append("' -> '");
+		builder.append(newValue);
+		builder.append("'\n]");
+		return builder.toString();
+	}
+
 }

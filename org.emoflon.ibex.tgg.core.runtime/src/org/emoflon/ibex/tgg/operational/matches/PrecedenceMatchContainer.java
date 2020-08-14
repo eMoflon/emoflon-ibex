@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.operational.matches;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
@@ -7,11 +8,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.common.collections.CollectionFactory;
-import org.emoflon.ibex.common.collections.jdk.JDKCollectionFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
@@ -20,9 +22,9 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
-
-public class PrecedenceMatchContainer extends LoggingMatchContainer implements IMatchContainer {
-	public static final CollectionFactory cfactory = new JDKCollectionFactory();
+public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable {
+	
+	protected final Times times = new Times();
 
 	protected PropagatingOperationalStrategy strategy;
 
@@ -37,18 +39,19 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 
 	protected Map<TGGRuleApplication, Collection<Object>> raToTranslated = cfactory.createObjectToObjectHashMap();
 	protected Map<TGGRuleApplication, ITGGMatch> raToMatch = cfactory.createObjectToObjectHashMap();
-	
+
 	protected Set<ITGGMatch> readySet = cfactory.createObjectSet();
 
 	public PrecedenceMatchContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
+		TimeRegistry.register(this);
 	}
 
 	@Override
 	public void addMatch(ITGGMatch match) {
-		long tic = System.nanoTime();
+		Timer.start();
 		pending.add(match);
-		addMatchTime += System.nanoTime() - tic;
+		times.addTo("addMatch", Timer.stop());
 	}
 
 	private void handleMatch(ITGGMatch m) {
@@ -57,7 +60,7 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
 			return;
-		
+
 		// Register nodes
 		for (TGGRuleNode contextNode : gPattern.getMarkedContextNodes()) {
 			Object contextObj = m.get(contextNode.getName());
@@ -121,17 +124,17 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 
 		return false;
 	}
-	
+
 	private boolean noElementIsPending(ITGGMatch m) {
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getType());
-		
+
 		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
 			Object createdObj = m.get(createdNode.getName());
 			if (pendingElts.contains(createdObj))
 				return false;
 		}
-		
+
 		for (TGGRuleNode contextNode : gPattern.getMarkedContextNodes()) {
 			Object contextObj = m.get(contextNode.getName());
 			if (pendingElts.contains(contextObj))
@@ -143,15 +146,18 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 
 	@Override
 	public void matchApplied(ITGGMatch m) {
-		long tic = System.nanoTime();
-		
+		Timer.start();
+
 		if (m.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
 			consistencyMatchApplied(m);
+			times.addTo("matchApplied", Timer.stop());
 			return;
 		}
-		
-		if (!translates.containsKey(m))
+
+		if (!translates.containsKey(m)) {
+			times.addTo("matchApplied", Timer.stop());
 			return;
+		}
 
 		Collection<Object> translatedElts = translates.get(m);
 		for (Object translatedElement : translatedElts) {
@@ -178,15 +184,15 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 		}
 
 		translated.addAll(translatedElts);
-		
-		matchAppliedTime += System.nanoTime() - tic;
+
+		times.addTo("matchApplied", Timer.stop());
 	}
-	
+
 	private void consistencyMatchApplied(ITGGMatch m) {
 		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
-		if(raToTranslated.containsKey(ra))
+		if (raToTranslated.containsKey(ra))
 			return;
-		
+
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
 
 		// Add translated elements
@@ -202,7 +208,7 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 
 		translated.addAll(translatedElts);
 		pendingElts.removeAll(translatedElts);
-		
+
 		for (Object translatedElement : translatedElts) {
 			// Handle children: this parent has now been translated and can be removed
 			Collection<ITGGMatch> dependentMatches = requiredBy.remove(translatedElement);
@@ -216,53 +222,56 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 			}
 		}
 	}
-	
+
 	public void clearPendingElements() {
 		pendingElts.clear();
 	}
 
 	@Override
 	public Set<ITGGMatch> getMatches() {
-		long tic = System.nanoTime();
-		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toList());
+		Timer.start();
+
+		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending)
+				.collect(Collectors.toList());
 		notPendingMatches.forEach(this::handleMatch);
-		if(notPendingMatches.size() == pending.size())
+		if (notPendingMatches.size() == pending.size())
 			pending.clear();
 		else
 			pending.removeAll(notPendingMatches);
 		Set<ITGGMatch> validate = validate(readySet);
-		getMatchTime += System.nanoTime() - tic;
+
+		times.addTo("getMatches", Timer.stop());
 		return validate;
 	}
-	
+
 	private Set<ITGGMatch> validate(Set<ITGGMatch> readySet) {
-		if(pendingElts.isEmpty())
+		if (pendingElts.isEmpty())
 			return readySet;
-		
+
 		Set<ITGGMatch> filteredReadySet = cfactory.createObjectSet();
-		for(ITGGMatch m : readySet) {
-			if(m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p))))
+		for (ITGGMatch m : readySet) {
+			if (m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p))))
 				continue;
 			filteredReadySet.add(m);
 		}
 		return filteredReadySet;
 	}
- 
+
 	@Override
 	public boolean removeMatch(ITGGMatch match) {
-		long tic = System.nanoTime();
-		
+		Timer.start();
+
 		if (match.getType() == PatternType.CONSISTENCY) {
 			boolean removed = removeConsistencyMatch(match);
-			
-			removeMatchTime += System.nanoTime() - tic;
+
+			times.addTo("removeMatch", Timer.stop());
 			return removed;
 		}
-		
+
 		if (pending.contains(match)) {
 			pending.remove(match);
-			
-			removeMatchTime += System.nanoTime() - tic;
+
+			times.addTo("removeMatch", Timer.stop());
 			return true;
 		}
 
@@ -286,21 +295,22 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 		}
 
 		readySet.remove(match);
+
 		
-		removeMatchTime += System.nanoTime() - tic;
+		times.addTo("removeMatch", Timer.stop());
 		return true;
 	}
-	
+
 	public boolean removeConsistencyMatch(ITGGMatch m) {
 		// Transfer elements to the pending collection
 		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
-		if(!raToTranslated.containsKey(ra))
+		if (!raToTranslated.containsKey(ra))
 			return true;
-		
+
 		translated.removeAll(raToTranslated.get(ra));
 		pendingElts.addAll(raToTranslated.remove(ra));
 		raToMatch.remove(ra);
-		
+
 		return true;
 	}
 
@@ -317,6 +327,11 @@ public class PrecedenceMatchContainer extends LoggingMatchContainer implements I
 		translates.clear();
 
 		readySet.clear();
+	}
+
+	@Override
+	public Times getTimes() {
+		return times;
 	}
 
 }

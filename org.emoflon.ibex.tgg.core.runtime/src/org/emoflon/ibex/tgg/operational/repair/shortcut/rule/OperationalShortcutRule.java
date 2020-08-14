@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,21 +16,21 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchKey;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.CSPCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.EdgeCheck;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
@@ -41,6 +42,7 @@ import language.TGGLiteralExpression;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
+import runtime.RuntimePackage;
 
 /**
  * 
@@ -61,7 +63,7 @@ public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
 
 	protected PropagatingOperationalStrategy strategy;
-	protected PropagationDirection direction;
+	protected PatternType type;
 	protected ShortcutRule scRule;
 
 	protected Collection<TGGRuleElement> markedElements;
@@ -74,10 +76,10 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, PropagationDirection direction,
+	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, PatternType type,
 			ShortcutRule scRule) {
 		this.scRule = scRule;
-		this.direction = direction;
+		this.type = type;
 
 		this.markedElements = new HashSet<>();
 		this.key2lookup = cfactory.createObjectToObjectHashMap();
@@ -94,13 +96,20 @@ public abstract class OperationalShortcutRule {
 		Collection<TGGRuleNode> uncheckedRelaxedNodes = new ArrayList<>();
 		scRule.getNodes().stream() //
 				.filter(n -> !scRule.getMergedNodes().contains(n)) //
+				.filter(n -> !scRule.getNewOriginalNodes().contains(n)) //
+				.filter(n -> !RuntimePackage.eINSTANCE.getTGGRuleApplication().isSuperTypeOf(n.getType())) //
 				.filter(n -> n.getBindingType() != BindingType.NEGATIVE) //
 				.filter(n -> n.getBindingType() != BindingType.CREATE) //
-				.forEach(n -> //
-				(n.getBindingType() == BindingType.RELAXED ? uncheckedRelaxedNodes : uncheckedNodes).add(n));
+				.filter(n -> n.getBindingType() != BindingType.RELAXED) //
+				.forEach(n -> uncheckedNodes.add(n));
 
-		Collection<TGGRuleEdge> uncheckedEdges = scRule.getEdges().stream() //
-				.collect(Collectors.toList());
+		LinkedList<TGGRuleEdge> uncheckedEdges = new LinkedList<>();
+		for (TGGRuleEdge edge : scRule.getEdges()) {
+			if(edge.getBindingType() == BindingType.NEGATIVE)
+				uncheckedEdges.addLast(edge);
+			else
+				uncheckedEdges.addFirst(edge);
+		}
 
 		List<SearchKey> uncheckedSearchKeys = key2lookup.keySet().stream() //
 				.filter(key -> key.edge.getBindingType() != BindingType.NEGATIVE) //
@@ -124,23 +133,6 @@ public abstract class OperationalShortcutRule {
 			searchPlan.add(Pair.of(nextKey, key2lookup.get(nextKey)));
 
 			uncheckedNodes.remove(nextKey.reverse ? nextKey.sourceNode : nextKey.targetNode);
-			uncheckedEdges.remove(nextKey.edge);
-			uncheckedSearchKeys.remove(nextKey);
-		}
-
-		// then calculate lookups for relaxed nodes
-		while (!uncheckedRelaxedNodes.isEmpty()) {
-			List<SearchKey> nextSearchKeys = //
-					filterKeys(uncheckedSearchKeys, uncheckedNodes, uncheckedRelaxedNodes, true);
-			if (nextSearchKeys.isEmpty()) {
-				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + scRule.getName());
-				return null;
-			}
-
-			SearchKey nextKey = nextSearchKeys.iterator().next();
-			searchPlan.add(Pair.of(nextKey, key2lookup.get(nextKey)));
-
-			uncheckedRelaxedNodes.remove(nextKey.reverse ? nextKey.sourceNode : nextKey.targetNode);
 			uncheckedEdges.remove(nextKey.edge);
 			uncheckedSearchKeys.remove(nextKey);
 		}
@@ -184,14 +176,23 @@ public abstract class OperationalShortcutRule {
 
 	private List<SearchKey> filterKeys(List<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes,
 			Collection<TGGRuleNode> uncheckedRelaxedNodes, boolean relaxed) {
-		Stream<SearchKey> filteredKeys = keys.stream() //
-				.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k));
+		Collection<SearchKey> filteredKeys = keys.stream() //
+				.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k, false)).collect(Collectors.toList());
+		
+		// if no navigable edge was found -> allow to navigate backwards
+		if(filteredKeys.isEmpty()) {
+			filteredKeys = keys.stream() //
+			.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k, true)).collect(Collectors.toList());
+		}
+		
+		Stream<SearchKey> filteredKeysStream = filteredKeys.stream();
 		if (!relaxed) {
-			filteredKeys = filteredKeys //
+			filteredKeysStream = filteredKeysStream //
 					.filter(k -> (k.reverse ? k.sourceNode : k.targetNode).getBindingType() != BindingType.RELAXED) //
 					.filter(k -> k.edge.getBindingType() != BindingType.RELAXED);
 		} else {
-			filteredKeys = filteredKeys.sorted((a, b) -> {
+			// sort relaxed to the end of this list
+			filteredKeysStream = filteredKeysStream.sorted((a, b) -> {
 				if (a.sourceNode.getBindingType() == b.sourceNode.getBindingType())
 					return 0;
 				if ((a.reverse ? a.targetNode : a.sourceNode).getBindingType() != BindingType.RELAXED)
@@ -199,19 +200,20 @@ public abstract class OperationalShortcutRule {
 				return 1;
 			});
 		}
-		return filteredKeys.collect(Collectors.toList());
+		return filteredKeysStream.collect(Collectors.toList());
 	}
 
 	// a valid lookup key is a key where source xor target has already been checked
 	private boolean validLookupKey(Collection<TGGRuleNode> uncheckedNodes, Collection<TGGRuleNode> uncheckedRelaxedNodes,
-			SearchKey key) {
+			SearchKey key, boolean allowBackNavigate) {
 		boolean srcChecked = !uncheckedNodes.contains(key.sourceNode) && !uncheckedRelaxedNodes.contains(key.sourceNode);
 		boolean trgChecked = !uncheckedNodes.contains(key.targetNode) && !uncheckedRelaxedNodes.contains(key.targetNode);
 		
 		boolean notReverse = !key.reverse &&  srcChecked && !trgChecked;
 		boolean reverse    =  key.reverse && !srcChecked &&  trgChecked;
+		boolean backward = allowBackNavigate || key.edge.getType().getEOpposite() != null;
 		
-		return notReverse || reverse;
+		return notReverse || reverse && backward;
 	}
 
 	protected void createConstraintChecks() {
@@ -261,13 +263,20 @@ public abstract class OperationalShortcutRule {
 				return (EObject) n.eContainer();
 			});
 		} else {
+			if(edgeRef.getEOpposite() != null) {
+				key2lookup.put(key, n -> {
+					return n.eGet(edgeRef.getEOpposite());
+				});
+			}
+			else {
+				key2lookup.put(key, n -> {
+					Class<?> instanceClass = key.sourceNode.getType().getInstanceClass();
+					if (instanceClass != null)
+						return eMoflonEMFUtil.getOppositeReference(n, instanceClass, key.edge.getType().getName());
+					return EMFNavigationUtil.getOppositeReference(n, key.sourceNode.getType(), key.edge.getType().getName());
+				});
+			}
 			// TODO lfritsche : implement reverse navigation
-			key2lookup.put(key, n -> {
-				Class<?> instanceClass = key.sourceNode.getType().getInstanceClass();
-				if (instanceClass != null)
-					return eMoflonEMFUtil.getOppositeReference(n, instanceClass, key.edge.getType().getName());
-				return EMFNavigationUtil.getOppositeReference(n, key.sourceNode.getType(), key.edge.getType().getName());
-			});
 		}
 	}
 
@@ -345,6 +354,9 @@ public abstract class OperationalShortcutRule {
 			Object subjectAttr = node.eGet(inplAttrExpr.getAttribute());
 
 			if (inplAttrExpr.getValueExpr() instanceof TGGLiteralExpression) {
+				if (subjectAttr == null)
+					return false;
+
 				TGGLiteralExpression litExpr = (TGGLiteralExpression) inplAttrExpr.getValueExpr();
 				Object literal = String2EPrimitive.convertLiteral( //
 						litExpr.getValue(), inplAttrExpr.getAttribute().getEAttributeType());
@@ -384,6 +396,9 @@ public abstract class OperationalShortcutRule {
 					break;
 				}
 			} else if (inplAttrExpr.getValueExpr() instanceof TGGEnumExpression) {
+				if (subjectAttr == null)
+					return false;
+
 				TGGEnumExpression enumExpr = (TGGEnumExpression) inplAttrExpr.getValueExpr();
 				if (!subjectAttr.equals(enumExpr.getLiteral().getInstance()))
 					return false;
@@ -393,7 +408,11 @@ public abstract class OperationalShortcutRule {
 				if (obj == null)
 					return false;
 				Object objectAttr = obj.eGet(attrExpr.getAttribute());
-				if (!subjectAttr.equals(objectAttr))
+
+				if (subjectAttr == null) {
+					if (objectAttr != null)
+						return false;
+				} else if (!subjectAttr.equals(objectAttr))
 					return false;
 			}
 		}
@@ -424,8 +443,8 @@ public abstract class OperationalShortcutRule {
 		return key2lookup;
 	}
 
-	public PropagationDirection getDirection() {
-		return direction;
+	public PatternType getType() {
+		return type;
 	}
 
 	public String getName() {

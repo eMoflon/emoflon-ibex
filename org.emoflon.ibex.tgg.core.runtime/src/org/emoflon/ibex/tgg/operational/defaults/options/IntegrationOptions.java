@@ -1,8 +1,8 @@
 package org.emoflon.ibex.tgg.operational.defaults.options;
 
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.ConflictResolver;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflict.DefaultConflictResolver;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.ConflictResolver;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.DefaultConflictResolver;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
 
 public class IntegrationOptions extends IbexSubOptions {

@@ -165,8 +165,8 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 	 * @generated
 	 */
 	@Override
-	public EReference getPrecedenceNode_BasedOn() {
-		return (EReference) precedenceNodeEClass.getEStructuralFeatures().get(3);
+	public EAttribute getPrecedenceNode_MatchAsString() {
+		return (EAttribute) precedenceNodeEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 	 * @generated
 	 */
 	@Override
-	public EReference getPrecedenceNode_BaseFor() {
+	public EReference getPrecedenceNode_RollbackCauses() {
 		return (EReference) precedenceNodeEClass.getEStructuralFeatures().get(4);
 	}
 
@@ -185,8 +185,18 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 	 * @generated
 	 */
 	@Override
-	public EAttribute getPrecedenceNode_MatchAsString() {
-		return (EAttribute) precedenceNodeEClass.getEStructuralFeatures().get(5);
+	public EReference getPrecedenceNode_RollesBack() {
+		return (EReference) precedenceNodeEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getPrecedenceNode_PrecedenceNodeContainer() {
+		return (EReference) precedenceNodeEClass.getEStructuralFeatures().get(6);
 	}
 
 	/**
@@ -226,9 +236,10 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 		createEAttribute(precedenceNodeEClass, PRECEDENCE_NODE__BROKEN);
 		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__REQUIRES);
 		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__REQUIRED_BY);
-		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__BASED_ON);
-		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__BASE_FOR);
 		createEAttribute(precedenceNodeEClass, PRECEDENCE_NODE__MATCH_AS_STRING);
+		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__ROLLBACK_CAUSES);
+		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__ROLLES_BACK);
+		createEReference(precedenceNodeEClass, PRECEDENCE_NODE__PRECEDENCE_NODE_CONTAINER);
 	}
 
 	/**
@@ -264,9 +275,10 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 		// Initialize classes, features, and operations; add parameters
 		initEClass(precedenceNodeContainerEClass, PrecedenceNodeContainer.class, "PrecedenceNodeContainer",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getPrecedenceNodeContainer_Nodes(), this.getPrecedenceNode(), null, "nodes", null, 0, -1,
-				PrecedenceNodeContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getPrecedenceNodeContainer_Nodes(), this.getPrecedenceNode(),
+				this.getPrecedenceNode_PrecedenceNodeContainer(), "nodes", null, 0, -1, PrecedenceNodeContainer.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(precedenceNodeEClass, PrecedenceNode.class, "PrecedenceNode", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -279,15 +291,21 @@ public class PrecedencegraphPackageImpl extends EPackageImpl implements Preceden
 		initEReference(getPrecedenceNode_RequiredBy(), this.getPrecedenceNode(), this.getPrecedenceNode_Requires(),
 				"requiredBy", null, 0, -1, PrecedenceNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getPrecedenceNode_BasedOn(), this.getPrecedenceNode(), this.getPrecedenceNode_BaseFor(),
-				"basedOn", null, 0, -1, PrecedenceNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getPrecedenceNode_BaseFor(), this.getPrecedenceNode(), this.getPrecedenceNode_BasedOn(),
-				"baseFor", null, 0, -1, PrecedenceNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getPrecedenceNode_MatchAsString(), ecorePackage.getEString(), "matchAsString", null, 0, 1,
 				PrecedenceNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
+		initEReference(getPrecedenceNode_RollbackCauses(), this.getPrecedenceNode(),
+				this.getPrecedenceNode_RollesBack(), "rollbackCauses", null, 0, -1, PrecedenceNode.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getPrecedenceNode_RollesBack(), this.getPrecedenceNode(),
+				this.getPrecedenceNode_RollbackCauses(), "rollesBack", null, 0, -1, PrecedenceNode.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getPrecedenceNode_PrecedenceNodeContainer(), this.getPrecedenceNodeContainer(),
+				this.getPrecedenceNodeContainer_Nodes(), "precedenceNodeContainer", null, 0, 1, PrecedenceNode.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);
