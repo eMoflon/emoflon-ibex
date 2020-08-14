@@ -195,6 +195,7 @@ public class PatternSuffixes {
 		case CONTEXT: return PatternType.CONTEXT;
 		case FWD_GREENCORR: return PatternType.FWD_GREENCORR;
 		case BWD_GREENCORR: return PatternType.BWD_GREENCORR;
+		case GREENCORR: return PatternType.GREENCORR;
 		default: throw new RuntimeException(suffix + "is an unknown suffix for TGG patterns");
 		}
 	}

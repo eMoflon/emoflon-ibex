@@ -123,7 +123,7 @@ public class ContextPatternTransformation {
 			
 			if(!createPatternIfRelevant(rule, this::createGENPattern, PatternType.GEN))
 				if(patternInvOption) {
-				createCONTEXTPattern(rule);
+					createCONTEXTPattern(rule);
 				}
 			
 			if (patternInvOption && isDomainProgressive(rule, DomainType.CORR)) {
@@ -133,7 +133,7 @@ public class ContextPatternTransformation {
 			if (isDomainProgressive(rule, DomainType.SRC)) {
 				if(patternInvOption) {
 					createSRCPattern(rule);
-					createPatternIfRelevant(rule, this::createFWDPattern, PatternType.CONSISTENCY);
+					createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD);
 					createFWD_GREENCORRPattern(rule);
 					}
 				else createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD);
@@ -144,7 +144,7 @@ public class ContextPatternTransformation {
 			if (isDomainProgressive(rule, DomainType.TRG)) {
 				if(patternInvOption) {
 					createTRGPattern(rule);
-					createPatternIfRelevant(rule, this::createBWDPattern, PatternType.CONSISTENCY);
+					createPatternIfRelevant(rule, this::createBWDPattern, PatternType.BWD);
 				}
 				
 				else createPatternIfRelevant(rule, this::createBWDPattern, PatternType.BWD);
@@ -224,8 +224,6 @@ public class ContextPatternTransformation {
 	private void createFWD_GREENCORRPattern(TGGRule rule) {
 		FWD_GREENCORRPatternTransformation transformer = new FWD_GREENCORRPatternTransformation(this, options, rule, filterNacAnalysis);
 		addContextPattern(transformer.transform());
-//		OperationalPatternTransformation transformer = new FWD_GENPatternTransformation(this, options, rule, filterNacAnalysis);
-//		return transformer.transform();
 	}
 
 	private IBeXContextPattern createModelGenPattern(TGGRule rule) {

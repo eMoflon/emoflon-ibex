@@ -70,7 +70,7 @@ public class FWDPatternTransformation extends FWD_OPTPatternTransformation {
 				parent.createInvocation(ibexPattern, tmp);
 			}
 			for(int i = 1; ; i++) {
-				tmp = parent.getPattern(rule.getName() +  PatternSuffixes.CONTEXT + "__" + i);
+				tmp = parent.getPattern(rule.getName() + "_" + i + PatternSuffixes.CONTEXT);
 				if(tmp == null)
 					break;
 				parent.createInvocation(ibexPattern, tmp);
@@ -79,12 +79,13 @@ public class FWDPatternTransformation extends FWD_OPTPatternTransformation {
 			if(tmp != null) {
 				parent.createInvocation(ibexPattern, tmp);
 			}
-			for(int i = 1; ; i++) {
-				tmp = parent.getPattern(rule.getName() + PatternSuffixes.SRC + "__" + i);
-				if(tmp == null)
-					break;
-				parent.createInvocation(ibexPattern, tmp);
-			}
+			//At the moment there can be only one SRC/TRG Pattern
+//			for(int i = 1; ; i++) {
+//				tmp = parent.getPattern(rule.getName() + PatternSuffixes.SRC + "_" + i);
+//				if(tmp == null)
+//					break;
+//				parent.createInvocation(ibexPattern, tmp);
+//			}
 		}
 		else super.transformEdges(ibexPattern);
 	}

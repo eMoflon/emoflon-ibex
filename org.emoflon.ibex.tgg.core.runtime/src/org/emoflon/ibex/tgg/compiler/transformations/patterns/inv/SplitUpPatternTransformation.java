@@ -16,6 +16,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
@@ -52,10 +53,10 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 		return pattern.get();
 	}
 	
-	public void createPatternFromBinding(BindingType binding, String name) {
+	public void createPatternFromBinding(BindingType binding, String ruleName, String suffixe) {
 		LinkedList<TGGRuleNode> ruleNodesByOperator = new LinkedList<TGGRuleNode>(getNodesByOperator(rule, binding));
 		LinkedList<? extends TGGRuleEdge> ruleEdgesByOperator = new LinkedList<TGGRuleEdge>(getEdgesByOperator(rule, binding));
-		buildPattern(ruleNodesByOperator, ruleEdgesByOperator, name, 0);
+		buildPattern(ruleNodesByOperator, ruleEdgesByOperator, ruleName, suffixe, 0);
 	}
 	
 	public Optional<IBeXContextPattern> transform(Collection<TGGRuleNode> nodesToTranslate, Collection<? extends TGGRuleEdge> edgesToTranslate, String nameOfPattern) {
@@ -142,13 +143,13 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 		return edge;
 	}
 	
-	public void buildPattern(LinkedList<TGGRuleNode> nodes, LinkedList<? extends TGGRuleEdge> edges, String name, int patternCounter) {
+	public void buildPattern(LinkedList<TGGRuleNode> nodes, LinkedList<? extends TGGRuleEdge> edges, String ruleName, String suffixe, int patternCounter) {
 		if(nodes.isEmpty() && edges.isEmpty())
 			return;
 		String patternName;
 		if(patternCounter == 0)
-			patternName = name;
-		else patternName = name + "__" + patternCounter;
+			patternName = ruleName + suffixe;
+		else patternName = ruleName + "_" + patternCounter + suffixe;
 		graphIterator(nodes, edges);
 		Optional<IBeXContextPattern> pattern = transform(patternNodes, patternEdges, patternName);
 		pattern.ifPresent(parent::addContextPattern);
@@ -157,7 +158,7 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 		patternEdges.clear();
 		patternNodes.clear();
 		patternCounter++;
-		buildPattern(nodes, edges, name, patternCounter);
+		buildPattern(nodes, edges, ruleName, suffixe, patternCounter);
 	}
 	
 	/*

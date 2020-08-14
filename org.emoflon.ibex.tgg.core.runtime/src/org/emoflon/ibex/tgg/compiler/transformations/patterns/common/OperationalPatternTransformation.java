@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
@@ -17,6 +18,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
@@ -287,7 +289,7 @@ public abstract class OperationalPatternTransformation {
 					return premisePattern;
 				}
 				else {
-					createPACPatternInvocation(conclusionPattern, premisePattern, pacCandidate, conclusion);
+					createPACPatternInvocation(conclusionPattern, premisePattern, pacCandidate, conclusion, true);
 				}
 			}
 			else if(pacCandidate.getConclusionRules().size() > 1) {
@@ -312,7 +314,7 @@ public abstract class OperationalPatternTransformation {
 					if(premiseNode.isPresent())
 						pacInv.getMapping().put(premiseNode.get(), pacNode);
 					premisePattern.getInvocations().add(pacInv);
-					createPACPatternInvocation(conclusionPattern, pacPattern, pacCandidate, conclusionRule);
+					createPACPatternInvocation(conclusionPattern, pacPattern, pacCandidate, conclusionRule,false);
 				}
 				parent.addContextPattern(pacPattern);
 			}
@@ -321,15 +323,53 @@ public abstract class OperationalPatternTransformation {
 	/*
 	 * creates a negative Pattern Invocation from the Pac used Pattern with the conclusion and connects the necessary node
 	 */
-	private void createPACPatternInvocation(IBeXContextPattern conclusionPattern, IBeXContextPattern pacPattern, PACCandidate pacCandidate, ConclusionRule conclusionRule) {
+	private void createPACPatternInvocation(IBeXContextPattern conclusionPattern, IBeXContextPattern pacPattern, PACCandidate pacCandidate, ConclusionRule conclusionRule, boolean pos) {
 		IBeXPatternInvocation inv = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
-		inv.setPositive(false);
+		inv.setPositive(pos);
 		inv.setInvokedPattern(conclusionPattern);
 		inv.setInvokedBy(pacPattern);
 		Optional<IBeXNode> pacNode = IBeXPatternUtils.findIBeXNodeWithName(pacPattern, pacCandidate.getPremise().getNodeInRule().getName());
 		Optional<IBeXNode> conclusionNode = IBeXPatternUtils.findIBeXNodeWithName(conclusionPattern, conclusionRule.getPremiseConclusionNode().getName());
-		if(pacNode.isPresent() && conclusionNode.isPresent())
+		if(pacNode.isPresent() && conclusionNode.isPresent()) {
 			inv.getMapping().put(pacNode.get(), conclusionNode.get());
+			
+			IBeXNode otherNodePremise = findOtherNode(pacCandidate.getPremise().getEDirection(), pacNode.get(), pacCandidate.getPremise().getEdgeType());
+			IBeXNode otherNodeConclusion = findOtherNode(pacCandidate.getPremise().getEDirection(), conclusionNode.get(), pacCandidate.getPremise().getEdgeType());
+			inv.getMapping().put(otherNodePremise, otherNodeConclusion);
+			
+			List<IBeXNode> additionalNodes = new LinkedList<IBeXNode>();
+			additionalNodes.addAll(conclusionPattern.getSignatureNodes());
+			additionalNodes.remove(conclusionNode.get());
+			additionalNodes.remove(otherNodeConclusion);
+				for(IBeXNode n :  additionalNodes) {
+					Optional<IBeXNode> optNode = IBeXPatternUtils.findIBeXNodeWithName(pacPattern, n.getName());
+					if(!optNode.isPresent()) {
+						IBeXNode pN = IBeXPatternModelFactory.eINSTANCE.createIBeXNode();
+						pN.setName("PAC_NODE_" + n.getName());
+						pN.setType(n.getType());
+						optNode = Optional.of(pN);
+						pacPattern.getLocalNodes().add(pN);
+					}
+					inv.getMapping().put(optNode.get(), n);
+				}
+		}
+		
 		pacPattern.getInvocations().add(inv);
+	}
+	
+	private IBeXNode findOtherNode(EdgeDirection direction, IBeXNode node, EReference edgeType) {
+		if(direction.equals(EdgeDirection.OUTGOING))
+			for(IBeXEdge edge : node.getOutgoingEdges()) {
+				if(edge.getType().equals(edgeType)) {
+					return edge.getTargetNode();
+				}
+			}
+		else 
+			for(IBeXEdge edge : node.getIncomingEdges()) {
+				if(edge.getType().equals(edgeType)) {
+					return edge.getSourceNode();
+				}
+			}
+		return null;
 	}
 }

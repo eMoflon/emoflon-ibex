@@ -7,14 +7,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.DomainTypePatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
@@ -88,16 +85,13 @@ public class PACAnalysis extends FilterNACAnalysis {
 				}
 			}
 		}
-		pacCandidates.forEach(x ->  {
-			System.err.println("PAC Candidates from: " + rule.getName() + " -> Premise: " + x.getPremise() + " Conclusions: " + x.getConclusionRules());
-		});
 		final Collection<PACCandidate> optimisedPACs = pacCandidates.stream().filter(pac -> !isRedundantDueToEMFContainmentSemantics(rule, pac)).collect(Collectors.toList());
 		// Use optimiser to remove some of the filter NACs
 		optimisedPACs.removeAll(ignoreDueToEOppositeSemantics(pacCandidates));
 		
-		optimisedPACs.forEach(x ->  {
-				System.out.println("PAC from: " + rule.getName() + " -> Premise: " + x.getPremise() + " Conclusions: " + x.getConclusionRules());
-		});
+//		optimisedPACs.forEach(x ->  {
+//				System.out.println("PAC from: " + rule.getName() + " -> Premise: " + x.getPremise() + " Conclusions: " + x.getConclusionRules());
+//		});
 		return optimisedPACs;
 	}
 	
@@ -120,9 +114,9 @@ public class PACAnalysis extends FilterNACAnalysis {
 	}
 	
 	private boolean isRedundantDueToEMFContainmentSemantics(TGGRule rule, PACCandidate pac) {
-		if(!pac.getConclusionRules().isEmpty()) {
-			return false;
-		}
+//		if(!pac.getConclusionRules().isEmpty()) {
+//			return false;
+//		}
 		for (TGGRuleEdge edge : rule.getEdges()) {
 			// Edges must be of same type and be containment
 			if (edge.getType().equals(pac.getPremise().getEdgeType()) && edge.getType().isContainment()) {

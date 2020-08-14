@@ -5,6 +5,7 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperator;
 
 import java.util.Collection;
 
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -27,7 +28,7 @@ public class CONTEXTPatternTransformation extends SplitUpPatternTransformation{
 	}
 	
 	public void createCONTEXTPattern() {
-		createPatternFromBinding(BindingType.CONTEXT, getPatternName());
+		createPatternFromBinding(BindingType.CONTEXT, rule.getName(), PatternSuffixes.CONTEXT);
 	}
 	
 	public void setPatternName(String patternName) {
