@@ -63,9 +63,13 @@ public class PrecedenceGraph implements TimeMeasurable {
 	}
 
 	public void removeMatch(ITGGMatch match) {
+		Timer.start();
+		
 		PrecedenceNode node = getNode(match);
 		removeConsistencyMatch(match, node);
 		brokenNodes.remove(node);
+		
+		times.addTo("removeMatch", Timer.stop());
 	}
 
 	public PrecedenceNode getNode(ITGGMatch match) {
@@ -194,6 +198,8 @@ public class PrecedenceGraph implements TimeMeasurable {
 	}
 
 	private void updateImplicitBrokenNodes(PrecedenceNode node) {
+		Timer.start();
+		
 		if (node.isBroken()) {
 			node.addRollbackCause(node);
 			forAllRequiredBy(node, n -> {
@@ -204,6 +210,8 @@ public class PrecedenceGraph implements TimeMeasurable {
 			});
 		} else
 			node.clearRollsBack();
+		
+		times.addTo("updateImplBrokenNodes", Timer.stop());
 	}
 
 	public void forAllRequires(PrecedenceNode node, Predicate<? super PrecedenceNode> action) {

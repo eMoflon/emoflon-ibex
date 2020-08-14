@@ -14,7 +14,6 @@ import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
-import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
@@ -249,12 +248,6 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 		options.debug.benchmarkLogger().setNumOfElementsCreated(greenInterpreter.getNumOfCreatedNodes());
 		options.debug.benchmarkLogger().setNumOfElementsDeleted(redInterpreter.getNumOfDeletedNodes());
-	}
-
-	@Override
-	public void terminate() throws IOException {
-		times.set("createElements", ((IbexGreenInterpreter) greenInterpreter).getCreationTime());
-		super.terminate();
 	}
 
 }

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import language.BindingType;
@@ -64,5 +65,14 @@ public class EltFilter {
 		this.all = false;
 		this.deleted = false;
 		return this;
+	}
+	
+	public EltFilter copy() {
+		EltFilter copy = new EltFilter();
+		copy.domainTypes = new LinkedList<>(this.domainTypes);
+		copy.bindingTypes = new LinkedList<>(this.bindingTypes);
+		copy.all = this.all;
+		copy.deleted = this.deleted;
+		return copy;
 	}
 }
