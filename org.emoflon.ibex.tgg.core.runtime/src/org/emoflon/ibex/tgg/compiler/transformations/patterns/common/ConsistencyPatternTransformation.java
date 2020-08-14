@@ -9,6 +9,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
@@ -42,15 +43,17 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
-		//TODO why is this needed with pattern invocation
-		if(!options.invocation.usePatternInvocation())
+		if(!options.invocation.usePatternInvocation()) {
 			for (TGGRuleEdge edge : rule.getEdges()) 
 				parent.transformEdge(rule.getEdges(), edge, ibexPattern);
-//			
+		}
+		else {
+			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
+			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWD_GREENCORRBlackPatternName(rule.getName())));
+		}
 		// Create protocol node and connections to nodes in pattern
 		parent.createAndConnectProtocolNode(rule, ibexPattern);
 //		}
-
 	}
 
 	@Override
