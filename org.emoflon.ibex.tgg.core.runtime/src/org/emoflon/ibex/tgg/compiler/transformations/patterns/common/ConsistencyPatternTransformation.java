@@ -43,13 +43,17 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
-		if(!options.invocation.usePatternInvocation()) {
-			for (TGGRuleEdge edge : rule.getEdges()) 
-				parent.transformEdge(rule.getEdges(), edge, ibexPattern);
-		}
-		else {
+		if(options.invocation.useGreenCorrPattern() && options.invocation.usePatternInvocation()) {
 			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
 			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWD_GREENCORRBlackPatternName(rule.getName())));
+		}
+		else {
+			for (TGGRuleEdge edge : rule.getEdges()) 
+				parent.transformEdge(rule.getEdges(), edge, ibexPattern);
+			if(options.invocation.usePatternInvocation()) {
+				parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
+				parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWDBlackPatternName(rule.getName())));
+			}	
 		}
 		// Create protocol node and connections to nodes in pattern
 		parent.createAndConnectProtocolNode(rule, ibexPattern);
