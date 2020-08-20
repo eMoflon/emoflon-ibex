@@ -69,7 +69,7 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 				parent.addContextPattern(createPAC(ibexPattern,  DomainType.SRC, candidate));
 			}
 			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.TRG)) {
-				parent.addContextPattern(createPAC(ibexPattern,  DomainType.SRC, candidate));
+				parent.addContextPattern(createPAC(ibexPattern,  DomainType.TRG, candidate));
 			}
 		}
 		else {

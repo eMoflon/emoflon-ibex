@@ -287,6 +287,9 @@ public abstract class OperationalPatternTransformation {
 	
 	protected IBeXContextPattern createPAC(IBeXContextPattern ibexPattern, DomainType domain, PACCandidate pacCandidate) {
 			IBeXContextPattern premisePattern = createFilterNAC(ibexPattern, pacCandidate.getPremise());
+			//FWD/BWD and Consitency are calling create PAC so it is possible that the PAC was already created
+			if(!premisePattern.getInvocations().isEmpty())
+				return premisePattern;
 			//if there is only one conclusion there is no need for a extra PAC-Pattern, a single negative pattern invocation is enough
 			if(pacCandidate.getConclusionRules().size() == 1) {
 				ConclusionRule conclusion = pacCandidate.getConclusionRules().get(0);
