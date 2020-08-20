@@ -173,7 +173,7 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 					constraint.setParameter(gtAttribute);
 					constraint.setRelation(convertRelation(attribute.getRelation()));
 					constraint.setExpression(EditorToArithmeticExtensionHelper
-							.transformToGTArithmetics(((ArithmeticCalculationExpression) attribute.getValue()).getExpression()));
+							.transformToGTArithmetics(((ArithmeticCalculationExpression) attribute.getValue()).getExpression(), null, null));
 					gtRule.getConstraints().add(constraint);
 				}
 			}

@@ -1,5 +1,7 @@
 package org.emoflon.ibex.gt.arithmetics;
 
+import java.util.HashMap;
+
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
@@ -7,6 +9,7 @@ import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute;
 import org.emoflon.ibex.gt.SGTPatternModel.GTNumber;
 import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
 import org.emoflon.ibex.gt.SGTPatternModel.GTTwoParameterCalculation;
+import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 public class RuntimeArithmeticsExtensionCalculator {
 	
@@ -17,9 +20,9 @@ public class RuntimeArithmeticsExtensionCalculator {
 	 * @param match the match for the calculation of the runtime depended parameters
 	 * @return the calculated value
 	 */
-	public static double calculateValue(final GTArithmetics expression, final IMatch match){
+	public static double calculateValue(final GraphTransformationInterpreter contextInterpreter, final GTArithmetics expression, final IMatch match){
 		if(expression instanceof GTOneParameterCalculation){
-			double value = calculateValue(((GTOneParameterCalculation) expression).getValue(), match);
+			double value = calculateValue(contextInterpreter, ((GTOneParameterCalculation) expression).getValue(), match);
 			double result = 0.0;
 			switch(((GTOneParameterCalculation) expression).getOperator()) {
 				case ABSOLUTE: 		result = Math.abs(value);
@@ -46,13 +49,18 @@ public class RuntimeArithmeticsExtensionCalculator {
 									break;
 				case TAN: 			result = Math.tan(value);
 									break;
+				case COUNT: {
+						result = contextInterpreter.matchStream(match.getPatternName(), new HashMap<>()).count();
+					break;
+				}
+			
 			}
 			if(((GTOneParameterCalculation) expression).isNegative()) return -result;
 			else return result;
 		}
 		if(expression instanceof GTTwoParameterCalculation) {
-			double left = calculateValue(((GTTwoParameterCalculation) expression).getLeft(), match);
-			double right = calculateValue(((GTTwoParameterCalculation) expression).getRight(), match);
+			double left = calculateValue(contextInterpreter, ((GTTwoParameterCalculation) expression).getLeft(), match);
+			double right = calculateValue(contextInterpreter, ((GTTwoParameterCalculation) expression).getRight(), match);
 			switch(((GTTwoParameterCalculation) expression).getOperator()) {
 				case ADDITION: 		return left + right;
 				case SUBTRACTION: 	return left - right;

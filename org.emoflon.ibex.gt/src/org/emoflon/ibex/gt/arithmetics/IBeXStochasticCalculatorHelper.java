@@ -9,6 +9,7 @@ import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
 import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticDistribution;
 import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticFunction;
 import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
+import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 
 
@@ -29,10 +30,10 @@ public class IBeXStochasticCalculatorHelper {
 	 * @param match the match
 	 * @return the new randomly generated value for the parameter
 	 */
-	public static Object getGeneratedValue(final IBeXStochasticAttributeValue value,
+	public static Object getGeneratedValue( final GraphTransformationInterpreter contextInterpreter, final IBeXStochasticAttributeValue value,
 			final IMatch match, EDataType type) {
-		checkRuntimeStochasticConstraints(value, match);
-		return getTypedValue(value, match, type);
+		checkRuntimeStochasticConstraints(contextInterpreter, value, match);
+		return getTypedValue(contextInterpreter, value, match, type);
 		
 	}
 	
@@ -45,21 +46,21 @@ public class IBeXStochasticCalculatorHelper {
 	 * @param match the match
 	 * @return
 	 */
-	private static Object getTypedValue(final IBeXStochasticAttributeValue value,
+	private static Object getTypedValue( final GraphTransformationInterpreter contextInterpreter, final IBeXStochasticAttributeValue value,
 			final IMatch match, EDataType type) {
 		Object object = null;
 		double doubleValue;
 		long intValue;
 		GTStochasticFunction function = value.getFunction();
 		if(type.equals(EcorePackage.Literals.EDOUBLE) || type.equals(EcorePackage.Literals.EFLOAT)) {
-			doubleValue = getDoubleStochasticValue(getValue(function.getMean(), match),
-					getValue(function.getSd(), match),function.getDistribution(), value.getRange());
+			doubleValue = getDoubleStochasticValue(getValue(contextInterpreter, function.getMean(), match),
+					getValue(contextInterpreter, function.getSd(), match),function.getDistribution(), value.getRange());
 			object = type.getEPackage().getEFactoryInstance().createFromString(type, 
 					Double.toString(doubleValue));
 		}
 		else{
-			intValue = getIntegerStochasticValue((int) Math.ceil(getValue(function.getMean(), match)),
-					(int) getValue(function.getSd(), match), function.getDistribution(), value.getRange());
+			intValue = getIntegerStochasticValue((int) Math.ceil(getValue(contextInterpreter, function.getMean(), match)),
+					(int) getValue(contextInterpreter, function.getSd(), match), function.getDistribution(), value.getRange());
 			object = type.getEPackage().getEFactoryInstance().createFromString(type, 
 					Long.toString(intValue));
 		}
@@ -130,17 +131,17 @@ public class IBeXStochasticCalculatorHelper {
 	 * @param value the value
 	 * @param match the match
 	 */
-	private static void checkRuntimeStochasticConstraints(final IBeXStochasticAttributeValue value,
+	private static void checkRuntimeStochasticConstraints(final GraphTransformationInterpreter contextInterpreter, final IBeXStochasticAttributeValue value,
 			final IMatch match){
 		GTStochasticFunction function = value.getFunction();
 		//checks that the standard deviation of the normaldistribution is positive
-		double mean = getValue(function.getMean(), match);
+		double mean = getValue(contextInterpreter, function.getMean(), match);
 		if(function.getDistribution() == GTStochasticDistribution.EXPONENTIAL && mean <= 0.0) {
 			throw new IllegalArgumentException("the mean of the exponential distribution needs to be positive:"
 					+ "the mean of a value generator in " 
 					+ match.getPatternName() + " is negative");	
 		}
-		double sd =getValue(function.getSd(), match);
+		double sd =getValue(contextInterpreter, function.getSd(), match);
 		if(function.getDistribution() == GTStochasticDistribution.NORMAL && sd <= 0.0) {
 			throw new IllegalArgumentException("standard deviation of a normal distribution needs"
 					+ "to be positive: The standard deviation of a value generator in " 
@@ -161,7 +162,7 @@ public class IBeXStochasticCalculatorHelper {
 	 * @param match the match
 	 * @return the numeric value of the parameter
 	 */
-	private static double getValue(final GTArithmetics expression, final IMatch match) {
-		return RuntimeArithmeticsExtensionCalculator.calculateValue(expression, match);
+	private static double getValue(final GraphTransformationInterpreter contextInterpreter, final GTArithmetics expression, final IMatch match) {
+		return RuntimeArithmeticsExtensionCalculator.calculateValue(contextInterpreter, expression, match);
 	}
 }

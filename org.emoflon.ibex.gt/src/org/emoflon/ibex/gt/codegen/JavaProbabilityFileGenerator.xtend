@@ -355,6 +355,7 @@ class JavaProbabilityFileGenerator {
 				case LOGARITHMUS: return negative + '''Math.log10(«value»)'''
 				case NATLOG: return negative + '''Math.log(«value»)'''
 				case ROOT: return negative + '''Math.sqrt(«value»)'''
+				case COUNT: return negative + '''interpreter.matchStream(match.getPatternName(), new HashMap<>()).count()'''
 			}		
 		}
 		if(expression instanceof GTTwoParameterCalculation){

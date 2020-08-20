@@ -37,13 +37,13 @@ public class EditorToStochasticExtensionHelper {
 				//if probability is depended on a parameter
 				if(((StochasticFunction) probability).getParameter() != null) {
 					gtProbability.setParameter(EditorToArithmeticExtensionHelper
-							.transformToGTArithmetics(((StochasticFunction) probability).getParameter()));
+							.transformToGTArithmetics(((StochasticFunction) probability).getParameter(), null, null));
 				}
 			}
 			//if the probability is an arithmetic expression
 			else {				
 				gtProbability.setFunction(createStaticProbability(EditorToArithmeticExtensionHelper
-						.transformToGTArithmetics(((ArithmeticExpression) probability))));
+						.transformToGTArithmetics(((ArithmeticExpression) probability), null, null)));
 			}					
 		}
 		//if the rule has no probability it will not have a GTProbability
@@ -62,10 +62,10 @@ public class EditorToStochasticExtensionHelper {
 		GTStochasticFunction stochasticFunction = SGTPatternModelFactory.eINSTANCE.createGTStochasticFunction();
 		stochasticFunction.setDistribution(transformDistribution(function.getDistribution()));
 		stochasticFunction.setMean(EditorToArithmeticExtensionHelper
-				.transformToGTArithmetics(function.getMean()));
+				.transformToGTArithmetics(function.getMean(), null, null));
 		if(stochasticFunction.getDistribution() != GTStochasticDistribution.EXPONENTIAL) {
 			stochasticFunction.setSd(EditorToArithmeticExtensionHelper
-					.transformToGTArithmetics(function.getSd()));	
+					.transformToGTArithmetics(function.getSd(), null, null));	
 		}else {
 			GTNumber sd = SGTPatternModelFactory.eINSTANCE.createGTNumber();
 			sd.setNumber(0.0);
