@@ -41,12 +41,6 @@ public class TGGPatternUtil {
 		return patternName;
 	}
 	
-	public static String generateCONTEXTBlackPatternName(String ruleName) {
-		String patternName = ruleName + PatternSuffixes.CONTEXT;
-		PatternUtil.registerPattern(patternName, PatternType.CONTEXT);
-		return patternName;
-	}
-	
 	public static String generateGREENCORRBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.GREENCORR;
 		PatternUtil.registerPattern(patternName, PatternType.GREENCORR);

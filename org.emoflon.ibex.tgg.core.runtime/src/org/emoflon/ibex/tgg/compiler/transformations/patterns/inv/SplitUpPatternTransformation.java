@@ -5,10 +5,8 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomai
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperator;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
-import java.security.cert.PKIXRevocationChecker.Option;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
@@ -16,8 +14,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -70,12 +66,15 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 			TGGRuleNode srcNode = ruleEdge.getSrcNode();
 			TGGRuleNode trgNode = ruleEdge.getTrgNode();
 
-			createIBeXEdge(ruleEdge, pattern); 
+			createIBeXEdge(ruleEdge, pattern);
+			parent.transformInNodeAttributeConditions(pattern, srcNode);
+			parent.transformInNodeAttributeConditions(pattern, trgNode);
 			nodesToTranslate.remove(srcNode);
 			nodesToTranslate.remove(trgNode);
 		}
 		for(TGGRuleNode ruleNode : nodesToTranslate) {
 			createIBeXNode(ruleNode, pattern);
+			parent.transformInNodeAttributeConditions(pattern, ruleNode);
 		}
 		if(pattern.getSignatureNodes().isEmpty())
 			return Optional.empty();
@@ -144,6 +143,7 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 	}
 	
 	public void buildPattern(LinkedList<TGGRuleNode> nodes, LinkedList<? extends TGGRuleEdge> edges, String ruleName, String suffixe, int patternCounter) {
+		//Recursive because checks for disjoint parts
 		if(nodes.isEmpty() && edges.isEmpty())
 			return;
 		String patternName;
@@ -162,7 +162,7 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 	}
 	
 	/*
-	 * BFA-shortest path, checks for disjunction
+	 * BFA-shortest path, allEdges will not be empty if there are disjoint parts
 	 */
 	public void graphIterator(LinkedList<TGGRuleNode> allNodes, LinkedList<? extends TGGRuleEdge> allEdges) {
 		LinkedList<TGGRuleNode> queue = new LinkedList<TGGRuleNode>();
@@ -195,27 +195,25 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 			}
 		}
 	}
-
+	
+	@Deprecated
 	@Override
 	protected String getPatternName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	@Deprecated
 	@Override
-	protected void transformNodes(IBeXContextPattern ibexPattern) {
-		// TODO Auto-generated method stub
-		
+	protected void transformNodes(IBeXContextPattern ibexPattern) {	
 	}
-
+	
+	@Deprecated
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
-		// TODO Auto-generated method stub
-		
 	}
-
+	
+	@Deprecated
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		// TODO Auto-generated method stub
 	}
 }

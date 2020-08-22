@@ -30,6 +30,8 @@ public class PatternSuffixes {
 	public static final String FILTER_NAC_SRC = SEP + "FILTER_NAC_SRC";
 	public static final String FILTER_NAC_TRG = SEP + "FILTER_NAC_TRG";
 	
+	public static final String PAC = SEP + "PAC";
+	
 	/** Used for edge patterns */
 	public static final String EDGE = SEP + "EDGE";
 
@@ -137,11 +139,6 @@ public class PatternSuffixes {
 	public static final String TRG = SEP + "TRG";
 	
 	/**
-	 * Used for pattern invocation. Represents the context part of the rule
-	 */
-	public static final String CONTEXT = SEP + "CONTEXT";
-	
-	/**
 	 * Used for pattern invocation. Represents the create correspondence part of the rule
 	 */
 	public static final String GREENCORR = SEP + "GREENCORR";
@@ -194,10 +191,10 @@ public class PatternSuffixes {
 		case GENForCO: return PatternType.GENForCO;
 		case SRC: return PatternType.SRC;
 		case TRG: return PatternType.TRG;
-		case CONTEXT: return PatternType.CONTEXT;
 		case FWD_GREENCORR: return PatternType.FWD_GREENCORR;
 		case BWD_GREENCORR: return PatternType.BWD_GREENCORR;
 		case GREENCORR: return PatternType.GREENCORR;
+		case PAC: return PatternType.PAC;
 		default: throw new RuntimeException(suffix + " is an unknown suffix for TGG patterns");
 		}
 	}

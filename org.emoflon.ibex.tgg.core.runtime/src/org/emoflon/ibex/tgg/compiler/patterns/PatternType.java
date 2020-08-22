@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 public enum PatternType {
 		USER_NAC, FILTER_NAC_SRC, FILTER_NAC_TRG, EDGE, GEN_REFINEMENT_INVOCATIONS, GEN, GEN_AXIOM_NAC, FWD, FWD_OPT, BWD, BWD_OPT, CONSISTENCY, PROTOCOL, PROTOCOL_CORE,
-		CC, GENForCC, CO, GENForCO, SRC, TRG, CONTEXT, FWD_GREENCORR, BWD_GREENCORR, GREENCORR;
+		CC, GENForCC, CO, GENForCO, SRC, TRG, CONTEXT, FWD_GREENCORR, BWD_GREENCORR, GREENCORR, PAC;
 
 	public static Collection<PatternType> getModelGENTypes() {
 		Collection<PatternType> patternTypes = new LinkedList<>();
