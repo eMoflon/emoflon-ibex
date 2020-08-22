@@ -8,6 +8,9 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -58,12 +61,23 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
-			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+		if(options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS)) {
+			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.SRC)) {
+				parent.addContextPattern(createPAC(ibexPattern,  DomainType.SRC, candidate));
+			}
+			
+			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.TRG)) {
+				parent.addContextPattern(createPAC(ibexPattern,  DomainType.TRG, candidate));
+			} 
+		}
+		else {
+			for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
+				parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
 		}
 
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
-			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+			for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
+				parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+			}
 		}
 	}
 }
