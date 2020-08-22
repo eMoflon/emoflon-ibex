@@ -3,12 +3,12 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns.common;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -43,7 +43,9 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
-		if(options.invocation.useGreenCorrPattern() && options.invocation.usePatternInvocation()) {
+		//Avoid creating wrong consistency-pattern in CC because FWD/BWD-pattern doesn't exists when use of greenCorr-pattern is on
+		//No need to check if BWD is relevant
+		if(parent.isPatternRelevant(rule, PatternType.FWD) && options.invocation.useGreenCorrPattern() && options.invocation.usePatternInvocation()) {
 			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
 			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWD_GREENCORRBlackPatternName(rule.getName())));
 		}
@@ -57,7 +59,6 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 		}
 		// Create protocol node and connections to nodes in pattern
 		parent.createAndConnectProtocolNode(rule, ibexPattern);
-//		}
 	}
 
 	@Override

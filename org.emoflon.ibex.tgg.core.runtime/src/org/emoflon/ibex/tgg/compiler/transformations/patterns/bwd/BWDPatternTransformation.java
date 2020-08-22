@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd;
 
-import java.util.Optional;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
@@ -39,26 +38,16 @@ public class BWDPatternTransformation extends BWD_OPTPatternTransformation {
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
 		if(options.invocation.usePatternInvocation()) {
-			IBeXContextPattern tmp = parent.getPattern(rule.getName() + PatternSuffixes.CONTEXT);
-			if(tmp != null) {
-				parent.createInvocation(ibexPattern, tmp);
-			}
+			parent.createInvocation(ibexPattern, parent.getPattern(rule.getName() + PatternSuffixes.GEN));
 			for(int i = 1; ; i++) {
-				tmp = parent.getPattern(rule.getName() + "_" + i + PatternSuffixes.CONTEXT);
-				if(tmp == null)
+				if(!parent.createInvocation(ibexPattern, parent.getPattern(rule.getName() + "_" + i + PatternSuffixes.GEN)))
 					break;
-				parent.createInvocation(ibexPattern, tmp);
 			}
-			tmp = parent.getPattern(rule.getName() + PatternSuffixes.TRG);
-			if(tmp != null) {
-				parent.createInvocation(ibexPattern, tmp);
-			}
+			parent.createInvocation(ibexPattern, parent.getPattern(rule.getName() + PatternSuffixes.TRG));
 			//At the moment there can be only one SRC/TRG Pattern
 //			for(int i = 1; ; i++) {
-//				tmp = parent.getPattern(rule.getName() + PatternSuffixes.TRG + "_" + i);
-//				if(tmp == null)
+//				if(!parent.createInvocation(ibexPattern, parent.getPattern(rule.getName() + "_" + i + PatternSuffixes.TRG)))
 //					break;
-//				parent.createInvocation(ibexPattern, tmp);
 //			}
 		}
 		else super.transformEdges(ibexPattern);

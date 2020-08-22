@@ -12,10 +12,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
-import language.DomainType;
-import language.NAC;
 import language.TGGRule;
 
 public class FWD_GREENCORRPatternTransformation {
@@ -37,7 +34,7 @@ public class FWD_GREENCORRPatternTransformation {
 		return TGGPatternUtil.generateFWD_GREENCORRBlackPatternName(rule.getName());
 	}
 	
-	public IBeXContextPattern transform() {
+	public void transform() {
 		IBeXContextPattern ibexPattern;
 		if(options.invocation.usePatternInvocation()) {
 			ibexPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
@@ -57,9 +54,8 @@ public class FWD_GREENCORRPatternTransformation {
 				createInvocation(ibexPattern, tmp);
 //				tmp = parent.createFWDPattern(rule);
 //			createInvocation(ibexPattern, tmp);
-			return ibexPattern;
+			parent.addContextPattern(ibexPattern);
 		}
-		else return new FWDPatternTransformation(parent, options, rule, filterNACAnalysis).transform();
 	}
 	
 	protected void createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {

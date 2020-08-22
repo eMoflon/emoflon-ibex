@@ -43,7 +43,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWD_OPTPatternTransformation;
@@ -53,12 +52,8 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWDPatternTran
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_GREENCORRPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_OPTPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.CONTEXTPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.DomainTypePatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.GREENCORRPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.SRCPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.SplitUpPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.TRGPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.CCPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.COPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolCorePatternTransformation;
@@ -113,25 +108,22 @@ public class ContextPatternTransformation {
 		boolean patternInvOption = options.invocation.usePatternInvocation();
 		options.tgg.getFlattenedConcreteTGGRules().parallelStream().forEach(rule -> {
 //		for (TGGRule rule : options.tgg.getFlattenedConcreteTGGRules()) {
-			createPatternIfRelevant(rule, this::createModelGenPattern, PatternType.GEN);
 			createPatternIfRelevant(rule, this::createCCPattern, PatternType.CC);
-			createPatternIfRelevant(rule, this::createCOPattern, PatternType.CO);
-//			
+			createPatternIfRelevant(rule, this::createCOPattern, PatternType.CO);			
 			
-			if(!createPatternIfRelevant(rule, this::createGENPattern, PatternType.GEN))
-				if(patternInvOption) {
-					createCONTEXTPattern(rule);
+			if(!createPatternIfRelevant(rule, this::createModelGenPattern, PatternType.GEN))
+				if(patternInvOption && !isPatternRelevant(rule, PatternType.CC) &&  !isPatternRelevant(rule, PatternType.CO)) {
+					createGENPattern(rule);
 				}
 			
-			if (options.invocation.useGreenCorrPattern() && patternInvOption && isDomainProgressive(rule, DomainType.CORR)) {
+			if (options.invocation.useGreenCorrPattern() && !isPatternRelevant(rule, PatternType.CC) &&  !isPatternRelevant(rule, PatternType.CO) && patternInvOption && isDomainProgressive(rule, DomainType.CORR)) {
 				createGRENNCORRPattern(rule);
 			}
 
 			if (isDomainProgressive(rule, DomainType.SRC)) {
-				if(patternInvOption) {
+				if(patternInvOption && isPatternRelevant(rule, PatternType.FWD)) {
 					createSRCPattern(rule);
-					createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD);
-					if(options.invocation.useGreenCorrPattern())
+					if(options.invocation.useGreenCorrPattern() && createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD))
 						createFWD_GREENCORRPattern(rule);
 					}
 				else createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD);
@@ -140,12 +132,10 @@ public class ContextPatternTransformation {
 			}
 
 			if (isDomainProgressive(rule, DomainType.TRG)) {
-				if(patternInvOption) {
+				if(patternInvOption && isPatternRelevant(rule, PatternType.FWD)) {
 					createTRGPattern(rule);
-					createPatternIfRelevant(rule, this::createBWDPattern, PatternType.BWD);
-				}
-				
-				else createPatternIfRelevant(rule, this::createBWDPattern, PatternType.BWD);
+				}				
+				createPatternIfRelevant(rule, this::createBWDPattern, PatternType.BWD);
 				createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternType.BWD_OPT);
 			}
 			
@@ -174,8 +164,15 @@ public class ContextPatternTransformation {
 	}
 
 	private boolean createPatternIfRelevant(TGGRule rule, Consumer<TGGRule> transformer, PatternType type) {
-		if (distributor.getPatternRelevantForCompiler().contains(type)) {
+		if (isPatternRelevant(rule, type)) {
 			transformer.accept(rule);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isPatternRelevant(TGGRule rule, PatternType type) {
+		if (distributor.getPatternRelevantForCompiler().contains(type)) {
 			return true;
 		}
 		return false;
@@ -209,19 +206,13 @@ public class ContextPatternTransformation {
 	}
 	
 	private void createGENPattern(TGGRule rule) {
-		CONTEXTPatternTransformation transformer = new CONTEXTPatternTransformation(this, options, rule);
-		transformer.setPatternName(TGGPatternUtil.generateGENBlackPatternName(rule.getName()));
-		transformer.createCONTEXTPattern();
-	}
-	
-	private void createCONTEXTPattern(TGGRule rule) {
-		CONTEXTPatternTransformation transformer = new CONTEXTPatternTransformation(this, options, rule);
-		transformer.createCONTEXTPattern();
+		org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.GENPatternTransformation transformer = new org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.GENPatternTransformation(this, options, rule);
+		transformer.createGENPattern();
 	}
 	
 	private void createFWD_GREENCORRPattern(TGGRule rule) {
 		FWD_GREENCORRPatternTransformation transformer = new FWD_GREENCORRPatternTransformation(this, options, rule, filterNacAnalysis);
-		addContextPattern(transformer.transform());
+		transformer.transform();
 	}
 
 	private IBeXContextPattern createModelGenPattern(TGGRule rule) {
