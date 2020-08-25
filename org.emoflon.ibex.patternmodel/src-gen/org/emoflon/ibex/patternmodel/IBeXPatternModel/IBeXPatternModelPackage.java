@@ -62,6 +62,218 @@ public interface IBeXPatternModelPackage extends EPackage {
 			.init();
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXModelImpl <em>IBe XModel</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXModelImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXModel()
+	 * @generated
+	 */
+	int IBE_XMODEL = 0;
+
+	/**
+	 * The feature id for the '<em><b>Pattern Set</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL__PATTERN_SET = 0;
+
+	/**
+	 * The feature id for the '<em><b>Rule Set</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL__RULE_SET = 1;
+
+	/**
+	 * The feature id for the '<em><b>Node Set</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL__NODE_SET = 2;
+
+	/**
+	 * The feature id for the '<em><b>Edge Set</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL__EDGE_SET = 3;
+
+	/**
+	 * The number of structural features of the '<em>IBe XModel</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_FEATURE_COUNT = 4;
+
+	/**
+	 * The number of operations of the '<em>IBe XModel</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl <em>IBe XPattern Set</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXPatternSet()
+	 * @generated
+	 */
+	int IBE_XPATTERN_SET = 1;
+
+	/**
+	 * The feature id for the '<em><b>Context Patterns</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPATTERN_SET__CONTEXT_PATTERNS = 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XPattern Set</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPATTERN_SET_FEATURE_COUNT = 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XPattern Set</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPATTERN_SET_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleSetImpl <em>IBe XRule Set</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleSetImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRuleSet()
+	 * @generated
+	 */
+	int IBE_XRULE_SET = 2;
+
+	/**
+	 * The feature id for the '<em><b>Rules</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE_SET__RULES = 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XRule Set</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE_SET_FEATURE_COUNT = 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XRule Set</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE_SET_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodeSetImpl <em>IBe XNode Set</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodeSetImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXNodeSet()
+	 * @generated
+	 */
+	int IBE_XNODE_SET = 3;
+
+	/**
+	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNODE_SET__NODES = 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XNode Set</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNODE_SET_FEATURE_COUNT = 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XNode Set</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNODE_SET_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXEdgeSetImpl <em>IBe XEdge Set</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXEdgeSetImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXEdgeSet()
+	 * @generated
+	 */
+	int IBE_XEDGE_SET = 4;
+
+	/**
+	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XEDGE_SET__EDGES = 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XEdge Set</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XEDGE_SET_FEATURE_COUNT = 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XEdge Set</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XEDGE_SET_OPERATION_COUNT = 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXAttributeImpl <em>IBe XAttribute</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -69,7 +281,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttribute()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE = 0;
+	int IBE_XATTRIBUTE = 5;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -124,7 +336,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeAssignment()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_ASSIGNMENT = 1;
+	int IBE_XATTRIBUTE_ASSIGNMENT = 6;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -179,7 +391,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeConstraint()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_CONSTRAINT = 2;
+	int IBE_XATTRIBUTE_CONSTRAINT = 7;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -243,7 +455,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeValue()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_VALUE = 4;
+	int IBE_XATTRIBUTE_VALUE = 9;
 
 	/**
 	 * The number of structural features of the '<em>IBe XAttribute Value</em>' class.
@@ -271,7 +483,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeParameter()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_PARAMETER = 3;
+	int IBE_XATTRIBUTE_PARAMETER = 8;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -308,7 +520,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeExpression()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_EXPRESSION = 5;
+	int IBE_XATTRIBUTE_EXPRESSION = 10;
 
 	/**
 	 * The feature id for the '<em><b>Attribute</b></em>' reference.
@@ -354,7 +566,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXConstant()
 	 * @generated
 	 */
-	int IBE_XCONSTANT = 6;
+	int IBE_XCONSTANT = 11;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -400,7 +612,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXNamedElement()
 	 * @generated
 	 */
-	int IBE_XNAMED_ELEMENT = 14;
+	int IBE_XNAMED_ELEMENT = 19;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -437,7 +649,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXPattern()
 	 * @generated
 	 */
-	int IBE_XPATTERN = 18;
+	int IBE_XPATTERN = 23;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -474,7 +686,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXContext()
 	 * @generated
 	 */
-	int IBE_XCONTEXT = 7;
+	int IBE_XCONTEXT = 12;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -511,7 +723,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXContextAlternatives()
 	 * @generated
 	 */
-	int IBE_XCONTEXT_ALTERNATIVES = 8;
+	int IBE_XCONTEXT_ALTERNATIVES = 13;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -557,7 +769,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXContextPattern()
 	 * @generated
 	 */
-	int IBE_XCONTEXT_PATTERN = 9;
+	int IBE_XCONTEXT_PATTERN = 14;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -596,7 +808,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCONTEXT_PATTERN__INVOCATIONS = IBE_XCONTEXT_FEATURE_COUNT + 2;
 
 	/**
-	 * The feature id for the '<em><b>Local Edges</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Local Edges</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -605,7 +817,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCONTEXT_PATTERN__LOCAL_EDGES = IBE_XCONTEXT_FEATURE_COUNT + 3;
 
 	/**
-	 * The feature id for the '<em><b>Local Nodes</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Local Nodes</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -614,7 +826,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCONTEXT_PATTERN__LOCAL_NODES = IBE_XCONTEXT_FEATURE_COUNT + 4;
 
 	/**
-	 * The feature id for the '<em><b>Signature Nodes</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Signature Nodes</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -657,7 +869,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXCreatePattern()
 	 * @generated
 	 */
-	int IBE_XCREATE_PATTERN = 10;
+	int IBE_XCREATE_PATTERN = 15;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -678,7 +890,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCREATE_PATTERN__ATTRIBUTE_ASSIGNMENTS = IBE_XPATTERN_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Context Nodes</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Context Nodes</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -687,7 +899,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCREATE_PATTERN__CONTEXT_NODES = IBE_XPATTERN_FEATURE_COUNT + 1;
 
 	/**
-	 * The feature id for the '<em><b>Created Edges</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Created Edges</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -696,7 +908,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCREATE_PATTERN__CREATED_EDGES = IBE_XPATTERN_FEATURE_COUNT + 2;
 
 	/**
-	 * The feature id for the '<em><b>Created Nodes</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Created Nodes</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -730,7 +942,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXDeletePattern()
 	 * @generated
 	 */
-	int IBE_XDELETE_PATTERN = 11;
+	int IBE_XDELETE_PATTERN = 16;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -742,7 +954,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XDELETE_PATTERN__NAME = IBE_XPATTERN__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Context Nodes</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Context Nodes</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -751,7 +963,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XDELETE_PATTERN__CONTEXT_NODES = IBE_XPATTERN_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Deleted Edges</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Deleted Edges</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -760,7 +972,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XDELETE_PATTERN__DELETED_EDGES = IBE_XPATTERN_FEATURE_COUNT + 1;
 
 	/**
-	 * The feature id for the '<em><b>Deleted Nodes</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Deleted Nodes</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -794,7 +1006,16 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXEdge()
 	 * @generated
 	 */
-	int IBE_XEDGE = 12;
+	int IBE_XEDGE = 17;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XEDGE__NAME = IBE_XNAMED_ELEMENT__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Source Node</b></em>' reference.
@@ -803,7 +1024,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE__SOURCE_NODE = 0;
+	int IBE_XEDGE__SOURCE_NODE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Target Node</b></em>' reference.
@@ -812,7 +1033,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE__TARGET_NODE = 1;
+	int IBE_XEDGE__TARGET_NODE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -821,7 +1042,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE__TYPE = 2;
+	int IBE_XEDGE__TYPE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of structural features of the '<em>IBe XEdge</em>' class.
@@ -830,7 +1051,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE_FEATURE_COUNT = 3;
+	int IBE_XEDGE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of operations of the '<em>IBe XEdge</em>' class.
@@ -839,7 +1060,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE_OPERATION_COUNT = 0;
+	int IBE_XEDGE_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXEnumLiteralImpl <em>IBe XEnum Literal</em>}' class.
@@ -849,7 +1070,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXEnumLiteral()
 	 * @generated
 	 */
-	int IBE_XENUM_LITERAL = 13;
+	int IBE_XENUM_LITERAL = 18;
 
 	/**
 	 * The feature id for the '<em><b>Literal</b></em>' reference.
@@ -886,7 +1107,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXNode()
 	 * @generated
 	 */
-	int IBE_XNODE = 15;
+	int IBE_XNODE = 20;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -943,14 +1164,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XNODE_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodePairImpl <em>IBe XNode Pair</em>}' class.
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXInjectivityConstraintImpl <em>IBe XInjectivity Constraint</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodePairImpl
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXNodePair()
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXInjectivityConstraintImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXInjectivityConstraint()
 	 * @generated
 	 */
-	int IBE_XNODE_PAIR = 16;
+	int IBE_XINJECTIVITY_CONSTRAINT = 21;
 
 	/**
 	 * The feature id for the '<em><b>Values</b></em>' reference list.
@@ -959,25 +1180,25 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XNODE_PAIR__VALUES = 0;
+	int IBE_XINJECTIVITY_CONSTRAINT__VALUES = 0;
 
 	/**
-	 * The number of structural features of the '<em>IBe XNode Pair</em>' class.
+	 * The number of structural features of the '<em>IBe XInjectivity Constraint</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XNODE_PAIR_FEATURE_COUNT = 1;
+	int IBE_XINJECTIVITY_CONSTRAINT_FEATURE_COUNT = 1;
 
 	/**
-	 * The number of operations of the '<em>IBe XNode Pair</em>' class.
+	 * The number of operations of the '<em>IBe XInjectivity Constraint</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XNODE_PAIR_OPERATION_COUNT = 0;
+	int IBE_XINJECTIVITY_CONSTRAINT_OPERATION_COUNT = 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodeToNodeMappingImpl <em>IBe XNode To Node Mapping</em>}' class.
@@ -987,7 +1208,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXNodeToNodeMapping()
 	 * @generated
 	 */
-	int IBE_XNODE_TO_NODE_MAPPING = 17;
+	int IBE_XNODE_TO_NODE_MAPPING = 22;
 
 	/**
 	 * The feature id for the '<em><b>Key</b></em>' reference.
@@ -1033,7 +1254,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXPatternInvocation()
 	 * @generated
 	 */
-	int IBE_XPATTERN_INVOCATION = 19;
+	int IBE_XPATTERN_INVOCATION = 24;
 
 	/**
 	 * The feature id for the '<em><b>Positive</b></em>' attribute.
@@ -1090,61 +1311,6 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XPATTERN_INVOCATION_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl <em>IBe XPattern Set</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXPatternSet()
-	 * @generated
-	 */
-	int IBE_XPATTERN_SET = 20;
-
-	/**
-	 * The feature id for the '<em><b>Context Patterns</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XPATTERN_SET__CONTEXT_PATTERNS = 0;
-
-	/**
-	 * The feature id for the '<em><b>Create Patterns</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XPATTERN_SET__CREATE_PATTERNS = 1;
-
-	/**
-	 * The feature id for the '<em><b>Delete Patterns</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XPATTERN_SET__DELETE_PATTERNS = 2;
-
-	/**
-	 * The number of structural features of the '<em>IBe XPattern Set</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XPATTERN_SET_FEATURE_COUNT = 3;
-
-	/**
-	 * The number of operations of the '<em>IBe XPattern Set</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XPATTERN_SET_OPERATION_COUNT = 0;
-
-	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXCSPImpl <em>IBe XCSP</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1152,7 +1318,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXCSP()
 	 * @generated
 	 */
-	int IBE_XCSP = 21;
+	int IBE_XCSP = 25;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1207,7 +1373,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXStochasticAttributeValue()
 	 * @generated
 	 */
-	int IBE_XSTOCHASTIC_ATTRIBUTE_VALUE = 22;
+	int IBE_XSTOCHASTIC_ATTRIBUTE_VALUE = 26;
 
 	/**
 	 * The feature id for the '<em><b>Range</b></em>' attribute.
@@ -1253,7 +1419,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticValue()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_VALUE = 23;
+	int IBE_XARITHMETIC_VALUE = 27;
 
 	/**
 	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
@@ -1283,6 +1449,79 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XARITHMETIC_VALUE_OPERATION_COUNT = IBE_XATTRIBUTE_VALUE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl <em>IBe XRule</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRule()
+	 * @generated
+	 */
+	int IBE_XRULE = 28;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__NAME = IBE_XNAMED_ELEMENT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Lhs</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__LHS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Rhs</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__RHS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Create</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__CREATE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Delete</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__DELETE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+
+	/**
+	 * The number of structural features of the '<em>IBe XRule</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
+
+	/**
+	 * The number of operations of the '<em>IBe XRule</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation <em>IBe XRelation</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1290,7 +1529,145 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRelation()
 	 * @generated
 	 */
-	int IBE_XRELATION = 24;
+	int IBE_XRELATION = 29;
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel <em>IBe XModel</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XModel</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel
+	 * @generated
+	 */
+	EClass getIBeXModel();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel#getPatternSet <em>Pattern Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Pattern Set</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel#getPatternSet()
+	 * @see #getIBeXModel()
+	 * @generated
+	 */
+	EReference getIBeXModel_PatternSet();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel#getRuleSet <em>Rule Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Rule Set</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel#getRuleSet()
+	 * @see #getIBeXModel()
+	 * @generated
+	 */
+	EReference getIBeXModel_RuleSet();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel#getNodeSet <em>Node Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Node Set</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel#getNodeSet()
+	 * @see #getIBeXModel()
+	 * @generated
+	 */
+	EReference getIBeXModel_NodeSet();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel#getEdgeSet <em>Edge Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Edge Set</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel#getEdgeSet()
+	 * @see #getIBeXModel()
+	 * @generated
+	 */
+	EReference getIBeXModel_EdgeSet();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet <em>IBe XPattern Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XPattern Set</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet
+	 * @generated
+	 */
+	EClass getIBeXPatternSet();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getContextPatterns <em>Context Patterns</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Context Patterns</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getContextPatterns()
+	 * @see #getIBeXPatternSet()
+	 * @generated
+	 */
+	EReference getIBeXPatternSet_ContextPatterns();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet <em>IBe XRule Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XRule Set</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet
+	 * @generated
+	 */
+	EClass getIBeXRuleSet();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet#getRules <em>Rules</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Rules</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet#getRules()
+	 * @see #getIBeXRuleSet()
+	 * @generated
+	 */
+	EReference getIBeXRuleSet_Rules();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet <em>IBe XNode Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XNode Set</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet
+	 * @generated
+	 */
+	EClass getIBeXNodeSet();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet#getNodes <em>Nodes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Nodes</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet#getNodes()
+	 * @see #getIBeXNodeSet()
+	 * @generated
+	 */
+	EReference getIBeXNodeSet_Nodes();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet <em>IBe XEdge Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XEdge Set</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet
+	 * @generated
+	 */
+	EClass getIBeXEdgeSet();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet#getEdges <em>Edges</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Edges</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet#getEdges()
+	 * @see #getIBeXEdgeSet()
+	 * @generated
+	 */
+	EReference getIBeXEdgeSet_Edges();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttribute <em>IBe XAttribute</em>}'.
@@ -1525,10 +1902,10 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXContextPattern_Invocations();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalEdges <em>Local Edges</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalEdges <em>Local Edges</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Local Edges</em>'.
+	 * @return the meta object for the reference list '<em>Local Edges</em>'.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalEdges()
 	 * @see #getIBeXContextPattern()
 	 * @generated
@@ -1536,10 +1913,10 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXContextPattern_LocalEdges();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalNodes <em>Local Nodes</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalNodes <em>Local Nodes</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Local Nodes</em>'.
+	 * @return the meta object for the reference list '<em>Local Nodes</em>'.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalNodes()
 	 * @see #getIBeXContextPattern()
 	 * @generated
@@ -1547,10 +1924,10 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXContextPattern_LocalNodes();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getSignatureNodes <em>Signature Nodes</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getSignatureNodes <em>Signature Nodes</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Signature Nodes</em>'.
+	 * @return the meta object for the reference list '<em>Signature Nodes</em>'.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getSignatureNodes()
 	 * @see #getIBeXContextPattern()
 	 * @generated
@@ -1590,10 +1967,10 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXCreatePattern_AttributeAssignments();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern#getContextNodes <em>Context Nodes</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern#getContextNodes <em>Context Nodes</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Context Nodes</em>'.
+	 * @return the meta object for the reference list '<em>Context Nodes</em>'.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern#getContextNodes()
 	 * @see #getIBeXCreatePattern()
 	 * @generated
@@ -1601,10 +1978,10 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXCreatePattern_ContextNodes();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern#getCreatedEdges <em>Created Edges</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern#getCreatedEdges <em>Created Edges</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Created Edges</em>'.
+	 * @return the meta object for the reference list '<em>Created Edges</em>'.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern#getCreatedEdges()
 	 * @see #getIBeXCreatePattern()
 	 * @generated
@@ -1612,10 +1989,10 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXCreatePattern_CreatedEdges();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern#getCreatedNodes <em>Created Nodes</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern#getCreatedNodes <em>Created Nodes</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Created Nodes</em>'.
+	 * @return the meta object for the reference list '<em>Created Nodes</em>'.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern#getCreatedNodes()
 	 * @see #getIBeXCreatePattern()
 	 * @generated
@@ -1633,10 +2010,10 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EClass getIBeXDeletePattern();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern#getContextNodes <em>Context Nodes</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern#getContextNodes <em>Context Nodes</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Context Nodes</em>'.
+	 * @return the meta object for the reference list '<em>Context Nodes</em>'.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern#getContextNodes()
 	 * @see #getIBeXDeletePattern()
 	 * @generated
@@ -1644,10 +2021,10 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXDeletePattern_ContextNodes();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern#getDeletedEdges <em>Deleted Edges</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern#getDeletedEdges <em>Deleted Edges</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Deleted Edges</em>'.
+	 * @return the meta object for the reference list '<em>Deleted Edges</em>'.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern#getDeletedEdges()
 	 * @see #getIBeXDeletePattern()
 	 * @generated
@@ -1655,10 +2032,10 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXDeletePattern_DeletedEdges();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern#getDeletedNodes <em>Deleted Nodes</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern#getDeletedNodes <em>Deleted Nodes</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Deleted Nodes</em>'.
+	 * @return the meta object for the reference list '<em>Deleted Nodes</em>'.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern#getDeletedNodes()
 	 * @see #getIBeXDeletePattern()
 	 * @generated
@@ -1794,25 +2171,25 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXNode_Type();
 
 	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair <em>IBe XNode Pair</em>}'.
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint <em>IBe XInjectivity Constraint</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>IBe XNode Pair</em>'.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair
+	 * @return the meta object for class '<em>IBe XInjectivity Constraint</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint
 	 * @generated
 	 */
-	EClass getIBeXNodePair();
+	EClass getIBeXInjectivityConstraint();
 
 	/**
-	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair#getValues <em>Values</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint#getValues <em>Values</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference list '<em>Values</em>'.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair#getValues()
-	 * @see #getIBeXNodePair()
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint#getValues()
+	 * @see #getIBeXInjectivityConstraint()
 	 * @generated
 	 */
-	EReference getIBeXNodePair_Values();
+	EReference getIBeXInjectivityConstraint_Values();
 
 	/**
 	 * Returns the meta object for class '{@link java.util.Map.Entry <em>IBe XNode To Node Mapping</em>}'.
@@ -1913,49 +2290,6 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXPatternInvocation_Mapping();
 
 	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet <em>IBe XPattern Set</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>IBe XPattern Set</em>'.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet
-	 * @generated
-	 */
-	EClass getIBeXPatternSet();
-
-	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getContextPatterns <em>Context Patterns</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Context Patterns</em>'.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getContextPatterns()
-	 * @see #getIBeXPatternSet()
-	 * @generated
-	 */
-	EReference getIBeXPatternSet_ContextPatterns();
-
-	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getCreatePatterns <em>Create Patterns</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Create Patterns</em>'.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getCreatePatterns()
-	 * @see #getIBeXPatternSet()
-	 * @generated
-	 */
-	EReference getIBeXPatternSet_CreatePatterns();
-
-	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getDeletePatterns <em>Delete Patterns</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Delete Patterns</em>'.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getDeletePatterns()
-	 * @see #getIBeXPatternSet()
-	 * @generated
-	 */
-	EReference getIBeXPatternSet_DeletePatterns();
-
-	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP <em>IBe XCSP</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2052,6 +2386,60 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXArithmeticValue_Expression();
 
 	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule <em>IBe XRule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XRule</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule
+	 * @generated
+	 */
+	EClass getIBeXRule();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getLhs <em>Lhs</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Lhs</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getLhs()
+	 * @see #getIBeXRule()
+	 * @generated
+	 */
+	EReference getIBeXRule_Lhs();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getRhs <em>Rhs</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Rhs</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getRhs()
+	 * @see #getIBeXRule()
+	 * @generated
+	 */
+	EReference getIBeXRule_Rhs();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getCreate <em>Create</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Create</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getCreate()
+	 * @see #getIBeXRule()
+	 * @generated
+	 */
+	EReference getIBeXRule_Create();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDelete <em>Delete</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Delete</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDelete()
+	 * @see #getIBeXRule()
+	 * @generated
+	 */
+	EReference getIBeXRule_Delete();
+
+	/**
 	 * Returns the meta object for enum '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation <em>IBe XRelation</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2084,6 +2472,120 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	interface Literals {
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXModelImpl <em>IBe XModel</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXModelImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXModel()
+		 * @generated
+		 */
+		EClass IBE_XMODEL = eINSTANCE.getIBeXModel();
+
+		/**
+		 * The meta object literal for the '<em><b>Pattern Set</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMODEL__PATTERN_SET = eINSTANCE.getIBeXModel_PatternSet();
+
+		/**
+		 * The meta object literal for the '<em><b>Rule Set</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMODEL__RULE_SET = eINSTANCE.getIBeXModel_RuleSet();
+
+		/**
+		 * The meta object literal for the '<em><b>Node Set</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMODEL__NODE_SET = eINSTANCE.getIBeXModel_NodeSet();
+
+		/**
+		 * The meta object literal for the '<em><b>Edge Set</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMODEL__EDGE_SET = eINSTANCE.getIBeXModel_EdgeSet();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl <em>IBe XPattern Set</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXPatternSet()
+		 * @generated
+		 */
+		EClass IBE_XPATTERN_SET = eINSTANCE.getIBeXPatternSet();
+
+		/**
+		 * The meta object literal for the '<em><b>Context Patterns</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XPATTERN_SET__CONTEXT_PATTERNS = eINSTANCE.getIBeXPatternSet_ContextPatterns();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleSetImpl <em>IBe XRule Set</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleSetImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRuleSet()
+		 * @generated
+		 */
+		EClass IBE_XRULE_SET = eINSTANCE.getIBeXRuleSet();
+
+		/**
+		 * The meta object literal for the '<em><b>Rules</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XRULE_SET__RULES = eINSTANCE.getIBeXRuleSet_Rules();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodeSetImpl <em>IBe XNode Set</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodeSetImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXNodeSet()
+		 * @generated
+		 */
+		EClass IBE_XNODE_SET = eINSTANCE.getIBeXNodeSet();
+
+		/**
+		 * The meta object literal for the '<em><b>Nodes</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XNODE_SET__NODES = eINSTANCE.getIBeXNodeSet_Nodes();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXEdgeSetImpl <em>IBe XEdge Set</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXEdgeSetImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXEdgeSet()
+		 * @generated
+		 */
+		EClass IBE_XEDGE_SET = eINSTANCE.getIBeXEdgeSet();
+
+		/**
+		 * The meta object literal for the '<em><b>Edges</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XEDGE_SET__EDGES = eINSTANCE.getIBeXEdgeSet_Edges();
+
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXAttributeImpl <em>IBe XAttribute</em>}' class.
 		 * <!-- begin-user-doc -->
@@ -2283,7 +2785,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XCONTEXT_PATTERN__INVOCATIONS = eINSTANCE.getIBeXContextPattern_Invocations();
 
 		/**
-		 * The meta object literal for the '<em><b>Local Edges</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Local Edges</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2291,7 +2793,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XCONTEXT_PATTERN__LOCAL_EDGES = eINSTANCE.getIBeXContextPattern_LocalEdges();
 
 		/**
-		 * The meta object literal for the '<em><b>Local Nodes</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Local Nodes</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2299,7 +2801,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XCONTEXT_PATTERN__LOCAL_NODES = eINSTANCE.getIBeXContextPattern_LocalNodes();
 
 		/**
-		 * The meta object literal for the '<em><b>Signature Nodes</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Signature Nodes</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2333,7 +2835,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XCREATE_PATTERN__ATTRIBUTE_ASSIGNMENTS = eINSTANCE.getIBeXCreatePattern_AttributeAssignments();
 
 		/**
-		 * The meta object literal for the '<em><b>Context Nodes</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Context Nodes</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2341,7 +2843,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XCREATE_PATTERN__CONTEXT_NODES = eINSTANCE.getIBeXCreatePattern_ContextNodes();
 
 		/**
-		 * The meta object literal for the '<em><b>Created Edges</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Created Edges</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2349,7 +2851,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XCREATE_PATTERN__CREATED_EDGES = eINSTANCE.getIBeXCreatePattern_CreatedEdges();
 
 		/**
-		 * The meta object literal for the '<em><b>Created Nodes</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Created Nodes</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2367,7 +2869,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EClass IBE_XDELETE_PATTERN = eINSTANCE.getIBeXDeletePattern();
 
 		/**
-		 * The meta object literal for the '<em><b>Context Nodes</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Context Nodes</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2375,7 +2877,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XDELETE_PATTERN__CONTEXT_NODES = eINSTANCE.getIBeXDeletePattern_ContextNodes();
 
 		/**
-		 * The meta object literal for the '<em><b>Deleted Edges</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Deleted Edges</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2383,7 +2885,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XDELETE_PATTERN__DELETED_EDGES = eINSTANCE.getIBeXDeletePattern_DeletedEdges();
 
 		/**
-		 * The meta object literal for the '<em><b>Deleted Nodes</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Deleted Nodes</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2495,14 +2997,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XNODE__TYPE = eINSTANCE.getIBeXNode_Type();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodePairImpl <em>IBe XNode Pair</em>}' class.
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXInjectivityConstraintImpl <em>IBe XInjectivity Constraint</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodePairImpl
-		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXNodePair()
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXInjectivityConstraintImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXInjectivityConstraint()
 		 * @generated
 		 */
-		EClass IBE_XNODE_PAIR = eINSTANCE.getIBeXNodePair();
+		EClass IBE_XINJECTIVITY_CONSTRAINT = eINSTANCE.getIBeXInjectivityConstraint();
 
 		/**
 		 * The meta object literal for the '<em><b>Values</b></em>' reference list feature.
@@ -2510,7 +3012,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference IBE_XNODE_PAIR__VALUES = eINSTANCE.getIBeXNodePair_Values();
+		EReference IBE_XINJECTIVITY_CONSTRAINT__VALUES = eINSTANCE.getIBeXInjectivityConstraint_Values();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXNodeToNodeMappingImpl <em>IBe XNode To Node Mapping</em>}' class.
@@ -2591,40 +3093,6 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XPATTERN_INVOCATION__MAPPING = eINSTANCE.getIBeXPatternInvocation_Mapping();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl <em>IBe XPattern Set</em>}' class.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl
-		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXPatternSet()
-		 * @generated
-		 */
-		EClass IBE_XPATTERN_SET = eINSTANCE.getIBeXPatternSet();
-
-		/**
-		 * The meta object literal for the '<em><b>Context Patterns</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference IBE_XPATTERN_SET__CONTEXT_PATTERNS = eINSTANCE.getIBeXPatternSet_ContextPatterns();
-
-		/**
-		 * The meta object literal for the '<em><b>Create Patterns</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference IBE_XPATTERN_SET__CREATE_PATTERNS = eINSTANCE.getIBeXPatternSet_CreatePatterns();
-
-		/**
-		 * The meta object literal for the '<em><b>Delete Patterns</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference IBE_XPATTERN_SET__DELETE_PATTERNS = eINSTANCE.getIBeXPatternSet_DeletePatterns();
-
-		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXCSPImpl <em>IBe XCSP</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2701,6 +3169,48 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XARITHMETIC_VALUE__EXPRESSION = eINSTANCE.getIBeXArithmeticValue_Expression();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl <em>IBe XRule</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRule()
+		 * @generated
+		 */
+		EClass IBE_XRULE = eINSTANCE.getIBeXRule();
+
+		/**
+		 * The meta object literal for the '<em><b>Lhs</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XRULE__LHS = eINSTANCE.getIBeXRule_Lhs();
+
+		/**
+		 * The meta object literal for the '<em><b>Rhs</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XRULE__RHS = eINSTANCE.getIBeXRule_Rhs();
+
+		/**
+		 * The meta object literal for the '<em><b>Create</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XRULE__CREATE = eINSTANCE.getIBeXRule_Create();
+
+		/**
+		 * The meta object literal for the '<em><b>Delete</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XRULE__DELETE = eINSTANCE.getIBeXRule_Delete();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation <em>IBe XRelation</em>}' enum.

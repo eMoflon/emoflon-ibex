@@ -2,7 +2,6 @@
  */
 package org.emoflon.ibex.patternmodel.IBeXPatternModel;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 
 /**
@@ -27,7 +26,7 @@ import org.eclipse.emf.ecore.EReference;
  * @model
  * @generated
  */
-public interface IBeXEdge extends EObject {
+public interface IBeXEdge extends IBeXNamedElement {
 	/**
 	 * Returns the value of the '<em><b>Source Node</b></em>' reference.
 	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode#getOutgoingEdges <em>Outgoing Edges</em>}'.

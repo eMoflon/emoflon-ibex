@@ -68,6 +68,41 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
+		case IBeXPatternModelPackage.IBE_XMODEL: {
+			IBeXModel iBeXModel = (IBeXModel) theEObject;
+			T result = caseIBeXModel(iBeXModel);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XPATTERN_SET: {
+			IBeXPatternSet iBeXPatternSet = (IBeXPatternSet) theEObject;
+			T result = caseIBeXPatternSet(iBeXPatternSet);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XRULE_SET: {
+			IBeXRuleSet iBeXRuleSet = (IBeXRuleSet) theEObject;
+			T result = caseIBeXRuleSet(iBeXRuleSet);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XNODE_SET: {
+			IBeXNodeSet iBeXNodeSet = (IBeXNodeSet) theEObject;
+			T result = caseIBeXNodeSet(iBeXNodeSet);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XEDGE_SET: {
+			IBeXEdgeSet iBeXEdgeSet = (IBeXEdgeSet) theEObject;
+			T result = caseIBeXEdgeSet(iBeXEdgeSet);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXPatternModelPackage.IBE_XATTRIBUTE: {
 			IBeXAttribute iBeXAttribute = (IBeXAttribute) theEObject;
 			T result = caseIBeXAttribute(iBeXAttribute);
@@ -192,6 +227,8 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 			IBeXEdge iBeXEdge = (IBeXEdge) theEObject;
 			T result = caseIBeXEdge(iBeXEdge);
 			if (result == null)
+				result = caseIBeXNamedElement(iBeXEdge);
+			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
 		}
@@ -220,9 +257,9 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case IBeXPatternModelPackage.IBE_XNODE_PAIR: {
-			IBeXNodePair iBeXNodePair = (IBeXNodePair) theEObject;
-			T result = caseIBeXNodePair(iBeXNodePair);
+		case IBeXPatternModelPackage.IBE_XINJECTIVITY_CONSTRAINT: {
+			IBeXInjectivityConstraint iBeXInjectivityConstraint = (IBeXInjectivityConstraint) theEObject;
+			T result = caseIBeXInjectivityConstraint(iBeXInjectivityConstraint);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -247,13 +284,6 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 		case IBeXPatternModelPackage.IBE_XPATTERN_INVOCATION: {
 			IBeXPatternInvocation iBeXPatternInvocation = (IBeXPatternInvocation) theEObject;
 			T result = caseIBeXPatternInvocation(iBeXPatternInvocation);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXPatternModelPackage.IBE_XPATTERN_SET: {
-			IBeXPatternSet iBeXPatternSet = (IBeXPatternSet) theEObject;
-			T result = caseIBeXPatternSet(iBeXPatternSet);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -283,9 +313,93 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXPatternModelPackage.IBE_XRULE: {
+			IBeXRule iBeXRule = (IBeXRule) theEObject;
+			T result = caseIBeXRule(iBeXRule);
+			if (result == null)
+				result = caseIBeXNamedElement(iBeXRule);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		default:
 			return defaultCase(theEObject);
 		}
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XModel</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XModel</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXModel(IBeXModel object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XPattern Set</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XPattern Set</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXPatternSet(IBeXPatternSet object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XRule Set</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XRule Set</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXRuleSet(IBeXRuleSet object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XNode Set</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XNode Set</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXNodeSet(IBeXNodeSet object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XEdge Set</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XEdge Set</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXEdgeSet(IBeXEdgeSet object) {
+		return null;
 	}
 
 	/**
@@ -529,17 +643,17 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>IBe XNode Pair</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XInjectivity Constraint</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>IBe XNode Pair</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XInjectivity Constraint</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseIBeXNodePair(IBeXNodePair object) {
+	public T caseIBeXInjectivityConstraint(IBeXInjectivityConstraint object) {
 		return null;
 	}
 
@@ -589,21 +703,6 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>IBe XPattern Set</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>IBe XPattern Set</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseIBeXPatternSet(IBeXPatternSet object) {
-		return null;
-	}
-
-	/**
 	 * Returns the result of interpreting the object as an instance of '<em>IBe XCSP</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -645,6 +744,21 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXArithmeticValue(IBeXArithmeticValue object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XRule</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XRule</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXRule(IBeXRule object) {
 		return null;
 	}
 

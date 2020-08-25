@@ -39,6 +39,7 @@ import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
 import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.gt.transformations.EditorToGTModelTransformation;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
@@ -127,9 +128,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
 
 		// Transform editor models to IBeXPatterns.
-		IBeXPatternSet ibexPatternSet = transformEditorModels(editorModels, new EditorToIBeXPatternTransformation(),
+		IBeXModel ibexModel = transformEditorModels(editorModels, new EditorToIBeXPatternTransformation(),
 				"%s errors during editor model to pattern transformation");
-		saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
+		saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexModel);
 
 		// Generate the Java code.
 		generateAPI(apiPackage, gtRuleSet, loadMetaModels(metaModels, resourceSet));

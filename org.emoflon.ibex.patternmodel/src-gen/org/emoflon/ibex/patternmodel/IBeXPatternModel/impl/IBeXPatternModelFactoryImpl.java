@@ -59,6 +59,16 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
+		case IBeXPatternModelPackage.IBE_XMODEL:
+			return createIBeXModel();
+		case IBeXPatternModelPackage.IBE_XPATTERN_SET:
+			return createIBeXPatternSet();
+		case IBeXPatternModelPackage.IBE_XRULE_SET:
+			return createIBeXRuleSet();
+		case IBeXPatternModelPackage.IBE_XNODE_SET:
+			return createIBeXNodeSet();
+		case IBeXPatternModelPackage.IBE_XEDGE_SET:
+			return createIBeXEdgeSet();
 		case IBeXPatternModelPackage.IBE_XATTRIBUTE_ASSIGNMENT:
 			return createIBeXAttributeAssignment();
 		case IBeXPatternModelPackage.IBE_XATTRIBUTE_CONSTRAINT:
@@ -85,20 +95,20 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 			return createIBeXEnumLiteral();
 		case IBeXPatternModelPackage.IBE_XNODE:
 			return createIBeXNode();
-		case IBeXPatternModelPackage.IBE_XNODE_PAIR:
-			return createIBeXNodePair();
+		case IBeXPatternModelPackage.IBE_XINJECTIVITY_CONSTRAINT:
+			return createIBeXInjectivityConstraint();
 		case IBeXPatternModelPackage.IBE_XNODE_TO_NODE_MAPPING:
 			return (EObject) createIBeXNodeToNodeMapping();
 		case IBeXPatternModelPackage.IBE_XPATTERN_INVOCATION:
 			return createIBeXPatternInvocation();
-		case IBeXPatternModelPackage.IBE_XPATTERN_SET:
-			return createIBeXPatternSet();
 		case IBeXPatternModelPackage.IBE_XCSP:
 			return createIBeXCSP();
 		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE:
 			return createIBeXStochasticAttributeValue();
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE:
 			return createIBeXArithmeticValue();
+		case IBeXPatternModelPackage.IBE_XRULE:
+			return createIBeXRule();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -132,6 +142,61 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 		default:
 			throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXModel createIBeXModel() {
+		IBeXModelImpl iBeXModel = new IBeXModelImpl();
+		return iBeXModel;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXPatternSet createIBeXPatternSet() {
+		IBeXPatternSetImpl iBeXPatternSet = new IBeXPatternSetImpl();
+		return iBeXPatternSet;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXRuleSet createIBeXRuleSet() {
+		IBeXRuleSetImpl iBeXRuleSet = new IBeXRuleSetImpl();
+		return iBeXRuleSet;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXNodeSet createIBeXNodeSet() {
+		IBeXNodeSetImpl iBeXNodeSet = new IBeXNodeSetImpl();
+		return iBeXNodeSet;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXEdgeSet createIBeXEdgeSet() {
+		IBeXEdgeSetImpl iBeXEdgeSet = new IBeXEdgeSetImpl();
+		return iBeXEdgeSet;
 	}
 
 	/**
@@ -283,9 +348,9 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-	public IBeXNodePair createIBeXNodePair() {
-		IBeXNodePairImpl iBeXNodePair = new IBeXNodePairImpl();
-		return iBeXNodePair;
+	public IBeXInjectivityConstraint createIBeXInjectivityConstraint() {
+		IBeXInjectivityConstraintImpl iBeXInjectivityConstraint = new IBeXInjectivityConstraintImpl();
+		return iBeXInjectivityConstraint;
 	}
 
 	/**
@@ -307,17 +372,6 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXPatternInvocation createIBeXPatternInvocation() {
 		IBeXPatternInvocationImpl iBeXPatternInvocation = new IBeXPatternInvocationImpl();
 		return iBeXPatternInvocation;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public IBeXPatternSet createIBeXPatternSet() {
-		IBeXPatternSetImpl iBeXPatternSet = new IBeXPatternSetImpl();
-		return iBeXPatternSet;
 	}
 
 	/**
@@ -351,6 +405,17 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXArithmeticValue createIBeXArithmeticValue() {
 		IBeXArithmeticValueImpl iBeXArithmeticValue = new IBeXArithmeticValueImpl();
 		return iBeXArithmeticValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXRule createIBeXRule() {
+		IBeXRuleImpl iBeXRule = new IBeXRuleImpl();
+		return iBeXRule;
 	}
 
 	/**

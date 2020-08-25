@@ -13,14 +13,15 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 
@@ -62,7 +63,7 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<IBeXNodePair> injectivityConstraints;
+	protected EList<IBeXInjectivityConstraint> injectivityConstraints;
 
 	/**
 	 * The cached value of the '{@link #getInvocations() <em>Invocations</em>}' containment reference list.
@@ -75,7 +76,7 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	protected EList<IBeXPatternInvocation> invocations;
 
 	/**
-	 * The cached value of the '{@link #getLocalEdges() <em>Local Edges</em>}' containment reference list.
+	 * The cached value of the '{@link #getLocalEdges() <em>Local Edges</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getLocalEdges()
@@ -85,7 +86,7 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	protected EList<IBeXEdge> localEdges;
 
 	/**
-	 * The cached value of the '{@link #getLocalNodes() <em>Local Nodes</em>}' containment reference list.
+	 * The cached value of the '{@link #getLocalNodes() <em>Local Nodes</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getLocalNodes()
@@ -95,7 +96,7 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	protected EList<IBeXNode> localNodes;
 
 	/**
-	 * The cached value of the '{@link #getSignatureNodes() <em>Signature Nodes</em>}' containment reference list.
+	 * The cached value of the '{@link #getSignatureNodes() <em>Signature Nodes</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getSignatureNodes()
@@ -153,9 +154,10 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	 * @generated
 	 */
 	@Override
-	public EList<IBeXNodePair> getInjectivityConstraints() {
+	public EList<IBeXInjectivityConstraint> getInjectivityConstraints() {
 		if (injectivityConstraints == null) {
-			injectivityConstraints = new EObjectContainmentEList<IBeXNodePair>(IBeXNodePair.class, this,
+			injectivityConstraints = new EObjectContainmentEList<IBeXInjectivityConstraint>(
+					IBeXInjectivityConstraint.class, this,
 					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS);
 		}
 		return injectivityConstraints;
@@ -184,7 +186,7 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXEdge> getLocalEdges() {
 		if (localEdges == null) {
-			localEdges = new EObjectContainmentEList<IBeXEdge>(IBeXEdge.class, this,
+			localEdges = new EObjectResolvingEList<IBeXEdge>(IBeXEdge.class, this,
 					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__LOCAL_EDGES);
 		}
 		return localEdges;
@@ -198,7 +200,7 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXNode> getLocalNodes() {
 		if (localNodes == null) {
-			localNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+			localNodes = new EObjectResolvingEList<IBeXNode>(IBeXNode.class, this,
 					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__LOCAL_NODES);
 		}
 		return localNodes;
@@ -212,7 +214,7 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public EList<IBeXNode> getSignatureNodes() {
 		if (signatureNodes == null) {
-			signatureNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+			signatureNodes = new EObjectResolvingEList<IBeXNode>(IBeXNode.class, this,
 					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__SIGNATURE_NODES);
 		}
 		return signatureNodes;
@@ -261,12 +263,6 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			return ((InternalEList<?>) getInjectivityConstraints()).basicRemove(otherEnd, msgs);
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INVOCATIONS:
 			return ((InternalEList<?>) getInvocations()).basicRemove(otherEnd, msgs);
-		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__LOCAL_EDGES:
-			return ((InternalEList<?>) getLocalEdges()).basicRemove(otherEnd, msgs);
-		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__LOCAL_NODES:
-			return ((InternalEList<?>) getLocalNodes()).basicRemove(otherEnd, msgs);
-		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__SIGNATURE_NODES:
-			return ((InternalEList<?>) getSignatureNodes()).basicRemove(otherEnd, msgs);
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__CSPS:
 			return ((InternalEList<?>) getCsps()).basicRemove(otherEnd, msgs);
 		}
@@ -314,7 +310,7 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			return;
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS:
 			getInjectivityConstraints().clear();
-			getInjectivityConstraints().addAll((Collection<? extends IBeXNodePair>) newValue);
+			getInjectivityConstraints().addAll((Collection<? extends IBeXInjectivityConstraint>) newValue);
 			return;
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INVOCATIONS:
 			getInvocations().clear();

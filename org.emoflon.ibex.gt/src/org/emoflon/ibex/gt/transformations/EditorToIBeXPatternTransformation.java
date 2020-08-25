@@ -1,12 +1,16 @@
 package org.emoflon.ibex.gt.transformations;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
@@ -21,47 +25,61 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelFactoryImpl;
+import org.moflon.core.utilities.EcoreUtils;
 
 /**
  * Transformation from the editor model to IBeX Patterns.
  */
-public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransformation<IBeXPatternSet> {
+public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransformation<IBeXModel> {
 	/**
 	 * Setting: usage of invocations for references.
 	 */
 	static final boolean USE_INVOCATIONS_FOR_REFERENCES = false;
 
+	private List<IBeXNode> ibexNodes = new LinkedList<>();
+	
+	private List<IBeXEdge> ibexEdges = new LinkedList<>();
+	
 	/**
 	 * All context patterns.
 	 */
-	private List<IBeXContext> ibexContextPatterns = new ArrayList<IBeXContext>();
+	private List<IBeXContext> ibexContextPatterns = new LinkedList<>();
 
 	/**
 	 * All create patterns.
 	 */
-	private List<IBeXCreatePattern> ibexCreatePatterns = new ArrayList<IBeXCreatePattern>();;
+	private List<IBeXCreatePattern> ibexCreatePatterns = new LinkedList<>();;
 
 	/**
 	 * All delete patterns.
 	 */
-	private List<IBeXDeletePattern> ibexDeletePatterns = new ArrayList<IBeXDeletePattern>();
+	private List<IBeXDeletePattern> ibexDeletePatterns = new LinkedList<>();
+	
+	private List<IBeXRule> ibexRules = new LinkedList<>();
 
 	/**
 	 * Mapping between pattern names and the context patterns.
 	 */
-	private HashMap<String, IBeXContext> nameToPattern = new HashMap<String, IBeXContext>();
+	private Map<String, IBeXContext> nameToPattern = new HashMap<>();
 
 	@Override
-	public IBeXPatternSet transform(final EditorGTFile file) {
+	public IBeXModel transform(final EditorGTFile file) {
 		Objects.requireNonNull(file, "The editor file must not be null!");
 		file.getPatterns().stream() //
 				.filter(p -> !p.isAbstract()) //
 				.forEach(editorPattern -> transformPattern(editorPattern));
-		return createSortedPatternSet();
+		return createSortedIBeXSets();
 	}
 
 	/**
@@ -69,16 +87,31 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * 
 	 * @return the IBeXPatternSet
 	 */
-	private IBeXPatternSet createSortedPatternSet() {
+	private IBeXModel createSortedIBeXSets() {
 		ibexContextPatterns.sort(IBeXPatternUtils.sortByName);
-		ibexCreatePatterns.sort(IBeXPatternUtils.sortByName);
-		ibexDeletePatterns.sort(IBeXPatternUtils.sortByName);
-
+		ibexRules.sort(IBeXPatternUtils.sortByName);
+		ibexNodes.sort(IBeXPatternUtils.sortByName);
+		ibexEdges.sort(IBeXPatternUtils.sortByName);
+		
+		IBeXModel ibexModel = IBeXPatternModelFactory.eINSTANCE.createIBeXModel();
+		
 		IBeXPatternSet ibexPatternSet = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternSet();
+		ibexModel.setPatternSet(ibexPatternSet);
 		ibexPatternSet.getContextPatterns().addAll(ibexContextPatterns);
-		ibexPatternSet.getCreatePatterns().addAll(ibexCreatePatterns);
-		ibexPatternSet.getDeletePatterns().addAll(ibexDeletePatterns);
-		return ibexPatternSet;
+		
+		IBeXRuleSet ibexRuleSet = IBeXPatternModelFactoryImpl.eINSTANCE.createIBeXRuleSet();
+		ibexModel.setRuleSet(ibexRuleSet);
+		ibexRuleSet.getRules().addAll(ibexRules);
+		
+		IBeXNodeSet ibexNodeSet = IBeXPatternModelFactoryImpl.eINSTANCE.createIBeXNodeSet();
+		ibexNodeSet.getNodes().addAll(ibexNodes);
+		ibexModel.setNodeSet(ibexNodeSet);
+		
+		IBeXEdgeSet ibexEdgeSet = IBeXPatternModelFactoryImpl.eINSTANCE.createIBeXEdgeSet();
+		ibexEdgeSet.getEdges().addAll(ibexEdges);
+		ibexModel.setEdgeSet(ibexEdgeSet);
+		
+		return ibexModel;
 	}
 
 	/**chrome
@@ -98,8 +131,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		getFlattenedPattern(editorPattern).ifPresent(flattenedPattern -> {
 			transformToContextPattern(flattenedPattern);
 			if (editorPattern.getType() == EditorPatternType.RULE) {
-				transformToCreatePattern(flattenedPattern);
-				transformToDeletePattern(flattenedPattern);
+				transformToRule(editorPattern);
 			}
 		});
 	}
@@ -206,6 +238,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			} else {
 				ibexPattern.getSignatureNodes().add(ibexNode);
 			}
+			ibexNodes.add(ibexNode);
 		}
 
 		// Transform attributes.
@@ -224,7 +257,9 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		} else {
 			// No invocations, so include all edges as well.
 			edges.forEach(editorReference -> {
-				ibexPattern.getLocalEdges().add(transformEdge(editorReference, ibexPattern));
+				IBeXEdge edge = transformEdge(editorReference, ibexPattern);
+				ibexPattern.getLocalEdges().add(edge);
+				ibexEdges.add(edge);
 			});
 		}
 
@@ -266,11 +301,13 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		}
 
 		if (ibexSourceNode.get() == ibexTargetNode.get()) {
-			ibexPattern.getLocalEdges().add(transformEdge(editorReference, ibexPattern));
+			IBeXEdge edge = transformEdge(editorReference, ibexPattern);
+			ibexPattern.getLocalEdges().add(edge);
+			ibexEdges.add(edge);
 			return;
 		}
 
-		Optional<IBeXContextPattern> edgePatternOptional = IBeXPatternUtils.createEdgePattern(editorReference.getType(), nameToPattern, s -> logError(s));
+		Optional<IBeXContextPattern> edgePatternOptional = createEdgePattern(editorReference.getType(), ibexSourceNode.get(), ibexTargetNode.get());
 		if (!edgePatternOptional.isPresent()) {
 			logError("Cannot create edge pattern for type " + editorReference.getType().getName());
 			return;
@@ -278,21 +315,55 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		IBeXContextPattern edgePattern = edgePatternOptional.get();
 		addContextPattern(edgePattern);
 
-		Optional<IBeXNode> ibexSignatureSourceNode = //
-				IBeXPatternUtils.findIBeXNodeWithName(edgePattern.getSignatureNodes(), "src");
-		Optional<IBeXNode> ibexSignatureTargetNode = //
-				IBeXPatternUtils.findIBeXNodeWithName(edgePattern.getSignatureNodes(), "trg");
-		if (!ibexSignatureSourceNode.isPresent() || !ibexSignatureTargetNode.isPresent()) {
-			logError("Invalid signature nodes for edge pattern!");
-			return;
-		}
-
 		IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(true);
-		invocation.getMapping().put(ibexSourceNode.get(), ibexSignatureSourceNode.get());
-		invocation.getMapping().put(ibexTargetNode.get(), ibexSignatureTargetNode.get());
+		// Get Src at idx 0
+		invocation.getMapping().put(ibexSourceNode.get(), edgePattern.getSignatureNodes().get(0));
+		// Get Trg at idx 1
+		invocation.getMapping().put(ibexTargetNode.get(), edgePattern.getSignatureNodes().get(1));
 		invocation.setInvokedPattern(edgePattern);
 		ibexPattern.getInvocations().add(invocation);
+	}
+	
+	/**
+	 * Create an {@link IBeXPattern} for the given edge. If an {@link IBeXPattern}
+	 * for the given {@link EReference} exists already, the existing pattern is
+	 * returned.
+	 * 
+	 * @param edgeType the EReference to create a pattern for
+	 * @return the created IBeXPattern
+	 */
+	public Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType, final IBeXNode ibexSrcNode, final IBeXNode ibexTrgNode) {
+		Objects.requireNonNull(edgeType, "Edge type must not be null!");
+
+		EClass sourceType = edgeType.getEContainingClass();
+		EClass targetType = edgeType.getEReferenceType();
+
+		if (sourceType == null || targetType == null) {
+			logError("Cannot resolve reference source or target type.");
+			return Optional.empty();
+		}
+
+		String name = String.format("edge-%s-%s-%s", EcoreUtils.getFQN(sourceType).replace(".", "_"),
+				edgeType.getName(), EcoreUtils.getFQN(targetType).replace(".", "_"));
+
+		if (nameToPattern.containsKey(name)) {
+			return Optional.of((IBeXContextPattern) nameToPattern.get(name));
+		}
+
+		IBeXContextPattern edgePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
+		edgePattern.setName(name);
+		// Put Src at idx 0
+		edgePattern.getSignatureNodes().add(ibexSrcNode);
+		// Put Trg at idx 1
+		edgePattern.getSignatureNodes().add(ibexTrgNode);
+
+		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSrcNode, ibexTrgNode, edgeType);
+		ibexEdge.setName(ibexEdge.getSourceNode()+"->"+ibexEdge.getTargetNode());
+		edgePattern.getLocalEdges().add(ibexEdge);
+		
+		ibexEdges.add(ibexEdge);
+		return Optional.of(edgePattern);
 	}
 
 	/**
@@ -313,7 +384,29 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				.ifPresent(sourceNode -> ibexEdge.setSourceNode(sourceNode));
 		IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, editorReference.getTarget().getName())
 				.ifPresent(targetNode -> ibexEdge.setTargetNode(targetNode));
+		ibexEdge.setName(ibexEdge.getSourceNode()+"->"+ibexEdge.getTargetNode());
 		return ibexEdge;
+	}
+	
+	private void transformToRule(final EditorPattern editorPattern) {
+		IBeXCreatePattern ibexCreatePattern = transformToCreatePattern(editorPattern);
+		IBeXDeletePattern ibexDeletePattern = transformToDeletePattern(editorPattern);
+		
+		IBeXRule ibexRule = IBeXPatternModelFactory.eINSTANCE.createIBeXRule();
+		ibexRule.setName(editorPattern.getName());
+		if(nameToPattern.containsKey(editorPattern.getName())) {
+			ibexRule.setLhs(nameToPattern.get(editorPattern.getName()));
+		}
+		
+		if(ibexCreatePattern != null) {
+			ibexRule.setCreate(ibexCreatePattern);
+		}
+		
+		if(ibexDeletePattern != null) {
+			ibexRule.setDelete(ibexDeletePattern);
+		}
+		
+		ibexRules.add(ibexRule);
 	}
 
 	/**
@@ -322,7 +415,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * @param editorPattern
 	 *            the rule, must not be <code>null</code>
 	 */
-	private void transformToCreatePattern(final EditorPattern editorPattern) {
+	private IBeXCreatePattern transformToCreatePattern(final EditorPattern editorPattern) {
 		IBeXCreatePattern ibexCreatePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXCreatePattern();
 		ibexCreatePattern.setName(editorPattern.getName());
 		new EditorToIBeXPatternHelper(this).transformNodesAndEdgesOfOperator(editorPattern, EditorOperator.CREATE,
@@ -336,6 +429,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		}
 
 		ibexCreatePatterns.add(ibexCreatePattern);
+		return ibexCreatePattern;
 	}
 
 	/**
@@ -344,7 +438,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * @param editorPattern
 	 *            the rule, must not be <code>null</code>
 	 */
-	private void transformToDeletePattern(final EditorPattern editorPattern) {
+	private IBeXDeletePattern transformToDeletePattern(final EditorPattern editorPattern) {
 		IBeXDeletePattern ibexDeletePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXDeletePattern();
 		ibexDeletePattern.setName(editorPattern.getName());
 
@@ -353,5 +447,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				ibexDeletePattern.getDeletedEdges());
 
 		ibexDeletePatterns.add(ibexDeletePattern);
+		return ibexDeletePattern;
 	}
 }

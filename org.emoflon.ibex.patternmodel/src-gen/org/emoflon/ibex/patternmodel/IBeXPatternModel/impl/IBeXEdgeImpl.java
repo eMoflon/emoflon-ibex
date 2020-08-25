@@ -10,8 +10,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
@@ -31,7 +29,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
  *
  * @generated
  */
-public class IBeXEdgeImpl extends MinimalEObjectImpl.Container implements IBeXEdge {
+public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	/**
 	 * The cached value of the '{@link #getSourceNode() <em>Source Node</em>}' reference.
 	 * <!-- begin-user-doc -->
