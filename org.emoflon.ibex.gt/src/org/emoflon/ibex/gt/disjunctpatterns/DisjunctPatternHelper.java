@@ -62,7 +62,13 @@ public class DisjunctPatternHelper {
 		Set<IMatch> newSubMatches = new HashSet<IMatch>();
 		if(match1.isEmpty() || match2.isEmpty()) {
 			return newSubMatches;		
-		}		
+		}
+		else if(attributes.isEmpty()) {
+			for(IMatch match: match1) {
+				newSubMatches.addAll(match2.parallelStream().filter(otherMatch -> isDisjunct(match, otherMatch))
+						.map(m -> merge(match, m, name)).collect(Collectors.toList()));
+			}
+		}
 		else{
 			IMatch firstMatch = match1.iterator().next();
 			IMatch secondMatch = match2.iterator().next();
@@ -115,7 +121,7 @@ public class DisjunctPatternHelper {
 						valid &= comp.compareWithEquals(m, m);
 					}
 					return valid;
-				}).collect(Collectors.toSet()));
+				}).collect(Collectors.toList()));
 			}
 		}
 		return newSubMatches;			
@@ -198,6 +204,7 @@ public class DisjunctPatternHelper {
 		for(IBeXContextPattern subpattern: cartesianSequence) {
 			Set<IMatch> oldSubpatternMatches = oldMatches.get(subpattern);
 			Set<IMatch> newSubpatternMatches = submatchesMap.get(subpattern);
+			if(newSubpatternMatches.isEmpty()) return new HashSet<IMatch>();
 			changedMatches.put(subpattern, newSubpatternMatches.parallelStream().filter(match -> {
 				//if it is a new match then it cant be updated
 				if(!oldSubpatternMatches.contains(match)) return false;

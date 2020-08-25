@@ -117,27 +117,79 @@ public class DisjunctAttributeCalculationHelper {
 		
 		//remove the old target matches
 		for(IMatch oldMatch: oldTargetMatch) {
+			boolean removed = true;
 			for(IMatch dependentSourceMatch: targetMap.remove(oldMatch)) {
 				sourceMap.get(dependentSourceMatch).remove(oldMatch);
 			}
 			for(SubmatchAttributeComparator comparator: comparators) {
-				sortedNeededSets.get(comparator).getLeft().remove(oldMatch);
+				removed &= sortedNeededSets.get(comparator).getLeft().remove(oldMatch);
 			}
 			for(SubmatchAttributeComparator comparator: reverseComparator) {
-				sortedNeededSets.get(comparator).getRight().remove(oldMatch);
+				removed &= sortedNeededSets.get(comparator).getRight().remove(oldMatch);
+				
 			}
+			if(!removed) {
+				//remove the changed matches -> needs to be found iteratively because it cant be found with the comparator
+				for(SubmatchAttributeComparator comparator: comparators) {
+					Iterator<IMatch> iter =  sortedNeededSets.get(comparator).getLeft().iterator();
+					while(iter.hasNext()) {
+						IMatch match = iter.next();
+						if(oldMatch.equals(match)) {
+							//remove the old value
+							iter.remove();
+							break;
+						}
+					}
+				}
+				for(SubmatchAttributeComparator comparator: reverseComparator) {
+					Iterator<IMatch> iter =  sortedNeededSets.get(comparator).getRight().iterator();
+					while(iter.hasNext()) {
+						IMatch match = iter.next();
+						if(oldMatch.equals(match)) {
+							//remove the old value
+							iter.remove();
+							break;
+						}
+					}
+				}
+			}	
 		}	
 		
 		//remove the old source matches
 		for(IMatch oldMatch: oldSourceMatch) {
+			boolean removed = true;
 			for(IMatch dependentTargetMatch: sourceMap.remove(oldMatch)) {
 				targetMap.get(dependentTargetMatch).remove(oldMatch);
 			}
 			for(SubmatchAttributeComparator comparator: comparators) {
-				sortedNeededSets.get(comparator).getRight().remove(oldMatch);
+				removed &= sortedNeededSets.get(comparator).getRight().remove(oldMatch);
 			}
 			for(SubmatchAttributeComparator comparator: reverseComparator) {
-				sortedNeededSets.get(comparator).getLeft().remove(oldMatch);
+				removed &= sortedNeededSets.get(comparator).getLeft().remove(oldMatch);
+			}
+			if(!removed) {
+				for(SubmatchAttributeComparator comparator: comparators) {
+					Iterator<IMatch> iter =  sortedNeededSets.get(comparator).getRight().iterator();
+					while(iter.hasNext()) {
+						IMatch match = iter.next();
+						if(oldMatch.equals(match)) {
+							//remove the old value
+							iter.remove();
+							break;
+						}
+					}
+				}
+				for(SubmatchAttributeComparator comparator: reverseComparator) {
+					Iterator<IMatch> iter =  sortedNeededSets.get(comparator).getLeft().iterator();
+					while(iter.hasNext()) {
+						IMatch match = iter.next();
+						if(oldMatch.equals(match)) {
+							//remove the old value
+							iter.remove();
+							break;
+						}
+					}
+				}
 			}
 		}
 		
@@ -205,7 +257,7 @@ public class DisjunctAttributeCalculationHelper {
 			for(SubmatchAttributeComparator comparator: comparators) {
 				allForbiddenMatches.addAll(DisjunctPatternHelper.findSubsetWithAttributeConstraint(comparator, sortedNeededSets.get(comparator).getRight(), newMatch, true));
 				sortedNeededSets.get(comparator).getLeft().add(newMatch);
-			}
+			}			
 			for(IMatch match: allForbiddenMatches) {
 				sourceMap.get(match).add(newMatch);
 			}
@@ -223,7 +275,7 @@ public class DisjunctAttributeCalculationHelper {
 				}
 				else {
 					//match is illegal for all target matches
-					allForbiddenMatches.addAll(new HashSet<IMatch>(targetMap.keySet()));	
+					allForbiddenMatches.addAll(new HashSet<IMatch>(targetMap.keySet()));
 				}
 
 			}
@@ -258,7 +310,7 @@ public class DisjunctAttributeCalculationHelper {
 
 		return targetMap;
 	}
-	
+
 	/**
 	 * finds the best cartesian sequence patterns for calculation
 	 */

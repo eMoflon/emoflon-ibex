@@ -102,16 +102,15 @@ public class GraphTransformationDisjunctPatternInterpreter {
 				new Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>(new HashMap<IMatch, Set<IMatch>>(), new HashMap<IMatch, Set<IMatch>>()));
 			oldCartesianProducts.put(subpatternConstraint, new Pair<Set<IMatch>, Set<IMatch>>(new HashSet<IMatch>(), new HashSet<IMatch>()));
 		}
-		for(IBeXDependentDisjunctAttribute attribute: contextPattern.getAttributesConstraints()) {
-			List<SubmatchAttributeComparator> comparators = new ArrayList<SubmatchAttributeComparator>();			
+		for(IBeXDependentDisjunctAttribute attribute: contextPattern.getAttributesConstraints()) {		
 			for(IBeXDisjunctAttribute subattribute: attribute.getAttributes()) {
 				for(IBeXAttributeConstraint constraint: subattribute.getDisjunctAttribute()) {
 					SubmatchAttributeComparator comparator = new SubmatchAttributeComparator(constraint,
 							subattribute.getSourcePattern(), subattribute.getTargetPattern());
-					comparators.add(comparator);
 					sortedSets.put(comparator, new Pair<TreeSet<IMatch>, TreeSet<IMatch>>(new TreeSet<IMatch>(comparator),new TreeSet<IMatch>(comparator)));
+					attributeComparators.add(comparator);						
 				}	
-				attributeComparators.addAll(comparators);				
+			
 			}
 			targetMatchSets.put(attribute, new HashMap<IMatch, Set<IMatch>>());
 			sourceMatchSets.put(attribute, new HashMap<IMatch,Set<IMatch>>());

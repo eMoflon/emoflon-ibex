@@ -254,7 +254,7 @@ public class EditorToIBeXDisjunctPatternHelper {
 		
 		Map<IBeXAttributeConstraint, List<IBeXContextPattern>> sourceAttributeMapping = new HashMap<IBeXAttributeConstraint, List<IBeXContextPattern>>();
 		//transform all attributes					
-		for(EditorAttribute attribute: pair.getRight()) {
+		for(EditorAttribute attribute: new HashSet<EditorAttribute>(pair.getRight())) {
 
 			//find out which subpatterns are needed for the attribute calculation
 			List<IBeXContextPattern> nodesOfSubpattern = new ArrayList<IBeXContextPattern>();				

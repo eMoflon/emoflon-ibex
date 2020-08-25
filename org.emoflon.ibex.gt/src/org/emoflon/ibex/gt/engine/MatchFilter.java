@@ -225,7 +225,8 @@ public class MatchFilter {
 				matches = matches.filter(m -> {
 					EObject node = (EObject) m.get(nodeName);
 					Object currentValue = node.eGet(constraint.getType());
-					return compare(currentValue, IBeXArithmeticsCalculatorHelper.getValue((IBeXArithmeticValue) constraint.getValue(), 
+					if(!isValid(constraint, m)) return false;
+					else return compare(currentValue, IBeXArithmeticsCalculatorHelper.getValue((IBeXArithmeticValue) constraint.getValue(), 
 							m, constraint.getType().getEAttributeType()), constraint.getRelation());
 				});			
 			}
@@ -279,5 +280,18 @@ public class MatchFilter {
 	private static boolean compareTo(final Object a, final Object b, final Predicate<Integer> condition) {
 		return a instanceof Comparable && b instanceof Comparable //
 				&& condition.test(((Comparable) a).compareTo(b));
+	}
+	
+	/**
+	 * checks if a parameter can be calculated arithmetically
+	 */
+	private static boolean isValid(IBeXAttributeConstraint constraint, IMatch match) {
+		try {
+			IBeXArithmeticsCalculatorHelper.getValue((IBeXArithmeticValue) constraint.getValue(), 
+					match, constraint.getType().getEAttributeType());
+			return true;
+		}catch(IllegalArgumentException e) {
+			return false;
+		}
 	}
 }
