@@ -258,7 +258,7 @@ public class ModelChanges {
 		return Collections.unmodifiableSet(result);
 	}
 
-	private void cleanUp() {
+	synchronized private void cleanUp() {
 		if (modified) {
 			detectAppendagesOfNewlyCreatedElements();
 			newlyCreatedElements.clear();

@@ -99,7 +99,7 @@ public enum DeletionType {
 		return new HashSet<DeletionType>(Arrays.asList(SRC_NOT_TRG_PARTLY, SRC_NOT_TRG_FULL));
 	}
 
-	public static Set<DeletionType> getInconsDelCandidates() {
+	public static Set<DeletionType> getInconsDelsCandidates() {
 		return new HashSet<DeletionType>(Arrays.asList(SRC_FULL_TRG_PARTLY, SRC_PARTLY_TRG_FULL, SRC_PARTLY_TRG_NOT,
 				SRC_NOT_TRG_PARTLY, SRC_PARTLY_TRG_PARTLY));
 	}

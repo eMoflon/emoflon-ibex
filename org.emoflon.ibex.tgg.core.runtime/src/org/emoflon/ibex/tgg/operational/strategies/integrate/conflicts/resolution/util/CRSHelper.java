@@ -8,8 +8,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 
 public class CRSHelper {
 
-	public static <S extends ConflictResolutionStrategy, C extends S> void forEachResolve(
-			ConflictContainer conflictContainer, Class<C> conflictClass, Consumer<S> crs) {
+	public static <S extends ConflictResolutionStrategy, C extends S> void forEachResolve(ConflictContainer conflictContainer, //
+			Class<C> conflictClass, Consumer<S> crs) {
 		for (Conflict conflict : conflictContainer.getConflicts())
 			forConflict(conflict, conflictClass, crs);
 		for (ConflictContainer container : conflictContainer.getSubContainers())
@@ -17,7 +17,7 @@ public class CRSHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <S extends ConflictResolutionStrategy, C extends S> void forConflict(Conflict conflict,
+	private static <S extends ConflictResolutionStrategy, C extends S> void forConflict(Conflict conflict, //
 			Class<C> conflictClass, Consumer<S> crs) {
 		if (conflictClass.isInstance(conflict)) {
 			try {
