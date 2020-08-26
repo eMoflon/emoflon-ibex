@@ -173,7 +173,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		Objects.requireNonNull(ibexPatternResource, "Resource must not be null!");
 		EObject resourceContent = ibexPatternResource.getContents().get(0);
 		Objects.requireNonNull("Resource must not be empty!");
-		if (resourceContent instanceof IBeXPatternSet) {
+		if (resourceContent instanceof IBeXModel) {
 			contextPatternInterpreter.initialise(model.getPackageRegistry(), this);
 
 			// Transform into patterns of the concrete engine.

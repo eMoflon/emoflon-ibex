@@ -111,7 +111,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			try {
 				EcoreUtil2.resolveLazyCrossReferences(file, () -> false);
 			} catch (WrappedException e) {
-				log(String.format("Error resolving cross references in file %s.", gtFile.getName()));
+				logError(String.format("Error resolving cross references in file %s.", gtFile.getName()));
 			}
 
 			EditorGTFile editorModel = (EditorGTFile) file.getContents().get(0);
@@ -153,7 +153,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			try {
 				folder.delete(true, null);
 			} catch (CoreException e) {
-				log("Could not delete old package.");
+				logError("Could not delete old package.");
 			}
 		}
 		return ensureFolderExists(folder);
@@ -203,7 +203,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		try {
 			resource.save(options);
 		} catch (IOException e) {
-			log("Could not save " + file.getName());
+			logError("Could not save " + file.getName() + " Error Message:\n"+e.getMessage());
 		}
 	}
 
@@ -229,7 +229,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 				ecoreFile.load(null);
 				eClassifiersManager.loadMetaModelClasses(ecoreFile);
 			} catch (Exception e) {
-				log("Could not load meta-model " + uri + ".");
+				logError("Could not load meta-model " + uri + ".");
 			}
 		});
 		return eClassifiersManager;

@@ -24,128 +24,114 @@ import org.moflon.core.utilities.EcoreUtils;
 /**
  * Utility methods to transform editor patterns to IBeX Patterns.
  */
-public class EditorToIBeXPatternHelper {
-	/**
-	 * The transformation.
-	 */
-	private final EditorToIBeXPatternTransformation transformation;
+final public class EditorToIBeXPatternHelper {
 
-	/**
-	 * Creates a new EditorToIBeXPatternHelper.
-	 * 
-	 * @param transformation
-	 *            the transformation
-	 */
-	public EditorToIBeXPatternHelper(final EditorToIBeXPatternTransformation transformation) {
-		this.transformation = transformation;
-	}
+//	/**
+//	 * Transforms the given editor reference into an {@link IBeXEdge}. If a source
+//	 * or target node does not exist in the lists of changed or context nodes, the
+//	 * node will be added to the context nodes.
+//	 * 
+//	 * @param editorReference
+//	 *            the reference
+//	 * @param changedNodes
+//	 *            the list of nodes
+//	 * @param contextNodes
+//	 *            the list of nodes where
+//	 * @return the transformed edge
+//	 */
+//	public Optional<IBeXEdge> transformEdge(final EditorReference editorReference, final List<IBeXNode> changedNodes,
+//			final List<IBeXNode> contextNodes) {
+//		EditorNode editorSourceNode = EditorModelUtils.getSourceNode(editorReference);
+//		EditorNode editorTargetNode = editorReference.getTarget();
+//
+//		Objects.requireNonNull(editorReference, "Edge must not be null!");
+//		Objects.requireNonNull(changedNodes, "Changed node must not be null!");
+//		Objects.requireNonNull(contextNodes, "Context node must not be null!");
+//
+//		if (editorSourceNode == null || editorSourceNode.getName() == null) {
+//			transformation.logError("Cannot resolve reference to source node.");
+//			return Optional.empty();
+//		}
+//
+//		if (editorTargetNode == null || editorTargetNode.getName() == null) {
+//			transformation.logError("Cannot resolve reference to target node.");
+//			return Optional.empty();
+//		}
+//
+//		IBeXNode ibexSourceNode = addIBeXNodeToContextNodes(editorSourceNode, changedNodes, contextNodes);
+//		IBeXNode ibexTargetNode = addIBeXNodeToContextNodes(editorTargetNode, changedNodes, contextNodes);
+//		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSourceNode, ibexTargetNode, editorReference.getType());
+//		return Optional.of(ibexEdge);
+//	}
 
-	/**
-	 * Transforms the given editor reference into an {@link IBeXEdge}. If a source
-	 * or target node does not exist in the lists of changed or context nodes, the
-	 * node will be added to the context nodes.
-	 * 
-	 * @param editorReference
-	 *            the reference
-	 * @param changedNodes
-	 *            the list of nodes
-	 * @param contextNodes
-	 *            the list of nodes where
-	 * @return the transformed edge
-	 */
-	public Optional<IBeXEdge> transformEdge(final EditorReference editorReference, final List<IBeXNode> changedNodes,
-			final List<IBeXNode> contextNodes) {
-		EditorNode editorSourceNode = EditorModelUtils.getSourceNode(editorReference);
-		EditorNode editorTargetNode = editorReference.getTarget();
+//	/**
+//	 * Searches the IBeXNode with the same name as the given editor node within the
+//	 * given node lists. If such an IBeXNode exists, it is returned, otherwise it
+//	 * created and added to the context nodes.
+//	 * 
+//	 * @param editorNode
+//	 *            the editor node
+//	 * @param changedNodes
+//	 *            the list of changed nodes of the pattern
+//	 * @param contextNodes
+//	 *            the list of context nodes of the pattern
+//	 * @return the IBeXNode
+//	 */
+//	public static IBeXNode addIBeXNodeToContextNodes(final EditorNode editorNode, final List<IBeXNode> changedNodes,
+//			final List<IBeXNode> contextNodes) {
+//		Optional<IBeXNode> existingNode = IBeXPatternUtils.findIBeXNodeWithName(changedNodes, contextNodes,
+//				editorNode.getName());
+//		if (existingNode.isPresent()) {
+//			return existingNode.get();
+//		} else {
+//			IBeXNode node = transformNode(editorNode);
+//			contextNodes.add(node);
+//			return node;
+//		}
+//	}
 
-		Objects.requireNonNull(editorReference, "Edge must not be null!");
-		Objects.requireNonNull(changedNodes, "Changed node must not be null!");
-		Objects.requireNonNull(contextNodes, "Context node must not be null!");
+//	/**
+//	 * Transforms an editor node into an IBeXNode.
+//	 * 
+//	 * @param editorNode
+//	 *            the editor node
+//	 * @return the IBeXNode
+//	 */
+//	public static IBeXNode transformNode(final EditorNode editorNode) {
+//		Objects.requireNonNull(editorNode, "Node must not be null!");
+//
+//		return IBeXPatternFactory.createNode(editorNode.getName(), editorNode.getType());
+//	}
 
-		if (editorSourceNode == null || editorSourceNode.getName() == null) {
-			transformation.logError("Cannot resolve reference to source node.");
-			return Optional.empty();
-		}
-
-		if (editorTargetNode == null || editorTargetNode.getName() == null) {
-			transformation.logError("Cannot resolve reference to target node.");
-			return Optional.empty();
-		}
-
-		IBeXNode ibexSourceNode = addIBeXNodeToContextNodes(editorSourceNode, changedNodes, contextNodes);
-		IBeXNode ibexTargetNode = addIBeXNodeToContextNodes(editorTargetNode, changedNodes, contextNodes);
-		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSourceNode, ibexTargetNode, editorReference.getType());
-		return Optional.of(ibexEdge);
-	}
-
-	/**
-	 * Searches the IBeXNode with the same name as the given editor node within the
-	 * given node lists. If such an IBeXNode exists, it is returned, otherwise it
-	 * created and added to the context nodes.
-	 * 
-	 * @param editorNode
-	 *            the editor node
-	 * @param changedNodes
-	 *            the list of changed nodes of the pattern
-	 * @param contextNodes
-	 *            the list of context nodes of the pattern
-	 * @return the IBeXNode
-	 */
-	public static IBeXNode addIBeXNodeToContextNodes(final EditorNode editorNode, final List<IBeXNode> changedNodes,
-			final List<IBeXNode> contextNodes) {
-		Optional<IBeXNode> existingNode = IBeXPatternUtils.findIBeXNodeWithName(changedNodes, contextNodes,
-				editorNode.getName());
-		if (existingNode.isPresent()) {
-			return existingNode.get();
-		} else {
-			IBeXNode node = transformNode(editorNode);
-			contextNodes.add(node);
-			return node;
-		}
-	}
-
-	/**
-	 * Transforms an editor node into an IBeXNode.
-	 * 
-	 * @param editorNode
-	 *            the editor node
-	 * @return the IBeXNode
-	 */
-	public static IBeXNode transformNode(final EditorNode editorNode) {
-		Objects.requireNonNull(editorNode, "Node must not be null!");
-
-		return IBeXPatternFactory.createNode(editorNode.getName(), editorNode.getType());
-	}
-
-	/**
-	 * Transforms the nodes and edges of the given operator and adds them to the
-	 * correct lists.
-	 * 
-	 * @param editorPattern
-	 *            the editor pattern
-	 * @param editorOperator
-	 *            the editor operator
-	 * @param changedNodes
-	 *            the changed nodes
-	 * @param contextNodes
-	 *            the context nodes
-	 * @param changedEdges
-	 *            the changed edges
-	 */
-	public void transformNodesAndEdgesOfOperator(final EditorPattern editorPattern, final EditorOperator editorOperator,
-			final List<IBeXNode> changedNodes, final List<IBeXNode> contextNodes, final List<IBeXEdge> changedEdges) {
-		EditorModelUtils.getNodesByOperator(editorPattern, editorOperator).forEach(editorNode -> {
-			changedNodes.add(transformNode(editorNode));
-		});
-
-		List<IBeXNode> context = new ArrayList<IBeXNode>();
-		EditorModelUtils.getReferencesByOperator(editorPattern, editorOperator).forEach(editorReference -> {
-			transformEdge(editorReference, changedNodes, context) //
-					.ifPresent(ibexEdge -> changedEdges.add(ibexEdge));
-		});
-		context.sort(IBeXPatternUtils.sortByName);
-		contextNodes.addAll(context);
-	}
+//	/**
+//	 * Transforms the nodes and edges of the given operator and adds them to the
+//	 * correct lists.
+//	 * 
+//	 * @param editorPattern
+//	 *            the editor pattern
+//	 * @param editorOperator
+//	 *            the editor operator
+//	 * @param changedNodes
+//	 *            the changed nodes
+//	 * @param contextNodes
+//	 *            the context nodes
+//	 * @param changedEdges
+//	 *            the changed edges
+//	 */
+//	public void transformNodesAndEdgesOfOperator(final EditorPattern editorPattern, final EditorOperator editorOperator,
+//			final List<IBeXNode> changedNodes, final List<IBeXNode> contextNodes, final List<IBeXEdge> changedEdges) {
+//		EditorModelUtils.getNodesByOperator(editorPattern, editorOperator).forEach(editorNode -> {
+//			changedNodes.add(transformNode(editorNode));
+//		});
+//
+//		List<IBeXNode> context = new ArrayList<IBeXNode>();
+//		EditorModelUtils.getReferencesByOperator(editorPattern, editorOperator).forEach(editorReference -> {
+//			transformEdge(editorReference, changedNodes, context) //
+//					.ifPresent(ibexEdge -> changedEdges.add(ibexEdge));
+//		});
+//		context.sort(IBeXPatternUtils.sortByName);
+//		contextNodes.addAll(context);
+//	}
 
 	/**
 	 * Adds injectivity constraints to the pattern such that all nodes in the

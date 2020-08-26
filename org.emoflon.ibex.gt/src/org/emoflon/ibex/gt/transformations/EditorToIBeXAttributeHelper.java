@@ -140,8 +140,9 @@ public class EditorToIBeXAttributeHelper {
 			return;
 		}
 
-		IBeXNode ibexNode = EditorToIBeXPatternHelper.addIBeXNodeToContextNodes(editorNode,
-				ibexCreatePattern.getCreatedNodes(), ibexCreatePattern.getContextNodes());
+//		IBeXNode ibexNode = EditorToIBeXPatternHelper.addIBeXNodeToContextNodes(editorNode,
+//				ibexCreatePattern.getCreatedNodes(), ibexCreatePattern.getContextNodes());
+		IBeXNode ibexNode = transformation.getNode2ibexNode().get(editorNode);
 		for (EditorAttribute editorAttribute : attributeAssignments) {
 			transformAttributeAssignment(editorAttribute, ibexNode, ibexCreatePattern);
 		}
@@ -250,18 +251,19 @@ public class EditorToIBeXAttributeHelper {
 	 *            the IBeXPattern
 	 * @return the IBeXAttributeExpression
 	 */
-	private static Optional<IBeXAttributeValue> convertAttributeValue(final EditorAttributeExpression editorExpression,
+	private Optional<IBeXAttributeValue> convertAttributeValue(final EditorAttributeExpression editorExpression,
 			final IBeXPattern ibexPattern) {
 		IBeXAttributeExpression ibexAttributeExpression = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
 		ibexAttributeExpression.setAttribute(editorExpression.getAttribute());
-		Optional<IBeXNode> ibexExistingNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern,
-				editorExpression.getNode().getName());
+//		Optional<IBeXNode> ibexExistingNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern,
+//				editorExpression.getNode().getName());
+		Optional<IBeXNode> ibexExistingNode = Optional.of(transformation.getNode2ibexNode().get(editorExpression.getNode()));
 
-		if (!ibexExistingNode.isPresent() && ibexPattern instanceof IBeXCreatePattern) {
-			IBeXNode ibexNode = EditorToIBeXPatternHelper.transformNode(editorExpression.getNode());
-			ibexExistingNode = Optional.of(ibexNode);
-			((IBeXCreatePattern) ibexPattern).getContextNodes().add(ibexNode);
-		}
+//		if (!ibexExistingNode.isPresent() && ibexPattern instanceof IBeXCreatePattern) {
+//			IBeXNode ibexNode = EditorToIBeXPatternHelper.transformNode(editorExpression.getNode());
+//			ibexExistingNode = Optional.of(ibexNode);
+//			((IBeXCreatePattern) ibexPattern).getContextNodes().add(ibexNode);
+//		}
 
 		return ibexExistingNode.map(ibexNode -> {
 			ibexAttributeExpression.setNode(ibexNode);
