@@ -58,7 +58,7 @@ public class EditorToIBeXConditionHelper {
 		Objects.requireNonNull(condition, "The condition must not be null!");
 
 		for (EditorApplicationCondition applicationCondition : getApplicationConditions(condition)) {
-			transformPattern(applicationCondition.getPattern(),
+			transformPattern(transformation.getFlattenedPattern(applicationCondition.getPattern(), transformation::logError),
 					applicationCondition.getType() == EditorApplicationConditionType.POSITIVE);
 		}
 	}
@@ -104,10 +104,9 @@ public class EditorToIBeXConditionHelper {
 			invocation.setInvokedPattern(invokedPattern);
 			EditorToIBeXPatternHelper.addNodeMapping(invocation, nodeMap);
 		} else { // not all signature nodes are mapped.
-			transformContextPatternForSignature(editorPattern, nodeMap).ifPresent(p -> {
-				invocation.setInvokedPattern(p);
-				EditorToIBeXPatternHelper.addNodeMapping(invocation, determineNodeMapping(p));
-			});
+			IBeXContextPattern subContext = transformContextPatternForSignature(editorPattern, nodeMap);
+			invocation.setInvokedPattern(subContext);
+			EditorToIBeXPatternHelper.addNodeMapping(invocation, determineNodeMapping(subContext));
 		}
 	}
 
@@ -139,16 +138,18 @@ public class EditorToIBeXConditionHelper {
 	 *            the node mapping
 	 * @return the IBeXContextPattern if it exists
 	 */
-	private Optional<IBeXContextPattern> transformContextPatternForSignature(final EditorPattern editorPattern,
+	private IBeXContextPattern transformContextPatternForSignature(final EditorPattern editorPattern,
 			final Map<IBeXNode, IBeXNode> nodeMap) {
 		List<String> signatureNodeNames = nodeMap.values().stream() //
 				.map(n -> n.getName()) //
 				.collect(Collectors.toList());
 		String patternName = editorPattern.getName() + "-CONDITION-"
 				+ signatureNodeNames.stream().collect(Collectors.joining(","));
-
-		return transformation.getFlattenedPattern(editorPattern) //
-				.map(p -> transformation.transformToContextPattern(p, patternName,
-						editorNode -> !signatureNodeNames.contains(editorNode.getName())));
+		return  transformation.transformToContextPattern(editorPattern, patternName, 
+				editorNode -> !signatureNodeNames.contains(editorNode.getName()));
+//		return transformation.getFlattenedPattern(editorPattern) //
+//				.map(p -> transformation.transformToContextPattern(p, patternName,
+//						editorNode -> !signatureNodeNames.contains(editorNode.getName())));
+		
 	}
 }

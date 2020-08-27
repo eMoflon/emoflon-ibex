@@ -60,10 +60,8 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 		if (editorPattern.isAbstract()) {
 			return;
 		}
-
-		getFlattenedPattern(editorPattern).ifPresent(flattened -> {
-			addRuleForFlattenedPattern(flattened, GTCommentExtractor.getComment(editorPattern));
-		});
+		calcFlattenedPattern(editorPattern, this::logError);
+		addRuleForFlattenedPattern(getFlattenedPattern(editorPattern, this::logError), GTCommentExtractor.getComment(editorPattern));
 	}
 
 	/**

@@ -1,6 +1,10 @@
 package org.emoflon.ibex.gt.transformations;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
@@ -16,6 +20,8 @@ import org.emoflon.ibex.gt.editor.utils.GTFlattener;
  */
 public abstract class AbstractEditorModelTransformation<TargetModel>
 		extends AbstractModelTransformation<EditorGTFile, TargetModel> {
+	
+	protected Map<EditorPattern, EditorPattern> pattern2flattened = new HashMap<>();
 
 	/**
 	 * Returns the flattened pattern if it exists and the pattern is not abstract.
@@ -24,18 +30,28 @@ public abstract class AbstractEditorModelTransformation<TargetModel>
 	 *            editor pattern
 	 * @return an Optional for the flattened pattern
 	 */
-	protected Optional<EditorPattern> getFlattenedPattern(final EditorPattern editorPattern) {
+	public EditorPattern calcFlattenedPattern(final EditorPattern editorPattern, Consumer<String> errorLogger) {
 		if (editorPattern.getSuperPatterns().isEmpty()) {
-			return Optional.of(editorPattern);
+			pattern2flattened.put(editorPattern, editorPattern);
+			return editorPattern;
 		}
 
 		GTFlattener flattener = new GTFlattener(editorPattern);
 		if (flattener.hasErrors()) {
-			flattener.getErrors().forEach(e -> logError("Flattening of %s: %s", editorPattern.getName(), e));
-			return Optional.empty();
+			flattener.getErrors().forEach(e -> errorLogger.accept("Flattening of " + editorPattern.getName() + " "+e) );
+			return null;
 		} else {
-			return Optional.of(flattener.getFlattenedPattern());
+			pattern2flattened.put(editorPattern, flattener.getFlattenedPattern());
+			return flattener.getFlattenedPattern();
 		}
 	}
+	
+	public EditorPattern getFlattenedPattern(final EditorPattern editorPattern, Consumer<String> errorLogger) {
+		if(!pattern2flattened.containsKey(editorPattern))
+			return calcFlattenedPattern(editorPattern, errorLogger);
+		
+		return pattern2flattened.get(editorPattern);
+	}
+	
 	
 }
