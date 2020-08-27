@@ -152,7 +152,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		getFlattenedPattern(editorPattern).ifPresent(flattenedPattern -> {
 			transformToContextPattern(flattenedPattern);
 			if (editorPattern.getType() == EditorPatternType.RULE) {
-				transformToRule(editorPattern);
+				transformToRule(flattenedPattern);
 			}
 		});
 	}
@@ -414,10 +414,12 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 
 		IBeXEdge ibexEdge = IBeXPatternModelFactory.eINSTANCE.createIBeXEdge();
 		ibexEdge.setType(editorReference.getType());
-		IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, EditorModelUtils.getSourceNode(editorReference).getName())
-				.ifPresent(sourceNode -> ibexEdge.setSourceNode(sourceNode));
-		IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, editorReference.getTarget().getName())
-				.ifPresent(targetNode -> ibexEdge.setTargetNode(targetNode));
+		ibexEdge.setSourceNode(node2ibexNode.get(EditorModelUtils.getSourceNode(editorReference)));
+		ibexEdge.setTargetNode(node2ibexNode.get(editorReference.getTarget()));
+//		IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, EditorModelUtils.getSourceNode(editorReference).getName())
+//				.ifPresent(sourceNode -> ibexEdge.setSourceNode(sourceNode));
+//		IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, editorReference.getTarget().getName())
+//				.ifPresent(targetNode -> ibexEdge.setTargetNode(targetNode));
 		ibexEdge.setName(ibexEdge.getSourceNode()+"->"+ibexEdge.getTargetNode());
 		return ibexEdge;
 	}

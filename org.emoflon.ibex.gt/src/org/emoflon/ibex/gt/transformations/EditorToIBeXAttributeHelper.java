@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EDataType;
+import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
@@ -140,9 +141,13 @@ public class EditorToIBeXAttributeHelper {
 			return;
 		}
 
-//		IBeXNode ibexNode = EditorToIBeXPatternHelper.addIBeXNodeToContextNodes(editorNode,
-//				ibexCreatePattern.getCreatedNodes(), ibexCreatePattern.getContextNodes());
 		IBeXNode ibexNode = transformation.getNode2ibexNode().get(editorNode);
+		if(ibexNode == null) {
+			Objects.requireNonNull(editorNode, "Node must not be null!");
+			ibexNode = IBeXPatternFactory.createNode(editorNode.getName(), editorNode.getType());
+			transformation.getNode2ibexNode().put(editorNode, ibexNode);
+			ibexCreatePattern.getContextNodes().add(ibexNode);
+		}
 		for (EditorAttribute editorAttribute : attributeAssignments) {
 			transformAttributeAssignment(editorAttribute, ibexNode, ibexCreatePattern);
 		}
@@ -255,15 +260,15 @@ public class EditorToIBeXAttributeHelper {
 			final IBeXPattern ibexPattern) {
 		IBeXAttributeExpression ibexAttributeExpression = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
 		ibexAttributeExpression.setAttribute(editorExpression.getAttribute());
-//		Optional<IBeXNode> ibexExistingNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern,
-//				editorExpression.getNode().getName());
 		Optional<IBeXNode> ibexExistingNode = Optional.of(transformation.getNode2ibexNode().get(editorExpression.getNode()));
 
-//		if (!ibexExistingNode.isPresent() && ibexPattern instanceof IBeXCreatePattern) {
-//			IBeXNode ibexNode = EditorToIBeXPatternHelper.transformNode(editorExpression.getNode());
-//			ibexExistingNode = Optional.of(ibexNode);
-//			((IBeXCreatePattern) ibexPattern).getContextNodes().add(ibexNode);
-//		}
+		if (!ibexExistingNode.isPresent() && ibexPattern instanceof IBeXCreatePattern) {
+			Objects.requireNonNull(editorExpression.getNode(), "Node must not be null!");
+			IBeXNode ibexNode = IBeXPatternFactory.createNode(editorExpression.getNode().getName(), editorExpression.getNode().getType());
+			transformation.getNode2ibexNode().put(editorExpression.getNode(), ibexNode);
+			((IBeXCreatePattern) ibexPattern).getContextNodes().add(ibexNode);
+			Optional.of(ibexNode);
+		}
 
 		return ibexExistingNode.map(ibexNode -> {
 			ibexAttributeExpression.setNode(ibexNode);
