@@ -2,8 +2,6 @@ package org.emoflon.ibex.gt.transformations;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
@@ -51,6 +49,20 @@ public abstract class AbstractEditorModelTransformation<TargetModel>
 			return calcFlattenedPattern(editorPattern, errorLogger);
 		
 		return pattern2flattened.get(editorPattern);
+	}
+	
+	public static EditorPattern flattenPattern(final EditorPattern editorPattern, Consumer<String> errorLogger) {
+		if (editorPattern.getSuperPatterns().isEmpty()) {
+			return editorPattern;
+		}
+
+		GTFlattener flattener = new GTFlattener(editorPattern);
+		if (flattener.hasErrors()) {
+			flattener.getErrors().forEach(e -> errorLogger.accept("Flattening of " + editorPattern.getName() + " "+e) );
+			return null;
+		} else {
+			return flattener.getFlattenedPattern();
+		}
 	}
 	
 	
