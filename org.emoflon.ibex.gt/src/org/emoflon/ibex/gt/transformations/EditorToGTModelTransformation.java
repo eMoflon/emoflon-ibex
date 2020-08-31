@@ -18,6 +18,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
 import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.utils.GTCommentExtractor;
+import org.emoflon.ibex.gt.editor.utils.GTEditorModelUtils;
 
 import GTLanguage.GTArithmeticConstraint;
 import GTLanguage.GTLanguageFactory;
@@ -60,8 +61,8 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 		if (editorPattern.isAbstract()) {
 			return;
 		}
-		calcFlattenedPattern(editorPattern, this::logError);
-		addRuleForFlattenedPattern(getFlattenedPattern(editorPattern, this::logError), GTCommentExtractor.getComment(editorPattern));
+		calcFlattenedPattern(editorPattern);
+		addRuleForFlattenedPattern(getFlattenedPattern(editorPattern), GTCommentExtractor.getComment(editorPattern));
 	}
 
 	/**
@@ -96,7 +97,7 @@ public class EditorToGTModelTransformation extends AbstractEditorModelTransforma
 	 *            the GTRule
 	 */
 	private void transformNodes(final EditorPattern editorPattern, final GTRule gtRule) {
-		editorPattern.getNodes().stream().filter(n -> !EditorModelUtils.isLocal(n)).forEach(editorNode -> {
+		editorPattern.getNodes().stream().filter(n -> !GTEditorModelUtils.isLocal(n)).forEach(editorNode -> {
 			GTNode gtNode = transformNode(editorNode);
 			gtRule.getNodes().add(gtNode);
 
