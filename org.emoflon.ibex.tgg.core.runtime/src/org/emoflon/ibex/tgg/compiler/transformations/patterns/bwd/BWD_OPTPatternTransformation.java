@@ -7,6 +7,9 @@ import java.util.List;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -39,8 +42,9 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 		}
 
 		// Transform in-node attributes.
-		for (final TGGRuleNode node : nodes)
-			parent.transformInNodeAttributeConditions(ibexPattern, node);
+		if(!options.invocation.usePatternInvocation())
+			for (final TGGRuleNode node : nodes)
+				parent.transformInNodeAttributeConditions(ibexPattern, node);
 	}
 
 	@Override
@@ -48,14 +52,20 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
 		edges.addAll(TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG));
 
-		for (TGGRuleEdge edge : edges)
+		for (TGGRuleEdge edge : edges) 
 			parent.transformEdge(edges, edge, ibexPattern);
+		
 	}
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
-			parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+		if(options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS)) {
+			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.TRG)) {
+				parent.addContextPattern(createPAC(ibexPattern,  DomainType.TRG, candidate));
+			} 
 		}
-	}
+		else for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
+				parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+			}
+		}
 }
