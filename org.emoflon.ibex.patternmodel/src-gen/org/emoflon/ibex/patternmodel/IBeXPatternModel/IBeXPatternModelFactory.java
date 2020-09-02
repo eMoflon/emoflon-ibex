@@ -239,6 +239,15 @@ public interface IBeXPatternModelFactory extends EFactory {
 	IBeXRule createIBeXRule();
 
 	/**
+	 * Returns a new object of class '<em>IBe XParameter</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XParameter</em>'.
+	 * @generated
+	 */
+	IBeXParameter createIBeXParameter();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

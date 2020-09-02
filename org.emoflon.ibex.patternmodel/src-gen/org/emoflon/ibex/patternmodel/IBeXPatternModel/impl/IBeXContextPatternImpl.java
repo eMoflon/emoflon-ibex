@@ -4,6 +4,7 @@ package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
 import java.util.Collection;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
@@ -11,6 +12,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
@@ -22,6 +24,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 
@@ -40,6 +43,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getLocalNodes <em>Local Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getCsps <em>Csps</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getDocumentation <em>Documentation</em>}</li>
  * </ul>
  *
  * @generated
@@ -114,6 +119,36 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	 * @ordered
 	 */
 	protected EList<IBeXCSP> csps;
+
+	/**
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getParameters()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXParameter> parameters;
+
+	/**
+	 * The default value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDocumentation()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String DOCUMENTATION_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDocumentation()
+	 * @generated
+	 * @ordered
+	 */
+	protected String documentation = DOCUMENTATION_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -239,6 +274,44 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
+	public EList<IBeXParameter> getParameters() {
+		if (parameters == null) {
+			parameters = new EObjectContainmentEList<IBeXParameter>(IBeXParameter.class, this,
+					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__PARAMETERS);
+		}
+		return parameters;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getDocumentation() {
+		return documentation;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setDocumentation(String newDocumentation) {
+		String oldDocumentation = documentation;
+		documentation = newDocumentation;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION, oldDocumentation, documentation));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
@@ -265,6 +338,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			return ((InternalEList<?>) getInvocations()).basicRemove(otherEnd, msgs);
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__CSPS:
 			return ((InternalEList<?>) getCsps()).basicRemove(otherEnd, msgs);
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__PARAMETERS:
+			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -291,6 +366,10 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			return getSignatureNodes();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__CSPS:
 			return getCsps();
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__PARAMETERS:
+			return getParameters();
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
+			return getDocumentation();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -332,6 +411,13 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			getCsps().clear();
 			getCsps().addAll((Collection<? extends IBeXCSP>) newValue);
 			return;
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__PARAMETERS:
+			getParameters().clear();
+			getParameters().addAll((Collection<? extends IBeXParameter>) newValue);
+			return;
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
+			setDocumentation((String) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -365,6 +451,12 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__CSPS:
 			getCsps().clear();
 			return;
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__PARAMETERS:
+			getParameters().clear();
+			return;
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
+			setDocumentation(DOCUMENTATION_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -391,8 +483,30 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			return signatureNodes != null && !signatureNodes.isEmpty();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__CSPS:
 			return csps != null && !csps.isEmpty();
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__PARAMETERS:
+			return parameters != null && !parameters.isEmpty();
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
+			return DOCUMENTATION_EDEFAULT == null ? documentation != null
+					: !DOCUMENTATION_EDEFAULT.equals(documentation);
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (documentation: ");
+		result.append(documentation);
+		result.append(')');
+		return result.toString();
 	}
 
 } //IBeXContextPatternImpl

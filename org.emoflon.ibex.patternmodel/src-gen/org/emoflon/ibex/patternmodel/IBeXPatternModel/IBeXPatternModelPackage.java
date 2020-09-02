@@ -744,13 +744,22 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCONTEXT_ALTERNATIVES__ALTERNATIVE_PATTERNS = IBE_XCONTEXT_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Context</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_ALTERNATIVES__CONTEXT = IBE_XCONTEXT_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>IBe XContext Alternatives</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XCONTEXT_ALTERNATIVES_FEATURE_COUNT = IBE_XCONTEXT_FEATURE_COUNT + 1;
+	int IBE_XCONTEXT_ALTERNATIVES_FEATURE_COUNT = IBE_XCONTEXT_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>IBe XContext Alternatives</em>' class.
@@ -844,13 +853,31 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCONTEXT_PATTERN__CSPS = IBE_XCONTEXT_FEATURE_COUNT + 6;
 
 	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_PATTERN__PARAMETERS = IBE_XCONTEXT_FEATURE_COUNT + 7;
+
+	/**
+	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_PATTERN__DOCUMENTATION = IBE_XCONTEXT_FEATURE_COUNT + 8;
+
+	/**
 	 * The number of structural features of the '<em>IBe XContext Pattern</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XCONTEXT_PATTERN_FEATURE_COUNT = IBE_XCONTEXT_FEATURE_COUNT + 7;
+	int IBE_XCONTEXT_PATTERN_FEATURE_COUNT = IBE_XCONTEXT_FEATURE_COUNT + 9;
 
 	/**
 	 * The number of operations of the '<em>IBe XContext Pattern</em>' class.
@@ -1504,13 +1531,31 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XRULE__DELETE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__PARAMETERS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
+
+	/**
+	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__DOCUMENTATION = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
+
+	/**
 	 * The number of structural features of the '<em>IBe XRule</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XRULE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
+	int IBE_XRULE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The number of operations of the '<em>IBe XRule</em>' class.
@@ -1522,6 +1567,52 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XRULE_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXParameterImpl <em>IBe XParameter</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXParameterImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXParameter()
+	 * @generated
+	 */
+	int IBE_XPARAMETER = 29;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPARAMETER__NAME = IBE_XNAMED_ELEMENT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPARAMETER__TYPE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XParameter</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPARAMETER_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XParameter</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPARAMETER_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation <em>IBe XRelation</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1529,7 +1620,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRelation()
 	 * @generated
 	 */
-	int IBE_XRELATION = 29;
+	int IBE_XRELATION = 30;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel <em>IBe XModel</em>}'.
@@ -1859,6 +1950,17 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXContextAlternatives_AlternativePatterns();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives#getContext <em>Context</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Context</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives#getContext()
+	 * @see #getIBeXContextAlternatives()
+	 * @generated
+	 */
+	EReference getIBeXContextAlternatives_Context();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern <em>IBe XContext Pattern</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1944,6 +2046,28 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBeXContextPattern_Csps();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getParameters <em>Parameters</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Parameters</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getParameters()
+	 * @see #getIBeXContextPattern()
+	 * @generated
+	 */
+	EReference getIBeXContextPattern_Parameters();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation <em>Documentation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Documentation</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation()
+	 * @see #getIBeXContextPattern()
+	 * @generated
+	 */
+	EAttribute getIBeXContextPattern_Documentation();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern <em>IBe XCreate Pattern</em>}'.
@@ -2440,6 +2564,49 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXRule_Delete();
 
 	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getParameters <em>Parameters</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Parameters</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getParameters()
+	 * @see #getIBeXRule()
+	 * @generated
+	 */
+	EReference getIBeXRule_Parameters();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDocumentation <em>Documentation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Documentation</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDocumentation()
+	 * @see #getIBeXRule()
+	 * @generated
+	 */
+	EAttribute getIBeXRule_Documentation();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter <em>IBe XParameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XParameter</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter
+	 * @generated
+	 */
+	EClass getIBeXParameter();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter#getType <em>Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Type</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter#getType()
+	 * @see #getIBeXParameter()
+	 * @generated
+	 */
+	EReference getIBeXParameter_Type();
+
+	/**
 	 * Returns the meta object for enum '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation <em>IBe XRelation</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2750,6 +2917,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 				.getIBeXContextAlternatives_AlternativePatterns();
 
 		/**
+		 * The meta object literal for the '<em><b>Context</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XCONTEXT_ALTERNATIVES__CONTEXT = eINSTANCE.getIBeXContextAlternatives_Context();
+
+		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl <em>IBe XContext Pattern</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2815,6 +2990,22 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XCONTEXT_PATTERN__CSPS = eINSTANCE.getIBeXContextPattern_Csps();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameters</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XCONTEXT_PATTERN__PARAMETERS = eINSTANCE.getIBeXContextPattern_Parameters();
+
+		/**
+		 * The meta object literal for the '<em><b>Documentation</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XCONTEXT_PATTERN__DOCUMENTATION = eINSTANCE.getIBeXContextPattern_Documentation();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXCreatePatternImpl <em>IBe XCreate Pattern</em>}' class.
@@ -3211,6 +3402,40 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XRULE__DELETE = eINSTANCE.getIBeXRule_Delete();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameters</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XRULE__PARAMETERS = eINSTANCE.getIBeXRule_Parameters();
+
+		/**
+		 * The meta object literal for the '<em><b>Documentation</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XRULE__DOCUMENTATION = eINSTANCE.getIBeXRule_Documentation();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXParameterImpl <em>IBe XParameter</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXParameterImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXParameter()
+		 * @generated
+		 */
+		EClass IBE_XPARAMETER = eINSTANCE.getIBeXParameter();
+
+		/**
+		 * The meta object literal for the '<em><b>Type</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XPARAMETER__TYPE = eINSTANCE.getIBeXParameter_Type();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation <em>IBe XRelation</em>}' enum.

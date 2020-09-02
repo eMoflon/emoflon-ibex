@@ -109,6 +109,8 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 			return createIBeXArithmeticValue();
 		case IBeXPatternModelPackage.IBE_XRULE:
 			return createIBeXRule();
+		case IBeXPatternModelPackage.IBE_XPARAMETER:
+			return createIBeXParameter();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -416,6 +418,17 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXRule createIBeXRule() {
 		IBeXRuleImpl iBeXRule = new IBeXRuleImpl();
 		return iBeXRule;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXParameter createIBeXParameter() {
+		IBeXParameterImpl iBeXParameter = new IBeXParameterImpl();
+		return iBeXParameter;
 	}
 
 	/**

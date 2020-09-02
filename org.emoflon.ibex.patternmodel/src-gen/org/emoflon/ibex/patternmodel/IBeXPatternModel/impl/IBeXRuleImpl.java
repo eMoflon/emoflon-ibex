@@ -2,18 +2,22 @@
  */
 package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
+import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 
@@ -29,6 +33,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getRhs <em>Rhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getDelete <em>Delete</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getDocumentation <em>Documentation</em>}</li>
  * </ul>
  *
  * @generated
@@ -73,6 +79,36 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	 * @ordered
 	 */
 	protected IBeXDeletePattern delete;
+
+	/**
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getParameters()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXParameter> parameters;
+
+	/**
+	 * The default value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDocumentation()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String DOCUMENTATION_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDocumentation()
+	 * @generated
+	 * @ordered
+	 */
+	protected String documentation = DOCUMENTATION_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -296,6 +332,44 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	 * @generated
 	 */
 	@Override
+	public EList<IBeXParameter> getParameters() {
+		if (parameters == null) {
+			parameters = new EObjectResolvingEList<IBeXParameter>(IBeXParameter.class, this,
+					IBeXPatternModelPackage.IBE_XRULE__PARAMETERS);
+		}
+		return parameters;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getDocumentation() {
+		return documentation;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setDocumentation(String newDocumentation) {
+		String oldDocumentation = documentation;
+		documentation = newDocumentation;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION,
+					oldDocumentation, documentation));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case IBeXPatternModelPackage.IBE_XRULE__RHS:
@@ -326,6 +400,10 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return getCreate();
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			return getDelete();
+		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
+			return getParameters();
+		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
+			return getDocumentation();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -335,6 +413,7 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
@@ -349,6 +428,13 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return;
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			setDelete((IBeXDeletePattern) newValue);
+			return;
+		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
+			getParameters().clear();
+			getParameters().addAll((Collection<? extends IBeXParameter>) newValue);
+			return;
+		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
+			setDocumentation((String) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -374,6 +460,12 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			setDelete((IBeXDeletePattern) null);
 			return;
+		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
+			getParameters().clear();
+			return;
+		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
+			setDocumentation(DOCUMENTATION_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -394,8 +486,30 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return create != null;
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			return delete != null;
+		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
+			return parameters != null && !parameters.isEmpty();
+		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
+			return DOCUMENTATION_EDEFAULT == null ? documentation != null
+					: !DOCUMENTATION_EDEFAULT.equals(documentation);
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (documentation: ");
+		result.append(documentation);
+		result.append(')');
+		return result.toString();
 	}
 
 } //IBeXRuleImpl

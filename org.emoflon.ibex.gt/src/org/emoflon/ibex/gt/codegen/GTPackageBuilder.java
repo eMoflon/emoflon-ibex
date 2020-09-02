@@ -40,6 +40,7 @@ import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
 import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.gt.transformations.EditorToGTModelTransformation;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
@@ -123,9 +124,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		checkEditorModelsForDuplicatePatternNames(editorModels);
 
 		// Transform editor models to rules of the GT API model.
-		GTRuleSet gtRuleSet = transformEditorModels(editorModels, new EditorToGTModelTransformation(),
-				"%s errors during editor to GT API model transformation");
-		saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
+//		GTRuleSet gtRuleSet = transformEditorModels(editorModels, new EditorToGTModelTransformation(),
+//				"%s errors during editor to GT API model transformation");
+//		saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
 
 		// Transform editor models to IBeXPatterns.
 		IBeXModel ibexModel = transformEditorModels(editorModels, new EditorToIBeXPatternTransformation(),
@@ -133,7 +134,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexModel);
 
 		// Generate the Java code.
-		generateAPI(apiPackage, gtRuleSet, loadMetaModels(metaModels, resourceSet));
+		generateAPI(apiPackage, ibexModel, loadMetaModels(metaModels, resourceSet));
 		updateManifest(manifest -> processManifestForPackage(manifest));
 		log("Finished build.");
 	}
@@ -293,19 +294,30 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @param eClassifiersManager
 	 *            the EClassifiers handler
 	 */
-	private void generateAPI(final IFolder apiPackage, final GTRuleSet gtRuleSet,
+	private void generateAPI(final IFolder apiPackage, final IBeXModel ibexModel,
 			final EClassifiersManager eClassifiersManager) {
 		JavaFileGenerator generator = new JavaFileGenerator(getClassNamePrefix(), packageName, eClassifiersManager);
 		IFolder matchesPackage = ensureFolderExists(apiPackage.getFolder("matches"));
 		IFolder rulesPackage = ensureFolderExists(apiPackage.getFolder("rules"));
 		IFolder probabilitiesPackage = ensureFolderExists(apiPackage.getFolder("probabilities"));
-		gtRuleSet.getRules().forEach(gtRule -> {
-			generator.generateMatchClass(matchesPackage, gtRule);
-			generator.generateRuleClass(rulesPackage, gtRule);
-			generator.generateProbabilityClass(probabilitiesPackage, gtRule);
+		
+		Set<IBeXPattern> ruleContextPatterns = new HashSet<>();
+		ibexModel.getRuleSet().getRules().forEach(ibexRule -> {
+			generator.generateMatchClass(matchesPackage, ibexRule);
+			generator.generateRuleClass(rulesPackage, ibexRule);
+			generator.generateProbabilityClass(probabilitiesPackage, ibexRule);
+			ruleContextPatterns.add(ibexRule.getLhs());
 		});
+		
+		ibexModel.getPatternSet().getContextPatterns().stream()
+			.filter(pattern -> !ruleContextPatterns.contains(pattern))
+			.filter(pattern -> !pattern.getName().contains("CONDITION"))
+			.forEach(pattern -> {
+				generator.generateMatchClass(matchesPackage, pattern);
+				generator.generatePatternClass(rulesPackage, pattern);
+			});
 
-		generator.generateAPIClass(apiPackage, gtRuleSet,
+		generator.generateAPIClass(apiPackage, ibexModel,
 				String.format("%s/%s/%s/api/ibex-patterns.xmi", project.getName(), SOURCE_GEN_FOLDER, path.toString()));
 		generator.generateAppClass(apiPackage);
 		collectEngineExtensions().forEach(e -> generator.generateAppClassForEngine(apiPackage, e));

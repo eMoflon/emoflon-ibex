@@ -2,6 +2,8 @@
  */
 package org.emoflon.ibex.patternmodel.IBeXPatternModel;
 
+import org.eclipse.emf.common.util.EList;
+
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>IBe XRule</b></em>'.
@@ -15,6 +17,8 @@ package org.emoflon.ibex.patternmodel.IBeXPatternModel;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getRhs <em>Rhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDelete <em>Delete</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDocumentation <em>Documentation</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXRule()
@@ -109,5 +113,39 @@ public interface IBeXRule extends IBeXNamedElement {
 	 * @generated
 	 */
 	void setDelete(IBeXDeletePattern value);
+
+	/**
+	 * Returns the value of the '<em><b>Parameters</b></em>' reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Parameters</em>' reference list.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXRule_Parameters()
+	 * @model
+	 * @generated
+	 */
+	EList<IBeXParameter> getParameters();
+
+	/**
+	 * Returns the value of the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Documentation</em>' attribute.
+	 * @see #setDocumentation(String)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXRule_Documentation()
+	 * @model
+	 * @generated
+	 */
+	String getDocumentation();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDocumentation <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Documentation</em>' attribute.
+	 * @see #getDocumentation()
+	 * @generated
+	 */
+	void setDocumentation(String value);
 
 } // IBeXRule

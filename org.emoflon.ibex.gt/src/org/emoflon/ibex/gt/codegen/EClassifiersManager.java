@@ -1,5 +1,6 @@
 package org.emoflon.ibex.gt.codegen;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,8 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter;
 import org.moflon.core.utilities.EcoreUtils;
 
 import GTLanguage.GTNode;
@@ -153,7 +156,7 @@ public class EClassifiersManager {
 	 * @param nodes the nodes
 	 * @return the types for Java import statements
 	 */
-	public Set<String> getImportsForNodeTypes(final List<GTNode> nodes) {
+	public Set<String> getImportsForNodeTypes(final Collection<IBeXNode> nodes) {
 		return getImportsForTypes(nodes.stream().map(n -> n.getType()).collect(Collectors.toSet()));
 	}
 
@@ -163,7 +166,7 @@ public class EClassifiersManager {
 	 * @param parameters the parameters
 	 * @return the types for Java import statements
 	 */
-	public Set<String> getImportsForDataTypes(final List<GTParameter> parameters) {
+	public Set<String> getImportsForDataTypes(final List<IBeXParameter> parameters) {
 		return getImportsForTypes(parameters.stream().map(p -> p.getType()).collect(Collectors.toSet()));
 	}
 

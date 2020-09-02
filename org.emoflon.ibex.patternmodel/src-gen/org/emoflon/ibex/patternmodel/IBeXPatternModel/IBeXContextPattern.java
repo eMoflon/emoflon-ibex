@@ -24,6 +24,8 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalNodes <em>Local Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getCsps <em>Csps</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation <em>Documentation</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern()
@@ -116,5 +118,39 @@ public interface IBeXContextPattern extends IBeXContext {
 	 * @generated
 	 */
 	EList<IBeXCSP> getCsps();
+
+	/**
+	 * Returns the value of the '<em><b>Parameters</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Parameters</em>' containment reference list.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_Parameters()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<IBeXParameter> getParameters();
+
+	/**
+	 * Returns the value of the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Documentation</em>' attribute.
+	 * @see #setDocumentation(String)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_Documentation()
+	 * @model
+	 * @generated
+	 */
+	String getDocumentation();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Documentation</em>' attribute.
+	 * @see #getDocumentation()
+	 * @generated
+	 */
+	void setDocumentation(String value);
 
 } // IBeXContextPattern

@@ -1,7 +1,9 @@
 package org.emoflon.ibex.gt.transformations;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +28,8 @@ import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
@@ -33,6 +37,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 import org.moflon.core.utilities.EcoreUtils;
 
@@ -41,6 +46,51 @@ import org.moflon.core.utilities.EcoreUtils;
  * Utility methods to transform editor patterns to IBeX Patterns.
  */
 final public class EditorToIBeXPatternHelper {
+	
+	public static Collection<IBeXNode> getAllRuleNodes(IBeXRule rule) {
+		Collection<IBeXNode> nodes = new LinkedList<>();
+		IBeXContextPattern lhs = null;
+		if(rule.getLhs() instanceof IBeXContextPattern) {
+			lhs = (IBeXContextPattern) rule.getLhs();
+		}else {
+			lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
+		}
+		
+		nodes.addAll(lhs.getSignatureNodes());
+		
+		if(rule.getCreate() != null) {
+			nodes.addAll(rule.getCreate().getCreatedNodes());
+		}
+		
+		return nodes;
+	}
+	
+	public static Collection<IBeXNode> getRuleContextNodes(IBeXRule rule) {
+		Collection<IBeXNode> nodes = new LinkedList<>();
+		IBeXContextPattern lhs = null;
+		if(rule.getLhs() instanceof IBeXContextPattern) {
+			lhs = (IBeXContextPattern) rule.getLhs();
+		}else {
+			lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
+		}
+		
+		nodes.addAll(lhs.getSignatureNodes());
+		return nodes;
+	}
+	
+	public static Collection<IBeXNode> getPatternNodes(IBeXContext pattern) {
+		Collection<IBeXNode> nodes = new LinkedList<>();
+		IBeXContextPattern context = null;
+		if(pattern instanceof IBeXContextPattern) {
+			context = (IBeXContextPattern) pattern;
+		} else {
+			context = ((IBeXContextAlternatives) pattern).getContext();
+			
+		}
+		
+		nodes.addAll(context.getSignatureNodes());
+		return nodes;
+	}
 	
 	/**
 	 * Checks whether the editor attribute is an assignment.

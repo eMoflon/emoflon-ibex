@@ -1,11 +1,13 @@
 package org.emoflon.ibex.gt.transformations;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
 import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
+import org.emoflon.ibex.gt.editor.utils.GTCommentExtractor;
 import org.emoflon.ibex.gt.editor.utils.GTEditorModelUtils;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
@@ -43,6 +46,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
@@ -51,6 +55,9 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelFactoryImpl;
+
+import GTLanguage.GTLanguageFactory;
+import GTLanguage.GTParameter;
 
 /**
  * Transformation from the editor model to IBeX Patterns.
@@ -68,7 +75,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	/**
 	 * All context patterns.
 	 */
-	private List<IBeXContext> ibexContextPatterns = new LinkedList<>();
+	private Set<IBeXContext> ibexContextPatterns = new LinkedHashSet<>();
 
 	/**
 	 * All create patterns.
@@ -120,7 +127,11 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * @return the IBeXPatternSet
 	 */
 	private IBeXModel createSortedIBeXSets() {
-		ibexContextPatterns.sort(IBeXPatternUtils.sortByName);
+		List<IBeXContext> sortList = new LinkedList<>(ibexContextPatterns);
+		ibexContextPatterns.clear();
+		sortList.sort(IBeXPatternUtils.sortByName);
+		ibexContextPatterns.addAll(sortList);
+		
 		ibexRules.sort(IBeXPatternUtils.sortByName);
 		ibexNodes.addAll(node2ibexNode.values().stream()
 				.flatMap(map -> map.values().stream())
@@ -234,7 +245,13 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	private void transformToAlternatives(final EditorPattern editorPattern) {
 		IBeXContextAlternatives ibexAlternatives = IBeXPatternModelFactory.eINSTANCE.createIBeXContextAlternatives();
 		ibexAlternatives.setName(editorPattern.getName());
-
+		ibexAlternatives.setContext(transformToContextPattern(editorPattern, editorPattern.getName(), editorNode -> GTEditorModelUtils.isLocal(editorNode)));
+		nameToPattern.remove(editorPattern.getName());
+		node2ibexNode.remove(editorPattern.getName());
+		ibexNodes.addAll(ibexAlternatives.getContext().getSignatureNodes());
+		ibexNodes.addAll(ibexAlternatives.getContext().getLocalNodes());
+		ibexContextPatterns.remove(ibexAlternatives.getContext());
+		
 		for (final EditorCondition editorCondition : editorPattern.getConditions()) {
 			String name = editorPattern.getName() + "-ALTERNATIVE-" + editorCondition.getName();
 			IBeXContextPattern ibexPattern = transformToContextPattern(editorPattern, name,
@@ -317,6 +334,21 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				.filter(editorReference -> reference2ibexEdge.get(name).containsKey(editorReference))
 				.map(editorReference -> reference2ibexEdge.get(name).get(editorReference))
 				.collect(Collectors.toList()));
+		
+		// Transform parameters
+		editorPattern.getParameters().forEach(param -> {
+			IBeXParameter ibexParameter = IBeXPatternModelFactory.eINSTANCE.createIBeXParameter();
+			ibexParameter.setName(param.getName());
+			ibexParameter.setType(param.getType());
+			ibexPattern.getParameters().add(ibexParameter);
+		});
+		// Add documentation
+		try {
+			ibexPattern.setDocumentation(GTCommentExtractor.getComment(editorPattern));
+		} catch(Exception e) {
+			ibexPattern.setDocumentation("");
+		}
+		
 		
 		return ibexPattern;
 	}
@@ -520,7 +552,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		IBeXDeletePattern ibexDeletePattern = transformToDeletePattern(editorPattern);
 		
 		IBeXRule ibexRule = IBeXPatternModelFactory.eINSTANCE.createIBeXRule();
-		ibexRule.setName(editorPattern.getName()+"_rule");
+		ibexRule.setName(editorPattern.getName());
 		if(nameToPattern.containsKey(editorPattern.getName())) {
 			ibexRule.setLhs(nameToPattern.get(editorPattern.getName()));
 		}
@@ -532,24 +564,31 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		if(ibexDeletePattern != null) {
 			ibexRule.setDelete(ibexDeletePattern);
 		}
-		
+		IBeXContextPattern lhs = null;
 		if(ibexRule.getLhs() instanceof IBeXContextPattern) {
-			IBeXContextPattern lhs = (IBeXContextPattern) ibexRule.getLhs();
-			IBeXContextPattern rhs = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
-			rhs.setName(lhs.getName()+"_rhs");
-			rhs.getSignatureNodes().addAll(lhs.getSignatureNodes().stream()
-					.filter(lhsNode -> !ibexDeletePattern.getDeletedNodes().contains(lhsNode))
-					.collect(Collectors.toList()));
-			rhs.getLocalNodes().addAll(lhs.getLocalNodes().stream()
-					.filter(lhsNode -> !ibexDeletePattern.getDeletedNodes().contains(lhsNode))
-					.collect(Collectors.toList()));
-			rhs.getLocalEdges().addAll(lhs.getLocalEdges().stream()
-					.filter(lhsEdge -> !ibexDeletePattern.getDeletedEdges().contains(lhsEdge))
-					.collect(Collectors.toList()));
-			rhs.getSignatureNodes().addAll(ibexCreatePattern.getCreatedNodes());
-			rhs.getLocalEdges().addAll(ibexCreatePattern.getCreatedEdges());
-			ibexRule.setRhs(rhs);
+			lhs = (IBeXContextPattern) ibexRule.getLhs();
+		} else {
+			lhs = ((IBeXContextAlternatives) ibexRule.getLhs()).getContext();
 		}
+		
+		ibexRule.getParameters().addAll(lhs.getParameters());
+		ibexRule.setDocumentation(lhs.getDocumentation());
+		
+		IBeXContextPattern rhs = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
+		rhs.setName(lhs.getName()+"_rhs");
+		rhs.getSignatureNodes().addAll(lhs.getSignatureNodes().stream()
+				.filter(lhsNode -> !ibexDeletePattern.getDeletedNodes().contains(lhsNode))
+				.collect(Collectors.toList()));
+		rhs.getLocalNodes().addAll(lhs.getLocalNodes().stream()
+				.filter(lhsNode -> !ibexDeletePattern.getDeletedNodes().contains(lhsNode))
+				.collect(Collectors.toList()));
+		rhs.getLocalEdges().addAll(lhs.getLocalEdges().stream()
+				.filter(lhsEdge -> !ibexDeletePattern.getDeletedEdges().contains(lhsEdge))
+				.collect(Collectors.toList()));
+		rhs.getSignatureNodes().addAll(ibexCreatePattern.getCreatedNodes());
+		rhs.getLocalEdges().addAll(ibexCreatePattern.getCreatedEdges());
+		ibexRule.setRhs(rhs);
+		
 		ibexRules.add(ibexRule);
 	}
 

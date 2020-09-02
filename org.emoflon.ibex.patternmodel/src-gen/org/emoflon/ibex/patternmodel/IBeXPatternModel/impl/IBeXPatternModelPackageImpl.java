@@ -36,6 +36,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
@@ -255,6 +256,13 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	private EClass iBeXRuleEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXParameterEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -646,6 +654,16 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EReference getIBeXContextAlternatives_Context() {
+		return (EReference) iBeXContextAlternativesEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getIBeXContextPattern() {
 		return iBeXContextPatternEClass;
 	}
@@ -718,6 +736,26 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	@Override
 	public EReference getIBeXContextPattern_Csps() {
 		return (EReference) iBeXContextPatternEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXContextPattern_Parameters() {
+		return (EReference) iBeXContextPatternEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getIBeXContextPattern_Documentation() {
+		return (EAttribute) iBeXContextPatternEClass.getEStructuralFeatures().get(8);
 	}
 
 	/**
@@ -1186,6 +1224,46 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EReference getIBeXRule_Parameters() {
+		return (EReference) iBeXRuleEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getIBeXRule_Documentation() {
+		return (EAttribute) iBeXRuleEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXParameter() {
+		return iBeXParameterEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXParameter_Type() {
+		return (EReference) iBeXParameterEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getIBeXRelation() {
 		return iBeXRelationEEnum;
 	}
@@ -1264,6 +1342,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 
 		iBeXContextAlternativesEClass = createEClass(IBE_XCONTEXT_ALTERNATIVES);
 		createEReference(iBeXContextAlternativesEClass, IBE_XCONTEXT_ALTERNATIVES__ALTERNATIVE_PATTERNS);
+		createEReference(iBeXContextAlternativesEClass, IBE_XCONTEXT_ALTERNATIVES__CONTEXT);
 
 		iBeXContextPatternEClass = createEClass(IBE_XCONTEXT_PATTERN);
 		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__ATTRIBUTE_CONSTRAINT);
@@ -1273,6 +1352,8 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__LOCAL_NODES);
 		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__SIGNATURE_NODES);
 		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__CSPS);
+		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__PARAMETERS);
+		createEAttribute(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__DOCUMENTATION);
 
 		iBeXCreatePatternEClass = createEClass(IBE_XCREATE_PATTERN);
 		createEReference(iBeXCreatePatternEClass, IBE_XCREATE_PATTERN__ATTRIBUTE_ASSIGNMENTS);
@@ -1333,6 +1414,11 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXRuleEClass, IBE_XRULE__RHS);
 		createEReference(iBeXRuleEClass, IBE_XRULE__CREATE);
 		createEReference(iBeXRuleEClass, IBE_XRULE__DELETE);
+		createEReference(iBeXRuleEClass, IBE_XRULE__PARAMETERS);
+		createEAttribute(iBeXRuleEClass, IBE_XRULE__DOCUMENTATION);
+
+		iBeXParameterEClass = createEClass(IBE_XPARAMETER);
+		createEReference(iBeXParameterEClass, IBE_XPARAMETER__TYPE);
 
 		// Create enums
 		iBeXRelationEEnum = createEEnum(IBE_XRELATION);
@@ -1389,6 +1475,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXStochasticAttributeValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 		iBeXArithmeticValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 		iBeXRuleEClass.getESuperTypes().add(this.getIBeXNamedElement());
+		iBeXParameterEClass.getESuperTypes().add(this.getIBeXNamedElement());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(iBeXModelEClass, IBeXModel.class, "IBeXModel", !IS_ABSTRACT, !IS_INTERFACE,
@@ -1482,6 +1569,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXContextAlternatives_AlternativePatterns(), this.getIBeXContextPattern(), null,
 				"alternativePatterns", null, 0, -1, IBeXContextAlternatives.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXContextAlternatives_Context(), this.getIBeXContextPattern(), null, "context", null, 1, 1,
+				IBeXContextAlternatives.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXContextPatternEClass, IBeXContextPattern.class, "IBeXContextPattern", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1507,6 +1597,12 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXContextPattern_Csps(), this.getIBeXCSP(), null, "csps", null, 0, -1,
 				IBeXContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXContextPattern_Parameters(), this.getIBeXParameter(), null, "parameters", null, 0, -1,
+				IBeXContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXContextPattern_Documentation(), ecorePackage.getEString(), "documentation", null, 0, 1,
+				IBeXContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXCreatePatternEClass, IBeXCreatePattern.class, "IBeXCreatePattern", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -1643,6 +1739,18 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXRule_Delete(), this.getIBeXDeletePattern(), null, "delete", null, 0, 1, IBeXRule.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXRule_Parameters(), this.getIBeXParameter(), null, "parameters", null, 0, -1,
+				IBeXRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXRule_Documentation(), ecorePackage.getEString(), "documentation", null, 0, 1,
+				IBeXRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXParameterEClass, IBeXParameter.class, "IBeXParameter", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXParameter_Type(), ecorePackage.getEDataType(), null, "type", null, 0, 1,
+				IBeXParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(iBeXRelationEEnum, IBeXRelation.class, "IBeXRelation");
