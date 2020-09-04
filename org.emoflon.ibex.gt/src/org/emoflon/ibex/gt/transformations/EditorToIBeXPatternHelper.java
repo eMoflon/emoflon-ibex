@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorApplicationCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
@@ -25,12 +24,14 @@ import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
 import org.emoflon.ibex.gt.editor.utils.GTConditionHelper;
 import org.emoflon.ibex.gt.editor.utils.GTEditorAttributeUtils;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
@@ -90,6 +91,19 @@ final public class EditorToIBeXPatternHelper {
 		
 		nodes.addAll(context.getSignatureNodes());
 		return nodes;
+	}
+	
+	public static Collection<IBeXArithmeticConstraint> getArithmeticConstratins(IBeXContext pattern) {
+		Collection<IBeXArithmeticConstraint> constraints = new LinkedList<>();
+		IBeXContextPattern context = null;
+		if(pattern instanceof IBeXContextPattern) {
+			context = (IBeXContextPattern) pattern;
+		} else {
+			context = ((IBeXContextAlternatives) pattern).getContext();
+			
+		}
+		constraints.addAll(context.getArithmeticConstraints());
+		return constraints;
 	}
 	
 	/**
@@ -295,7 +309,7 @@ final public class EditorToIBeXPatternHelper {
 		value.setFunction(EditorToStochasticExtensionHelper
 				.transformStochasticFunction(stochasticExpression));
 		// the value of the enums from GTStochasticRange and OperatorRange need to be the same
-		value.setRange(GTStochasticRange.get(stochasticExpression.getOperatorRange().getValue()));
+		value.setRange(IBeXDistributionRange.get(stochasticExpression.getOperatorRange().getValue()));
 		return value;
 	}
 	/**

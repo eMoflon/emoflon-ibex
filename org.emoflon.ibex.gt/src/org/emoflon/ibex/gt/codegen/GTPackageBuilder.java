@@ -1,6 +1,5 @@
 package org.emoflon.ibex.gt.codegen;
 
-import GTLanguage.GTRuleSet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +31,6 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.XtextResourceSet;
-import org.emoflon.ibex.gt.codegen.JavaFileGenerator;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
@@ -41,8 +39,6 @@ import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
-import org.emoflon.ibex.gt.transformations.EditorToGTModelTransformation;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.propertycontainer.MoflonPropertiesContainerHelper;
 import org.moflon.core.utilities.ClasspathUtil;

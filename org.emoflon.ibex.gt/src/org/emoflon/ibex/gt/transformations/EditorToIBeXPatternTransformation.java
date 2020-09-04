@@ -29,9 +29,12 @@ import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
+import org.emoflon.ibex.gt.editor.gT.EditorRelation;
 import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
 import org.emoflon.ibex.gt.editor.utils.GTCommentExtractor;
 import org.emoflon.ibex.gt.editor.utils.GTEditorModelUtils;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
@@ -55,9 +58,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelFactoryImpl;
-
-import GTLanguage.GTLanguageFactory;
-import GTLanguage.GTParameter;
 
 /**
  * Transformation from the editor model to IBeX Patterns.
@@ -342,6 +342,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			ibexParameter.setType(param.getType());
 			ibexPattern.getParameters().add(ibexParameter);
 		});
+		
+		//Transform arithmetic constraints
+		transformArithmeticConstraints(editorPattern, ibexPattern);
+		
 		// Add documentation
 		try {
 			ibexPattern.setDocumentation(GTCommentExtractor.getComment(editorPattern));
@@ -547,6 +551,31 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			return ibexAttributeExpression;
 		});
 	}
+	
+	/**
+	 * Transforms the arithmetic expressions to pattern constraints; only used on context patterns
+	 * @param editorPattern
+	 * @param ibexPattern
+	 */
+	private void transformArithmeticConstraints(final EditorPattern editorPattern, final IBeXContextPattern ibexPattern) {
+		for(final EditorNode node: editorPattern.getNodes()) {
+			for(final EditorAttribute attribute: node.getAttributes()) {
+				if(attribute.getValue() instanceof ArithmeticCalculationExpression && attribute.getRelation() != EditorRelation.ASSIGNMENT) {
+					IBeXArithmeticAttribute arithmeticAttribute = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticAttribute();
+					arithmeticAttribute.setName(node.getName());
+					arithmeticAttribute.setAttribute(attribute.getAttribute());
+					arithmeticAttribute.setType(node.getType());
+					IBeXArithmeticConstraint constraint = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticConstraint();
+					constraint.setParameter(arithmeticAttribute);
+					constraint.setRelation(EditorToIBeXPatternHelper.convertRelation(attribute.getRelation()));
+					constraint.setExpression(EditorToArithmeticExtensionHelper
+							.transformToGTArithmetics(((ArithmeticCalculationExpression) attribute.getValue()).getExpression()));
+					ibexPattern.getArithmeticConstraints().add(constraint);
+				}
+			}
+		}
+	}
+	
 	private void transformToRule(final EditorPattern editorPattern) {
 		IBeXCreatePattern ibexCreatePattern = transformToCreatePattern(editorPattern);
 		IBeXDeletePattern ibexDeletePattern = transformToDeletePattern(editorPattern);
@@ -564,6 +593,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		if(ibexDeletePattern != null) {
 			ibexRule.setDelete(ibexDeletePattern);
 		}
+		
+		// create RHS from LHS, create and delete patterns
 		IBeXContextPattern lhs = null;
 		if(ibexRule.getLhs() instanceof IBeXContextPattern) {
 			lhs = (IBeXContextPattern) ibexRule.getLhs();
@@ -573,6 +604,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		
 		ibexRule.getParameters().addAll(lhs.getParameters());
 		ibexRule.setDocumentation(lhs.getDocumentation());
+		ibexRule.getArithmeticConstraints().addAll(lhs.getArithmeticConstraints());
 		
 		IBeXContextPattern rhs = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
 		rhs.setName(lhs.getName()+"_rhs");
@@ -588,6 +620,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		rhs.getSignatureNodes().addAll(ibexCreatePattern.getCreatedNodes());
 		rhs.getLocalEdges().addAll(ibexCreatePattern.getCreatedEdges());
 		ibexRule.setRhs(rhs);
+		
+		// add probability, if present
+		ibexRule.setProbability(EditorToStochasticExtensionHelper
+				.transformToGTProbability(editorPattern));
 		
 		ibexRules.add(ibexRule);
 	}

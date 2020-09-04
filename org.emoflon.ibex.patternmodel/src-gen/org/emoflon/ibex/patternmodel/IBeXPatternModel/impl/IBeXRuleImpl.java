@@ -3,22 +3,27 @@
 package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
 import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbability;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 
 /**
@@ -29,17 +34,39 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getDocumentation <em>Documentation</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getLhs <em>Lhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getRhs <em>Rhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getDelete <em>Delete</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getDocumentation <em>Documentation</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getArithmeticConstraints <em>Arithmetic Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getProbability <em>Probability</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
+	/**
+	 * The default value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDocumentation()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String DOCUMENTATION_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDocumentation()
+	 * @generated
+	 * @ordered
+	 */
+	protected String documentation = DOCUMENTATION_EDEFAULT;
+
 	/**
 	 * The cached value of the '{@link #getLhs() <em>Lhs</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -91,24 +118,24 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	protected EList<IBeXParameter> parameters;
 
 	/**
-	 * The default value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * The cached value of the '{@link #getArithmeticConstraints() <em>Arithmetic Constraints</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDocumentation()
+	 * @see #getArithmeticConstraints()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String DOCUMENTATION_EDEFAULT = null;
+	protected EList<IBeXArithmeticConstraint> arithmeticConstraints;
 
 	/**
-	 * The cached value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * The cached value of the '{@link #getProbability() <em>Probability</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDocumentation()
+	 * @see #getProbability()
 	 * @generated
 	 * @ordered
 	 */
-	protected String documentation = DOCUMENTATION_EDEFAULT;
+	protected IBeXProbability probability;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -127,6 +154,30 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	@Override
 	protected EClass eStaticClass() {
 		return IBeXPatternModelPackage.Literals.IBE_XRULE;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getDocumentation() {
+		return documentation;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setDocumentation(String newDocumentation) {
+		String oldDocumentation = documentation;
+		documentation = newDocumentation;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION,
+					oldDocumentation, documentation));
 	}
 
 	/**
@@ -346,8 +397,12 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	 * @generated
 	 */
 	@Override
-	public String getDocumentation() {
-		return documentation;
+	public EList<IBeXArithmeticConstraint> getArithmeticConstraints() {
+		if (arithmeticConstraints == null) {
+			arithmeticConstraints = new EObjectResolvingEList<IBeXArithmeticConstraint>(IBeXArithmeticConstraint.class,
+					this, IBeXPatternModelPackage.IBE_XRULE__ARITHMETIC_CONSTRAINTS);
+		}
+		return arithmeticConstraints;
 	}
 
 	/**
@@ -356,12 +411,50 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	 * @generated
 	 */
 	@Override
-	public void setDocumentation(String newDocumentation) {
-		String oldDocumentation = documentation;
-		documentation = newDocumentation;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION,
-					oldDocumentation, documentation));
+	public IBeXProbability getProbability() {
+		return probability;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetProbability(IBeXProbability newProbability, NotificationChain msgs) {
+		IBeXProbability oldProbability = probability;
+		probability = newProbability;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXPatternModelPackage.IBE_XRULE__PROBABILITY, oldProbability, newProbability);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setProbability(IBeXProbability newProbability) {
+		if (newProbability != probability) {
+			NotificationChain msgs = null;
+			if (probability != null)
+				msgs = ((InternalEObject) probability).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XRULE__PROBABILITY, null, msgs);
+			if (newProbability != null)
+				msgs = ((InternalEObject) newProbability).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XRULE__PROBABILITY, null, msgs);
+			msgs = basicSetProbability(newProbability, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXPatternModelPackage.IBE_XRULE__PROBABILITY,
+					newProbability, newProbability));
 	}
 
 	/**
@@ -378,6 +471,8 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return basicSetCreate(null, msgs);
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			return basicSetDelete(null, msgs);
+		case IBeXPatternModelPackage.IBE_XRULE__PROBABILITY:
+			return basicSetProbability(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -390,6 +485,8 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
+		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
+			return getDocumentation();
 		case IBeXPatternModelPackage.IBE_XRULE__LHS:
 			if (resolve)
 				return getLhs();
@@ -402,8 +499,10 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return getDelete();
 		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
 			return getParameters();
-		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
-			return getDocumentation();
+		case IBeXPatternModelPackage.IBE_XRULE__ARITHMETIC_CONSTRAINTS:
+			return getArithmeticConstraints();
+		case IBeXPatternModelPackage.IBE_XRULE__PROBABILITY:
+			return getProbability();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -417,6 +516,9 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
+		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
+			setDocumentation((String) newValue);
+			return;
 		case IBeXPatternModelPackage.IBE_XRULE__LHS:
 			setLhs((IBeXContext) newValue);
 			return;
@@ -433,8 +535,12 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			getParameters().clear();
 			getParameters().addAll((Collection<? extends IBeXParameter>) newValue);
 			return;
-		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
-			setDocumentation((String) newValue);
+		case IBeXPatternModelPackage.IBE_XRULE__ARITHMETIC_CONSTRAINTS:
+			getArithmeticConstraints().clear();
+			getArithmeticConstraints().addAll((Collection<? extends IBeXArithmeticConstraint>) newValue);
+			return;
+		case IBeXPatternModelPackage.IBE_XRULE__PROBABILITY:
+			setProbability((IBeXProbability) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -448,6 +554,9 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
+		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
+			setDocumentation(DOCUMENTATION_EDEFAULT);
+			return;
 		case IBeXPatternModelPackage.IBE_XRULE__LHS:
 			setLhs((IBeXContext) null);
 			return;
@@ -463,8 +572,11 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
 			getParameters().clear();
 			return;
-		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
-			setDocumentation(DOCUMENTATION_EDEFAULT);
+		case IBeXPatternModelPackage.IBE_XRULE__ARITHMETIC_CONSTRAINTS:
+			getArithmeticConstraints().clear();
+			return;
+		case IBeXPatternModelPackage.IBE_XRULE__PROBABILITY:
+			setProbability((IBeXProbability) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -478,6 +590,9 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
+		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
+			return DOCUMENTATION_EDEFAULT == null ? documentation != null
+					: !DOCUMENTATION_EDEFAULT.equals(documentation);
 		case IBeXPatternModelPackage.IBE_XRULE__LHS:
 			return lhs != null;
 		case IBeXPatternModelPackage.IBE_XRULE__RHS:
@@ -488,9 +603,10 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return delete != null;
 		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
 			return parameters != null && !parameters.isEmpty();
-		case IBeXPatternModelPackage.IBE_XRULE__DOCUMENTATION:
-			return DOCUMENTATION_EDEFAULT == null ? documentation != null
-					: !DOCUMENTATION_EDEFAULT.equals(documentation);
+		case IBeXPatternModelPackage.IBE_XRULE__ARITHMETIC_CONSTRAINTS:
+			return arithmeticConstraints != null && !arithmeticConstraints.isEmpty();
+		case IBeXPatternModelPackage.IBE_XRULE__PROBABILITY:
+			return probability != null;
 		}
 		return super.eIsSet(featureID);
 	}

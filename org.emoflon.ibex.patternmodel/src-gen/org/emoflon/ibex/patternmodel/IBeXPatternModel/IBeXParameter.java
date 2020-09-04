@@ -21,7 +21,6 @@ import org.eclipse.emf.ecore.EDataType;
  * @generated
  */
 public interface IBeXParameter extends IBeXNamedElement {
-
 	/**
 	 * Returns the value of the '<em><b>Type</b></em>' reference.
 	 * <!-- begin-user-doc -->
@@ -43,4 +42,5 @@ public interface IBeXParameter extends IBeXNamedElement {
 	 * @generated
 	 */
 	void setType(EDataType value);
+
 } // IBeXParameter

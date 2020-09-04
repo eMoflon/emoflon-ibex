@@ -18,9 +18,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter;
 import org.moflon.core.utilities.EcoreUtils;
 
-import GTLanguage.GTNode;
-import GTLanguage.GTParameter;
-
 /**
  * This class manages the mapping between names of EClasses/EDataTypes to the
  * name of the meta-model.

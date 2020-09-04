@@ -17,7 +17,9 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation <em>Documentation</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getAttributeConstraint <em>Attribute Constraint</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getArithmeticConstraints <em>Arithmetic Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getInjectivityConstraints <em>Injectivity Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getInvocations <em>Invocations</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalEdges <em>Local Edges</em>}</li>
@@ -25,7 +27,6 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getCsps <em>Csps</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation <em>Documentation</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern()
@@ -33,6 +34,28 @@ import org.eclipse.emf.common.util.EList;
  * @generated
  */
 public interface IBeXContextPattern extends IBeXContext {
+	/**
+	 * Returns the value of the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Documentation</em>' attribute.
+	 * @see #setDocumentation(String)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_Documentation()
+	 * @model
+	 * @generated
+	 */
+	String getDocumentation();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Documentation</em>' attribute.
+	 * @see #getDocumentation()
+	 * @generated
+	 */
+	void setDocumentation(String value);
+
 	/**
 	 * Returns the value of the '<em><b>Attribute Constraint</b></em>' containment reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint}.
@@ -44,6 +67,18 @@ public interface IBeXContextPattern extends IBeXContext {
 	 * @generated
 	 */
 	EList<IBeXAttributeConstraint> getAttributeConstraint();
+
+	/**
+	 * Returns the value of the '<em><b>Arithmetic Constraints</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Arithmetic Constraints</em>' containment reference list.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_ArithmeticConstraints()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<IBeXArithmeticConstraint> getArithmeticConstraints();
 
 	/**
 	 * Returns the value of the '<em><b>Injectivity Constraints</b></em>' containment reference list.
@@ -130,27 +165,5 @@ public interface IBeXContextPattern extends IBeXContext {
 	 * @generated
 	 */
 	EList<IBeXParameter> getParameters();
-
-	/**
-	 * Returns the value of the '<em><b>Documentation</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Documentation</em>' attribute.
-	 * @see #setDocumentation(String)
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_Documentation()
-	 * @model
-	 * @generated
-	 */
-	String getDocumentation();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation <em>Documentation</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Documentation</em>' attribute.
-	 * @see #getDocumentation()
-	 * @generated
-	 */
-	void setDocumentation(String value);
 
 } // IBeXContextPattern

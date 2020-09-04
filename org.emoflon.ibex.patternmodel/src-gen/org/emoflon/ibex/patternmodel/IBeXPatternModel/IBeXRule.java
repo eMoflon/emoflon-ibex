@@ -13,12 +13,14 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDocumentation <em>Documentation</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getLhs <em>Lhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getRhs <em>Rhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDelete <em>Delete</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDocumentation <em>Documentation</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getArithmeticConstraints <em>Arithmetic Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getProbability <em>Probability</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXRule()
@@ -26,6 +28,28 @@ import org.eclipse.emf.common.util.EList;
  * @generated
  */
 public interface IBeXRule extends IBeXNamedElement {
+	/**
+	 * Returns the value of the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Documentation</em>' attribute.
+	 * @see #setDocumentation(String)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXRule_Documentation()
+	 * @model
+	 * @generated
+	 */
+	String getDocumentation();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDocumentation <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Documentation</em>' attribute.
+	 * @see #getDocumentation()
+	 * @generated
+	 */
+	void setDocumentation(String value);
+
 	/**
 	 * Returns the value of the '<em><b>Lhs</b></em>' reference.
 	 * <!-- begin-user-doc -->
@@ -127,25 +151,37 @@ public interface IBeXRule extends IBeXNamedElement {
 	EList<IBeXParameter> getParameters();
 
 	/**
-	 * Returns the value of the '<em><b>Documentation</b></em>' attribute.
+	 * Returns the value of the '<em><b>Arithmetic Constraints</b></em>' reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Documentation</em>' attribute.
-	 * @see #setDocumentation(String)
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXRule_Documentation()
+	 * @return the value of the '<em>Arithmetic Constraints</em>' reference list.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXRule_ArithmeticConstraints()
 	 * @model
 	 * @generated
 	 */
-	String getDocumentation();
+	EList<IBeXArithmeticConstraint> getArithmeticConstraints();
 
 	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDocumentation <em>Documentation</em>}' attribute.
+	 * Returns the value of the '<em><b>Probability</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Documentation</em>' attribute.
-	 * @see #getDocumentation()
+	 * @return the value of the '<em>Probability</em>' containment reference.
+	 * @see #setProbability(IBeXProbability)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXRule_Probability()
+	 * @model containment="true"
 	 * @generated
 	 */
-	void setDocumentation(String value);
+	IBeXProbability getProbability();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getProbability <em>Probability</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Probability</em>' containment reference.
+	 * @see #getProbability()
+	 * @generated
+	 */
+	void setProbability(IBeXProbability value);
 
 } // IBeXRule

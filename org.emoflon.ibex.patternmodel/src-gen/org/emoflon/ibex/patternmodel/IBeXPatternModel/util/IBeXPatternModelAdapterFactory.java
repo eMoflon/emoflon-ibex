@@ -94,38 +94,13 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-		public Adapter caseIBeXAttribute(IBeXAttribute object) {
-			return createIBeXAttributeAdapter();
+		public Adapter caseIBeXNamedElement(IBeXNamedElement object) {
+			return createIBeXNamedElementAdapter();
 		}
 
 		@Override
-		public Adapter caseIBeXAttributeAssignment(IBeXAttributeAssignment object) {
-			return createIBeXAttributeAssignmentAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXAttributeConstraint(IBeXAttributeConstraint object) {
-			return createIBeXAttributeConstraintAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXAttributeParameter(IBeXAttributeParameter object) {
-			return createIBeXAttributeParameterAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXAttributeValue(IBeXAttributeValue object) {
-			return createIBeXAttributeValueAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXAttributeExpression(IBeXAttributeExpression object) {
-			return createIBeXAttributeExpressionAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXConstant(IBeXConstant object) {
-			return createIBeXConstantAdapter();
+		public Adapter caseIBeXPattern(IBeXPattern object) {
+			return createIBeXPatternAdapter();
 		}
 
 		@Override
@@ -154,8 +129,48 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseIBeXNode(IBeXNode object) {
+			return createIBeXNodeAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXEdge(IBeXEdge object) {
 			return createIBeXEdgeAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXParameter(IBeXParameter object) {
+			return createIBeXParameterAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXAttribute(IBeXAttribute object) {
+			return createIBeXAttributeAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXAttributeAssignment(IBeXAttributeAssignment object) {
+			return createIBeXAttributeAssignmentAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXAttributeConstraint(IBeXAttributeConstraint object) {
+			return createIBeXAttributeConstraintAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXAttributeValue(IBeXAttributeValue object) {
+			return createIBeXAttributeValueAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXAttributeParameter(IBeXAttributeParameter object) {
+			return createIBeXAttributeParameterAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXConstant(IBeXConstant object) {
+			return createIBeXConstantAdapter();
 		}
 
 		@Override
@@ -164,38 +179,8 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-		public Adapter caseIBeXNamedElement(IBeXNamedElement object) {
-			return createIBeXNamedElementAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXNode(IBeXNode object) {
-			return createIBeXNodeAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXInjectivityConstraint(IBeXInjectivityConstraint object) {
-			return createIBeXInjectivityConstraintAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXNodeToNodeMapping(Map.Entry<IBeXNode, IBeXNode> object) {
-			return createIBeXNodeToNodeMappingAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXPattern(IBeXPattern object) {
-			return createIBeXPatternAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXPatternInvocation(IBeXPatternInvocation object) {
-			return createIBeXPatternInvocationAdapter();
-		}
-
-		@Override
-		public Adapter caseIBeXCSP(IBeXCSP object) {
-			return createIBeXCSPAdapter();
+		public Adapter caseIBeXAttributeExpression(IBeXAttributeExpression object) {
+			return createIBeXAttributeExpressionAdapter();
 		}
 
 		@Override
@@ -209,13 +194,68 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseIBeXInjectivityConstraint(IBeXInjectivityConstraint object) {
+			return createIBeXInjectivityConstraintAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXPatternInvocation(IBeXPatternInvocation object) {
+			return createIBeXPatternInvocationAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXNodeToNodeMapping(Map.Entry<IBeXNode, IBeXNode> object) {
+			return createIBeXNodeToNodeMappingAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXCSP(IBeXCSP object) {
+			return createIBeXCSPAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXRule(IBeXRule object) {
 			return createIBeXRuleAdapter();
 		}
 
 		@Override
-		public Adapter caseIBeXParameter(IBeXParameter object) {
-			return createIBeXParameterAdapter();
+		public Adapter caseIBeXProbability(IBeXProbability object) {
+			return createIBeXProbabilityAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXArithmeticConstraint(IBeXArithmeticConstraint object) {
+			return createIBeXArithmeticConstraintAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXArithmeticExpression(IBeXArithmeticExpression object) {
+			return createIBeXArithmeticExpressionAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXUnaryExpression(IBeXUnaryExpression object) {
+			return createIBeXUnaryExpressionAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXBinaryExpression(IBeXBinaryExpression object) {
+			return createIBeXBinaryExpressionAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXArithmeticValueLiteral(IBeXArithmeticValueLiteral object) {
+			return createIBeXArithmeticValueLiteralAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXProbabilityDistribution(IBeXProbabilityDistribution object) {
+			return createIBeXProbabilityDistributionAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXArithmeticAttribute(IBeXArithmeticAttribute object) {
+			return createIBeXArithmeticAttributeAdapter();
 		}
 
 		@Override
@@ -308,100 +348,30 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttribute <em>IBe XAttribute</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement <em>IBe XNamed Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttribute
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement
 	 * @generated
 	 */
-	public Adapter createIBeXAttributeAdapter() {
+	public Adapter createIBeXNamedElementAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment <em>IBe XAttribute Assignment</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern <em>IBe XPattern</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern
 	 * @generated
 	 */
-	public Adapter createIBeXAttributeAssignmentAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint <em>IBe XAttribute Constraint</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint
-	 * @generated
-	 */
-	public Adapter createIBeXAttributeConstraintAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter <em>IBe XAttribute Parameter</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter
-	 * @generated
-	 */
-	public Adapter createIBeXAttributeParameterAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue <em>IBe XAttribute Value</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue
-	 * @generated
-	 */
-	public Adapter createIBeXAttributeValueAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression <em>IBe XAttribute Expression</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression
-	 * @generated
-	 */
-	public Adapter createIBeXAttributeExpressionAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant <em>IBe XConstant</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant
-	 * @generated
-	 */
-	public Adapter createIBeXConstantAdapter() {
+	public Adapter createIBeXPatternAdapter() {
 		return null;
 	}
 
@@ -476,6 +446,20 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode <em>IBe XNode</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode
+	 * @generated
+	 */
+	public Adapter createIBeXNodeAdapter() {
+		return null;
+	}
+
+	/**
 	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge <em>IBe XEdge</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -486,6 +470,104 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXEdgeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter <em>IBe XParameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter
+	 * @generated
+	 */
+	public Adapter createIBeXParameterAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttribute <em>IBe XAttribute</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttribute
+	 * @generated
+	 */
+	public Adapter createIBeXAttributeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment <em>IBe XAttribute Assignment</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment
+	 * @generated
+	 */
+	public Adapter createIBeXAttributeAssignmentAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint <em>IBe XAttribute Constraint</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint
+	 * @generated
+	 */
+	public Adapter createIBeXAttributeConstraintAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue <em>IBe XAttribute Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue
+	 * @generated
+	 */
+	public Adapter createIBeXAttributeValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter <em>IBe XAttribute Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter
+	 * @generated
+	 */
+	public Adapter createIBeXAttributeParameterAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant <em>IBe XConstant</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant
+	 * @generated
+	 */
+	public Adapter createIBeXConstantAdapter() {
 		return null;
 	}
 
@@ -504,100 +586,16 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement <em>IBe XNamed Element</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression <em>IBe XAttribute Expression</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression
 	 * @generated
 	 */
-	public Adapter createIBeXNamedElementAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode <em>IBe XNode</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode
-	 * @generated
-	 */
-	public Adapter createIBeXNodeAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint <em>IBe XInjectivity Constraint</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint
-	 * @generated
-	 */
-	public Adapter createIBeXInjectivityConstraintAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link java.util.Map.Entry <em>IBe XNode To Node Mapping</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see java.util.Map.Entry
-	 * @generated
-	 */
-	public Adapter createIBeXNodeToNodeMappingAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern <em>IBe XPattern</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern
-	 * @generated
-	 */
-	public Adapter createIBeXPatternAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation <em>IBe XPattern Invocation</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation
-	 * @generated
-	 */
-	public Adapter createIBeXPatternInvocationAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP <em>IBe XCSP</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP
-	 * @generated
-	 */
-	public Adapter createIBeXCSPAdapter() {
+	public Adapter createIBeXAttributeExpressionAdapter() {
 		return null;
 	}
 
@@ -630,6 +628,62 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint <em>IBe XInjectivity Constraint</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint
+	 * @generated
+	 */
+	public Adapter createIBeXInjectivityConstraintAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation <em>IBe XPattern Invocation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation
+	 * @generated
+	 */
+	public Adapter createIBeXPatternInvocationAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link java.util.Map.Entry <em>IBe XNode To Node Mapping</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see java.util.Map.Entry
+	 * @generated
+	 */
+	public Adapter createIBeXNodeToNodeMappingAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP <em>IBe XCSP</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP
+	 * @generated
+	 */
+	public Adapter createIBeXCSPAdapter() {
+		return null;
+	}
+
+	/**
 	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule <em>IBe XRule</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -644,16 +698,114 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter <em>IBe XParameter</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbability <em>IBe XProbability</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbability
 	 * @generated
 	 */
-	public Adapter createIBeXParameterAdapter() {
+	public Adapter createIBeXProbabilityAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint <em>IBe XArithmetic Constraint</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint
+	 * @generated
+	 */
+	public Adapter createIBeXArithmeticConstraintAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression <em>IBe XArithmetic Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression
+	 * @generated
+	 */
+	public Adapter createIBeXArithmeticExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression <em>IBe XUnary Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression
+	 * @generated
+	 */
+	public Adapter createIBeXUnaryExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression <em>IBe XBinary Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression
+	 * @generated
+	 */
+	public Adapter createIBeXBinaryExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral <em>IBe XArithmetic Value Literal</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral
+	 * @generated
+	 */
+	public Adapter createIBeXArithmeticValueLiteralAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbabilityDistribution <em>IBe XProbability Distribution</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbabilityDistribution
+	 * @generated
+	 */
+	public Adapter createIBeXProbabilityDistributionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute <em>IBe XArithmetic Attribute</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute
+	 * @generated
+	 */
+	public Adapter createIBeXArithmeticAttributeAdapter() {
 		return null;
 	}
 

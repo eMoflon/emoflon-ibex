@@ -10,16 +10,11 @@ import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EEnum
 import org.emoflon.ibex.gt.codegen.EClassifiersManager
 
-import GTLanguage.GTNode
-import GTLanguage.GTRule
-import GTLanguage.GTRuleSet
 import java.util.HashSet
-import org.emoflon.ibex.gt.SGTPatternModel.GTRelation
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern
-import java.util.LinkedList
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation
@@ -79,7 +74,6 @@ class JavaFileGenerator {
 			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
 			'java.util.HashMap',
 			'java.util.Map.Entry',
-			'java.util.AbstractMap.SimpleEntry',
 			'org.emoflon.ibex.gt.arithmetics.Probability'
 		)
 		
@@ -117,13 +111,13 @@ class JavaFileGenerator {
 				/**
 				 * Map with all the rules and patterns of the model
 				 */
-				private Map<String, Supplier<? extends GraphTransformationPattern>> patternMap;
+				private Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> patternMap;
 				
 				/*
 				 *Map with all the rules that can be applied to Gillespie and their probabilities;
 				 * array[0] is the probability; array[1] is probability*matchCount
 				 */
-				private Map<GraphTransformationRule, double[]> gillespieMap;
+				private Map<GraphTransformationRule<?,?>, double[]> gillespieMap;
 			
 				/**
 				 * Creates a new «APIClassName».
@@ -141,8 +135,7 @@ class JavaFileGenerator {
 					URI uri = URI.createFileURI(workspacePath + patternPath);
 					interpreter.loadPatternSet(uri);
 					patternMap = initiatePatternMap();
-«««					TODO: Fix Isabellas stochastic and arithmetic GT features 
-«««					gillespieMap = initiateGillespieMap();
+					gillespieMap = initiateGillespieMap();
 				}
 			
 				/**
@@ -164,12 +157,11 @@ class JavaFileGenerator {
 					URI uri = URI.createFileURI(workspacePath + patternPath);
 					interpreter.loadPatternSet(uri);
 					patternMap = initiatePatternMap();
-«««					TODO: Fix Isabellas stochastic and arithmetic GT features
-«««					gillespieMap = initiateGillespieMap();
+					gillespieMap = initiateGillespieMap();
 				}
 				
-				private Map<String, Supplier<? extends GraphTransformationPattern>> initiatePatternMap(){
-					Map<String, Supplier<? extends GraphTransformationPattern>> map = new HashMap<String, Supplier<? extends GraphTransformationPattern>>();
+				private Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> initiatePatternMap(){
+					Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> map = new HashMap<>();
 					«FOR rule: ibexModel.ruleSet.rules»
 					«IF rule.parameters.empty»
 					map.put("«getRuleClassName(rule)»", () -> «rule.name»());
@@ -185,72 +177,72 @@ class JavaFileGenerator {
 					return map;
 				}
 				
-«««				TODO: Fix Isabellas stochastic and arithmetic GT features 
-«««				private Map<GraphTransformationRule, double[]> initiateGillespieMap(){
-«««					Map<GraphTransformationRule, double[]> map = 
-«««						new HashMap<GraphTransformationRule, double[]>();
-«««					«FOR rule: gtRuleSet.rules»
-«««					«IF rule.parameters.empty && rule.executable && rule.probability!== null»
-«««					«IF probabilityGenerator.isStatic(rule.probability)»
-«««					map.put(«rule.name»(), new double[]{
-«««					«rule.name»().getProbability().get().getProbability(), 0.0});					
-«««					«ENDIF»
-«««					«ENDIF»
-«««					«ENDFOR»
-«««					return map;
-«««				}
+				private Map<GraphTransformationRule<?,?>, double[]> initiateGillespieMap(){
+					Map<GraphTransformationRule<?,?>, double[]> map = 
+						new HashMap<>();
+					«FOR rule: ibexModel.ruleSet.rules»
+					«IF rule.parameters.empty && rule.probability!== null»
+					«IF probabilityGenerator.isStatic(rule.probability)»
+					map.put(«rule.name»(), new double[]{
+					«rule.name»().getProbability().get().getProbability(), 0.0});					
+					«ENDIF»
+					«ENDIF»
+					«ENDFOR»
+					return map;
+				}
 				 
-«««				/**
-«««				 * Returns the probability that the rule will be applied with the
-«««				 * Gillespie algorithm; only works if the rules do not have parameters and the
-«««				 * probability is static
-«««				 */
-«««				public double getGillespieProbability(GraphTransformationRule rule){
-«««					if(gillespieMap.containsKey(rule)){
-«««						double totalActivity = getTotalSystemActivity();
-«««						if(totalActivity > 0){
-«««							return gillespieMap.get(rule)[1]/totalActivity;	
-«««						}								
-«««					}
-«««					return 0;
-«««				}
-«««				
-«««				/**
-«««				 * Applies a rule to the graph after the Gillerspie algorithm;
-«««				 * only rules that do not have parameters are counted
-«««				 * @return an {@link Optional} for the the match after rule application
-«««				 */
-«««				public final Optional<GraphTransformationMatch> applyGillespie(){
-«««					double totalActivity = getTotalSystemActivity();
-«««					if(totalActivity != 0){
-«««						Random rnd = new Random();
-«««						double randomValue = totalActivity*rnd.nextDouble();
-«««						double currentActivity = 0;
-«««						for(Entry<GraphTransformationRule, double[]> entries : gillespieMap.entrySet()){
-«««						currentActivity += entries.getValue()[1];
-«««							if(currentActivity >= randomValue){
-«««								return entries.getKey().apply();
-«««							}						
-«««						}
-«««					}
-«««					return Optional.empty();
-«««				}
-«««				
-«««				/**
-«««				 * Helper method for the Gillespie algorithm; counts all the possible matches
-«««				 * for rules in the graph that have a static probability
-«««				 */
-«««				private double getTotalSystemActivity(){
-«««					 gillespieMap.forEach((v,z) -> {
-«««					 	z[0] =((Probability) v.getProbability().get()).getProbability();
-«««						 z[1] = v.countMatches()*z[0];
-«««						});
-«««					double totalActivity = 0;
-«««					for(double[] activity : gillespieMap.values()) {
-«««						totalActivity += activity[1];
-«««					}
-«««					return totalActivity;
-«««				}
+				/**
+				 * Returns the probability that the rule will be applied with the
+				 * Gillespie algorithm; only works if the rules do not have parameters and the
+				 * probability is static
+				 */
+				public double getGillespieProbability(GraphTransformationRule<?,?> rule){
+					if(gillespieMap.containsKey(rule)){
+						double totalActivity = getTotalSystemActivity();
+						if(totalActivity > 0){
+							return gillespieMap.get(rule)[1]/totalActivity;	
+						}								
+					}
+					return 0;
+				}
+				
+				/**
+				 * Applies a rule to the graph after the Gillerspie algorithm;
+				 * only rules that do not have parameters are counted
+				 * @return an {@link Optional} for the the match after rule application
+				 */
+				@SuppressWarnings("unchecked")
+				public final Optional<GraphTransformationMatch<?,?>> applyGillespie(){
+					double totalActivity = getTotalSystemActivity();
+					if(totalActivity != 0){
+						Random rnd = new Random();
+						double randomValue = totalActivity*rnd.nextDouble();
+						double currentActivity = 0;
+						for(Entry<GraphTransformationRule<?,?>, double[]> entries : gillespieMap.entrySet()){
+						currentActivity += entries.getValue()[1];
+							if(currentActivity >= randomValue){
+								return (Optional<GraphTransformationMatch<?, ?>>)entries.getKey().apply();
+							}						
+						}
+					}
+					return Optional.empty();
+				}
+				
+				/**
+				 * Helper method for the Gillespie algorithm; counts all the possible matches
+				 * for rules in the graph that have a static probability
+				 */
+				private double getTotalSystemActivity(){
+					 gillespieMap.forEach((v,z) -> {
+					 	z[0] =((Probability<?,?>) v.getProbability().get()).getProbability();
+						 z[1] = v.countMatches()*z[0];
+						});
+					double totalActivity = 0;
+					for(double[] activity : gillespieMap.values()) {
+						totalActivity += activity[1];
+					}
+					return totalActivity;
+				}
 								
 				«FOR rule : ibexModel.ruleSet.rules»
 						/**
@@ -279,7 +271,7 @@ class JavaFileGenerator {
 				/**
 			 	* returns all the patterns and rules of the model that do not need an input parameter
 			 	*/
-				public Map<String, Supplier<? extends GraphTransformationPattern>> getAllPatterns(){
+				public Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> getAllPatterns(){
 					return patternMap;
 				}
 			}
@@ -509,25 +501,24 @@ class JavaFileGenerator {
 	 * Generates the Java Pattern/Rule class for the given rule.
 	 */
 	def generateRuleClass(IFolder rulesPackage, IBeXRule rule) {
-//		val ruleClassType = if(rule.executable) 'GraphTransformationRule' else 'GraphTransformationPattern'
 		val imports = eClassifiersManager.getImportsForNodeTypes(EditorToIBeXPatternHelper.getRuleContextNodes(rule))
 		imports.addAll(eClassifiersManager.getImportsForDataTypes(rule.parameters))
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
+			'java.util.stream.Stream',
 			'org.emoflon.ibex.common.operational.IMatch',
 			'''org.emoflon.ibex.gt.api.GraphTransformationRule''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'java.util.Optional',
 			'''«getSubPackageName('api')».«APIClassName»''',
-			'''«getSubPackageName('api.matches')».«getMatchClassName(rule)»''',
-			'java.util.stream.Stream'
+			'''«getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
 		)
 		if (rule.parameters.size > 0 || EditorToIBeXPatternHelper.getRuleContextNodes(rule).size > 0) {
 			imports.add('java.util.Objects');
 		}
-//		TODO: Fix stochastic and arithmetic extension
-//		imports.addAll(getProbabilityImports(rule))
+		
+		imports.addAll(getProbabilityImports(rule))
 
 		val ruleSourceCode = '''
 			«printHeader(getSubPackageName('api.rules'), imports)»
@@ -536,6 +527,7 @@ class JavaFileGenerator {
 			 * The rule «getRuleSignature(rule)» which does the following:
 			 * «getRuleDocumentation(rule)»
 			 */
+			@SuppressWarnings("unused")
 			public class «getRuleClassName(rule)» extends GraphTransformationRule<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				private static String patternName = "«rule.name»";
 			
@@ -556,14 +548,11 @@ class JavaFileGenerator {
 				 * The probability that the rule will be applied; if the rule has no probability,
 				 * then the Optional will be empty
 				 */
-«««				TODO: Fix stochastic and arithmetic extension
-«««				private static «probabilityGenerator.getProbability(rule)»
-				
+				private static «probabilityGenerator.getProbability(rule)»
+			
 				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
 						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR»
-«««				TODO: Fix stochastic and arithmetic extension
-«««					super(api, interpreter, patternName, probability);
-					super(api, interpreter, patternName, null);
+					super(api, interpreter, patternName, probability);
 					«FOR parameter : rule.parameters»
 						«getMethodName('set', parameter.name)»(«parameter.name»Value);
 					«ENDFOR»
@@ -608,21 +597,19 @@ class JavaFileGenerator {
 						return this;
 					}
 			«ENDFOR»
-				
-«««				TODO: Fix arithmetic and stochastic extension
-«««				«IF !rule.constraints.empty»
-«««				@Override
-«««				protected Stream<IMatch> untypedMatchStream(){
-«««					return super.untypedMatchStream().filter( match -> 
-«««						«FOR constraint: rule.constraints SEPARATOR '&&'» 
-«««						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
-«««						«arithmeticConstraint» &&
-«««						«ENDFOR»
-«««						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-«««						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
-«««					);				
-«««				}
-«««				«ENDIF»
+				«IF !rule.arithmeticConstraints.empty»
+				@Override
+				protected Stream<IMatch> untypedMatchStream(){
+					return super.untypedMatchStream().filter( match -> 
+						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'» 
+						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
+						«arithmeticConstraint» &&
+						«ENDFOR»
+						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
+						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+					);				
+				}
+				«ENDIF»
 				@Override
 				public String toString() {
 					String s = "rule " + patternName + " {" + System.lineSeparator();
@@ -644,19 +631,18 @@ class JavaFileGenerator {
 	 * Generates the Java Pattern/Rule class for the given rule.
 	 */
 	def generatePatternClass(IFolder rulesPackage, IBeXContext pattern) {
-//		val ruleClassType = if(rule.executable) 'GraphTransformationRule' else 'GraphTransformationPattern'
 		val imports = eClassifiersManager.getImportsForNodeTypes(EditorToIBeXPatternHelper.getPatternNodes(pattern))
 		imports.addAll(eClassifiersManager.getImportsForDataTypes(getPatternParameter(pattern)))
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
+			'java.util.stream.Stream',
+			'java.util.Optional',
 			'org.emoflon.ibex.common.operational.IMatch',
 			'''org.emoflon.ibex.gt.api.GraphTransformationPattern''',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
-			'java.util.Optional',
 			'''«getSubPackageName('api')».«APIClassName»''',
-			'''«getSubPackageName('api.matches')».«getMatchClassName(pattern)»''',
-			'java.util.stream.Stream'
+			'''«getSubPackageName('api.matches')».«getMatchClassName(pattern)»'''
 		)
 		if (getPatternParameter(pattern).size > 0 || EditorToIBeXPatternHelper.getPatternNodes(pattern).size > 0) {
 			imports.add('java.util.Objects');
@@ -669,6 +655,7 @@ class JavaFileGenerator {
 			 * The pattern «EditorToIBeXPatternHelper.getPatternNodes(pattern)» which does the following:
 			 * «getPatternDocumentation(pattern)»
 			 */
+			@SuppressWarnings("unused")
 			public class «getPatternClassName(pattern)» extends GraphTransformationPattern<«getMatchClassName(pattern)», «getPatternClassName(pattern)»> {
 				private static String patternName = "«pattern.name»";
 			
@@ -733,20 +720,19 @@ class JavaFileGenerator {
 					}
 			«ENDFOR»
 				
-«««				TODO: Fix arithmetic and stochastic extension
-«««				«IF !rule.constraints.empty»
-«««				@Override
-«««				protected Stream<IMatch> untypedMatchStream(){
-«««					return super.untypedMatchStream().filter( match -> 
-«««						«FOR constraint: rule.constraints SEPARATOR '&&'» 
-«««						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
-«««						«arithmeticConstraint» &&
-«««						«ENDFOR»
-«««						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-«««						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
-«««					);				
-«««				}
-«««				«ENDIF»
+				«IF !EditorToIBeXPatternHelper.getArithmeticConstratins(pattern).empty»
+				@Override
+				protected Stream<IMatch> untypedMatchStream(){
+					return super.untypedMatchStream().filter( match -> 
+						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstratins(pattern) SEPARATOR '&&'» 
+						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
+						«arithmeticConstraint» &&
+						«ENDFOR»
+						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
+						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+					);				
+				}
+				«ENDIF»
 				@Override
 				public String toString() {
 					String s = "pattern " + patternName + " {" + System.lineSeparator();
@@ -769,24 +755,23 @@ class JavaFileGenerator {
 	 * depended of a node attribute
 	 */
 	def generateProbabilityClass(IFolder probabilitiesPackage, IBeXRule rule){
-		//TODO: Fix stochastic and arithmetic extension
-//		if(rule.probability === null){
-//			return;
-//		}
-//		if(!probabilityGenerator.isStatic(rule.probability)){
-//			var probabilitySourceCode = probabilityGenerator.generateProbabilityClass(rule)
-//			var imports = probabilityGenerator.getProbabilityImports(rule)
-//			probabilitySourceCode = printHeader(getSubPackageName('api.probabilities'), imports) + probabilitySourceCode 
-//			//a probability class is only generated if the probability is not static
-//			writeFile(probabilitiesPackage.getFile(probabilityGenerator.getProbabilityClassName(rule) + ".java")
-//				, probabilitySourceCode)			
-//		}
+		if(rule.probability === null){
+			return;
+		}
+		if(!probabilityGenerator.isStatic(rule.probability)){
+			var probabilitySourceCode = probabilityGenerator.generateProbabilityClass(rule)
+			var imports = probabilityGenerator.getProbabilityImports(rule)
+			probabilitySourceCode = printHeader(getSubPackageName('api.probabilities'), imports) + probabilitySourceCode 
+			//a probability class is only generated if the probability is not static
+			writeFile(probabilitiesPackage.getFile(probabilityGenerator.getProbabilityClassName(rule) + ".java")
+				, probabilitySourceCode)			
+		}
 	}
 	
 	/**
 	 * Returns the necessary imports for the rule class for the stochastic extension
 	 */
-	def getProbabilityImports(GTRule rule){
+	def getProbabilityImports(IBeXRule rule){
 		val imports = new HashSet<String>()
 		imports.add(
 			'org.emoflon.ibex.gt.arithmetics.Probability'
@@ -797,7 +782,7 @@ class JavaFileGenerator {
 		if(probabilityGenerator.isStatic(rule.probability)){
 			imports.addAll(
 				'org.emoflon.ibex.gt.arithmetics.StaticProbability',
-				'StochasticLanguage.GTStochasticDistribution',
+				'IBeXPatternModel.IBeXDistributionType',
 				'java.util.OptionalDouble'
 			)
 		}

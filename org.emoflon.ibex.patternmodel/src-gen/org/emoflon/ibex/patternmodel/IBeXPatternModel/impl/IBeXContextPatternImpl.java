@@ -13,11 +13,13 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
@@ -36,7 +38,9 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getDocumentation <em>Documentation</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getAttributeConstraint <em>Attribute Constraint</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getArithmeticConstraints <em>Arithmetic Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getInjectivityConstraints <em>Injectivity Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getInvocations <em>Invocations</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getLocalEdges <em>Local Edges</em>}</li>
@@ -44,12 +48,31 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getCsps <em>Csps</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getDocumentation <em>Documentation</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXContextPattern {
+	/**
+	 * The default value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDocumentation()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String DOCUMENTATION_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDocumentation()
+	 * @generated
+	 * @ordered
+	 */
+	protected String documentation = DOCUMENTATION_EDEFAULT;
+
 	/**
 	 * The cached value of the '{@link #getAttributeConstraint() <em>Attribute Constraint</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -59,6 +82,16 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	 * @ordered
 	 */
 	protected EList<IBeXAttributeConstraint> attributeConstraint;
+
+	/**
+	 * The cached value of the '{@link #getArithmeticConstraints() <em>Arithmetic Constraints</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getArithmeticConstraints()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXArithmeticConstraint> arithmeticConstraints;
 
 	/**
 	 * The cached value of the '{@link #getInjectivityConstraints() <em>Injectivity Constraints</em>}' containment reference list.
@@ -131,26 +164,6 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	protected EList<IBeXParameter> parameters;
 
 	/**
-	 * The default value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getDocumentation()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String DOCUMENTATION_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getDocumentation() <em>Documentation</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getDocumentation()
-	 * @generated
-	 * @ordered
-	 */
-	protected String documentation = DOCUMENTATION_EDEFAULT;
-
-	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -175,12 +188,51 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	 * @generated
 	 */
 	@Override
+	public String getDocumentation() {
+		return documentation;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setDocumentation(String newDocumentation) {
+		String oldDocumentation = documentation;
+		documentation = newDocumentation;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION, oldDocumentation, documentation));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EList<IBeXAttributeConstraint> getAttributeConstraint() {
 		if (attributeConstraint == null) {
 			attributeConstraint = new EObjectContainmentEList<IBeXAttributeConstraint>(IBeXAttributeConstraint.class,
 					this, IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ATTRIBUTE_CONSTRAINT);
 		}
 		return attributeConstraint;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EList<IBeXArithmeticConstraint> getArithmeticConstraints() {
+		if (arithmeticConstraints == null) {
+			arithmeticConstraints = new EObjectContainmentEList<IBeXArithmeticConstraint>(
+					IBeXArithmeticConstraint.class, this,
+					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ARITHMETIC_CONSTRAINTS);
+		}
+		return arithmeticConstraints;
 	}
 
 	/**
@@ -288,30 +340,6 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
-	public String getDocumentation() {
-		return documentation;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setDocumentation(String newDocumentation) {
-		String oldDocumentation = documentation;
-		documentation = newDocumentation;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION, oldDocumentation, documentation));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
@@ -332,6 +360,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 		switch (featureID) {
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ATTRIBUTE_CONSTRAINT:
 			return ((InternalEList<?>) getAttributeConstraint()).basicRemove(otherEnd, msgs);
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ARITHMETIC_CONSTRAINTS:
+			return ((InternalEList<?>) getArithmeticConstraints()).basicRemove(otherEnd, msgs);
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS:
 			return ((InternalEList<?>) getInjectivityConstraints()).basicRemove(otherEnd, msgs);
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INVOCATIONS:
@@ -352,8 +382,12 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
+			return getDocumentation();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ATTRIBUTE_CONSTRAINT:
 			return getAttributeConstraint();
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ARITHMETIC_CONSTRAINTS:
+			return getArithmeticConstraints();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS:
 			return getInjectivityConstraints();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INVOCATIONS:
@@ -368,8 +402,6 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			return getCsps();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__PARAMETERS:
 			return getParameters();
-		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
-			return getDocumentation();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -383,9 +415,16 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
+			setDocumentation((String) newValue);
+			return;
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ATTRIBUTE_CONSTRAINT:
 			getAttributeConstraint().clear();
 			getAttributeConstraint().addAll((Collection<? extends IBeXAttributeConstraint>) newValue);
+			return;
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ARITHMETIC_CONSTRAINTS:
+			getArithmeticConstraints().clear();
+			getArithmeticConstraints().addAll((Collection<? extends IBeXArithmeticConstraint>) newValue);
 			return;
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS:
 			getInjectivityConstraints().clear();
@@ -415,9 +454,6 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			getParameters().clear();
 			getParameters().addAll((Collection<? extends IBeXParameter>) newValue);
 			return;
-		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
-			setDocumentation((String) newValue);
-			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -430,8 +466,14 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
+			setDocumentation(DOCUMENTATION_EDEFAULT);
+			return;
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ATTRIBUTE_CONSTRAINT:
 			getAttributeConstraint().clear();
+			return;
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ARITHMETIC_CONSTRAINTS:
+			getArithmeticConstraints().clear();
 			return;
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS:
 			getInjectivityConstraints().clear();
@@ -454,9 +496,6 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__PARAMETERS:
 			getParameters().clear();
 			return;
-		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
-			setDocumentation(DOCUMENTATION_EDEFAULT);
-			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -469,8 +508,13 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
+			return DOCUMENTATION_EDEFAULT == null ? documentation != null
+					: !DOCUMENTATION_EDEFAULT.equals(documentation);
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ATTRIBUTE_CONSTRAINT:
 			return attributeConstraint != null && !attributeConstraint.isEmpty();
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__ARITHMETIC_CONSTRAINTS:
+			return arithmeticConstraints != null && !arithmeticConstraints.isEmpty();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS:
 			return injectivityConstraints != null && !injectivityConstraints.isEmpty();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__INVOCATIONS:
@@ -485,9 +529,6 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			return csps != null && !csps.isEmpty();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__PARAMETERS:
 			return parameters != null && !parameters.isEmpty();
-		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__DOCUMENTATION:
-			return DOCUMENTATION_EDEFAULT == null ? documentation != null
-					: !DOCUMENTATION_EDEFAULT.equals(documentation);
 		}
 		return super.eIsSet(featureID);
 	}
