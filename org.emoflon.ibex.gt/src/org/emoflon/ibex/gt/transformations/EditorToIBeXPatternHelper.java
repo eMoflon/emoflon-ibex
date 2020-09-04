@@ -151,6 +151,9 @@ final public class EditorToIBeXPatternHelper {
 	 */
 	public static void addInjectivityConstraintIfNecessary(final IBeXContextPattern ibexPattern, final IBeXNode node1,
 			final IBeXNode node2) {
+		if(node1.equals(node2))
+			return;
+		
 		if (EcoreUtils.areTypesCompatible(node1.getType(), node2.getType())) {
 			IBeXInjectivityConstraint nodePair = IBeXPatternModelFactory.eINSTANCE.createIBeXInjectivityConstraint();
 			nodePair.getValues().add(node1);
