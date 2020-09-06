@@ -296,6 +296,12 @@ public class DisjunctInjectivityCalculationHelper {
 				List<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>> patternCombinations = DisjunctPatternHelper
 						.calculatePatternCombinations(constraint.getPatterns(), new HashSet<List<IBeXContextPattern>>());
 				patternCombinations.forEach(c -> patternFrequency.put(c, Integer.valueOf(0)));
+				//remove the combinations that are not divided properly
+				Optional<Entry<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer>> othermin = patternFrequency.entrySet().stream()
+				        .min((x1, x2) -> Math.abs(x1.getKey().getLeft().size()-constraint.getPatterns().size()/2)-Math.abs(x2.getKey().getLeft().size()-constraint.getPatterns().size()/2));
+						
+				patternFrequency.entrySet().removeIf(entry -> !(entry.getKey().getLeft().size() == othermin.get().getKey().getLeft().size()) && !(entry.getKey().getRight().size() == othermin.get().getKey().getLeft().size()));
+				
 			}
 			//search for the pattern with the least injectivity dependencies
 			for(IBexDisjunctInjectivityConstraint subconstraint: constraint.getInjectivityConstraints()) {

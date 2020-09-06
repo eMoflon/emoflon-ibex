@@ -357,6 +357,12 @@ public class DisjunctAttributeCalculationHelper {
 		for(Pair<List<IBeXContextPattern>, List<IBeXContextPattern>> pattern: DisjunctPatternHelper.calculatePatternCombinations(attribute.getDependentPatterns(), forbiddenPatterns)) {
 			patternFrequency.put(pattern, Integer.valueOf(0));
 		}
+		//remove the combinations that are not divided properly
+		Optional<Entry<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer>> newmin = patternFrequency.entrySet().stream()
+		        .min((x1, x2) -> Math.abs(x1.getKey().getLeft().size()-attribute.getDependentPatterns().size()/2)-Math.abs(x2.getKey().getLeft().size()-attribute.getDependentPatterns().size()/2));
+				
+		patternFrequency.entrySet().removeIf(entry -> !(entry.getKey().getLeft().size() == newmin.get().getKey().getLeft().size()) && !(entry.getKey().getRight().size() == newmin.get().getKey().getLeft().size()));
+		
 		//find all constraints that need to be calculated between the two pattern sequences
 		for(IBeXDisjunctAttribute constraint: attribute.getAttributes()) {
 			for(Entry<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer> entry: patternFrequency.entrySet()) {
