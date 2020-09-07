@@ -59,9 +59,24 @@ public class ModelChanges {
 
 	public void addAttributeChange(AttributeChange attributeChange) {
 		modified = true;
+
+		for (AttributeChange oldChange : mappedAttributeChanges.getOrDefault(attributeChange.getElement(), new HashSet<>())) {
+			if (attributeChange.getAttribute().equals(oldChange.getAttribute())) {
+				AttributeChange mergedChange = new AttributeChange( //
+						oldChange.getElement(), oldChange.getAttribute(), oldChange.getOldValue(), attributeChange.getNewValue());
+
+				attributeChanges.remove(oldChange);
+				attributeChanges.add(mergedChange);
+
+				Set<AttributeChange> mappedChanges = mappedAttributeChanges.get(mergedChange.getElement());
+				mappedChanges.remove(oldChange);
+				mappedChanges.add(mergedChange);
+				return;
+			}
+		}
+
 		attributeChanges.add(attributeChange);
-		mappedAttributeChanges.computeIfAbsent(attributeChange.getElement(), k -> new HashSet<>());
-		mappedAttributeChanges.get(attributeChange.getElement()).add(attributeChange);
+		mappedAttributeChanges.computeIfAbsent(attributeChange.getElement(), k -> new HashSet<>()).add(attributeChange);
 	}
 
 	public void addCreatedElement(EObject createdElement) {
@@ -98,10 +113,8 @@ public class ModelChanges {
 			trgMappedDeletedEdges.get(createdEdge.getTarget()).remove(createdEdge);
 		} else {
 			createdEdges.add(createdEdge);
-			srcMappedCreatedEdges.computeIfAbsent(createdEdge.getSource(), k -> new HashSet<>());
-			srcMappedCreatedEdges.get(createdEdge.getSource()).add(createdEdge);
-			trgMappedCreatedEdges.computeIfAbsent(createdEdge.getTarget(), k -> new HashSet<>());
-			trgMappedCreatedEdges.get(createdEdge.getTarget()).add(createdEdge);
+			srcMappedCreatedEdges.computeIfAbsent(createdEdge.getSource(), k -> new HashSet<>()).add(createdEdge);
+			trgMappedCreatedEdges.computeIfAbsent(createdEdge.getTarget(), k -> new HashSet<>()).add(createdEdge);
 		}
 	}
 
@@ -113,10 +126,8 @@ public class ModelChanges {
 			trgMappedCreatedEdges.get(deletedEdge.getTarget()).remove(deletedEdge);
 		} else {
 			deletedEdges.add(deletedEdge);
-			srcMappedDeletedEdges.computeIfAbsent(deletedEdge.getSource(), k -> new HashSet<>());
-			srcMappedDeletedEdges.get(deletedEdge.getSource()).add(deletedEdge);
-			trgMappedDeletedEdges.computeIfAbsent(deletedEdge.getTarget(), k -> new HashSet<>());
-			trgMappedDeletedEdges.get(deletedEdge.getTarget()).add(deletedEdge);
+			srcMappedDeletedEdges.computeIfAbsent(deletedEdge.getSource(), k -> new HashSet<>()).add(deletedEdge);
+			trgMappedDeletedEdges.computeIfAbsent(deletedEdge.getTarget(), k -> new HashSet<>()).add(deletedEdge);
 		}
 	}
 
@@ -207,7 +218,7 @@ public class ModelChanges {
 		cleanUp();
 		return deletedElements.contains(element);
 	}
-	
+
 	public Resource containedInResource(EObject element) {
 		cleanUp();
 		return containedInResource.get(element);

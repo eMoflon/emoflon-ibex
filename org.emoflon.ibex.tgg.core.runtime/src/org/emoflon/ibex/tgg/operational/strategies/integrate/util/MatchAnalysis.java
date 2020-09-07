@@ -39,11 +39,11 @@ public class MatchAnalysis {
 	private final ITGGMatch match;
 	private final TGGRule rule;
 
-	Map<TGGRuleNode, EObject> nodeToEObject;
-	Map<EObject, TGGRuleNode> eObjectToNode;
+	Map<TGGRuleNode, EObject> node2eObject;
+	Map<EObject, TGGRuleNode> eObject2node;
 
-	Map<TGGRuleEdge, EMFEdge> edgeToEMFEdge;
-	Map<EMFEdge, TGGRuleEdge> emfEdgeToEdge;
+	Map<TGGRuleEdge, EMFEdge> edge2emfEdge;
+	Map<EMFEdge, TGGRuleEdge> emfEdge2edge;
 
 	Map<DomainType, Map<BindingType, List<TGGRuleElement>>> groupedElements;
 
@@ -57,19 +57,21 @@ public class MatchAnalysis {
 	}
 
 	private void init() {
-		this.nodeToEObject = rule.getNodes().stream() //
+		this.node2eObject = rule.getNodes().stream() //
+				.filter(n -> match.get(n.getName()) != null) //
 				.collect(Collectors.toMap(n -> n, n -> (EObject) match.get(n.getName())));
-		this.eObjectToNode = new HashMap<>();
-		nodeToEObject.forEach((n, o) -> eObjectToNode.put(o, n));
+		this.eObject2node = new HashMap<>();
+		node2eObject.forEach((n, o) -> eObject2node.put(o, n));
 
-		this.edgeToEMFEdge = rule.getEdges().stream() //
+		this.edge2emfEdge = rule.getEdges().stream() //
+				.filter(e -> node2eObject.containsKey(e.getSrcNode()) && node2eObject.containsKey(e.getTrgNode())) //
 				.collect(Collectors.toMap(e -> e, e -> TGGEdgeUtil.getRuntimeEdge(match, e)));
-		this.emfEdgeToEdge = new HashMap<>();
-		edgeToEMFEdge.forEach((e, f) -> emfEdgeToEdge.put(f, e));
+		this.emfEdge2edge = new HashMap<>();
+		edge2emfEdge.forEach((e, f) -> emfEdge2edge.put(f, e));
 
 		Set<TGGRuleElement> elements = new HashSet<>();
-		elements.addAll(rule.getNodes());
-		elements.addAll(rule.getEdges());
+		elements.addAll(node2eObject.keySet());
+		elements.addAll(edge2emfEdge.keySet());
 		groupedElements = elements.stream().collect(Collectors.groupingBy( //
 				elt -> elt.getDomainType(), //
 				Collectors.groupingBy(elt -> elt.getBindingType()) //
@@ -85,12 +87,12 @@ public class MatchAnalysis {
 
 	private void getDeletions() {
 		deletedElements.clear();
-		nodeToEObject.forEach((node, obj) -> {
+		node2eObject.forEach((node, obj) -> {
 			Resource res = obj.eResource();
 			if (res == null || !isValidResource(res))
 				deletedElements.add(node);
 		});
-		edgeToEMFEdge.forEach((edge, emfEdge) -> {
+		edge2emfEdge.forEach((edge, emfEdge) -> {
 			if (edgeIsDeleted(edge, emfEdge))
 				deletedElements.add(edge);
 		});
@@ -220,51 +222,51 @@ public class MatchAnalysis {
 	}
 
 	public Set<TGGRuleNode> getNodes() {
-		return nodeToEObject.keySet();
+		return node2eObject.keySet();
 	}
 
 	public Set<TGGRuleEdge> getEdges() {
-		return edgeToEMFEdge.keySet();
+		return edge2emfEdge.keySet();
 	}
 
 	public Set<EObject> getObjects() {
-		return eObjectToNode.keySet();
+		return eObject2node.keySet();
 	}
 
 	public Set<EMFEdge> getEMFEdges() {
-		return emfEdgeToEdge.keySet();
+		return emfEdge2edge.keySet();
 	}
 
 	public Map<TGGRuleNode, EObject> getNodeToEObject() {
-		return nodeToEObject;
+		return node2eObject;
 	}
 
 	public Map<EObject, TGGRuleNode> getEObjectToNode() {
-		return eObjectToNode;
+		return eObject2node;
 	}
 
 	public Map<TGGRuleEdge, EMFEdge> getEdgeToEMFEdge() {
-		return edgeToEMFEdge;
+		return edge2emfEdge;
 	}
 
 	public Map<EMFEdge, TGGRuleEdge> getEmfEdgeToEdge() {
-		return emfEdgeToEdge;
+		return emfEdge2edge;
 	}
 
 	public TGGRuleNode getNode(EObject object) {
-		return eObjectToNode.get(object);
+		return eObject2node.get(object);
 	}
 
 	public EObject getObject(TGGRuleNode node) {
-		return nodeToEObject.get(node);
+		return node2eObject.get(node);
 	}
 
 	public TGGRuleEdge getEdge(EMFEdge emfEdge) {
-		return emfEdgeToEdge.get(emfEdge);
+		return emfEdge2edge.get(emfEdge);
 	}
 
 	public EMFEdge getEMFEdge(TGGRuleEdge edge) {
-		return edgeToEMFEdge.get(edge);
+		return edge2emfEdge.get(edge);
 	}
 
 }

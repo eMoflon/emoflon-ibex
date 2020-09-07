@@ -22,6 +22,8 @@ public enum PatternType {
 //		types.add(PatternType.CC);
 		types.add(PatternType.FILTER_NAC_SRC);
 		types.add(PatternType.FILTER_NAC_TRG);
+		types.add(PatternType.SRC);
+		types.add(PatternType.TRG);
 		return types;
 	}
 

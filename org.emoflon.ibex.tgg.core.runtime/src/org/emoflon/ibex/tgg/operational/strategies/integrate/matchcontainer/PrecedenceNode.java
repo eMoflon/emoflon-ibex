@@ -2,7 +2,10 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import java.util.function.BiPredicate;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 
@@ -14,8 +17,7 @@ public class PrecedenceNode {
 	private Set<PrecedenceNode> requires = cfactory.createObjectSet();
 	private Set<PrecedenceNode> requiredBy = cfactory.createObjectSet();
 
-	private Set<PrecedenceNode> rollbackCauses = cfactory.createObjectSet();
-	private Set<PrecedenceNode> rollsBack = cfactory.createObjectSet();
+	private Set<PrecedenceNode> toBeRolledBackBy = cfactory.createObjectSet();
 
 	public PrecedenceNode(ITGGMatch match) {
 		this.match = match;
@@ -41,12 +43,8 @@ public class PrecedenceNode {
 		return requiredBy;
 	}
 
-	public Set<PrecedenceNode> getRollbackCauses() {
-		return rollbackCauses;
-	}
-
-	public Set<PrecedenceNode> getRollsBack() {
-		return rollsBack;
+	public Set<PrecedenceNode> getToBeRolledBackBy() {
+		return toBeRolledBackBy;
 	}
 
 	public void addRequires(PrecedenceNode node) {
@@ -58,12 +56,11 @@ public class PrecedenceNode {
 		this.requiredBy.add(node);
 		node.requires.add(this);
 	}
-	
-	public void addRollbackCause(PrecedenceNode node) {
-		this.rollbackCauses.add(node);
-		node.rollsBack.add(this);
+
+	public void addToBeRolledBackBy(PrecedenceNode node) {
+		this.toBeRolledBackBy.add(node);
 	}
-	
+
 	public void removeRequires(PrecedenceNode node) {
 		this.requires.remove(node);
 		node.requiredBy.remove(this);
@@ -73,34 +70,115 @@ public class PrecedenceNode {
 		this.requiredBy.remove(node);
 		node.requires.remove(this);
 	}
-	
-	public void removeRollbackCause(PrecedenceNode node) {
-		this.rollbackCauses.remove(node);
-		node.rollsBack.remove(this);
+
+	public void removeToBeRolledBackBy(PrecedenceNode node) {
+		this.toBeRolledBackBy.remove(node);
 	}
-	
+
 	public void clearRequires() {
 		for (PrecedenceNode node : this.requires)
 			node.requiredBy.remove(this);
 		this.requires.clear();
 	}
-	
+
 	public void clearRequiredBy() {
 		for (PrecedenceNode node : this.requiredBy)
 			node.requires.remove(this);
 		this.requiredBy.clear();
 	}
-	
-	public void clearRollbackCauses() {
-		for (PrecedenceNode node : this.rollbackCauses)
-			node.rollsBack.remove(this);
-		this.rollbackCauses.clear();
+
+	public void clearToBeRolledBackBy() {
+		this.toBeRolledBackBy.clear();
 	}
-	
-	public void clearRollsBack() {
-		for (PrecedenceNode node : this.rollsBack)
-			node.rollbackCauses.remove(this);
-		this.rollsBack.clear();
+
+	//// UTILS ////
+
+	/**
+	 * Executes the specified <code>action</code> for all nodes that are (transitively) required by this
+	 * node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
+	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
+	 * the transition of the current branch stops at this point.
+	 * 
+	 * @param action the action
+	 */
+	public void forAllRequires(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Set<PrecedenceNode> processed = cfactory.createObjectSet();
+		forAllRequires(this, action, processed);
+	}
+
+	private void forAllRequires(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action,
+			Set<PrecedenceNode> processed) {
+		for (PrecedenceNode n : node.getRequires()) {
+			if (!processed.contains(n)) {
+				processed.add(n);
+				if (action.test(n, node))
+					forAllRequires(n, action, processed);
+			}
+		}
+	}
+
+	/**
+	 * Executes the specified <code>action</code> for all nodes that (transitively) requires this
+	 * node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
+	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
+	 * the transition of the current branch stops at this point.
+	 * 
+	 * @param action the action
+	 */
+	public void forAllRequiredBy(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Set<PrecedenceNode> processed = cfactory.createObjectSet();
+		forAllRequiredBy(this, action, processed);
+	}
+
+	private void forAllRequiredBy(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action,
+			Set<PrecedenceNode> processed) {
+		for (PrecedenceNode n : node.getRequiredBy()) {
+			if (!processed.contains(n)) {
+				processed.add(n);
+				if (action.test(n, node))
+					forAllRequiredBy(n, action, processed);
+			}
+		}
+	}
+
+	/**
+	 * Executes the specified <code>action</code> for all nodes that directly or indirectly are going to
+	 * roll back this node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
+	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
+	 * the transition of the current branch stops at this point.
+	 * 
+	 * @param action the action
+	 */
+	public void forAllToBeRolledBackBy(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Set<PrecedenceNode> processed = cfactory.createObjectSet();
+		forAllToBeRolledBackBy(this, action, processed);
+	}
+
+	private void forAllToBeRolledBackBy(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action,
+			Set<PrecedenceNode> processed) {
+		for (PrecedenceNode n : node.getToBeRolledBackBy()) {
+			if (!processed.contains(n)) {
+				processed.add(n);
+				if (action.test(n, node))
+					forAllToBeRolledBackBy(n, action, processed);
+			}
+		}
+	}
+
+	public List<PrecedenceNode> computeSortedRollBackCauses() {
+		List<PrecedenceNode> rollBackCauses = new LinkedList<>();
+
+		rollBackCauses.add(this);
+		this.forAllToBeRolledBackBy((act, pre) -> {
+			if (act.isBroken())
+				rollBackCauses.add(act);
+			return true;
+		});
+
+		return rollBackCauses;
 	}
 
 }
