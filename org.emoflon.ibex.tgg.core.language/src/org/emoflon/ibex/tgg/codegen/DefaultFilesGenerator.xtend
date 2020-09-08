@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.defaults
+package org.emoflon.ibex.tgg.codegen
  
 import java.util.Collection
 import language.TGGAttributeConstraintDefinition
@@ -237,8 +237,8 @@ class DefaultFilesGenerator {
 				    
 				    VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(generator, IBeXOperation.MODELGEN);
 					restart = adapter.run(() -> {
-				        adapter.register(generator);
-				        try {
+					       adapter.register(generator);
+					       try {
 						    logger.info("Starting MODELGEN_Debug");
 						    long runTic = System.currentTimeMillis();
 						    generator.run();
@@ -247,9 +247,9 @@ class DefaultFilesGenerator {
 				
 						    generator.saveModels();
 						    generator.terminate();
-				        } catch (IOException pIOE) {
+						      } catch (IOException pIOE) {
 						    logger.error("MODELGEN_Debug threw an IOException", pIOE);
-				        }
+						      }
 				    });
 				}
 			''',
@@ -428,17 +428,17 @@ class DefaultFilesGenerator {
 				    restart = adapter.run(() -> {
 				        adapter.register(init_fwd);
 				        try {
-						    logger.info("Starting INITIAL_FWD_Debug");
-						    long runTic = System.currentTimeMillis();
-						    init_fwd.forward();
-						    long runToc = System.currentTimeMillis();
-						    logger.info("Completed INITIAL_FWD_Debug in: " + (runToc - runTic) + " ms");
+				      logger.info("Starting INITIAL_FWD_Debug");
+				      long runTic = System.currentTimeMillis();
+				      init_fwd.forward();
+				      long runToc = System.currentTimeMillis();
+				      logger.info("Completed INITIAL_FWD_Debug in: " + (runToc - runTic) + " ms");
 				
 						    init_fwd.saveModels();
 						    init_fwd.terminate();
 					    } catch (IOException pIOE) {
-						    logger.error("INITIAL_FWD_Debug threw an IOException", pIOE);
-				        }
+					     logger.error("INITIAL_FWD_Debug threw an IOException", pIOE);
+					       }
 				    });
 				}
 			''',
@@ -523,17 +523,17 @@ class DefaultFilesGenerator {
 				    restart = adapter.run(() -> {
 				        adapter.register(init_bwd);
 				        try {
-						    logger.info("Starting INITIAL_BWD_Debug");
-						    long runTic = System.currentTimeMillis();
-						    init_bwd.backward();
-						    long runToc = System.currentTimeMillis();
-						    logger.info("Completed INITIAL_BWD_Debug in: " + (runToc - runTic) + " ms");
+				      logger.info("Starting INITIAL_BWD_Debug");
+				      long runTic = System.currentTimeMillis();
+				      init_bwd.backward();
+				      long runToc = System.currentTimeMillis();
+				      logger.info("Completed INITIAL_BWD_Debug in: " + (runToc - runTic) + " ms");
 				
 						    init_bwd.saveModels();
 						    init_bwd.terminate();
 					    } catch (IOException pIOE) {
-						    logger.error("INITIAL_BWD_Debug threw an IOException", pIOE);
-				        }
+					     logger.error("INITIAL_BWD_Debug threw an IOException", pIOE);
+					       }
 				    });
 				}
 			''',
@@ -587,7 +587,7 @@ class DefaultFilesGenerator {
 				public void registerMetamodels(ResourceSet rs, IbexExecutable executable) throws IOException {
 					// Replace to register generated code or handle other URI-related requirements
 					«FOR imp : tgg.imports»
-					executable.getResourceHandler().loadAndRegisterMetamodel("«imp.name»");
+						executable.getResourceHandler().loadAndRegisterMetamodel("«imp.name»");
 					«ENDFOR»
 				}
 			

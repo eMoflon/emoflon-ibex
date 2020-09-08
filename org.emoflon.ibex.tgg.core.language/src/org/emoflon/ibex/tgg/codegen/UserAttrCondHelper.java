@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.defaults;
+package org.emoflon.ibex.tgg.codegen;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

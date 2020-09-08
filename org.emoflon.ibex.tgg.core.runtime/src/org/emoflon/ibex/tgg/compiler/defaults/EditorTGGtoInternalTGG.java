@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.transformations;
+package org.emoflon.ibex.tgg.compiler.defaults;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -518,7 +518,6 @@ public class EditorTGGtoInternalTGG {
 		EClass markerClass = ecoreFactory.createEClass();
 		markerClass.setName(TGGModelUtils.getMarkerTypeName(ruleName));
 		markerClass.getESuperTypes().add(RuntimePackage.eINSTANCE.getTGGRuleApplication());
-
 		for (ObjectVariablePattern ovPattern : sourcePatterns)
 			markerClass.getEStructuralFeatures()
 					.add(createMarkerRef(ovPattern, ovPattern.getName(), ovPattern.getType(), DomainType.SRC));

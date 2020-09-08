@@ -119,15 +119,12 @@ public class GTPackageBuilder implements GTBuilderExtension {
 
 		checkEditorModelsForDuplicatePatternNames(editorModels);
 
-		// Transform editor models to rules of the GT API model.
-//		GTRuleSet gtRuleSet = transformEditorModels(editorModels, new EditorToGTModelTransformation(),
-//				"%s errors during editor to GT API model transformation");
-//		saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
-
 		// Transform editor models to IBeXPatterns.
 		IBeXModel ibexModel = transformEditorModels(editorModels, new EditorToIBeXPatternTransformation(),
 				"%s errors during editor model to pattern transformation");
 		saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexModel);
+		// Run possible pattern matcher builder extensions (e.g. hipe builder)
+		collectEngineBuilderExtensions().forEach(builder -> builder.run(project, packagePath, ibexModel));
 
 		// Generate the Java code.
 		generateAPI(apiPackage, ibexModel, loadMetaModels(metaModels, resourceSet));
@@ -374,6 +371,16 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		}
 		return folder;
 	}
+	
+	/**
+	 * Collects the GTEngine builder extensions.
+	 * 
+	 * @return the extensions
+	 */
+	private Collection<GTEngineBuilderExtension> collectEngineBuilderExtensions() {
+		return ExtensionsUtil.collectExtensions(GTEngineBuilderExtension.BUILDER_EXTENSON_ID, "class",
+				GTEngineBuilderExtension.class);
+	}
 
 	/**
 	 * Collects the GTEngine builder extensions.
@@ -438,4 +445,5 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		}
 		return updateExports;
 	}
+
 }
