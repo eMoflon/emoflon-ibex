@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.management.RuntimeErrorException;
+
 import org.eclipse.emf.ecore.EDataType;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
@@ -151,9 +153,10 @@ final public class EditorToIBeXPatternHelper {
 	 */
 	public static void addInjectivityConstraintIfNecessary(final IBeXContextPattern ibexPattern, final IBeXNode node1,
 			final IBeXNode node2) {
-		if(node1.equals(node2))
-			return;
-		
+		if(node1.equals(node2)) {
+			throw new RuntimeException("Injectivity constraints can only be created for unequal pattern nodes!");
+		}
+
 		if (EcoreUtils.areTypesCompatible(node1.getType(), node2.getType())) {
 			IBeXInjectivityConstraint nodePair = IBeXPatternModelFactory.eINSTANCE.createIBeXInjectivityConstraint();
 			nodePair.getValues().add(node1);

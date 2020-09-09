@@ -234,8 +234,12 @@ public class ContextPatternTransformation {
 
 				if (src.isPresent())
 					invocation.getMapping().put(src.get(), node);
-				else
-					localNodes.add(node);
+				else {
+					if(!nacPattern.getSignatureNodes().contains(node)) {
+						localNodes.add(node);
+					}
+				}
+					
 			}
 
 			nacPattern.getLocalNodes().addAll(localNodes);
