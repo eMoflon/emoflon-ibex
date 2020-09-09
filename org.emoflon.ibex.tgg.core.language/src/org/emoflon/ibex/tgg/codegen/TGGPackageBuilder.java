@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.codegen;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +20,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ISafeRunnable;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
@@ -37,7 +35,6 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
@@ -59,11 +56,12 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 	@Override
 	public void run(IProject project) {
 		this.project = project;
-
-		performClean();
+		
+		logInfo("Generating Attribute Condition Libraries..");
 		generateAttrCondLib();
 		
 		//Create editor model
+		logInfo("Creating editor model..");
 		TripleGraphGrammarFile editorModel = null;
 		try {
 			editorModel = generateEditorModel();
@@ -73,6 +71,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 		}
 		
 		//Flatten editor model
+		logInfo("Flattening editor model..");
 		TripleGraphGrammarFile flattenedEditorModel = null;
 		try {
 			flattenedEditorModel = generateFlattenedEditorModel(editorModel);
@@ -90,7 +89,9 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 			logError(e);
 		}
 		
+		logInfo("Running internal model builder..");
 		buildInternalModel(editorModel, flattenedEditorModel);
+		logInfo("Running engine builder..");
 		generatePMEngineCode(editorModel, flattenedEditorModel);		
 	}
 	
@@ -104,16 +105,17 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 			IFile schemaFile = project.getFile(IbexTGGNature.SCHEMA_FILE);
 			if (schemaFile.exists()) {
 				Resource schemaResource = loadSchema(resourceSet, schemaFile);
-				ResourceSet resourceSet2 = new ResourceSetImpl();
-				registerMetamodels(resourceSet2, (TripleGraphGrammarFile) schemaResource.getContents().get(0));
-				resourceSet = resourceSet2;
-				schemaResource = loadSchema(resourceSet, schemaFile);
+//				ResourceSet resourceSet2 = new ResourceSetImpl();
+//				registerMetamodels(resourceSet, (TripleGraphGrammarFile) schemaResource.getContents().get(0));
+//				resourceSet = resourceSet2;
+//				schemaResource = loadSchema(resourceSet, schemaFile);
 
 				if (schemaIsOfExpectedType(schemaResource)) {
 					// Load
 					visitAllFiles(resourceSet, project.getFolder(IbexTGGBuilder.SRC_FOLDER), this::loadRules);
-					EcoreUtil2.resolveLazyCrossReferences(schemaResource, () -> false);
-					resourceSet.getResources().forEach(r -> EcoreUtil2.resolveLazyCrossReferences(r, () -> false));
+					visitAllFiles(resourceSet, project.getFolder(IbexTGGBuilder.SRC_FOLDER), this::loadRules);
+//					EcoreUtil2.resolveLazyCrossReferences(schemaResource, () -> false);
+//					resourceSet.getResources().forEach(r -> EcoreUtil2.resolveLazyCrossReferences(r, () -> false));
 					EcoreUtil.resolveAll(resourceSet);
 
 					// Combine to form single tgg model
@@ -192,7 +194,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 	private XtextResource loadSchema(ResourceSet resourceSet, IFile schemaFile) throws IOException {
 		XtextResource schemaResource = (XtextResource) resourceSet.createResource(URI.createPlatformResourceURI(schemaFile.getFullPath().toString(), false));
 		schemaResource.load(null);
-		EcoreUtil.resolveAll(resourceSet);
+//		EcoreUtil.resolveAll(resourceSet);
 		return schemaResource;
 	}
 	
@@ -326,35 +328,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 		resource.save(options);
 	}
 	
-	private void performClean() {
-		try {
-			Arrays.asList(project.findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE))//
-					.forEach(m -> {
-						try {
-							m.delete();
-						} catch (CoreException e) {
-							logError(e);
-						}
-					});
-		} catch (CoreException e) {
-			logError(e);
-		}
-
-		List<String> toDelete = Arrays.asList(//
-				IbexTGGBuilder.MODEL_FOLDER + "/" + filenameFromProject() + IbexTGGBuilder.ECORE_FILE_EXTENSION, IbexTGGBuilder.MODEL_FOLDER + "/" + filenameFromProject() + IbexTGGBuilder.EDITOR_MODEL_EXTENSION,
-				IbexTGGBuilder.MODEL_FOLDER + "/" + filenameFromProject() + IbexTGGBuilder.INTERNAL_TGG_MODEL_EXTENSION, IbexTGGBuilder.MODEL_FOLDER + "/" + filenameFromProject() + IbexTGGBuilder.EDITOR_FLATTENED_MODEL_EXTENSION,
-				IbexTGGBuilder.MODEL_FOLDER + "/" + filenameFromProject() + IbexTGGBuilder.INTERNAL_TGG_FLATTENED_MODEL_EXTENSION);
-		toDelete.stream()//
-				.map(f -> project.getFile(f))//
-				.filter(IFile::exists)//
-				.forEach(f -> {
-					try {
-						f.delete(true, new NullProgressMonitor());
-					} catch (CoreException e) {
-						logError(e);
-					}
-				});
-	}
+	
 	
 	private void generateAttrCondLib() {
 		try {
@@ -368,18 +342,22 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 		return MoflonUtil.lastCapitalizedSegmentOf(project.getName());
 	}
 	
+	private void logInfo(final String message) {
+		Logger.getRootLogger().info(this.getClass().getSimpleName()+ "(TGG-Project -> " + project.getName() + " ): " + message);
+	}
+	
 	/**
 	 * Logs the error message on the console.
 	 */
 	private void logError(final Exception exception) {
-		Logger.getRootLogger().error(this.getClass().getSimpleName()+ "(Project -> " + project.getName() + " ): " + exception.getMessage());
+		Logger.getRootLogger().error(this.getClass().getSimpleName()+ "(TGG-Project -> " + project.getName() + " ): " + exception.getMessage());
 	}
 	
 	/**
 	 * Logs the error message on the console.
 	 */
 	private void logError(final String message) {
-		Logger.getRootLogger().error(this.getClass().getSimpleName()+ "(Project -> " + project.getName() + " ): " + message);
+		Logger.getRootLogger().error(this.getClass().getSimpleName()+ "(TGG-Project -> " + project.getName() + " ): " + message);
 	}
 
 }

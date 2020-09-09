@@ -17,6 +17,7 @@ public class InternalModelBuilder implements TGGInternalModelBuilder {
 	public void run(IProject project, TripleGraphGrammarFile editorModel, TripleGraphGrammarFile flattenedEditorModel) {
 		this.project = project;
 		
+		logInfo("Building correlation model..");
 		Optional<TGGProject> tggProject = new EditorTGGtoInternalTGG().generateInternalModels(editorModel, flattenedEditorModel, project);
 		if(!tggProject.isPresent()) {
 			logError("Could not create tgg project.");
@@ -24,6 +25,10 @@ public class InternalModelBuilder implements TGGInternalModelBuilder {
 		}
 		
 		new AttrCondDefLibraryProvider().generateAttrCondLibsAndStubs(tggProject.get(), project);
+	}
+	
+	private void logInfo(final String message) {
+		Logger.getRootLogger().info(this.getClass().getSimpleName()+ "(TGG-Project -> " + project.getName() + " ): " + message);
 	}
 	
 	/**
