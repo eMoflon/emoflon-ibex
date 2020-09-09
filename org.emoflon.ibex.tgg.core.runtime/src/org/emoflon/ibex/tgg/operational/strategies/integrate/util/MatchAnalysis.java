@@ -142,50 +142,41 @@ public class MatchAnalysis {
 	}
 
 	public Map<ITGGMatch, DomainType> analyzeFilterNACViolations() {
-		return integrate.getFilterNacMatches(match.getPatternName(), match).stream() //
-				.collect(Collectors.toMap(fnm -> fnm,
-						fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SRC : DomainType.TRG));
-	}
-
-	private boolean belongsToMatch(ITGGMatch filterNacMatch, ITGGMatch match) {
-		for (String n : filterNacMatch.getParameterNames()) {
-			if (!filterNacMatch.get(n).equals(match.get(n)))
-				return false;
-		}
-		return true;
+		return integrate.getFilterNacMatches(match).stream() //
+				.collect(Collectors.toMap(fnm -> fnm, fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SRC : DomainType.TRG));
 	}
 
 	public Set<ConstrainedAttributeChanges> analyzeAttributeChanges() {
 		Set<ConstrainedAttributeChanges> constrainedAttrChanges = new HashSet<>();
-		
-		for(TGGAttributeConstraint constr : rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
+
+		for (TGGAttributeConstraint constr : rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
 			IRuntimeTGGAttrConstrContainer runtimeAttrConstr = getRuntimeAttrConstraint(constr, match);
-			if(runtimeAttrConstr.solve())
+			if (runtimeAttrConstr.solve())
 				continue;
-			
+
 			Map<TGGAttributeExpression, AttributeChange> affectedParams = new HashMap<>();
-			
+
 			for (TGGParamValue param : constr.getParameters()) {
-				if(param instanceof TGGAttributeExpression) {
+				if (param instanceof TGGAttributeExpression) {
 					TGGAttributeExpression attrExpr = (TGGAttributeExpression) param;
 					EObject obj = getObject(attrExpr.getObjectVar());
 					Set<AttributeChange> attrChanges = integrate.getGeneralModelChanges().getAttributeChanges(obj);
 					for (AttributeChange attrChange : attrChanges) {
-						if(attrChange.getAttribute().equals(attrExpr.getAttribute())) {
+						if (attrChange.getAttribute().equals(attrExpr.getAttribute())) {
 							affectedParams.put(attrExpr, attrChange);
 							break;
 						}
 					}
 				}
 			}
-			
-			if(!affectedParams.isEmpty())
+
+			if (!affectedParams.isEmpty())
 				constrainedAttrChanges.add(new ConstrainedAttributeChanges(constr, affectedParams));
 		}
-		
+
 		return constrainedAttrChanges;
 	}
-	
+
 	private IRuntimeTGGAttrConstrContainer getRuntimeAttrConstraint(TGGAttributeConstraint constraint, ITGGMatch match) {
 		List<TGGAttributeConstraint> constraints = new LinkedList<>();
 		constraints.add(constraint);
@@ -197,8 +188,7 @@ public class MatchAnalysis {
 		public final TGGAttributeConstraint constraint;
 		public final Map<TGGAttributeExpression, AttributeChange> affectedParams;
 
-		public ConstrainedAttributeChanges(TGGAttributeConstraint constraint,
-				Map<TGGAttributeExpression, AttributeChange> affectedParams) {
+		public ConstrainedAttributeChanges(TGGAttributeConstraint constraint, Map<TGGAttributeExpression, AttributeChange> affectedParams) {
 			this.constraint = constraint;
 			this.affectedParams = affectedParams;
 		}

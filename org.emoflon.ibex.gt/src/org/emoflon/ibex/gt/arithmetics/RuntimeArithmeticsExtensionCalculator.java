@@ -4,12 +4,11 @@ import java.util.HashMap;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
-import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute;
-import org.emoflon.ibex.gt.SGTPatternModel.GTNumber;
-import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
-import org.emoflon.ibex.gt.SGTPatternModel.GTTwoParameterCalculation;
-import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression;
 
 public class RuntimeArithmeticsExtensionCalculator {
 	
@@ -20,26 +19,26 @@ public class RuntimeArithmeticsExtensionCalculator {
 	 * @param match the match for the calculation of the runtime depended parameters
 	 * @return the calculated value
 	 */
-	public static double calculateValue(final GraphTransformationInterpreter contextInterpreter, final GTArithmetics expression, final IMatch match){
-		if(expression instanceof GTOneParameterCalculation){
-			double value = calculateValue(contextInterpreter, ((GTOneParameterCalculation) expression).getValue(), match);
+	public static double calculateValue(final IBeXArithmeticExpression expression, final IMatch match){
+		if(expression instanceof IBeXUnaryExpression){
+			double value = calculateValue(((IBeXUnaryExpression) expression).getOperand(), match);
 			double result = 0.0;
-			switch(((GTOneParameterCalculation) expression).getOperator()) {
+			switch(((IBeXUnaryExpression) expression).getOperator()) {
 				case ABSOLUTE: 		result = Math.abs(value);
 									break;
 				case BRACKET: 		result = value;
 									break;
 				case EEXPONENTIAL: 	result = Math.exp(value);
 									break;
-				case LOGARITHMUS: 	if(value > 0.0) result = Math.log10(value);
+				case LOG: 	if(value > 0.0) result = Math.log10(value);
 									else throw new IllegalArgumentException("The value of the log operand in the pattern "
 											+ match.getPatternName() + " needs to be positive");
 									break;
-				case NATLOG: 		if(value > 0.0) result = Math.log(value);
+				case LG: 		if(value > 0.0) result = Math.log(value);
 									else throw new IllegalArgumentException("The value of the ln operand in the pattern "
 											+ match.getPatternName() + " needs to be positive");
 									break;
-				case ROOT: 			if(value >= 0.0) result = Math.sqrt(value);
+				case SQRT: 			if(value >= 0.0) result = Math.sqrt(value);
 									else throw new IllegalArgumentException("The value of the root operand in the pattern "
 											+ match.getPatternName() + " needs to be positive");
 									break;
@@ -55,30 +54,36 @@ public class RuntimeArithmeticsExtensionCalculator {
 				}
 			
 			}
-			if(((GTOneParameterCalculation) expression).isNegative()) return -result;
+			if(((IBeXUnaryExpression) expression).isNegative()) return -result;
 			else return result;
 		}
-		if(expression instanceof GTTwoParameterCalculation) {
-			double left = calculateValue(contextInterpreter, ((GTTwoParameterCalculation) expression).getLeft(), match);
-			double right = calculateValue(contextInterpreter, ((GTTwoParameterCalculation) expression).getRight(), match);
-			switch(((GTTwoParameterCalculation) expression).getOperator()) {
+		if(expression instanceof IBeXBinaryExpression) {
+			double left = calculateValue(((IBeXBinaryExpression) expression).getLeft(), match);
+			double right = calculateValue(((IBeXBinaryExpression) expression).getRight(), match);
+			switch(((IBeXBinaryExpression) expression).getOperator()) {
 				case ADDITION: 		return left + right;
 				case SUBTRACTION: 	return left - right;
 				case MULTIPLICATION:return left * right;
 				case DIVISION: 		if(right != 0.0) return left / right;
 									else throw new IllegalArgumentException("division by zero in the pattern "
 											+ match.getPatternName() + " not possible");
-				case MODULO: 		return left % right;
-				case EXPONENTIAL: 	return Math.pow(left, right);
+				case MODULUS: 		return left % right;
+				case EXPONENTIATION: 	return Math.pow(left, right);
+			case MAXIMUM:
+				throw new IllegalArgumentException("Maximum function not yet supported.");
+			case MINIMUM:
+				throw new IllegalArgumentException("Minimum function not yet supported.");
+			default:
+				throw new IllegalArgumentException("Unknown operation.");
 			}
 		}
-		if(expression instanceof GTAttribute) {
-			EObject node = (EObject) match.get(((GTAttribute) expression).getName());
-			if(!((GTAttribute) expression).isNegative()) return ((Number) node.eGet(((GTAttribute) expression).getAttribute())).doubleValue();
-			else return - ((Number) node.eGet(((GTAttribute) expression).getAttribute())).doubleValue();
+		if(expression instanceof IBeXArithmeticAttribute) {
+			EObject node = (EObject) match.get(((IBeXArithmeticAttribute) expression).getName());
+			if(!((IBeXArithmeticAttribute) expression).isNegative()) return ((Number) node.eGet(((IBeXArithmeticAttribute) expression).getAttribute())).doubleValue();
+			else return - ((Number) node.eGet(((IBeXArithmeticAttribute) expression).getAttribute())).doubleValue();
 		}
 		
-		return ((GTNumber) expression).getNumber();
+		return ((IBeXArithmeticValueLiteral) expression).getValue();
 	}
 }
 

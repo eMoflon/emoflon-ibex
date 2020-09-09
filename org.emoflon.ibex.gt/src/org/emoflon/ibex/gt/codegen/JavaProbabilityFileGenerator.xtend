@@ -1,17 +1,17 @@
 package org.emoflon.ibex.gt.codegen
 
-import GTLanguage.GTRule
-import GTLanguage.GTProbability
 import java.util.HashSet
 import java.util.ArrayList
 import java.util.List
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticDistribution
-import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics
-import org.emoflon.ibex.gt.SGTPatternModel.GTNumber
-import org.emoflon.ibex.gt.SGTPatternModel.GTAttribute
-import org.emoflon.ibex.gt.SGTPatternModel.GTTwoParameterCalculation
-import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation
-import org.emoflon.ibex.gt.SGTPatternModel.TwoParameterOperator
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbability
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryOperator
 
 /**
  *  Enum for the different Constraint types
@@ -37,14 +37,14 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * Returns the initialization of the probability of the rule depended if the rule is static or not
 	 */
-	def getProbability(GTRule rule){
+	def getProbability(IBeXRule rule){
 		var declaration = '''Optional<Probability«getGenerics(rule)»> probability = '''		
 		if(rule.probability === null) return declaration + 'Optional.empty();'		
 		if(isStatic(rule.probability)){
-			val function = rule.probability.function;			
+			val function = rule.probability.distribution;			
 			return declaration + '''Optional.of(new StaticProbability«getGenerics(rule)»(«
 			transformExpression(function.mean, false)», «
-			transformExpression(function.sd, false)», «getDistribution(function.distribution)», «
+			transformExpression(function.stddev, false)», «getDistribution(function.type)», «
 			IF rule.probability.parameter !== null» OptionalDouble.of(«transformExpression(rule.probability.parameter, false)
 			»)«ELSE»OptionalDouble.empty()«ENDIF»));'''
 		} 
@@ -54,7 +54,7 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * if the probability is not static, then it will generate a probability class for the rule
 	 */
-	def generateProbabilityClass(GTRule rule){
+	def generateProbabilityClass(IBeXRule rule){
 		val probability = rule.probability
 
 		var sourceCode = '''
@@ -64,7 +64,7 @@ class JavaProbabilityFileGenerator {
 		 */
 		public class «getProbabilityClassName(rule)» implements Probability«getGenerics(rule)»{
 			«IF probability.parameter!== null»
-			«getDistributionFunction(probability.function.distribution)» distribution;
+			«getDistributionFunction(probability.distribution.type)» distribution;
 			«ELSE»
 			
 			Random rnd = new Random();
@@ -88,7 +88,7 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * Returns the body of the getProbability method with constraints if there are any
 	 */
-	private def getProbabilityBodyWithConstraints(GTRule rule){
+	private def getProbabilityBodyWithConstraints(IBeXRule rule){
 		val probability = rule.probability
 		val constraint = hasConstraint(probability)
 		val arithmeticConstraints = getArithmeticConstraint(probability)
@@ -125,34 +125,34 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * Returns the body of the getProbability method which calculates the probability of the rule
 	 */
-	private def getProbabilityBody(GTProbability probability){
-		val function = probability.function
+	private def getProbabilityBody(IBeXProbability probability){
+		val function = probability.distribution
 		var sourceCode = ''''''
 		if(probability.parameter !== null){
 			sourceCode = '''
-			distribution = new «getDistributionFunction(function.distribution)
+			distribution = new «getDistributionFunction(function.type)
 			»(«transformExpression(function.mean, false)»«
-			IF function.distribution != GTStochasticDistribution.EXPONENTIAL», «transformExpression(function.sd, false)»«ENDIF»);
+			IF function.type != IBeXDistributionType.EXPONENTIAL», «transformExpression(function.stddev, false)»«ENDIF»);
 			return distribution.cumulativeProbability(«transformExpression(probability.parameter, false)»);'''
 		}
 		else{
-			val distribution = function.distribution
-			if(distribution === GTStochasticDistribution.STATIC){
+			val distribution = function.type
+			if(distribution === IBeXDistributionType.STATIC){
 				sourceCode = '''return «transformExpression(function.mean, false)»;'''
 			}
-			else if(distribution === GTStochasticDistribution.NORMAL){
+			else if(distribution === IBeXDistributionType.NORMAL){
 				sourceCode = '''
 				double value;
 				do{
-					value = rnd.nextGaussian()*(«transformExpression(function.sd, false)») + «transformExpression(function.mean, false)»;
+					value = rnd.nextGaussian()*(«transformExpression(function.stddev, false)») + «transformExpression(function.mean, false)»;
 				}while(value < 0.0 || value > 1.0);
 				return value;'''
 			}
-			else if(distribution === GTStochasticDistribution.UNIFORM){
+			else if(distribution === IBeXDistributionType.UNIFORM){
 				sourceCode = '''return «transformExpression(function.mean, false)» + rnd.nextDouble()*(«
-				transformExpression(function.sd, false)» - «transformExpression(function.mean, false)»);'''
+				transformExpression(function.stddev, false)» - «transformExpression(function.mean, false)»);'''
 			}
-			else if(distribution === GTStochasticDistribution.EXPONENTIAL){
+			else if(distribution === IBeXDistributionType.EXPONENTIAL){
 				sourceCode = '''
 				double value;
 				do{
@@ -168,8 +168,8 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * Checks if the probability is depended of a parameter and thus not static 
 	 */
-	def isStatic(GTProbability probability){
-		if(!isRuntimeDepended(probability.function.mean) && !isRuntimeDepended(probability.function.sd)){
+	def isStatic(IBeXProbability probability){
+		if(!isRuntimeDepended(probability.distribution.mean) && !isRuntimeDepended(probability.distribution.stddev)){
 			if(probability.parameter === null) {
 				return true;
 			}
@@ -183,24 +183,24 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * Checks if the probability needs to have a constraints check
 	 */
-	private def hasConstraint(GTProbability probability){
-		val function = probability.function
-		val distribution = function.distribution
+	private def hasConstraint(IBeXProbability probability){
+		val function = probability.distribution
+		val distribution = function.type
 		//checks if the sd of the normal distribution is runtime depended
-		if(distribution === GTStochasticDistribution.NORMAL && isRuntimeDepended(function.sd)){
+		if(distribution === IBeXDistributionType.NORMAL && isRuntimeDepended(function.stddev)){
 			return ConstraintType.SDNEGATIVE
 		}
-		else if(distribution === GTStochasticDistribution.UNIFORM
-			&& (isRuntimeDepended(function.sd) || isRuntimeDepended(function.mean))){
+		else if(distribution === IBeXDistributionType.UNIFORM
+			&& (isRuntimeDepended(function.stddev) || isRuntimeDepended(function.mean))){
 				if(probability.parameter === null) return ConstraintType.UNIFORMVALUE
 				else return ConstraintType.UNIFORMDISTRIBUTION	
 		}
 				
 		//if the distribution is static then the probability will be a parameter
-		if(distribution === GTStochasticDistribution.STATIC) {
+		if(distribution === IBeXDistributionType.STATIC) {
 			return ConstraintType.STATICPARAMETER		
 		}
-		if(distribution === GTStochasticDistribution.EXPONENTIAL){
+		if(distribution === IBeXDistributionType.EXPONENTIAL){
 			return ConstraintType.EXPONENTIALMEAN
 		} 
 		return ConstraintType.NOCONSTRAINT
@@ -209,12 +209,12 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * returns the appropriate constraint check for the particular probability
 	 */
-	private def getStochasticConstraint(ConstraintType constraint, GTProbability probability){
-		val function = probability.function
+	private def getStochasticConstraint(ConstraintType constraint, IBeXProbability probability){
+		val function = probability.distribution
 		var constraintCheck = new ArrayList()
 		// the sd needs to be a positive value
 		if(constraint == ConstraintType.SDNEGATIVE){
-			constraintCheck.add('''(«transformExpression(function.sd, false)») > 0.0''')
+			constraintCheck.add('''(«transformExpression(function.stddev, false)») > 0.0''')
 		}
 		// the probability needs to be a value between 0 and 1
 		else if(constraint == ConstraintType.STATICPARAMETER){
@@ -225,17 +225,17 @@ class JavaProbabilityFileGenerator {
 		// the min value needs to be smaller than the max value
 		else if(constraint == ConstraintType.UNIFORMDISTRIBUTION){
 			constraintCheck.add('''(«transformExpression(function.mean, false)») <= («
-				transformExpression(function.sd, false)»)'''
+				transformExpression(function.stddev, false)»)'''
 			)
 		}
 		else if(constraint == ConstraintType.UNIFORMVALUE){
 			if(isRuntimeDepended(function.mean)){
 				constraintCheck.add('''(«transformExpression(function.mean, false)») >= 0.0''') 
-			}if(isRuntimeDepended(function.sd)){
-				constraintCheck.add('''(«transformExpression(function.sd, false)») <= 1.0''')
+			}if(isRuntimeDepended(function.stddev)){
+				constraintCheck.add('''(«transformExpression(function.stddev, false)») <= 1.0''')
 				if(isRuntimeDepended(function.mean)){
 					constraintCheck.add('''(«transformExpression(function.mean, false)») <= («
-						transformExpression(function.sd, false)»)'''
+						transformExpression(function.stddev, false)»)'''
 					)
 				}
 			}
@@ -249,15 +249,15 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * returns all the constraints originating through the arithmetic expression
 	 */
-	private def getArithmeticConstraint(GTProbability probability){
+	private def getArithmeticConstraint(IBeXProbability probability){
 		var constraints = new ArrayList<String>();
-		constraints.addAll(getArithmeticConstraint(probability.function.mean, false))
-		constraints.addAll(getArithmeticConstraint(probability.function.sd, false))
-		if(probability.parameter!== null) constraints.addAll(getArithmeticConstraint(probability.function.sd, false))
+		constraints.addAll(getArithmeticConstraint(probability.distribution.mean, false))
+		constraints.addAll(getArithmeticConstraint(probability.distribution.stddev, false))
+		if(probability.parameter!== null) constraints.addAll(getArithmeticConstraint(probability.distribution.stddev, false))
 		return constraints
 	}
 	
-	static def getArithmeticConstraint(GTArithmetics expression, boolean isIMatch){
+	static def getArithmeticConstraint(IBeXArithmeticExpression expression, boolean isIMatch){
 		var list = new ArrayList()
 		getArithmeticConstraint(expression, list, isIMatch)
 		return list
@@ -267,21 +267,21 @@ class JavaProbabilityFileGenerator {
 	 * returns the arithmetic constraints for the expression; can be used for IMatch matches or matches
 	 * of the generated match classes
 	 */
-	private static def getArithmeticConstraint(GTArithmetics expression, List<String> list, boolean isIMatch){
-		if(expression instanceof GTNumber || expression instanceof GTAttribute) return;
-		if(expression instanceof GTOneParameterCalculation){
-			getArithmeticConstraint(expression.value, list, isIMatch)
+	private static def getArithmeticConstraint(IBeXArithmeticExpression expression, List<String> list, boolean isIMatch){
+		if(expression instanceof IBeXArithmeticValueLiteral || expression instanceof IBeXArithmeticAttribute) return;
+		if(expression instanceof IBeXUnaryExpression){
+			getArithmeticConstraint(expression.operand, list, isIMatch)
 			switch(expression.operator){
-				case ROOT: list.add('''(«transformExpression(expression.value, isIMatch)»)>=0.0''')
-				case LOGARITHMUS: list.add('''(«transformExpression(expression.value, isIMatch)»)>0.0''')
-				case NATLOG: list.add('''(«transformExpression(expression.value, isIMatch)»)>=0.0''')
+				case SQRT: list.add('''(«transformExpression(expression.operand, isIMatch)»)>=0.0''')
+				case LOG: list.add('''(«transformExpression(expression.operand, isIMatch)»)>0.0''')
+				case LG: list.add('''(«transformExpression(expression.operand, isIMatch)»)>=0.0''')
 				default: return
 			}
 		}
-		if(expression instanceof GTTwoParameterCalculation){
+		if(expression instanceof IBeXBinaryExpression){
 			getArithmeticConstraint(expression.left, list, isIMatch)
 			getArithmeticConstraint(expression.right, list, isIMatch)
-			if(expression.operator === TwoParameterOperator.DIVISION && !(expression.right instanceof GTNumber)){
+			if(expression.operator === IBeXBinaryOperator.DIVISION && !(expression.right instanceof IBeXArithmeticValueLiteral)){
 				list.add('''(«transformExpression(expression.right, isIMatch)»)!=0.0''')
 			} 
 		}
@@ -291,7 +291,7 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * Returns the exception message
 	 */
-	private def getExceptionMessage(ConstraintType constraint, GTRule rule){
+	private def getExceptionMessage(ConstraintType constraint, IBeXRule rule){
 		var message = ''
 		if(constraint == ConstraintType.SDNEGATIVE){
 			message = '''The standard deviation of the distribution of the rule «rule.name» needs to be positive'''
@@ -314,7 +314,7 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * Returns the imports for the probability class of the rule
 	 */
-	def getProbabilityImports(GTRule rule){
+	def getProbabilityImports(IBeXRule rule){
 		val probability = rule.probability
 		val imports = new HashSet<String>()
 		imports.addAll(
@@ -328,7 +328,7 @@ class JavaProbabilityFileGenerator {
 		}
 		else{
 		if(probability.parameter === null) imports.add('java.util.Random')
-		else imports.add('''org.apache.commons.math3.distribution.«getDistributionFunction(probability.function.distribution)»''')
+		else imports.add('''org.apache.commons.math3.distribution.«getDistributionFunction(probability.distribution.type)»''')
 			
 		}
 		return imports	
@@ -337,13 +337,13 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * Transforms the GTArithmetics in a String; works with IMatches as matches or the generated match class 
 	 */
-	static def String transformExpression(GTArithmetics expression, boolean isIMatch){
-		if(expression instanceof GTNumber) return '''«expression.number»''' 
-		if(expression instanceof GTAttribute) {
+	static def String transformExpression(IBeXArithmeticExpression expression, boolean isIMatch){
+		if(expression instanceof IBeXArithmeticValueLiteral) return '''«expression.value»''' 
+		if(expression instanceof IBeXArithmeticAttribute) {
 			return transformAttribute(expression, isIMatch)
 		}
-		if(expression instanceof GTOneParameterCalculation){
-			var value = transformExpression(expression.value, isIMatch)
+		if(expression instanceof IBeXUnaryExpression){
+			var value = transformExpression(expression.operand, isIMatch)
 			var negative = if(expression.negative) '-' else ''
 			switch(expression.operator){
 				case BRACKET: return negative + '''(«value»)'''
@@ -352,39 +352,44 @@ class JavaProbabilityFileGenerator {
 				case SIN: return negative + '''Math.sin(«value»)'''
 				case TAN: return negative + '''Math.tan(«value»)'''
 				case EEXPONENTIAL: return negative + '''Math.exp(«value»)'''
-				case LOGARITHMUS: return negative + '''Math.log10(«value»)'''
-				case NATLOG: return negative + '''Math.log(«value»)'''
-				case ROOT: return negative + '''Math.sqrt(«value»)'''
-				case COUNT: return negative + '''interpreter.matchStream(match.getPatternName(), new HashMap<>()).count()'''
+				case LOG: return negative + '''Math.log10(«value»)'''
+				case LG: return negative + '''Math.log(«value»)'''
+				case SQRT: return negative + '''Math.sqrt(«value»)'''
 			}		
 		}
-		if(expression instanceof GTTwoParameterCalculation){
+		if(expression instanceof IBeXBinaryExpression){
 			val left = transformExpression(expression.left, isIMatch)
 			val right = transformExpression(expression.right, isIMatch)
 			switch(expression.operator){
 				case ADDITION: return '''«left»+«right»'''
 				case DIVISION: return '''«left» / «right»'''
-				case EXPONENTIAL: return '''Math.pow(«left»,«right»)'''
-				case MODULO: return '''«left»%«right»'''
+				case EXPONENTIATION: return '''Math.pow(«left»,«right»)'''
+				case MODULUS: return '''«left»%«right»'''
 				case MULTIPLICATION: return '''«left»*«right»'''
 				case SUBTRACTION: return '''«left»-«right»'''
+				case MAXIMUM: {
+					return null;
+				}
+				case MINIMUM: {
+					return null;
+				}
 			}
 		}	
 	}
-	 static def transformAttribute(GTAttribute expression, boolean isIMatch){
+	 static def transformAttribute(IBeXArithmeticAttribute expression, boolean isIMatch){
 	 	if(!isIMatch) return '''«IF expression.isNegative»-«ENDIF»match.get«expression.name.toFirstUpper»().get«
 				expression.attribute.name.toFirstUpper»()'''
 		else return '''«IF expression.isNegative»-«ENDIF»((«expression.type.name») match.get("«expression.name»")).get«
 				expression.attribute.name.toFirstUpper»()'''
 	 }
-	def getDistribution(GTStochasticDistribution distribution){
-		return '''GTStochasticDistribution.«distribution»'''
+	def getDistribution(IBeXDistributionType distribution){
+		return '''IBeXDistributionType.«distribution»'''
 	}
 	
 	/**
 	 * Returns the distribution function which is used
 	 */
-	private def getDistributionFunction(GTStochasticDistribution distribution){
+	private def getDistributionFunction(IBeXDistributionType distribution){
 		switch(distribution){
 			case NORMAL: 		return "NormalDistribution"
 			case UNIFORM: 		return "UniformRealDistribution"
@@ -396,37 +401,37 @@ class JavaProbabilityFileGenerator {
 	/**
 	 * checks if the parameter is a number or attribute
 	 */
-	private def isRuntimeDepended(GTArithmetics expression){
-		if(expression instanceof GTNumber) return false else return true
+	private def isRuntimeDepended(IBeXArithmeticExpression expression){
+		if(expression instanceof IBeXArithmeticValueLiteral) return false else return true
 	}
 	
 	
 	/**
 	 * Returns the name of the generics for the rule
 	 */
-	private def getGenerics(GTRule rule){
+	private def getGenerics(IBeXRule rule){
 		return "<" + getMatchClassName(rule) + ", " + getRuleClassName(rule) + ">"
 	}
 	
 	/**
 	 * Returns the name of the probability class for the rule
 	 */
-	def getProbabilityClassName(GTRule rule){
+	def getProbabilityClassName(IBeXRule rule){
 		return rule.name.toFirstUpper + "RuleProbability"
 	}
 	
 	/**
 	 * Returns the name of the match class for the rule.
 	 */
-	private def getMatchClassName(GTRule rule) {
+	private def getMatchClassName(IBeXRule rule) {
 		return rule.name.toFirstUpper + "Match"
 	}
 
 	/**
 	 * Returns the name of the rule class for the rule.
 	 */
-	private static def getRuleClassName(GTRule rule) {
-		return rule.name.toFirstUpper + if(rule.executable) "Rule" else "Pattern"
+	private static def getRuleClassName(IBeXRule rule) {
+		return rule.name.toFirstUpper + "Rule"
 	}
 	
 	/**

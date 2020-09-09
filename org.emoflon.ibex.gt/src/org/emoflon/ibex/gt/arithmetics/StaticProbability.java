@@ -6,9 +6,9 @@ import java.util.Random;
 import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticDistribution;
 import org.emoflon.ibex.gt.api.GraphTransformationMatch;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType;
 
 /**
  * class for all probabilities that do not depend on parameters
@@ -16,11 +16,11 @@ import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 public class StaticProbability<M extends GraphTransformationMatch<M, P>, P extends GraphTransformationPattern<M, P>> implements Probability<M, P> {
 	
 	double mean, sd;
-	GTStochasticDistribution distribution;
+	IBeXDistributionType distribution;
 	Random rnd;
 	OptionalDouble parameter;
 	
-	public StaticProbability(double mean, double sd, GTStochasticDistribution distribution, OptionalDouble parameter) {
+	public StaticProbability(double mean, double sd, IBeXDistributionType distribution, OptionalDouble parameter) {
 		this.mean = mean;
 		this.sd = sd;
 		this.distribution = distribution;

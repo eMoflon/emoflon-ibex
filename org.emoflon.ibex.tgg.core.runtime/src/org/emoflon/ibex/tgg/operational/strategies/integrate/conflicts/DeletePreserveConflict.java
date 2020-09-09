@@ -62,15 +62,15 @@ public abstract class DeletePreserveConflict extends Conflict
 		resolved = true;
 	}
 
-	private Set<ITGGMatch> restored;
+	private Set<ITGGMatch> tmp_restored;
 
 	@Override
 	public void crs_revokeDeletion() {
-		restored = new HashSet<>();
+		tmp_restored = new HashSet<>();
 		causingMatches.forEach(match -> {
-			if (!restored.contains(match)) {
+			if (!tmp_restored.contains(match)) {
 				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
-				restored.add(match);
+				tmp_restored.add(match);
 				restoreMatchesBasedOn(match);
 			}
 		});
@@ -82,9 +82,9 @@ public abstract class DeletePreserveConflict extends Conflict
 		pg.getNode(match).getRequiredBy().forEach(n -> {
 			if (n.isBroken()) {
 				ITGGMatch m = n.getMatch();
-				if (!restored.contains(m)) {
+				if (!tmp_restored.contains(m)) {
 					restoreMatch(integrate().getClassifiedBrokenMatches().get(m));
-					restored.add(m);
+					tmp_restored.add(m);
 					restoreMatchesBasedOn(m);
 				}
 			}

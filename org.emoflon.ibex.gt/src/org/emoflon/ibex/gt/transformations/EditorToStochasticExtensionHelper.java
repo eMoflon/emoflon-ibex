@@ -1,19 +1,17 @@
 package org.emoflon.ibex.gt.transformations;
 
-import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
-import org.emoflon.ibex.gt.SGTPatternModel.GTNumber;
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticDistribution;
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticFunction;
-import org.emoflon.ibex.gt.SGTPatternModel.SGTPatternModelFactory;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorProbability;
 import org.emoflon.ibex.gt.editor.gT.StochasticDistribution;
 import org.emoflon.ibex.gt.editor.gT.StochasticFunction;
 import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
-
-import GTLanguage.GTLanguageFactory;
-import GTLanguage.GTProbability;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbability;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbabilityDistribution;
 
 /**
  * Utility class for stochastic extension transformation
@@ -26,13 +24,13 @@ public class EditorToStochasticExtensionHelper {
 	 * @param probability the EditorProbability
 	 * @return the GTProbability
 	 */
-	public static GTProbability transformToGTProbability(final EditorPattern pattern) {
-		GTProbability gtProbability = GTLanguageFactory.eINSTANCE.createGTProbability();
+	public static IBeXProbability transformToGTProbability(final EditorPattern pattern) {
+		IBeXProbability gtProbability = IBeXPatternModelFactory.eINSTANCE.createIBeXProbability();
 		if(pattern.isStochastic()) {
 			EditorProbability probability = pattern.getProbability();
 			// if probability is a function
 			if(probability instanceof StochasticFunction) {
-				gtProbability.setFunction(transformStochasticFunction(((StochasticFunction) probability)
+				gtProbability.setDistribution(transformStochasticFunction(((StochasticFunction) probability)
 						.getFunctionExpression()));
 				//if probability is depended on a parameter
 				if(((StochasticFunction) probability).getParameter() != null) {
@@ -42,8 +40,8 @@ public class EditorToStochasticExtensionHelper {
 			}
 			//if the probability is an arithmetic expression
 			else {				
-				gtProbability.setFunction(createStaticProbability(EditorToArithmeticExtensionHelper
-						.transformToGTArithmetics(((ArithmeticExpression) probability), null, null)));
+				gtProbability.setDistribution(createStaticProbability(EditorToArithmeticExtensionHelper
+						.transformToGTArithmetics(((ArithmeticExpression) probability))));
 			}					
 		}
 		//if the rule has no probability it will not have a GTProbability
@@ -58,18 +56,18 @@ public class EditorToStochasticExtensionHelper {
 	 * 			the stochasticFunctionExpression
 	 * @return the transformed function
 	 */
-	public static GTStochasticFunction transformStochasticFunction(final StochasticFunctionExpression function){
-		GTStochasticFunction stochasticFunction = SGTPatternModelFactory.eINSTANCE.createGTStochasticFunction();
-		stochasticFunction.setDistribution(transformDistribution(function.getDistribution()));
+	public static IBeXProbabilityDistribution transformStochasticFunction(final StochasticFunctionExpression function){
+		IBeXProbabilityDistribution stochasticFunction = IBeXPatternModelFactory.eINSTANCE.createIBeXProbabilityDistribution();
+		stochasticFunction.setType(transformDistribution(function.getDistribution()));
 		stochasticFunction.setMean(EditorToArithmeticExtensionHelper
-				.transformToGTArithmetics(function.getMean(), null, null));
-		if(stochasticFunction.getDistribution() != GTStochasticDistribution.EXPONENTIAL) {
-			stochasticFunction.setSd(EditorToArithmeticExtensionHelper
-					.transformToGTArithmetics(function.getSd(), null, null));	
+				.transformToGTArithmetics(function.getMean()));
+		if(stochasticFunction.getType() != IBeXDistributionType.EXPONENTIAL) {
+			stochasticFunction.setStddev(EditorToArithmeticExtensionHelper
+					.transformToGTArithmetics(function.getSd()));	
 		}else {
-			GTNumber sd = SGTPatternModelFactory.eINSTANCE.createGTNumber();
-			sd.setNumber(0.0);
-			stochasticFunction.setSd(sd);
+			IBeXArithmeticValueLiteral sd = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValueLiteral();
+			sd.setValue(0.0);
+			stochasticFunction.setStddev(sd);
 		}
 		return stochasticFunction;
 	}
@@ -79,22 +77,22 @@ public class EditorToStochasticExtensionHelper {
 	 * @param parameter the static probability
 	 * @param probability the probability of the rule
 	 */
-	private static GTStochasticFunction createStaticProbability(final GTArithmetics expression) {
-		GTStochasticFunction function = SGTPatternModelFactory.eINSTANCE.createGTStochasticFunction();
+	private static IBeXProbabilityDistribution createStaticProbability(final IBeXArithmeticExpression expression) {
+		IBeXProbabilityDistribution function = IBeXPatternModelFactory.eINSTANCE.createIBeXProbabilityDistribution();
 		function.setMean(expression);
-		GTNumber sd = SGTPatternModelFactory.eINSTANCE.createGTNumber();
-		sd.setNumber(0.0);
-		function.setSd(sd);
-		function.setDistribution(GTStochasticDistribution.STATIC);
+		IBeXArithmeticValueLiteral sd = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValueLiteral();
+		sd.setValue(0.0);
+		function.setStddev(sd);
+		function.setType(IBeXDistributionType.STATIC);
 		return function;
 	}
 	
-	private static GTStochasticDistribution transformDistribution(StochasticDistribution distribution) {
+	private static IBeXDistributionType transformDistribution(StochasticDistribution distribution) {
 		switch(distribution) {
-		case EXPONENTIAL: return GTStochasticDistribution.EXPONENTIAL;
-		case NORMAL: return GTStochasticDistribution.NORMAL;
-		case UNIFORM: return GTStochasticDistribution.UNIFORM;
+		case EXPONENTIAL: return IBeXDistributionType.EXPONENTIAL;
+		case NORMAL: return IBeXDistributionType.NORMAL;
+		case UNIFORM: return IBeXDistributionType.UNIFORM;
 		}
-		return GTStochasticDistribution.STATIC;
+		return IBeXDistributionType.STATIC;
 	}
 }

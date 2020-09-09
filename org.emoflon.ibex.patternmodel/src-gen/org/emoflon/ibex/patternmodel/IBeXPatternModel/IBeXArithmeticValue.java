@@ -2,8 +2,6 @@
  */
 package org.emoflon.ibex.patternmodel.IBeXPatternModel;
 
-import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>IBe XArithmetic Value</b></em>'.
@@ -26,12 +24,12 @@ public interface IBeXArithmeticValue extends IBeXAttributeValue {
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Expression</em>' containment reference.
-	 * @see #setExpression(GTArithmetics)
+	 * @see #setExpression(IBeXArithmeticExpression)
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXArithmeticValue_Expression()
 	 * @model containment="true"
 	 * @generated
 	 */
-	GTArithmetics getExpression();
+	IBeXArithmeticExpression getExpression();
 
 	/**
 	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue#getExpression <em>Expression</em>}' containment reference.
@@ -41,6 +39,6 @@ public interface IBeXArithmeticValue extends IBeXAttributeValue {
 	 * @see #getExpression()
 	 * @generated
 	 */
-	void setExpression(GTArithmetics value);
+	void setExpression(IBeXArithmeticExpression value);
 
 } // IBeXArithmeticValue

@@ -7,6 +7,7 @@ Export-Package: language,
  language.repair.impl,
  language.repair.util,
  language.util,
+ org.emoflon.ibex.tgg.codegen,
  org.emoflon.ibex.tgg.transformation,
  org.emoflon.ibex.tgg.util
 Bundle-Name: eMoflon::IBeX Bidirectional Model Transformation via Trip
@@ -20,7 +21,8 @@ Require-Bundle: com.google.guava,
  org.eclipse.emf.ecore,
  org.emoflon.ibex.tgg.editor,
  org.emoflon.ibex.tgg.ide,
- org.moflon.core.utilities
+ org.moflon.core.utilities,
+ org.eclipse.xtext
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2

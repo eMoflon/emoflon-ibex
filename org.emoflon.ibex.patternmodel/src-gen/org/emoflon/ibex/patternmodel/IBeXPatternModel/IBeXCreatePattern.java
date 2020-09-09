@@ -41,37 +41,37 @@ public interface IBeXCreatePattern extends IBeXPattern {
 	EList<IBeXAttributeAssignment> getAttributeAssignments();
 
 	/**
-	 * Returns the value of the '<em><b>Context Nodes</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Context Nodes</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Context Nodes</em>' containment reference list.
+	 * @return the value of the '<em>Context Nodes</em>' reference list.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXCreatePattern_ContextNodes()
-	 * @model containment="true"
+	 * @model
 	 * @generated
 	 */
 	EList<IBeXNode> getContextNodes();
 
 	/**
-	 * Returns the value of the '<em><b>Created Edges</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Created Edges</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Created Edges</em>' containment reference list.
+	 * @return the value of the '<em>Created Edges</em>' reference list.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXCreatePattern_CreatedEdges()
-	 * @model containment="true"
+	 * @model
 	 * @generated
 	 */
 	EList<IBeXEdge> getCreatedEdges();
 
 	/**
-	 * Returns the value of the '<em><b>Created Nodes</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Created Nodes</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Created Nodes</em>' containment reference list.
+	 * @return the value of the '<em>Created Nodes</em>' reference list.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXCreatePattern_CreatedNodes()
-	 * @model containment="true"
+	 * @model
 	 * @generated
 	 */
 	EList<IBeXNode> getCreatedNodes();
