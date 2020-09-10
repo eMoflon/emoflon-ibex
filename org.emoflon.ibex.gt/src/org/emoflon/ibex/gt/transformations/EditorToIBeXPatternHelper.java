@@ -325,7 +325,7 @@ final public class EditorToIBeXPatternHelper {
 	 */
 	public static IBeXArithmeticValue convertAttributeValue(final TransformationData data, final IBeXPattern ibexPattern, final ArithmeticCalculationExpression expression) {
 		IBeXArithmeticValue value= IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();		;
-		value.setExpression(EditorToArithmeticExtensionHelper.transformToGTArithmetics(data, ibexPattern, expression.getExpression()));
+		value.setExpression(EditorToArithmeticExtensionHelper.transformToIBeXArithmeticExpression(data, ibexPattern, expression.getExpression()));
 		return value;
 	}
 }

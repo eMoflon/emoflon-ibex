@@ -39,7 +39,7 @@ public class EditorToArithmeticExtensionHelper {
 	 * @param expression the ArithmeticExpression
 	 * @return the transformed GTArithmetics
 	 */
-	public static IBeXArithmeticExpression transformToGTArithmetics(final TransformationData data, final IBeXPattern ibexPattern, final ArithmeticExpression expression) {
+	public static IBeXArithmeticExpression transformToIBeXArithmeticExpression(final TransformationData data, final IBeXPattern ibexPattern, final ArithmeticExpression expression) {
 		//if the expression has two parameters and one operator
 		if(expression instanceof AddExpression || expression instanceof MultExpression || 
 				expression instanceof ExpExpression) {
@@ -52,8 +52,8 @@ public class EditorToArithmeticExtensionHelper {
 				try {
 					return tryToParseExpression(expression);
 				} catch(IllegalArgumentException e) {
-					calculation.setLeft(transformToGTArithmetics(data, ibexPattern, ((AddExpression) expression).getLeft()));
-					calculation.setRight(transformToGTArithmetics(data, ibexPattern, ((AddExpression) expression).getRight()));								
+					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((AddExpression) expression).getLeft()));
+					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((AddExpression) expression).getRight()));								
 					if(((AddExpression) expression).getAddOperator() == AddOperator.ADDITION) {
 						calculation.setOperator(IBeXBinaryOperator.ADDITION);
 					}else {
@@ -65,8 +65,8 @@ public class EditorToArithmeticExtensionHelper {
 				try {
 					return tryToParseExpression(expression);
 				} catch(IllegalArgumentException e) {
-					calculation.setLeft(transformToGTArithmetics(data, ibexPattern, ((MultExpression) expression).getLeft()));
-					calculation.setRight(transformToGTArithmetics(data, ibexPattern, ((MultExpression) expression).getRight()));								
+					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((MultExpression) expression).getLeft()));
+					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((MultExpression) expression).getRight()));								
 					switch(((MultExpression) expression).getMultOperator()) {
 						case DIVISION:  	calculation.setOperator(IBeXBinaryOperator.DIVISION);
 											break;
@@ -82,8 +82,8 @@ public class EditorToArithmeticExtensionHelper {
 				try {
 					return tryToParseExpression(expression);
 				} catch(IllegalArgumentException e) {
-					calculation.setLeft(transformToGTArithmetics(data, ibexPattern, ((ExpExpression) expression).getLeft()));
-					calculation.setRight(transformToGTArithmetics(data, ibexPattern, ((ExpExpression) expression).getRight()));								
+					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((ExpExpression) expression).getLeft()));
+					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((ExpExpression) expression).getRight()));								
 					calculation.setOperator(IBeXBinaryOperator.EXPONENTIATION);	
 				}	
 			}
@@ -95,7 +95,7 @@ public class EditorToArithmeticExtensionHelper {
 				return tryToParseExpression(expression);
 			} catch(IllegalArgumentException e) {
 				IBeXUnaryExpression calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXUnaryExpression();
-				calculation.setOperand(transformToGTArithmetics(data, ibexPattern, ((OneParameterArithmetics) expression).getExpression()));
+				calculation.setOperand(transformToIBeXArithmeticExpression(data, ibexPattern, ((OneParameterArithmetics) expression).getExpression()));
 				switch(((OneParameterArithmetics) expression).getOperator()) {
 					case ABSOLUTE: 	calculation.setOperator(IBeXUnaryOperator.ABSOLUTE);
 									break;

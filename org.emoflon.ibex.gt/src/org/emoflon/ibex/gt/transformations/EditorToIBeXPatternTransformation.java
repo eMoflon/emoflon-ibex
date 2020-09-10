@@ -532,7 +532,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 					constraint.setParameter(arithmeticAttribute);
 					constraint.setRelation(EditorToIBeXPatternHelper.convertRelation(attribute.getRelation()));
 					constraint.setExpression(EditorToArithmeticExtensionHelper
-							.transformToGTArithmetics(data, ibexPattern, ((ArithmeticCalculationExpression) attribute.getValue()).getExpression()));
+							.transformToIBeXArithmeticExpression(data, ibexPattern, ((ArithmeticCalculationExpression) attribute.getValue()).getExpression()));
 					ibexPattern.getArithmeticConstraints().add(constraint);
 				}
 			}
@@ -586,7 +586,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		
 		// add probability, if present
 		ibexRule.setProbability(EditorToStochasticExtensionHelper
-				.transformToGTProbability(data, lhs, editorPattern));
+				.transformToIBeXProbability(data, lhs, editorPattern));
 		
 		data.ibexRules.add(ibexRule);
 	}

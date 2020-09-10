@@ -26,7 +26,7 @@ public class EditorToStochasticExtensionHelper {
 	 * @param probability the EditorProbability
 	 * @return the GTProbability
 	 */
-	public static IBeXProbability transformToGTProbability(final TransformationData data, final IBeXContext ibexPattern, final EditorPattern pattern) {
+	public static IBeXProbability transformToIBeXProbability(final TransformationData data, final IBeXContext ibexPattern, final EditorPattern pattern) {
 		IBeXProbability gtProbability = IBeXPatternModelFactory.eINSTANCE.createIBeXProbability();
 		if(pattern.isStochastic()) {
 			EditorProbability probability = pattern.getProbability();
@@ -37,13 +37,13 @@ public class EditorToStochasticExtensionHelper {
 				//if probability is depended on a parameter
 				if(((StochasticFunction) probability).getParameter() != null) {
 					gtProbability.setParameter(EditorToArithmeticExtensionHelper
-							.transformToGTArithmetics(data, ibexPattern, ((StochasticFunction) probability).getParameter()));
+							.transformToIBeXArithmeticExpression(data, ibexPattern, ((StochasticFunction) probability).getParameter()));
 				}
 			}
 			//if the probability is an arithmetic expression
 			else {				
 				gtProbability.setDistribution(createStaticProbability(EditorToArithmeticExtensionHelper
-						.transformToGTArithmetics(data, ibexPattern, ((ArithmeticExpression) probability))));
+						.transformToIBeXArithmeticExpression(data, ibexPattern, ((ArithmeticExpression) probability))));
 			}					
 		}
 		//if the rule has no probability it will not have a GTProbability
@@ -62,10 +62,10 @@ public class EditorToStochasticExtensionHelper {
 		IBeXProbabilityDistribution stochasticFunction = IBeXPatternModelFactory.eINSTANCE.createIBeXProbabilityDistribution();
 		stochasticFunction.setType(transformDistribution(function.getDistribution()));
 		stochasticFunction.setMean(EditorToArithmeticExtensionHelper
-				.transformToGTArithmetics(data, ibexPattern, function.getMean()));
+				.transformToIBeXArithmeticExpression(data, ibexPattern, function.getMean()));
 		if(stochasticFunction.getType() != IBeXDistributionType.EXPONENTIAL) {
 			stochasticFunction.setStddev(EditorToArithmeticExtensionHelper
-					.transformToGTArithmetics(data, ibexPattern, function.getSd()));	
+					.transformToIBeXArithmeticExpression(data, ibexPattern, function.getSd()));	
 		}else {
 			IBeXArithmeticValueLiteral sd = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValueLiteral();
 			sd.setValue(0.0);

@@ -27,7 +27,7 @@ enum ConstraintType {
 /**
  * Utility class for probability class generation
  */
-class JavaProbabilityFileGenerator {
+class ArithmeticExtensionGenerator {
 	
 	String packageName;
 	

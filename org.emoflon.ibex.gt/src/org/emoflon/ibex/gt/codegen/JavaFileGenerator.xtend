@@ -43,7 +43,7 @@ class JavaFileGenerator {
 	/**
 	 * Utility class for probability class generation
 	 */
-	 JavaProbabilityFileGenerator probabilityGenerator;
+	 ArithmeticExtensionGenerator probabilityGenerator;
 	 
 	/**
 	 * Creates a new JavaFileGenerator.
@@ -52,7 +52,7 @@ class JavaFileGenerator {
 		this.classNamePrefix = classNamePrefix
 		this.packageName = packageName
 		this.eClassifiersManager = eClassifiersManager
-		probabilityGenerator = new JavaProbabilityFileGenerator(packageName);
+		probabilityGenerator = new ArithmeticExtensionGenerator(packageName);
 	}
 
 	/**
@@ -602,11 +602,11 @@ class JavaFileGenerator {
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
 						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
 						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
 					);				
 				}
 				«ENDIF»
@@ -725,11 +725,11 @@ class JavaFileGenerator {
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
 						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstratins(pattern) SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
 						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
 					);				
 				}
 				«ENDIF»

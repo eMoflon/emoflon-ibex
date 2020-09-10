@@ -13,8 +13,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.gt.arithmetics.IBeXArithmeticsCalculatorHelper;
-import org.emoflon.ibex.gt.arithmetics.IBeXStochasticCalculatorHelper;
+import org.emoflon.ibex.gt.arithmetic.IBeXArithmeticCalculatorHelper;
+import org.emoflon.ibex.gt.arithmetic.IBeXStochasticCalculatorHelper;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
@@ -151,7 +151,7 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 			calculatedValue = IBeXStochasticCalculatorHelper.getGeneratedValue(contextInterpreter,
 					(IBeXStochasticAttributeValue) value, match, assignment.getType().getEAttributeType());
 		} else if(value instanceof IBeXArithmeticValue) {
-			calculatedValue = IBeXArithmeticsCalculatorHelper.getValue(contextInterpreter, (IBeXArithmeticValue) value, 
+			calculatedValue = IBeXArithmeticCalculatorHelper.getValue(contextInterpreter, (IBeXArithmeticValue) value, 
 					match, assignment.getType().getEAttributeType());
 		}
 		EObject object = (EObject) match.get(assignment.getNode().getName());

@@ -6,7 +6,7 @@ Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Export-Package: org.emoflon.ibex.gt.api,
- org.emoflon.ibex.gt.arithmetics,
+ org.emoflon.ibex.gt.arithmetic,
  org.emoflon.ibex.gt.codegen,
  org.emoflon.ibex.gt.engine,
  org.emoflon.ibex.gt.transformations

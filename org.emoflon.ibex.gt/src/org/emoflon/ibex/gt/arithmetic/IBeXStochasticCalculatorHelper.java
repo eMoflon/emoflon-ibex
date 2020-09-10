@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.arithmetics;
+package org.emoflon.ibex.gt.arithmetic;
 
 import java.util.Random;
 
@@ -163,6 +163,6 @@ public class IBeXStochasticCalculatorHelper {
 	 * @return the numeric value of the parameter
 	 */
 	private static double getValue(final GraphTransformationInterpreter interpreter, final IBeXArithmeticExpression expression, final IMatch match) {
-		return RuntimeArithmeticsExtensionCalculator.calculateValue(interpreter, expression, match);
+		return RuntimeArithmeticExtensionCalculator.calculateValue(interpreter, expression, match);
 	}
 }

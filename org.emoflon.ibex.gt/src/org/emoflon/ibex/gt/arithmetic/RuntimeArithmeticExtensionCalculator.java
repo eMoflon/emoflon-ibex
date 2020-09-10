@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.arithmetics;
+package org.emoflon.ibex.gt.arithmetic;
 
 import java.util.HashMap;
 
@@ -11,7 +11,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression;
 
-public class RuntimeArithmeticsExtensionCalculator {
+public class RuntimeArithmeticExtensionCalculator {
 	
 	/**
 	 * calculates the runtime depended value of the GTArithmetics
