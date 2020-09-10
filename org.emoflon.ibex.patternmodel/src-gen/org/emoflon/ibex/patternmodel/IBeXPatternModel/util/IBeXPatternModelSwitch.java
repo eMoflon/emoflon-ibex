@@ -9,8 +9,6 @@ import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
-import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
-import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.*;
 
 /**
@@ -295,15 +293,6 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-<<<<<<< HEAD
-		case IBeXPatternModelPackage.IBE_XMATCH_COUNT: {
-			IBeXMatchCount iBeXMatchCount = (IBeXMatchCount) theEObject;
-			T result = caseIBeXMatchCount(iBeXMatchCount);
-			if (result == null)
-				result = caseGTOneParameterCalculation(iBeXMatchCount);
-			if (result == null)
-				result = caseGTArithmetics(iBeXMatchCount);
-=======
 		case IBeXPatternModelPackage.IBE_XINJECTIVITY_CONSTRAINT: {
 			IBeXInjectivityConstraint iBeXInjectivityConstraint = (IBeXInjectivityConstraint) theEObject;
 			T result = caseIBeXInjectivityConstraint(iBeXInjectivityConstraint);
@@ -406,7 +395,17 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = caseIBeXArithmeticExpression(iBeXArithmeticAttribute);
 			if (result == null)
 				result = caseIBeXNamedElement(iBeXArithmeticAttribute);
->>>>>>> origin/gt_refactor
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XMATCH_COUNT: {
+			IBeXMatchCount iBeXMatchCount = (IBeXMatchCount) theEObject;
+			T result = caseIBeXMatchCount(iBeXMatchCount);
+			if (result == null)
+				result = caseIBeXUnaryExpression(iBeXMatchCount);
+			if (result == null)
+				result = caseIBeXArithmeticExpression(iBeXMatchCount);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -792,77 +791,42 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Returns the result of interpreting the object as an instance of '<em>IBe XMatch Count</em>'.
-=======
 	 * Returns the result of interpreting the object as an instance of '<em>IBe XInjectivity Constraint</em>'.
->>>>>>> origin/gt_refactor
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-<<<<<<< HEAD
-	 * @return the result of interpreting the object as an instance of '<em>IBe XMatch Count</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseIBeXMatchCount(IBeXMatchCount object) {
-=======
 	 * @return the result of interpreting the object as an instance of '<em>IBe XInjectivity Constraint</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
 	public T caseIBeXInjectivityConstraint(IBeXInjectivityConstraint object) {
->>>>>>> origin/gt_refactor
 		return null;
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Returns the result of interpreting the object as an instance of '<em>GT Arithmetics</em>'.
-=======
 	 * Returns the result of interpreting the object as an instance of '<em>IBe XPattern Invocation</em>'.
->>>>>>> origin/gt_refactor
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-<<<<<<< HEAD
-	 * @return the result of interpreting the object as an instance of '<em>GT Arithmetics</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseGTArithmetics(GTArithmetics object) {
-=======
 	 * @return the result of interpreting the object as an instance of '<em>IBe XPattern Invocation</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
 	public T caseIBeXPatternInvocation(IBeXPatternInvocation object) {
->>>>>>> origin/gt_refactor
 		return null;
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Returns the result of interpreting the object as an instance of '<em>GT One Parameter Calculation</em>'.
-=======
 	 * Returns the result of interpreting the object as an instance of '<em>IBe XNode To Node Mapping</em>'.
->>>>>>> origin/gt_refactor
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-<<<<<<< HEAD
-	 * @return the result of interpreting the object as an instance of '<em>GT One Parameter Calculation</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseGTOneParameterCalculation(GTOneParameterCalculation object) {
-=======
 	 * @return the result of interpreting the object as an instance of '<em>IBe XNode To Node Mapping</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
@@ -1018,7 +982,21 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXArithmeticAttribute(IBeXArithmeticAttribute object) {
->>>>>>> origin/gt_refactor
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XMatch Count</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XMatch Count</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXMatchCount(IBeXMatchCount object) {
 		return null;
 	}
 

@@ -11,8 +11,6 @@ import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
 
-import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
-import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.*;
 
 /**
@@ -196,20 +194,6 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-<<<<<<< HEAD
-		public Adapter caseIBeXMatchCount(IBeXMatchCount object) {
-			return createIBeXMatchCountAdapter();
-		}
-
-		@Override
-		public Adapter caseGTArithmetics(GTArithmetics object) {
-			return createGTArithmeticsAdapter();
-		}
-
-		@Override
-		public Adapter caseGTOneParameterCalculation(GTOneParameterCalculation object) {
-			return createGTOneParameterCalculationAdapter();
-=======
 		public Adapter caseIBeXInjectivityConstraint(IBeXInjectivityConstraint object) {
 			return createIBeXInjectivityConstraintAdapter();
 		}
@@ -272,7 +256,11 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseIBeXArithmeticAttribute(IBeXArithmeticAttribute object) {
 			return createIBeXArithmeticAttributeAdapter();
->>>>>>> origin/gt_refactor
+		}
+
+		@Override
+		public Adapter caseIBeXMatchCount(IBeXMatchCount object) {
+			return createIBeXMatchCountAdapter();
 		}
 
 		@Override
@@ -645,72 +633,40 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount <em>IBe XMatch Count</em>}'.
-=======
 	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint <em>IBe XInjectivity Constraint</em>}'.
->>>>>>> origin/gt_refactor
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-<<<<<<< HEAD
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount
-	 * @generated
-	 */
-	public Adapter createIBeXMatchCountAdapter() {
-=======
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint
 	 * @generated
 	 */
 	public Adapter createIBeXInjectivityConstraintAdapter() {
->>>>>>> origin/gt_refactor
 		return null;
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics <em>GT Arithmetics</em>}'.
-=======
 	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation <em>IBe XPattern Invocation</em>}'.
->>>>>>> origin/gt_refactor
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-<<<<<<< HEAD
-	 * @see org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics
-	 * @generated
-	 */
-	public Adapter createGTArithmeticsAdapter() {
-=======
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation
 	 * @generated
 	 */
 	public Adapter createIBeXPatternInvocationAdapter() {
->>>>>>> origin/gt_refactor
 		return null;
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation <em>GT One Parameter Calculation</em>}'.
-=======
 	 * Creates a new adapter for an object of class '{@link java.util.Map.Entry <em>IBe XNode To Node Mapping</em>}'.
->>>>>>> origin/gt_refactor
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-<<<<<<< HEAD
-	 * @see org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation
-	 * @generated
-	 */
-	public Adapter createGTOneParameterCalculationAdapter() {
-=======
 	 * @see java.util.Map.Entry
 	 * @generated
 	 */
@@ -855,7 +811,20 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXArithmeticAttributeAdapter() {
->>>>>>> origin/gt_refactor
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount <em>IBe XMatch Count</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount
+	 * @generated
+	 */
+	public Adapter createIBeXMatchCountAdapter() {
 		return null;
 	}
 

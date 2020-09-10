@@ -38,6 +38,7 @@
       <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXUnaryOperator/LOG"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXUnaryOperator/LG"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXUnaryOperator/BRACKET"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXUnaryOperator/COUNT"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXPatternModel.ecore#//IBeXDistributionType">
       <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXDistributionType/NORMAL"/>

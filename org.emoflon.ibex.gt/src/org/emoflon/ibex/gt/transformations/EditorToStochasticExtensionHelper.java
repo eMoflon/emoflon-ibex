@@ -8,7 +8,9 @@ import org.emoflon.ibex.gt.editor.gT.StochasticFunction;
 import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbability;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbabilityDistribution;
@@ -24,24 +26,24 @@ public class EditorToStochasticExtensionHelper {
 	 * @param probability the EditorProbability
 	 * @return the GTProbability
 	 */
-	public static IBeXProbability transformToGTProbability(final EditorPattern pattern) {
+	public static IBeXProbability transformToGTProbability(final TransformationData data, final IBeXContext ibexPattern, final EditorPattern pattern) {
 		IBeXProbability gtProbability = IBeXPatternModelFactory.eINSTANCE.createIBeXProbability();
 		if(pattern.isStochastic()) {
 			EditorProbability probability = pattern.getProbability();
 			// if probability is a function
 			if(probability instanceof StochasticFunction) {
-				gtProbability.setDistribution(transformStochasticFunction(((StochasticFunction) probability)
+				gtProbability.setDistribution(transformStochasticFunction(data, ibexPattern, ((StochasticFunction) probability)
 						.getFunctionExpression()));
 				//if probability is depended on a parameter
 				if(((StochasticFunction) probability).getParameter() != null) {
 					gtProbability.setParameter(EditorToArithmeticExtensionHelper
-							.transformToGTArithmetics(((StochasticFunction) probability).getParameter(), null, null));
+							.transformToGTArithmetics(data, ibexPattern, ((StochasticFunction) probability).getParameter()));
 				}
 			}
 			//if the probability is an arithmetic expression
 			else {				
 				gtProbability.setDistribution(createStaticProbability(EditorToArithmeticExtensionHelper
-						.transformToGTArithmetics(((ArithmeticExpression) probability))));
+						.transformToGTArithmetics(data, ibexPattern, ((ArithmeticExpression) probability))));
 			}					
 		}
 		//if the rule has no probability it will not have a GTProbability
@@ -56,14 +58,14 @@ public class EditorToStochasticExtensionHelper {
 	 * 			the stochasticFunctionExpression
 	 * @return the transformed function
 	 */
-	public static IBeXProbabilityDistribution transformStochasticFunction(final StochasticFunctionExpression function){
+	public static IBeXProbabilityDistribution transformStochasticFunction(final TransformationData data, final IBeXPattern ibexPattern, final StochasticFunctionExpression function){
 		IBeXProbabilityDistribution stochasticFunction = IBeXPatternModelFactory.eINSTANCE.createIBeXProbabilityDistribution();
 		stochasticFunction.setType(transformDistribution(function.getDistribution()));
 		stochasticFunction.setMean(EditorToArithmeticExtensionHelper
-				.transformToGTArithmetics(function.getMean()));
+				.transformToGTArithmetics(data, ibexPattern, function.getMean()));
 		if(stochasticFunction.getType() != IBeXDistributionType.EXPONENTIAL) {
 			stochasticFunction.setStddev(EditorToArithmeticExtensionHelper
-					.transformToGTArithmetics(function.getSd()));	
+					.transformToGTArithmetics(data, ibexPattern, function.getSd()));	
 		}else {
 			IBeXArithmeticValueLiteral sd = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValueLiteral();
 			sd.setValue(0.0);

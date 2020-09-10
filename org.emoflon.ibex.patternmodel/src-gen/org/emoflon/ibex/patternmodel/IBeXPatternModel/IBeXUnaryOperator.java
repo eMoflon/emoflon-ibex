@@ -107,14 +107,15 @@ public enum IBeXUnaryOperator implements Enumerator {
 	 * @ordered
 	 */
 	BRACKET(8, "BRACKET", "BRACKET"),
+
 	/**
-	* The '<em><b>COUNT</b></em>' literal object.
-	* <!-- begin-user-doc -->
-	* <!-- end-user-doc -->
-	* @see #COUNT_VALUE
-	* @generated
-	* @ordered
-	*/
+	 * The '<em><b>COUNT</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #COUNT_VALUE
+	 * @generated
+	 * @ordered
+	 */
 	COUNT(9, "COUNT", "COUNT");
 
 	/**
@@ -217,7 +218,6 @@ public enum IBeXUnaryOperator implements Enumerator {
 	public static final int BRACKET_VALUE = 8;
 
 	/**
-<<<<<<< HEAD:org.emoflon.ibex.gt.sgtpatternmodel/src-gen/org/emoflon/ibex/gt/SGTPatternModel/OneParameterOperator.java
 	 * The '<em><b>COUNT</b></em>' literal value.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -229,21 +229,13 @@ public enum IBeXUnaryOperator implements Enumerator {
 	public static final int COUNT_VALUE = 9;
 
 	/**
-	 * An array of all the '<em><b>One Parameter Operator</b></em>' enumerators.
-=======
 	 * An array of all the '<em><b>IBe XUnary Operator</b></em>' enumerators.
->>>>>>> origin/gt_refactor:org.emoflon.ibex.patternmodel/src-gen/org/emoflon/ibex/patternmodel/IBeXPatternModel/IBeXUnaryOperator.java
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-<<<<<<< HEAD:org.emoflon.ibex.gt.sgtpatternmodel/src-gen/org/emoflon/ibex/gt/SGTPatternModel/OneParameterOperator.java
-	private static final OneParameterOperator[] VALUES_ARRAY = new OneParameterOperator[] { ROOT, ABSOLUTE, SIN, COS,
-			TAN, EEXPONENTIAL, LOGARITHMUS, NATLOG, BRACKET, COUNT, };
-=======
 	private static final IBeXUnaryOperator[] VALUES_ARRAY = new IBeXUnaryOperator[] { SQRT, ABSOLUTE, SIN, COS, TAN,
-			EEXPONENTIAL, LOG, LG, BRACKET, };
->>>>>>> origin/gt_refactor:org.emoflon.ibex.patternmodel/src-gen/org/emoflon/ibex/patternmodel/IBeXPatternModel/IBeXUnaryOperator.java
+			EEXPONENTIAL, LOG, LG, BRACKET, COUNT, };
 
 	/**
 	 * A public read-only list of all the '<em><b>IBe XUnary Operator</b></em>' enumerators.

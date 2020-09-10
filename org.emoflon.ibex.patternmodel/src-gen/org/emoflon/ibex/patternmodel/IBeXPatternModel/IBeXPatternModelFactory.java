@@ -212,15 +212,6 @@ public interface IBeXPatternModelFactory extends EFactory {
 	IBeXArithmeticValue createIBeXArithmeticValue();
 
 	/**
-<<<<<<< HEAD
-	 * Returns a new object of class '<em>IBe XMatch Count</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XMatch Count</em>'.
-	 * @generated
-	 */
-	IBeXMatchCount createIBeXMatchCount();
-=======
 	 * Returns a new object of class '<em>IBe XInjectivity Constraint</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -318,7 +309,15 @@ public interface IBeXPatternModelFactory extends EFactory {
 	 * @generated
 	 */
 	IBeXArithmeticAttribute createIBeXArithmeticAttribute();
->>>>>>> origin/gt_refactor
+
+	/**
+	 * Returns a new object of class '<em>IBe XMatch Count</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XMatch Count</em>'.
+	 * @generated
+	 */
+	IBeXMatchCount createIBeXMatchCount();
 
 	/**
 	 * Returns the package supported by this factory.

@@ -37,12 +37,9 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
-<<<<<<< HEAD
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount;
-=======
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
->>>>>>> origin/gt_refactor
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
@@ -248,9 +245,6 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-<<<<<<< HEAD
-	private EClass iBeXMatchCountEClass = null;
-=======
 	private EClass iBeXInjectivityConstraintEClass = null;
 
 	/**
@@ -336,7 +330,13 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	private EClass iBeXArithmeticAttributeEClass = null;
->>>>>>> origin/gt_refactor
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXMatchCountEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -1203,33 +1203,8 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-<<<<<<< HEAD
-	public EClass getIBeXMatchCount() {
-		return iBeXMatchCountEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EReference getIBeXMatchCount_Invocation() {
-		return (EReference) iBeXMatchCountEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EEnum getIBeXRelation() {
-		return iBeXRelationEEnum;
-=======
 	public EReference getIBeXPatternInvocation_InvokedBy() {
 		return (EReference) iBeXPatternInvocationEClass.getEStructuralFeatures().get(1);
->>>>>>> origin/gt_refactor
 	}
 
 	/**
@@ -1262,13 +1237,6 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		return iBeXNodeToNodeMappingEClass;
 	}
 
-<<<<<<< HEAD
-		iBeXMatchCountEClass = createEClass(IBE_XMATCH_COUNT);
-		createEReference(iBeXMatchCountEClass, IBE_XMATCH_COUNT__INVOCATION);
-
-		// Create enums
-		iBeXRelationEEnum = createEEnum(IBE_XRELATION);
-=======
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1277,7 +1245,6 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	@Override
 	public EReference getIBeXNodeToNodeMapping_Key() {
 		return (EReference) iBeXNodeToNodeMappingEClass.getEStructuralFeatures().get(0);
->>>>>>> origin/gt_refactor
 	}
 
 	/**
@@ -1676,6 +1643,26 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EClass getIBeXMatchCount() {
+		return iBeXMatchCountEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXMatchCount_Invocation() {
+		return (EReference) iBeXMatchCountEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getIBeXRelation() {
 		return iBeXRelationEEnum;
 	}
@@ -1908,6 +1895,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXArithmeticAttributeEClass, IBE_XARITHMETIC_ATTRIBUTE__ATTRIBUTE);
 		createEAttribute(iBeXArithmeticAttributeEClass, IBE_XARITHMETIC_ATTRIBUTE__NEGATIVE);
 
+		iBeXMatchCountEClass = createEClass(IBE_XMATCH_COUNT);
+		createEReference(iBeXMatchCountEClass, IBE_XMATCH_COUNT__INVOCATION);
+
 		// Create enums
 		iBeXRelationEEnum = createEEnum(IBE_XRELATION);
 		iBeXBinaryOperatorEEnum = createEEnum(IBE_XBINARY_OPERATOR);
@@ -1963,16 +1953,13 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXAttributeExpressionEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 		iBeXStochasticAttributeValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 		iBeXArithmeticValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
-<<<<<<< HEAD
-		iBeXMatchCountEClass.getESuperTypes().add(theSGTPatternModelPackage.getGTOneParameterCalculation());
-=======
 		iBeXRuleEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXUnaryExpressionEClass.getESuperTypes().add(this.getIBeXArithmeticExpression());
 		iBeXBinaryExpressionEClass.getESuperTypes().add(this.getIBeXArithmeticExpression());
 		iBeXArithmeticValueLiteralEClass.getESuperTypes().add(this.getIBeXArithmeticExpression());
 		iBeXArithmeticAttributeEClass.getESuperTypes().add(this.getIBeXNode());
 		iBeXArithmeticAttributeEClass.getESuperTypes().add(this.getIBeXArithmeticExpression());
->>>>>>> origin/gt_refactor
+		iBeXMatchCountEClass.getESuperTypes().add(this.getIBeXUnaryExpression());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(iBeXModelEClass, IBeXModel.class, "IBeXModel", !IS_ABSTRACT, !IS_INTERFACE,
@@ -2368,6 +2355,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		addEEnumLiteral(iBeXUnaryOperatorEEnum, IBeXUnaryOperator.LOG);
 		addEEnumLiteral(iBeXUnaryOperatorEEnum, IBeXUnaryOperator.LG);
 		addEEnumLiteral(iBeXUnaryOperatorEEnum, IBeXUnaryOperator.BRACKET);
+		addEEnumLiteral(iBeXUnaryOperatorEEnum, IBeXUnaryOperator.COUNT);
 
 		initEEnum(iBeXDistributionTypeEEnum, IBeXDistributionType.class, "IBeXDistributionType");
 		addEEnumLiteral(iBeXDistributionTypeEEnum, IBeXDistributionType.NORMAL);

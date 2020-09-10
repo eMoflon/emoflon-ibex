@@ -2,8 +2,6 @@
  */
 package org.emoflon.ibex.patternmodel.IBeXPatternModel;
 
-import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>IBe XMatch Count</b></em>'.
@@ -20,7 +18,7 @@ import org.emoflon.ibex.gt.SGTPatternModel.GTOneParameterCalculation;
  * @model
  * @generated
  */
-public interface IBeXMatchCount extends GTOneParameterCalculation {
+public interface IBeXMatchCount extends IBeXUnaryExpression {
 	/**
 	 * Returns the value of the '<em><b>Invocation</b></em>' containment reference.
 	 * <!-- begin-user-doc -->

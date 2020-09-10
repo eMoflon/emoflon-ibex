@@ -5,18 +5,11 @@ import java.util.Random;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.common.operational.IMatch;
-<<<<<<< HEAD
-import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticDistribution;
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticFunction;
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
-=======
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbabilityDistribution;
->>>>>>> origin/gt_refactor
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 
 
@@ -53,31 +46,21 @@ public class IBeXStochasticCalculatorHelper {
 	 * @param match the match
 	 * @return
 	 */
-	private static Object getTypedValue( final GraphTransformationInterpreter contextInterpreter, final IBeXStochasticAttributeValue value,
+	private static Object getTypedValue(final GraphTransformationInterpreter interpreter, final IBeXStochasticAttributeValue value,
 			final IMatch match, EDataType type) {
 		Object object = null;
 		double doubleValue;
 		long intValue;
 		IBeXProbabilityDistribution function = value.getFunction();
 		if(type.equals(EcorePackage.Literals.EDOUBLE) || type.equals(EcorePackage.Literals.EFLOAT)) {
-<<<<<<< HEAD
-			doubleValue = getDoubleStochasticValue(getValue(contextInterpreter, function.getMean(), match),
-					getValue(contextInterpreter, function.getSd(), match),function.getDistribution(), value.getRange());
-=======
-			doubleValue = getDoubleStochasticValue(getValue(function.getMean(), match),
-					getValue(function.getStddev(), match),function.getType(), value.getRange());
->>>>>>> origin/gt_refactor
+			doubleValue = getDoubleStochasticValue(getValue(interpreter, function.getMean(), match),
+					getValue(interpreter, function.getStddev(), match),function.getType(), value.getRange());
 			object = type.getEPackage().getEFactoryInstance().createFromString(type, 
 					Double.toString(doubleValue));
 		}
 		else{
-<<<<<<< HEAD
-			intValue = getIntegerStochasticValue((int) Math.ceil(getValue(contextInterpreter, function.getMean(), match)),
-					(int) getValue(contextInterpreter, function.getSd(), match), function.getDistribution(), value.getRange());
-=======
-			intValue = getIntegerStochasticValue((int) Math.ceil(getValue(function.getMean(), match)),
-					(int) getValue(function.getStddev(), match), function.getType(), value.getRange());
->>>>>>> origin/gt_refactor
+			intValue = getIntegerStochasticValue((int) Math.ceil(getValue(interpreter, function.getMean(), match)),
+					(int) getValue(interpreter, function.getStddev(), match), function.getType(), value.getRange());
 			object = type.getEPackage().getEFactoryInstance().createFromString(type, 
 					Long.toString(intValue));
 		}
@@ -148,28 +131,18 @@ public class IBeXStochasticCalculatorHelper {
 	 * @param value the value
 	 * @param match the match
 	 */
-	private static void checkRuntimeStochasticConstraints(final GraphTransformationInterpreter contextInterpreter, final IBeXStochasticAttributeValue value,
+	private static void checkRuntimeStochasticConstraints(final GraphTransformationInterpreter interpreter, final IBeXStochasticAttributeValue value,
 			final IMatch match){
 		IBeXProbabilityDistribution function = value.getFunction();
 		//checks that the standard deviation of the normaldistribution is positive
-<<<<<<< HEAD
-		double mean = getValue(contextInterpreter, function.getMean(), match);
-		if(function.getDistribution() == GTStochasticDistribution.EXPONENTIAL && mean <= 0.0) {
-=======
-		double mean = getValue(function.getMean(), match);
+		double mean = getValue(interpreter, function.getMean(), match);
 		if(function.getType() == IBeXDistributionType.EXPONENTIAL && mean <= 0.0) {
->>>>>>> origin/gt_refactor
 			throw new IllegalArgumentException("the mean of the exponential distribution needs to be positive:"
 					+ "the mean of a value generator in " 
 					+ match.getPatternName() + " is negative");	
 		}
-<<<<<<< HEAD
-		double sd =getValue(contextInterpreter, function.getSd(), match);
-		if(function.getDistribution() == GTStochasticDistribution.NORMAL && sd <= 0.0) {
-=======
-		double sd =getValue(function.getStddev(), match);
+		double sd =getValue(interpreter, function.getStddev(), match);
 		if(function.getType() == IBeXDistributionType.NORMAL && sd <= 0.0) {
->>>>>>> origin/gt_refactor
 			throw new IllegalArgumentException("standard deviation of a normal distribution needs"
 					+ "to be positive: The standard deviation of a value generator in " 
 					+ match.getPatternName() + " is negative");		
@@ -189,12 +162,7 @@ public class IBeXStochasticCalculatorHelper {
 	 * @param match the match
 	 * @return the numeric value of the parameter
 	 */
-<<<<<<< HEAD
-	private static double getValue(final GraphTransformationInterpreter contextInterpreter, final GTArithmetics expression, final IMatch match) {
-		return RuntimeArithmeticsExtensionCalculator.calculateValue(contextInterpreter, expression, match);
-=======
-	private static double getValue(final IBeXArithmeticExpression expression, final IMatch match) {
-		return RuntimeArithmeticsExtensionCalculator.calculateValue(expression, match);
->>>>>>> origin/gt_refactor
+	private static double getValue(final GraphTransformationInterpreter interpreter, final IBeXArithmeticExpression expression, final IMatch match) {
+		return RuntimeArithmeticsExtensionCalculator.calculateValue(interpreter, expression, match);
 	}
 }

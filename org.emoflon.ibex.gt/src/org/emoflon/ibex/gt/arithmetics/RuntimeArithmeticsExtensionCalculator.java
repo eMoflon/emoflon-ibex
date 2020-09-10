@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral;
@@ -19,9 +20,9 @@ public class RuntimeArithmeticsExtensionCalculator {
 	 * @param match the match for the calculation of the runtime depended parameters
 	 * @return the calculated value
 	 */
-	public static double calculateValue(final IBeXArithmeticExpression expression, final IMatch match){
+	public static double calculateValue(final GraphTransformationInterpreter interpreter, final IBeXArithmeticExpression expression, final IMatch match){
 		if(expression instanceof IBeXUnaryExpression){
-			double value = calculateValue(((IBeXUnaryExpression) expression).getOperand(), match);
+			double value = calculateValue(interpreter, ((IBeXUnaryExpression) expression).getOperand(), match);
 			double result = 0.0;
 			switch(((IBeXUnaryExpression) expression).getOperator()) {
 				case ABSOLUTE: 		result = Math.abs(value);
@@ -49,7 +50,7 @@ public class RuntimeArithmeticsExtensionCalculator {
 				case TAN: 			result = Math.tan(value);
 									break;
 				case COUNT: {
-						result = contextInterpreter.matchStream(match.getPatternName(), new HashMap<>()).count();
+						result = interpreter.matchStream(match.getPatternName(), new HashMap<>()).count();
 					break;
 				}
 			
@@ -58,8 +59,8 @@ public class RuntimeArithmeticsExtensionCalculator {
 			else return result;
 		}
 		if(expression instanceof IBeXBinaryExpression) {
-			double left = calculateValue(((IBeXBinaryExpression) expression).getLeft(), match);
-			double right = calculateValue(((IBeXBinaryExpression) expression).getRight(), match);
+			double left = calculateValue(interpreter, ((IBeXBinaryExpression) expression).getLeft(), match);
+			double right = calculateValue(interpreter, ((IBeXBinaryExpression) expression).getRight(), match);
 			switch(((IBeXBinaryExpression) expression).getOperator()) {
 				case ADDITION: 		return left + right;
 				case SUBTRACTION: 	return left - right;

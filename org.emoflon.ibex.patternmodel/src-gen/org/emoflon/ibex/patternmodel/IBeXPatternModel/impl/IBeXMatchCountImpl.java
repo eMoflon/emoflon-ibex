@@ -10,8 +10,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
-import org.emoflon.ibex.gt.SGTPatternModel.impl.GTOneParameterCalculationImpl;
-
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
@@ -29,7 +27,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
  *
  * @generated
  */
-public class IBeXMatchCountImpl extends GTOneParameterCalculationImpl implements IBeXMatchCount {
+public class IBeXMatchCountImpl extends IBeXUnaryExpressionImpl implements IBeXMatchCount {
 	/**
 	 * The cached value of the '{@link #getInvocation() <em>Invocation</em>}' containment reference.
 	 * <!-- begin-user-doc -->
