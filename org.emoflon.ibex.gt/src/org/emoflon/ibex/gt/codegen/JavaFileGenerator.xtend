@@ -74,7 +74,7 @@ class JavaFileGenerator {
 			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
 			'java.util.HashMap',
 			'java.util.Map.Entry',
-			'org.emoflon.ibex.gt.arithmetics.Probability'
+			'org.emoflon.ibex.gt.arithmetic.Probability'
 		)
 		
 		val rulePreconditions = new HashSet
@@ -720,11 +720,11 @@ class JavaFileGenerator {
 					}
 			«ENDFOR»
 				
-				«IF !EditorToIBeXPatternHelper.getArithmeticConstratins(pattern).empty»
+				«IF !EditorToIBeXPatternHelper.getArithmeticConstraints(pattern).empty»
 				@Override
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
-						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstratins(pattern) SEPARATOR '&&'» 
+						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstraints(pattern) SEPARATOR '&&'» 
 						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
@@ -774,14 +774,14 @@ class JavaFileGenerator {
 	def getProbabilityImports(IBeXRule rule){
 		val imports = new HashSet<String>()
 		imports.add(
-			'org.emoflon.ibex.gt.arithmetics.Probability'
+			'org.emoflon.ibex.gt.arithmetic.Probability'
 		)
 		if(rule.probability === null){
 			return imports;
 		}
 		if(probabilityGenerator.isStatic(rule.probability)){
 			imports.addAll(
-				'org.emoflon.ibex.gt.arithmetics.StaticProbability',
+				'org.emoflon.ibex.gt.arithmetic.StaticProbability',
 				'IBeXPatternModel.IBeXDistributionType',
 				'java.util.OptionalDouble'
 			)
@@ -893,10 +893,12 @@ class JavaFileGenerator {
 	 * Returns the documentation for the rule.
 	 */
 	private static def getRuleDocumentation(IBeXRule rule) {
+		if(rule.documentation === null)
+			return String.format(
+					"If this rule is not self-explaining, you really should add some comment in the specification.")
 		if (rule.documentation.isEmpty) {
 			return String.format(
-				"If this rule is not self-explaining, you really should add some comment in the specification."
-			)
+				"If this rule is not self-explaining, you really should add some comment in the specification.")
 		} else {
 			return rule.documentation
 		}
@@ -906,18 +908,22 @@ class JavaFileGenerator {
 	 * Returns the documentation for the rule.
 	 */
 	private static def getPatternDocumentation(IBeXPattern pattern) {
-		if ((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).documentation.isEmpty) {
+		var ibexPattern = null as IBeXContextPattern
+		if(pattern instanceof IBeXContextPattern)
+			ibexPattern = pattern as IBeXContextPattern
+		else 	
+			ibexPattern = (pattern as IBeXContextAlternatives).context	
+			
+		if (ibexPattern.documentation === null) {
 			return String.format(
 				"If this pattern is not self-explaining, you really should add some comment in the specification."
 			)
-		} else if ((pattern instanceof IBeXContextAlternatives) && (pattern as IBeXContextAlternatives).context.documentation.isEmpty) {
+		} else if (ibexPattern.documentation.isEmpty) {
 			return String.format(
 				"If this pattern is not self-explaining, you really should add some comment in the specification."
 			)
-		} else if((pattern instanceof IBeXContextPattern) && !(pattern as IBeXContextPattern).documentation.isEmpty) {
-			return (pattern as IBeXContextPattern).documentation
 		} else {
-			return (pattern as IBeXContextAlternatives).context.documentation
+			return ibexPattern.documentation
 		}
 	}
 

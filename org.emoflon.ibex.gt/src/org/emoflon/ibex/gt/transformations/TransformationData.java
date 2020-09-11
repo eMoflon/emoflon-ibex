@@ -52,7 +52,7 @@ public class TransformationData {
 	/**
 	 * All context patterns.
 	 */
-	public Set<IBeXContext> ibexContextPatterns = new LinkedHashSet<>();
+	public Map<IBeXContext, EditorPattern> ibexContextPatterns = new HashMap<>();
 
 	/**
 	 * All create patterns.
@@ -67,6 +67,6 @@ public class TransformationData {
 	/**
 	 * All rules.
 	 */
-	public List<IBeXRule> ibexRules = new LinkedList<>();
+	public Map<IBeXRule, EditorPattern> ibexRules = new HashMap<>();
 
 }

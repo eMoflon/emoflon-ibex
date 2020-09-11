@@ -318,7 +318,7 @@ class ArithmeticExtensionGenerator {
 		val probability = rule.probability
 		val imports = new HashSet<String>()
 		imports.addAll(
-			'org.emoflon.ibex.gt.arithmetics.Probability',
+			'org.emoflon.ibex.gt.arithmetic.Probability',
 			'''«getSubPackageName('api.matches')».«getMatchClassName(rule)»''',
 			'''«getSubPackageName('api.rules')».«getRuleClassName(rule)»'''
 			
@@ -355,6 +355,9 @@ class ArithmeticExtensionGenerator {
 				case LOG: return negative + '''Math.log10(«value»)'''
 				case LG: return negative + '''Math.log(«value»)'''
 				case SQRT: return negative + '''Math.sqrt(«value»)'''
+				case COUNT: {
+					return '''interpreter.matchStream(match.getPatternName(), new HashMap<>()).count()'''
+				}
 			}		
 		}
 		if(expression instanceof IBeXBinaryExpression){

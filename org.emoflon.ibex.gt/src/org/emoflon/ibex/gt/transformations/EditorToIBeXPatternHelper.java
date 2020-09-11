@@ -94,7 +94,7 @@ final public class EditorToIBeXPatternHelper {
 		return nodes;
 	}
 	
-	public static Collection<IBeXArithmeticConstraint> getArithmeticConstratins(IBeXContext pattern) {
+	public static Collection<IBeXArithmeticConstraint> getArithmeticConstraints(IBeXContext pattern) {
 		Collection<IBeXArithmeticConstraint> constraints = new LinkedList<>();
 		IBeXContextPattern context = null;
 		if(pattern instanceof IBeXContextPattern) {
