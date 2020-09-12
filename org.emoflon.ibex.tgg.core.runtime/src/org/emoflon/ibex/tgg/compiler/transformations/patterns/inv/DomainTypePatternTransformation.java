@@ -5,7 +5,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
-import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 
@@ -27,7 +26,7 @@ public class DomainTypePatternTransformation extends SplitUpPatternTransformatio
 	
 	public void createDomainTypePattern() {
 		if(!parent.isTransformed(getPatternName()))
-			thisPattern = createPatternFromDomain(domain, getPatternName());
+			thisPattern = createPatternByDomain(domain, getPatternName());
 //			thisPattern = createPatternFromBindingAndDomain(BindingType.CREATE, domain, getPatternName());
 	}
 	
