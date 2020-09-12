@@ -2,8 +2,6 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWDBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDBlackPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWD_GREENCORRBlackPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWD_GREENCORRBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
@@ -11,7 +9,6 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomai
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

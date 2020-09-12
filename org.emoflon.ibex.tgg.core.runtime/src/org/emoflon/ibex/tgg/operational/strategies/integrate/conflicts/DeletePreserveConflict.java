@@ -1,10 +1,8 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_MergeAndPreserve;
@@ -13,7 +11,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeAddition;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeDeletion;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
@@ -27,20 +24,30 @@ public abstract class DeletePreserveConflict extends Conflict
 	protected final List<ITGGMatch> causingMatches;
 	protected final DomainType domainToBePreserved;
 
-	public DeletePreserveConflict(ConflictContainer container, DomainType domainToBePreserved) {
+	public DeletePreserveConflict(ConflictContainer container, DomainType domainToBePreserved, List<ITGGMatch> causingMatches) {
 		super(container);
-		this.causingMatches = getAndSortCausingMatches();
+		this.causingMatches = causingMatches;
 		this.domainToBePreserved = domainToBePreserved;
 	}
 
-	private List<ITGGMatch> getAndSortCausingMatches() {
-		PrecedenceGraph pg = integrate().getPrecedenceGraph();
-		PrecedenceNode node = pg.getNode(getBrokenMatch().getMatch());
+	@Override
+	protected Set<ITGGMatch> initConflictMatches() {
+		Set<ITGGMatch> matches = new HashSet<>();
+		matches.add(causingMatches.get(0));
+		return matches;
+	}
 
-		return new LinkedList<>(node.getRollbackCauses()).stream() //
-				.sorted((n1, n2) -> n1.getRollbackCauses().size() - n2.getRollbackCauses().size()) //
-				.map(n -> n.getMatch()) //
-				.collect(Collectors.toList());
+	@Override
+	protected Set<ITGGMatch> initScopeMatches() {
+		Set<ITGGMatch> matches = new HashSet<>();
+		matches.addAll(causingMatches);
+		matches.remove(causingMatches.get(0));
+		integrate().getPrecedenceGraph().getNode(getBrokenMatch().getMatch()).forAllRequiredBy((act, pre) -> matches.add(act.getMatch()));
+		return matches;
+	}
+
+	public DomainType getDomainToBePreserved() {
+		return domainToBePreserved;
 	}
 
 	//// CRS ////
@@ -117,9 +124,5 @@ public abstract class DeletePreserveConflict extends Conflict
 			break;
 		}
 		resolved = true;
-	}
-
-	public DomainType getDomainToBePreserved() {
-		return domainToBePreserved;
 	}
 }

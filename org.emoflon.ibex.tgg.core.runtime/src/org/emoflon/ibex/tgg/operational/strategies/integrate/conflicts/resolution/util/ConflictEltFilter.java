@@ -56,6 +56,8 @@ public class ConflictEltFilter {
 		this.modifications = new HashSet<>();
 		this.ruleNames = new HashSet<>();
 		this.excludeRuleNames = true;
+		this.objectTypes = new HashSet<>();
+		this.edgeTypes = new HashSet<>();
 	}
 
 	/**

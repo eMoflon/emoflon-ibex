@@ -55,7 +55,7 @@ public class ConflictElements {
 			this.intact = filter.modifications.contains(ConflictEltModification.INTACT);
 		}
 
-		this.consistencyFilter = new EltFilter().create().domains((DomainType[]) filter.domainTypes.toArray());
+		this.consistencyFilter = new EltFilter().create().domains(filter.domainTypes.toArray(new DomainType[] {}));
 		this.srcTrgFilter = this.consistencyFilter.copy();
 		if (deleted && !intact)
 			this.consistencyFilter.deleted();
