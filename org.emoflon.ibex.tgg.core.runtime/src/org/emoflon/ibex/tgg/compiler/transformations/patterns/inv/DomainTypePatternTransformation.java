@@ -27,8 +27,8 @@ public class DomainTypePatternTransformation extends SplitUpPatternTransformatio
 	
 	public void createDomainTypePattern() {
 		if(!parent.isTransformed(getPatternName()))
-			thisPattern = createPatternFromBindingAndDomain(BindingType.CREATE, domain, getPatternName());
-//		transformPACs();
+			thisPattern = createPatternFromDomain(domain, getPatternName());
+//			thisPattern = createPatternFromBindingAndDomain(BindingType.CREATE, domain, getPatternName());
 	}
 	
 	public IBeXContextPattern getPattern() {

@@ -85,23 +85,11 @@ public class PACAnalysis extends FilterNACAnalysis {
 		return optimisedPACs;
 	}
 	
-	public Collection<ConclusionRule> onlyEdgeIsMarkedInOtherRules2(TGGRule toCheckRule, EClass nodeClass, EReference eTypeEdge, DomainType domain, EdgeDirection eDirection) {
-		List<ConclusionRule> cRules = new LinkedList<ConclusionRule>();
-		for(TGGRule rule: ref2rules.get(eTypeEdge)) {
-			for(TGGRuleEdge edge : rule.getEdges()) {
-				if(edge.getBindingType().equals(BindingType.CREATE) && edge.getType().equals(eTypeEdge) && edge.getSrcNode().getBindingType().equals(BindingType.CONTEXT) && edge.getTrgNode().getBindingType().equals(BindingType.CONTEXT)) {
-					TGGRuleNode n = eDirection == EdgeDirection.INCOMING ? edge.getTrgNode() : edge.getSrcNode();
-					cRules.add(new ConclusionRule(rule, n));
-				}
-			}
-		}
-		return cRules;		
-	}
 	protected boolean nodeAndEdgeAreMarkedInOtherRule(TGGRuleNode n, EReference eTypeEdge,EdgeDirection eDirection) {
 		for(TGGRule rule: ref2rules.get(eTypeEdge)) {
 			for(TGGRuleEdge edge : rule.getEdges()) {
 				if(edge.getBindingType().equals(BindingType.CREATE) && edge.getType().equals(eTypeEdge))
-					if((eDirection.equals(EdgeDirection.INCOMING) && edge.getTrgNode().getBindingType().equals(BindingType.CREATE)) || (eDirection.equals(EdgeDirection.OUTGOING) && edge.getSrcNode().getBindingType().equals(BindingType.CREATE)))
+					if((eDirection.equals(EdgeDirection.INCOMING) && edge.getTrgNode().getBindingType().equals(BindingType.CREATE) && edge.getTrgNode().getBindingType().equals(BindingType.CONTEXT)) || (eDirection.equals(EdgeDirection.OUTGOING) && edge.getSrcNode().getBindingType().equals(BindingType.CREATE) && edge.getTrgNode().getBindingType().equals(BindingType.CONTEXT)))
 						return true;
 			}
 		}

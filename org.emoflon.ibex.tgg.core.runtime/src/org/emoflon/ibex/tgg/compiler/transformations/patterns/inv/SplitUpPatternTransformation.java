@@ -2,8 +2,10 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns.inv;
 
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperator;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByDomain;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperator;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByDomain;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,16 +42,23 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 		this.rule = rule;
 	}
 	
-	public IBeXContextPattern createPatternFromBindingAndDomain(BindingType binding, DomainType domain, String name) {
+	public IBeXContextPattern createPatternByBindingAndDomain(BindingType binding, DomainType domain, String name) {
 		LinkedList<TGGRuleNode> ruleNodesByOperatorAndDomain = new LinkedList<TGGRuleNode>(getNodesByOperatorAndDomain(rule, binding, domain));
 		LinkedList<? extends TGGRuleEdge> ruleEdgesByOperatorAndDomain = new LinkedList<TGGRuleEdge>(getEdgesByOperatorAndDomain(rule, binding, domain));
-//		buildPattern(ruleNodesByOperatorAndDomain, ruleEdgesByOperatorAndDomain, name, 0);
 		Optional<IBeXContextPattern> pattern = transform(ruleNodesByOperatorAndDomain, ruleEdgesByOperatorAndDomain, name);
 		pattern.ifPresent(parent::addContextPattern);
 		return pattern.get();
 	}
 	
-	public void createPatternFromBinding(BindingType binding, String ruleName, String suffixe) {
+	public IBeXContextPattern createPatternByDomain(DomainType domain, String name) {
+		LinkedList<TGGRuleNode> ruleNodesByDomain = new LinkedList<TGGRuleNode>(getNodesByDomain(rule, domain));
+		LinkedList<? extends TGGRuleEdge> ruleEdgesByDomain = new LinkedList<TGGRuleEdge>(getEdgesByDomain(rule, domain));
+		Optional<IBeXContextPattern> pattern = transform(ruleNodesByDomain, ruleEdgesByDomain, name);
+		pattern.ifPresent(parent::addContextPattern);
+		return pattern.get();
+	}
+	
+	public void createPatternByBinding(BindingType binding, String ruleName, String suffixe) {
 		LinkedList<TGGRuleNode> ruleNodesByOperator = new LinkedList<TGGRuleNode>(getNodesByOperator(rule, binding));
 		LinkedList<? extends TGGRuleEdge> ruleEdgesByOperator = new LinkedList<TGGRuleEdge>(getEdgesByOperator(rule, binding));
 		buildPattern(ruleNodesByOperator, ruleEdgesByOperator, ruleName, suffixe, 0);
