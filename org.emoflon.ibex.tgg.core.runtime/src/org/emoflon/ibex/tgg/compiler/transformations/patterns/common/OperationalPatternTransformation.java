@@ -28,6 +28,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.DomainTypePatternTransformation;
@@ -45,6 +46,7 @@ import language.TGGRuleNode;
 
 public abstract class OperationalPatternTransformation {
 	protected static final String NODE_NAME = "FILTER_NAC_NODE";
+	protected static final String PAC_NODE_NAME = "PAC_NODE";
 
 	protected ContextPatternTransformation parent;
 	protected IbexOptions options;
@@ -292,17 +294,21 @@ public abstract class OperationalPatternTransformation {
 			//if there is only one conclusion there is no need for a extra PAC-Pattern, a single negative pattern invocation is enough
 			if(pacCandidate.getConclusionRules().size() == 1) {
 				ConclusionRule conclusion = pacCandidate.getConclusionRules().get(0);
+				if(!parent.isTransformed(conclusion.getConclusionRule().getName() + "__" + domain)) {
+					DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(parent, options, conclusion.getConclusionRule(), domain);
+					transformer.createDomainTypePattern();
+				}
 				IBeXContextPattern conclusionPattern = parent.getPattern(conclusion.getConclusionRule().getName() + "__" + domain);
 				if(conclusionPattern == null) {
 					return premisePattern;
 				}
 				else {
-					createPACPatternInvocation(conclusionPattern, premisePattern, pacCandidate, conclusion, true, false);
+					createPACPatternInvocation(conclusionPattern, premisePattern, pacCandidate, conclusion, false, false);
 				}
 			}
 			else if(pacCandidate.getConclusionRules().size() > 1) {
 				IBeXContextPattern pacPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
-				pacPattern.setName(rule.getName() + "_" + pacCandidate.getPremise() + "__PAC");
+				pacPattern.setName(rule.getName() + "_" + pacCandidate.getPremise() + PatternSuffixes.PAC);
 				IBeXPatternInvocation pacInv = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 				pacInv.setPositive(true);
 				pacInv.setInvokedPattern(pacPattern);
@@ -311,11 +317,19 @@ public abstract class OperationalPatternTransformation {
 				IBeXNode pacNode = IBeXPatternModelFactory.eINSTANCE.createIBeXNode();
 				pacNode.setName(pacCandidate.getPremise().getNodeInRule().getName());
 				pacNode.setType(pacCandidate.getPremise().getNodeInRule().getType());
-				pacPattern.getSignatureNodes().add(pacNode);
-				
-				Optional<IBeXNode> premiseNode = IBeXPatternUtils.findIBeXNodeWithName(pacPattern, pacCandidate.getPremise().getNodeInRule().getName());
+				pacPattern.getSignatureNodes().add(pacNode);				
+				Optional<IBeXNode> premiseNode = IBeXPatternUtils.findIBeXNodeWithName(premisePattern, pacCandidate.getPremise().getNodeInRule().getName());
 				if(premiseNode.isPresent())
 					pacInv.getMapping().put(premiseNode.get(), pacNode);
+				
+				IBeXNode otherPACNode = IBeXPatternModelFactory.eINSTANCE.createIBeXNode();
+				otherPACNode.setName(PAC_NODE_NAME);
+				otherPACNode.setType(pacCandidate.getPremise().getOtherNodeType());
+				pacPattern.getLocalNodes().add(otherPACNode);
+				Optional<IBeXNode> premiseFilterNACNode = IBeXPatternUtils.findIBeXNodeWithName(premisePattern, NODE_NAME);
+				if(premiseFilterNACNode.isPresent())
+					pacInv.getMapping().put(premiseFilterNACNode.get(), otherPACNode);
+				
 				premisePattern.getInvocations().add(pacInv);
 				
 				for(ConclusionRule conclusionRule : pacCandidate.getConclusionRules()) {
@@ -344,32 +358,32 @@ public abstract class OperationalPatternTransformation {
 		if(pacNode.isPresent() && conclusionNode.isPresent()) {
 			inv.getMapping().put(pacNode.get(), conclusionNode.get());
 			
-			IBeXNode otherNodeConclusion = findOtherNode(pacCandidate.getPremise().getEDirection(), conclusionNode.get(), pacCandidate.getPremise().getEdgeType());
-			//If only one conclusion exist, there is no need for a separate pacPattern (NAC_Pattern can be used) but the mapping is changing because the Filter_NAC-node from the NAC_Pattern can be used
+			Optional<IBeXNode> otherNodeConclusion = Optional.of(findOtherNode(pacCandidate.getPremise().getEDirection(), conclusionNode.get(), pacCandidate.getPremise().getEdgeType()));
+			Optional<IBeXNode> otherNodePremise;
+			//If only one conclusion exist, there is no need for a separate pacPattern (NAC_Pattern can be used) but the mapping is changing
 			if(!pacPatternNeeded) {
-				IBeXNode otherNodePremise = findOtherNode(pacCandidate.getPremise().getEDirection(), pacNode.get(), pacCandidate.getPremise().getEdgeType());
-				inv.getMapping().put(otherNodePremise, otherNodeConclusion);
+				otherNodePremise = Optional.of(findOtherNode(pacCandidate.getPremise().getEDirection(), pacNode.get(), pacCandidate.getPremise().getEdgeType()));
 			}
+			else otherNodePremise = IBeXPatternUtils.findIBeXNodeWithName(pacPattern, PAC_NODE_NAME);
+			if(otherNodeConclusion.isPresent() && otherNodePremise.isPresent())
+				inv.getMapping().put(otherNodePremise.get(), otherNodeConclusion.get());
 			//To map all nodes from the conclusion with the pacPattern
-			//because of different names the node from the conclusion which is connected with the premise-node needs to be removed
-			//and eventually the other node of the edge
-			//example special case-> TGG: FamiliesToPersons_Vo, Rule: ReplaceFatherWithSon, Pattern: ReplaceFatherWithSon_son_father_incoming_SRC__FILTER_NAC_SRC
-			List<IBeXNode> additionalNodes = new LinkedList<IBeXNode>();
-			additionalNodes.addAll(conclusionPattern.getSignatureNodes());
-			additionalNodes.remove(conclusionNode.get());
-			if(!pacPatternNeeded)
-				additionalNodes.remove(otherNodeConclusion);
-			for(IBeXNode n :  additionalNodes) {
-				Optional<IBeXNode> optNode = IBeXPatternUtils.findIBeXNodeWithName(pacPattern, "PAC_NODE_" + n.getName());
-				if(!optNode.isPresent()) {
+			//example special case-> TGG: FamiliesToPersons_V0, Rule: ReplaceFatherWithSon, Pattern: ReplaceFatherWithSon_son_father_incoming_SRC__FILTER_NAC_SRC
+			for(IBeXNode n :  conclusionPattern.getSignatureNodes()) {
+				//already mapped previously
+				if(n.equals(conclusionNode.get()) || n.equals(otherNodeConclusion.get()))
+					continue;
+				Optional<IBeXNode> optNode = pacPattern.getLocalNodes().stream().filter(node -> node.getType().equals(n.getType()) && !inv.getMapping().containsKey(node)).findAny();
+				if(optNode.isPresent())
+					inv.getMapping().put(optNode.get(), n);
+				else {
 					IBeXNode pN = IBeXPatternModelFactory.eINSTANCE.createIBeXNode();
 					pN.setName("PAC_NODE_" + n.getName());
 					pN.setType(n.getType());
 					optNode = Optional.of(pN);
 					pacPattern.getLocalNodes().add(optNode.get());
+					inv.getMapping().put(optNode.get(), n);
 				}
-//				if(!inv.getMapping().containsKey(optNode.get()))
-				inv.getMapping().put(optNode.get(), n);
 			}
 		}
 		

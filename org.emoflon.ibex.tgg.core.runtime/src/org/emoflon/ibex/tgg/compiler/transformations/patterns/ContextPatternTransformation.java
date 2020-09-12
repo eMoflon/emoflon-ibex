@@ -122,6 +122,7 @@ public class ContextPatternTransformation {
 					createSRCPattern(rule);
 					if(options.invocation.useGreenCorrPattern() && createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD))
 						createFWD_GREENCORRPattern(rule);
+					else createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD);
 					}
 				else createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD);
 				
@@ -129,7 +130,7 @@ public class ContextPatternTransformation {
 			}
 
 			if (isDomainProgressive(rule, DomainType.TRG)) {
-				if(patternInvOption && isPatternRelevant(rule, PatternType.FWD)) {
+				if(patternInvOption && isPatternRelevant(rule, PatternType.BWD)) {
 					createTRGPattern(rule);
 				}				
 				createPatternIfRelevant(rule, this::createBWDPattern, PatternType.BWD);
