@@ -1,31 +1,32 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
-import java.util.Set;
+import java.util.List;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.AttrConflictingElt;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 
 import language.DomainType;
 
 public class DelPreserveAttrConflict extends DeletePreserveConflict {
 
-	private final Set<AttrConflictingElt> subjects;
+	private final AttributeChange attrChange;
 
-	public DelPreserveAttrConflict(ConflictContainer container,
-			Set<AttrConflictingElt> subjects, DomainType domainToBePreserved) {
-		super(container, domainToBePreserved);
-		this.subjects = subjects;
+	public DelPreserveAttrConflict(ConflictContainer container, AttributeChange attrChange, DomainType domainToBePreserved,
+			List<ITGGMatch> causingMatches) {
+		super(container, domainToBePreserved, causingMatches);
+		this.attrChange = attrChange;
 	}
 
-	public Set<AttrConflictingElt> getSubjects() {
-		return subjects;
+	public AttributeChange getAttributeChange() {
+		return attrChange;
 	}
 
 	//// CRS ////
 
 	@Override
 	public void crs_revokeAddition() {
-		subjects.forEach(subject -> subject.getAttributeChanges().forEach(ac -> ModelChangeUtil.revertAttributeChange(ac)));
+		ModelChangeUtil.revertAttributeChange(attrChange);
 		resolved = true;
 	}
 

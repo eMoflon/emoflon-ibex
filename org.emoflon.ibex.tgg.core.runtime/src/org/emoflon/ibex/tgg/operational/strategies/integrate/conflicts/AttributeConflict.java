@@ -1,6 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
@@ -19,6 +23,18 @@ public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS
 		this.conflictedConstraint = conflictedConstraint;
 		this.srcChange = srcChange;
 		this.trgChange = trgChange;
+	}
+	
+	@Override
+	protected Set<ITGGMatch> initConflictMatches() {
+		Set<ITGGMatch> matches = new HashSet<>();
+		matches.add(getBrokenMatch().getMatch());
+		return matches;
+	}
+
+	@Override
+	protected Set<ITGGMatch> initScopeMatches() {
+		return new HashSet<>();
 	}
 
 	public ConstrainedAttributeChanges getConflictedConstraint() {

@@ -1,39 +1,49 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
+import java.util.List;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.util.EdgeConflictingElt;
+import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
+import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
 
+import language.BindingType;
 import language.DomainType;
+import language.TGGRuleEdge;
 
 public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 
-	private final Set<EdgeConflictingElt> subjects;
+	private final ITGGMatch srcTrgMatch;
 
-	public DelPreserveEdgeConflict(ConflictContainer container, Set<EdgeConflictingElt> subjects,
-			DomainType domainToBePreserved) {
-		super(container, domainToBePreserved);
-		this.subjects = subjects;
+	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
+			List<ITGGMatch> causingMatches) {
+		super(container, domainToBePreserved, causingMatches);
+		this.srcTrgMatch = srcTrgMatch;
 	}
 
-	public Set<EdgeConflictingElt> getSubjects() {
-		return subjects;
+	@Override
+	protected Set<ITGGMatch> initConflictMatches() {
+		Set<ITGGMatch> matches = super.initConflictMatches();
+		matches.add(srcTrgMatch);
+		return matches;
 	}
 
 	//// CRS ////
 
 	@Override
 	public void crs_revokeAddition() {
-		subjects.forEach(subject -> {
-			subject.getCreatedEdges().forEach(ce -> {
-				if (ce.getType().isContainment()) {
-					ModelChangeUtil.deleteElement(ce.getTarget(), true);
-				} else {
-					ModelChangeUtil.deleteEdge(ce);
-				}
-			});
-		});
+		for (TGGRuleEdge e : integrate().getMatchUtil().getEdges(srcTrgMatch, new EltFilter().create())) {
+			if (e.getSrcNode().getBindingType() != BindingType.CONTEXT && e.getTrgNode().getBindingType() != BindingType.CONTEXT)
+				return;
+
+			EMFEdge emfEdge = TGGEdgeUtil.getRuntimeEdge(srcTrgMatch, e);
+			if (emfEdge.getType().isContainment())
+				ModelChangeUtil.deleteElement(emfEdge.getTarget(), true);
+			else
+				ModelChangeUtil.deleteEdge(emfEdge);
+		}
 		resolved = true;
 	}
 

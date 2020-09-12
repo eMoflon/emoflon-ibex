@@ -26,7 +26,7 @@ public class FilterNACAnalysis {
 	private TGG tgg;
 	private IbexOptions options;
 	
-	private Map<EReference, Collection<TGGRule>> ref2rules = new HashMap<>();
+	protected Map<EReference, Collection<TGGRule>> ref2rules = new HashMap<>();
 
 	public FilterNACAnalysis(TGG tgg, IbexOptions options) {
 		this.tgg = tgg;
@@ -35,7 +35,7 @@ public class FilterNACAnalysis {
 		initializeCaching();
 	}
 
-	private void initializeCaching() {
+	protected void initializeCaching() {
 		for(TGGRule rule : tgg.getRules()) {
 			for(TGGRuleEdge edge : rule.getEdges()) {
 				if(!ref2rules.containsKey(edge.getType())) {
@@ -93,7 +93,7 @@ public class FilterNACAnalysis {
 		return optimisedFilterNACs;
 	}
 
-	private boolean isRedundantDueToEMFContainmentSemantics(TGGRule rule, FilterNACCandidate filterNAC) {
+	protected boolean isRedundantDueToEMFContainmentSemantics(TGGRule rule, FilterNACCandidate filterNAC) {
 		for (TGGRuleEdge edge : rule.getEdges()) {
 			// Edges must be of same type and be containment
 			if (edge.getType().equals(filterNAC.getEdgeType()) && edge.getType().isContainment()) {
@@ -114,7 +114,7 @@ public class FilterNACAnalysis {
 				.collect(Collectors.toList());
 	}
 
-	private boolean isGreaterEOpposite(FilterNACCandidate nac1, FilterNACCandidate nac2) {
+	protected boolean isGreaterEOpposite(FilterNACCandidate nac1, FilterNACCandidate nac2) {
 		if (nac2.getEdgeType().equals(nac1.getEdgeType().getEOpposite())) {
 			if (nac1.getNodeInRule().getName().equals(nac2.getNodeInRule().getName()))
 				if (nac1.getEDirection() != nac2.getEDirection()) {
@@ -129,16 +129,16 @@ public class FilterNACAnalysis {
 		return determineSavingRules(domain, eType, eDirection, tgg).isEmpty();
 	}
 
-	private boolean edgeIsNeverTranslatedInTGG(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
+	protected boolean edgeIsNeverTranslatedInTGG(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
 		return !isEdgeInTGG(tgg, eType, eDirection, false, domain);
 	}
 
-	private boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRule rule, TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
+	protected boolean onlyPossibleEdgeIsAlreadyTranslatedInRule(TGGRule rule, TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
 		int numOfEdges = countEdgeInRule(rule, n, eType, eDirection, false, domain).getEdgeCount();
 		return eType.getUpperBound() == 1 && numOfEdges == 1;
 	}
 
-	private boolean typeDoesNotFitToDirection(TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
+	protected boolean typeDoesNotFitToDirection(TGGRuleNode n, EReference eType, EdgeDirection eDirection) {
 		return !getType(eType, eDirection).equals(n.getType());
 	}
 
@@ -150,7 +150,7 @@ public class FilterNACAnalysis {
 		return !n.getDomainType().equals(domain) || n.getDomainType().equals(DomainType.CORR);
 	}
 
-	private List<TGGRule> determineSavingRules(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
+	protected List<TGGRule> determineSavingRules(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
 //		return tgg.getRules().stream().filter(r -> isSavingRule(domain, eType, eDirection, r)).collect(Collectors.toList());
 		return ref2rules.get(eType).stream().filter(r -> isSavingRule(domain, eType, eDirection, r)).collect(Collectors.toList());
 	}
@@ -209,11 +209,11 @@ public class FilterNACAnalysis {
 	/**
 	 * this method returns the type of the currently viewed object which is implicit
 	 */
-	private EClass getType(EReference eType, EdgeDirection eDirection) {
+	protected EClass getType(EReference eType, EdgeDirection eDirection) {
 		return eDirection == EdgeDirection.INCOMING ? (EClass) eType.getEType() : (EClass) eType.eContainer();
 	}
 
-	private Collection<EReference> extractEReferences(EClass nodeClass) {
+	protected Collection<EReference> extractEReferences(EClass nodeClass) {
 		EPackage pkg = (EPackage) nodeClass.eContainer();
 
 		if (pkg == null)
