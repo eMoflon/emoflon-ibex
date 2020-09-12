@@ -21,7 +21,7 @@ public class GENPatternTransformation extends SplitUpPatternTransformation{
 	}
 	
 	public void createGENPattern() {
-		createPatternFromBinding(BindingType.CONTEXT, rule.getName(), PatternSuffixes.GEN);
+		createPatternByBinding(BindingType.CONTEXT, rule.getName(), PatternSuffixes.GEN);
 	}
 	
 	public void setPatternName(String patternName) {

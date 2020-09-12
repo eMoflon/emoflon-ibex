@@ -19,7 +19,7 @@ public class GREENCORRPatternTransformation extends SplitUpPatternTransformation
 	}
 	
 	public void createGREENCORRPattern() {
-		createPatternFromBindingAndDomain(BindingType.CREATE, DomainType.CORR, getPatternName());
+		createPatternByBindingAndDomain(BindingType.CREATE, DomainType.CORR, getPatternName());
 	}
 
 }
