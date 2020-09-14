@@ -31,18 +31,27 @@ public abstract class Conflict {
 		this.container = container;
 		this.resolved = false;
 		container.addConflict(this);
-		// TODO adrianm: init conflict/scope matches
+		conflictMatches = null;
+		scopeMatches = null;
 	}
+
+	abstract protected Set<ITGGMatch> initConflictMatches();
+
+	abstract protected Set<ITGGMatch> initScopeMatches();
 
 	public BrokenMatch getBrokenMatch() {
 		return container.getBrokenMatch();
 	}
 
 	public Set<ITGGMatch> getConflictMatches() {
+		if (conflictMatches == null)
+			conflictMatches = initConflictMatches();
 		return conflictMatches;
 	}
 
 	public Set<ITGGMatch> getScopeMatches() {
+		if (scopeMatches == null)
+			scopeMatches = initScopeMatches();
 		return scopeMatches;
 	}
 

@@ -23,7 +23,7 @@ import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
 
 public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable {
-	
+
 	protected final Times times = new Times();
 
 	protected PropagatingOperationalStrategy strategy;
@@ -50,7 +50,10 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	@Override
 	public void addMatch(ITGGMatch match) {
 		Timer.start();
-		pending.add(match);
+		
+		if (match.getType() == PatternType.CONSISTENCY || match.getType() == PatternType.FWD || match.getType() == PatternType.BWD)
+			pending.add(match);
+		
 		times.addTo("addMatch", Timer.stop());
 	}
 
@@ -231,8 +234,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	public Set<ITGGMatch> getMatches() {
 		Timer.start();
 
-		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending)
-				.collect(Collectors.toList());
+		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toList());
 		notPendingMatches.forEach(this::handleMatch);
 		if (notPendingMatches.size() == pending.size())
 			pending.clear();
@@ -296,7 +298,6 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 
 		readySet.remove(match);
 
-		
 		times.addTo("removeMatch", Timer.stop());
 		return true;
 	}

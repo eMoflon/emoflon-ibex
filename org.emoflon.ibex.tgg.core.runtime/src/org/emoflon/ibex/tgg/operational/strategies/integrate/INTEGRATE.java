@@ -179,7 +179,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		Collection<PrecedenceNode> brokenNodes = new HashSet<>(precedenceGraph.getBrokenNodes());
 		if (includeImplicitBroken)
-			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes());
+			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes().parallelStream() //
+					.filter(n -> n.getMatch().getType() == PatternType.CONSISTENCY).collect(Collectors.toSet()) //
+			);
 		classifiedBrokenMatches = brokenNodes.parallelStream().collect( //
 				Collectors.toMap( //
 						node -> node.getMatch(), //
@@ -203,7 +205,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	private void buildContainerHierarchy() {
 		Set<ConflictContainer> conflicts = new HashSet<>(match2conflicts.values());
 		for (ITGGMatch match : match2conflicts.keySet()) {
-			precedenceGraph.forAllRequiredBy(precedenceGraph.getNode(match), n -> {
+			precedenceGraph.getNode(match).forAllRequiredBy((n, pre) -> {
 				ITGGMatch m = n.getMatch();
 				if (match2conflicts.containsKey(m)) {
 					ConflictContainer cc = match2conflicts.get(m);
@@ -276,12 +278,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	/**
 	 * <p>
-	 * Determines green correspondence elements and adds them to the passed sets
-	 * (nodesToRevoke & edgesToRevoke).
+	 * Determines green correspondence elements and adds them to the passed sets (nodesToRevoke &
+	 * edgesToRevoke).
 	 * </p>
 	 * <p>
-	 * To delete this elements call
-	 * {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
+	 * To delete this elements call {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
 	 * </p>
 	 * 
 	 * @param match
@@ -513,6 +514,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 //		case CC:
 		case FILTER_NAC_SRC:
 		case FILTER_NAC_TRG:
+		case SRC:
+		case TRG:
 			return true;
 		default:
 			return false;
@@ -635,8 +638,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	/**
-	 * Applies a given delta to source and target models specified by a
-	 * {@link BiConsumer} providing the source and target root elements.
+	 * Applies a given delta to source and target models specified by a {@link BiConsumer} providing the
+	 * source and target root elements.
 	 * <p>
 	 * Alternatively use {@link INTEGRATE#applyDelta(DeltaContainer)}.
 	 * </p>
@@ -648,16 +651,15 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	/**
-	 * Applies a given delta to source and target models specified by a
-	 * {@link delta.DeltaContainer DeltaContainer}.
+	 * Applies a given delta to source and target models specified by a {@link delta.DeltaContainer
+	 * DeltaContainer}.
 	 * <p>
 	 * Alternatively use {@link INTEGRATE#applyDelta(BiConsumer)}.
 	 * </p>
 	 * 
 	 * @param delta delta to be applied
-	 * @throws InvalidDeltaException if a <code>Delta</code> of the given
-	 *                               <code>DeltaContainer</code> has an invalid
-	 *                               structure or invalid components
+	 * @throws InvalidDeltaException if a <code>Delta</code> of the given <code>DeltaContainer</code>
+	 *                               has an invalid structure or invalid components
 	 */
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
 		DeltaValidator.validate(delta);

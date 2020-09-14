@@ -7,6 +7,7 @@ import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.options.CSPOptions;
 import org.emoflon.ibex.tgg.operational.defaults.options.DebugOptions;
 import org.emoflon.ibex.tgg.operational.defaults.options.IntegrationOptions;
+import org.emoflon.ibex.tgg.operational.defaults.options.PatternInvocationOptions;
 import org.emoflon.ibex.tgg.operational.defaults.options.PatternOptions;
 import org.emoflon.ibex.tgg.operational.defaults.options.ProjectOptions;
 import org.emoflon.ibex.tgg.operational.defaults.options.PropagateOptions;
@@ -35,6 +36,7 @@ public class IbexOptions {
 	public final CSPOptions csp = new CSPOptions(this);
 	public final PropagateOptions propagate = new PropagateOptions(this);
 	public final IntegrationOptions integration = new IntegrationOptions(this);
+	public final PatternInvocationOptions invocation = new PatternInvocationOptions(this);
 
 	public IbexOptions() {
 		try {
