@@ -7,7 +7,6 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatter
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,7 +85,7 @@ public class ContextPatternTransformation {
 	protected static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
 	private final boolean USE_INVOCATIONS_FOR_REFERENCES;
 	private IbexOptions options;
-	private List<IBeXContext> ibexContextPatterns = new ArrayList<>();
+	private List<IBeXContext> ibexContextPatterns = new LinkedList<>();
 
 	/**
 	 * Mapping between pattern names and the context patterns.
@@ -302,7 +301,7 @@ public class ContextPatternTransformation {
 			// Invoke NAC from parent: nodes with/without pre-image are signature/local
 			IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 			invocation.setPositive(false);
-			ArrayList<IBeXNode> localNodes = new ArrayList<>();
+			List<IBeXNode> localNodes = new LinkedList<>();
 
 			for (IBeXNode node : nacPattern.getSignatureNodes()) {
 				Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(parent, node.getName());
