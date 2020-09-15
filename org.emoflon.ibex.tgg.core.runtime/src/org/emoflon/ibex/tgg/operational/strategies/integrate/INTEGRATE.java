@@ -375,6 +375,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		set.add(PatternType.FWD);
 		set.add(PatternType.BWD);
 		set.add(PatternType.CC);
+		set.add(PatternType.SRC);
+		set.add(PatternType.TRG);
 		return set;
 	}
 

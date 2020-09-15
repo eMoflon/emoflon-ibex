@@ -52,8 +52,12 @@ public class OperationalSCFactory {
 			return new BWDShortcutRule(strategy, scRule, filterNACAnalysis);
 		case CC:
 			return new CCShortcutRule(strategy, scRule, filterNACAnalysis);
+		case SRC:
+			return new SRCShortcutRule(strategy, scRule, filterNACAnalysis);
+		case TRG:
+			return new TRGShortcutRule(strategy, scRule, filterNACAnalysis);
 		default:
-			throw new RuntimeException("Shortcut Rules can only be operationalized for FWD, BWD and CC operations");
+			throw new RuntimeException("Shortcut Rules cannot be operationalized for " + type.toString() + " operations");
 		}
 	}
 }
