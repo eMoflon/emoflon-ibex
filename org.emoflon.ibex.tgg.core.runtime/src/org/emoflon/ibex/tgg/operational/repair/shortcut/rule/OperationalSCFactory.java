@@ -37,9 +37,23 @@ public class OperationalSCFactory {
 					+ TGGFilterUtil.filterEdges(replacingRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
 
-			InterfaceShortcutRule isr = new InterfaceShortcutRule(strategy, type, scRule, filterNACAnalysis);
-			operationalRules.computeIfAbsent(originalRule.getName(), k -> new LinkedList<>()).add(isr);
+			OperationalShortcutRule opSCR = createOpShortcutRule(strategy, scRule, filterNACAnalysis, type);
+			operationalRules.computeIfAbsent(originalRule.getName(), k -> new LinkedList<>()).add(opSCR);
 		}
 		return operationalRules;
+	}
+
+	private OperationalShortcutRule createOpShortcutRule(PropagatingOperationalStrategy strategy, ShortcutRule scRule, //
+			FilterNACAnalysis filterNACAnalysis, PatternType type) {
+		switch (type) {
+		case FWD:
+			return new FWDShortcutRule(strategy, scRule, filterNACAnalysis);
+		case BWD:
+			return new BWDShortcutRule(strategy, scRule, filterNACAnalysis);
+		case CC:
+			return new CCShortcutRule(strategy, scRule, filterNACAnalysis);
+		default:
+			throw new RuntimeException("Shortcut Rules can only be operationalized for FWD, BWD and CC operations");
+		}
 	}
 }
