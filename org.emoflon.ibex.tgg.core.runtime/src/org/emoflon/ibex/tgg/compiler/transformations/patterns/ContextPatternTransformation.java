@@ -189,22 +189,22 @@ public class ContextPatternTransformation {
 	}
 	
 	private void createSRCPattern(TGGRule rule) {
-		DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(this, options, rule, DomainType.SRC);
+		DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(this, options, rule, filterNacAnalysis, DomainType.SRC);
 		transformer.createDomainTypePattern();
 	}
 	
 	private void createTRGPattern(TGGRule rule) {
-		DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(this, options, rule, DomainType.TRG);
+		DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(this, options, rule, filterNacAnalysis, DomainType.TRG);
 		transformer.createDomainTypePattern();
 	}
 	
 	private void createGRENNCORRPattern(TGGRule rule) {
-		GREENCORRPatternTransformation transformer = new GREENCORRPatternTransformation(this, options, rule);
+		GREENCORRPatternTransformation transformer = new GREENCORRPatternTransformation(this, options, rule, filterNacAnalysis);
 		transformer.createGREENCORRPattern();
 	}
 	
 	private void createGENPattern(TGGRule rule) {
-		org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.GENPatternTransformation transformer = new org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.GENPatternTransformation(this, options, rule);
+		org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.GENPatternTransformation transformer = new org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.GENPatternTransformation(this, options, rule, filterNacAnalysis);
 		transformer.createGENPattern();
 	}
 	

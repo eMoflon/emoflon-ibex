@@ -63,7 +63,7 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		if(options.propagate.optimizeSyncPattern())
+		if(options.propagate.optimizeSyncPattern() || options.invocation.usePatternInvocation())
 			return;
 		if(options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS)) {
 			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.SRC)) {

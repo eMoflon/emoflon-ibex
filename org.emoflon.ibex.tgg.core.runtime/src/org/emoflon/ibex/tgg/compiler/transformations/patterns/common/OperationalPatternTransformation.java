@@ -4,7 +4,6 @@ import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWith
 import static org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper.addInjectivityConstraintIfNecessary;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -295,7 +294,7 @@ public abstract class OperationalPatternTransformation {
 			if(pacCandidate.getConclusionRules().size() == 1) {
 				ConclusionRule conclusion = pacCandidate.getConclusionRules().get(0);
 				if(!parent.isTransformed(conclusion.getConclusionRule().getName() + "__" + domain)) {
-					DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(parent, options, conclusion.getConclusionRule(), domain);
+					DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(parent, options, conclusion.getConclusionRule(), filterNACAnalysis, domain);
 					transformer.createDomainTypePattern();
 				}
 				IBeXContextPattern conclusionPattern = parent.getPattern(conclusion.getConclusionRule().getName() + "__" + domain);
@@ -334,7 +333,7 @@ public abstract class OperationalPatternTransformation {
 				
 				for(ConclusionRule conclusionRule : pacCandidate.getConclusionRules()) {
 					if(!parent.isTransformed(conclusionRule.getConclusionRule().getName() + "__" + domain)) {
-						DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(parent, options, conclusionRule.getConclusionRule(), domain);
+						DomainTypePatternTransformation transformer = new DomainTypePatternTransformation(parent, options, conclusionRule.getConclusionRule(), filterNACAnalysis, domain);
 						transformer.createDomainTypePattern();
 					}
 					IBeXContextPattern conclusionPattern = parent.getPattern(conclusionRule.getConclusionRule().getName() + "__" + domain);

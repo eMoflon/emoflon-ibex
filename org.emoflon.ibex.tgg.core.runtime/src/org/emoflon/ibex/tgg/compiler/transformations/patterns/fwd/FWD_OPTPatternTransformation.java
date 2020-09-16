@@ -60,7 +60,6 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		
 		if(options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS)) {
 			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.SRC)) {
 				parent.addContextPattern(createPAC(ibexPattern,  DomainType.SRC, candidate));
