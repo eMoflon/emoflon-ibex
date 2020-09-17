@@ -42,7 +42,7 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 		}
 
 		// Transform in-node attributes.
-		if(!options.invocation.usePatternInvocation())
+		if(!options.patterns.useSrcTrgPattern())
 			for (final TGGRuleNode node : nodes)
 				parent.transformInNodeAttributeConditions(ibexPattern, node);
 	}

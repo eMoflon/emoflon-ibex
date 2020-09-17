@@ -44,7 +44,7 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 			parent.transformNode(ibexPattern, node);
 
 		// Transform attributes.
-		if(!options.invocation.usePatternInvocation())
+		if(!options.patterns.useSrcTrgPattern())
 			for (final TGGRuleNode node : contextNodes)
 				parent.transformInNodeAttributeConditions(ibexPattern, node);
 	}

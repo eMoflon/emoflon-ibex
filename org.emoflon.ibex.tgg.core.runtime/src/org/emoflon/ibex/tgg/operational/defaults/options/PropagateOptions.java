@@ -5,14 +5,12 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 public class PropagateOptions extends IbexSubOptions {
 	
 	private boolean applyConcurrently;
-	private boolean optimizeSyncPattern;
 	private boolean usePrecedenceGraph;
 
 	public PropagateOptions(IbexOptions options) {
 		super(options);
 		
 		applyConcurrently = false;
-		optimizeSyncPattern = false;
 		usePrecedenceGraph = true;
 	}
 	
@@ -22,15 +20,6 @@ public class PropagateOptions extends IbexSubOptions {
 
 	public IbexOptions applyConcurrently(boolean applyConcurrently) {
 		this.applyConcurrently = applyConcurrently;
-		return options;
-	}
-	
-	public boolean optimizeSyncPattern() {
-		return optimizeSyncPattern;
-	}
-
-	public IbexOptions optimizeSyncPattern(boolean optimizeSyncPattern) {
-		this.optimizeSyncPattern = optimizeSyncPattern;
 		return options;
 	}
 

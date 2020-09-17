@@ -45,14 +45,14 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
 		//Avoid creating wrong consistency-pattern in CC because FWD/BWD-pattern doesn't exists when use of greenCorr-pattern is on
 		//No need to check if BWD is relevant
-		if(parent.isPatternRelevant(rule, PatternType.FWD) && options.invocation.useGreenCorrPattern() && options.invocation.usePatternInvocation()) {
+		if(parent.isPatternRelevant(rule, PatternType.FWD) && options.patterns.useGreenCorrPattern() && options.patterns.useSrcTrgPattern()) {
 			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
 			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWD_GREENCORRBlackPatternName(rule.getName())));
 		}
 		else {
 			for (TGGRuleEdge edge : rule.getEdges()) 
 				parent.transformEdge(rule.getEdges(), edge, ibexPattern);
-			if(options.invocation.usePatternInvocation()) {
+			if(options.patterns.optimizeSyncPattern()) {
 				parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
 				parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWDBlackPatternName(rule.getName())));
 			}	
@@ -63,7 +63,7 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		if(options.propagate.optimizeSyncPattern() || options.invocation.usePatternInvocation())
+		if(options.patterns.optimizeSyncPattern())
 			return;
 		if(options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS)) {
 			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.SRC)) {

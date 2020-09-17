@@ -17,6 +17,9 @@ public class PatternOptions extends IbexSubOptions {
 	private boolean useEdgePatterns;
 	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity;
 	private boolean ignoreDomainConformity;
+	private boolean useSrcTrgPattern;
+	private boolean useGreenCorrPattern;
+	private boolean optimizeSyncPattern;
 
 	public PatternOptions(IbexOptions options) {
 		super(options);
@@ -25,6 +28,9 @@ public class PatternOptions extends IbexSubOptions {
 		useEdgePatterns = false;
 		ignoreInjecitity = (x, y) -> false;
 		ignoreDomainConformity = false;
+		useSrcTrgPattern = false;
+		useGreenCorrPattern = false;
+		optimizeSyncPattern = false;
 	}
 	
 	public FilterNACStrategy lookAheadStrategy() {
@@ -60,6 +66,33 @@ public class PatternOptions extends IbexSubOptions {
 
 	public IbexOptions ignoreDomainConformity(boolean ignoreDomainConformity) {
 		this.ignoreDomainConformity = ignoreDomainConformity;
+		return options;
+	}
+	
+	public boolean useSrcTrgPattern() {
+		return useSrcTrgPattern;
+	}
+
+	public IbexOptions useSrcTrgPattern(boolean value) {
+		useSrcTrgPattern = value;
+		return options;
+	}
+	
+	public boolean useGreenCorrPattern() {
+		return useGreenCorrPattern;
+	}
+	
+	public IbexOptions useGreenCorrPattern(boolean value) {
+		useGreenCorrPattern = value;
+		return options;
+	}
+	
+	public boolean optimizeSyncPattern() {
+		return optimizeSyncPattern;
+	}
+
+	public IbexOptions optimizeSyncPattern(boolean optimizeSyncPattern) {
+		this.optimizeSyncPattern = optimizeSyncPattern;
 		return options;
 	}
 

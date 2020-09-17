@@ -102,7 +102,7 @@ public class ContextPatternTransformation {
 	}
 
 	public IBeXPatternSet transform() {
-		boolean patternInvOption = options.invocation.usePatternInvocation();
+		boolean patternInvOption = options.patterns.useSrcTrgPattern();
 		options.tgg.getFlattenedConcreteTGGRules().parallelStream().forEach(rule -> {
 //		for (TGGRule rule : options.tgg.getFlattenedConcreteTGGRules()) {
 			createPatternIfRelevant(rule, this::createCCPattern, PatternType.CC);
@@ -113,14 +113,14 @@ public class ContextPatternTransformation {
 					createGENPattern(rule);
 				}
 			
-			if (options.invocation.useGreenCorrPattern() && !isPatternRelevant(rule, PatternType.CC) &&  !isPatternRelevant(rule, PatternType.CO) && patternInvOption && isDomainProgressive(rule, DomainType.CORR)) {
+			if (options.patterns.useGreenCorrPattern() && !isPatternRelevant(rule, PatternType.CC) &&  !isPatternRelevant(rule, PatternType.CO) && patternInvOption && isDomainProgressive(rule, DomainType.CORR)) {
 				createGRENNCORRPattern(rule);
 			}
 
 			if (isDomainProgressive(rule, DomainType.SRC)) {
 				if(patternInvOption && isPatternRelevant(rule, PatternType.FWD)) {
 					createSRCPattern(rule);
-					if(options.invocation.useGreenCorrPattern() && createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD))
+					if(options.patterns.useGreenCorrPattern() && createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD))
 						createFWD_GREENCORRPattern(rule);
 					else createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD);
 					}
@@ -320,10 +320,10 @@ public class ContextPatternTransformation {
 		
 		//Avoid double pattern-invocation 
 		//invocations are created inside the Class ConsistencyPatternTransformation
-		if(options.invocation.usePatternInvocation()) {
+		if(options.patterns.useSrcTrgPattern()) {
 			return;
 		}
-		if (!options.propagate.optimizeSyncPattern())
+		if (!options.patterns.optimizeSyncPattern())
 			return;
 		IBeXContextPattern fwdPattern = getPattern(generateFWDBlackPatternName(rule.getName()));
 		IBeXContextPattern bwdPattern = getPattern(generateBWDBlackPatternName(rule.getName()));
