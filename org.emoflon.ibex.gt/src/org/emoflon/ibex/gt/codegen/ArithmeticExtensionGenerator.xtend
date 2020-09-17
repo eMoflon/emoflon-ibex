@@ -12,6 +12,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryOperator
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount
 
 /**
  *  Enum for the different Constraint types
@@ -356,7 +357,13 @@ class ArithmeticExtensionGenerator {
 				case LG: return negative + '''Math.log(«value»)'''
 				case SQRT: return negative + '''Math.sqrt(«value»)'''
 				case COUNT: {
-					return '''interpreter.matchStream(match.getPatternName(), new HashMap<>()).count()'''
+					val countExpr = expression as IBeXMatchCount
+					return '''
+						interpreter.matchStream("«countExpr.invocation.invokedPattern.name»", new HashMap<>())
+								«FOR mapping : countExpr.invocation.mapping.entrySet»
+								.filter(localMatch -> match.get("«mapping.key.name»").equals(localMatch.get("«mapping.value.name»")))
+								«ENDFOR»
+								.count()'''
 				}
 			}		
 		}

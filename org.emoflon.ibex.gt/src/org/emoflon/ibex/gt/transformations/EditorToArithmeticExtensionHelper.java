@@ -22,6 +22,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryOperator;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
@@ -162,23 +163,40 @@ public class EditorToArithmeticExtensionHelper {
 		number.setValue(0.0);
 		matchCount.setOperand(number);
 		
-		IBeXContext invContext = data.nameToPattern.get(expression.getInvokedPatten().getName());
-		if(invContext instanceof IBeXContextAlternatives) {
-//			TODO
+		
+		IBeXPattern invokingPattern = null;
+		if(ibexPattern instanceof IBeXCreatePattern) {
+			invokingPattern = data.nameToPattern.get(ibexPattern.getName());
 		} else {
-			IBeXContextPattern invPattern = (IBeXContextPattern)invContext;
-			IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
-			invocation.setPositive(true);
-
-			Map<IBeXNode, IBeXNode> nodeMap = new HashMap<IBeXNode, IBeXNode>();
-			for (final IBeXNode nodeInPattern : IBeXPatternUtils.getAllNodes((IBeXContextPattern) ibexPattern)) {
-				IBeXPatternUtils.findIBeXNodeWithName(invPattern, nodeInPattern.getName())
-						.ifPresent(nodeInInvokedPattern -> nodeMap.put(nodeInPattern, nodeInInvokedPattern));
-			}
-			invocation.setInvokedPattern(invPattern);
-			EditorToIBeXPatternHelper.addNodeMapping(invocation, nodeMap);
-			matchCount.setInvocation(invocation);
+			invokingPattern = ibexPattern;
 		}
+		
+		IBeXContextPattern invokingContext = null;
+		if(invokingPattern instanceof IBeXContextPattern) {
+			invokingContext = (IBeXContextPattern) invokingPattern;		
+		} else {
+			invokingContext = ((IBeXContextAlternatives) invokingPattern).getContext();
+		}
+		
+		IBeXContext invokedPattern = data.nameToPattern.get(expression.getInvokedPatten().getName());
+		IBeXContextPattern invokedContext = null;
+		if(invokedPattern instanceof IBeXContextPattern) {
+			invokedContext = (IBeXContextPattern) invokedPattern;
+		} else {
+			invokedContext = ((IBeXContextAlternatives) invokedPattern).getContext();
+		}
+		
+		IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
+		invocation.setPositive(true);
+
+		Map<IBeXNode, IBeXNode> nodeMap = new HashMap<IBeXNode, IBeXNode>();
+		for (final IBeXNode nodeInPattern : IBeXPatternUtils.getAllNodes(invokingContext)) {
+			IBeXPatternUtils.findIBeXNodeWithName(invokedContext , nodeInPattern.getName())
+					.ifPresent(nodeInInvokedPattern -> nodeMap.put(nodeInPattern, nodeInInvokedPattern));
+		}
+		invocation.setInvokedPattern(invokedContext );
+		EditorToIBeXPatternHelper.addNodeMapping(invocation, nodeMap);
+		matchCount.setInvocation(invocation);
 		return matchCount;
 	}
 }

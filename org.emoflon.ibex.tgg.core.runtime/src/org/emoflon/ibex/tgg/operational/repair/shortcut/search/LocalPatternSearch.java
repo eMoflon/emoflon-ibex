@@ -293,7 +293,6 @@ public class LocalPatternSearch {
 	private class NodeCheckComponent extends Component {
 		NodeCheck check;
 		String nodeName;
-		int counter = 0;
 
 		public NodeCheckComponent(NodeCheck check, TGGRuleNode node) {
 			super();
@@ -303,7 +302,6 @@ public class LocalPatternSearch {
 
 		@Override
 		public ReturnState apply() {
-			counter++;
 			// TODO move relaxed null-check to this point
 			if (check.checkConstraint(name2candidates.get(nodeName))) {
 				if (nextComponent == null)

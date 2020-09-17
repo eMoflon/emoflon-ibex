@@ -1,6 +1,8 @@
 package org.emoflon.ibex.gt.arithmetic;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
@@ -9,6 +11,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression;
 
 public class RuntimeArithmeticExtensionCalculator {
@@ -50,7 +54,7 @@ public class RuntimeArithmeticExtensionCalculator {
 				case TAN: 			result = Math.tan(value);
 									break;
 				case COUNT: {
-						result = interpreter.matchStream(match.getPatternName(), new HashMap<>()).count();
+						result = evaluateMatchCount(interpreter, (IBeXMatchCount)expression, match);
 					break;
 				}
 			
@@ -85,6 +89,15 @@ public class RuntimeArithmeticExtensionCalculator {
 		}
 		
 		return ((IBeXArithmeticValueLiteral) expression).getValue();
+	}
+	
+	public static long evaluateMatchCount(final GraphTransformationInterpreter interpreter, final IBeXMatchCount expression, final IMatch match) {
+			Stream<IMatch> overlappedMatches = interpreter.matchStream(expression.getInvocation().getInvokedPattern().getName(), new HashMap<>());
+			for(Entry<IBeXNode, IBeXNode> entry : expression.getInvocation().getMapping().entrySet()) {
+				overlappedMatches = overlappedMatches.filter(localMatch -> match.get(entry.getKey().getName()).equals(localMatch.get(entry.getValue().getName())));
+			}
+
+		return overlappedMatches.count();
 	}
 }
 

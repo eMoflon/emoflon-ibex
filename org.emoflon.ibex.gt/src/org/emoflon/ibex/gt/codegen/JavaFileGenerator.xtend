@@ -506,9 +506,10 @@ class JavaFileGenerator {
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
+			'java.util.HashMap',
 			'java.util.stream.Stream',
 			'org.emoflon.ibex.common.operational.IMatch',
-			'''org.emoflon.ibex.gt.api.GraphTransformationRule''',
+			'org.emoflon.ibex.gt.api.GraphTransformationRule',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'java.util.Optional',
 			'''«getSubPackageName('api')».«APIClassName»''',
@@ -636,6 +637,7 @@ class JavaFileGenerator {
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
+			'java.util.HashMap',
 			'java.util.stream.Stream',
 			'java.util.Optional',
 			'org.emoflon.ibex.common.operational.IMatch',

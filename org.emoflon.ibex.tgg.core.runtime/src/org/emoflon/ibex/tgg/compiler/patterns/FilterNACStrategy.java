@@ -8,5 +8,7 @@ public enum FilterNACStrategy {
 	// Filter NACs for the case where no other rule would "potentially" translate a
 	// dangling edge.
 	// This corresponds to the old implementation (with SDMs) in eMoflon
-	FILTER_NACS
+	FILTER_NACS,
+	
+	PACS
 }

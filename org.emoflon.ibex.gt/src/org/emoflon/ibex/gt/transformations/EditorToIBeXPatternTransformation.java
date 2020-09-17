@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelFacto
  * Transformation from the editor model to IBeX Patterns.
  */
 public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransformation<IBeXModel> {
+	
+	private Queue<EditorPattern> rulesToBeTransformed = new LinkedList<>();
 
 	@Override
 	public IBeXModel transform(final EditorGTFile file) {
@@ -123,6 +126,9 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				});
 			}
 		});
+		
+		while(!rulesToBeTransformed.isEmpty())
+			transformToRule(rulesToBeTransformed.poll());
 		
 		// add arithmetic expressions and probability annotations to rules
 		data.ibexRules.forEach((rule, editorPattern) -> {
@@ -199,7 +205,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		
 		transformToContextPattern(editorPattern);
 		if (editorPattern.getType() == EditorPatternType.RULE) {
-			transformToRule(editorPattern);
+//			transformToRule(editorPattern);
+			rulesToBeTransformed.add(editorPattern);
 		}
 
 	}
