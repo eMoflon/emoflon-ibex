@@ -74,10 +74,8 @@ public class RuntimeArithmeticExtensionCalculator {
 											+ match.getPatternName() + " not possible");
 				case MODULUS: 		return left % right;
 				case EXPONENTIATION: 	return Math.pow(left, right);
-			case MAXIMUM:
-				throw new IllegalArgumentException("Maximum function not yet supported.");
-			case MINIMUM:
-				throw new IllegalArgumentException("Minimum function not yet supported.");
+			case MAXIMUM:			return Math.max(left, right);
+			case MINIMUM:			return Math.min(left, right);
 			default:
 				throw new IllegalArgumentException("Unknown operation.");
 			}

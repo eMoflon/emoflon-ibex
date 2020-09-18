@@ -377,12 +377,8 @@ class ArithmeticExtensionGenerator {
 				case MODULUS: return '''«left»%«right»'''
 				case MULTIPLICATION: return '''«left»*«right»'''
 				case SUBTRACTION: return '''«left»-«right»'''
-				case MAXIMUM: {
-					return null;
-				}
-				case MINIMUM: {
-					return null;
-				}
+				case MAXIMUM: return '''Math.max(«left»,«right»)'''
+				case MINIMUM: return '''Math.min(«left»,«right»)'''
 			}
 		}	
 	}

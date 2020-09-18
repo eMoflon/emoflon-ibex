@@ -11,6 +11,7 @@ import org.emoflon.ibex.gt.editor.gT.ArithmeticExpression;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticNodeAttribute;
 import org.emoflon.ibex.gt.editor.gT.EditorCountExpression;
 import org.emoflon.ibex.gt.editor.gT.ExpExpression;
+import org.emoflon.ibex.gt.editor.gT.MinMaxExpression;
 import org.emoflon.ibex.gt.editor.gT.MultExpression;
 import org.emoflon.ibex.gt.editor.gT.OneParameterArithmetics;
 import org.emoflon.ibex.gt.editor.utils.GTArithmeticsCalculatorUtil;
@@ -43,7 +44,7 @@ public class EditorToArithmeticExtensionHelper {
 	public static IBeXArithmeticExpression transformToIBeXArithmeticExpression(final TransformationData data, final IBeXPattern ibexPattern, final ArithmeticExpression expression) {
 		//if the expression has two parameters and one operator
 		if(expression instanceof AddExpression || expression instanceof MultExpression || 
-				expression instanceof ExpExpression) {
+				expression instanceof ExpExpression || expression instanceof MinMaxExpression) {
 			IBeXBinaryExpression calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXBinaryExpression();
 			if(expression instanceof AddExpression) {
 				/* tries to parse the expression tree; if it is runtime-depended
@@ -87,6 +88,23 @@ public class EditorToArithmeticExtensionHelper {
 					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((ExpExpression) expression).getRight()));								
 					calculation.setOperator(IBeXBinaryOperator.EXPONENTIATION);	
 				}	
+			}
+			if(expression instanceof MinMaxExpression) {
+				try {
+					return tryToParseExpression(expression);
+				} catch(IllegalArgumentException e) {
+					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((MinMaxExpression) expression).getLeft()));
+					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((MinMaxExpression) expression).getRight()));
+					switch(((MinMaxExpression) expression).getMinMaxOperator()) {
+					case MAX:
+						calculation.setOperator(IBeXBinaryOperator.MAXIMUM);	
+						break;
+					case MIN:
+						calculation.setOperator(IBeXBinaryOperator.MINIMUM);
+						break;
+					}
+					
+				}
 			}
 			return calculation;
 		}
@@ -156,8 +174,6 @@ public class EditorToArithmeticExtensionHelper {
 	
 	public static IBeXArithmeticExpression transformCountExpression(final TransformationData data, final IBeXPattern ibexPattern, final EditorCountExpression expression) {
 		IBeXMatchCount matchCount = IBeXPatternModelFactory.eINSTANCE.createIBeXMatchCount();
-//		TODO?
-//		matchCount.setNegative(value);
 		matchCount.setOperator(IBeXUnaryOperator.COUNT);
 		IBeXArithmeticValueLiteral number = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValueLiteral();
 		number.setValue(0.0);
