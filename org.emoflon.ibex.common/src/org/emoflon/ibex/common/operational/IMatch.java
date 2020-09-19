@@ -3,8 +3,8 @@ package org.emoflon.ibex.common.operational;
 import java.util.Collection;
 
 /**
- * An interface for matches for a pattern providing a mapping between parameter
- * names and objects.
+ * An interface for matches for a pattern providing a mapping between parameter names and
+ * objects.
  */
 public interface IMatch {
 
@@ -18,8 +18,7 @@ public interface IMatch {
 	/**
 	 * Sets the name of the pattern
 	 * 
-	 * @param patternName
-	 *            the name of the pattern.
+	 * @param patternName the name of the pattern.
 	 */
 	default void setPatternName(String patternName) {
 		throw new UnsupportedOperationException("Cannot change pattern name!");
@@ -28,8 +27,7 @@ public interface IMatch {
 	/**
 	 * Returns the object with the given name.
 	 * 
-	 * @param name
-	 *            the name to search for
+	 * @param name the name to search for
 	 * @return the object
 	 */
 	Object get(String name);
@@ -37,10 +35,8 @@ public interface IMatch {
 	/**
 	 * Adds the mapping for the given name to the given object.
 	 * 
-	 * @param name
-	 *            the name
-	 * @param object
-	 *            the object
+	 * @param name   the name
+	 * @param object the object
 	 */
 	default void put(String name, Object object) {
 		throw new UnsupportedOperationException("This match does not support adding new mappings!");
@@ -54,38 +50,43 @@ public interface IMatch {
 	Collection<String> getParameterNames();
 
 	/**
+	 * Return all objects.
+	 * 
+	 * @return the objects
+	 */
+	Collection<Object> getObjects();
+
+	/**
 	 * Returns whether there is a parameter with the given name in the match.
 	 * 
-	 * @param name
-	 *            the name of the parameter to search for
+	 * @param name the name of the parameter to search for
 	 * @return <code>true</code> if and only if such a parameter exists
 	 */
 	default boolean isInMatch(String name) {
 		return getParameterNames().contains(name);
 	}
-	
+
 	long getHashCode();
-	
+
 	@Override
 	int hashCode();
 
 	/**
 	 * Checks whether this match is equal to the given match.
 	 * 
-	 * @param match
-	 *            the other match
-	 * @return <code>true</code> if and only if the two matches are for the same
-	 *         pattern and map all parameters to the same name
+	 * @param match the other match
+	 * @return <code>true</code> if and only if the two matches are for the same pattern and
+	 *         map all parameters to the same name
 	 */
 	default boolean isEqual(final IMatch match) {
 		if (getParameterNames().size() != match.getParameterNames().size()) {
 			return false;
 		}
-		
-		if(getHashCode() != match.getHashCode()) {
+
+		if (getHashCode() != match.getHashCode()) {
 			return false;
 		}
-		
+
 		if (!getPatternName().equals(match.getPatternName())) {
 			return false;
 		}
