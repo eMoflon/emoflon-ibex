@@ -1,11 +1,13 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy.RepairableMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
@@ -36,12 +38,15 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 	private void computeSrcAndTrgMatches() {
 		srcMatches = new HashSet<>();
 		trgMatches = new HashSet<>();
-		
+
 		PrecedenceGraph pg = integrate().getPrecedenceGraph();
 		ITGGMatch match = getBrokenMatch().getMatch();
 		IGreenPatternFactory gFactory = integrate().getGreenFactory(match.getRuleName());
 
-		for (TGGRuleNode ruleNode : gFactory.getGreenSrcNodesInRule()) {
+		Collection<TGGRuleNode> greenRuleNodes = new HashSet<>();
+		greenRuleNodes.addAll(gFactory.getGreenSrcNodesInRule());
+		greenRuleNodes.addAll(gFactory.getGreenTrgNodesInRule());
+		for (TGGRuleNode ruleNode : greenRuleNodes) {
 			for (PrecedenceNode node : pg.getNodesTranslating(match.get(ruleNode.getName()))) {
 				if (node.getMatch().getType() == PatternType.CONSISTENCY)
 					continue;
@@ -59,14 +64,26 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 	@Override
 	public void crs_preferSource() {
-		restoreDomain(getBrokenMatch(), DomainType.TRG);
+		for (ITGGMatch trgMatch : trgMatches) {
+			RepairableMatch repairableMatch = integrate().getShortcutRepairStrat().isRepairable(getBrokenMatch().getMatch(), trgMatch);
+			if (repairableMatch != null)
+				revertRepairable(repairableMatch, DomainType.TRG);
+		}
+
+		integrate().getOptions().matchDistributor().updateMatches();
 		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getBrokenMatch().getMatch(), PatternType.FWD);
 		resolved = true;
 	}
 
 	@Override
 	public void crs_preferTarget() {
-		restoreDomain(getBrokenMatch(), DomainType.SRC);
+		for (ITGGMatch srcMatch : srcMatches) {
+			RepairableMatch repairableMatch = integrate().getShortcutRepairStrat().isRepairable(getBrokenMatch().getMatch(), srcMatch);
+			if (repairableMatch != null)
+				revertRepairable(repairableMatch, DomainType.SRC);
+		}
+
+		integrate().getOptions().matchDistributor().updateMatches();
 		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getBrokenMatch().getMatch(), PatternType.BWD);
 		resolved = true;
 	}

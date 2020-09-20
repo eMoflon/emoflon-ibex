@@ -72,11 +72,11 @@ public class SearchPlanCreator {
 	}
 
 	protected void createConstraintChecks() {
-		for (TGGRuleNode node : opSCR.getScRule().getNodes()) {
+		for (TGGRuleNode node : opSCR.getOpScRule().getNodes()) {
 			createNodeCheck(node);
 		}
 
-		for (TGGRuleEdge edge : opSCR.getScRule().getEdges()) {
+		for (TGGRuleEdge edge : opSCR.getOpScRule().getEdges()) {
 			SearchKey forwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
 			SearchKey backwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, true);
 
@@ -97,7 +97,7 @@ public class SearchPlanCreator {
 		}
 
 		cspCheck = (name2candidates) -> {
-			ITGGMatch match = new SCMatch(opSCR.getScRule().getName(), name2candidates);
+			ITGGMatch match = new SCMatch(opSCR.getOpScRule().getName(), name2candidates);
 			IRuntimeTGGAttrConstrContainer cspContainer = opSCR.getGreenPattern().getAttributeConstraintContainer(match);
 			return cspContainer.solve();
 		};
@@ -289,9 +289,9 @@ public class SearchPlanCreator {
 	public SearchPlan createSearchPlan() {
 		Collection<TGGRuleNode> uncheckedNodes = new ArrayList<>();
 		Collection<TGGRuleNode> uncheckedRelaxedNodes = new ArrayList<>();
-		opSCR.getScRule().getNodes().stream() //
-				.filter(n -> !opSCR.getScRule().getMergedNodes().contains(n)) //
-				.filter(n -> !opSCR.getScRule().getNewOriginalNodes().contains(n)) //
+		opSCR.getOpScRule().getNodes().stream() //
+				.filter(n -> !opSCR.getOpScRule().getMergedNodes().contains(n)) //
+				.filter(n -> !opSCR.getOpScRule().getNewOriginalNodes().contains(n)) //
 				.filter(n -> !RuntimePackage.eINSTANCE.getTGGRuleApplication().isSuperTypeOf(n.getType())) //
 				.filter(n -> n.getBindingType() != BindingType.NEGATIVE) //
 				.filter(n -> n.getBindingType() != BindingType.CREATE) //
@@ -299,7 +299,7 @@ public class SearchPlanCreator {
 				.forEach(n -> uncheckedNodes.add(n));
 
 		LinkedList<TGGRuleEdge> uncheckedEdges = new LinkedList<>();
-		for (TGGRuleEdge edge : opSCR.getScRule().getEdges()) {
+		for (TGGRuleEdge edge : opSCR.getOpScRule().getEdges()) {
 			if (edge.getBindingType() == BindingType.NEGATIVE)
 				uncheckedEdges.addLast(edge);
 			else
@@ -320,7 +320,7 @@ public class SearchPlanCreator {
 			if (nextSearchKeys.isEmpty()) {
 				// TODO lfritsche: clear this up
 //				throw new RuntimeException("Searchplan could not be generated for OperationalShortcutRule - " + scRule);
-				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + opSCR.getScRule().getName());
+				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + opSCR.getOpScRule().getName());
 				return null;
 			}
 

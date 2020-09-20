@@ -19,12 +19,12 @@ public class ModelChangeUtil {
 
 	@SuppressWarnings("unchecked")
 	public static void deleteElement(EObject element, boolean deleteContainedChildren) {
-		if(isDangling(element))
+		if (isDangling(element))
 			return;
-		
+
 		Set<EObject> nodesToDelete = new HashSet<>();
 		nodesToDelete.add(element);
-		
+
 		if (deleteContainedChildren) {
 			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, o -> {}, true);
 		} else {
@@ -47,10 +47,10 @@ public class ModelChangeUtil {
 	public static void createEdge(EMFEdge edge) {
 		if (edge.getSource() == null || edge.getTarget() == null)
 			return;
-		
+
 		if (edge.getType().isMany()) {
-			Collection<EObject> feature = (Collection<EObject>) edge.getSource().eGet(edge.getType());
-			feature.add(edge.getTarget());
+			Collection<EObject> value = (Collection<EObject>) edge.getSource().eGet(edge.getType());
+			value.add(edge.getTarget());
 		} else
 			edge.getSource().eSet(edge.getType(), edge.getTarget());
 	}
@@ -59,8 +59,12 @@ public class ModelChangeUtil {
 	public static void deleteEdge(EMFEdge edge) {
 		if (edge.getSource() == null || edge.getTarget() == null)
 			return;
-		if(isDangling(edge.getSource()))
+		if (isDangling(edge.getSource()))
 			return;
+		if (edge.getType().isContainment()) {
+			edge.getTarget().eResource().getContents().add(edge.getTarget());
+			return;
+		}
 		if (edge.getType().isMany()) {
 			Collection<EObject> value = (Collection<EObject>) edge.getSource().eGet(edge.getType());
 			value.remove(edge.getTarget());

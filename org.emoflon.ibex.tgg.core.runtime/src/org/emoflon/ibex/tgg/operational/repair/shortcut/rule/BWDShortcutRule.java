@@ -16,17 +16,17 @@ public class BWDShortcutRule extends OperationalShortcutRule {
 
 	@Override
 	protected void operationalize() {
-		createFilterNacs(scRule.getReplacingRule(), DomainType.TRG);
+		createFilterNacs(opScRule.getReplacingRule(), DomainType.TRG);
 
-		transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
+		transformEdges(TGGFilterUtil.filterEdges(opScRule.getEdges(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
 //		transformEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC, BindingType.RELAXED), BindingType.CONTEXT);
-		transformInterfaceEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE), BindingType.NEGATIVE);
+		transformInterfaceEdges(TGGFilterUtil.filterEdges(opScRule.getEdges(), DomainType.TRG, BindingType.DELETE), BindingType.NEGATIVE);
 
-		transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
+		transformNodes(TGGFilterUtil.filterNodes(opScRule.getNodes(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
 //		transformNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.SRC, BindingType.RELAXED), BindingType.CONTEXT);
 
-		removeEdges(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.DELETE));
-		removeNodes(TGGFilterUtil.filterNodes(scRule.getNodes(), DomainType.TRG, BindingType.DELETE));
+		removeEdges(TGGFilterUtil.filterEdges(opScRule.getEdges(), DomainType.TRG, BindingType.DELETE));
+		removeNodes(TGGFilterUtil.filterNodes(opScRule.getNodes(), DomainType.TRG, BindingType.DELETE));
 
 		// Note: at the moment not required -> maybe use it if there are problems with already created green edges
 		// addNACforCreatedInterface(TGGFilterUtil.filterEdges(scRule.getEdges(), DomainType.SRC));

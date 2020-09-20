@@ -136,6 +136,24 @@ public class PrecedenceGraph implements TimeMeasurable {
 		return translatedBy.getOrDefault(elt, new HashSet<>());
 	}
 
+	public boolean hasAnyConsistencyOverlap(PrecedenceNode srcTrgNode) {
+		ITGGMatch srcTrgMatch = srcTrgNode.getMatch();
+
+		IGreenPatternFactory gFactory = strategy.getGreenFactory(srcTrgMatch.getRuleName());
+		Collection<Object> translatedElts = cfactory.createObjectSet();
+		if (srcTrgMatch.getType() == PatternType.SRC) {
+			gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(srcTrgMatch.get(n.getName())));
+			gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(srcTrgMatch, e)));
+		} else if (srcTrgMatch.getType() == PatternType.TRG) {
+			gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(srcTrgMatch.get(n.getName())));
+			gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(srcTrgMatch, e)));
+		}
+
+		return translatedElts.parallelStream() //
+				.flatMap(elt -> this.getNodesTranslating(elt).stream()) //
+				.anyMatch(n -> n.getMatch().getType() == PatternType.CONSISTENCY);
+	}
+
 	private void addMatch(ITGGMatch match) {
 		IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
 
@@ -192,6 +210,16 @@ public class PrecedenceGraph implements TimeMeasurable {
 		for (PrecedenceNode n : node.getRequires()) {
 			if (n.isBroken() || !n.getToBeRolledBackBy().isEmpty())
 				node.addToBeRolledBackBy(n);
+		}
+		if (!node.getToBeRolledBackBy().isEmpty()) {
+			implicitBrokenNodes.add(node);
+			node.forAllRequiredBy((n, pre) -> {
+				boolean wasIntact = n.getToBeRolledBackBy().isEmpty();
+				n.addToBeRolledBackBy(pre);
+				if (wasIntact && !n.isBroken())
+					implicitBrokenNodes.add(n);
+				return wasIntact;
+			});
 		}
 
 		// caching
@@ -302,7 +330,7 @@ public class PrecedenceGraph implements TimeMeasurable {
 
 		if (node.getToBeRolledBackBy().isEmpty()) {
 			if (node.isBroken()) {
-				node.forAllRequiredBy((n, pre) -> {
+				node.forAllRequiredByMultiVisit((n, pre) -> {
 					boolean wasIntact = n.getToBeRolledBackBy().isEmpty();
 					n.addToBeRolledBackBy(pre);
 					if (wasIntact && !n.isBroken())
@@ -310,7 +338,7 @@ public class PrecedenceGraph implements TimeMeasurable {
 					return wasIntact;
 				});
 			} else {
-				node.forAllRequiredBy((n, pre) -> {
+				node.forAllRequiredByMultiVisit((n, pre) -> {
 					n.removeToBeRolledBackBy(pre);
 					boolean isIntact = n.getToBeRolledBackBy().isEmpty();
 					if (isIntact && !n.isBroken())
@@ -342,22 +370,6 @@ public class PrecedenceGraph implements TimeMeasurable {
 	private boolean checkConsistencyOverlap(ITGGMatch srcTrgMatch) {
 		ITGGMatch consMatch = srcTrgMatch2consMatch.get(srcTrgMatch);
 		if (consMatch != null && match2node.containsKey(consMatch))
-			return true;
-
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(srcTrgMatch.getRuleName());
-		Collection<Object> translatedElts = cfactory.createObjectSet();
-		if (srcTrgMatch.getType() == PatternType.SRC) {
-			gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(srcTrgMatch.get(n.getName())));
-			gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(srcTrgMatch, e)));
-		} else if (srcTrgMatch.getType() == PatternType.TRG) {
-			gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(srcTrgMatch.get(n.getName())));
-			gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(srcTrgMatch, e)));
-		}
-
-		boolean consOverlap = translatedElts.parallelStream() //
-				.flatMap(elt -> this.getNodesTranslating(elt).stream()) //
-				.anyMatch(n -> n.getMatch().getType() == PatternType.CONSISTENCY);
-		if (consOverlap)
 			return true;
 
 		return false;
