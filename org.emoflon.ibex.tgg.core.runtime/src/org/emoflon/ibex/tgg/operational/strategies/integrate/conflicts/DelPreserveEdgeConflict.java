@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
@@ -44,6 +45,8 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 			else
 				ModelChangeUtil.deleteEdge(emfEdge);
 		}
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_ADDITION");
 		resolved = true;
 	}
 

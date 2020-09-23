@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
@@ -39,6 +39,7 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 			
 			i.modelChangeProtocol.registerKey(i.userDeltaKey);
@@ -63,6 +64,7 @@ public class FragmentProvider {
 		}
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 			
 			i.classifyBrokenMatches(true);
@@ -80,13 +82,12 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 			
 			i.classifyBrokenMatches(true);
 			i.detectConflicts();
-			for (ConflictContainer c : i.conflicts) {
-				i.getOptions().integration.conflictSolver().resolveConflict(c);
-			}
+			i.resolveConflicts();
 			
 			i.getTimes().addTo("fragments:ResolveConflicts", Timer.stop());
 		}
@@ -98,6 +99,7 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 			
 			do {
@@ -115,6 +117,7 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 			
 			ChangeKey key = i.revokeBrokenCorrsAndRuleApplNodes();
@@ -131,6 +134,7 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 			
 			i.classifyBrokenMatches(true);
@@ -148,6 +152,7 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 			
 			i.revokeBrokenCorrsAndRuleApplNodes();
@@ -162,6 +167,7 @@ public class FragmentProvider {
 		
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 			
 			i.revokeBrokenCorrsAndRuleApplNodes();
@@ -170,6 +176,10 @@ public class FragmentProvider {
 			
 			i.getTimes().addTo("fragments:CleanUp", Timer.stop());
 		}
+	}
+	
+	private static void logFragmentStart(IntegrationFragment fragment) {
+		LoggerConfig.log(LoggerConfig.log_executionStructure(), () -> "Run FRAGMENT " + fragment.getClass().getSimpleName() + ":\n");
 	}
 
 }

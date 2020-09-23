@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
@@ -55,6 +56,8 @@ public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS
 	public void crs_preferSource() {
 		ModelChangeUtil.revertAttributeChange(trgChange);
 		integrate().repairOneMatch(integrate().getAttributeRepairStrat(), getBrokenMatch().getMatch(), PatternType.FWD);
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
 	}
 
@@ -62,6 +65,8 @@ public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS
 	public void crs_preferTarget() {
 		ModelChangeUtil.revertAttributeChange(srcChange);
 		integrate().repairOneMatch(integrate().getAttributeRepairStrat(), getBrokenMatch().getMatch(), PatternType.BWD);
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;
 	}
 

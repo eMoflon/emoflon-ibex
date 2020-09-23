@@ -46,27 +46,27 @@ public class GreenSCPattern extends IbexGreenPattern {
 	
 	@Override
 	public Collection<TGGRuleNode> getSrcNodes() {
-		return TGGFilterUtil.filterNodes(oscRule.getScRule().getNodes(), DomainType.SRC, BindingType.CREATE);
+		return TGGFilterUtil.filterNodes(oscRule.getOpScRule().getNodes(), DomainType.SRC, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleEdge> getSrcEdges() {
-		return TGGFilterUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.SRC, BindingType.CREATE);
+		return TGGFilterUtil.filterEdges(oscRule.getOpScRule().getEdges(), DomainType.SRC, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleNode> getTrgNodes() {
-		return TGGFilterUtil.filterNodes(oscRule.getScRule().getNodes(), DomainType.TRG, BindingType.CREATE);
+		return TGGFilterUtil.filterNodes(oscRule.getOpScRule().getNodes(), DomainType.TRG, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleEdge> getTrgEdges() {
-		return TGGFilterUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.TRG, BindingType.CREATE);
+		return TGGFilterUtil.filterEdges(oscRule.getOpScRule().getEdges(), DomainType.TRG, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleCorr> getCorrNodes() {
-		return TGGFilterUtil.filterNodes(oscRule.getScRule().getNodes(), DomainType.CORR, BindingType.CREATE).stream().map(n -> (TGGRuleCorr) n).collect(Collectors.toList());
+		return TGGFilterUtil.filterNodes(oscRule.getOpScRule().getNodes(), DomainType.CORR, BindingType.CREATE).stream().map(n -> (TGGRuleCorr) n).collect(Collectors.toList());
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class GreenSCPattern extends IbexGreenPattern {
 			for(TGGParamValue pVal : newAttributeCSPVariables) {
 				if(pVal instanceof TGGAttributeExpression) {
 					TGGAttributeExpression attrExpr = (TGGAttributeExpression) pVal;
-					attrExpr.setObjectVar(oscRule.scRule.mapReplacingToSCNodeNode(attrExpr.getObjectVar().getName()));
+					attrExpr.setObjectVar(oscRule.opScRule.mapReplacingToSCNodeNode(attrExpr.getObjectVar().getName()));
 				}
 			}
 			
@@ -123,6 +123,6 @@ public class GreenSCPattern extends IbexGreenPattern {
 
 	@Override
 	public Collection<TGGRuleEdge> getCorrEdges() {
-		return TGGFilterUtil.filterEdges(oscRule.getScRule().getEdges(), DomainType.CORR, BindingType.CREATE);
+		return TGGFilterUtil.filterEdges(oscRule.getOpScRule().getEdges(), DomainType.CORR, BindingType.CREATE);
 	}
 }

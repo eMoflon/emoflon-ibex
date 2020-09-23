@@ -25,7 +25,8 @@ public class FWDPatternTransformation extends FWD_OPTPatternTransformation {
 	
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		super.transformNACs(ibexPattern);
+		if(!options.patterns.useSrcTrgPattern())
+			super.transformNACs(ibexPattern);
 
 		// Output Domain User NACs
 		for (NAC nac : rule.getNacs()) {
@@ -36,7 +37,7 @@ public class FWDPatternTransformation extends FWD_OPTPatternTransformation {
 	
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
-		if(options.invocation.usePatternInvocation()) {
+		if(options.patterns.useSrcTrgPattern()) {
 			
 			parent.createInvocation(ibexPattern, parent.getPattern(rule.getName() + PatternSuffixes.GEN));
 			for(int i = 1; ; i++) {

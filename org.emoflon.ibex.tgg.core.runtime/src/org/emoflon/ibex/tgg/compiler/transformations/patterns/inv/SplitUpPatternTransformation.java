@@ -16,6 +16,11 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -31,30 +36,43 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 	protected ContextPatternTransformation parent;
 	protected IbexOptions options;
 	protected TGGRule rule;
+	protected DomainType domain;
+	protected FilterNACAnalysis filterNACAnalysis;
 	
 	LinkedList<TGGRuleNode> patternNodes = new LinkedList<TGGRuleNode>();
 	LinkedList<TGGRuleEdge> patternEdges = new LinkedList<TGGRuleEdge>();
 	
-	public SplitUpPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule) {
-		super(parent, options, rule, null);
+	public SplitUpPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+		super(parent, options, rule, filterNACAnalysis);
 		this.parent = parent;
 		this.options = options;
 		this.rule = rule;
+		this.filterNACAnalysis = filterNACAnalysis;
 	}
 	
 	public IBeXContextPattern createPatternByBindingAndDomain(BindingType binding, DomainType domain, String name) {
+		this.domain = domain;
 		LinkedList<TGGRuleNode> ruleNodesByOperatorAndDomain = new LinkedList<TGGRuleNode>(getNodesByOperatorAndDomain(rule, binding, domain));
 		LinkedList<? extends TGGRuleEdge> ruleEdgesByOperatorAndDomain = new LinkedList<TGGRuleEdge>(getEdgesByOperatorAndDomain(rule, binding, domain));
 		Optional<IBeXContextPattern> pattern = transform(ruleNodesByOperatorAndDomain, ruleEdgesByOperatorAndDomain, name);
-		pattern.ifPresent(parent::addContextPattern);
+		if(pattern.isPresent()) {
+			// Transform NACs
+			transformNACs(pattern.get());
+			parent.addContextPattern(pattern.get());
+		}
 		return pattern.get();
 	}
 	
 	public IBeXContextPattern createPatternByDomain(DomainType domain, String name) {
+		this.domain = domain;
 		LinkedList<TGGRuleNode> ruleNodesByDomain = new LinkedList<TGGRuleNode>(getNodesByDomain(rule, domain));
 		LinkedList<? extends TGGRuleEdge> ruleEdgesByDomain = new LinkedList<TGGRuleEdge>(getEdgesByDomain(rule, domain));
 		Optional<IBeXContextPattern> pattern = transform(ruleNodesByDomain, ruleEdgesByDomain, name);
-		pattern.ifPresent(parent::addContextPattern);
+		if(pattern.isPresent()) {
+			// Transform NACs
+			transformNACs(pattern.get());
+			parent.addContextPattern(pattern.get());
+		}
 		return pattern.get();
 	}
 	
@@ -207,22 +225,40 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 	
 	@Deprecated
 	@Override
+	/*
+	 * @deprecated because of disjoint parts multiple patterns could be created 
+	 * the method will return null
+	 */
 	protected String getPatternName() {
 		return null;
 	}
 	
 	@Deprecated
 	@Override
+	/*
+	 * @deprecated instead the method createIBeXNode is used
+	 */
 	protected void transformNodes(IBeXContextPattern ibexPattern) {	
 	}
 	
 	@Deprecated
 	@Override
+	/*
+	 * @deprecated instead the method createIBeXEdge is used
+	 */
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
 	}
 	
-	@Deprecated
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
+		if(domain != null && options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS)) {
+			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  domain)) {
+				parent.addContextPattern(createPAC(ibexPattern,  domain, candidate));
+			}
+		}
+		else if(domain != null) 
+			for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, domain)) {
+				parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
+			}
 	}
 }

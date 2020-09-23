@@ -63,14 +63,16 @@ public class ConflictDetector {
 	}
 
 	private void detectDeletePreserveConflicts() {
-		// we only iterate over src/trg matches which are not part of a consistency match (already filtered
-		// in precedence graph)
-		
+		// we only iterate over src/trg matches which are not part of a consistency match (already
+		// filtered in precedence graph)
+
 		// TODO adrianm: parallel stream causes concurrent modification exception
 		integrate.getPrecedenceGraph().getSourceNodes().stream() //
+				.filter(srcNode -> !integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(srcNode)) //
 				.forEach(srcNode -> detectDeletePreserveEdgeConflict(srcNode, DomainType.SRC));
 
 		integrate.getPrecedenceGraph().getTargetNodes().stream() //
+				.filter(trgNode -> !integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(trgNode)) //
 				.forEach(trgNode -> detectDeletePreserveEdgeConflict(trgNode, DomainType.TRG));
 
 		detectDeletePreserveAttrConflicts();
@@ -79,6 +81,9 @@ public class ConflictDetector {
 	private void detectDeletePreserveEdgeConflict(PrecedenceNode node, DomainType domainToBePreserved) {
 		Set<PrecedenceNode> directRollBackCauses = new HashSet<>();
 		node.forAllToBeRolledBackBy((act, pre) -> {
+			// TODO adrianm: improve performance
+			if(integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(act))
+				return false;
 			if (act.isBroken()) {
 				directRollBackCauses.add(act);
 				return false;
@@ -133,7 +138,7 @@ public class ConflictDetector {
 
 		for (ITGGMatch match : rollBackCauses) {
 			BrokenMatch brokenMatch = integrate.getClassifiedBrokenMatches().get(match);
-			if(brokenMatch == null)
+			if (brokenMatch == null)
 				continue;
 			if (hasDomainSpecificViolations(brokenMatch, criticalDomain))
 				return true;

@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.compiler.patterns;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,12 +19,10 @@ import language.TGGRuleNode;
 
 public class PACAnalysis extends FilterNACAnalysis {
 	private TGG tgg;
-	private IbexOptions options;
-
+	
 	public PACAnalysis(TGG tgg, IbexOptions options, Collection<DomainTypePatternTransformation> domainPatterns) {
 		super(tgg, options);
 		this.tgg = tgg;
-		this.options = options;
 		
 		initializeCaching();
 	}
@@ -33,7 +30,6 @@ public class PACAnalysis extends FilterNACAnalysis {
 	public PACAnalysis(TGG tgg, IbexOptions options) {
 		super(tgg, options);
 		this.tgg = tgg;
-		this.options = options;
 		
 		initializeCaching();
 	}

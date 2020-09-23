@@ -6,11 +6,13 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import language.DomainType;
 
@@ -23,7 +25,7 @@ public class BrokenMatch {
 
 	private final boolean implicitBroken;
 	private final DeletionPattern deletionPattern;
-	
+
 	private DeletionType deletionType;
 	private final Map<ITGGMatch, DomainType> filterNacViolations;
 	private final Set<ConstrainedAttributeChanges> constrainedAttrChanges;
@@ -66,7 +68,7 @@ public class BrokenMatch {
 	public Set<ConstrainedAttributeChanges> getConstrainedAttrChanges() {
 		return constrainedAttrChanges;
 	}
-	
+
 	public boolean isImplicitBroken() {
 		return implicitBroken;
 	}
@@ -76,29 +78,31 @@ public class BrokenMatch {
 	}
 
 	public void rollbackBrokenMatch() {
-		if(implicitBroken)
+		if (implicitBroken)
 			return;
-		
+
 		integrate.deleteGreenCorrs(match);
 
 		Set<EObject> nodesToBeDeleted = new HashSet<>();
 		Set<EMFEdge> edgesToBeDeleted = new HashSet<>();
-		
+
 		EltFilter filter = new EltFilter().create().notDeleted();
-		if(DeletionType.getPropFWDCandidates().contains(deletionType))
+		if (DeletionType.getPropFWDCandidates().contains(deletionType))
 			filter.trg();
 		else if (DeletionType.getPropBWDCandidates().contains(deletionType))
 			filter.src();
 		else
 			filter.srcAndTrg();
-		
-		integrate.getMatchUtil().getObjects(match, filter)
-				.forEach((o) -> nodesToBeDeleted.add(o));
-		integrate.getMatchUtil().getEMFEdges(match, filter)
-				.forEach((e) -> edgesToBeDeleted.add(e));
+
+		integrate.getMatchUtil().getObjects(match, filter).forEach((o) -> nodesToBeDeleted.add(o));
+		integrate.getMatchUtil().getEMFEdges(match, filter).forEach((e) -> edgesToBeDeleted.add(e));
 		integrate.getRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
 
 		integrate.removeBrokenMatch(match);
+
+		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
+				() -> "Rule application: rolled back " + match.getPatternName() + "(" + match.hashCode() + ")\n" //
+						+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
 	}
 
 	@Override
@@ -142,7 +146,7 @@ public class BrokenMatch {
 		}
 		return b.length() == 0 ? b.toString() : b.substring(0, b.length() - 1);
 	}
-	
+
 	private String printConstrAttrChanges() {
 		StringBuilder b = new StringBuilder();
 		for (ConstrainedAttributeChanges c : constrainedAttrChanges) {

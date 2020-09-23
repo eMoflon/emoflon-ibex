@@ -115,7 +115,7 @@ public class LocalPatternSearch {
 			lastComponent = comp;
 		}
 
-		for (TGGRuleNode mergedNode : osr.getScRule().getMergedNodes()) {
+		for (TGGRuleNode mergedNode : osr.getOpScRule().getMergedNodes()) {
 			if (!searchPlan.key2AttrCheck.containsKey(mergedNode) || skipAttrCheck(mergedNode))
 				continue;
 
@@ -132,7 +132,7 @@ public class LocalPatternSearch {
 	}
 
 	private boolean skipAttrCheck(TGGRuleNode mergedNode) {
-		if (osr.getScRule().getPreservedNodes().contains(mergedNode))
+		if (osr.getOpScRule().getPreservedNodes().contains(mergedNode))
 			switch (mergedNode.getDomainType()) {
 			case SRC:
 				return osr.getType() == PatternType.BWD;
@@ -155,7 +155,7 @@ public class LocalPatternSearch {
 
 		switch (firstComponent.apply()) {
 		case SUCCESS:
-			return new SCMatch(osr.getScRule().getName(), name2candidates);
+			return new SCMatch(osr.getOpScRule().getName(), name2candidates);
 		case FAILURE:
 			return null;
 		case NEGATIVE:
@@ -178,7 +178,7 @@ public class LocalPatternSearch {
 		
 		filteredNames.addAll(name2entryNodeElem.keySet());
 		
-		ShortcutRule scRule = osr.getScRule();
+		ShortcutRule scRule = osr.getOpScRule();
 		TGGRule originalRule = scRule.getOriginalRule();
 		for(TGGRuleNode node : originalRule.getNodes()) {
 			if(node.getBindingType() == BindingType.CREATE) 
