@@ -63,7 +63,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			repairStrategies.add(new AttributeRepairStrategy(this));
 		}
 	}
-	
+
 	public Set<PatternType> getShortcutPatternTypes() {
 		Set<PatternType> set = new HashSet<>();
 		set.add(PatternType.FWD);
@@ -81,7 +81,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		boolean processedOnce = true;
 		while (processedOnce) {
 			processedOnce = false;
-			// TODO lfritsche, amoeller: refactor this -> applying repairs can occasionally invalidate other consistency matches
+			// TODO lfritsche, amoeller: refactor this -> applying repairs can occasionally invalidate
+			// other consistency matches
 			while (!dependencyContainer.isEmpty()) {
 				ITGGMatch repairCandidate = dependencyContainer.getNext();
 				processedOnce = true;
@@ -111,14 +112,14 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);
 		}
-		
+
 		times.addTo("repair", Timer.stop());
 		return !alreadyProcessed.isEmpty();
 	}
 
 	protected void translate() {
 		Timer.start();
-		
+
 		if (options.propagate.applyConcurrently()) {
 			matchDistributor.updateMatches();
 
@@ -143,11 +144,11 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 	protected void rollBack() {
 		Timer.start();
-		
+
 		do
 			matchDistributor.updateMatches();
 		while (revokeBrokenMatches());
-		
+
 		times.addTo("revoke", Timer.stop());
 	}
 
@@ -173,8 +174,9 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 				ITGGMatch match = brokenRuleApplications.get(ra);
 				redInterpreter.revokeOperationalRule(match);
 				revoked.add(ra);
-				LoggerConfig.log(LoggerConfig.log_matchApplication(),
-						() -> "Rollback match: " + ConsoleUtil.indent(match.toString(), 80, false));
+				LoggerConfig.log(LoggerConfig.log_ruleApplication(),
+						() -> "Rule application: rolled back " + match.getPatternName() + "(" + match.hashCode() + ")\n" //
+								+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
 			}
 			for (TGGRuleApplication revokedRA : revoked)
 				brokenRuleApplications.remove(revokedRA);
@@ -186,8 +188,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	/***** Marker Handling *******/
 
 	/**
-	 * Override in subclass if markers for protocol are not required (this can speed
-	 * up the translation process).
+	 * Override in subclass if markers for protocol are not required (this can speed up the
+	 * translation process).
 	 */
 	@Override
 	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, IGreenPattern greenPattern) {
@@ -210,7 +212,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		if (brokenRuleApplications.containsKey(ruleAppNode)) {
-			LoggerConfig.log(LoggerConfig.log_matchApplication(),
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
 					() -> "Repair confirmation: " + match.getPatternName() + "(" + match.hashCode() + ") appears to be fixed.");
 			brokenRuleApplications.remove(ruleAppNode);
 			options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
@@ -234,7 +236,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		consistencyMatches.remove(ra);
 		operationalMatchContainer.removeMatch(match);
 	}
-	
+
 	public IRedInterpreter getRedInterpreter() {
 		return redInterpreter;
 	}

@@ -7,6 +7,7 @@ import java.util.function.BiConsumer;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.FragmentProvider;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_ActAndLetRepair;
@@ -32,6 +33,8 @@ public abstract class InconsistentChangesConflict extends Conflict implements CR
 	public void crs_actAndLetRepair(BiConsumer<EObject, EObject> delta) {
 		integrate().applyDelta(delta);
 		repair();
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by ACT_&_LET_REPAIR");
 		resolved = true;
 	}
 
@@ -43,6 +46,8 @@ public abstract class InconsistentChangesConflict extends Conflict implements CR
 		} catch (InvalidDeltaException e) {
 			e.printStackTrace();
 		}
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by ACT_&_LET_REPAIR");
 		resolved = true;
 	}
 

@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy.RepairableMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
@@ -42,6 +43,8 @@ public abstract class Conflict {
 		container.addConflict(this);
 		conflictMatches = null;
 		scopeMatches = null;
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Detected conflict: " + printConflictIdentification());
 	}
 
 	abstract protected Set<ITGGMatch> initConflictMatches();
@@ -230,6 +233,11 @@ public abstract class Conflict {
 				.collect(Collectors.toSet());
 
 		revokeElements(createdNodes, Collections.emptySet(), createdCrossEdges);
+	}
+
+	protected String printConflictIdentification() {
+		return this.getClass().getSimpleName() + " at match " + getBrokenMatch().getMatch().getPatternName() //
+				+ "(" + getBrokenMatch().getMatch().hashCode() + ")";
 	}
 
 }

@@ -52,7 +52,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.NACOverlap;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
-import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import com.google.common.collect.Sets;
 
@@ -200,6 +199,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		buildContainerHierarchy();
 
 		times.addTo("operations:detectConflicts", Timer.stop());
+
+		if (!match2conflicts.isEmpty())
+			LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "");
 	}
 
 	private void buildContainerHierarchy() {
@@ -219,6 +221,15 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		this.conflicts = conflicts;
 	}
 
+	protected void resolveConflicts() {
+		for (ConflictContainer c : conflicts) {
+			options.integration.conflictSolver().resolveConflict(c);
+		}
+
+		if (!conflicts.isEmpty())
+			LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "");
+	}
+
 	protected void translateConflictFree() {
 //		setUpdatePolicy(new ConflictFreeElementsUpdatePolicy(this));
 		translate();
@@ -232,6 +243,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		((PrecedenceMatchContainer) operationalMatchContainer).clearPendingElements();
 
 		times.addTo("operations:resolveBrokenMatches", Timer.stop());
+
+		if (!classifiedBrokenMatches.isEmpty())
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "");
 	}
 
 	protected ChangeKey revokeBrokenCorrsAndRuleApplNodes() {
@@ -278,11 +292,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	/**
 	 * <p>
-	 * Determines green correspondence elements and adds them to the passed sets (nodesToRevoke &
-	 * edgesToRevoke).
+	 * Determines green correspondence elements and adds them to the passed sets
+	 * (nodesToRevoke & edgesToRevoke).
 	 * </p>
 	 * <p>
-	 * To delete this elements call {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
+	 * To delete this elements call
+	 * {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
 	 * </p>
 	 * 
 	 * @param match
@@ -290,8 +305,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param edgesToRevoke
 	 */
 	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		matchUtil.getObjects(match, new EltFilter().corr().create())
-				.forEach(obj -> getIbexRedInterpreter().revokeCorr(obj, nodesToRevoke, edgesToRevoke));
+		matchUtil.getObjects(match, new EltFilter().corr().create()).forEach(obj -> getIbexRedInterpreter().revokeCorr(obj, nodesToRevoke, edgesToRevoke));
 	}
 
 	protected void restoreBrokenCorrsAndRuleApplNodes(ChangeKey key) {
@@ -350,14 +364,13 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		removeOperationalRuleMatch(match);
 
-		LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Processing match: " + ConsoleUtil.indent(match.toString(), 80, false));
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as it has just been applied: " //
-					+ match.getPatternName() + "(" + match.hashCode() + ")");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
+					() -> "Matches: removed (as it has just been applied) " + match.getPatternName() + "(" + match.hashCode() + ")\n");
 		} else {
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Removed as application failed: " //
-					+ match.getPatternName() + "(" + match.hashCode() + ")");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
+					() -> "Matches: removed (as application failed) " + match.getPatternName() + "(" + match.hashCode() + ")\n");
 		}
 
 		times.addTo("translate:ruleApplication", Timer.stop());
@@ -440,6 +453,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		}
 
 		times.addTo("operations:repairBrokenMatches", Timer.stop());
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> "");
 		return !alreadyProcessed.isEmpty();
 	}
 
@@ -640,8 +654,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	/**
-	 * Applies a given delta to source and target models specified by a {@link BiConsumer} providing the
-	 * source and target root elements.
+	 * Applies a given delta to source and target models specified by a {@link BiConsumer}
+	 * providing the source and target root elements.
 	 * <p>
 	 * Alternatively use {@link INTEGRATE#applyDelta(DeltaContainer)}.
 	 * </p>
@@ -653,15 +667,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	/**
-	 * Applies a given delta to source and target models specified by a {@link delta.DeltaContainer
-	 * DeltaContainer}.
+	 * Applies a given delta to source and target models specified by a
+	 * {@link delta.DeltaContainer DeltaContainer}.
 	 * <p>
 	 * Alternatively use {@link INTEGRATE#applyDelta(BiConsumer)}.
 	 * </p>
 	 * 
 	 * @param delta delta to be applied
-	 * @throws InvalidDeltaException if a <code>Delta</code> of the given <code>DeltaContainer</code>
-	 *                               has an invalid structure or invalid components
+	 * @throws InvalidDeltaException if a <code>Delta</code> of the given
+	 *                               <code>DeltaContainer</code> has an invalid structure or
+	 *                               invalid components
 	 */
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
 		DeltaValidator.validate(delta);

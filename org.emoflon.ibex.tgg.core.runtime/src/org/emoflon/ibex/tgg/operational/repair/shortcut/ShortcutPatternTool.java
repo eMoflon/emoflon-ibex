@@ -147,7 +147,7 @@ public class ShortcutPatternTool {
 				return null;
 
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-			"Repair attempt: '" + brokenMatch.getPatternName() + "' with " + osr.getOpScRule().getName() + " (" + brokenMatch.hashCode() + ")");
+			"Repair attempt: " + brokenMatch.getPatternName() + "(" + brokenMatch.hashCode() + ") with " + osr.getName());
 			ITGGMatch newMatch = processBrokenMatch(osr, brokenMatch);
 			if (newMatch == null) {
 				copiedRules.remove(osr);

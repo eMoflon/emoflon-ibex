@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy.RepairableMatch;
@@ -72,6 +73,8 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 		integrate().getOptions().matchDistributor().updateMatches();
 		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getBrokenMatch().getMatch(), PatternType.FWD);
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
 	}
 
@@ -85,6 +88,8 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 		integrate().getOptions().matchDistributor().updateMatches();
 		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getBrokenMatch().getMatch(), PatternType.BWD);
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;
 	}
 

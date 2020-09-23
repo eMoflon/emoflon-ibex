@@ -260,7 +260,7 @@ public abstract class OperationalShortcutRule {
 	}
 
 	public String getName() {
-		return opScRule.getOriginalRule().getName() + "_OSC_" + opScRule.getReplacingRule().getName();
+		return getType() + "_" + opScRule.getName();
 	}
 
 	public IGreenPattern getGreenPattern() {

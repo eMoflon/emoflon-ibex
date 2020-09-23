@@ -59,6 +59,8 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 		scTool = new ShortcutPatternTool(opStrat, shortcutRules, opStrat.getShortcutPatternTypes());
 		updateDirection();
+		
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> "");
 	}
 
 	@Override

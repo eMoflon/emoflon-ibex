@@ -14,6 +14,7 @@ import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.benchmark.Times;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.TGGMatchParameterOrderProvider;
@@ -236,6 +237,8 @@ public class PrecedenceGraph implements TimeMeasurable {
 		default:
 			break;
 		}
+
+		LoggerConfig.log(LoggerConfig.log_pg(), () -> "Precedence graph: added " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	private boolean handleRestoredConsistencyMatch(ITGGMatch match) {
@@ -296,6 +299,8 @@ public class PrecedenceGraph implements TimeMeasurable {
 		default:
 			break;
 		}
+
+		LoggerConfig.log(LoggerConfig.log_pg(), () -> "Precedence graph: removed " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	private PrecedenceNode createNode(ITGGMatch match) {
