@@ -36,7 +36,7 @@ public class FWD_GREENCORRPatternTransformation {
 	
 	public void transform() {
 		IBeXContextPattern ibexPattern;
-		if(options.invocation.usePatternInvocation()) {
+		if(options.patterns.useSrcTrgPattern()) {
 			ibexPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
 			ibexPattern.setName(getPatternName());
 			IBeXContextPattern tmp = parent.getPattern(rule.getName() + PatternSuffixes.GREENCORR);
