@@ -413,7 +413,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private boolean processManifestForProject(final Manifest manifest) {
 		List<String> dependencies = new ArrayList<String>();
-		dependencies.addAll(Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt"));
+		dependencies.addAll(Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt", "org.emoflon.ibex.patternmodel"));
 		collectEngineExtensions().forEach(engine -> dependencies.addAll(engine.getDependencies()));
 
 		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, project.getName());

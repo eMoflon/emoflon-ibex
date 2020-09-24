@@ -784,7 +784,7 @@ class JavaFileGenerator {
 		if(probabilityGenerator.isStatic(rule.probability)){
 			imports.addAll(
 				'org.emoflon.ibex.gt.arithmetic.StaticProbability',
-				'IBeXPatternModel.IBeXDistributionType',
+				'org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType',
 				'java.util.OptionalDouble'
 			)
 		}
