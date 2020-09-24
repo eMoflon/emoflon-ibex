@@ -43,7 +43,7 @@ class JavaFileGenerator {
 	/**
 	 * Utility class for probability class generation
 	 */
-	 JavaProbabilityFileGenerator probabilityGenerator;
+	 ArithmeticExtensionGenerator probabilityGenerator;
 	 
 	/**
 	 * Creates a new JavaFileGenerator.
@@ -52,7 +52,7 @@ class JavaFileGenerator {
 		this.classNamePrefix = classNamePrefix
 		this.packageName = packageName
 		this.eClassifiersManager = eClassifiersManager
-		probabilityGenerator = new JavaProbabilityFileGenerator(packageName);
+		probabilityGenerator = new ArithmeticExtensionGenerator(packageName);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class JavaFileGenerator {
 			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
 			'java.util.HashMap',
 			'java.util.Map.Entry',
-			'org.emoflon.ibex.gt.arithmetics.Probability'
+			'org.emoflon.ibex.gt.arithmetic.Probability'
 		)
 		
 		val rulePreconditions = new HashSet
@@ -506,9 +506,10 @@ class JavaFileGenerator {
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
+			'java.util.HashMap',
 			'java.util.stream.Stream',
 			'org.emoflon.ibex.common.operational.IMatch',
-			'''org.emoflon.ibex.gt.api.GraphTransformationRule''',
+			'org.emoflon.ibex.gt.api.GraphTransformationRule',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'java.util.Optional',
 			'''«getSubPackageName('api')».«APIClassName»''',
@@ -602,11 +603,11 @@ class JavaFileGenerator {
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
 						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
 						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
 					);				
 				}
 				«ENDIF»
@@ -636,6 +637,7 @@ class JavaFileGenerator {
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
+			'java.util.HashMap',
 			'java.util.stream.Stream',
 			'java.util.Optional',
 			'org.emoflon.ibex.common.operational.IMatch',
@@ -720,16 +722,16 @@ class JavaFileGenerator {
 					}
 			«ENDFOR»
 				
-				«IF !EditorToIBeXPatternHelper.getArithmeticConstratins(pattern).empty»
+				«IF !EditorToIBeXPatternHelper.getArithmeticConstraints(pattern).empty»
 				@Override
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
-						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstratins(pattern) SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
+						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstraints(pattern) SEPARATOR '&&'» 
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
 						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
 					);				
 				}
 				«ENDIF»
@@ -774,15 +776,15 @@ class JavaFileGenerator {
 	def getProbabilityImports(IBeXRule rule){
 		val imports = new HashSet<String>()
 		imports.add(
-			'org.emoflon.ibex.gt.arithmetics.Probability'
+			'org.emoflon.ibex.gt.arithmetic.Probability'
 		)
 		if(rule.probability === null){
 			return imports;
 		}
 		if(probabilityGenerator.isStatic(rule.probability)){
 			imports.addAll(
-				'org.emoflon.ibex.gt.arithmetics.StaticProbability',
-				'IBeXPatternModel.IBeXDistributionType',
+				'org.emoflon.ibex.gt.arithmetic.StaticProbability',
+				'org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType',
 				'java.util.OptionalDouble'
 			)
 		}
@@ -893,10 +895,12 @@ class JavaFileGenerator {
 	 * Returns the documentation for the rule.
 	 */
 	private static def getRuleDocumentation(IBeXRule rule) {
+		if(rule.documentation === null)
+			return String.format(
+					"If this rule is not self-explaining, you really should add some comment in the specification.")
 		if (rule.documentation.isEmpty) {
 			return String.format(
-				"If this rule is not self-explaining, you really should add some comment in the specification."
-			)
+				"If this rule is not self-explaining, you really should add some comment in the specification.")
 		} else {
 			return rule.documentation
 		}
@@ -906,18 +910,22 @@ class JavaFileGenerator {
 	 * Returns the documentation for the rule.
 	 */
 	private static def getPatternDocumentation(IBeXPattern pattern) {
-		if ((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).documentation.isEmpty) {
+		var ibexPattern = null as IBeXContextPattern
+		if(pattern instanceof IBeXContextPattern)
+			ibexPattern = pattern as IBeXContextPattern
+		else 	
+			ibexPattern = (pattern as IBeXContextAlternatives).context	
+			
+		if (ibexPattern.documentation === null) {
 			return String.format(
 				"If this pattern is not self-explaining, you really should add some comment in the specification."
 			)
-		} else if ((pattern instanceof IBeXContextAlternatives) && (pattern as IBeXContextAlternatives).context.documentation.isEmpty) {
+		} else if (ibexPattern.documentation.isEmpty) {
 			return String.format(
 				"If this pattern is not self-explaining, you really should add some comment in the specification."
 			)
-		} else if((pattern instanceof IBeXContextPattern) && !(pattern as IBeXContextPattern).documentation.isEmpty) {
-			return (pattern as IBeXContextPattern).documentation
 		} else {
-			return (pattern as IBeXContextAlternatives).context.documentation
+			return ibexPattern.documentation
 		}
 	}
 
