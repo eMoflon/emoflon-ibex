@@ -259,6 +259,11 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseIBeXMatchCount(IBeXMatchCount object) {
+			return createIBeXMatchCountAdapter();
+		}
+
+		@Override
 		public Adapter defaultCase(EObject object) {
 			return createEObjectAdapter();
 		}
@@ -806,6 +811,20 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXArithmeticAttributeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount <em>IBe XMatch Count</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount
+	 * @generated
+	 */
+	public Adapter createIBeXMatchCountAdapter() {
 		return null;
 	}
 

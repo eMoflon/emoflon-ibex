@@ -10,8 +10,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.management.RuntimeErrorException;
-
 import org.eclipse.emf.ecore.EDataType;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
@@ -36,6 +34,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
@@ -95,7 +94,7 @@ final public class EditorToIBeXPatternHelper {
 		return nodes;
 	}
 	
-	public static Collection<IBeXArithmeticConstraint> getArithmeticConstratins(IBeXContext pattern) {
+	public static Collection<IBeXArithmeticConstraint> getArithmeticConstraints(IBeXContext pattern) {
 		Collection<IBeXArithmeticConstraint> constraints = new LinkedList<>();
 		IBeXContextPattern context = null;
 		if(pattern instanceof IBeXContextPattern) {
@@ -310,10 +309,10 @@ final public class EditorToIBeXPatternHelper {
 	 * 			the stochastic expression
 	 * @return the IBeXStochasticAttributeValue
 	 */
-	public static IBeXStochasticAttributeValue convertAttributeValue(final StochasticFunctionExpression stochasticExpression) {
+	public static IBeXStochasticAttributeValue convertAttributeValue(final TransformationData data, final IBeXPattern ibexPattern, final StochasticFunctionExpression stochasticExpression) {
 		IBeXStochasticAttributeValue value = IBeXPatternModelFactory.eINSTANCE.createIBeXStochasticAttributeValue();
 		value.setFunction(EditorToStochasticExtensionHelper
-				.transformStochasticFunction(stochasticExpression));
+				.transformStochasticFunction(data, ibexPattern, stochasticExpression));
 		// the value of the enums from GTStochasticRange and OperatorRange need to be the same
 		value.setRange(IBeXDistributionRange.get(stochasticExpression.getOperatorRange().getValue()));
 		return value;
@@ -324,9 +323,9 @@ final public class EditorToIBeXPatternHelper {
 	 * @param expression the arithmetic expression
 	 * @return the IBeXArithmeticValue
 	 */
-	public static IBeXArithmeticValue convertAttributeValue(final ArithmeticCalculationExpression expression) {
+	public static IBeXArithmeticValue convertAttributeValue(final TransformationData data, final IBeXPattern ibexPattern, final ArithmeticCalculationExpression expression) {
 		IBeXArithmeticValue value= IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();		;
-		value.setExpression(EditorToArithmeticExtensionHelper.transformToGTArithmetics(expression.getExpression()));
+		value.setExpression(EditorToArithmeticExtensionHelper.transformToIBeXArithmeticExpression(data, ibexPattern, expression.getExpression()));
 		return value;
 	}
 }

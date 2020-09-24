@@ -12,6 +12,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryOperator
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount
 
 /**
  *  Enum for the different Constraint types
@@ -27,7 +28,7 @@ enum ConstraintType {
 /**
  * Utility class for probability class generation
  */
-class JavaProbabilityFileGenerator {
+class ArithmeticExtensionGenerator {
 	
 	String packageName;
 	
@@ -318,7 +319,7 @@ class JavaProbabilityFileGenerator {
 		val probability = rule.probability
 		val imports = new HashSet<String>()
 		imports.addAll(
-			'org.emoflon.ibex.gt.arithmetics.Probability',
+			'org.emoflon.ibex.gt.arithmetic.Probability',
 			'''«getSubPackageName('api.matches')».«getMatchClassName(rule)»''',
 			'''«getSubPackageName('api.rules')».«getRuleClassName(rule)»'''
 			
@@ -355,6 +356,15 @@ class JavaProbabilityFileGenerator {
 				case LOG: return negative + '''Math.log10(«value»)'''
 				case LG: return negative + '''Math.log(«value»)'''
 				case SQRT: return negative + '''Math.sqrt(«value»)'''
+				case COUNT: {
+					val countExpr = expression as IBeXMatchCount
+					return '''
+						interpreter.matchStream("«countExpr.invocation.invokedPattern.name»", new HashMap<>())
+								«FOR mapping : countExpr.invocation.mapping.entrySet»
+								.filter(localMatch -> match.get("«mapping.key.name»").equals(localMatch.get("«mapping.value.name»")))
+								«ENDFOR»
+								.count()'''
+				}
 			}		
 		}
 		if(expression instanceof IBeXBinaryExpression){
@@ -367,12 +377,8 @@ class JavaProbabilityFileGenerator {
 				case MODULUS: return '''«left»%«right»'''
 				case MULTIPLICATION: return '''«left»*«right»'''
 				case SUBTRACTION: return '''«left»-«right»'''
-				case MAXIMUM: {
-					return null;
-				}
-				case MINIMUM: {
-					return null;
-				}
+				case MAXIMUM: return '''Math.max(«left»,«right»)'''
+				case MINIMUM: return '''Math.min(«left»,«right»)'''
 			}
 		}	
 	}

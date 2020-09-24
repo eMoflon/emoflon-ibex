@@ -150,7 +150,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 
 		this.contextPatternInterpreter = engine;
 		this.model = model;
-		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource);
+		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource, this);
 		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource);
 	}
 

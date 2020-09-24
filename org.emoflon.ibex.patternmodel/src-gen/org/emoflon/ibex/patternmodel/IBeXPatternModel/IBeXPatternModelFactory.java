@@ -311,6 +311,15 @@ public interface IBeXPatternModelFactory extends EFactory {
 	IBeXArithmeticAttribute createIBeXArithmeticAttribute();
 
 	/**
+	 * Returns a new object of class '<em>IBe XMatch Count</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XMatch Count</em>'.
+	 * @generated
+	 */
+	IBeXMatchCount createIBeXMatchCount();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

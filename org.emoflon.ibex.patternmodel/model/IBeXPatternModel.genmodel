@@ -38,6 +38,7 @@
       <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXUnaryOperator/LOG"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXUnaryOperator/LG"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXUnaryOperator/BRACKET"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXUnaryOperator/COUNT"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXPatternModel.ecore#//IBeXDistributionType">
       <genEnumLiterals ecoreEnumLiteral="IBeXPatternModel.ecore#//IBeXDistributionType/NORMAL"/>
@@ -201,6 +202,9 @@
     <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXArithmeticAttribute">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXArithmeticAttribute/attribute"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXArithmeticAttribute/negative"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXMatchCount">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXMatchCount/invocation"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

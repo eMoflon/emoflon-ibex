@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
-import org.emoflon.ibex.gt.arithmetics.Probability;
+import org.emoflon.ibex.gt.arithmetic.Probability;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**

@@ -106,7 +106,17 @@ public enum IBeXUnaryOperator implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	BRACKET(8, "BRACKET", "BRACKET");
+	BRACKET(8, "BRACKET", "BRACKET"),
+
+	/**
+	 * The '<em><b>COUNT</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #COUNT_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	COUNT(9, "COUNT", "COUNT");
 
 	/**
 	 * The '<em><b>SQRT</b></em>' literal value.
@@ -208,13 +218,24 @@ public enum IBeXUnaryOperator implements Enumerator {
 	public static final int BRACKET_VALUE = 8;
 
 	/**
+	 * The '<em><b>COUNT</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #COUNT
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int COUNT_VALUE = 9;
+
+	/**
 	 * An array of all the '<em><b>IBe XUnary Operator</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	private static final IBeXUnaryOperator[] VALUES_ARRAY = new IBeXUnaryOperator[] { SQRT, ABSOLUTE, SIN, COS, TAN,
-			EEXPONENTIAL, LOG, LG, BRACKET, };
+			EEXPONENTIAL, LOG, LG, BRACKET, COUNT, };
 
 	/**
 	 * A public read-only list of all the '<em><b>IBe XUnary Operator</b></em>' enumerators.
@@ -288,6 +309,8 @@ public enum IBeXUnaryOperator implements Enumerator {
 			return LG;
 		case BRACKET_VALUE:
 			return BRACKET;
+		case COUNT_VALUE:
+			return COUNT;
 		}
 		return null;
 	}

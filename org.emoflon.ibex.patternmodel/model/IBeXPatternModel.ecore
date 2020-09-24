@@ -294,6 +294,7 @@
     <eLiterals name="LOG" value="6"/>
     <eLiterals name="LG" value="7"/>
     <eLiterals name="BRACKET" value="8"/>
+    <eLiterals name="COUNT" value="9" literal="COUNT"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXProbabilityDistribution">
     <eStructuralFeatures xsi:type="ecore:EReference" name="mean" eType="#//IBeXArithmeticExpression"
@@ -318,5 +319,9 @@
     <eLiterals name="ALL"/>
     <eLiterals name="POSITIVE_ONLY" value="1"/>
     <eLiterals name="NEGATIVE_ONLY" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXMatchCount" eSuperTypes="#//IBeXUnaryExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invocation" lowerBound="1"
+        eType="#//IBeXPatternInvocation" containment="true"/>
   </eClassifiers>
 </ecore:EPackage>

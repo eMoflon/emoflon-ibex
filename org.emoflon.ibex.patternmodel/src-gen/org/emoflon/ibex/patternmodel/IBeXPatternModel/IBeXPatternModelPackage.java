@@ -2053,6 +2053,70 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XARITHMETIC_ATTRIBUTE_OPERATION_COUNT = IBE_XNODE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXMatchCountImpl <em>IBe XMatch Count</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXMatchCountImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXMatchCount()
+	 * @generated
+	 */
+	int IBE_XMATCH_COUNT = 38;
+
+	/**
+	 * The feature id for the '<em><b>Operand</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMATCH_COUNT__OPERAND = IBE_XUNARY_EXPRESSION__OPERAND;
+
+	/**
+	 * The feature id for the '<em><b>Operator</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMATCH_COUNT__OPERATOR = IBE_XUNARY_EXPRESSION__OPERATOR;
+
+	/**
+	 * The feature id for the '<em><b>Negative</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMATCH_COUNT__NEGATIVE = IBE_XUNARY_EXPRESSION__NEGATIVE;
+
+	/**
+	 * The feature id for the '<em><b>Invocation</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMATCH_COUNT__INVOCATION = IBE_XUNARY_EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XMatch Count</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMATCH_COUNT_FEATURE_COUNT = IBE_XUNARY_EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XMatch Count</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMATCH_COUNT_OPERATION_COUNT = IBE_XUNARY_EXPRESSION_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation <em>IBe XRelation</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2060,7 +2124,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRelation()
 	 * @generated
 	 */
-	int IBE_XRELATION = 38;
+	int IBE_XRELATION = 39;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryOperator <em>IBe XBinary Operator</em>}' enum.
@@ -2070,7 +2134,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXBinaryOperator()
 	 * @generated
 	 */
-	int IBE_XBINARY_OPERATOR = 39;
+	int IBE_XBINARY_OPERATOR = 40;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryOperator <em>IBe XUnary Operator</em>}' enum.
@@ -2080,7 +2144,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXUnaryOperator()
 	 * @generated
 	 */
-	int IBE_XUNARY_OPERATOR = 40;
+	int IBE_XUNARY_OPERATOR = 41;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType <em>IBe XDistribution Type</em>}' enum.
@@ -2090,7 +2154,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXDistributionType()
 	 * @generated
 	 */
-	int IBE_XDISTRIBUTION_TYPE = 41;
+	int IBE_XDISTRIBUTION_TYPE = 42;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange <em>IBe XDistribution Range</em>}' enum.
@@ -2100,7 +2164,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXDistributionRange()
 	 * @generated
 	 */
-	int IBE_XDISTRIBUTION_RANGE = 42;
+	int IBE_XDISTRIBUTION_RANGE = 43;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel <em>IBe XModel</em>}'.
@@ -3387,6 +3451,27 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EAttribute getIBeXArithmeticAttribute_Negative();
 
 	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount <em>IBe XMatch Count</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XMatch Count</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount
+	 * @generated
+	 */
+	EClass getIBeXMatchCount();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount#getInvocation <em>Invocation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Invocation</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount#getInvocation()
+	 * @see #getIBeXMatchCount()
+	 * @generated
+	 */
+	EReference getIBeXMatchCount_Invocation();
+
+	/**
 	 * Returns the meta object for enum '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation <em>IBe XRelation</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4497,6 +4582,24 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute IBE_XARITHMETIC_ATTRIBUTE__NEGATIVE = eINSTANCE.getIBeXArithmeticAttribute_Negative();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXMatchCountImpl <em>IBe XMatch Count</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXMatchCountImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXMatchCount()
+		 * @generated
+		 */
+		EClass IBE_XMATCH_COUNT = eINSTANCE.getIBeXMatchCount();
+
+		/**
+		 * The meta object literal for the '<em><b>Invocation</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMATCH_COUNT__INVOCATION = eINSTANCE.getIBeXMatchCount_Invocation();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation <em>IBe XRelation</em>}' enum.

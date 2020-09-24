@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.arithmetics;
+package org.emoflon.ibex.gt.arithmetic;
 
 import org.emoflon.ibex.gt.api.GraphTransformationMatch;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;

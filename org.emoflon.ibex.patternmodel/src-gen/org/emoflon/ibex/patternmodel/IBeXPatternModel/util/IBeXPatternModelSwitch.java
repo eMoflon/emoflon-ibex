@@ -399,6 +399,17 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXPatternModelPackage.IBE_XMATCH_COUNT: {
+			IBeXMatchCount iBeXMatchCount = (IBeXMatchCount) theEObject;
+			T result = caseIBeXMatchCount(iBeXMatchCount);
+			if (result == null)
+				result = caseIBeXUnaryExpression(iBeXMatchCount);
+			if (result == null)
+				result = caseIBeXArithmeticExpression(iBeXMatchCount);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		default:
 			return defaultCase(theEObject);
 		}
@@ -971,6 +982,21 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXArithmeticAttribute(IBeXArithmeticAttribute object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XMatch Count</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XMatch Count</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXMatchCount(IBeXMatchCount object) {
 		return null;
 	}
 

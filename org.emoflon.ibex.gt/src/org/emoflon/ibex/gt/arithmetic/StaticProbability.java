@@ -1,4 +1,4 @@
-package org.emoflon.ibex.gt.arithmetics;
+package org.emoflon.ibex.gt.arithmetic;
 
 import java.util.OptionalDouble;
 import java.util.Random;

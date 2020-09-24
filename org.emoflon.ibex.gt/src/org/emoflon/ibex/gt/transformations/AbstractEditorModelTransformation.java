@@ -1,7 +1,5 @@
 package org.emoflon.ibex.gt.transformations;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
@@ -19,7 +17,7 @@ import org.emoflon.ibex.gt.editor.utils.GTFlattener;
 public abstract class AbstractEditorModelTransformation<TargetModel>
 		extends AbstractModelTransformation<EditorGTFile, TargetModel> {
 	
-	protected Map<EditorPattern, EditorPattern> pattern2flattened = new HashMap<>();
+	protected TransformationData data = new TransformationData();
 
 	/**
 	 * Returns the flattened pattern if it exists and the pattern is not abstract. 
@@ -30,7 +28,7 @@ public abstract class AbstractEditorModelTransformation<TargetModel>
 	 */
 	public EditorPattern calcFlattenedPattern(final EditorPattern editorPattern) {
 		if (editorPattern.getSuperPatterns().isEmpty()) {
-			pattern2flattened.put(editorPattern, editorPattern);
+			data.pattern2flattened.put(editorPattern, editorPattern);
 			return editorPattern;
 		}
 
@@ -39,7 +37,7 @@ public abstract class AbstractEditorModelTransformation<TargetModel>
 			flattener.getErrors().forEach(e -> logError("Flattening of " + editorPattern.getName() + " "+e) );
 			return null;
 		} else {
-			pattern2flattened.put(editorPattern, flattener.getFlattenedPattern());
+			data.pattern2flattened.put(editorPattern, flattener.getFlattenedPattern());
 			return flattener.getFlattenedPattern();
 		}
 	}
@@ -51,10 +49,10 @@ public abstract class AbstractEditorModelTransformation<TargetModel>
 	 * @return the flattened pattern
 	 */
 	public EditorPattern getFlattenedPattern(final EditorPattern editorPattern) {
-		if(!pattern2flattened.containsKey(editorPattern))
+		if(!data.pattern2flattened.containsKey(editorPattern))
 			return calcFlattenedPattern(editorPattern);
 		
-		return pattern2flattened.get(editorPattern);
+		return data.pattern2flattened.get(editorPattern);
 	}
 	
 	/**

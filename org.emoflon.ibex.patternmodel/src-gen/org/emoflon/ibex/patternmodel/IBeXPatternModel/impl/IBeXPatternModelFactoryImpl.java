@@ -125,6 +125,8 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 			return createIBeXProbabilityDistribution();
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_ATTRIBUTE:
 			return createIBeXArithmeticAttribute();
+		case IBeXPatternModelPackage.IBE_XMATCH_COUNT:
+			return createIBeXMatchCount();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -536,6 +538,17 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXArithmeticAttribute createIBeXArithmeticAttribute() {
 		IBeXArithmeticAttributeImpl iBeXArithmeticAttribute = new IBeXArithmeticAttributeImpl();
 		return iBeXArithmeticAttribute;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXMatchCount createIBeXMatchCount() {
+		IBeXMatchCountImpl iBeXMatchCount = new IBeXMatchCountImpl();
+		return iBeXMatchCount;
 	}
 
 	/**
