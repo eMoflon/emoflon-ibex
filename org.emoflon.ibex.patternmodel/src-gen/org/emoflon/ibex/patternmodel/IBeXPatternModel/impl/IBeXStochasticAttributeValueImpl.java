@@ -10,10 +10,9 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticFunction;
-import org.emoflon.ibex.gt.SGTPatternModel.GTStochasticRange;
-
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbabilityDistribution;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 
 /**
@@ -39,7 +38,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	 * @generated
 	 * @ordered
 	 */
-	protected static final GTStochasticRange RANGE_EDEFAULT = GTStochasticRange.NEUTRAL;
+	protected static final IBeXDistributionRange RANGE_EDEFAULT = IBeXDistributionRange.ALL;
 
 	/**
 	 * The cached value of the '{@link #getRange() <em>Range</em>}' attribute.
@@ -49,7 +48,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	 * @generated
 	 * @ordered
 	 */
-	protected GTStochasticRange range = RANGE_EDEFAULT;
+	protected IBeXDistributionRange range = RANGE_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getFunction() <em>Function</em>}' containment reference.
@@ -59,7 +58,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	 * @generated
 	 * @ordered
 	 */
-	protected GTStochasticFunction function;
+	protected IBeXProbabilityDistribution function;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -86,7 +85,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	 * @generated
 	 */
 	@Override
-	public GTStochasticRange getRange() {
+	public IBeXDistributionRange getRange() {
 		return range;
 	}
 
@@ -96,8 +95,8 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	 * @generated
 	 */
 	@Override
-	public void setRange(GTStochasticRange newRange) {
-		GTStochasticRange oldRange = range;
+	public void setRange(IBeXDistributionRange newRange) {
+		IBeXDistributionRange oldRange = range;
 		range = newRange == null ? RANGE_EDEFAULT : newRange;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
@@ -110,7 +109,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	 * @generated
 	 */
 	@Override
-	public GTStochasticFunction getFunction() {
+	public IBeXProbabilityDistribution getFunction() {
 		return function;
 	}
 
@@ -119,8 +118,8 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetFunction(GTStochasticFunction newFunction, NotificationChain msgs) {
-		GTStochasticFunction oldFunction = function;
+	public NotificationChain basicSetFunction(IBeXProbabilityDistribution newFunction, NotificationChain msgs) {
+		IBeXProbabilityDistribution oldFunction = function;
 		function = newFunction;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
@@ -139,7 +138,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	 * @generated
 	 */
 	@Override
-	public void setFunction(GTStochasticFunction newFunction) {
+	public void setFunction(IBeXProbabilityDistribution newFunction) {
 		if (newFunction != function) {
 			NotificationChain msgs = null;
 			if (function != null)
@@ -197,10 +196,10 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__RANGE:
-			setRange((GTStochasticRange) newValue);
+			setRange((IBeXDistributionRange) newValue);
 			return;
 		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
-			setFunction((GTStochasticFunction) newValue);
+			setFunction((IBeXProbabilityDistribution) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -218,7 +217,7 @@ public class IBeXStochasticAttributeValueImpl extends IBeXAttributeValueImpl imp
 			setRange(RANGE_EDEFAULT);
 			return;
 		case IBeXPatternModelPackage.IBE_XSTOCHASTIC_ATTRIBUTE_VALUE__FUNCTION:
-			setFunction((GTStochasticFunction) null);
+			setFunction((IBeXProbabilityDistribution) null);
 			return;
 		}
 		super.eUnset(featureID);

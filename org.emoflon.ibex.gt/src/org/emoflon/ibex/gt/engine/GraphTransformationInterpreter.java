@@ -31,8 +31,10 @@ import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 
 /**
  * The GraphTransformationInterpreter implements rule application based on a
@@ -42,8 +44,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
 	 * The pattern set containing the patterns.
 	 */
+	private IBeXModel ibexModel;
 	private IBeXPatternSet patternSet;
-
+	private IBeXRuleSet ruleSet;
 	/**
 	 * The pattern matching engine.
 	 */
@@ -147,7 +150,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 
 		this.contextPatternInterpreter = engine;
 		this.model = model;
-		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource);
+		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource, this);
 		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource);
 	}
 
@@ -170,11 +173,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		Objects.requireNonNull(ibexPatternResource, "Resource must not be null!");
 		EObject resourceContent = ibexPatternResource.getContents().get(0);
 		Objects.requireNonNull("Resource must not be empty!");
-		if (resourceContent instanceof IBeXPatternSet) {
+		if (resourceContent instanceof IBeXModel) {
 			contextPatternInterpreter.initialise(model.getPackageRegistry(), this);
 
 			// Transform into patterns of the concrete engine.
-			patternSet = (IBeXPatternSet) resourceContent;
+			ibexModel = (IBeXModel) resourceContent;
+			patternSet = ibexModel.getPatternSet();
+			ruleSet = ibexModel.getRuleSet();
 			contextPatternInterpreter.initPatterns(patternSet);
 			contextPatternInterpreter.monitor(model.getResources());
 		} else {
@@ -204,7 +209,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return true if <code>loadPatterns</code> has been called successfully.
 	 */
 	public boolean isPatternSetLoaded() {
-		return patternSet != null;
+		return ibexModel != null;
 	}
 
 	/**
@@ -228,8 +233,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters) {
 		String patternName = match.getPatternName();
 
-		IBeXCreatePattern createPattern = IBeXPatternUtils.getCreatePattern(patternSet, patternName);
-		IBeXDeletePattern deletePattern = IBeXPatternUtils.getDeletePattern(patternSet, patternName);
+		IBeXCreatePattern createPattern = IBeXPatternUtils.getCreatePattern(ruleSet, patternName);
+		IBeXDeletePattern deletePattern = IBeXPatternUtils.getDeletePattern(ruleSet, patternName);
 
 		// Execute deletion.
 		IMatch originalMatch = new SimpleMatch(match);
@@ -276,12 +281,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return the created match
 	 */
 	private IMatch createEmptyMatchForCreatePattern(final String patternName) {
-		Optional<IBeXCreatePattern> pattern = patternSet.getCreatePatterns().stream()
-				.filter(p -> p.getName().equals(patternName)) //
-				.findAny();
-		if (pattern.isPresent()) {
+		IBeXCreatePattern pattern = IBeXPatternUtils.getCreatePattern(ruleSet, patternName);
+		if (pattern != null) {
 			IMatch match = new SimpleMatch(patternName);
-			pattern.get().getCreatedNodes().forEach(node -> match.put(node.getName(), null));
+			pattern.getCreatedNodes().forEach(node -> match.put(node.getName(), null));
 			return match;
 		} else {
 			throw new IllegalArgumentException(String.format("No create pattern called %s", patternName));

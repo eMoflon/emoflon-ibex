@@ -207,7 +207,7 @@ public abstract class OperationalPatternTransformation {
 
 		return nacPattern;
 	}
-
+	
 	private void createNegativeInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(false);
@@ -219,7 +219,10 @@ public abstract class OperationalPatternTransformation {
 			if (src.isPresent())
 				invocation.getMapping().put(src.get(), node);
 			else
-				localNodes.add(node);
+				if(!invokee.getSignatureNodes().contains(node)) {
+					localNodes.add(node);
+				}
+				
 		}
 
 		invokee.getLocalNodes().addAll(localNodes);

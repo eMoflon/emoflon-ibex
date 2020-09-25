@@ -10,8 +10,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair;
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGRuleEdge;
@@ -138,9 +138,9 @@ public class IBeXPatternOptimiser {
 	}
 
 	private static void optimizeInjectivityConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
-		Collection<IBeXNodePair> revokedPairs = new ArrayList<>();
+		Collection<IBeXInjectivityConstraint> revokedPairs = new ArrayList<>();
 
-		for(IBeXNodePair injPair : invoker.getInjectivityConstraints()) {
+		for(IBeXInjectivityConstraint injPair : invoker.getInjectivityConstraints()) {
 			IBeXNode first = injPair.getValues().get(0);
 			IBeXNode second = injPair.getValues().get(1);
 			boolean firstFoundInInvokee = invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(first.getName()));

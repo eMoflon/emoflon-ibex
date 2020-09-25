@@ -93,6 +93,7 @@
     <eLiterals name="LOGARITHMUS" value="6"/>
     <eLiterals name="NATLOG" value="7"/>
     <eLiterals name="BRACKET" value="8"/>
+    <eLiterals name="COUNT" value="9" literal="COUNT"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="GTRelation">
     <eLiterals name="GREATER_OR_EQUAL"/>
@@ -103,4 +104,3 @@
     <eLiterals name="SMALLER" value="5"/>
   </eClassifiers>
 </ecore:EPackage>
-    

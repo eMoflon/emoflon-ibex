@@ -7,14 +7,15 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatter
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EAttribute;
@@ -30,8 +31,11 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
@@ -59,6 +63,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
+import org.moflon.core.utilities.EcoreUtils;
 
 import language.BindingType;
 import language.DomainType;
@@ -80,7 +85,7 @@ public class ContextPatternTransformation {
 	protected static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
 	private final boolean USE_INVOCATIONS_FOR_REFERENCES;
 	private IbexOptions options;
-	private List<IBeXContext> ibexContextPatterns = new ArrayList<>();
+	private List<IBeXContext> ibexContextPatterns = new LinkedList<>();
 
 	/**
 	 * Mapping between pattern names and the context patterns.
@@ -101,7 +106,7 @@ public class ContextPatternTransformation {
 
 	}
 
-	public IBeXPatternSet transform() {
+	public IBeXModel transform() {
 		boolean patternInvOption = options.patterns.useSrcTrgPattern();
 		options.tgg.getFlattenedConcreteTGGRules().parallelStream().forEach(rule -> {
 //		for (TGGRule rule : options.tgg.getFlattenedConcreteTGGRules()) {
@@ -296,15 +301,19 @@ public class ContextPatternTransformation {
 			// Invoke NAC from parent: nodes with/without pre-image are signature/local
 			IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 			invocation.setPositive(false);
-			ArrayList<IBeXNode> localNodes = new ArrayList<>();
+			List<IBeXNode> localNodes = new LinkedList<>();
 
 			for (IBeXNode node : nacPattern.getSignatureNodes()) {
 				Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(parent, node.getName());
 
 				if (src.isPresent())
 					invocation.getMapping().put(src.get(), node);
-				else
-					localNodes.add(node);
+				else {
+					if(!nacPattern.getSignatureNodes().contains(node)) {
+						localNodes.add(node);
+					}
+				}
+					
 			}
 
 			nacPattern.getLocalNodes().addAll(localNodes);
@@ -534,7 +543,7 @@ public class ContextPatternTransformation {
 			return;
 		}
 
-		Optional<IBeXContextPattern> edgePatternOptional = IBeXPatternUtils.createEdgePattern(type, nameToPattern,
+		Optional<IBeXContextPattern> edgePatternOptional = createEdgePattern(type, nameToPattern,
 				(s) -> logger.error(s));
 		if (!edgePatternOptional.isPresent()) {
 			logger.error("Cannot create edge pattern for type " + type.getName());
@@ -558,6 +567,47 @@ public class ContextPatternTransformation {
 		invocation.getMapping().put(ibexTargetNode, ibexSignatureTargetNode.get());
 		invocation.setInvokedPattern(edgePattern);
 		ibexPattern.getInvocations().add(invocation);
+	}
+	
+	/**
+	 * Create an {@link IBeXPattern} for the given edge. If an {@link IBeXPattern}
+	 * for the given {@link EReference} exists already, the existing pattern is
+	 * returned.
+	 * 
+	 * @param edgeType the EReference to create a pattern for
+	 * @return the created IBeXPattern
+	 */
+	public static <T extends IBeXContext> Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType,
+			Map<String, T> nameToPattern, Consumer<String> logError) {
+		Objects.requireNonNull(edgeType, "Edge type must not be null!");
+
+		EClass sourceType = edgeType.getEContainingClass();
+		EClass targetType = edgeType.getEReferenceType();
+
+		if (sourceType == null || targetType == null) {
+			logError.accept("Cannot resolve reference source or target type.");
+			return Optional.empty();
+		}
+
+		String name = String.format("edge-%s-%s-%s", EcoreUtils.getFQN(sourceType).replace(".", "_"),
+				edgeType.getName(), EcoreUtils.getFQN(targetType).replace(".", "_"));
+
+		if (nameToPattern.containsKey(name)) {
+			return Optional.of((IBeXContextPattern) nameToPattern.get(name));
+		}
+
+		IBeXContextPattern edgePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
+		edgePattern.setName(name);
+
+		IBeXNode ibexSignatureSourceNode = IBeXPatternFactory.createNode("src", sourceType);
+		edgePattern.getSignatureNodes().add(ibexSignatureSourceNode);
+
+		IBeXNode ibexSignatureTargetNode = IBeXPatternFactory.createNode("trg", targetType);
+		edgePattern.getSignatureNodes().add(ibexSignatureTargetNode);
+
+		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSignatureSourceNode, ibexSignatureTargetNode, edgeType);
+		edgePattern.getLocalEdges().add(ibexEdge);
+		return Optional.of(edgePattern);
 	}
 
 	public IBeXNode transformNode(IBeXContextPattern ibexPattern, TGGRuleNode node) {
@@ -599,13 +649,52 @@ public class ContextPatternTransformation {
 	 * 
 	 * @return the IBeXPatternSet
 	 */
-	private IBeXPatternSet createSortedPatternSet() {
+	private IBeXModel createSortedPatternSet() {
 		ibexContextPatterns.sort(IBeXPatternUtils.sortByName);
 
 		IBeXPatternSet ibexPatternSet = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternSet();
 		ibexPatternSet.getContextPatterns().addAll(ibexContextPatterns);
 
-		return ibexPatternSet;
+		
+		
+		
+		List<IBeXNode> nodes = new LinkedList<>();
+		nodes.addAll(ibexPatternSet.getContextPatterns().stream()
+				.filter(pattern -> pattern instanceof IBeXContextPattern)
+				.map(pattern -> (IBeXContextPattern)pattern)
+				.flatMap(pattern -> pattern.getSignatureNodes().stream())
+				.collect(Collectors.toList()));
+		nodes.addAll(ibexPatternSet.getContextPatterns().stream()
+				.filter(pattern -> pattern instanceof IBeXContextPattern)
+				.map(pattern -> (IBeXContextPattern)pattern)
+				.flatMap(pattern -> pattern.getLocalNodes().stream())
+				.collect(Collectors.toList()));
+		nodes.sort(IBeXPatternUtils.sortByName);
+		
+		IBeXNodeSet nodeSet = IBeXPatternModelFactory.eINSTANCE.createIBeXNodeSet();
+		nodeSet.getNodes().addAll(nodes);
+		
+		List<IBeXEdge> edges = new LinkedList<>();
+		edges.addAll(ibexPatternSet.getContextPatterns().stream()
+				.filter(pattern -> pattern instanceof IBeXContextPattern)
+				.map(pattern -> (IBeXContextPattern)pattern)
+				.flatMap(pattern -> pattern.getLocalEdges().stream())
+				.map(edge -> {
+					edge.setName(edge.getSourceNode().getName() + "->" + edge.getTargetNode().getName());
+					return edge;
+				})
+				.collect(Collectors.toList()));
+		edges.sort(IBeXPatternUtils.sortByName);
+		
+		IBeXEdgeSet edgeSet = IBeXPatternModelFactory.eINSTANCE.createIBeXEdgeSet();
+		edgeSet.getEdges().addAll(edges);
+		
+		IBeXModel model = IBeXPatternModelFactory.eINSTANCE.createIBeXModel();
+		model.setPatternSet(ibexPatternSet);
+		model.setNodeSet(nodeSet);
+		model.setEdgeSet(edgeSet);
+		
+		return model;
 	}
 
 	public void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
