@@ -4,6 +4,8 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +35,8 @@ public class PrecedenceGraph implements TimeMeasurable {
 	protected Map<PrecedenceNode, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
 	protected Map<Object, Collection<PrecedenceNode>> requiredBy = cfactory.createObjectToObjectHashMap();
 	protected Map<PrecedenceNode, Collection<Object>> translates = cfactory.createObjectToObjectHashMap();
-	protected Map<Object, Collection<PrecedenceNode>> translatedBy = cfactory.createObjectToObjectHashMap();
+//	protected Map<Object, Collection<PrecedenceNode>> translatedBy = cfactory.createObjectToObjectHashMap();
+	protected Map<Object, Collection<PrecedenceNode>> translatedBy = Collections.synchronizedMap(new HashMap<>());
 
 	//// Precedence Graph ////
 	protected Set<PrecedenceNode> nodes = cfactory.createObjectSet();
@@ -357,7 +360,11 @@ public class PrecedenceGraph implements TimeMeasurable {
 	}
 
 	private void killRedundantSrcTrgMatches(ITGGMatch match) {
-		SrcTrgMatchContainer srcTrgMatches = consMatch2srcTrgMatches.computeIfAbsent(match, m -> generateSrcTrgMatches(match));
+		if(!consMatch2srcTrgMatches.containsKey(match)) {
+			consMatch2srcTrgMatches.put(match, generateSrcTrgMatches(match));
+		}
+//		SrcTrgMatchContainer srcTrgMatches = consMatch2srcTrgMatches.computeIfAbsent(match, m -> generateSrcTrgMatches(match));
+		SrcTrgMatchContainer srcTrgMatches = consMatch2srcTrgMatches.get(match);
 
 		PrecedenceNode srcNode = match2node.get(srcTrgMatches.srcMatch);
 		if (srcNode != null) {
