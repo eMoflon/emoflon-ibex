@@ -65,16 +65,11 @@ class JavaFileGenerator {
 			'org.eclipse.emf.ecore.resource.ResourceSet',
 			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI',
-			'org.emoflon.ibex.gt.api.GraphTransformationPattern',		
-			'java.util.Optional',
+			'org.emoflon.ibex.gt.api.GraphTransformationPattern',
 			'java.util.Map',
 			'java.util.function.Supplier',
-			'java.util.Random',
 			'org.emoflon.ibex.gt.api.GraphTransformationRule',
-			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
-			'java.util.HashMap',
-			'java.util.Map.Entry',
-			'org.emoflon.ibex.gt.arithmetic.Probability'
+			'java.util.HashMap'
 		)
 		
 		val rulePreconditions = new HashSet
@@ -107,17 +102,6 @@ class JavaFileGenerator {
 			public class «APIClassName» extends GraphTransformationAPI {
 				
 				public static String patternPath = "«patternPath»";
-				
-				/**
-				 * Map with all the rules and patterns of the model
-				 */
-				private Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> patternMap;
-				
-				/*
-				 *Map with all the rules that can be applied to Gillespie and their probabilities;
-				 * array[0] is the probability; array[1] is probability*matchCount
-				 */
-				private Map<GraphTransformationRule<?,?>, double[]> gillespieMap;
 			
 				/**
 				 * Creates a new «APIClassName».
@@ -160,7 +144,8 @@ class JavaFileGenerator {
 					gillespieMap = initiateGillespieMap();
 				}
 				
-				private Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> initiatePatternMap(){
+				@Override
+				protected Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> initiatePatternMap(){
 					Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> map = new HashMap<>();
 					«FOR rule: ibexModel.ruleSet.rules»
 					«IF rule.parameters.empty»
@@ -177,7 +162,8 @@ class JavaFileGenerator {
 					return map;
 				}
 				
-				private Map<GraphTransformationRule<?,?>, double[]> initiateGillespieMap(){
+				@Override
+				protected Map<GraphTransformationRule<?,?>, double[]> initiateGillespieMap(){
 					Map<GraphTransformationRule<?,?>, double[]> map = 
 						new HashMap<>();
 					«FOR rule: ibexModel.ruleSet.rules»
@@ -189,59 +175,6 @@ class JavaFileGenerator {
 					«ENDIF»
 					«ENDFOR»
 					return map;
-				}
-				 
-				/**
-				 * Returns the probability that the rule will be applied with the
-				 * Gillespie algorithm; only works if the rules do not have parameters and the
-				 * probability is static
-				 */
-				public double getGillespieProbability(GraphTransformationRule<?,?> rule){
-					if(gillespieMap.containsKey(rule)){
-						double totalActivity = getTotalSystemActivity();
-						if(totalActivity > 0){
-							return gillespieMap.get(rule)[1]/totalActivity;	
-						}								
-					}
-					return 0;
-				}
-				
-				/**
-				 * Applies a rule to the graph after the Gillerspie algorithm;
-				 * only rules that do not have parameters are counted
-				 * @return an {@link Optional} for the the match after rule application
-				 */
-				@SuppressWarnings("unchecked")
-				public final Optional<GraphTransformationMatch<?,?>> applyGillespie(){
-					double totalActivity = getTotalSystemActivity();
-					if(totalActivity != 0){
-						Random rnd = new Random();
-						double randomValue = totalActivity*rnd.nextDouble();
-						double currentActivity = 0;
-						for(Entry<GraphTransformationRule<?,?>, double[]> entries : gillespieMap.entrySet()){
-						currentActivity += entries.getValue()[1];
-							if(currentActivity >= randomValue){
-								return (Optional<GraphTransformationMatch<?, ?>>)entries.getKey().apply();
-							}						
-						}
-					}
-					return Optional.empty();
-				}
-				
-				/**
-				 * Helper method for the Gillespie algorithm; counts all the possible matches
-				 * for rules in the graph that have a static probability
-				 */
-				private double getTotalSystemActivity(){
-					 gillespieMap.forEach((v,z) -> {
-					 	z[0] =((Probability<?,?>) v.getProbability().get()).getProbability();
-						 z[1] = v.countMatches()*z[0];
-						});
-					double totalActivity = 0;
-					for(double[] activity : gillespieMap.values()) {
-						totalActivity += activity[1];
-					}
-					return totalActivity;
 				}
 								
 				«FOR rule : ibexModel.ruleSet.rules»
@@ -268,12 +201,6 @@ class JavaFileGenerator {
 							return new «getPatternClassName(pattern)»(this, interpreter«FOR parameter : getPatternParameter(pattern) BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
 						}
 						«ENDFOR»
-				/**
-			 	* returns all the patterns and rules of the model that do not need an input parameter
-			 	*/
-				public Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> getAllPatterns(){
-					return patternMap;
-				}
 			}
 		'''
 		writeFile(apiPackage.getFile(APIClassName + '.java'), apiSourceCode)

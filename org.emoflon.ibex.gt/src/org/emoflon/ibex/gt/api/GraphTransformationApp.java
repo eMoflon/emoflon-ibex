@@ -125,7 +125,7 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	/**
 	 * Add the meta-models to the package registry.
 	 */
-	protected abstract void registerMetaModels();
+	public abstract void registerMetaModels();
 
 	/**
 	 * Registers the given EPackage as a meta-model.
