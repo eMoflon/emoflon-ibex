@@ -568,7 +568,7 @@ class JavaFileGenerator {
 			'java.util.stream.Stream',
 			'java.util.Optional',
 			'org.emoflon.ibex.common.operational.IMatch',
-			'''org.emoflon.ibex.gt.api.GraphTransformationPattern''',
+			'org.emoflon.ibex.gt.api.GraphTransformationPattern',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'''«getSubPackageName('api')».«APIClassName»''',
 			'''«getSubPackageName('api.matches')».«getMatchClassName(pattern)»'''
@@ -702,7 +702,7 @@ class JavaFileGenerator {
 	 */
 	def getProbabilityImports(IBeXRule rule){
 		val imports = new HashSet<String>()
-		imports.add(
+		imports.addAll(
 			'org.emoflon.ibex.gt.arithmetic.Probability'
 		)
 		if(rule.probability === null){

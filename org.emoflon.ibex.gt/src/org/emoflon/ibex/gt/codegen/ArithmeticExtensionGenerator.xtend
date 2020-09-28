@@ -77,6 +77,11 @@ class ArithmeticExtensionGenerator {
 			}
 			
 			@Override
+			public double getProbabilityGeneric(GraphTransformationMatch<?, ?> match){
+				return getProbability((«getMatchClassName(rule)»)match);
+			}
+			
+			@Override
 			public double getProbability(){
 				return 0;
 			}
@@ -320,6 +325,7 @@ class ArithmeticExtensionGenerator {
 		val imports = new HashSet<String>()
 		imports.addAll(
 			'org.emoflon.ibex.gt.arithmetic.Probability',
+			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
 			'''«getSubPackageName('api.matches')».«getMatchClassName(rule)»''',
 			'''«getSubPackageName('api.rules')».«getRuleClassName(rule)»'''
 			

@@ -16,6 +16,8 @@ public interface Probability<M extends GraphTransformationMatch<M, P>, P extends
 	 */
 	public double getProbability(M match);
 	
+	public double getProbabilityGeneric(GraphTransformationMatch<?, ?> match);
+	
 	/**
 	 * calculates the probability that the rule will be applied; this method should only be used by
 	 * static methods, with runtime-depended probabilities it will return 0

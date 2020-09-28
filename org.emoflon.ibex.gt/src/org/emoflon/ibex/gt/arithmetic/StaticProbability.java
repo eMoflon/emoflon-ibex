@@ -32,6 +32,11 @@ public class StaticProbability<M extends GraphTransformationMatch<M, P>, P exten
 		return getProbability();
 	}
 	
+	@Override
+	public double getProbabilityGeneric(GraphTransformationMatch<?, ?> match) {
+		return getProbability();
+	}
+	
 	/**
 	 * calculates the probability based on the normal distribution
 	 * 
@@ -88,4 +93,5 @@ public class StaticProbability<M extends GraphTransformationMatch<M, P>, P exten
 			default: 			return 1.0;
 		}
 	}
+
 }
