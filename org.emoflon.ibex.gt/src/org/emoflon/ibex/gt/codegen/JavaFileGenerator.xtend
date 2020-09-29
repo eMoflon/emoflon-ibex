@@ -149,14 +149,14 @@ class JavaFileGenerator {
 					Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> map = new HashMap<>();
 					«FOR rule: ibexModel.ruleSet.rules»
 					«IF rule.parameters.empty»
-					map.put("«getRuleClassName(rule)»", () -> «rule.name»());
+					map.put("«rule.name»", () -> «rule.name»());
 					«ENDIF»
 					«ENDFOR»
 					«FOR pattern: ibexModel.patternSet.contextPatterns
 						.filter [ pattern | !rulePreconditions.contains(pattern)]
 						.filter [ pattern | !pattern.name.contains("CONDITION")]»
 					«IF getPatternParameter(pattern).empty»
-					map.put("«getPatternClassName(pattern)»", () -> «pattern.name»());
+					map.put("«pattern.name»", () -> «pattern.name»());
 					«ENDIF»
 					«ENDFOR»
 					return map;
