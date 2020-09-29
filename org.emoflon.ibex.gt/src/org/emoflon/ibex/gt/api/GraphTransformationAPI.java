@@ -1,9 +1,16 @@
 package org.emoflon.ibex.gt.api;
 
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.Supplier;
+
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.PushoutApproach;
+import org.emoflon.ibex.gt.arithmetic.Probability;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 
@@ -34,6 +41,17 @@ public abstract class GraphTransformationAPI {
 	protected PushoutApproach defaultPushoutApproach = PushoutApproach.SPO;
 
 	/**
+	 * 	Map with all the rules and patterns of the model
+	 */
+	protected Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> patternMap;
+	
+	/**
+	 *	Map with all the rules that can be applied to Gillespie and their probabilities;
+	 * 	array[0] is the probability; array[1] is probability*matchCount
+	 */
+	protected Map<GraphTransformationRule<?,?>, double[]> gillespieMap;
+	
+	/**
 	 * Creates a new GraphTransformationAPI for given engine and resource set.
 	 * 
 	 * @param engine
@@ -59,6 +77,10 @@ public abstract class GraphTransformationAPI {
 			final Resource defaultResource) {
 		this.interpreter = new GraphTransformationInterpreter(engine, model, defaultResource);
 	}
+	
+	protected abstract Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> initiatePatternMap();
+	
+	protected abstract Map<GraphTransformationRule<?,?>, double[]> initiateGillespieMap();
 
 	/**
 	 * Returns the resource set opened for transformations with the API.
@@ -74,6 +96,70 @@ public abstract class GraphTransformationAPI {
 	 */
 	public final void updateMatches() {
 		interpreter.updateMatches();
+	}
+	
+	/**
+ 	* returns all the patterns and rules of the model that do not need an input parameter
+ 	*/
+	public Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> getAllPatterns(){
+		return patternMap;
+	}
+	
+	public GraphTransformationPattern<?,?> getPattern(String patternName) {
+		return patternMap.get(patternName).get();
+	}
+	
+	/**
+	 * Helper method for the Gillespie algorithm; counts all the possible matches
+	 * for rules in the graph that have a static probability
+	 */
+	public double getTotalSystemActivity(){
+		 gillespieMap.forEach((v,z) -> {
+		 	z[0] =((Probability<?,?>) v.getProbability().get()).getProbability();
+			 z[1] = v.countMatches()*z[0];
+			});
+		double totalActivity = 0;
+		for(double[] activity : gillespieMap.values()) {
+			totalActivity += activity[1];
+		}
+		return totalActivity;
+	}
+	
+	/**
+	 * Returns the probability that the rule will be applied with the
+	 * Gillespie algorithm; only works if the rules do not have parameters and the
+	 * probability is static
+	 */
+	public double getGillespieProbability(GraphTransformationRule<?,?> rule){
+		if(gillespieMap.containsKey(rule)){
+			double totalActivity = getTotalSystemActivity();
+			if(totalActivity > 0){
+				return gillespieMap.get(rule)[1]/totalActivity;	
+			}								
+		}
+		return 0;
+	}
+	
+	/**
+	 * Applies a rule to the graph after the Gillerspie algorithm;
+	 * only rules that do not have parameters are counted
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	@SuppressWarnings("unchecked")
+	public final Optional<GraphTransformationMatch<?,?>> applyGillespie(){
+		double totalActivity = getTotalSystemActivity();
+		if(totalActivity != 0){
+			Random rnd = new Random();
+			double randomValue = totalActivity*rnd.nextDouble();
+			double currentActivity = 0;
+			for(Entry<GraphTransformationRule<?,?>, double[]> entries : gillespieMap.entrySet()){
+			currentActivity += entries.getValue()[1];
+				if(currentActivity >= randomValue){
+					return (Optional<GraphTransformationMatch<?, ?>>)entries.getKey().apply();
+				}						
+			}
+		}
+		return Optional.empty();
 	}
 
 	/**
