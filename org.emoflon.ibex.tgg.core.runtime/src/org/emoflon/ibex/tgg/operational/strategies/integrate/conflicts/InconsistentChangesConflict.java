@@ -23,7 +23,7 @@ public abstract class InconsistentChangesConflict extends Conflict implements CR
 	@Override
 	protected Set<ITGGMatch> initConflictMatches() {
 		Set<ITGGMatch> matches = new HashSet<>();
-		matches.add(getBrokenMatch().getMatch());
+		matches.add(getMatch());
 		return matches;
 	}
 

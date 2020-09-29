@@ -51,8 +51,8 @@ public abstract class Conflict {
 
 	abstract protected Set<ITGGMatch> initScopeMatches();
 
-	public BrokenMatch getBrokenMatch() {
-		return container.getBrokenMatch();
+	public ITGGMatch getMatch() {
+		return container.getMatch();
 	}
 
 	public Set<ITGGMatch> getConflictMatches() {
@@ -201,22 +201,22 @@ public abstract class Conflict {
 		ShortcutRule shortcutRule = repairableMatch.opSCR.getOriginalScRule();
 
 		Set<EObject> deletedNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), revertedDomain, BindingType.DELETE).stream() //
-				.map(n -> (EObject) getBrokenMatch().getMatch().get(n.getName())) //
+				.map(n -> (EObject) getMatch().get(n.getName())) //
 				.collect(Collectors.toSet());
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
 		TGGFilterUtil.filterEdges(shortcutRule.getEdges(), revertedDomain, BindingType.DELETE).stream() //
-				.map(e -> TGGEdgeUtil.getRuntimeEdge(getBrokenMatch().getMatch(), e)) //
+				.map(e -> TGGEdgeUtil.getRuntimeEdge(getMatch(), e)) //
 				.forEach(e -> {
 					if (e.getType().isContainment())
 						deletedContainmentEdges.add(e);
 					else
 						deletedCrossEdges.add(e);
 				});
-		integrate().getMatchUtil().getEMFEdges(getBrokenMatch().getMatch(), new EltFilter().corr().create()).stream() //
+		integrate().getMatchUtil().getEMFEdges(getMatch(), new EltFilter().corr().create()).stream() //
 				.filter(e -> deletedNodes.contains(e.getTarget())) //
 				.forEach(e -> deletedCrossEdges.add(e));
-		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(getBrokenMatch().getMatch());
+		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(getMatch());
 		integrate().getGeneralModelChanges().getDeletedEdges(ruleApplication).stream() //
 				.filter(e -> deletedNodes.contains(e.getTarget())) //
 				.forEach(e -> deletedCrossEdges.add(e));
@@ -236,8 +236,7 @@ public abstract class Conflict {
 	}
 
 	protected String printConflictIdentification() {
-		return this.getClass().getSimpleName() + " at match " + getBrokenMatch().getMatch().getPatternName() //
-				+ "(" + getBrokenMatch().getMatch().hashCode() + ")";
+		return this.getClass().getSimpleName() + " at match " + getMatch().getPatternName() + "(" + getMatch().hashCode() + ")";
 	}
 
 }

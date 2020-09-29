@@ -43,7 +43,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		Set<ITGGMatch> matches = new HashSet<>();
 		matches.addAll(causingMatches);
 		matches.remove(causingMatches.get(0));
-		integrate().getPrecedenceGraph().getNode(getBrokenMatch().getMatch()).forAllRequiredBy((act, pre) -> matches.add(act.getMatch()));
+		integrate().getPrecedenceGraph().getNode(getMatch()).forAllRequiredBy((act, pre) -> matches.add(act.getMatch()));
 		return matches;
 	}
 
@@ -55,7 +55,7 @@ public abstract class DeletePreserveConflict extends Conflict
 
 	@Override
 	public void crs_mergeAndPreserve() {
-		MatchAnalysis analysis = integrate().getMatchUtil().getAnalysis(getBrokenMatch().getMatch());
+		MatchAnalysis analysis = integrate().getMatchUtil().getAnalysis(getMatch());
 
 		causingMatches.forEach(m -> restoreMatch(integrate().getClassifiedBrokenMatches().get(m)));
 
