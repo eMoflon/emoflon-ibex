@@ -23,6 +23,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreser
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePreserveConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsDomainChangesConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.OperationalMultiplicityConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.MultiplicityCounter.OutgoingEdge;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
@@ -295,11 +296,12 @@ public class ConflictDetector {
 		for (ITGGMatch fwdBwdMatch : Sets.difference(cachedAddedFwdBwdMatches, actFwdBwdMatches))
 			multiplicityCounter.removeMatch(fwdBwdMatch);
 
-		multiplicityCounter.getObject2reference2numOfEdges().forEach((obj, ref2numOfEdges) -> {
+		// detect conflicts
+		multiplicityCounter.getSubject2reference2numOfEdges().forEach((subj, ref2numOfEdges) -> {
 			ref2numOfEdges.forEach((ref, numOfEdges) -> {
 				if (multiplicityCounter.violatesMultiplicity(ref, numOfEdges)) {
 					ITGGMatch underlyingMatch = null;
-					for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(obj)) {
+					for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(subj)) {
 						if (node.getMatch().getType() == PatternType.CONSISTENCY) {
 							underlyingMatch = node.getMatch();
 							break;
@@ -313,7 +315,10 @@ public class ConflictDetector {
 					ConflictContainer container = match2conflictContainer.computeIfAbsent(underlyingMatch, //
 							key -> new ConflictContainer(integrate, tmpUnderlyingMatch));
 
-					new OperationalMultiplicityConflict(container, obj, ref, Collections.emptySet()); // TODO add violating matches
+					Set<ITGGMatch> violatingMatches = multiplicityCounter.getOutgoingEdge2matches() //
+							.getOrDefault(new OutgoingEdge(subj, ref), Collections.emptySet());
+
+					new OperationalMultiplicityConflict(container, subj, ref, violatingMatches);
 				}
 			});
 		});

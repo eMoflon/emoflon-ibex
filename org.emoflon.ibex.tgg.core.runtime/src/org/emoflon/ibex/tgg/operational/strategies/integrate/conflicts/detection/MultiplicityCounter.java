@@ -2,10 +2,13 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detectio
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -28,14 +31,17 @@ public class MultiplicityCounter {
 	private Map<String, Map<String, List<EReference>>> ruleName2contextNodeName2references;
 
 	/**
-	 * Stores for every object and its references the current number of outgoing edges. We
+	 * Stores for every subject and its references the current number of outgoing edges. We
 	 * only consider entries that can potentially be affected by multiplicity violations.
 	 */
-	private Map<EObject, Map<EReference, Integer>> object2reference2numOfEdges;
+	private Map<EObject, Map<EReference, Integer>> subject2reference2numOfEdges;
+
+	private Map<OutgoingEdge, Set<ITGGMatch>> outgoingEdge2matches;
 
 	public MultiplicityCounter(Collection<TGGRule> tggRules) {
 		ruleName2contextNodeName2references = new HashMap<>();
-		object2reference2numOfEdges = new HashMap<>();
+		subject2reference2numOfEdges = new HashMap<>();
+		outgoingEdge2matches = new HashMap<>();
 
 		for (TGGRule rule : tggRules) {
 			for (TGGRuleEdge greenEdge : TGGFilterUtil.filterEdges(rule.getEdges(), BindingType.CREATE)) {
@@ -47,11 +53,37 @@ public class MultiplicityCounter {
 						storeReference(rule, greenEdge.getSrcNode(), greenEdge.getType());
 				}
 
-				if (greenEdge.getTrgNode().getBindingType() == BindingType.CONTEXT && greenEdge.getType().getEOpposite() != null) {
-					if (isViolableReference(greenEdge.getType().getEOpposite()))
-						storeReference(rule, greenEdge.getTrgNode(), greenEdge.getType().getEOpposite());
-				}
+				// only needed, if in the future TGG rules may contain no opposite edges anymore
+//				if (greenEdge.getTrgNode().getBindingType() == BindingType.CONTEXT && greenEdge.getType().getEOpposite() != null) {
+//					if (isViolableReference(greenEdge.getType().getEOpposite()))
+//						storeReference(rule, greenEdge.getTrgNode(), greenEdge.getType().getEOpposite());
+//				}
 			}
+		}
+	}
+
+	public static class OutgoingEdge {
+		public final EObject subject;
+		public final EReference reference;
+
+		public OutgoingEdge(EObject subject, EReference reference) {
+			this.subject = subject;
+			this.reference = reference;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(reference, subject);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!(obj instanceof OutgoingEdge))
+				return false;
+			OutgoingEdge other = (OutgoingEdge) obj;
+			return Objects.equals(reference, other.reference) && Objects.equals(subject, other.subject);
 		}
 	}
 
@@ -62,14 +94,16 @@ public class MultiplicityCounter {
 			return;
 
 		for (Entry<String, List<EReference>> entry : contextNode2ref.entrySet()) {
-			EObject object = (EObject) match.get(entry.getKey());
+			EObject subject = (EObject) match.get(entry.getKey());
 
-			if (object == null)
+			if (subject == null)
 				throw new RuntimeException("Node must exist in match!");
 
-			Map<EReference, Integer> reference2numOfEdges = object2reference2numOfEdges.computeIfAbsent(object, k -> new HashMap<>());
-			for (EReference ref : entry.getValue())
+			Map<EReference, Integer> reference2numOfEdges = subject2reference2numOfEdges.computeIfAbsent(subject, k -> new HashMap<>());
+			for (EReference ref : entry.getValue()) {
 				reference2numOfEdges.compute(ref, (k, v) -> v == null ? 1 : v + 1);
+				outgoingEdge2matches.computeIfAbsent(new OutgoingEdge(subject, ref), k -> new HashSet<>()).add(match);
+			}
 		}
 	}
 
@@ -80,16 +114,20 @@ public class MultiplicityCounter {
 			return;
 
 		for (Entry<String, List<EReference>> entry : contextNode2ref.entrySet()) {
-			EObject object = (EObject) match.get(entry.getKey());
+			EObject subject = (EObject) match.get(entry.getKey());
 
-			if (object == null)
+			if (subject == null)
 				throw new RuntimeException("MultiplicityCounter: node must exist in match!");
 
-			Map<EReference, Integer> reference2numOfEdges = object2reference2numOfEdges.get(object);
+			Map<EReference, Integer> reference2numOfEdges = subject2reference2numOfEdges.get(subject);
 			for (EReference ref : entry.getValue()) {
 				if (reference2numOfEdges.get(ref) == 0)
 					throw new IllegalStateException("Number of edges cannot be decreased, when it already is 0!");
 				reference2numOfEdges.compute(ref, (k, v) -> v - 1);
+				
+				Set<ITGGMatch> matches = outgoingEdge2matches.get(new OutgoingEdge(subject, ref));
+				if(matches != null)
+					matches.remove(match);
 			}
 		}
 	}
@@ -115,8 +153,12 @@ public class MultiplicityCounter {
 		return false;
 	}
 
-	public Map<EObject, Map<EReference, Integer>> getObject2reference2numOfEdges() {
-		return object2reference2numOfEdges;
+	public Map<EObject, Map<EReference, Integer>> getSubject2reference2numOfEdges() {
+		return subject2reference2numOfEdges;
+	}
+
+	public Map<OutgoingEdge, Set<ITGGMatch>> getOutgoingEdge2matches() {
+		return outgoingEdge2matches;
 	}
 
 }
