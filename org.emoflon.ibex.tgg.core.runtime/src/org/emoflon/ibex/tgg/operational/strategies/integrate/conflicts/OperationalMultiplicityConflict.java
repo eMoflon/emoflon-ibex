@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
@@ -48,13 +50,25 @@ public class OperationalMultiplicityConflict extends Conflict implements CRS_Pre
 
 	@Override
 	public void crs_preferSource() {
-		// TODO implement
+		for (ITGGMatch match : violatingMatches) {
+			if (match.getType() != PatternType.BWD)
+				continue;
+			revokeMatch(match);
+		}
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
 	}
 
 	@Override
 	public void crs_preferTarget() {
-		// TODO implement
+		for (ITGGMatch match : violatingMatches) {
+			if (match.getType() != PatternType.FWD)
+				continue;
+			revokeMatch(match);
+		}
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;
 	}
 

@@ -10,8 +10,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy.RepairableMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
@@ -149,6 +151,95 @@ public abstract class Conflict {
 		recreateElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);
 	}
 
+	protected void revokeMatch(ITGGMatch match) {
+		Set<EObject> deletedNodes = null;
+		Set<EMFEdge> deletedContainmentEdges = null;
+		Set<EMFEdge> deletedCrossEdges = null;
+
+		switch (match.getType()) {
+		case FWD:
+		case SRC:
+			IGreenPattern fwdPattern = integrate().getGreenFactory(match.getRuleName()).create(PatternType.FWD);
+			deletedNodes = fwdPattern.getNodesMarkedByPattern().stream() //
+					.map(n -> (EObject) match.get(n.getName())) //
+					.collect(Collectors.toSet());
+			deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
+			deletedCrossEdges = fwdPattern.getEdgesMarkedByPattern().stream() //
+					.filter(e -> !e.getType().isContainment()) //
+					.map(e -> TGGEdgeUtil.getRuntimeEdge(match, e)) //
+					.collect(Collectors.toSet());
+			break;
+		case BWD:
+		case TRG:
+			IGreenPattern bwdPattern = integrate().getGreenFactory(match.getRuleName()).create(PatternType.BWD);
+			deletedNodes = bwdPattern.getNodesMarkedByPattern().stream() //
+					.map(n -> (EObject) match.get(n.getName())) //
+					.collect(Collectors.toSet());
+			deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
+			deletedCrossEdges = bwdPattern.getEdgesMarkedByPattern().stream() //
+					.filter(e -> !e.getType().isContainment()) //
+					.map(e -> TGGEdgeUtil.getRuntimeEdge(match, e)) //
+					.collect(Collectors.toSet());
+			break;
+		case CONSISTENCY:
+			EltFilter filter = new EltFilter().create();
+			deletedNodes = integrate().getMatchUtil().getObjects(match, filter);
+			deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
+			deletedCrossEdges = integrate().getMatchUtil().getEMFEdgeStream(match, filter) //
+					.filter(e -> !e.getType().isContainment()) //
+					.collect(Collectors.toSet());
+			TGGRuleApplication ra = integrate().getRuleApplicationNode(match);
+			ra.eClass().getEAllReferences().forEach(r -> ra.eSet(r, null));
+			ra.eResource().getContents().remove(ra);
+			break;
+		default:
+			deletedNodes = Collections.emptySet();
+			deletedContainmentEdges = Collections.emptySet();
+			deletedCrossEdges = Collections.emptySet();
+			break;
+		}
+
+		revokeElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);
+	}
+
+	protected void revertRepairable(RepairableMatch repairableMatch, DomainType revertedDomain) {
+		ShortcutRule shortcutRule = repairableMatch.opSCR.getOriginalScRule();
+
+		Set<EObject> deletedNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), revertedDomain, BindingType.DELETE).stream() //
+				.map(n -> (EObject) getMatch().get(n.getName())) //
+				.collect(Collectors.toSet());
+		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
+		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
+		TGGFilterUtil.filterEdges(shortcutRule.getEdges(), revertedDomain, BindingType.DELETE).stream() //
+				.map(e -> TGGEdgeUtil.getRuntimeEdge(getMatch(), e)) //
+				.forEach(e -> {
+					if (e.getType().isContainment())
+						deletedContainmentEdges.add(e);
+					else
+						deletedCrossEdges.add(e);
+				});
+		integrate().getMatchUtil().getEMFEdges(getMatch(), new EltFilter().corr().create()).stream() //
+				.filter(e -> deletedNodes.contains(e.getTarget())) //
+				.forEach(e -> deletedCrossEdges.add(e));
+		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(getMatch());
+		integrate().getGeneralModelChanges().getDeletedEdges(ruleApplication).stream() //
+				.filter(e -> deletedNodes.contains(e.getTarget())) //
+				.forEach(e -> deletedCrossEdges.add(e));
+
+		recreateElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);
+
+		Set<EObject> createdNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), revertedDomain, BindingType.CREATE).stream() //
+				.map(n -> (EObject) repairableMatch.scMatch.get(n.getName())) //
+				.collect(Collectors.toSet());
+		Set<EMFEdge> createdCrossEdges = TGGFilterUtil.filterEdges(shortcutRule.getEdges(), revertedDomain, BindingType.CREATE).stream() //
+				.map(e -> TGGEdgeUtil.getRuntimeEdge(repairableMatch.scMatch, e)) //
+				.filter(e -> !e.getType().isContainment()) //
+				.filter(e -> !e.getType().isContainer()) //
+				.collect(Collectors.toSet());
+
+		revokeElements(createdNodes, Collections.emptySet(), createdCrossEdges);
+	}
+
 	protected void recreateElements(Collection<EObject> nodes, Collection<EMFEdge> containmentEdges, Collection<EMFEdge> crossEdges) {
 		// used to eliminate opposite edges
 		Set<EReference> processedRefs = new HashSet<>();
@@ -195,44 +286,6 @@ public abstract class Conflict {
 			if (isBidirectional)
 				processedRefs.add(edge.getType());
 		});
-	}
-
-	protected void revertRepairable(RepairableMatch repairableMatch, DomainType revertedDomain) {
-		ShortcutRule shortcutRule = repairableMatch.opSCR.getOriginalScRule();
-
-		Set<EObject> deletedNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), revertedDomain, BindingType.DELETE).stream() //
-				.map(n -> (EObject) getMatch().get(n.getName())) //
-				.collect(Collectors.toSet());
-		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
-		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
-		TGGFilterUtil.filterEdges(shortcutRule.getEdges(), revertedDomain, BindingType.DELETE).stream() //
-				.map(e -> TGGEdgeUtil.getRuntimeEdge(getMatch(), e)) //
-				.forEach(e -> {
-					if (e.getType().isContainment())
-						deletedContainmentEdges.add(e);
-					else
-						deletedCrossEdges.add(e);
-				});
-		integrate().getMatchUtil().getEMFEdges(getMatch(), new EltFilter().corr().create()).stream() //
-				.filter(e -> deletedNodes.contains(e.getTarget())) //
-				.forEach(e -> deletedCrossEdges.add(e));
-		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(getMatch());
-		integrate().getGeneralModelChanges().getDeletedEdges(ruleApplication).stream() //
-				.filter(e -> deletedNodes.contains(e.getTarget())) //
-				.forEach(e -> deletedCrossEdges.add(e));
-
-		recreateElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);
-
-		Set<EObject> createdNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), revertedDomain, BindingType.CREATE).stream() //
-				.map(n -> (EObject) repairableMatch.scMatch.get(n.getName())) //
-				.collect(Collectors.toSet());
-		Set<EMFEdge> createdCrossEdges = TGGFilterUtil.filterEdges(shortcutRule.getEdges(), revertedDomain, BindingType.CREATE).stream() //
-				.map(e -> TGGEdgeUtil.getRuntimeEdge(repairableMatch.scMatch, e)) //
-				.filter(e -> !e.getType().isContainment()) //
-				.filter(e -> !e.getType().isContainer()) //
-				.collect(Collectors.toSet());
-
-		revokeElements(createdNodes, Collections.emptySet(), createdCrossEdges);
 	}
 
 	protected String printConflictIdentification() {

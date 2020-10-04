@@ -295,6 +295,11 @@ public class ConflictDetector {
 			multiplicityCounter.addMatch(fwdBwdMatch);
 		for (ITGGMatch fwdBwdMatch : Sets.difference(cachedAddedFwdBwdMatches, actFwdBwdMatches))
 			multiplicityCounter.removeMatch(fwdBwdMatch);
+		cachedAddedFwdBwdMatches = new HashSet<>(actFwdBwdMatches);
+
+		// TODO adrianm: revert deletions to get additional FWD/BWD matches, which are required to
+		// detect all conflicts -> not needed, since in the multiplicity counter we also cover
+		// consistency matches
 
 		// detect conflicts
 		multiplicityCounter.getSubject2reference2numOfEdges().forEach((subj, ref2numOfEdges) -> {
