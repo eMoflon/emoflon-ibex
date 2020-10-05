@@ -33,21 +33,13 @@ import language.TGGRuleNode;
 
 public class SplitUpPatternTransformation extends OperationalPatternTransformation{
 	
-	protected ContextPatternTransformation parent;
-	protected IbexOptions options;
-	protected TGGRule rule;
 	protected DomainType domain;
-	protected FilterNACAnalysis filterNACAnalysis;
 	
-	LinkedList<TGGRuleNode> patternNodes = new LinkedList<TGGRuleNode>();
-	LinkedList<TGGRuleEdge> patternEdges = new LinkedList<TGGRuleEdge>();
+	private LinkedList<TGGRuleNode> patternNodes = new LinkedList<TGGRuleNode>();
+	private LinkedList<TGGRuleEdge> patternEdges = new LinkedList<TGGRuleEdge>();
 	
 	public SplitUpPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
 		super(parent, options, rule, filterNACAnalysis);
-		this.parent = parent;
-		this.options = options;
-		this.rule = rule;
-		this.filterNACAnalysis = filterNACAnalysis;
 	}
 	
 	public IBeXContextPattern createPatternByBindingAndDomain(BindingType binding, DomainType domain, String name) {
@@ -56,9 +48,9 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 		LinkedList<? extends TGGRuleEdge> ruleEdgesByOperatorAndDomain = new LinkedList<TGGRuleEdge>(getEdgesByOperatorAndDomain(rule, binding, domain));
 		Optional<IBeXContextPattern> pattern = transform(ruleNodesByOperatorAndDomain, ruleEdgesByOperatorAndDomain, name);
 		if(pattern.isPresent()) {
-			// Transform NACs
-			transformNACs(pattern.get());
-			parent.addContextPattern(pattern.get());
+//			// Transform NACs
+//			transformNACs(pattern.get());
+			parent.addContextPattern(pattern.get(), rule);
 		}
 		return pattern.get();
 	}
@@ -69,9 +61,9 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 		LinkedList<? extends TGGRuleEdge> ruleEdgesByDomain = new LinkedList<TGGRuleEdge>(getEdgesByDomain(rule, domain));
 		Optional<IBeXContextPattern> pattern = transform(ruleNodesByDomain, ruleEdgesByDomain, name);
 		if(pattern.isPresent()) {
-			// Transform NACs
-			transformNACs(pattern.get());
-			parent.addContextPattern(pattern.get());
+//			// Transform NACs
+//			transformNACs(pattern.get());
+			parent.addContextPattern(pattern.get(), rule);
 		}
 		return pattern.get();
 	}
@@ -179,7 +171,8 @@ public class SplitUpPatternTransformation extends OperationalPatternTransformati
 		else patternName = ruleName + "_" + patternCounter + suffixe;
 		graphIterator(nodes, edges);
 		Optional<IBeXContextPattern> pattern = transform(patternNodes, patternEdges, patternName);
-		pattern.ifPresent(parent::addContextPattern);
+		if(pattern.isPresent())
+			parent.addContextPattern(pattern.get(), rule);
 		if((nodes.size() == 1 && edges.isEmpty()) || (nodes.isEmpty() && edges.size() == 1))
 			return;
 		patternEdges.clear();

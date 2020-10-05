@@ -50,36 +50,41 @@ public class PACAnalysis extends FilterNACAnalysis {
 						continue;
 					
 					List<TGGRule> savingRules = determineSavingRules(domain, eType, eDirection, tgg);
-					PACCandidate pacCandidate = null;
-					if(savingRules.isEmpty())
-						pacCandidate = new PACCandidate(new FilterNACCandidate(n, eType, eDirection));
+					if(savingRules.isEmpty()) {
+						PACCandidate pacCandidate = new PACCandidate(n, eType, eDirection, domain);
+						pacCandidates.add(pacCandidate);
+					}
 					else {
-						if(nodeAndEdgeAreMarkedInOtherRule(n, eType, eDirection))
+						PACCandidate pacCandidate = null;
+						if(nodeAndEdgeAreMarkedInOtherRule(n, eType, eDirection, rule)) {
 							for(TGGRule savingRule : savingRules) {
 								for(TGGRuleEdge edge : savingRule.getEdges()) {
-									if(edge.getType().equals(eType) && edge.getBindingType().equals(BindingType.CREATE) && edge.getSrcNode().getBindingType().equals(BindingType.CONTEXT) && edge.getTrgNode().getBindingType().equals(BindingType.CONTEXT)) {
+									if(edge.getType().equals(eType) && edge.getBindingType().equals(BindingType.CREATE) && ((eDirection.equals(EdgeDirection.OUTGOING) && edge.getSrcNode().getBindingType().equals(BindingType.CONTEXT)) || (eDirection.equals(EdgeDirection.INCOMING) && edge.getTrgNode().getBindingType().equals(BindingType.CONTEXT)))) {
 										if(pacCandidate == null)
-											pacCandidate = new PACCandidate(new FilterNACCandidate(n, eType, eDirection));
+											pacCandidate = new PACCandidate(n, eType, eDirection, domain);
 								 			pacCandidate.addConclusionRule(new ConclusionRule(savingRule, eDirection == EdgeDirection.INCOMING ? edge.getTrgNode() : edge.getSrcNode()));
 									}
 								}
 							}
 						}
-					if(pacCandidate != null)
-						pacCandidates.add(pacCandidate);
+						if(pacCandidate != null)
+							pacCandidates.add(pacCandidate);
+					}
 				}
 			}
 		}
 		
-		final Collection<PACCandidate> optimisedPACs = pacCandidates.stream().filter(pac -> !isRedundantDueToEMFContainmentSemantics(rule, pac.getPremise())).collect(Collectors.toList());
+		final Collection<PACCandidate> optimisedPACs = pacCandidates.stream().filter(pac -> !isRedundantDueToEMFContainmentSemantics(rule, pac)).collect(Collectors.toList());
 		
 		optimisedPACs.removeAll(ignoreDueToEOppositeSemantics(pacCandidates));
 
 		return optimisedPACs;
 	}
 	
-	protected boolean nodeAndEdgeAreMarkedInOtherRule(TGGRuleNode n, EReference eTypeEdge,EdgeDirection eDirection) {
+	protected boolean nodeAndEdgeAreMarkedInOtherRule(TGGRuleNode n, EReference eTypeEdge,EdgeDirection eDirection, TGGRule thisRule) {
 		for(TGGRule rule: ref2rules.get(eTypeEdge)) {
+			if(rule.equals(thisRule))
+				continue;
 			for(TGGRuleEdge edge : rule.getEdges()) {
 				if(edge.getBindingType().equals(BindingType.CREATE) && edge.getType().equals(eTypeEdge))
 					if((eDirection.equals(EdgeDirection.INCOMING) && edge.getTrgNode().getBindingType().equals(BindingType.CREATE) && edge.getTrgNode().getBindingType().equals(BindingType.CONTEXT)) || (eDirection.equals(EdgeDirection.OUTGOING) && edge.getSrcNode().getBindingType().equals(BindingType.CREATE) && edge.getTrgNode().getBindingType().equals(BindingType.CONTEXT)))
@@ -92,7 +97,7 @@ public class PACAnalysis extends FilterNACAnalysis {
 	private Collection<PACCandidate> ignoreDueToEOppositeSemantics(Collection<PACCandidate> allPacs) {
 		return allPacs.stream()//
 				.filter(pac -> {
-					return allPacs.stream().anyMatch(otherPAC -> isGreaterEOpposite(otherPAC.getPremise(), pac.getPremise()));
+					return allPacs.stream().anyMatch(otherPAC -> isGreaterEOpposite(otherPAC, pac));
 				})
 				.collect(Collectors.toList());
 	}

@@ -25,7 +25,6 @@ public class FWDPatternTransformation extends FWD_OPTPatternTransformation {
 	
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		if(!options.patterns.useSrcTrgPattern())
 			super.transformNACs(ibexPattern);
 
 		// Output Domain User NACs
