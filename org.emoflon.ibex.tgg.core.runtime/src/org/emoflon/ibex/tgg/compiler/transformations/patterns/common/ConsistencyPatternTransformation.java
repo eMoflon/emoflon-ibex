@@ -13,6 +13,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
+import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
@@ -51,11 +52,15 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 		}
 		else {
 			for (TGGRuleEdge edge : rule.getEdges()) 
-				parent.transformEdge(rule.getEdges(), edge, ibexPattern);
-			if(options.patterns.optimizeSyncPattern()) {
-				parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
-				parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWDBlackPatternName(rule.getName())));
-			}	
+				if(options.patterns.optimizeSyncPattern()) {
+					if(edge.getSrcNode().getBindingType() == BindingType.CREATE && edge.getSrcNode().getDomainType() == DomainType.CORR)
+						parent.transformEdge(rule.getEdges(), edge, ibexPattern);
+
+					parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
+					parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWDBlackPatternName(rule.getName())));
+				}	
+				else
+					parent.transformEdge(rule.getEdges(), edge, ibexPattern);
 		}
 		// Create protocol node and connections to nodes in pattern
 		parent.createAndConnectProtocolNode(rule, ibexPattern);
