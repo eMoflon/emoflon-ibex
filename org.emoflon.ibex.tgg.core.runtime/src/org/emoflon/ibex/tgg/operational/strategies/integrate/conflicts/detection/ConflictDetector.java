@@ -22,10 +22,14 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreser
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveEdgeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePreserveConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsDomainChangesConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.OperationalMultiplicityConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.MultiplicityCounter.OutgoingEdge;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
+
+import com.google.common.collect.Sets;
 
 import language.DomainType;
 import language.TGGAttributeConstraintDefinition;
@@ -38,11 +42,18 @@ public class ConflictDetector {
 
 	private INTEGRATE integrate;
 
+	private MultiplicityCounter multiplicityCounter;
+	private Set<PrecedenceNode> cachedAddedConsNodes;
+	private Set<ITGGMatch> cachedAddedFwdBwdMatches;
+
 	private Map<ITGGMatch, ConflictContainer> match2conflictContainer;
 	private Map<ITGGMatch, List<ITGGMatch>> match2sortedRollBackCauses;
 
 	public ConflictDetector(INTEGRATE integrate) {
 		this.integrate = integrate;
+		this.multiplicityCounter = new MultiplicityCounter(integrate.getOptions().tgg.getFlattenedConcreteTGGRules());
+		cachedAddedConsNodes = new HashSet<>();
+		cachedAddedFwdBwdMatches = new HashSet<>();
 	}
 
 	public Set<ConflictContainer> detectConflicts() {
@@ -52,7 +63,9 @@ public class ConflictDetector {
 		integrate.getClassifiedBrokenMatches().values().parallelStream() //
 				.forEach(brokenMatch -> detectMatchConflicts(brokenMatch));
 		detectDeletePreserveConflicts();
+		detectOpMultiplicityConflicts();
 
+		// sort out empty conflict containers
 		for (Iterator<ConflictContainer> iterator = match2conflictContainer.values().iterator(); iterator.hasNext();) {
 			ConflictContainer container = (ConflictContainer) iterator.next();
 			if (container.getConflicts().isEmpty())
@@ -82,7 +95,7 @@ public class ConflictDetector {
 		Set<PrecedenceNode> directRollBackCauses = new HashSet<>();
 		node.forAllToBeRolledBackBy((act, pre) -> {
 			// TODO adrianm: improve performance
-			if(integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(act))
+			if (integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(act))
 				return false;
 			if (act.isBroken()) {
 				directRollBackCauses.add(act);
@@ -93,7 +106,7 @@ public class ConflictDetector {
 
 		for (PrecedenceNode rollBackCause : directRollBackCauses) {
 			ConflictContainer container = match2conflictContainer.computeIfAbsent(rollBackCause.getMatch(), //
-					key -> new ConflictContainer(integrate, integrate.getClassifiedBrokenMatches().get(rollBackCause.getMatch())));
+					key -> new ConflictContainer(integrate, rollBackCause.getMatch()));
 
 			boolean skipCheckDomainSpecificViolations = skipCheckDomainSpecificViolations(container, domainToBePreserved);
 
@@ -112,7 +125,7 @@ public class ConflictDetector {
 				TGGRuleNode ruleNode = analysis.getNode(change.getElement());
 
 				ConflictContainer container = match2conflictContainer.computeIfAbsent(node.getMatch(), //
-						key -> new ConflictContainer(integrate, integrate.getClassifiedBrokenMatches().get(node.getMatch())));
+						key -> new ConflictContainer(integrate, node.getMatch()));
 
 				boolean skipCheckDomainSpecificViolations = skipCheckDomainSpecificViolations(container, ruleNode.getDomainType());
 
@@ -183,7 +196,7 @@ public class ConflictDetector {
 
 	private void detectMatchConflicts(BrokenMatch brokenMatch) {
 		ConflictContainer container = match2conflictContainer.computeIfAbsent(brokenMatch.getMatch(), //
-				key -> new ConflictContainer(integrate, brokenMatch));
+				key -> new ConflictContainer(integrate, brokenMatch.getMatch()));
 
 		detectInconsistentChangesConflict(container, brokenMatch);
 		detectAttributeConflicts(container, brokenMatch);
@@ -266,6 +279,54 @@ public class ConflictDetector {
 		}
 
 		return false;
+	}
+
+	private void detectOpMultiplicityConflicts() {
+		// fill multiplicity counter
+		Set<PrecedenceNode> actConsNodes = integrate.getPrecedenceGraph().getConsistencyNodes();
+		for (PrecedenceNode consNode : Sets.difference(actConsNodes, cachedAddedConsNodes))
+			multiplicityCounter.addMatch(consNode.getMatch());
+		for (PrecedenceNode consNode : Sets.difference(cachedAddedConsNodes, actConsNodes))
+			multiplicityCounter.removeMatch(consNode.getMatch());
+		cachedAddedConsNodes = new HashSet<>(actConsNodes);
+
+		Set<ITGGMatch> actFwdBwdMatches = integrate.getMatchContainer().getMatches();
+		for (ITGGMatch fwdBwdMatch : Sets.difference(actFwdBwdMatches, cachedAddedFwdBwdMatches))
+			multiplicityCounter.addMatch(fwdBwdMatch);
+		for (ITGGMatch fwdBwdMatch : Sets.difference(cachedAddedFwdBwdMatches, actFwdBwdMatches))
+			multiplicityCounter.removeMatch(fwdBwdMatch);
+		cachedAddedFwdBwdMatches = new HashSet<>(actFwdBwdMatches);
+
+		// TODO adrianm: revert deletions to get additional FWD/BWD matches, which are required to
+		// detect all conflicts -> not needed, since in the multiplicity counter we also cover
+		// consistency matches
+
+		// detect conflicts
+		multiplicityCounter.getSubject2reference2numOfEdges().forEach((subj, ref2numOfEdges) -> {
+			ref2numOfEdges.forEach((ref, numOfEdges) -> {
+				if (multiplicityCounter.violatesMultiplicity(ref, numOfEdges)) {
+					ITGGMatch underlyingMatch = null;
+					for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(subj)) {
+						if (node.getMatch().getType() == PatternType.CONSISTENCY) {
+							underlyingMatch = node.getMatch();
+							break;
+						}
+					}
+
+					if (underlyingMatch == null)
+						throw new RuntimeException("There must exist an underlying consistency match!");
+
+					final ITGGMatch tmpUnderlyingMatch = underlyingMatch;
+					ConflictContainer container = match2conflictContainer.computeIfAbsent(underlyingMatch, //
+							key -> new ConflictContainer(integrate, tmpUnderlyingMatch));
+
+					Set<ITGGMatch> violatingMatches = multiplicityCounter.getOutgoingEdge2matches() //
+							.getOrDefault(new OutgoingEdge(subj, ref), Collections.emptySet());
+
+					new OperationalMultiplicityConflict(container, subj, ref, violatingMatches);
+				}
+			});
+		});
 	}
 
 }

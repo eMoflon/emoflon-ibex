@@ -195,7 +195,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Timer.start();
 
 		match2conflicts = conflictDetector.detectConflicts().stream() //
-				.collect(Collectors.toMap(cc -> cc.getBrokenMatch().getMatch(), cc -> cc));
+				.collect(Collectors.toMap(cc -> cc.getMatch(), cc -> cc));
 		buildContainerHierarchy();
 
 		times.addTo("operations:detectConflicts", Timer.stop());
@@ -567,6 +567,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		// the number of matches per overlap should not exceed a certain number
 		overlap2match.putIfAbsent(overlap, new LinkedList<>());
 		overlap2match.get(overlap).add(match);
+
+		LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: received & added " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	private boolean removeFilterNacMatch(ITGGMatch match) {

@@ -41,7 +41,7 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 		trgMatches = new HashSet<>();
 
 		PrecedenceGraph pg = integrate().getPrecedenceGraph();
-		ITGGMatch match = getBrokenMatch().getMatch();
+		ITGGMatch match = getMatch();
 		IGreenPatternFactory gFactory = integrate().getGreenFactory(match.getRuleName());
 
 		Collection<TGGRuleNode> greenRuleNodes = new HashSet<>();
@@ -66,13 +66,13 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 	@Override
 	public void crs_preferSource() {
 		for (ITGGMatch trgMatch : trgMatches) {
-			RepairableMatch repairableMatch = integrate().getShortcutRepairStrat().isRepairable(getBrokenMatch().getMatch(), trgMatch);
+			RepairableMatch repairableMatch = integrate().getShortcutRepairStrat().isRepairable(getMatch(), trgMatch);
 			if (repairableMatch != null)
 				revertRepairable(repairableMatch, DomainType.TRG);
 		}
 
 		integrate().getOptions().matchDistributor().updateMatches();
-		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getBrokenMatch().getMatch(), PatternType.FWD);
+		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.FWD);
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
@@ -81,13 +81,13 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 	@Override
 	public void crs_preferTarget() {
 		for (ITGGMatch srcMatch : srcMatches) {
-			RepairableMatch repairableMatch = integrate().getShortcutRepairStrat().isRepairable(getBrokenMatch().getMatch(), srcMatch);
+			RepairableMatch repairableMatch = integrate().getShortcutRepairStrat().isRepairable(getMatch(), srcMatch);
 			if (repairableMatch != null)
 				revertRepairable(repairableMatch, DomainType.SRC);
 		}
 
 		integrate().getOptions().matchDistributor().updateMatches();
-		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getBrokenMatch().getMatch(), PatternType.BWD);
+		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.BWD);
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;
