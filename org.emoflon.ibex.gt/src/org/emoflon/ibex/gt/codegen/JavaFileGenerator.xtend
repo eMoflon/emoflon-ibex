@@ -528,10 +528,11 @@ class JavaFileGenerator {
 				@Override
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
-						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'» 
-«««						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
-«««						«arithmeticConstraint» &&
-«««						«ENDFOR»
+						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'»
+«««						Protect against div/0
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
+						«arithmeticConstraint» &&
+						«ENDFOR»
 						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
 						«ENDFOR»
 					);				
@@ -653,10 +654,11 @@ class JavaFileGenerator {
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
 						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstraints(pattern) SEPARATOR '&&'» 
-«««						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
-«««						«arithmeticConstraint» &&
-«««						«ENDFOR»
-						«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
+«««						Protection from div/0
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
+						«arithmeticConstraint» &&
+						«ENDFOR»
+						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
 						«ENDFOR»
 					);				
 				}
