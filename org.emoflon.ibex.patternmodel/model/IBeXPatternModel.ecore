@@ -250,12 +250,12 @@
         eType="#//IBeXArithmeticExpression" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXArithmeticConstraint">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" lowerBound="1"
-        eType="#//IBeXArithmeticAttribute" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
-        eType="#//IBeXArithmeticExpression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lhs" lowerBound="1" eType="#//IBeXArithmeticExpression"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="relation" lowerBound="1"
         eType="#//IBeXRelation"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rhs" lowerBound="1" eType="#//IBeXArithmeticExpression"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXArithmeticExpression" abstract="true"
       interface="true"/>

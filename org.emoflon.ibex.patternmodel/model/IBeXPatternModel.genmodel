@@ -178,9 +178,9 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXProbability/parameter"/>
     </genClasses>
     <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXArithmeticConstraint">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXArithmeticConstraint/parameter"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXArithmeticConstraint/expression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXArithmeticConstraint/lhs"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXArithmeticConstraint/relation"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXArithmeticConstraint/rhs"/>
     </genClasses>
     <genClasses image="false" ecoreClass="IBeXPatternModel.ecore#//IBeXArithmeticExpression"/>
     <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXUnaryExpression">

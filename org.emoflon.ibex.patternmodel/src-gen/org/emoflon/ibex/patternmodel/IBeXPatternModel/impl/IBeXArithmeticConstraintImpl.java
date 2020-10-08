@@ -10,8 +10,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
@@ -25,33 +23,23 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXArithmeticConstraintImpl#getParameter <em>Parameter</em>}</li>
- *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXArithmeticConstraintImpl#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXArithmeticConstraintImpl#getLhs <em>Lhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXArithmeticConstraintImpl#getRelation <em>Relation</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXArithmeticConstraintImpl#getRhs <em>Rhs</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container implements IBeXArithmeticConstraint {
 	/**
-	 * The cached value of the '{@link #getParameter() <em>Parameter</em>}' containment reference.
+	 * The cached value of the '{@link #getLhs() <em>Lhs</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getParameter()
+	 * @see #getLhs()
 	 * @generated
 	 * @ordered
 	 */
-	protected IBeXArithmeticAttribute parameter;
-
-	/**
-	 * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getExpression()
-	 * @generated
-	 * @ordered
-	 */
-	protected IBeXArithmeticExpression expression;
+	protected IBeXArithmeticExpression lhs;
 
 	/**
 	 * The default value of the '{@link #getRelation() <em>Relation</em>}' attribute.
@@ -72,6 +60,16 @@ public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container i
 	 * @ordered
 	 */
 	protected IBeXRelation relation = RELATION_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getRhs() <em>Rhs</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getRhs()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXArithmeticExpression rhs;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -98,8 +96,8 @@ public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container i
 	 * @generated
 	 */
 	@Override
-	public IBeXArithmeticAttribute getParameter() {
-		return parameter;
+	public IBeXArithmeticExpression getLhs() {
+		return lhs;
 	}
 
 	/**
@@ -107,12 +105,12 @@ public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetParameter(IBeXArithmeticAttribute newParameter, NotificationChain msgs) {
-		IBeXArithmeticAttribute oldParameter = parameter;
-		parameter = newParameter;
+	public NotificationChain basicSetLhs(IBeXArithmeticExpression newLhs, NotificationChain msgs) {
+		IBeXArithmeticExpression oldLhs = lhs;
+		lhs = newLhs;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__PARAMETER, oldParameter, newParameter);
+					IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__LHS, oldLhs, newLhs);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -127,77 +125,21 @@ public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container i
 	 * @generated
 	 */
 	@Override
-	public void setParameter(IBeXArithmeticAttribute newParameter) {
-		if (newParameter != parameter) {
+	public void setLhs(IBeXArithmeticExpression newLhs) {
+		if (newLhs != lhs) {
 			NotificationChain msgs = null;
-			if (parameter != null)
-				msgs = ((InternalEObject) parameter).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__PARAMETER, null,
-						msgs);
-			if (newParameter != null)
-				msgs = ((InternalEObject) newParameter).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__PARAMETER, null,
-						msgs);
-			msgs = basicSetParameter(newParameter, msgs);
+			if (lhs != null)
+				msgs = ((InternalEObject) lhs).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__LHS, null, msgs);
+			if (newLhs != null)
+				msgs = ((InternalEObject) newLhs).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__LHS, null, msgs);
+			msgs = basicSetLhs(newLhs, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__PARAMETER, newParameter, newParameter));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public IBeXArithmeticExpression getExpression() {
-		return expression;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetExpression(IBeXArithmeticExpression newExpression, NotificationChain msgs) {
-		IBeXArithmeticExpression oldExpression = expression;
-		expression = newExpression;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__EXPRESSION, oldExpression, newExpression);
-			if (msgs == null)
-				msgs = notification;
-			else
-				msgs.add(notification);
-		}
-		return msgs;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setExpression(IBeXArithmeticExpression newExpression) {
-		if (newExpression != expression) {
-			NotificationChain msgs = null;
-			if (expression != null)
-				msgs = ((InternalEObject) expression).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__EXPRESSION, null,
-						msgs);
-			if (newExpression != null)
-				msgs = ((InternalEObject) newExpression).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__EXPRESSION, null,
-						msgs);
-			msgs = basicSetExpression(newExpression, msgs);
-			if (msgs != null)
-				msgs.dispatch();
-		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__EXPRESSION, newExpression, newExpression));
+					IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__LHS, newLhs, newLhs));
 	}
 
 	/**
@@ -230,12 +172,64 @@ public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container i
 	 * @generated
 	 */
 	@Override
+	public IBeXArithmeticExpression getRhs() {
+		return rhs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetRhs(IBeXArithmeticExpression newRhs, NotificationChain msgs) {
+		IBeXArithmeticExpression oldRhs = rhs;
+		rhs = newRhs;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RHS, oldRhs, newRhs);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setRhs(IBeXArithmeticExpression newRhs) {
+		if (newRhs != rhs) {
+			NotificationChain msgs = null;
+			if (rhs != null)
+				msgs = ((InternalEObject) rhs).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RHS, null, msgs);
+			if (newRhs != null)
+				msgs = ((InternalEObject) newRhs).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RHS, null, msgs);
+			msgs = basicSetRhs(newRhs, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RHS, newRhs, newRhs));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__PARAMETER:
-			return basicSetParameter(null, msgs);
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__EXPRESSION:
-			return basicSetExpression(null, msgs);
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__LHS:
+			return basicSetLhs(null, msgs);
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RHS:
+			return basicSetRhs(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -248,12 +242,12 @@ public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__PARAMETER:
-			return getParameter();
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__EXPRESSION:
-			return getExpression();
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__LHS:
+			return getLhs();
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RELATION:
 			return getRelation();
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RHS:
+			return getRhs();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -266,14 +260,14 @@ public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__PARAMETER:
-			setParameter((IBeXArithmeticAttribute) newValue);
-			return;
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__EXPRESSION:
-			setExpression((IBeXArithmeticExpression) newValue);
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__LHS:
+			setLhs((IBeXArithmeticExpression) newValue);
 			return;
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RELATION:
 			setRelation((IBeXRelation) newValue);
+			return;
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RHS:
+			setRhs((IBeXArithmeticExpression) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -287,14 +281,14 @@ public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__PARAMETER:
-			setParameter((IBeXArithmeticAttribute) null);
-			return;
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__EXPRESSION:
-			setExpression((IBeXArithmeticExpression) null);
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__LHS:
+			setLhs((IBeXArithmeticExpression) null);
 			return;
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RELATION:
 			setRelation(RELATION_EDEFAULT);
+			return;
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RHS:
+			setRhs((IBeXArithmeticExpression) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -308,12 +302,12 @@ public class IBeXArithmeticConstraintImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__PARAMETER:
-			return parameter != null;
-		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__EXPRESSION:
-			return expression != null;
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__LHS:
+			return lhs != null;
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RELATION:
 			return relation != RELATION_EDEFAULT;
+		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT__RHS:
+			return rhs != null;
 		}
 		return super.eIsSet(featureID);
 	}

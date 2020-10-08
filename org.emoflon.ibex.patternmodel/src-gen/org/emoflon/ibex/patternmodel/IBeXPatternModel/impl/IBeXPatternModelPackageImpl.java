@@ -1453,7 +1453,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-	public EReference getIBeXArithmeticConstraint_Parameter() {
+	public EReference getIBeXArithmeticConstraint_Lhs() {
 		return (EReference) iBeXArithmeticConstraintEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -1463,8 +1463,8 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-	public EReference getIBeXArithmeticConstraint_Expression() {
-		return (EReference) iBeXArithmeticConstraintEClass.getEStructuralFeatures().get(1);
+	public EAttribute getIBeXArithmeticConstraint_Relation() {
+		return (EAttribute) iBeXArithmeticConstraintEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -1473,8 +1473,8 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-	public EAttribute getIBeXArithmeticConstraint_Relation() {
-		return (EAttribute) iBeXArithmeticConstraintEClass.getEStructuralFeatures().get(2);
+	public EReference getIBeXArithmeticConstraint_Rhs() {
+		return (EReference) iBeXArithmeticConstraintEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -1889,9 +1889,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXProbabilityEClass, IBE_XPROBABILITY__PARAMETER);
 
 		iBeXArithmeticConstraintEClass = createEClass(IBE_XARITHMETIC_CONSTRAINT);
-		createEReference(iBeXArithmeticConstraintEClass, IBE_XARITHMETIC_CONSTRAINT__PARAMETER);
-		createEReference(iBeXArithmeticConstraintEClass, IBE_XARITHMETIC_CONSTRAINT__EXPRESSION);
+		createEReference(iBeXArithmeticConstraintEClass, IBE_XARITHMETIC_CONSTRAINT__LHS);
 		createEAttribute(iBeXArithmeticConstraintEClass, IBE_XARITHMETIC_CONSTRAINT__RELATION);
+		createEReference(iBeXArithmeticConstraintEClass, IBE_XARITHMETIC_CONSTRAINT__RHS);
 
 		iBeXArithmeticExpressionEClass = createEClass(IBE_XARITHMETIC_EXPRESSION);
 
@@ -2284,15 +2284,15 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 
 		initEClass(iBeXArithmeticConstraintEClass, IBeXArithmeticConstraint.class, "IBeXArithmeticConstraint",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getIBeXArithmeticConstraint_Parameter(), this.getIBeXArithmeticAttribute(), null, "parameter",
-				null, 1, 1, IBeXArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getIBeXArithmeticConstraint_Expression(), this.getIBeXArithmeticExpression(), null, "expression",
-				null, 1, 1, IBeXArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+		initEReference(getIBeXArithmeticConstraint_Lhs(), this.getIBeXArithmeticExpression(), null, "lhs", null, 1, 1,
+				IBeXArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getIBeXArithmeticConstraint_Relation(), this.getIBeXRelation(), "relation", null, 1, 1,
 				IBeXArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXArithmeticConstraint_Rhs(), this.getIBeXArithmeticExpression(), null, "rhs", null, 1, 1,
+				IBeXArithmeticConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXArithmeticExpressionEClass, IBeXArithmeticExpression.class, "IBeXArithmeticExpression",
 				IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

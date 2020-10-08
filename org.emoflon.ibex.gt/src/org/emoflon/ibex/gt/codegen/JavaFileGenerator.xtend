@@ -529,11 +529,11 @@ class JavaFileGenerator {
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
 						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
-						«arithmeticConstraint» &&
+«««						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
+«««						«arithmeticConstraint» &&
+«««						«ENDFOR»
+						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
 						«ENDFOR»
-						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
 					);				
 				}
 				«ENDIF»
@@ -653,11 +653,11 @@ class JavaFileGenerator {
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
 						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstraints(pattern) SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
-						«arithmeticConstraint» &&
+«««						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
+«««						«arithmeticConstraint» &&
+«««						«ENDFOR»
+						«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
 						«ENDFOR»
-						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
 					);				
 				}
 				«ENDIF»

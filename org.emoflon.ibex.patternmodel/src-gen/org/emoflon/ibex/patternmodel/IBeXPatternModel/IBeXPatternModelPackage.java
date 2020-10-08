@@ -1660,22 +1660,13 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XARITHMETIC_CONSTRAINT = 31;
 
 	/**
-	 * The feature id for the '<em><b>Parameter</b></em>' containment reference.
+	 * The feature id for the '<em><b>Lhs</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XARITHMETIC_CONSTRAINT__PARAMETER = 0;
-
-	/**
-	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XARITHMETIC_CONSTRAINT__EXPRESSION = 1;
+	int IBE_XARITHMETIC_CONSTRAINT__LHS = 0;
 
 	/**
 	 * The feature id for the '<em><b>Relation</b></em>' attribute.
@@ -1684,7 +1675,16 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XARITHMETIC_CONSTRAINT__RELATION = 2;
+	int IBE_XARITHMETIC_CONSTRAINT__RELATION = 1;
+
+	/**
+	 * The feature id for the '<em><b>Rhs</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XARITHMETIC_CONSTRAINT__RHS = 2;
 
 	/**
 	 * The number of structural features of the '<em>IBe XArithmetic Constraint</em>' class.
@@ -3212,26 +3212,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EClass getIBeXArithmeticConstraint();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getParameter <em>Parameter</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getLhs <em>Lhs</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Parameter</em>'.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getParameter()
+	 * @return the meta object for the containment reference '<em>Lhs</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getLhs()
 	 * @see #getIBeXArithmeticConstraint()
 	 * @generated
 	 */
-	EReference getIBeXArithmeticConstraint_Parameter();
-
-	/**
-	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getExpression <em>Expression</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Expression</em>'.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getExpression()
-	 * @see #getIBeXArithmeticConstraint()
-	 * @generated
-	 */
-	EReference getIBeXArithmeticConstraint_Expression();
+	EReference getIBeXArithmeticConstraint_Lhs();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getRelation <em>Relation</em>}'.
@@ -3243,6 +3232,17 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getIBeXArithmeticConstraint_Relation();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getRhs <em>Rhs</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Rhs</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getRhs()
+	 * @see #getIBeXArithmeticConstraint()
+	 * @generated
+	 */
+	EReference getIBeXArithmeticConstraint_Rhs();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression <em>IBe XArithmetic Expression</em>}'.
@@ -4406,20 +4406,12 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EClass IBE_XARITHMETIC_CONSTRAINT = eINSTANCE.getIBeXArithmeticConstraint();
 
 		/**
-		 * The meta object literal for the '<em><b>Parameter</b></em>' containment reference feature.
+		 * The meta object literal for the '<em><b>Lhs</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference IBE_XARITHMETIC_CONSTRAINT__PARAMETER = eINSTANCE.getIBeXArithmeticConstraint_Parameter();
-
-		/**
-		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference IBE_XARITHMETIC_CONSTRAINT__EXPRESSION = eINSTANCE.getIBeXArithmeticConstraint_Expression();
+		EReference IBE_XARITHMETIC_CONSTRAINT__LHS = eINSTANCE.getIBeXArithmeticConstraint_Lhs();
 
 		/**
 		 * The meta object literal for the '<em><b>Relation</b></em>' attribute feature.
@@ -4428,6 +4420,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute IBE_XARITHMETIC_CONSTRAINT__RELATION = eINSTANCE.getIBeXArithmeticConstraint_Relation();
+
+		/**
+		 * The meta object literal for the '<em><b>Rhs</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XARITHMETIC_CONSTRAINT__RHS = eINSTANCE.getIBeXArithmeticConstraint_Rhs();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression <em>IBe XArithmetic Expression</em>}' class.
