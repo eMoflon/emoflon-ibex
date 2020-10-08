@@ -490,7 +490,7 @@ public class ContextPatternTransformation {
 		IBeXAttributeExpression expression = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
 		expression.setNode(ibexNode);
 		expression.setAttribute(attribute);
-		return null;
+		return expression;
 	}
 
 	private IBeXEnumLiteral convertAttributeValue(TGGEnumExpression valueExpr) {
