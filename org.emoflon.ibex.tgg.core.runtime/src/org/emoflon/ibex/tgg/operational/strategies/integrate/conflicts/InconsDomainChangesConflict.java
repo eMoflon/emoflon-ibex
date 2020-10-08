@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeChanges;
 
@@ -26,7 +27,10 @@ public class InconsDomainChangesConflict extends InconsistentChangesConflict imp
 
 	@Override
 	public void crs_revokeChanges() {
-		restoreDomain(getBrokenMatch(), changedDomain);
+		// TODO adrianm: fix this
+		restoreDomain(integrate().getClassifiedBrokenMatches().get(getMatch()), changedDomain);
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_CHANGES");
 		resolved = true;
 	}
 

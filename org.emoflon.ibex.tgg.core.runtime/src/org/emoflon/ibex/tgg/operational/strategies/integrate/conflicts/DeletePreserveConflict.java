@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_MergeAndPreserve;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
@@ -42,7 +43,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		Set<ITGGMatch> matches = new HashSet<>();
 		matches.addAll(causingMatches);
 		matches.remove(causingMatches.get(0));
-		integrate().getPrecedenceGraph().getNode(getBrokenMatch().getMatch()).forAllRequiredBy((act, pre) -> matches.add(act.getMatch()));
+		integrate().getPrecedenceGraph().getNode(getMatch()).forAllRequiredBy((act, pre) -> matches.add(act.getMatch()));
 		return matches;
 	}
 
@@ -54,7 +55,7 @@ public abstract class DeletePreserveConflict extends Conflict
 
 	@Override
 	public void crs_mergeAndPreserve() {
-		MatchAnalysis analysis = integrate().getMatchUtil().getAnalysis(getBrokenMatch().getMatch());
+		MatchAnalysis analysis = integrate().getMatchUtil().getAnalysis(getMatch());
 
 		causingMatches.forEach(m -> restoreMatch(integrate().getClassifiedBrokenMatches().get(m)));
 
@@ -66,6 +67,8 @@ public abstract class DeletePreserveConflict extends Conflict
 				});
 			}
 		});
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by MERGE_&_PRESERVE");
 		resolved = true;
 	}
 
@@ -81,6 +84,8 @@ public abstract class DeletePreserveConflict extends Conflict
 				restoreMatchesBasedOn(match);
 			}
 		});
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_DELETION");
 		resolved = true;
 	}
 
@@ -109,6 +114,8 @@ public abstract class DeletePreserveConflict extends Conflict
 		default:
 			break;
 		}
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
 	}
 
@@ -123,6 +130,8 @@ public abstract class DeletePreserveConflict extends Conflict
 		default:
 			break;
 		}
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;
 	}
 }

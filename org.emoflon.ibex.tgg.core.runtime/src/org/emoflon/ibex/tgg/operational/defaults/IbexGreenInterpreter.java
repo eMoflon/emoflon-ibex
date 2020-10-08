@@ -178,7 +178,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		// Check if match is valid
 		// TODO lfritsche, amoeller: this can maybe make problems? here the problem is that we create before deleting 
 		if (matchIsInvalid(ruleName, greenPattern, match) && !(options.repair.disableInjectivity() && match instanceof SCMatch)) {
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Blocking application as match is invalid.");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Blocking application as match is invalid.");
 			return Optional.empty();
 		}
 
@@ -190,7 +190,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		// Check if all attribute values provided match are as expected
 		IRuntimeTGGAttrConstrContainer cspContainer = greenPattern.getAttributeConstraintContainer(match);
 		if (!cspContainer.solve()) {
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Blocking application as attribute conditions don't hold.");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Blocking application as attribute conditions don't hold.");
 			return Optional.empty();
 		}
 

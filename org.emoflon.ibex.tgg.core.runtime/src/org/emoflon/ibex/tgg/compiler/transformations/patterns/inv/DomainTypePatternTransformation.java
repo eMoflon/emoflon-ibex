@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.inv;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -13,8 +14,8 @@ public class DomainTypePatternTransformation extends SplitUpPatternTransformatio
 	IBeXContextPattern thisPattern;
 	DomainType domain;
 	
-	public DomainTypePatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, DomainType domain) {
-		super(parent, options, rule);
+	public DomainTypePatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis, DomainType domain) {
+		super(parent, options, rule, filterNACAnalysis);
 		this.domain = domain;
 	}
 	

@@ -176,6 +176,18 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 		});
 		return comatch;
 	}
+		
+	/**
+	 * Applies the rule on the given match.
+	 * 
+	 * @param match
+	 *            the match
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	@SuppressWarnings("unchecked")
+	public final Optional<M> applyGeneric(final GraphTransformationMatch<?, ?>  match) {
+		return apply((M) match);
+	}
 	
 	/**
 	 * If the rule has a probability, then it applies the rule on the given match 

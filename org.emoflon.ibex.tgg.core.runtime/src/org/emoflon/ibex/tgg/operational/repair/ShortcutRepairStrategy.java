@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.repair;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -11,8 +12,10 @@ import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
@@ -20,10 +23,10 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import runtime.TGGRuleApplication;
 
 /**
- * This class attempts to repair broken matches by using operationalized
- * shortcut rules (OSR). These OSRs detect specific situations (like certain
- * deltas) and try to repair the broken match to be either a valid match of its
- * rule again or by transforming the match to that of another rule.
+ * This class attempts to repair broken matches by using operationalized shortcut rules
+ * (OSR). These OSRs detect specific situations (like certain deltas) and try to repair
+ * the broken match to be either a valid match of its rule again or by transforming the
+ * match to that of another rule.
  * 
  * @author lfritsche
  *
@@ -56,6 +59,8 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 		scTool = new ShortcutPatternTool(opStrat, shortcutRules, opStrat.getShortcutPatternTypes());
 		updateDirection();
+		
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> "");
 	}
 
 	@Override
@@ -87,6 +92,35 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 		if (repairedMatch != null)
 			logSuccessfulRepair(repairCandidate, repairedMatch);
 		return repairedMatch;
+	}
+
+	public RepairableMatch isRepairable(ITGGMatch repairCandidate, ITGGMatch replacingMatch) {
+		RepairableMatch result = null;
+
+		Map<SCMatch, OperationalShortcutRule> repMatches = scTool.isRepairable(replacingMatch.getType(), repairCandidate, replacingMatch.getRuleName());
+		for (Entry<SCMatch, OperationalShortcutRule> entry : repMatches.entrySet()) {
+			boolean validSCMatch = true;
+			for (String paramName : replacingMatch.getParameterNames()) {
+				if (!entry.getKey().getObjects().contains(replacingMatch.get(paramName))) {
+					validSCMatch = false;
+					break;
+				}
+			}
+			if (validSCMatch)
+				return new RepairableMatch(entry.getKey(), entry.getValue());
+		}
+
+		return result;
+	}
+
+	public class RepairableMatch {
+		public final SCMatch scMatch;
+		public final OperationalShortcutRule opSCR;
+
+		RepairableMatch(SCMatch scMatch, OperationalShortcutRule opSCR) {
+			this.scMatch = scMatch;
+			this.opSCR = opSCR;
+		}
 	}
 
 	private void updateDirection() {

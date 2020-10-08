@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 public class PrecedenceNode {
 
@@ -94,11 +95,11 @@ public class PrecedenceNode {
 	//// UTILS ////
 
 	/**
-	 * Executes the specified <code>action</code> for all nodes that are (transitively) required by this
-	 * node.<br>
-	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
-	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
-	 * the transition of the current branch stops at this point.
+	 * Executes the specified <code>action</code> for all nodes that are (transitively)
+	 * required by this node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one
+	 * is the hierarchically previously processed node. If the <code>action</code> returns
+	 * <code>false</code>, the transition of the current branch stops at this point.
 	 * 
 	 * @param action the action
 	 */
@@ -107,8 +108,7 @@ public class PrecedenceNode {
 		forAllRequires(this, action, processed);
 	}
 
-	private void forAllRequires(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action,
-			Set<PrecedenceNode> processed) {
+	private void forAllRequires(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action, Set<PrecedenceNode> processed) {
 		for (PrecedenceNode n : node.getRequires()) {
 			if (!processed.contains(n)) {
 				processed.add(n);
@@ -119,11 +119,11 @@ public class PrecedenceNode {
 	}
 
 	/**
-	 * Executes the specified <code>action</code> for all nodes that (transitively) requires this
-	 * node.<br>
-	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
-	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
-	 * the transition of the current branch stops at this point.
+	 * Executes the specified <code>action</code> for all nodes that (transitively) requires
+	 * this node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one
+	 * is the hierarchically previously processed node. If the <code>action</code> returns
+	 * <code>false</code>, the transition of the current branch stops at this point.
 	 * 
 	 * @param action the action
 	 */
@@ -132,8 +132,7 @@ public class PrecedenceNode {
 		forAllRequiredBy(this, action, processed);
 	}
 
-	private void forAllRequiredBy(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action,
-			Set<PrecedenceNode> processed) {
+	private void forAllRequiredBy(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action, Set<PrecedenceNode> processed) {
 		for (PrecedenceNode n : node.getRequiredBy()) {
 			if (!processed.contains(n)) {
 				processed.add(n);
@@ -144,11 +143,33 @@ public class PrecedenceNode {
 	}
 
 	/**
-	 * Executes the specified <code>action</code> for all nodes that directly or indirectly are going to
-	 * roll back this node.<br>
-	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
-	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
-	 * the transition of the current branch stops at this point.
+	 * Executes the specified <code>action</code> for all nodes that (transitively) requires
+	 * this node.<br>
+	 * <b>Important note:</b> this implementation may visit some nodes multiple times. For one
+	 * time visitation use {@link PrecedenceNode#forAllRequiredBy(BiPredicate)}.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one
+	 * is the hierarchically previously processed node. If the <code>action</code> returns
+	 * <code>false</code>, the transition of the current branch stops at this point.
+	 * 
+	 * @param action the action
+	 */
+	public void forAllRequiredByMultiVisit(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		forAllRequiredBy(this, action);
+	}
+
+	private void forAllRequiredBy(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		for (PrecedenceNode n : node.getRequiredBy()) {
+			if (action.test(n, node))
+				forAllRequiredBy(n, action);
+		}
+	}
+
+	/**
+	 * Executes the specified <code>action</code> for all nodes that directly or indirectly
+	 * are going to roll back this node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one
+	 * is the hierarchically previously processed node. If the <code>action</code> returns
+	 * <code>false</code>, the transition of the current branch stops at this point.
 	 * 
 	 * @param action the action
 	 */
@@ -179,6 +200,39 @@ public class PrecedenceNode {
 		});
 
 		return rollBackCauses;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		b.append("PrecedenceNode [\n");
+		b.append(ConsoleUtil.indent(print(), 2, true));
+		b.append("\n]");
+		return b.toString();
+	}
+
+	private String print() {
+		StringBuilder b = new StringBuilder();
+
+		b.append("match: ");
+		b.append(ConsoleUtil.indent(match.toString(), 7, false));
+
+		b.append("\nbroken: ");
+		b.append(broken);
+
+		b.append("\ntoBeRolledBackBy: ");
+		b.append(toBeRolledBackBy.size());
+		b.append(" node" + (toBeRolledBackBy.size() == 1 ? "" : "s"));
+
+		b.append("\nrequires: ");
+		b.append(requires.size());
+		b.append(" node" + (requires.size() == 1 ? "" : "s"));
+
+		b.append("\nrequiredBy: ");
+		b.append(requiredBy.size());
+		b.append(" node" + (requiredBy.size() == 1 ? "" : "s"));
+
+		return b.toString();
 	}
 
 }

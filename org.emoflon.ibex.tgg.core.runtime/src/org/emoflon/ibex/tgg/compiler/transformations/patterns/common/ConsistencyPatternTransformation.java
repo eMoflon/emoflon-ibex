@@ -13,6 +13,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
+import language.BindingType;
 import language.DomainType;
 import language.TGGRule;
 import language.TGGRuleEdge;
@@ -45,17 +46,21 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
 		//Avoid creating wrong consistency-pattern in CC because FWD/BWD-pattern doesn't exists when use of greenCorr-pattern is on
 		//No need to check if BWD is relevant
-		if(parent.isPatternRelevant(rule, PatternType.FWD) && options.invocation.useGreenCorrPattern() && options.invocation.usePatternInvocation()) {
+		if(parent.isPatternRelevant(rule, PatternType.FWD) && options.patterns.useGreenCorrPattern() && options.patterns.useSrcTrgPattern()) {
 			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
 			parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWD_GREENCORRBlackPatternName(rule.getName())));
 		}
 		else {
 			for (TGGRuleEdge edge : rule.getEdges()) 
-				parent.transformEdge(rule.getEdges(), edge, ibexPattern);
-			if(options.invocation.usePatternInvocation()) {
-				parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
-				parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWDBlackPatternName(rule.getName())));
-			}	
+				if(options.patterns.optimizeSyncPattern()) {
+					if(edge.getSrcNode().getBindingType() == BindingType.CREATE && edge.getSrcNode().getDomainType() == DomainType.CORR)
+						parent.transformEdge(rule.getEdges(), edge, ibexPattern);
+
+					parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateBWDBlackPatternName(rule.getName())));
+					parent.createInvocation(ibexPattern, parent.getPattern(TGGPatternUtil.generateFWDBlackPatternName(rule.getName())));
+				}	
+				else
+					parent.transformEdge(rule.getEdges(), edge, ibexPattern);
 		}
 		// Create protocol node and connections to nodes in pattern
 		parent.createAndConnectProtocolNode(rule, ibexPattern);
@@ -63,7 +68,7 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		if(options.propagate.optimizeSyncPattern())
+		if(options.patterns.optimizeSyncPattern())
 			return;
 		if(options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS)) {
 			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.SRC)) {

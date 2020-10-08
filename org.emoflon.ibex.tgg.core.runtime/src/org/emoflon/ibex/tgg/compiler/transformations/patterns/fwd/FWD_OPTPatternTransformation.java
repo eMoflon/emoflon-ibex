@@ -44,7 +44,7 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 			parent.transformNode(ibexPattern, node);
 
 		// Transform attributes.
-		if(!options.invocation.usePatternInvocation())
+		if(!options.patterns.useSrcTrgPattern())
 			for (final TGGRuleNode node : contextNodes)
 				parent.transformInNodeAttributeConditions(ibexPattern, node);
 	}
@@ -60,7 +60,6 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 
 	@Override
 	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		
 		if(options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS)) {
 			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.SRC)) {
 				parent.addContextPattern(createPAC(ibexPattern,  DomainType.SRC, candidate));
