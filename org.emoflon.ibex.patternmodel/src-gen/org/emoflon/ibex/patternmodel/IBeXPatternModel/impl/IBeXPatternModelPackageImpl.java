@@ -953,38 +953,38 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-	public EReference getIBeXAttribute_Type() {
-		return (EReference) iBeXAttributeEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EReference getIBeXAttribute_Node() {
-		return (EReference) iBeXAttributeEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EReference getIBeXAttribute_Value() {
-		return (EReference) iBeXAttributeEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EClass getIBeXAttributeAssignment() {
 		return iBeXAttributeAssignmentEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXAttributeAssignment_Value() {
+		return (EReference) iBeXAttributeAssignmentEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXAttributeAssignment_Node() {
+		return (EReference) iBeXAttributeAssignmentEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXAttributeAssignment_Type() {
+		return (EReference) iBeXAttributeAssignmentEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -1005,6 +1005,26 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	@Override
 	public EAttribute getIBeXAttributeConstraint_Relation() {
 		return (EAttribute) iBeXAttributeConstraintEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXAttributeConstraint_Lhs() {
+		return (EReference) iBeXAttributeConstraintEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXAttributeConstraint_Rhs() {
+		return (EReference) iBeXAttributeConstraintEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -1803,14 +1823,16 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXParameterEClass, IBE_XPARAMETER__TYPE);
 
 		iBeXAttributeEClass = createEClass(IBE_XATTRIBUTE);
-		createEReference(iBeXAttributeEClass, IBE_XATTRIBUTE__TYPE);
-		createEReference(iBeXAttributeEClass, IBE_XATTRIBUTE__NODE);
-		createEReference(iBeXAttributeEClass, IBE_XATTRIBUTE__VALUE);
 
 		iBeXAttributeAssignmentEClass = createEClass(IBE_XATTRIBUTE_ASSIGNMENT);
+		createEReference(iBeXAttributeAssignmentEClass, IBE_XATTRIBUTE_ASSIGNMENT__VALUE);
+		createEReference(iBeXAttributeAssignmentEClass, IBE_XATTRIBUTE_ASSIGNMENT__NODE);
+		createEReference(iBeXAttributeAssignmentEClass, IBE_XATTRIBUTE_ASSIGNMENT__TYPE);
 
 		iBeXAttributeConstraintEClass = createEClass(IBE_XATTRIBUTE_CONSTRAINT);
 		createEAttribute(iBeXAttributeConstraintEClass, IBE_XATTRIBUTE_CONSTRAINT__RELATION);
+		createEReference(iBeXAttributeConstraintEClass, IBE_XATTRIBUTE_CONSTRAINT__LHS);
+		createEReference(iBeXAttributeConstraintEClass, IBE_XATTRIBUTE_CONSTRAINT__RHS);
 
 		iBeXAttributeValueEClass = createEClass(IBE_XATTRIBUTE_VALUE);
 
@@ -2115,24 +2137,30 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 
 		initEClass(iBeXAttributeEClass, IBeXAttribute.class, "IBeXAttribute", IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getIBeXAttribute_Type(), ecorePackage.getEAttribute(), null, "type", null, 0, 1,
-				IBeXAttribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getIBeXAttribute_Node(), this.getIBeXNode(), null, "node", null, 0, 1, IBeXAttribute.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getIBeXAttribute_Value(), this.getIBeXAttributeValue(), null, "value", null, 0, 1,
-				IBeXAttribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXAttributeAssignmentEClass, IBeXAttributeAssignment.class, "IBeXAttributeAssignment",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXAttributeAssignment_Value(), this.getIBeXAttributeValue(), null, "value", null, 0, 1,
+				IBeXAttributeAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXAttributeAssignment_Node(), this.getIBeXNode(), null, "node", null, 0, 1,
+				IBeXAttributeAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXAttributeAssignment_Type(), ecorePackage.getEAttribute(), null, "type", null, 0, 1,
+				IBeXAttributeAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXAttributeConstraintEClass, IBeXAttributeConstraint.class, "IBeXAttributeConstraint",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getIBeXAttributeConstraint_Relation(), this.getIBeXRelation(), "relation", null, 0, 1,
 				IBeXAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXAttributeConstraint_Lhs(), this.getIBeXAttributeValue(), null, "lhs", null, 1, 1,
+				IBeXAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXAttributeConstraint_Rhs(), this.getIBeXAttributeValue(), null, "rhs", null, 1, 1,
+				IBeXAttributeConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXAttributeValueEClass, IBeXAttributeValue.class, "IBeXAttributeValue", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
