@@ -6,10 +6,10 @@ import java.util.Map;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.AddExpression;
 import org.emoflon.ibex.gt.editor.gT.AddOperator;
-import org.emoflon.ibex.gt.editor.gT.ArithmeticAttribute;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticExpression;
-import org.emoflon.ibex.gt.editor.gT.ArithmeticNodeAttribute;
+import org.emoflon.ibex.gt.editor.gT.EditorAttributeExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorCountExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
 import org.emoflon.ibex.gt.editor.gT.ExpExpression;
 import org.emoflon.ibex.gt.editor.gT.MinMaxExpression;
 import org.emoflon.ibex.gt.editor.gT.MultExpression;
@@ -53,7 +53,7 @@ public class EditorToArithmeticExtensionHelper {
 				
 				try {
 					return tryToParseExpression(expression);
-				} catch(IllegalArgumentException e) {
+				} catch(Exception e) {
 					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((AddExpression) expression).getLeft()));
 					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((AddExpression) expression).getRight()));								
 					if(((AddExpression) expression).getAddOperator() == AddOperator.ADDITION) {
@@ -66,7 +66,7 @@ public class EditorToArithmeticExtensionHelper {
 			if(expression instanceof MultExpression) {
 				try {
 					return tryToParseExpression(expression);
-				} catch(IllegalArgumentException e) {
+				} catch(Exception e) {
 					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((MultExpression) expression).getLeft()));
 					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((MultExpression) expression).getRight()));								
 					switch(((MultExpression) expression).getMultOperator()) {
@@ -83,7 +83,7 @@ public class EditorToArithmeticExtensionHelper {
 			if(expression instanceof ExpExpression) {
 				try {
 					return tryToParseExpression(expression);
-				} catch(IllegalArgumentException e) {
+				} catch(Exception e) {
 					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((ExpExpression) expression).getLeft()));
 					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((ExpExpression) expression).getRight()));								
 					calculation.setOperator(IBeXBinaryOperator.EXPONENTIATION);	
@@ -92,7 +92,7 @@ public class EditorToArithmeticExtensionHelper {
 			if(expression instanceof MinMaxExpression) {
 				try {
 					return tryToParseExpression(expression);
-				} catch(IllegalArgumentException e) {
+				} catch(Exception e) {
 					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((MinMaxExpression) expression).getLeft()));
 					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((MinMaxExpression) expression).getRight()));
 					switch(((MinMaxExpression) expression).getMinMaxOperator()) {
@@ -112,7 +112,7 @@ public class EditorToArithmeticExtensionHelper {
 		else if(expression instanceof OneParameterArithmetics) {
 			try {
 				return tryToParseExpression(expression);
-			} catch(IllegalArgumentException e) {
+			} catch(Exception e) {
 				IBeXUnaryExpression calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXUnaryExpression();
 				calculation.setOperand(transformToIBeXArithmeticExpression(data, ibexPattern, ((OneParameterArithmetics) expression).getExpression()));
 				switch(((OneParameterArithmetics) expression).getOperator()) {
@@ -142,12 +142,11 @@ public class EditorToArithmeticExtensionHelper {
 			
 		}
 		//if the parameter is an attribute from a node
-		else if(expression instanceof ArithmeticNodeAttribute) {
+		else if(expression instanceof EditorAttributeExpression) {
 			IBeXArithmeticAttribute calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticAttribute();
-			calculation.setType(((ArithmeticNodeAttribute) expression).getNode().getType());
-			calculation.setName(((ArithmeticNodeAttribute) expression).getNode().getName());
-			calculation.setAttribute(((ArithmeticNodeAttribute) expression).getAttribute());
-			calculation.setNegative(((ArithmeticNodeAttribute) expression).isNegative());
+			calculation.setType(((EditorAttributeExpression) expression).getNode().getType());
+			calculation.setName(((EditorAttributeExpression) expression).getNode().getName());
+			calculation.setAttribute(((EditorAttributeExpression) expression).getAttribute());
 			return calculation;
 		}
 		else if(expression instanceof EditorCountExpression) {
@@ -156,7 +155,7 @@ public class EditorToArithmeticExtensionHelper {
 		//if the attribute is a number
 		else {
 			IBeXArithmeticValueLiteral calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValueLiteral();
-			calculation.setValue(((ArithmeticAttribute) expression).getStaticAttribute());
+			calculation.setValue(Double.parseDouble(((EditorLiteralExpression)expression).getValue()));
 			return calculation;
 		}
 	}
@@ -165,7 +164,7 @@ public class EditorToArithmeticExtensionHelper {
 	 * private method that tries to parse the expression; if not possible, it will throw
 	 * an illegalArgumentException
 	 */
-	private static IBeXArithmeticValueLiteral tryToParseExpression(ArithmeticExpression expression) throws IllegalArgumentException{
+	private static IBeXArithmeticValueLiteral tryToParseExpression(ArithmeticExpression expression) throws Exception{
 			double value = GTArithmeticsCalculatorUtil.getValue(expression);
 			IBeXArithmeticValueLiteral number = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValueLiteral();
 			number.setValue(value);

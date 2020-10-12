@@ -39,7 +39,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
@@ -49,7 +48,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
@@ -494,7 +492,14 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		} else if(value instanceof StochasticFunctionExpression) {
 			return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue(data, ibexPattern, (StochasticFunctionExpression) value));
 		} else if(value instanceof ArithmeticCalculationExpression) {
-			return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue(data, ibexPattern, (ArithmeticCalculationExpression) value));
+			ArithmeticCalculationExpression ace = (ArithmeticCalculationExpression)value;
+			if(ace.getExpression() instanceof EditorAttributeExpression) {
+				return convertAttributeValue(editorPattern, (EditorAttributeExpression) ace.getExpression(), ibexPattern);
+			} else if(ace.getExpression() instanceof EditorLiteralExpression) {
+				return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue((EditorLiteralExpression) ace.getExpression()));
+			} else {
+				return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue(data, ibexPattern, (ArithmeticCalculationExpression) value));
+			}
 		}
 		else {
 			logError("Invalid attribute value: %s", value);
@@ -602,6 +607,18 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	private void transformArithmeticConstraints(final EditorPattern editorPattern, final IBeXContextPattern ibexPattern) {
 		for(final EditorAttributeConstraint attribute: editorPattern.getAttributeConstraints()) {
 			if(attribute.getLhs() instanceof ArithmeticCalculationExpression && attribute.getRhs() instanceof ArithmeticCalculationExpression) {
+				ArithmeticCalculationExpression lhs = (ArithmeticCalculationExpression)attribute.getLhs();
+				ArithmeticCalculationExpression rhs = (ArithmeticCalculationExpression)attribute.getRhs();
+				if(lhs.getExpression() instanceof EditorLiteralExpression && rhs.getExpression() instanceof EditorLiteralExpression) {
+					continue;
+				} else if(lhs.getExpression() instanceof EditorLiteralExpression && rhs.getExpression() instanceof EditorAttributeExpression) {
+					continue;
+				} else if(lhs.getExpression() instanceof EditorAttributeExpression && rhs.getExpression() instanceof EditorLiteralExpression) {
+					continue;
+				} else if(lhs.getExpression() instanceof EditorAttributeExpression && rhs.getExpression() instanceof EditorAttributeExpression) {
+					continue;
+				}
+				
 				IBeXArithmeticConstraint constraint = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticConstraint();
 				constraint.setLhs(EditorToArithmeticExtensionHelper
 						.transformToIBeXArithmeticExpression(data, ibexPattern, ((ArithmeticCalculationExpression) attribute.getLhs()).getExpression()));
@@ -610,6 +627,13 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 						.transformToIBeXArithmeticExpression(data, ibexPattern, ((ArithmeticCalculationExpression) attribute.getRhs()).getExpression()));
 				ibexPattern.getArithmeticConstraints().add(constraint);
 			} else if(attribute.getLhs() instanceof ArithmeticCalculationExpression && !(attribute.getRhs() instanceof ArithmeticCalculationExpression)) {
+				ArithmeticCalculationExpression lhs = (ArithmeticCalculationExpression)attribute.getLhs();
+				if(lhs.getExpression() instanceof EditorLiteralExpression) {
+					continue;
+				} else if(lhs.getExpression() instanceof EditorAttributeExpression) {
+					continue;
+				} 
+				
 				IBeXArithmeticConstraint constraint = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticConstraint();
 				constraint.setLhs(EditorToArithmeticExtensionHelper
 						.transformToIBeXArithmeticExpression(data, ibexPattern, ((ArithmeticCalculationExpression) attribute.getLhs()).getExpression()));
@@ -617,6 +641,13 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				convertAttributeValue(editorPattern, attribute.getRhs(), ibexPattern).ifPresent(val -> convertAttributeValue(val).ifPresent(val2 -> constraint.setRhs(val2)));
 				ibexPattern.getArithmeticConstraints().add(constraint);
 			} else if(!(attribute.getLhs() instanceof ArithmeticCalculationExpression) && attribute.getRhs() instanceof ArithmeticCalculationExpression) {
+				ArithmeticCalculationExpression rhs = (ArithmeticCalculationExpression)attribute.getRhs();
+				if(rhs.getExpression() instanceof EditorLiteralExpression) {
+					continue;
+				} else if(rhs.getExpression() instanceof EditorAttributeExpression) {
+					continue;
+				}
+				
 				IBeXArithmeticConstraint constraint = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticConstraint();
 				convertAttributeValue(editorPattern, attribute.getLhs(), ibexPattern).ifPresent(val -> convertAttributeValue(val).ifPresent(val2 -> constraint.setLhs(val2)));
 				constraint.setRelation(EditorToIBeXPatternHelper.convertRelation(attribute.getRelation()));
