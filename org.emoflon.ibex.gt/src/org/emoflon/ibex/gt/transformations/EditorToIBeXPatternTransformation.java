@@ -562,7 +562,14 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		} else if(value instanceof StochasticFunctionExpression) {
 			return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue(data, ibexPattern, (StochasticFunctionExpression) value));
 		} else if(value instanceof ArithmeticCalculationExpression) {
-			return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue(data, ibexPattern, (ArithmeticCalculationExpression) value));
+			ArithmeticCalculationExpression ace = (ArithmeticCalculationExpression)value;
+			if(ace.getExpression() instanceof EditorAttributeExpression) {
+				return convertAttributeValue(editorPattern, (EditorAttributeExpression) ace.getExpression(), ibexPattern);
+			} else if(ace.getExpression() instanceof EditorLiteralExpression) {
+				return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue((EditorLiteralExpression) ace.getExpression()));
+			} else {
+				return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue(data, ibexPattern, (ArithmeticCalculationExpression) value));
+			}
 		}
 		else {
 			logError("Invalid attribute value: %s", editorAttribute.getValue());
