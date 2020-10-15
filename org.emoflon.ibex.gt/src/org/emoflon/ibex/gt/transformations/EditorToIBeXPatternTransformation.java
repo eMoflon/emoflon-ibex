@@ -1,5 +1,6 @@
 package org.emoflon.ibex.gt.transformations;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,6 +68,61 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelFacto
 public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransformation<IBeXModel> {
 	
 	private Queue<EditorPattern> rulesToBeTransformed = new LinkedList<>();
+	
+	@Override
+	public IBeXModel transform(Collection<EditorGTFile> sourceModels) {
+		sourceModels.forEach(file -> {
+			Objects.requireNonNull(file, "The editor file must not be null!");
+			// flattend all editor patterns
+			file.getPatterns().stream() //
+				.forEach(editorPattern -> calcFlattenedPattern(editorPattern));
+			// transfrom non-abstract editor patterns to ibex patterns
+			file.getPatterns().stream() //
+				.filter(editorPattern -> !editorPattern.isAbstract())
+				.forEach(editorPattern -> transformPattern(data.pattern2flattened.get(editorPattern)));
+		});
+		
+		// transform attribute conditions and complex arithmetic expressions for each editor pattern (may require other ibex patterns)
+		data.ibexContextPatterns.forEach((ibexPattern, editorPattern) -> {
+			if(data.nameToPattern.get(editorPattern.getName()) instanceof IBeXContextPattern) {
+				transformAttributeConditions(editorPattern, (IBeXContextPattern)ibexPattern);
+				transformArithmeticConstraints(editorPattern, (IBeXContextPattern)ibexPattern);
+			} else {
+				IBeXContextAlternatives ibexAltPattern = (IBeXContextAlternatives) data.nameToPattern.get(editorPattern.getName());
+				transformAttributeConditions(editorPattern, ibexAltPattern.getContext());
+				transformArithmeticConstraints(editorPattern, ibexAltPattern.getContext());
+				
+				// do the same for all nested alternative patterns
+				ibexAltPattern.getAlternativePatterns().forEach(pattern -> {
+					transformAttributeConditions(editorPattern, pattern);
+					transformArithmeticConstraints(editorPattern, pattern);
+				});
+			}
+		});
+		
+		while(!rulesToBeTransformed.isEmpty())
+			transformToRule(rulesToBeTransformed.poll());
+		
+		// add arithmetic expressions and probability annotations to rules
+		data.ibexRules.forEach((rule, editorPattern) -> {
+			// fetch lhs
+			IBeXContextPattern lhs = null;
+			if(rule.getLhs() instanceof IBeXContextPattern) {
+				lhs = (IBeXContextPattern) rule.getLhs();
+			} else {
+				lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
+			}
+			
+			rule.getArithmeticConstraints().addAll(lhs.getArithmeticConstraints());
+			rule.setProbability(EditorToStochasticExtensionHelper
+					.transformToIBeXProbability(data, lhs, editorPattern));
+		});
+		
+		IBeXModel model = createSortedIBeXSets();
+		data.clear();
+		
+		return model;
+	}
 
 	@Override
 	public IBeXModel transform(final EditorGTFile file) {
@@ -113,8 +169,11 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			rule.setProbability(EditorToStochasticExtensionHelper
 					.transformToIBeXProbability(data, lhs, editorPattern));
 		});
-
-		return createSortedIBeXSets();
+		
+		IBeXModel model = createSortedIBeXSets();
+		data.clear();
+		
+		return model;
 	}
 
 	/**
@@ -874,4 +933,5 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		convertAttributeValue(editorPattern, editorAttribute, ibexCreatePattern).ifPresent(v -> ibexAssignment.setValue(v));
 		ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
 	}
+
 }
