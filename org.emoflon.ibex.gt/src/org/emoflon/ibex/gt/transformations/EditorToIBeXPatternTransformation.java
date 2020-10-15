@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.function.Predicate;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
@@ -281,8 +281,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		if (editorPattern.getConditions().size() > 1) {
 			transformToAlternatives(editorPattern);
 		} else {
-			IBeXContextPattern ibexPattern = transformToContextPattern(editorPattern, editorPattern.getName(),
-					editorNode -> GTEditorModelUtils.isLocal(editorNode));
+			IBeXContextPattern ibexPattern = transformToContextPattern(editorPattern, editorPattern.getName(), null);
 			if (editorPattern.getConditions().size() == 1) {
 				EditorCondition editorCondition = editorPattern.getConditions().get(0);
 				transformCondition(ibexPattern, editorCondition);
@@ -300,7 +299,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	private void transformToAlternatives(final EditorPattern editorPattern) {
 		IBeXContextAlternatives ibexAlternatives = IBeXPatternModelFactory.eINSTANCE.createIBeXContextAlternatives();
 		ibexAlternatives.setName(editorPattern.getName());
-		ibexAlternatives.setContext(transformToContextPattern(editorPattern, editorPattern.getName(), editorNode -> GTEditorModelUtils.isLocal(editorNode)));
+		ibexAlternatives.setContext(transformToContextPattern(editorPattern, editorPattern.getName(), null));
 		data.nameToPattern.remove(editorPattern.getName());
 		data.node2ibexNode.remove(editorPattern.getName());
 		data.ibexNodes.addAll(ibexAlternatives.getContext().getSignatureNodes());
@@ -309,8 +308,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		
 		for (final EditorCondition editorCondition : editorPattern.getConditions()) {
 			String name = editorPattern.getName() + "-ALTERNATIVE-" + editorCondition.getName();
-			IBeXContextPattern ibexPattern = transformToContextPattern(editorPattern, name,
-					editorNode -> GTEditorModelUtils.isLocal(editorNode));
+			IBeXContextPattern ibexPattern = transformToContextPattern(editorPattern, name, null);
 			transformCondition(ibexPattern, editorCondition);
 			ibexAlternatives.getAlternativePatterns().add(ibexPattern);
 		}
@@ -328,8 +326,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * @param isLocalCheck
 	 *            the condition which nodes shall be local nodes
 	 */
-	private IBeXContextPattern transformToContextPattern(final EditorPattern editorPattern, final String name,
-			final Predicate<EditorNode> isLocalCheck) {
+	private IBeXContextPattern transformToContextPattern(final EditorPattern editorPattern, final String name, final Map<IBeXNode, IBeXNode> nodeMap) {
 		if (data.nameToPattern.containsKey(name)) {
 			return (IBeXContextPattern) data.nameToPattern.get(name);
 		}
@@ -364,6 +361,13 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		// Transform nodes.
 		List<EditorNode> editorNodes = GTEditorModelUtils.getNodesByOperator(editorPattern, EditorOperator.CONTEXT,
 				EditorOperator.DELETE);
+		Set<String> signatureNodeNames = null;
+		if(nodeMap != null) {
+			signatureNodeNames = nodeMap.values().stream() //
+					.map(n -> n.getName()) //
+					.collect(Collectors.toSet());
+		}
+		
 		for (final EditorNode editorNode : editorNodes) {
 			IBeXNode ibexNode = data.node2ibexNode.get(name).get(editorNode);
 			if(ibexNode == null) {
@@ -371,12 +375,20 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				ibexNode = IBeXPatternFactory.createNode(editorNode.getName(), editorNode.getType());
 				data.node2ibexNode.get(name).put(editorNode, ibexNode);
 			}
-
-			if (isLocalCheck.test(editorNode)) {
-				ibexPattern.getLocalNodes().add(ibexNode);
+			if(nodeMap == null) {
+				if (editorNode.isLocal()) {
+					ibexPattern.getLocalNodes().add(ibexNode);
+				} else {
+					ibexPattern.getSignatureNodes().add(ibexNode);
+				}
 			} else {
-				ibexPattern.getSignatureNodes().add(ibexNode);
-			}			
+				if(!signatureNodeNames.contains(editorNode.getName())) {
+					ibexPattern.getLocalNodes().add(ibexNode);
+				} else {
+					ibexPattern.getSignatureNodes().add(ibexNode);
+				}
+			}
+						
 			
 		}
 
@@ -484,13 +496,12 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 */
 	private IBeXContextPattern transformContextPatternForSignature(final EditorPattern editorPattern,
 			final Map<IBeXNode, IBeXNode> nodeMap) {
-		List<String> signatureNodeNames = nodeMap.values().stream() //
+		Set<String> signatureNodeNames = nodeMap.values().stream() //
 				.map(n -> n.getName()) //
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 		String patternName = editorPattern.getName() + "-CONDITION-"
 				+ signatureNodeNames.stream().collect(Collectors.joining(","));
-		return  transformToContextPattern(editorPattern, patternName, 
-				editorNode -> !signatureNodeNames.contains(editorNode.getName()));
+		return  transformToContextPattern(editorPattern, patternName, nodeMap);
 		
 	}
 	
