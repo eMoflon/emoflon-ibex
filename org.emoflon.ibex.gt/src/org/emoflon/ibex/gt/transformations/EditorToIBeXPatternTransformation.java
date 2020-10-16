@@ -578,13 +578,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	}
 	
 	private Optional<IBeXArithmeticExpression> convertAttributeValue(final IBeXAttributeValue value) {
-//		if (value instanceof IBeXAttributeParameter) {
-////			IBeXAttributeParameter param = (IBeXAttributeParameter)value;
-////			IBeXArithmeticAttribute out = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticAttribute();
-////			out.setAttribute(param.g);
-//			return null;
-//		} else 
-			
 		if (value instanceof IBeXConstant) {
 			IBeXConstant constant = (IBeXConstant)value;
 			IBeXArithmeticValueLiteral literal = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValueLiteral();
