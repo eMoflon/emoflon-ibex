@@ -524,14 +524,14 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	@Override
 	public boolean isPatternRelevantForInterpreter(PatternType type) {
 		switch (type) {
+		case SRC:
+		case TRG:
 		case FWD:
 		case BWD:
 		case CONSISTENCY:
 //		case CC:
 		case FILTER_NAC_SRC:
 		case FILTER_NAC_TRG:
-		case SRC:
-		case TRG:
 			return true;
 		default:
 			return false;

@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolCorePatternName;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -12,7 +12,7 @@ import language.TGGRule;
 
 public class ProtocolCorePatternTransformation extends OperationalPatternTransformation {
 
-	public ProtocolCorePatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+	public ProtocolCorePatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, ACAnalysis filterNACAnalysis) {
 		super(parent, options, rule, filterNACAnalysis);
 	}
 
@@ -28,11 +28,6 @@ public class ProtocolCorePatternTransformation extends OperationalPatternTransfo
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
-		// Do nothing
-	}
-
-	@Override
-	protected void transformNACs(IBeXContextPattern ibexPattern) {
 		// Do nothing
 	}
 

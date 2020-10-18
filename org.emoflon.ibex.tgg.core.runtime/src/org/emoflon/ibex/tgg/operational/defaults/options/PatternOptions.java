@@ -2,14 +2,14 @@ package org.emoflon.ibex.tgg.operational.defaults.options;
 
 import java.util.function.BiPredicate;
 
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.ACStrategy;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import language.TGGRuleNode;
 
 public class PatternOptions extends IbexSubOptions {
 	
-	private FilterNACStrategy lookAheadStrategy;
+	private ACStrategy acStrategy;
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
 	 * If this is false (disabled), then edge patterns are never used.
@@ -17,28 +17,26 @@ public class PatternOptions extends IbexSubOptions {
 	private boolean useEdgePatterns;
 	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity;
 	private boolean ignoreDomainConformity;
-	private boolean useSrcTrgPattern;
-	private boolean useGreenCorrPattern;
-	private boolean optimizeSyncPattern;
+	private boolean optimizePattern;
+	private boolean useGenPattern;
 
 	public PatternOptions(IbexOptions options) {
 		super(options);
 		
-		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
+		acStrategy = ACStrategy.FILTER_NACS;
 		useEdgePatterns = false;
 		ignoreInjecitity = (x, y) -> false;
 		ignoreDomainConformity = false;
-		useSrcTrgPattern = false;
-		useGreenCorrPattern = false;
-		optimizeSyncPattern = false;
+		optimizePattern = false;
+		useGenPattern = false;
 	}
 	
-	public FilterNACStrategy lookAheadStrategy() {
-		return lookAheadStrategy;
+	public ACStrategy acStrategy() {
+		return acStrategy;
 	}
 
-	public IbexOptions lookAheadStrategy(FilterNACStrategy lookAheadStrategy) {
-		this.lookAheadStrategy = lookAheadStrategy;
+	public IbexOptions acStrategy(ACStrategy acStrategy) {
+		this.acStrategy = acStrategy;
 		return options;
 	}
 
@@ -69,30 +67,21 @@ public class PatternOptions extends IbexSubOptions {
 		return options;
 	}
 	
-	public boolean useSrcTrgPattern() {
-		return useSrcTrgPattern;
+	public boolean optimizePattern() {
+		return optimizePattern;
 	}
 
-	public IbexOptions useSrcTrgPattern(boolean value) {
-		useSrcTrgPattern = value;
+	public IbexOptions optimizePattern(boolean optimizePattern) {
+		this.optimizePattern = optimizePattern;
 		return options;
 	}
 	
-	public boolean useGreenCorrPattern() {
-		return useGreenCorrPattern;
-	}
-	
-	public IbexOptions useGreenCorrPattern(boolean value) {
-		useGreenCorrPattern = value;
-		return options;
-	}
-	
-	public boolean optimizeSyncPattern() {
-		return optimizeSyncPattern;
+	public boolean useGenPattern() {
+		return useGenPattern;
 	}
 
-	public IbexOptions optimizeSyncPattern(boolean optimizeSyncPattern) {
-		this.optimizeSyncPattern = optimizeSyncPattern;
+	public IbexOptions useGenPattern(boolean useGenPattern) {
+		this.useGenPattern = useGenPattern;
 		return options;
 	}
 

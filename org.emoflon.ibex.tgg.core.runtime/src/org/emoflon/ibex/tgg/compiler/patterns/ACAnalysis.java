@@ -21,14 +21,14 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class FilterNACAnalysis {
+public class ACAnalysis {
 	private DomainType domain;
 	private TGG tgg;
 	private IbexOptions options;
 	
 	protected Map<EReference, Collection<TGGRule>> ref2rules = new HashMap<>();
 
-	public FilterNACAnalysis(TGG tgg, IbexOptions options) {
+	public ACAnalysis(TGG tgg, IbexOptions options) {
 		this.tgg = tgg;
 		this.options = options;
 		
@@ -51,7 +51,7 @@ public class FilterNACAnalysis {
 	public Collection<FilterNACCandidate> computeFilterNACCandidates(TGGRule rule, DomainType domain) {
 		final Collection<FilterNACCandidate> filterNACs = new ArrayList<>();
 
-		if (options.patterns.lookAheadStrategy().equals(FilterNACStrategy.NONE))
+		if (options.patterns.acStrategy().equals(ACStrategy.NONE))
 			return filterNACs;
 
 		for (TGGRuleNode n : rule.getNodes()) {
@@ -96,9 +96,12 @@ public class FilterNACAnalysis {
 	protected boolean isRedundantDueToEMFContainmentSemantics(TGGRule rule, FilterNACCandidate filterNAC) {
 		for (TGGRuleEdge edge : rule.getEdges()) {
 			// Edges must be of same type and be containment
-			if (edge.getType().equals(filterNAC.getEdgeType()) && edge.getType().isContainment()) {
+			boolean hasContainmentEOpposite = edge.getType().getEOpposite() != null ? edge.getType().getEOpposite().isContainment() : false;
+			if (edge.getType().equals(filterNAC.getEdgeType()) && (edge.getType().isContainment() || hasContainmentEOpposite)) {
 				// Edges contain the same node (impossible so filter NAC can be ignored)
 				if (filterNAC.getEDirection().equals(EdgeDirection.INCOMING) && edge.getTrgNode().equals(filterNAC.getNodeInRule()))
+					return true;
+				if(filterNAC.getEDirection().equals(EdgeDirection.OUTGOING) && edge.getSrcNode().equals(filterNAC.getNodeInRule()))
 					return true;
 			}
 		}
