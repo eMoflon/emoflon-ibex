@@ -26,6 +26,7 @@ import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
@@ -462,13 +463,13 @@ public class ContextPatternTransformation {
 				continue;
 				
 			IBeXAttributeConstraint ibexAttrConstraint = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeConstraint();
-			ibexAttrConstraint.setNode(ibexNode.get());
-			ibexAttrConstraint.setType(attrExp.getAttribute());
-
 			IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
 			ibexAttrConstraint.setRelation(ibexRelation);
+			
+			ibexAttrConstraint.setLhs(convertAttributeValue(ibexNode.get(), attrExp.getAttribute()));
 			convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
-					.ifPresent(value -> ibexAttrConstraint.setValue(value));
+					.ifPresent(value -> ibexAttrConstraint.setRhs(value));
+			
 			ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
 		}
 	}
@@ -483,6 +484,13 @@ public class ContextPatternTransformation {
 			logger.error("Invalid attribute value: " + valueExpr);
 			return Optional.empty();
 		}
+	}
+	
+	private IBeXAttributeValue convertAttributeValue(IBeXNode ibexNode, EAttribute attribute) {
+		IBeXAttributeExpression expression = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
+		expression.setNode(ibexNode);
+		expression.setAttribute(attribute);
+		return expression;
 	}
 
 	private IBeXEnumLiteral convertAttributeValue(TGGEnumExpression valueExpr) {

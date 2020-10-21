@@ -277,6 +277,13 @@ class ArithmeticExtensionGenerator {
 		return list
 	}
 	
+	static def getArithmeticConstraint(IBeXArithmeticExpression lhs, IBeXArithmeticExpression rhs, boolean isIMatch){
+		var list = new ArrayList()
+		getArithmeticConstraint(lhs, list, isIMatch)
+		getArithmeticConstraint(rhs, list, isIMatch)
+		return list
+	}
+	
 	/**
 	 * returns the arithmetic constraints for the expression; can be used for IMatch matches or matches
 	 * of the generated match classes
