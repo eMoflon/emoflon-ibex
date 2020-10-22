@@ -1,6 +1,7 @@
 package org.emoflon.ibex.gt.transformations;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,6 +24,15 @@ abstract public class AbstractModelTransformation<SourceModel, TargetModel> {
 	public AbstractModelTransformation() {
 		this.errors = new ArrayList<String>();
 	}
+	
+	/**
+	 * Transforms the source consisting of multiple files into an aggregated target model.
+	 * 
+	 * @param sourceModel
+	 *            the source model, must not be <code>null</code>
+	 * @return the target model
+	 */
+	abstract public TargetModel transform(final Collection<SourceModel> sourceModels);
 
 	/**
 	 * Transforms the source into the target model.

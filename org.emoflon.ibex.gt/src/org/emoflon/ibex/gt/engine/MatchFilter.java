@@ -12,7 +12,9 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
@@ -125,15 +127,30 @@ public class MatchFilter {
 	public static Stream<IMatch> filterAttributeConstraintsWithParameter(Stream<IMatch> matches,
 			final IBeXContextPattern pattern, final Map<String, Object> parameters) {
 		for (IBeXAttributeConstraint ac : pattern.getAttributeConstraint()) {
-			if (ac.getValue() instanceof IBeXAttributeParameter) {
-				String nodeName = ac.getNode().getName();
-				String parameterName = ((IBeXAttributeParameter) ac.getValue()).getName();
+			if (ac.getLhs() instanceof IBeXAttributeExpression && ac.getRhs() instanceof IBeXAttributeParameter) {
+				IBeXAttributeExpression lhs = (IBeXAttributeExpression)ac.getLhs();
+				IBeXAttributeParameter rhs = (IBeXAttributeParameter)ac.getRhs();
+				String nodeName = lhs.getNode().getName();
+				String parameterName = rhs.getName();
 				if (!parameters.containsKey(parameterName)) {
 					throw new IllegalArgumentException("Missing required parameter " + parameterName);
 				}
 				matches = matches.filter(m -> {
 					EObject node = (EObject) m.get(nodeName);
-					Object currentValue = node.eGet(ac.getType());
+					Object currentValue = node.eGet(lhs.getAttribute());
+					return compare(currentValue, parameters.get(parameterName), ac.getRelation());
+				});
+			} else if(ac.getRhs() instanceof IBeXAttributeExpression && ac.getLhs() instanceof IBeXAttributeParameter) {
+				IBeXAttributeExpression lhs = (IBeXAttributeExpression)ac.getRhs();
+				IBeXAttributeParameter rhs = (IBeXAttributeParameter)ac.getLhs();
+				String nodeName = lhs.getNode().getName();
+				String parameterName = rhs.getName();
+				if (!parameters.containsKey(parameterName)) {
+					throw new IllegalArgumentException("Missing required parameter " + parameterName);
+				}
+				matches = matches.filter(m -> {
+					EObject node = (EObject) m.get(nodeName);
+					Object currentValue = node.eGet(lhs.getAttribute());
 					return compare(currentValue, parameters.get(parameterName), ac.getRelation());
 				});
 			}

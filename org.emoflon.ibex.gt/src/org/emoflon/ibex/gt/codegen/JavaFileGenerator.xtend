@@ -528,12 +528,13 @@ class JavaFileGenerator {
 				@Override
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
-						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
+						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'»
+«««						Protect against div/0
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
-						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
+						«ENDFOR»
 					);				
 				}
 				«ENDIF»
@@ -653,11 +654,12 @@ class JavaFileGenerator {
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
 						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstraints(pattern) SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
+«««						Protection from div/0
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
-						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
+						«ENDFOR»
 					);				
 				}
 				«ENDIF»

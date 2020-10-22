@@ -266,10 +266,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private <T> T transformEditorModels(final Map<IFile, EditorGTFile> editorModels,
 			final AbstractModelTransformation<EditorGTFile, T> transformation, final String errorCountMessageFormat) {
 		T targetModel = null;
-		for (final IFile gtFile : editorModels.keySet()) {
-			EditorGTFile editorModel = editorModels.get(gtFile);
-			targetModel = transformation.transform(editorModel);
-		}
+//		for (final IFile gtFile : editorModels.keySet()) {
+//			EditorGTFile editorModel = editorModels.get(gtFile);
+//			targetModel = transformation.transform(editorModel);
+//		}
+		targetModel = transformation.transform(editorModels.values());
 		if (transformation.hasErrors()) {
 			logError(String.format(errorCountMessageFormat, transformation.countErrors()));
 			transformation.getErrors().forEach(e -> logError(e));

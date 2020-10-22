@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
@@ -128,8 +130,11 @@ public class IBeXPatternOptimiser {
 
 	private static void optimizeAttributeConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		Collection<IBeXAttributeConstraint> revokedConstraints = new ArrayList<>();
-		for (IBeXAttributeConstraint constraint : invoker.getAttributeConstraint()) {
-			if(invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(constraint.getNode().getName()))) {
+		for (IBeXAttributeConstraint constraint : invoker.getAttributeConstraint().stream()
+				.filter(constraint -> (constraint.getLhs() instanceof IBeXAttributeExpression))
+				.collect(Collectors.toList())) {
+			if(invokee.getSignatureNodes().stream()
+					.anyMatch(n -> n.getName().equals(((IBeXAttributeExpression)constraint.getLhs()).getNode().getName()))) {
 				revokedConstraints.add(constraint);
 			}
 		}
