@@ -14,22 +14,27 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 
 public class OperationalMultiplicityConflict extends Conflict implements CRS_PreferSource, CRS_PreferTarget {
 
-	protected Set<ITGGMatch> violatingMatches;
+	protected Set<ITGGMatch> edgeAddingMatches;
+	protected Set<ITGGMatch> edgeRemovingMatches;
 	protected EObject subject;
 	protected EReference reference;
+	protected int violationCounter;
 
-	public OperationalMultiplicityConflict(ConflictContainer container, EObject subject, EReference reference, Set<ITGGMatch> violatingMatches) {
+	public OperationalMultiplicityConflict(ConflictContainer container, EObject subject, EReference reference, //
+			Set<ITGGMatch> edgeAddingMatches, Set<ITGGMatch> edgeRemovingMatches, int violationCounter) {
 		super(container);
 		this.subject = subject;
 		this.reference = reference;
-		this.violatingMatches = violatingMatches;
+		this.edgeAddingMatches = edgeAddingMatches;
+		this.edgeRemovingMatches = edgeRemovingMatches;
+		this.violationCounter = violationCounter;
 	}
 
 	@Override
 	protected Set<ITGGMatch> initConflictMatches() {
 		Set<ITGGMatch> result = new HashSet<>();
 		result.add(getMatch());
-		result.addAll(violatingMatches);
+		result.addAll(edgeAddingMatches);
 		return result;
 	}
 
@@ -50,10 +55,19 @@ public class OperationalMultiplicityConflict extends Conflict implements CRS_Pre
 
 	@Override
 	public void crs_preferSource() {
-		for (ITGGMatch match : violatingMatches) {
-			if (match.getType() != PatternType.BWD)
-				continue;
-			revokeMatch(match);
+		// TODO adrianm: only revoke/restore as many matches as needed to resolve the conflict
+		if (violationCounter > 0) {
+			for (ITGGMatch match : edgeAddingMatches) {
+				if (match.getType() != PatternType.BWD)
+					continue;
+				revokeMatch(match);
+			}
+		} else {
+			for (ITGGMatch match : edgeRemovingMatches) {
+				// TODO adrianm: only restore matches which were modified on the respective domain
+				// TODO adrianm: also restore matches underneath?
+				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
+			}
 		}
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
@@ -62,10 +76,16 @@ public class OperationalMultiplicityConflict extends Conflict implements CRS_Pre
 
 	@Override
 	public void crs_preferTarget() {
-		for (ITGGMatch match : violatingMatches) {
-			if (match.getType() != PatternType.FWD)
-				continue;
-			revokeMatch(match);
+		if (violationCounter > 0) {
+			for (ITGGMatch match : edgeAddingMatches) {
+				if (match.getType() != PatternType.FWD)
+					continue;
+				revokeMatch(match);
+			}
+		} else {
+			for (ITGGMatch match : edgeRemovingMatches) {
+				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
+			}
 		}
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");

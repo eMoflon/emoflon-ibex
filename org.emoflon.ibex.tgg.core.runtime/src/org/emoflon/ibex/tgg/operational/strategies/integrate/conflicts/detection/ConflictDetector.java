@@ -42,8 +42,6 @@ public class ConflictDetector {
 
 	private INTEGRATE integrate;
 
-	private MultiplicityCounter multiplicityCounter;
-	private Set<PrecedenceNode> cachedAddedConsNodes;
 	private Set<ITGGMatch> cachedAddedFwdBwdMatches;
 
 	private Map<ITGGMatch, ConflictContainer> match2conflictContainer;
@@ -51,19 +49,16 @@ public class ConflictDetector {
 
 	public ConflictDetector(INTEGRATE integrate) {
 		this.integrate = integrate;
-		this.multiplicityCounter = new MultiplicityCounter(integrate.getOptions().tgg.getFlattenedConcreteTGGRules());
-		cachedAddedConsNodes = new HashSet<>();
 		cachedAddedFwdBwdMatches = new HashSet<>();
 	}
 
-	public Set<ConflictContainer> detectConflicts() {
+	public Map<ITGGMatch, ConflictContainer> detectConflicts() {
 		match2conflictContainer = Collections.synchronizedMap(new HashMap<>());
 		match2sortedRollBackCauses = Collections.synchronizedMap(new HashMap<>());
 
 		integrate.getClassifiedBrokenMatches().values().parallelStream() //
 				.forEach(brokenMatch -> detectMatchConflicts(brokenMatch));
 		detectDeletePreserveConflicts();
-		detectOpMultiplicityConflicts();
 
 		// sort out empty conflict containers
 		for (Iterator<ConflictContainer> iterator = match2conflictContainer.values().iterator(); iterator.hasNext();) {
@@ -72,12 +67,11 @@ public class ConflictDetector {
 				iterator.remove();
 		}
 
-		return new HashSet<>(match2conflictContainer.values());
+		return match2conflictContainer;
 	}
 
 	private void detectDeletePreserveConflicts() {
-		// we only iterate over src/trg matches which are not part of a consistency match (already
-		// filtered in precedence graph)
+		// we only iterate over src/trg matches which are not part of a consistency match (already filtered in precedence graph)
 
 		// TODO adrianm: parallel stream causes concurrent modification exception
 		integrate.getPrecedenceGraph().getSourceNodes().stream() //
@@ -281,30 +275,22 @@ public class ConflictDetector {
 		return false;
 	}
 
-	private void detectOpMultiplicityConflicts() {
-		// fill multiplicity counter
-		Set<PrecedenceNode> actConsNodes = integrate.getPrecedenceGraph().getConsistencyNodes();
-		for (PrecedenceNode consNode : Sets.difference(actConsNodes, cachedAddedConsNodes))
-			multiplicityCounter.addMatch(consNode.getMatch());
-		for (PrecedenceNode consNode : Sets.difference(cachedAddedConsNodes, actConsNodes))
-			multiplicityCounter.removeMatch(consNode.getMatch());
-		cachedAddedConsNodes = new HashSet<>(actConsNodes);
+	public Map<ITGGMatch, ConflictContainer> detectOpMultiplicityConflicts() {
+		Map<ITGGMatch, ConflictContainer> match2conflictContainer = new HashMap<>();
 
+		// fill multiplicity counter with applicable fwd & bwd matches (consistency matches are caught directly at INTEGRATE)
 		Set<ITGGMatch> actFwdBwdMatches = integrate.getMatchContainer().getMatches();
 		for (ITGGMatch fwdBwdMatch : Sets.difference(actFwdBwdMatches, cachedAddedFwdBwdMatches))
-			multiplicityCounter.addMatch(fwdBwdMatch);
+			integrate.getMultiplicityCounter().notifyAddedMatch(fwdBwdMatch);
 		for (ITGGMatch fwdBwdMatch : Sets.difference(cachedAddedFwdBwdMatches, actFwdBwdMatches))
-			multiplicityCounter.removeMatch(fwdBwdMatch);
+			integrate.getMultiplicityCounter().notifyRemovedMatch(fwdBwdMatch);
 		cachedAddedFwdBwdMatches = new HashSet<>(actFwdBwdMatches);
 
-		// TODO adrianm: revert deletions to get additional FWD/BWD matches, which are required to
-		// detect all conflicts -> not needed, since in the multiplicity counter we also cover
-		// consistency matches
-
 		// detect conflicts
-		multiplicityCounter.getSubject2reference2numOfEdges().forEach((subj, ref2numOfEdges) -> {
+		integrate.getMultiplicityCounter().getSubject2reference2numOfEdges().forEach((subj, ref2numOfEdges) -> {
 			ref2numOfEdges.forEach((ref, numOfEdges) -> {
-				if (multiplicityCounter.violatesMultiplicity(ref, numOfEdges)) {
+				int violationCounter = integrate.getMultiplicityCounter().violatesMultiplicity(ref, numOfEdges);
+				if (violationCounter != 0) {
 					ITGGMatch underlyingMatch = null;
 					for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(subj)) {
 						if (node.getMatch().getType() == PatternType.CONSISTENCY) {
@@ -320,13 +306,18 @@ public class ConflictDetector {
 					ConflictContainer container = match2conflictContainer.computeIfAbsent(underlyingMatch, //
 							key -> new ConflictContainer(integrate, tmpUnderlyingMatch));
 
-					Set<ITGGMatch> violatingMatches = multiplicityCounter.getOutgoingEdge2matches() //
-							.getOrDefault(new OutgoingEdge(subj, ref), Collections.emptySet());
+					OutgoingEdge outgoingEdge = new OutgoingEdge(subj, ref);
+					Set<ITGGMatch> edgeAddingMatches = integrate.getMultiplicityCounter().getOutgoingEdge2edgeAddingMatches() //
+							.getOrDefault(outgoingEdge, Collections.emptySet());
+					Set<ITGGMatch> edgeRemovingMatches = integrate.getMultiplicityCounter().getOutgoingEdge2edgeRemovingMatches() //
+							.getOrDefault(outgoingEdge, Collections.emptySet());
 
-					new OperationalMultiplicityConflict(container, subj, ref, violatingMatches);
+					new OperationalMultiplicityConflict(container, subj, ref, edgeAddingMatches, edgeRemovingMatches, violationCounter);
 				}
 			});
 		});
+
+		return match2conflictContainer;
 	}
 
 }

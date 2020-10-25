@@ -88,6 +88,7 @@ public class FragmentProvider {
 			i.classifyBrokenMatches(true);
 			i.detectConflicts();
 			i.resolveConflicts();
+			i.detectAndResolveOpMultiplicityConflicts();
 			
 			i.getTimes().addTo("fragments:ResolveConflicts", Timer.stop());
 		}
