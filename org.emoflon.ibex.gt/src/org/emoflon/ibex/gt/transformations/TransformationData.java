@@ -66,5 +66,18 @@ public class TransformationData {
 	 * All rules.
 	 */
 	public Map<IBeXRule, EditorPattern> ibexRules = new HashMap<>();
+	
+	public void clear() {
+		pattern2flattened.clear();
+		ibexNodes.clear();
+		ibexEdges.clear();
+		node2ibexNode.clear();
+		reference2ibexEdge.clear();
+		nameToPattern.clear();
+		ibexContextPatterns.clear();
+		ibexCreatePatterns.clear();
+		ibexDeletePatterns.clear();
+		ibexRules.clear();
+	}
 
 }

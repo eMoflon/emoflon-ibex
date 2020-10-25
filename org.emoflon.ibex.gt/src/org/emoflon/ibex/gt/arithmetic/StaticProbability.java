@@ -8,19 +8,21 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.emoflon.ibex.gt.api.GraphTransformationMatch;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
+import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType;
 
 /**
  * class for all probabilities that do not depend on parameters
  */
-public class StaticProbability<M extends GraphTransformationMatch<M, P>, P extends GraphTransformationPattern<M, P>> implements Probability<M, P> {
+public class StaticProbability<M extends GraphTransformationMatch<M, P>, P extends GraphTransformationPattern<M, P>> extends Probability<M, P> {
 	
 	double mean, sd;
 	IBeXDistributionType distribution;
 	Random rnd;
 	OptionalDouble parameter;
 	
-	public StaticProbability(double mean, double sd, IBeXDistributionType distribution, OptionalDouble parameter) {
+	public StaticProbability(final GraphTransformationInterpreter interpreter, double mean, double sd, IBeXDistributionType distribution, OptionalDouble parameter) {
+		super(interpreter);
 		this.mean = mean;
 		this.sd = sd;
 		this.distribution = distribution;

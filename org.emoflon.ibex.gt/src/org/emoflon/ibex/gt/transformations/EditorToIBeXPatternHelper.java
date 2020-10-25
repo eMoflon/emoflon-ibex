@@ -14,7 +14,8 @@ import org.eclipse.emf.ecore.EDataType;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorApplicationCondition;
-import org.emoflon.ibex.gt.editor.gT.EditorAttribute;
+import org.emoflon.ibex.gt.editor.gT.EditorAttributeAssignment;
+import org.emoflon.ibex.gt.editor.gT.EditorAttributeConstraint;
 import org.emoflon.ibex.gt.editor.gT.EditorCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
@@ -108,20 +109,23 @@ final public class EditorToIBeXPatternHelper {
 	}
 	
 	/**
-	 * Checks whether the editor attribute is an assignment.
-	 */
-	public static final Predicate<EditorAttribute> isAssignment = a -> a.getRelation() == EditorRelation.ASSIGNMENT;
-	
-	/**
 	 * A comparator for editor attributes.
 	 */
-	public static final Comparator<EditorAttribute> sortAttribute = (a, b) -> {
-		int compareAttributes = a.getAttribute().getName().compareTo(b.getAttribute().getName());
+	public static final Comparator<EditorAttributeConstraint> sortAttributeConstraint = (a, b) -> {
+		int compareAttributes = a.getRelation().getName().compareTo(b.getRelation().getName());
 		if (compareAttributes != 0) {
 			return compareAttributes;
 		}
 
 		return a.getRelation().compareTo(b.getRelation());
+	};
+	
+	/**
+	 * A comparator for editor attributes.
+	 */
+	public static final Comparator<EditorAttributeAssignment> sortAttributeAssignment = (a, b) -> {
+		int compareAttributes = a.getAttribute().getName().compareTo(b.getAttribute().getName());
+		return compareAttributes;
 	};
 	
 	/**
@@ -220,11 +224,11 @@ final public class EditorToIBeXPatternHelper {
 	 *            the condition for filtering attributes
 	 * @return the attribute assignments
 	 */
-	public static List<EditorAttribute> filterAttributes(final EditorNode editorNode,
-			final Predicate<EditorAttribute> filterCondition) {
+	public static List<EditorAttributeAssignment> filterAttributes(final EditorNode editorNode,
+			final Predicate<EditorAttributeAssignment> filterCondition) {
 		return editorNode.getAttributes().stream() //
 				.filter(filterCondition) //
-				.sorted(sortAttribute) //
+				.sorted(sortAttributeAssignment) //
 				.collect(Collectors.toList());
 	}
 	
@@ -265,6 +269,26 @@ final public class EditorToIBeXPatternHelper {
 		IBeXEnumLiteral ibexEnumLiteral = IBeXPatternModelFactory.eINSTANCE.createIBeXEnumLiteral();
 		ibexEnumLiteral.setLiteral(editorExpression.getLiteral());
 		return ibexEnumLiteral;
+	}
+	
+	/**
+	 * Sets the attribute value for the given attribute to the literal expression.
+	 * 
+	 * @param editorAttribute
+	 *            the attribute constraint of the editor model
+	 * @return the IBeXConstant
+	 */
+	public static IBeXConstant convertAttributeValue(final EditorLiteralExpression editorExpression) {
+		String s = editorExpression.getValue();
+		Optional<Object> object = GTEditorAttributeUtils.convertEDataTypeStringToObject(editorExpression.getValue());
+		if (object.isPresent()) {
+			IBeXConstant ibexConstant = IBeXPatternModelFactory.eINSTANCE.createIBeXConstant();
+			ibexConstant.setValue(object.get());
+			ibexConstant.setStringValue(object.get().toString());
+			return ibexConstant;
+		} else {
+			throw new IllegalArgumentException("Invalid attribute value: " + s);
+		}
 	}
 
 	/**

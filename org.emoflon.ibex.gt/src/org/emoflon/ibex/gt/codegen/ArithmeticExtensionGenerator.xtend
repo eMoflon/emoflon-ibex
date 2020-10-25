@@ -35,21 +35,25 @@ class ArithmeticExtensionGenerator {
 	new(String packageName){
 		this.packageName = packageName
 	}
+	
+	def getProbabilityDeclaration(IBeXRule rule){
+		return '''Optional<Probability«getGenerics(rule)»> probability;'''		
+	}
+	
 	/**
 	 * Returns the initialization of the probability of the rule depended if the rule is static or not
 	 */
-	def getProbability(IBeXRule rule){
-		var declaration = '''Optional<Probability«getGenerics(rule)»> probability = '''		
-		if(rule.probability === null) return declaration + 'Optional.empty();'		
+	def getProbabilityInitialization(IBeXRule rule){	
+		if(rule.probability === null) return 'Optional.empty()'		
 		if(isStatic(rule.probability)){
 			val function = rule.probability.distribution;			
-			return declaration + '''Optional.of(new StaticProbability«getGenerics(rule)»(«
+			return '''Optional.of(new StaticProbability«getGenerics(rule)»(interpreter, «
 			transformExpression(function.mean, false)», «
 			transformExpression(function.stddev, false)», «getDistribution(function.type)», «
 			IF rule.probability.parameter !== null» OptionalDouble.of(«transformExpression(rule.probability.parameter, false)
-			»)«ELSE»OptionalDouble.empty()«ENDIF»));'''
+			»)«ELSE»OptionalDouble.empty()«ENDIF»))'''
 		} 
-		else return declaration + '''Optional.of(new «getProbabilityClassName(rule)»());'''
+		else return '''Optional.of(new «getProbabilityClassName(rule)»(interpreter))'''
 	}
 	
 	/**
@@ -63,13 +67,17 @@ class ArithmeticExtensionGenerator {
 		 * The probability class for the rule «getRuleClassName(rule)»; calculates the probability
 		 * that the rule will be applied
 		 */
-		public class «getProbabilityClassName(rule)» implements Probability«getGenerics(rule)»{
+		public class «getProbabilityClassName(rule)» extends Probability«getGenerics(rule)»{
 			«IF probability.parameter!== null»
 			«getDistributionFunction(probability.distribution.type)» distribution;
 			«ELSE»
 			
 			Random rnd = new Random();
 			«ENDIF»
+			
+			public «getProbabilityClassName(rule)»(final GraphTransformationInterpreter interpreter) {
+				super(interpreter);
+			}
 			
 			@Override
 			public double getProbability(«getMatchClassName(rule)» match){
@@ -269,6 +277,13 @@ class ArithmeticExtensionGenerator {
 		return list
 	}
 	
+	static def getArithmeticConstraint(IBeXArithmeticExpression lhs, IBeXArithmeticExpression rhs, boolean isIMatch){
+		var list = new ArrayList()
+		getArithmeticConstraint(lhs, list, isIMatch)
+		getArithmeticConstraint(rhs, list, isIMatch)
+		return list
+	}
+	
 	/**
 	 * returns the arithmetic constraints for the expression; can be used for IMatch matches or matches
 	 * of the generated match classes
@@ -326,6 +341,8 @@ class ArithmeticExtensionGenerator {
 		imports.addAll(
 			'org.emoflon.ibex.gt.arithmetic.Probability',
 			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
+			'java.util.HashMap',
+			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'''«getSubPackageName('api.matches')».«getMatchClassName(rule)»''',
 			'''«getSubPackageName('api.rules')».«getRuleClassName(rule)»'''
 			

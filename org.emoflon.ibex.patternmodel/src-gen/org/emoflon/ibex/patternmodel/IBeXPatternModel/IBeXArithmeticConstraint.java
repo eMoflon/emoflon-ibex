@@ -13,9 +13,9 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getParameter <em>Parameter</em>}</li>
- *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getLhs <em>Lhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getRelation <em>Relation</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getRhs <em>Rhs</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXArithmeticConstraint()
@@ -24,48 +24,26 @@ import org.eclipse.emf.ecore.EObject;
  */
 public interface IBeXArithmeticConstraint extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Parameter</b></em>' containment reference.
+	 * Returns the value of the '<em><b>Lhs</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Parameter</em>' containment reference.
-	 * @see #setParameter(IBeXArithmeticAttribute)
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXArithmeticConstraint_Parameter()
+	 * @return the value of the '<em>Lhs</em>' containment reference.
+	 * @see #setLhs(IBeXArithmeticExpression)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXArithmeticConstraint_Lhs()
 	 * @model containment="true" required="true"
 	 * @generated
 	 */
-	IBeXArithmeticAttribute getParameter();
+	IBeXArithmeticExpression getLhs();
 
 	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getParameter <em>Parameter</em>}' containment reference.
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getLhs <em>Lhs</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Parameter</em>' containment reference.
-	 * @see #getParameter()
+	 * @param value the new value of the '<em>Lhs</em>' containment reference.
+	 * @see #getLhs()
 	 * @generated
 	 */
-	void setParameter(IBeXArithmeticAttribute value);
-
-	/**
-	 * Returns the value of the '<em><b>Expression</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Expression</em>' containment reference.
-	 * @see #setExpression(IBeXArithmeticExpression)
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXArithmeticConstraint_Expression()
-	 * @model containment="true" required="true"
-	 * @generated
-	 */
-	IBeXArithmeticExpression getExpression();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getExpression <em>Expression</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Expression</em>' containment reference.
-	 * @see #getExpression()
-	 * @generated
-	 */
-	void setExpression(IBeXArithmeticExpression value);
+	void setLhs(IBeXArithmeticExpression value);
 
 	/**
 	 * Returns the value of the '<em><b>Relation</b></em>' attribute.
@@ -91,5 +69,27 @@ public interface IBeXArithmeticConstraint extends EObject {
 	 * @generated
 	 */
 	void setRelation(IBeXRelation value);
+
+	/**
+	 * Returns the value of the '<em><b>Rhs</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Rhs</em>' containment reference.
+	 * @see #setRhs(IBeXArithmeticExpression)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXArithmeticConstraint_Rhs()
+	 * @model containment="true" required="true"
+	 * @generated
+	 */
+	IBeXArithmeticExpression getRhs();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint#getRhs <em>Rhs</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Rhs</em>' containment reference.
+	 * @see #getRhs()
+	 * @generated
+	 */
+	void setRhs(IBeXArithmeticExpression value);
 
 } // IBeXArithmeticConstraint

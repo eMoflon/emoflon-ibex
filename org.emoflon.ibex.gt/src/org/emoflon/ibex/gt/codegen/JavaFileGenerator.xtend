@@ -476,11 +476,10 @@ class JavaFileGenerator {
 				 * The probability that the rule will be applied; if the rule has no probability,
 				 * then the Optional will be empty
 				 */
-				private static «probabilityGenerator.getProbability(rule)»
 			
 				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
 						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR»
-					super(api, interpreter, patternName, probability);
+					super(api, interpreter, patternName, «probabilityGenerator.getProbabilityInitialization(rule)»);
 					«FOR parameter : rule.parameters»
 						«getMethodName('set', parameter.name)»(«parameter.name»Value);
 					«ENDFOR»
@@ -529,12 +528,13 @@ class JavaFileGenerator {
 				@Override
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
-						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
+						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'»
+«««						Protect against div/0
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
-						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
+						«ENDFOR»
 					);				
 				}
 				«ENDIF»
@@ -654,11 +654,12 @@ class JavaFileGenerator {
 				protected Stream<IMatch> untypedMatchStream(){
 					return super.untypedMatchStream().filter( match -> 
 						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstraints(pattern) SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.expression, true)»
+«««						Protection from div/0
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
-						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						ArithmeticExtensionGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
+						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
+						«ENDFOR»
 					);				
 				}
 				«ENDIF»
