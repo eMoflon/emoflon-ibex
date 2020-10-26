@@ -73,7 +73,7 @@ public class ACAnalysis {
 						continue;
 					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg))
 						continue;
-
+					
 					// Collect all Filter NACs, but do not add them yet as negative invocations
 					if (thereIsNoSavingRule(domain, eType, eDirection, tgg))
 						filterNACs.add(new FilterNACCandidate(n, eType, eDirection));
@@ -94,18 +94,20 @@ public class ACAnalysis {
 	}
 
 	protected boolean isRedundantDueToEMFContainmentSemantics(TGGRule rule, FilterNACCandidate filterNAC) {
+		EReference eOpposite = filterNAC.getEdgeType().getEOpposite();
 		for (TGGRuleEdge edge : rule.getEdges()) {
 			// Edges must be of same type and be containment
-			boolean hasContainmentEOpposite = edge.getType().getEOpposite() != null ? edge.getType().getEOpposite().isContainment() : false;
-			if (edge.getType().equals(filterNAC.getEdgeType()) && (edge.getType().isContainment() || hasContainmentEOpposite)) {
+			if (edge.getType().equals(filterNAC.getEdgeType()) && edge.getType().isContainment()) {
 				// Edges contain the same node (impossible so filter NAC can be ignored)
 				if (filterNAC.getEDirection().equals(EdgeDirection.INCOMING) && edge.getTrgNode().equals(filterNAC.getNodeInRule()))
 					return true;
-				if(filterNAC.getEDirection().equals(EdgeDirection.OUTGOING) && edge.getSrcNode().equals(filterNAC.getNodeInRule()))
+			}
+			if(eOpposite != null && eOpposite.isContainment()) {
+				if (filterNAC.getEDirection().equals(EdgeDirection.OUTGOING) && edge.getSrcNode().equals(filterNAC.getNodeInRule()))
 					return true;
 			}
 		}
-
+		
 		return false;
 	}
 

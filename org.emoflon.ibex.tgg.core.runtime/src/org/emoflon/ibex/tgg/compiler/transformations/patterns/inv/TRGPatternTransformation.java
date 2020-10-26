@@ -36,7 +36,7 @@ public class TRGPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected void transformNodes(IBeXContextPattern ibexPattern) {
-		List<TGGRuleNode> nodes = getNodesByDomain(rule, DomainType.SRC);
+		List<TGGRuleNode> nodes = getNodesByDomain(rule, DomainType.TRG);
 
 		for (final TGGRuleNode node : nodes) {
 			parent.transformNode(ibexPattern, node);
@@ -49,7 +49,7 @@ public class TRGPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected void transformEdges(IBeXContextPattern ibexPattern) {
-		List<TGGRuleEdge> edges = getEdgesByDomain(rule, DomainType.SRC);
+		List<TGGRuleEdge> edges = getEdgesByDomain(rule, DomainType.TRG);
 		
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
@@ -57,8 +57,8 @@ public class TRGPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected boolean patternIsEmpty() {
-		return TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC).isEmpty() &&
-				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC).isEmpty();
+		return TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG).isEmpty() &&
+				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG).isEmpty();
 	}
 
 }
