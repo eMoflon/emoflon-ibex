@@ -90,7 +90,6 @@ public class ContextPatternTransformation {
 	public static final int MAX_NUM_OF_EDGES_IN_PATTERN = 3;
 
 	protected static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
-	private final boolean USE_INVOCATIONS_FOR_REFERENCES;
 	private IbexOptions options;
 	private List<IBeXContext> ibexContextPatterns = new LinkedList<>();
 
@@ -105,7 +104,6 @@ public class ContextPatternTransformation {
 
 	public ContextPatternTransformation(IbexOptions options, MatchDistributor distributor) {
 		this.options = options;
-		this.USE_INVOCATIONS_FOR_REFERENCES = options.patterns.useEdgePatterns();
 		this.distributor = distributor;
 		this.acPatternTransformation = new ACPatternTransformation(this, options);
 

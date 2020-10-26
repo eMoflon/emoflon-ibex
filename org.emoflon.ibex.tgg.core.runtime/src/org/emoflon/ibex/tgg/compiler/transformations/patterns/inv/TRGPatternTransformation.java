@@ -1,12 +1,8 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.inv;
 
-import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperator;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateSRCBlackPatternName;
-import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperator;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateTRGBlackPatternName;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByDomain;
-import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByDomain;
-import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
 import java.util.List;
 
@@ -31,7 +27,7 @@ public class TRGPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected String getPatternName() {
-		return generateSRCBlackPatternName(rule.getName());
+		return generateTRGBlackPatternName(rule.getName());
 	}
 
 	@Override
@@ -57,7 +53,7 @@ public class TRGPatternTransformation extends OperationalPatternTransformation {
 
 	@Override
 	protected boolean patternIsEmpty() {
-		return TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG).isEmpty() &&
+		return TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.TRG).isEmpty() &&
 				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG).isEmpty();
 	}
 
