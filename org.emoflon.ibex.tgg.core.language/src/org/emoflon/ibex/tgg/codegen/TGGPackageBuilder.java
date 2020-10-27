@@ -239,7 +239,6 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 				if (root instanceof TripleGraphGrammarFile) {
 					TripleGraphGrammarFile f = (TripleGraphGrammarFile) root;
 					xtextParsedTGG.getRules().addAll(f.getRules());
-					xtextParsedTGG.getNacs().addAll(f.getNacs());
 				}
 			}
 		}
@@ -254,13 +253,6 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 				}
 			}
 		}
-		for (Nac nac : xtextParsedTGG.getNacs()) {
-			for (AttrCond attrCond : nac.getAttrConditions()) {
-				if (!usedAttrCondDefs.contains(attrCond.getName()) && !attrCond.getName().isUserDefined()) {
-					usedAttrCondDefs.add(attrCond.getName());
-				}
-			}
-		}
 		xtextParsedTGG.getSchema().getAttributeCondDefs().addAll(usedAttrCondDefs);
 	}
 	
@@ -270,7 +262,6 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 	
 	private void noTwoRulesWithTheSameName(TripleGraphGrammarFile xtextParsedTGG) {
 		Stream<String> names = xtextParsedTGG.getRules().stream().map(r -> r.getName());
-		names = Stream.concat(names, xtextParsedTGG.getNacs().stream().map(r -> r.getName()));
 		names = names.sorted();
 
 		List<String> namesIterator = names.collect(Collectors.toList());
