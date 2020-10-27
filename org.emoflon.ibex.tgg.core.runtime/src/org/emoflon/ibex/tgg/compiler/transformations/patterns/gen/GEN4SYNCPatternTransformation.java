@@ -5,9 +5,9 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateGENB
 import java.util.List;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.ACStrategy;
 import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
@@ -24,7 +24,7 @@ import language.TGGRuleNode;
 
 public class GEN4SYNCPatternTransformation extends OperationalPatternTransformation {
 
-	public GEN4SYNCPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+	public GEN4SYNCPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, ACAnalysis filterNACAnalysis) {
 		super(parent, options, rule, filterNACAnalysis);
 	}
 
@@ -54,31 +54,12 @@ public class GEN4SYNCPatternTransformation extends OperationalPatternTransformat
 
 		parent.addContextPattern(ibexPattern, rule);
 	}
-
-	@Override
-	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		// Output Domain User NACs
-		for (NAC nac : rule.getNacs()) {
-			if (TGGModelUtils.isOfDomain(nac, DomainType.SRC))
-				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
-		}
-		if(options.patterns.lookAheadStrategy().equals(FilterNACStrategy.PACS)) {
-			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.SRC)) {
-				parent.addContextPattern(createPAC(ibexPattern,  DomainType.SRC, candidate));
-			}
-			
-			for (PACCandidate candidate : ((PACAnalysis) filterNACAnalysis).computePACCandidates(rule,  DomainType.TRG)) {
-				parent.addContextPattern(createPAC(ibexPattern,  DomainType.TRG, candidate));
-			} 
-		}
-		else {
 	
-			for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
-				parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
-			}
-			for (FilterNACCandidate candidate : filterNACAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
-				parent.addContextPattern(createFilterNAC(ibexPattern, candidate));
-			}
-		}
+	@Override
+	protected boolean patternIsEmpty() {
+		return TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.SRC).isEmpty() &&
+				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.SRC).isEmpty() && 
+				TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.TRG).isEmpty() &&
+				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.TRG).isEmpty();
 	}
 }

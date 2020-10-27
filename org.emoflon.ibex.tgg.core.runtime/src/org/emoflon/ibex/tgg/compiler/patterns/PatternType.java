@@ -16,14 +16,14 @@ public enum PatternType {
 
 	public static Collection<PatternType> getIntegrateTypes() {
 		Collection<PatternType> types = new LinkedList<>();
+		types.add(PatternType.SRC);
+		types.add(PatternType.TRG);
 		types.add(PatternType.FWD);
 		types.add(PatternType.BWD);
 		types.add(PatternType.CONSISTENCY);
 //		types.add(PatternType.CC);
 		types.add(PatternType.FILTER_NAC_SRC);
 		types.add(PatternType.FILTER_NAC_TRG);
-		types.add(PatternType.SRC);
-		types.add(PatternType.TRG);
 		return types;
 	}
 

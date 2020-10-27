@@ -5,7 +5,7 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateGENB
 import java.util.List;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -20,7 +20,7 @@ import language.TGGRuleNode;
 
 public class GENPatternTransformation extends OperationalPatternTransformation {
 
-	public GENPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+	public GENPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, ACAnalysis filterNACAnalysis) {
 		super(parent, options, rule, filterNACAnalysis);
 	}
 
@@ -47,16 +47,13 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 		List<TGGRuleEdge> edges = TGGModelUtils.getEdgesByOperator(rule, BindingType.CONTEXT);
 		for (TGGRuleEdge edge : edges)
 			parent.transformEdge(edges, edge, ibexPattern);
-
-		parent.addContextPattern(ibexPattern, rule);
 	}
-
+	
 	@Override
-	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		// Output Domain User NACs
-		for (NAC nac : rule.getNacs()) {
-			if (TGGModelUtils.isOfDomain(nac, DomainType.SRC))
-				parent.addContextPattern(parent.transformNac(rule, nac, ibexPattern), nac);
-		}
+	protected boolean patternIsEmpty() {
+		return TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.SRC).isEmpty() &&
+				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.SRC).isEmpty() && 
+				TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.TRG).isEmpty() &&
+				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.TRG).isEmpty();
 	}
 }

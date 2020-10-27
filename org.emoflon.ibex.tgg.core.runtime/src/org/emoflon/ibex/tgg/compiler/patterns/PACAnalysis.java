@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.DomainTypePatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import language.BindingType;
@@ -17,15 +16,8 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class PACAnalysis extends FilterNACAnalysis {
+public class PACAnalysis extends ACAnalysis {
 	private TGG tgg;
-	
-	public PACAnalysis(TGG tgg, IbexOptions options, Collection<DomainTypePatternTransformation> domainPatterns) {
-		super(tgg, options);
-		this.tgg = tgg;
-		
-		initializeCaching();
-	}
 	
 	public PACAnalysis(TGG tgg, IbexOptions options) {
 		super(tgg, options);

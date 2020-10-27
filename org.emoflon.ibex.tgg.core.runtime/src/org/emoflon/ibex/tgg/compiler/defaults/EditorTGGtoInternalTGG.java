@@ -147,7 +147,6 @@ public class EditorTGGtoInternalTGG {
 
 		translateXTextRulesToTGGRules(xtextTGG, tgg);
 		translateXTextRuleRefinementsToTGGRuleRefinements(xtextTGG, tgg);
-		translateXTextNacsToTGGNacs(xtextTGG, tgg);
 
 		tgg = addOppositeEdges(tgg);
 
@@ -176,23 +175,6 @@ public class EditorTGGtoInternalTGG {
 		for (TGGRule tggRule : tgg.getRules()) {
 			tggRule.getRefines().addAll(((Rule) tggToXtext.get(tggRule)).getSupertypes().stream()
 					.map(r -> (TGGRule) xtextToTGG.get(r)).collect(Collectors.toList()));
-		}
-	}
-
-	private void translateXTextNacsToTGGNacs(TripleGraphGrammarFile xtextTGG, TGG tgg) {
-		for (Nac xtextNac : xtextTGG.getNacs()) {
-			NAC tggNac = LanguageFactory.eINSTANCE.createNAC();
-			tggNac.setName(xtextNac.getName());
-			TGGRule rule = (TGGRule) xtextToTGG.get(xtextNac.getRule());
-			rule.getNacs().add(tggNac);
-			map(xtextNac, tggNac);
-
-			tggNac.getNodes().addAll(createTGGRuleNodes(toOVPatterns(xtextNac.getSourcePatterns()), DomainType.SRC));
-			tggNac.getNodes().addAll(createTGGRuleNodes(toOVPatterns(xtextNac.getTargetPatterns()), DomainType.TRG));
-
-			tggNac.getEdges().addAll(createTGGRuleEdges(tggNac.getNodes()));
-
-			tggNac.setAttributeConditionLibrary(createAttributeConditionLibrary(xtextNac.getAttrConditions()));
 		}
 	}
 
