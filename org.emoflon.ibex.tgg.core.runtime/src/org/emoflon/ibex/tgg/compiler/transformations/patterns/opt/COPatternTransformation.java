@@ -5,7 +5,7 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateCOBl
 import java.util.List;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
@@ -17,7 +17,7 @@ import language.TGGRuleNode;
 
 public class COPatternTransformation extends CCPatternTransformation {
 
-	public COPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+	public COPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, ACAnalysis filterNACAnalysis) {
 		super(parent, options, rule, filterNACAnalysis);
 	}
 

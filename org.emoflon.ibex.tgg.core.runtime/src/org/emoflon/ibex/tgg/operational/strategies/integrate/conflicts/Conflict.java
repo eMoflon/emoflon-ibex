@@ -3,9 +3,11 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -291,5 +293,9 @@ public abstract class Conflict {
 	protected String printConflictIdentification() {
 		return this.getClass().getSimpleName() + " at match " + getMatch().getPatternName() + "(" + getMatch().hashCode() + ")";
 	}
-
+	
+	public List<Class<?>> getAllImplementedCRSInterfaces() {
+		return ClassUtils.getAllInterfaces(this.getClass());
+	}
+	
 }

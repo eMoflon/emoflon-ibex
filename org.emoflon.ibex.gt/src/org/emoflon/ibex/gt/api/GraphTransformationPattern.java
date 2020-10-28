@@ -133,7 +133,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the list of matches (can be empty if no matches exist)
 	 */
 	public final Collection<M> findMatches() {
-		return matchStream().collect(Collectors.toList());
+		return matchStream().collect(Collectors.toSet());
 	}
 	
 	/**

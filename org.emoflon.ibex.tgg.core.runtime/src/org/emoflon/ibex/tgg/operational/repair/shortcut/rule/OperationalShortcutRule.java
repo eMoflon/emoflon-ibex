@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
@@ -54,7 +54,7 @@ public abstract class OperationalShortcutRule {
 	protected PropagatingOperationalStrategy strategy;
 	protected ShortcutRule originalScRule;
 	protected ShortcutRule opScRule;
-	protected FilterNACAnalysis filterNACAnalysis;
+	protected ACAnalysis filterNACAnalysis;
 
 	protected SearchPlanCreator searchPlanCreator;
 
@@ -62,7 +62,7 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, ShortcutRule scRule, FilterNACAnalysis filterNACAnalysis) {
+	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, ShortcutRule scRule, ACAnalysis filterNACAnalysis) {
 		this.strategy = strategy;
 		this.originalScRule = scRule;
 		this.opScRule = scRule.copy();

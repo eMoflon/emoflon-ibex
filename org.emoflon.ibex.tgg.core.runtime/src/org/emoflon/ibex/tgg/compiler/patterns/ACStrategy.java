@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns;
 
-public enum FilterNACStrategy {
+public enum ACStrategy {
 
 	// NONE = No checking of DECs at all
 	NONE,

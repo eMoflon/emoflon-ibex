@@ -21,14 +21,14 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class FilterNACAnalysis {
+public class ACAnalysis {
 	private DomainType domain;
 	private TGG tgg;
 	private IbexOptions options;
 	
 	protected Map<EReference, Collection<TGGRule>> ref2rules = new HashMap<>();
 
-	public FilterNACAnalysis(TGG tgg, IbexOptions options) {
+	public ACAnalysis(TGG tgg, IbexOptions options) {
 		this.tgg = tgg;
 		this.options = options;
 		
@@ -51,7 +51,7 @@ public class FilterNACAnalysis {
 	public Collection<FilterNACCandidate> computeFilterNACCandidates(TGGRule rule, DomainType domain) {
 		final Collection<FilterNACCandidate> filterNACs = new ArrayList<>();
 
-		if (options.patterns.lookAheadStrategy().equals(FilterNACStrategy.NONE))
+		if (options.patterns.acStrategy().equals(ACStrategy.NONE))
 			return filterNACs;
 
 		for (TGGRuleNode n : rule.getNodes()) {
@@ -73,7 +73,7 @@ public class FilterNACAnalysis {
 						continue;
 					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg))
 						continue;
-
+					
 					// Collect all Filter NACs, but do not add them yet as negative invocations
 					if (thereIsNoSavingRule(domain, eType, eDirection, tgg))
 						filterNACs.add(new FilterNACCandidate(n, eType, eDirection));
@@ -94,6 +94,7 @@ public class FilterNACAnalysis {
 	}
 
 	protected boolean isRedundantDueToEMFContainmentSemantics(TGGRule rule, FilterNACCandidate filterNAC) {
+		EReference eOpposite = filterNAC.getEdgeType().getEOpposite();
 		for (TGGRuleEdge edge : rule.getEdges()) {
 			// Edges must be of same type and be containment
 			if (edge.getType().equals(filterNAC.getEdgeType()) && edge.getType().isContainment()) {
@@ -101,8 +102,12 @@ public class FilterNACAnalysis {
 				if (filterNAC.getEDirection().equals(EdgeDirection.INCOMING) && edge.getTrgNode().equals(filterNAC.getNodeInRule()))
 					return true;
 			}
+			if(eOpposite != null && eOpposite.isContainment()) {
+				if (filterNAC.getEDirection().equals(EdgeDirection.OUTGOING) && edge.getSrcNode().equals(filterNAC.getNodeInRule()))
+					return true;
+			}
 		}
-
+		
 		return false;
 	}
 
