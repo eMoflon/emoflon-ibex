@@ -196,6 +196,17 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXPatternModelPackage.IBE_XTRANSITIVE_EDGE: {
+			IBeXTransitiveEdge iBeXTransitiveEdge = (IBeXTransitiveEdge) theEObject;
+			T result = caseIBeXTransitiveEdge(iBeXTransitiveEdge);
+			if (result == null)
+				result = caseIBeXEdge(iBeXTransitiveEdge);
+			if (result == null)
+				result = caseIBeXNamedElement(iBeXTransitiveEdge);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXPatternModelPackage.IBE_XPARAMETER: {
 			IBeXParameter iBeXParameter = (IBeXParameter) theEObject;
 			T result = caseIBeXParameter(iBeXParameter);
@@ -622,6 +633,21 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXEdge(IBeXEdge object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XTransitive Edge</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XTransitive Edge</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXTransitiveEdge(IBeXTransitiveEdge object) {
 		return null;
 	}
 

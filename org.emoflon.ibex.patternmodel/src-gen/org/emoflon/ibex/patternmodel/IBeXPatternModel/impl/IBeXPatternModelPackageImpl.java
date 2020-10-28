@@ -55,6 +55,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXTransitiveEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryOperator;
 
@@ -162,6 +163,13 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	private EClass iBeXEdgeEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXTransitiveEdgeEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -915,6 +923,26 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	@Override
 	public EReference getIBeXEdge_Type() {
 		return (EReference) iBeXEdgeEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXTransitiveEdge() {
+		return iBeXTransitiveEdgeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXTransitiveEdge_Limit() {
+		return (EReference) iBeXTransitiveEdgeEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -1819,6 +1847,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXEdgeEClass, IBE_XEDGE__TARGET_NODE);
 		createEReference(iBeXEdgeEClass, IBE_XEDGE__TYPE);
 
+		iBeXTransitiveEdgeEClass = createEClass(IBE_XTRANSITIVE_EDGE);
+		createEReference(iBeXTransitiveEdgeEClass, IBE_XTRANSITIVE_EDGE__LIMIT);
+
 		iBeXParameterEClass = createEClass(IBE_XPARAMETER);
 		createEReference(iBeXParameterEClass, IBE_XPARAMETER__TYPE);
 
@@ -1965,6 +1996,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXDeletePatternEClass.getESuperTypes().add(this.getIBeXPattern());
 		iBeXNodeEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXEdgeEClass.getESuperTypes().add(this.getIBeXNamedElement());
+		iBeXTransitiveEdgeEClass.getESuperTypes().add(this.getIBeXEdge());
 		iBeXParameterEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXAttributeAssignmentEClass.getESuperTypes().add(this.getIBeXAttribute());
 		iBeXAttributeConstraintEClass.getESuperTypes().add(this.getIBeXAttribute());
@@ -2128,6 +2160,12 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXEdge_Type(), ecorePackage.getEReference(), null, "type", null, 0, 1, IBeXEdge.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXTransitiveEdgeEClass, IBeXTransitiveEdge.class, "IBeXTransitiveEdge", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXTransitiveEdge_Limit(), this.getIBeXAttributeValue(), null, "limit", null, 0, 1,
+				IBeXTransitiveEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXParameterEClass, IBeXParameter.class, "IBeXParameter", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

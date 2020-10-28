@@ -832,6 +832,79 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XEDGE_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXTransitiveEdgeImpl <em>IBe XTransitive Edge</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXTransitiveEdgeImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXTransitiveEdge()
+	 * @generated
+	 */
+	int IBE_XTRANSITIVE_EDGE = 14;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XTRANSITIVE_EDGE__NAME = IBE_XEDGE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Source Node</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XTRANSITIVE_EDGE__SOURCE_NODE = IBE_XEDGE__SOURCE_NODE;
+
+	/**
+	 * The feature id for the '<em><b>Target Node</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XTRANSITIVE_EDGE__TARGET_NODE = IBE_XEDGE__TARGET_NODE;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XTRANSITIVE_EDGE__TYPE = IBE_XEDGE__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Limit</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XTRANSITIVE_EDGE__LIMIT = IBE_XEDGE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XTransitive Edge</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XTRANSITIVE_EDGE_FEATURE_COUNT = IBE_XEDGE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XTransitive Edge</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XTRANSITIVE_EDGE_OPERATION_COUNT = IBE_XEDGE_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXParameterImpl <em>IBe XParameter</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -839,7 +912,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXParameter()
 	 * @generated
 	 */
-	int IBE_XPARAMETER = 14;
+	int IBE_XPARAMETER = 15;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -885,7 +958,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttribute()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE = 15;
+	int IBE_XATTRIBUTE = 16;
 
 	/**
 	 * The number of structural features of the '<em>IBe XAttribute</em>' class.
@@ -913,7 +986,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeAssignment()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_ASSIGNMENT = 16;
+	int IBE_XATTRIBUTE_ASSIGNMENT = 17;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' containment reference.
@@ -968,7 +1041,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeConstraint()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_CONSTRAINT = 17;
+	int IBE_XATTRIBUTE_CONSTRAINT = 18;
 
 	/**
 	 * The feature id for the '<em><b>Relation</b></em>' attribute.
@@ -1023,7 +1096,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeValue()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_VALUE = 18;
+	int IBE_XATTRIBUTE_VALUE = 19;
 
 	/**
 	 * The number of structural features of the '<em>IBe XAttribute Value</em>' class.
@@ -1051,7 +1124,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeParameter()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_PARAMETER = 19;
+	int IBE_XATTRIBUTE_PARAMETER = 20;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1088,7 +1161,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXConstant()
 	 * @generated
 	 */
-	int IBE_XCONSTANT = 20;
+	int IBE_XCONSTANT = 21;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -1134,7 +1207,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXEnumLiteral()
 	 * @generated
 	 */
-	int IBE_XENUM_LITERAL = 21;
+	int IBE_XENUM_LITERAL = 22;
 
 	/**
 	 * The feature id for the '<em><b>Literal</b></em>' reference.
@@ -1171,7 +1244,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXAttributeExpression()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_EXPRESSION = 22;
+	int IBE_XATTRIBUTE_EXPRESSION = 23;
 
 	/**
 	 * The feature id for the '<em><b>Attribute</b></em>' reference.
@@ -1217,7 +1290,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXStochasticAttributeValue()
 	 * @generated
 	 */
-	int IBE_XSTOCHASTIC_ATTRIBUTE_VALUE = 23;
+	int IBE_XSTOCHASTIC_ATTRIBUTE_VALUE = 24;
 
 	/**
 	 * The feature id for the '<em><b>Range</b></em>' attribute.
@@ -1263,7 +1336,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticValue()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_VALUE = 24;
+	int IBE_XARITHMETIC_VALUE = 25;
 
 	/**
 	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
@@ -1300,7 +1373,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXInjectivityConstraint()
 	 * @generated
 	 */
-	int IBE_XINJECTIVITY_CONSTRAINT = 25;
+	int IBE_XINJECTIVITY_CONSTRAINT = 26;
 
 	/**
 	 * The feature id for the '<em><b>Values</b></em>' reference list.
@@ -1337,7 +1410,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXPatternInvocation()
 	 * @generated
 	 */
-	int IBE_XPATTERN_INVOCATION = 26;
+	int IBE_XPATTERN_INVOCATION = 27;
 
 	/**
 	 * The feature id for the '<em><b>Positive</b></em>' attribute.
@@ -1401,7 +1474,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXNodeToNodeMapping()
 	 * @generated
 	 */
-	int IBE_XNODE_TO_NODE_MAPPING = 27;
+	int IBE_XNODE_TO_NODE_MAPPING = 28;
 
 	/**
 	 * The feature id for the '<em><b>Key</b></em>' reference.
@@ -1447,7 +1520,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXCSP()
 	 * @generated
 	 */
-	int IBE_XCSP = 28;
+	int IBE_XCSP = 29;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1502,7 +1575,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRule()
 	 * @generated
 	 */
-	int IBE_XRULE = 29;
+	int IBE_XRULE = 30;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1611,7 +1684,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXProbability()
 	 * @generated
 	 */
-	int IBE_XPROBABILITY = 30;
+	int IBE_XPROBABILITY = 31;
 
 	/**
 	 * The feature id for the '<em><b>Distribution</b></em>' containment reference.
@@ -1657,7 +1730,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticConstraint()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_CONSTRAINT = 31;
+	int IBE_XARITHMETIC_CONSTRAINT = 32;
 
 	/**
 	 * The feature id for the '<em><b>Lhs</b></em>' containment reference.
@@ -1712,7 +1785,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticExpression()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_EXPRESSION = 32;
+	int IBE_XARITHMETIC_EXPRESSION = 33;
 
 	/**
 	 * The number of structural features of the '<em>IBe XArithmetic Expression</em>' class.
@@ -1740,7 +1813,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXUnaryExpression()
 	 * @generated
 	 */
-	int IBE_XUNARY_EXPRESSION = 33;
+	int IBE_XUNARY_EXPRESSION = 34;
 
 	/**
 	 * The feature id for the '<em><b>Operand</b></em>' containment reference.
@@ -1795,7 +1868,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXBinaryExpression()
 	 * @generated
 	 */
-	int IBE_XBINARY_EXPRESSION = 34;
+	int IBE_XBINARY_EXPRESSION = 35;
 
 	/**
 	 * The feature id for the '<em><b>Left</b></em>' containment reference.
@@ -1850,7 +1923,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticValueLiteral()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_VALUE_LITERAL = 35;
+	int IBE_XARITHMETIC_VALUE_LITERAL = 36;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -1887,7 +1960,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXProbabilityDistribution()
 	 * @generated
 	 */
-	int IBE_XPROBABILITY_DISTRIBUTION = 36;
+	int IBE_XPROBABILITY_DISTRIBUTION = 37;
 
 	/**
 	 * The feature id for the '<em><b>Mean</b></em>' containment reference.
@@ -1942,7 +2015,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticAttribute()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_ATTRIBUTE = 37;
+	int IBE_XARITHMETIC_ATTRIBUTE = 38;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -2024,7 +2097,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXMatchCount()
 	 * @generated
 	 */
-	int IBE_XMATCH_COUNT = 38;
+	int IBE_XMATCH_COUNT = 39;
 
 	/**
 	 * The feature id for the '<em><b>Operand</b></em>' containment reference.
@@ -2088,7 +2161,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRelation()
 	 * @generated
 	 */
-	int IBE_XRELATION = 39;
+	int IBE_XRELATION = 40;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryOperator <em>IBe XBinary Operator</em>}' enum.
@@ -2098,7 +2171,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXBinaryOperator()
 	 * @generated
 	 */
-	int IBE_XBINARY_OPERATOR = 40;
+	int IBE_XBINARY_OPERATOR = 41;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryOperator <em>IBe XUnary Operator</em>}' enum.
@@ -2108,7 +2181,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXUnaryOperator()
 	 * @generated
 	 */
-	int IBE_XUNARY_OPERATOR = 41;
+	int IBE_XUNARY_OPERATOR = 42;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType <em>IBe XDistribution Type</em>}' enum.
@@ -2118,7 +2191,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXDistributionType()
 	 * @generated
 	 */
-	int IBE_XDISTRIBUTION_TYPE = 42;
+	int IBE_XDISTRIBUTION_TYPE = 43;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange <em>IBe XDistribution Range</em>}' enum.
@@ -2128,7 +2201,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXDistributionRange()
 	 * @generated
 	 */
-	int IBE_XDISTRIBUTION_RANGE = 43;
+	int IBE_XDISTRIBUTION_RANGE = 44;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel <em>IBe XModel</em>}'.
@@ -2643,6 +2716,27 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBeXEdge_Type();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXTransitiveEdge <em>IBe XTransitive Edge</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XTransitive Edge</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXTransitiveEdge
+	 * @generated
+	 */
+	EClass getIBeXTransitiveEdge();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXTransitiveEdge#getLimit <em>Limit</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Limit</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXTransitiveEdge#getLimit()
+	 * @see #getIBeXTransitiveEdge()
+	 * @generated
+	 */
+	EReference getIBeXTransitiveEdge_Limit();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter <em>IBe XParameter</em>}'.
@@ -3944,6 +4038,24 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XEDGE__TYPE = eINSTANCE.getIBeXEdge_Type();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXTransitiveEdgeImpl <em>IBe XTransitive Edge</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXTransitiveEdgeImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXTransitiveEdge()
+		 * @generated
+		 */
+		EClass IBE_XTRANSITIVE_EDGE = eINSTANCE.getIBeXTransitiveEdge();
+
+		/**
+		 * The meta object literal for the '<em><b>Limit</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XTRANSITIVE_EDGE__LIMIT = eINSTANCE.getIBeXTransitiveEdge_Limit();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXParameterImpl <em>IBe XParameter</em>}' class.

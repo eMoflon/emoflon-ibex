@@ -116,6 +116,10 @@
         eOpposite="#//IBeXNode/incomingEdges"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EReference"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXTransitiveEdge" eSuperTypes="#//IBeXEdge">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="limit" eType="#//IBeXAttributeValue"
+        containment="true"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXParameter" eSuperTypes="#//IBeXNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EDataType"/>
   </eClassifiers>

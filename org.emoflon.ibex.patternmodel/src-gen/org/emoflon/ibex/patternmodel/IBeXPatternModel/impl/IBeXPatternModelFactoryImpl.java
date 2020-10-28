@@ -81,6 +81,8 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 			return createIBeXNode();
 		case IBeXPatternModelPackage.IBE_XEDGE:
 			return createIBeXEdge();
+		case IBeXPatternModelPackage.IBE_XTRANSITIVE_EDGE:
+			return createIBeXTransitiveEdge();
 		case IBeXPatternModelPackage.IBE_XPARAMETER:
 			return createIBeXParameter();
 		case IBeXPatternModelPackage.IBE_XATTRIBUTE_ASSIGNMENT:
@@ -297,6 +299,17 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXEdge createIBeXEdge() {
 		IBeXEdgeImpl iBeXEdge = new IBeXEdgeImpl();
 		return iBeXEdge;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXTransitiveEdge createIBeXTransitiveEdge() {
+		IBeXTransitiveEdgeImpl iBeXTransitiveEdge = new IBeXTransitiveEdgeImpl();
+		return iBeXTransitiveEdge;
 	}
 
 	/**

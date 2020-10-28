@@ -139,6 +139,11 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseIBeXTransitiveEdge(IBeXTransitiveEdge object) {
+			return createIBeXTransitiveEdgeAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXParameter(IBeXParameter object) {
 			return createIBeXParameterAdapter();
 		}
@@ -475,6 +480,20 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXEdgeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXTransitiveEdge <em>IBe XTransitive Edge</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXTransitiveEdge
+	 * @generated
+	 */
+	public Adapter createIBeXTransitiveEdgeAdapter() {
 		return null;
 	}
 

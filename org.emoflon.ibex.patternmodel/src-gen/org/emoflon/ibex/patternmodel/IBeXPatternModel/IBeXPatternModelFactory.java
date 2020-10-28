@@ -122,6 +122,15 @@ public interface IBeXPatternModelFactory extends EFactory {
 	IBeXEdge createIBeXEdge();
 
 	/**
+	 * Returns a new object of class '<em>IBe XTransitive Edge</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XTransitive Edge</em>'.
+	 * @generated
+	 */
+	IBeXTransitiveEdge createIBeXTransitiveEdge();
+
+	/**
 	 * Returns a new object of class '<em>IBe XParameter</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
