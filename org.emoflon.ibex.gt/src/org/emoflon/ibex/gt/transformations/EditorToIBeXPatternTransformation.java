@@ -118,6 +118,14 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 					.transformToIBeXProbability(data, lhs, editorPattern));
 		});
 		
+		data.ibexContextPatterns.forEach((ibexPattern, editorPattern) -> {
+			if(ibexPattern instanceof IBeXContextAlternatives) {
+				//ignore for now..
+			} else {
+				data.ibexBasicContextPatterns.put(processTransitiveEdges(editorPattern, (IBeXContextPattern)ibexPattern), editorPattern);
+			}
+		});
+		
 		IBeXModel model = createSortedIBeXSets();
 		data.clear();
 		
@@ -414,7 +422,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		
 		return ibexPattern;
 	}
-
+	
+	private IBeXContextPattern processTransitiveEdges(final EditorPattern editorPattern, final IBeXContextPattern ibexPattern) {
+		return null;
+	}
 	/**
 	 * Transforms a GTEdge into an IBeXEdge.
 	 * 

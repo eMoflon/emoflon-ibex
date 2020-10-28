@@ -145,13 +145,22 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XPATTERN_SET__CONTEXT_PATTERNS = 0;
 
 	/**
+	 * The feature id for the '<em><b>Extended Context Patterns</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS = 1;
+
+	/**
 	 * The number of structural features of the '<em>IBe XPattern Set</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN_SET_FEATURE_COUNT = 1;
+	int IBE_XPATTERN_SET_FEATURE_COUNT = 2;
 
 	/**
 	 * The number of operations of the '<em>IBe XPattern Set</em>' class.
@@ -2279,6 +2288,17 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXPatternSet_ContextPatterns();
 
 	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getExtendedContextPatterns <em>Extended Context Patterns</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Extended Context Patterns</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getExtendedContextPatterns()
+	 * @see #getIBeXPatternSet()
+	 * @generated
+	 */
+	EReference getIBeXPatternSet_ExtendedContextPatterns();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet <em>IBe XRule Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3683,6 +3703,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XPATTERN_SET__CONTEXT_PATTERNS = eINSTANCE.getIBeXPatternSet_ContextPatterns();
+
+		/**
+		 * The meta object literal for the '<em><b>Extended Context Patterns</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS = eINSTANCE.getIBeXPatternSet_ExtendedContextPatterns();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleSetImpl <em>IBe XRule Set</em>}' class.

@@ -59,6 +59,7 @@
     </genClasses>
     <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXPatternSet">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXPatternSet/contextPatterns"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXPatternSet/extendedContextPatterns"/>
     </genClasses>
     <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXRuleSet">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXRuleSet/rules"/>

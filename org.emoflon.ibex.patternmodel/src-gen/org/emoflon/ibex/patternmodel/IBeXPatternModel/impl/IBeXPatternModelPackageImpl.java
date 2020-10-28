@@ -521,6 +521,16 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EReference getIBeXPatternSet_ExtendedContextPatterns() {
+		return (EReference) iBeXPatternSetEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getIBeXRuleSet() {
 		return iBeXRuleSetEClass;
 	}
@@ -1793,6 +1803,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 
 		iBeXPatternSetEClass = createEClass(IBE_XPATTERN_SET);
 		createEReference(iBeXPatternSetEClass, IBE_XPATTERN_SET__CONTEXT_PATTERNS);
+		createEReference(iBeXPatternSetEClass, IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS);
 
 		iBeXRuleSetEClass = createEClass(IBE_XRULE_SET);
 		createEReference(iBeXRuleSetEClass, IBE_XRULE_SET__RULES);
@@ -2036,6 +2047,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXPatternSet_ContextPatterns(), this.getIBeXContext(), null, "contextPatterns", null, 0, -1,
 				IBeXPatternSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXPatternSet_ExtendedContextPatterns(), this.getIBeXContext(), null,
+				"extendedContextPatterns", null, 0, 1, IBeXPatternSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXRuleSetEClass, IBeXRuleSet.class, "IBeXRuleSet", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

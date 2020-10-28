@@ -21,6 +21,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="contextPatterns" upperBound="-1"
         eType="#//IBeXContext" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="extendedContextPatterns"
+        eType="#//IBeXContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXRuleSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"

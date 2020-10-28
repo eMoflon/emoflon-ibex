@@ -51,6 +51,8 @@ public class TransformationData {
 	 * All context patterns.
 	 */
 	public Map<IBeXContext, EditorPattern> ibexContextPatterns = new HashMap<>();
+	
+	public Map<IBeXContext, EditorPattern> ibexBasicContextPatterns = new HashMap<>();
 
 	/**
 	 * All create patterns.
@@ -75,6 +77,7 @@ public class TransformationData {
 		reference2ibexEdge.clear();
 		nameToPattern.clear();
 		ibexContextPatterns.clear();
+		ibexBasicContextPatterns.clear();
 		ibexCreatePatterns.clear();
 		ibexDeletePatterns.clear();
 		ibexRules.clear();

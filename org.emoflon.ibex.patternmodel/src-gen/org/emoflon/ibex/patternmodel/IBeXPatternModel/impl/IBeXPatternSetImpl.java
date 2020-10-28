@@ -4,6 +4,7 @@ package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
 import java.util.Collection;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
@@ -11,6 +12,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
@@ -29,6 +31,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl#getContextPatterns <em>Context Patterns</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternSetImpl#getExtendedContextPatterns <em>Extended Context Patterns</em>}</li>
  * </ul>
  *
  * @generated
@@ -43,6 +46,16 @@ public class IBeXPatternSetImpl extends MinimalEObjectImpl.Container implements 
 	 * @ordered
 	 */
 	protected EList<IBeXContext> contextPatterns;
+
+	/**
+	 * The cached value of the '{@link #getExtendedContextPatterns() <em>Extended Context Patterns</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getExtendedContextPatterns()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXContext extendedContextPatterns;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -83,6 +96,50 @@ public class IBeXPatternSetImpl extends MinimalEObjectImpl.Container implements 
 	 * @generated
 	 */
 	@Override
+	public IBeXContext getExtendedContextPatterns() {
+		if (extendedContextPatterns != null && extendedContextPatterns.eIsProxy()) {
+			InternalEObject oldExtendedContextPatterns = (InternalEObject) extendedContextPatterns;
+			extendedContextPatterns = (IBeXContext) eResolveProxy(oldExtendedContextPatterns);
+			if (extendedContextPatterns != oldExtendedContextPatterns) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXPatternModelPackage.IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS,
+							oldExtendedContextPatterns, extendedContextPatterns));
+			}
+		}
+		return extendedContextPatterns;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXContext basicGetExtendedContextPatterns() {
+		return extendedContextPatterns;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setExtendedContextPatterns(IBeXContext newExtendedContextPatterns) {
+		IBeXContext oldExtendedContextPatterns = extendedContextPatterns;
+		extendedContextPatterns = newExtendedContextPatterns;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXPatternModelPackage.IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS, oldExtendedContextPatterns,
+					extendedContextPatterns));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case IBeXPatternModelPackage.IBE_XPATTERN_SET__CONTEXT_PATTERNS:
@@ -101,6 +158,10 @@ public class IBeXPatternSetImpl extends MinimalEObjectImpl.Container implements 
 		switch (featureID) {
 		case IBeXPatternModelPackage.IBE_XPATTERN_SET__CONTEXT_PATTERNS:
 			return getContextPatterns();
+		case IBeXPatternModelPackage.IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS:
+			if (resolve)
+				return getExtendedContextPatterns();
+			return basicGetExtendedContextPatterns();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -118,6 +179,9 @@ public class IBeXPatternSetImpl extends MinimalEObjectImpl.Container implements 
 			getContextPatterns().clear();
 			getContextPatterns().addAll((Collection<? extends IBeXContext>) newValue);
 			return;
+		case IBeXPatternModelPackage.IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS:
+			setExtendedContextPatterns((IBeXContext) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -133,6 +197,9 @@ public class IBeXPatternSetImpl extends MinimalEObjectImpl.Container implements 
 		case IBeXPatternModelPackage.IBE_XPATTERN_SET__CONTEXT_PATTERNS:
 			getContextPatterns().clear();
 			return;
+		case IBeXPatternModelPackage.IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS:
+			setExtendedContextPatterns((IBeXContext) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -147,6 +214,8 @@ public class IBeXPatternSetImpl extends MinimalEObjectImpl.Container implements 
 		switch (featureID) {
 		case IBeXPatternModelPackage.IBE_XPATTERN_SET__CONTEXT_PATTERNS:
 			return contextPatterns != null && !contextPatterns.isEmpty();
+		case IBeXPatternModelPackage.IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS:
+			return extendedContextPatterns != null;
 		}
 		return super.eIsSet(featureID);
 	}
