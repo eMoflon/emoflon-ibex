@@ -2,6 +2,9 @@ package org.emoflon.ibex.gt.transformations;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +63,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXTransitiveEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelFactoryImpl;
 
 /**
@@ -424,7 +428,127 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	}
 	
 	private IBeXContextPattern processTransitiveEdges(final EditorPattern editorPattern, final IBeXContextPattern ibexPattern) {
+		Set<IBeXContextPattern> subPatterns = new LinkedHashSet<>();
+		Map<IBeXNode, IBeXContextPattern> node2Pattern = new LinkedHashMap<>();
+		int patternCount = 0;
+		
+		Set<IBeXNode> queue = new LinkedHashSet<>();
+		queue.addAll(ibexPattern.getSignatureNodes());
+		queue.addAll(ibexPattern.getLocalNodes());
+		Set<IBeXNode> vistedNodes = new HashSet<>();
+		// Cut patterns along transitive edges -> might result in disjoint sub-patterns
+		while(!queue.isEmpty()) {
+			IBeXNode src = queue.iterator().next();
+			queue.remove(src);
+			if(vistedNodes.contains(src))
+				continue;
+			
+			vistedNodes.add(src);
+			
+			IBeXContextPattern subPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
+			subPattern.setName(ibexPattern.getName()+"_TSUBPATTERN"+patternCount);
+			patternCount++;
+			subPatterns.add(subPattern);
+			if(ibexPattern.getLocalNodes().contains(src)) {
+				subPattern.getLocalNodes().add(src);
+			}else {
+				subPattern.getSignatureNodes().add(src);
+			}
+			subPattern.getLocalEdges().addAll(src.getOutgoingEdges().stream()
+					.filter(edge -> !(edge instanceof IBeXTransitiveEdge)).collect(Collectors.toSet()));
+			subPattern.getLocalEdges().addAll(src.getIncomingEdges().stream()
+					.filter(edge -> !(edge instanceof IBeXTransitiveEdge)).collect(Collectors.toSet()));
+			node2Pattern.put(src, subPattern);
+			
+			Set<IBeXNode> queue2 = new LinkedHashSet<>();
+			queue2.addAll(src.getOutgoingEdges().stream()
+					.filter(edge -> !(edge instanceof IBeXTransitiveEdge))
+					.map(edge -> edge.getTargetNode()).collect(Collectors.toSet()));
+			queue2.addAll(src.getIncomingEdges().stream()
+					.filter(edge -> !(edge instanceof IBeXTransitiveEdge))
+					.map(edge -> edge.getSourceNode()).collect(Collectors.toSet()));
+			
+			while(!queue2.isEmpty()) {
+				IBeXNode src2 = queue2.iterator().next();
+				queue2.remove(src2);
+				queue.remove(src2);
+				if(vistedNodes.contains(src2))
+					continue;
+				
+				vistedNodes.add(src2);
+				
+				queue2.addAll(src2.getOutgoingEdges().stream()
+						.filter(edge -> !(edge instanceof IBeXTransitiveEdge))
+						.map(edge -> edge.getTargetNode()).collect(Collectors.toSet()));
+				queue2.addAll(src2.getIncomingEdges().stream()
+						.filter(edge -> !(edge instanceof IBeXTransitiveEdge))
+						.map(edge -> edge.getSourceNode()).collect(Collectors.toSet()));
+				
+				if(ibexPattern.getLocalNodes().contains(src2)) {
+					subPattern.getLocalNodes().add(src2);
+				}else {
+					subPattern.getSignatureNodes().add(src2);
+				}
+				subPattern.getLocalEdges().addAll(src2.getOutgoingEdges().stream()
+						.filter(edge -> !(edge instanceof IBeXTransitiveEdge)).collect(Collectors.toSet()));
+				subPattern.getLocalEdges().addAll(src2.getIncomingEdges().stream()
+						.filter(edge -> !(edge instanceof IBeXTransitiveEdge)).collect(Collectors.toSet()));
+				node2Pattern.put(src2, subPattern);
+			}
+		}
+		// Repair attribute constraints without arithmetic expressions
+		for(IBeXAttributeConstraint constraint : ibexPattern.getAttributeConstraint()) {
+			copyAndMoveAttributeConstraint(constraint, node2Pattern);
+		}
 		return null;
+	}
+	
+	private void copyAndMoveAttributeConstraint(IBeXAttributeConstraint constraint, Map<IBeXNode, IBeXContextPattern> node2Pattern) {
+		Set<IBeXNode> usedNodes = new LinkedHashSet<>();
+		boolean isArithmeticConstraint = false;
+		findAttributeExpressions(constraint.getLhs(), usedNodes);
+		findAttributeExpressions(constraint.getRhs(), usedNodes);
+		if(isArithmeticConstraint) {
+			// Copy to Base-Pattern
+		} else {
+			// Merge involved Sub-Patterns if they are connected via Attribute Constraints
+			Set<IBeXContextPattern> involvedPattern = new HashSet<>();
+			involvedPattern.addAll(usedNodes.stream().map(node -> node2Pattern.get(node)).collect(Collectors.toSet()));
+			// Move to Sub-Pattern
+			
+		}
+	}
+	
+	private void findAttributeExpressions(IBeXAttributeValue value, Set<IBeXNode> usedNodes) {
+	}
+	
+	private IBeXAttributeValue copyAttributeValue(IBeXAttributeValue srcValue) {
+		return null;
+	}
+	
+	//TODO: basePattern must be some kind of container, having sub-patterns, the original pattern and local search plans
+	private IBeXContextPattern mergePatterns(IBeXContextPattern basePattern, Set<IBeXContextPattern> patterns, Map<IBeXNode, IBeXContextPattern> node2Pattern) {
+		if(patterns.size()<=1) {
+			return patterns.iterator().next();
+		}
+		
+		IBeXContextPattern mergedPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
+		mergedPattern.setName(basePattern.getName() + patterns.stream()
+			.map(pattern -> pattern.getName().replace(basePattern.getName(), "").replace("_TSUBPATTERN", ""))
+			.reduce("", (current, next) -> current.concat("+").concat(next))
+			);
+		
+		patterns.forEach(pattern -> {
+			//TODO Remove from base pattern
+			mergedPattern.getSignatureNodes().addAll(pattern.getSignatureNodes());
+			pattern.getSignatureNodes().clear();
+			mergedPattern.getLocalNodes().addAll(pattern.getLocalNodes());
+			pattern.getLocalNodes().clear();
+			mergedPattern.getLocalEdges().addAll(pattern.getLocalEdges());
+			pattern.getLocalEdges().clear();
+			// rewire mapping in node2patterns from subpattern to merged pattern!
+		});
+		return mergedPattern;
 	}
 	/**
 	 * Transforms a GTEdge into an IBeXEdge.
