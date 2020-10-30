@@ -71,6 +71,8 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 			return createIBeXEdgeSet();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_ALTERNATIVES:
 			return createIBeXContextAlternatives();
+		case IBeXPatternModelPackage.IBE_XCONTEXT_TRANSITIVE:
+			return createIBeXContextTransitive();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN:
 			return createIBeXContextPattern();
 		case IBeXPatternModelPackage.IBE_XCREATE_PATTERN:
@@ -244,6 +246,17 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXContextAlternatives createIBeXContextAlternatives() {
 		IBeXContextAlternativesImpl iBeXContextAlternatives = new IBeXContextAlternativesImpl();
 		return iBeXContextAlternatives;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXContextTransitive createIBeXContextTransitive() {
+		IBeXContextTransitiveImpl iBeXContextTransitive = new IBeXContextTransitiveImpl();
+		return iBeXContextTransitive;
 	}
 
 	/**

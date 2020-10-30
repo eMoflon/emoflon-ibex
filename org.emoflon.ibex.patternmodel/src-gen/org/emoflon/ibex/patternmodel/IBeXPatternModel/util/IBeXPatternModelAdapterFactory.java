@@ -114,6 +114,11 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseIBeXContextTransitive(IBeXContextTransitive object) {
+			return createIBeXContextTransitiveAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXContextPattern(IBeXContextPattern object) {
 			return createIBeXContextPatternAdapter();
 		}
@@ -410,6 +415,20 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXContextAlternativesAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextTransitive <em>IBe XContext Transitive</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextTransitive
+	 * @generated
+	 */
+	public Adapter createIBeXContextTransitiveAdapter() {
 		return null;
 	}
 

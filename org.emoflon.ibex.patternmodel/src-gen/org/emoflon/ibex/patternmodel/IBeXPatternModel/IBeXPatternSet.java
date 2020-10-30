@@ -16,7 +16,6 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getContextPatterns <em>Context Patterns</em>}</li>
- *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getExtendedContextPatterns <em>Extended Context Patterns</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXPatternSet()
@@ -35,27 +34,5 @@ public interface IBeXPatternSet extends EObject {
 	 * @generated
 	 */
 	EList<IBeXContext> getContextPatterns();
-
-	/**
-	 * Returns the value of the '<em><b>Extended Context Patterns</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Extended Context Patterns</em>' reference.
-	 * @see #setExtendedContextPatterns(IBeXContext)
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXPatternSet_ExtendedContextPatterns()
-	 * @model
-	 * @generated
-	 */
-	IBeXContext getExtendedContextPatterns();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet#getExtendedContextPatterns <em>Extended Context Patterns</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Extended Context Patterns</em>' reference.
-	 * @see #getExtendedContextPatterns()
-	 * @generated
-	 */
-	void setExtendedContextPatterns(IBeXContext value);
 
 } // IBeXPatternSet

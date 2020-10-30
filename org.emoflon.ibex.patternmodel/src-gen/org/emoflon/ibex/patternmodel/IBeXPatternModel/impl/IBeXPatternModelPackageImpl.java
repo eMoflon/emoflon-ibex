@@ -30,6 +30,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextTransitive;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange;
@@ -128,6 +129,13 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	private EClass iBeXContextAlternativesEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXContextTransitiveEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -521,16 +529,6 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-	public EReference getIBeXPatternSet_ExtendedContextPatterns() {
-		return (EReference) iBeXPatternSetEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EClass getIBeXRuleSet() {
 		return iBeXRuleSetEClass;
 	}
@@ -653,6 +651,46 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	@Override
 	public EReference getIBeXContextAlternatives_Context() {
 		return (EReference) iBeXContextAlternativesEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXContextTransitive() {
+		return iBeXContextTransitiveEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXContextTransitive_BasePattern() {
+		return (EReference) iBeXContextTransitiveEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXContextTransitive_SubPatterns() {
+		return (EReference) iBeXContextTransitiveEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXContextTransitive_TransitiveEdges() {
+		return (EReference) iBeXContextTransitiveEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -1803,7 +1841,6 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 
 		iBeXPatternSetEClass = createEClass(IBE_XPATTERN_SET);
 		createEReference(iBeXPatternSetEClass, IBE_XPATTERN_SET__CONTEXT_PATTERNS);
-		createEReference(iBeXPatternSetEClass, IBE_XPATTERN_SET__EXTENDED_CONTEXT_PATTERNS);
 
 		iBeXRuleSetEClass = createEClass(IBE_XRULE_SET);
 		createEReference(iBeXRuleSetEClass, IBE_XRULE_SET__RULES);
@@ -1824,6 +1861,11 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXContextAlternativesEClass = createEClass(IBE_XCONTEXT_ALTERNATIVES);
 		createEReference(iBeXContextAlternativesEClass, IBE_XCONTEXT_ALTERNATIVES__ALTERNATIVE_PATTERNS);
 		createEReference(iBeXContextAlternativesEClass, IBE_XCONTEXT_ALTERNATIVES__CONTEXT);
+
+		iBeXContextTransitiveEClass = createEClass(IBE_XCONTEXT_TRANSITIVE);
+		createEReference(iBeXContextTransitiveEClass, IBE_XCONTEXT_TRANSITIVE__BASE_PATTERN);
+		createEReference(iBeXContextTransitiveEClass, IBE_XCONTEXT_TRANSITIVE__SUB_PATTERNS);
+		createEReference(iBeXContextTransitiveEClass, IBE_XCONTEXT_TRANSITIVE__TRANSITIVE_EDGES);
 
 		iBeXContextPatternEClass = createEClass(IBE_XCONTEXT_PATTERN);
 		createEAttribute(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__DOCUMENTATION);
@@ -2002,6 +2044,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXPatternEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXContextEClass.getESuperTypes().add(this.getIBeXPattern());
 		iBeXContextAlternativesEClass.getESuperTypes().add(this.getIBeXContext());
+		iBeXContextTransitiveEClass.getESuperTypes().add(this.getIBeXContext());
 		iBeXContextPatternEClass.getESuperTypes().add(this.getIBeXContext());
 		iBeXCreatePatternEClass.getESuperTypes().add(this.getIBeXPattern());
 		iBeXDeletePatternEClass.getESuperTypes().add(this.getIBeXPattern());
@@ -2047,9 +2090,6 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXPatternSet_ContextPatterns(), this.getIBeXContext(), null, "contextPatterns", null, 0, -1,
 				IBeXPatternSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getIBeXPatternSet_ExtendedContextPatterns(), this.getIBeXContext(), null,
-				"extendedContextPatterns", null, 0, 1, IBeXPatternSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXRuleSetEClass, IBeXRuleSet.class, "IBeXRuleSet", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -2089,6 +2129,18 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXContextAlternatives_Context(), this.getIBeXContextPattern(), null, "context", null, 1, 1,
 				IBeXContextAlternatives.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXContextTransitiveEClass, IBeXContextTransitive.class, "IBeXContextTransitive", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXContextTransitive_BasePattern(), this.getIBeXContextPattern(), null, "basePattern", null,
+				1, 1, IBeXContextTransitive.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXContextTransitive_SubPatterns(), this.getIBeXContextPattern(), null, "subPatterns", null,
+				0, -1, IBeXContextTransitive.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXContextTransitive_TransitiveEdges(), this.getIBeXTransitiveEdge(), null,
+				"transitiveEdges", null, 0, -1, IBeXContextTransitive.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXContextPatternEClass, IBeXContextPattern.class, "IBeXContextPattern", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

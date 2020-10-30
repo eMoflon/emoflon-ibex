@@ -143,6 +143,19 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXPatternModelPackage.IBE_XCONTEXT_TRANSITIVE: {
+			IBeXContextTransitive iBeXContextTransitive = (IBeXContextTransitive) theEObject;
+			T result = caseIBeXContextTransitive(iBeXContextTransitive);
+			if (result == null)
+				result = caseIBeXContext(iBeXContextTransitive);
+			if (result == null)
+				result = caseIBeXPattern(iBeXContextTransitive);
+			if (result == null)
+				result = caseIBeXNamedElement(iBeXContextTransitive);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN: {
 			IBeXContextPattern iBeXContextPattern = (IBeXContextPattern) theEObject;
 			T result = caseIBeXContextPattern(iBeXContextPattern);
@@ -558,6 +571,21 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXContextAlternatives(IBeXContextAlternatives object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XContext Transitive</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XContext Transitive</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXContextTransitive(IBeXContextTransitive object) {
 		return null;
 	}
 

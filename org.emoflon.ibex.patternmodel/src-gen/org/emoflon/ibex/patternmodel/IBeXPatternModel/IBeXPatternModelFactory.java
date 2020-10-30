@@ -77,6 +77,15 @@ public interface IBeXPatternModelFactory extends EFactory {
 	IBeXContextAlternatives createIBeXContextAlternatives();
 
 	/**
+	 * Returns a new object of class '<em>IBe XContext Transitive</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XContext Transitive</em>'.
+	 * @generated
+	 */
+	IBeXContextTransitive createIBeXContextTransitive();
+
+	/**
 	 * Returns a new object of class '<em>IBe XContext Pattern</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

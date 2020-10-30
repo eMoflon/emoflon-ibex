@@ -14,6 +14,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
@@ -48,6 +49,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextTransitive;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
@@ -427,7 +429,15 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		return ibexPattern;
 	}
 	
-	private IBeXContextPattern processTransitiveEdges(final EditorPattern editorPattern, final IBeXContextPattern ibexPattern) {
+	private IBeXContextTransitive processTransitiveEdges(final EditorPattern editorPattern, final IBeXContextPattern ibexPattern) {
+		IBeXContextTransitive transitivePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextTransitive();
+		transitivePattern.setName(ibexPattern.getName());
+		transitivePattern.setBasePattern(ibexPattern);
+		transitivePattern.getTransitiveEdges().addAll(ibexPattern.getLocalEdges().stream()
+				.filter(edge -> (edge instanceof IBeXTransitiveEdge))
+				.map(edge -> (IBeXTransitiveEdge)edge)
+				.collect(Collectors.toList()));
+		
 		Set<IBeXContextPattern> subPatterns = new LinkedHashSet<>();
 		Map<IBeXNode, IBeXContextPattern> node2Pattern = new LinkedHashMap<>();
 		int patternCount = 0;
@@ -496,50 +506,45 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				node2Pattern.put(src2, subPattern);
 			}
 		}
+		transitivePattern.getSubPatterns().addAll(subPatterns);
+		
 		// Repair attribute constraints without arithmetic expressions
 		for(IBeXAttributeConstraint constraint : ibexPattern.getAttributeConstraint()) {
-			copyAndMoveAttributeConstraint(constraint, node2Pattern);
+			copyAndMoveAttributeConstraint(transitivePattern, constraint, node2Pattern);
 		}
-		return null;
+		//TODO: Remove sub-patterns containing only a single node and no additional edges or attribute constraints
+		
+		return transitivePattern;
 	}
 	
-	private void copyAndMoveAttributeConstraint(IBeXAttributeConstraint constraint, Map<IBeXNode, IBeXContextPattern> node2Pattern) {
+	private void copyAndMoveAttributeConstraint(IBeXContextTransitive transitivePattern, IBeXAttributeConstraint constraint, Map<IBeXNode, IBeXContextPattern> node2Pattern) {
 		Set<IBeXNode> usedNodes = new LinkedHashSet<>();
-		boolean isArithmeticConstraint = false;
+		// find all nodes that are used in attribute constraints
 		findAttributeExpressions(constraint.getLhs(), usedNodes);
 		findAttributeExpressions(constraint.getRhs(), usedNodes);
-		if(isArithmeticConstraint) {
-			// Copy to Base-Pattern
-		} else {
-			// Merge involved Sub-Patterns if they are connected via Attribute Constraints
-			Set<IBeXContextPattern> involvedPattern = new HashSet<>();
-			involvedPattern.addAll(usedNodes.stream().map(node -> node2Pattern.get(node)).collect(Collectors.toSet()));
-			// Move to Sub-Pattern
-			
-		}
+		// Merge involved Sub-Patterns if they are connected via Attribute Constraints
+		Set<IBeXContextPattern> involvedPatterns = new HashSet<>();
+		involvedPatterns.addAll(usedNodes.stream().map(node -> node2Pattern.get(node)).collect(Collectors.toSet()));
+		IBeXContextPattern pattern = mergePatterns(transitivePattern, involvedPatterns, node2Pattern);
+		pattern.getAttributeConstraint().add(EcoreUtil.copy(constraint));
 	}
 	
 	private void findAttributeExpressions(IBeXAttributeValue value, Set<IBeXNode> usedNodes) {
+		//TODO
 	}
 	
-	private IBeXAttributeValue copyAttributeValue(IBeXAttributeValue srcValue) {
-		return null;
-	}
-	
-	//TODO: basePattern must be some kind of container, having sub-patterns, the original pattern and local search plans
-	private IBeXContextPattern mergePatterns(IBeXContextPattern basePattern, Set<IBeXContextPattern> patterns, Map<IBeXNode, IBeXContextPattern> node2Pattern) {
+	private IBeXContextPattern mergePatterns(IBeXContextTransitive transitivePattern, Set<IBeXContextPattern> patterns, Map<IBeXNode, IBeXContextPattern> node2Pattern) {
 		if(patterns.size()<=1) {
 			return patterns.iterator().next();
 		}
 		
 		IBeXContextPattern mergedPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
-		mergedPattern.setName(basePattern.getName() + patterns.stream()
-			.map(pattern -> pattern.getName().replace(basePattern.getName(), "").replace("_TSUBPATTERN", ""))
+		mergedPattern.setName(transitivePattern.getName() + patterns.stream()
+			.map(pattern -> pattern.getName().replace(transitivePattern.getName(), "").replace("_TSUBPATTERN", ""))
 			.reduce("", (current, next) -> current.concat("+").concat(next))
 			);
 		
 		patterns.forEach(pattern -> {
-			//TODO Remove from base pattern
 			mergedPattern.getSignatureNodes().addAll(pattern.getSignatureNodes());
 			pattern.getSignatureNodes().clear();
 			mergedPattern.getLocalNodes().addAll(pattern.getLocalNodes());
@@ -547,7 +552,12 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			mergedPattern.getLocalEdges().addAll(pattern.getLocalEdges());
 			pattern.getLocalEdges().clear();
 			// rewire mapping in node2patterns from subpattern to merged pattern!
+			mergedPattern.getSignatureNodes().forEach(node -> node2Pattern.replace(node, mergedPattern));
+			mergedPattern.getLocalNodes().forEach(node -> node2Pattern.replace(node, mergedPattern));
+			// remove from base-pattern
+			transitivePattern.getSubPatterns().remove(pattern);
 		});
+		transitivePattern.getSubPatterns().add(mergedPattern);
 		return mergedPattern;
 	}
 	/**
