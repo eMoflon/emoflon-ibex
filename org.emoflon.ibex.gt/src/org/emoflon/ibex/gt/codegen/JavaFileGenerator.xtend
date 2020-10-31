@@ -20,6 +20,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextTransitive
 
 /**
  * This class contains the templates for the API Java classes.
@@ -87,6 +88,8 @@ class JavaFileGenerator {
 				if(pattern instanceof IBeXContextPattern) {
 					val context = pattern as IBeXContextPattern
 					imports.addAll(eClassifiersManager.getImportsForDataTypes(context.parameters))
+				} else if(pattern instanceof IBeXContextTransitive) {
+					imports.addAll(eClassifiersManager.getImportsForDataTypes(pattern.basePattern.parameters))
 				} else {
 					val context = (pattern as IBeXContextAlternatives).context
 					imports.addAll(eClassifiersManager.getImportsForDataTypes(context.parameters))
@@ -804,6 +807,8 @@ class JavaFileGenerator {
 		var context = null as IBeXContextPattern
 		if(pattern instanceof IBeXContextPattern) {
 			context = pattern as IBeXContextPattern	
+		} else if(pattern instanceof IBeXContextTransitive) {
+			context = pattern.basePattern
 		} else {
 			context = (pattern as IBeXContextAlternatives).context
 		}
@@ -814,6 +819,8 @@ class JavaFileGenerator {
 	private static def getPatternParameter(IBeXPattern pattern) {
 		if(pattern instanceof IBeXContextPattern) {
 			return (pattern as IBeXContextPattern).parameters
+		} else if(pattern instanceof IBeXContextTransitive) {
+			return pattern.basePattern.parameters
 		} else {
 			return (pattern as IBeXContextAlternatives).context.parameters
 		}
@@ -839,10 +846,13 @@ class JavaFileGenerator {
 	 */
 	private static def getPatternDocumentation(IBeXPattern pattern) {
 		var ibexPattern = null as IBeXContextPattern
-		if(pattern instanceof IBeXContextPattern)
+		if(pattern instanceof IBeXContextPattern) {
 			ibexPattern = pattern as IBeXContextPattern
-		else 	
-			ibexPattern = (pattern as IBeXContextAlternatives).context	
+		} else if(pattern instanceof IBeXContextTransitive) {
+			ibexPattern = pattern.basePattern
+		} else {	
+			ibexPattern = (pattern as IBeXContextAlternatives).context		
+		}
 			
 		if (ibexPattern.documentation === null) {
 			return String.format(

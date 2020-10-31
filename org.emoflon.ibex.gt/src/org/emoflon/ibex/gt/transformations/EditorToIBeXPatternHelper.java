@@ -32,6 +32,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextTransitive;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
@@ -86,9 +87,10 @@ final public class EditorToIBeXPatternHelper {
 		IBeXContextPattern context = null;
 		if(pattern instanceof IBeXContextPattern) {
 			context = (IBeXContextPattern) pattern;
+		} else if(pattern instanceof IBeXContextTransitive) {
+			context = ((IBeXContextTransitive)pattern).getBasePattern();
 		} else {
 			context = ((IBeXContextAlternatives) pattern).getContext();
-			
 		}
 		
 		nodes.addAll(context.getSignatureNodes());
@@ -100,6 +102,8 @@ final public class EditorToIBeXPatternHelper {
 		IBeXContextPattern context = null;
 		if(pattern instanceof IBeXContextPattern) {
 			context = (IBeXContextPattern) pattern;
+		} else if(pattern instanceof IBeXContextTransitive) {
+			context = ((IBeXContextTransitive)pattern).getBasePattern();
 		} else {
 			context = ((IBeXContextAlternatives) pattern).getContext();
 			
@@ -348,7 +352,7 @@ final public class EditorToIBeXPatternHelper {
 	 * @return the IBeXArithmeticValue
 	 */
 	public static IBeXArithmeticValue convertAttributeValue(final TransformationData data, final IBeXPattern ibexPattern, final ArithmeticCalculationExpression expression) {
-		IBeXArithmeticValue value= IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();		;
+		IBeXArithmeticValue value= IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticValue();
 		value.setExpression(EditorToArithmeticExtensionHelper.transformToIBeXArithmeticExpression(data, ibexPattern, expression.getExpression()));
 		return value;
 	}
