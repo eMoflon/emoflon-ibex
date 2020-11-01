@@ -88,7 +88,7 @@ public class ConflictDetector {
 	private void detectDeletePreserveEdgeConflict(PrecedenceNode node, DomainType domainToBePreserved) {
 		Set<PrecedenceNode> directRollBackCauses = new HashSet<>();
 		node.forAllToBeRolledBackBy((act, pre) -> {
-			// TODO adrianm: improve performance
+			// TODO adrianm: improve performance?
 			if (integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(act))
 				return false;
 			if (act.isBroken()) {
@@ -307,12 +307,12 @@ public class ConflictDetector {
 							key -> new ConflictContainer(integrate, tmpUnderlyingMatch));
 
 					OutgoingEdge outgoingEdge = new OutgoingEdge(subj, ref);
-					Set<ITGGMatch> edgeAddingMatches = integrate.getMultiplicityCounter().getOutgoingEdge2edgeAddingMatches() //
-							.getOrDefault(outgoingEdge, Collections.emptySet());
-					Set<ITGGMatch> edgeRemovingMatches = integrate.getMultiplicityCounter().getOutgoingEdge2edgeRemovingMatches() //
-							.getOrDefault(outgoingEdge, Collections.emptySet());
+					Map<ITGGMatch, Integer> addedMatches = integrate.getMultiplicityCounter().getOutgoingEdge2addedMatches2numOfEdges() //
+							.getOrDefault(outgoingEdge, Collections.emptyMap());
+					Map<ITGGMatch, Integer> removedMatches = integrate.getMultiplicityCounter().getOutgoingEdge2removedMatches2numOfEdges() //
+							.getOrDefault(outgoingEdge, Collections.emptyMap());
 
-					new OperationalMultiplicityConflict(container, subj, ref, edgeAddingMatches, edgeRemovingMatches, violationCounter);
+					new OperationalMultiplicityConflict(container, subj, ref, violationCounter, addedMatches, removedMatches);
 				}
 			});
 		});

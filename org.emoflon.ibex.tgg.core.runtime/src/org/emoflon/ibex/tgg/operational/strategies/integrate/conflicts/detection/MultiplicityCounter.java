@@ -1,13 +1,9 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -30,7 +26,7 @@ public class MultiplicityCounter {
 	 * Stores for every rule all created references those multiplicity can potentially be violated. The
 	 * context source node of the reference is used as key to uniquely identify references.
 	 */
-	private Map<String, Map<String, List<EReference>>> ruleName2contextNodeName2references;
+	private Map<String, Map<String, Map<EReference, Integer>>> ruleName2contextNodeName2refs2numOfEdges;
 
 	/**
 	 * Stores for every subject and its references the current number of outgoing edges. We only
@@ -38,15 +34,15 @@ public class MultiplicityCounter {
 	 */
 	private Map<EObject, Map<EReference, Integer>> subject2reference2numOfEdges;
 
-	private Map<OutgoingEdge, Set<ITGGMatch>> outgoingEdge2edgeAddingMatches;
-	private Map<OutgoingEdge, Set<ITGGMatch>> outgoingEdge2edgeRemovingMatches;
+	private Map<OutgoingEdge, Map<ITGGMatch, Integer>> outgoingEdge2addedMatches2numOfEdges;
+	private Map<OutgoingEdge, Map<ITGGMatch, Integer>> outgoingEdge2removedMatches2numOfEdges;
 
 	public MultiplicityCounter(INTEGRATE integrate) {
 		this.integrate = integrate;
-		ruleName2contextNodeName2references = new HashMap<>();
+		ruleName2contextNodeName2refs2numOfEdges = new HashMap<>();
 		subject2reference2numOfEdges = new HashMap<>();
-		outgoingEdge2edgeAddingMatches = new HashMap<>();
-		outgoingEdge2edgeRemovingMatches = new HashMap<>();
+		outgoingEdge2addedMatches2numOfEdges = new HashMap<>();
+		outgoingEdge2removedMatches2numOfEdges = new HashMap<>();
 
 		for (TGGRule rule : integrate.getOptions().tgg.getFlattenedConcreteTGGRules()) {
 			for (TGGRuleEdge greenEdge : TGGFilterUtil.filterEdges(rule.getEdges(), BindingType.CREATE)) {
@@ -94,31 +90,31 @@ public class MultiplicityCounter {
 
 	public void notifyAddedMatch(ITGGMatch match) {
 		// check, if the match potentially violates the multiplicity of references
-		Map<String, List<EReference>> contextNode2ref = ruleName2contextNodeName2references.get(match.getRuleName());
-		if (contextNode2ref == null)
+		Map<String, Map<EReference, Integer>> contextNode2refs2numOfEdges = ruleName2contextNodeName2refs2numOfEdges.get(match.getRuleName());
+		if (contextNode2refs2numOfEdges == null)
 			return;
 
-		for (Entry<String, List<EReference>> entry : contextNode2ref.entrySet()) {
+		for (Entry<String, Map<EReference, Integer>> entry : contextNode2refs2numOfEdges.entrySet()) {
 			EObject subject = (EObject) match.get(entry.getKey());
 
 			if (subject == null)
 				throw new RuntimeException("Node must exist in match!");
 
 			Map<EReference, Integer> reference2numOfEdges = subject2reference2numOfEdges.computeIfAbsent(subject, k -> new HashMap<>());
-			for (EReference ref : entry.getValue()) {
-				reference2numOfEdges.compute(ref, (k, v) -> v == null ? 1 : v + 1);
-				outgoingEdge2edgeAddingMatches.computeIfAbsent(new OutgoingEdge(subject, ref), k -> new HashSet<>()).add(match);
-			}
+			entry.getValue().forEach((ref, numOfEdges) -> {
+				reference2numOfEdges.compute(ref, (k, v) -> v == null ? 1 : v + numOfEdges);
+				outgoingEdge2addedMatches2numOfEdges.computeIfAbsent(new OutgoingEdge(subject, ref), k -> new HashMap<>()).put(match, numOfEdges);
+			});
 		}
 	}
 
 	public void notifyRemovedMatch(ITGGMatch match) {
 		// check, if the match potentially violates the multiplicity of references
-		Map<String, List<EReference>> contextNode2ref = ruleName2contextNodeName2references.get(match.getRuleName());
-		if (contextNode2ref == null)
+		Map<String, Map<EReference, Integer>> contextNode2refs2numOfEdges = ruleName2contextNodeName2refs2numOfEdges.get(match.getRuleName());
+		if (contextNode2refs2numOfEdges == null)
 			return;
 
-		for (Entry<String, List<EReference>> entry : contextNode2ref.entrySet()) {
+		for (Entry<String, Map<EReference, Integer>> entry : contextNode2refs2numOfEdges.entrySet()) {
 			EObject subject = (EObject) match.get(entry.getKey());
 
 			if (subject == null)
@@ -126,35 +122,35 @@ public class MultiplicityCounter {
 
 			if (integrate.getGeneralModelChanges().isDeleted(subject)) {
 				if (subject2reference2numOfEdges.remove(subject) != null) {
-					for (EReference ref : entry.getValue()) {
+					entry.getValue().forEach((ref, numOfEdges) -> {
 						OutgoingEdge outgoingEdge = new OutgoingEdge(subject, ref);
-						outgoingEdge2edgeAddingMatches.remove(outgoingEdge);
-						outgoingEdge2edgeRemovingMatches.remove(outgoingEdge);
-					}
+						outgoingEdge2addedMatches2numOfEdges.remove(outgoingEdge);
+						outgoingEdge2removedMatches2numOfEdges.remove(outgoingEdge);
+					});
 				}
 			} else {
 				boolean isBroken = match.getType() == PatternType.CONSISTENCY && integrate.getPrecedenceGraph().getNode(match).isBroken();
 
 				Map<EReference, Integer> reference2numOfEdges = subject2reference2numOfEdges.get(subject);
-				for (EReference ref : entry.getValue()) {
+				entry.getValue().forEach((ref, numOfEdges) -> {
 					if (reference2numOfEdges.get(ref) == 0)
 						throw new IllegalStateException("Number of edges cannot be decreased, when it already is 0!");
-					reference2numOfEdges.compute(ref, (k, v) -> v - 1);
+					reference2numOfEdges.compute(ref, (k, v) -> v - numOfEdges);
 
 					OutgoingEdge outgoingEdge = new OutgoingEdge(subject, ref);
-					Set<ITGGMatch> matches = outgoingEdge2edgeAddingMatches.get(outgoingEdge);
+					Map<ITGGMatch, Integer> matches = outgoingEdge2addedMatches2numOfEdges.get(outgoingEdge);
 					if (matches != null)
 						matches.remove(match);
 
 					if (isBroken)
-						outgoingEdge2edgeRemovingMatches.computeIfAbsent(outgoingEdge, k -> new HashSet<>()).add(match);
-				}
+						outgoingEdge2removedMatches2numOfEdges.computeIfAbsent(outgoingEdge, k -> new HashMap<>()).put(match, numOfEdges);
+				});
 			}
 		}
 	}
 
 	public void clearRemovedMatches() {
-		outgoingEdge2edgeRemovingMatches.clear();
+		outgoingEdge2removedMatches2numOfEdges.clear();
 	}
 
 	private boolean isViolableReference(EReference reference) {
@@ -162,10 +158,10 @@ public class MultiplicityCounter {
 	}
 
 	private void storeReference(TGGRule rule, TGGRuleNode contextNode, EReference reference) {
-		Map<String, List<EReference>> contextNodeName2references = ruleName2contextNodeName2references.computeIfAbsent( //
+		Map<String, Map<EReference, Integer>> contextNodeName2refs2numOfEdges = ruleName2contextNodeName2refs2numOfEdges.computeIfAbsent( //
 				rule.getName(), k -> new HashMap<>());
-		List<EReference> references = contextNodeName2references.computeIfAbsent(contextNode.getName(), k -> new LinkedList<>());
-		references.add(reference);
+		Map<EReference, Integer> refs2numOfEdges = contextNodeName2refs2numOfEdges.computeIfAbsent(contextNode.getName(), k -> new HashMap<>());
+		refs2numOfEdges.compute(reference, (k, v) -> v == null ? 1 : v + 1);
 	}
 
 	/**
@@ -186,16 +182,20 @@ public class MultiplicityCounter {
 		return 0;
 	}
 
+	public Map<String, Map<String, Map<EReference, Integer>>> getRuleName2contextNodeName2refs2numOfEdges() {
+		return ruleName2contextNodeName2refs2numOfEdges;
+	}
+
 	public Map<EObject, Map<EReference, Integer>> getSubject2reference2numOfEdges() {
 		return subject2reference2numOfEdges;
 	}
 
-	public Map<OutgoingEdge, Set<ITGGMatch>> getOutgoingEdge2edgeAddingMatches() {
-		return outgoingEdge2edgeAddingMatches;
+	public Map<OutgoingEdge, Map<ITGGMatch, Integer>> getOutgoingEdge2addedMatches2numOfEdges() {
+		return outgoingEdge2addedMatches2numOfEdges;
 	}
 
-	public Map<OutgoingEdge, Set<ITGGMatch>> getOutgoingEdge2edgeRemovingMatches() {
-		return outgoingEdge2edgeRemovingMatches;
+	public Map<OutgoingEdge, Map<ITGGMatch, Integer>> getOutgoingEdge2removedMatches2numOfEdges() {
+		return outgoingEdge2removedMatches2numOfEdges;
 	}
 
 }
