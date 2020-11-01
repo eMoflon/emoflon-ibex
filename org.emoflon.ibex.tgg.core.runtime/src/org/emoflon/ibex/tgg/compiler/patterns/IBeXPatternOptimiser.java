@@ -14,6 +14,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGRuleEdge;

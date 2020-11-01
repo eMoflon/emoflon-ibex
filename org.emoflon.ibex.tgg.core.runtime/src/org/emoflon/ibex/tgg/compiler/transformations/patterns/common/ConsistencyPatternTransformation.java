@@ -4,15 +4,8 @@ import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsisten
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
-import org.emoflon.ibex.tgg.compiler.patterns.ACStrategy;
-import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
-import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import language.BindingType;
 import language.DomainType;

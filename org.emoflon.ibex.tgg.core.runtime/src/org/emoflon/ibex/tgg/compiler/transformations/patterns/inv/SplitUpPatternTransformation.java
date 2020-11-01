@@ -1,11 +1,11 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns.inv;
 
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByDomain;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperator;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
-import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByDomain;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperator;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
-import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByDomain;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -17,10 +17,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
-import org.emoflon.ibex.tgg.compiler.patterns.ACStrategy;
-import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
-import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
