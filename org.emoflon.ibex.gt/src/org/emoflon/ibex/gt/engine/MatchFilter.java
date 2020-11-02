@@ -131,7 +131,8 @@ public class MatchFilter {
 		
 		IBeXTransitiveEdge edge = edges.get(currentEdge);
 		Stream<IMatch> connectedMatches = found
-				.flatMap(match -> findTransitiveNodes(Stream.empty(), (EObject) match.get(edge.getSourceNode().getName()), edge.getType())
+				.flatMap(match -> findTransitiveNodes(Stream.empty(), Collections.synchronizedSet(new HashSet<>()), 
+						(EObject) match.get(edge.getSourceNode().getName()), edge.getType())
 						.map(node -> {
 							SimpleMatch simpleMatch = new SimpleMatch(match);
 							simpleMatch.put(edge.getTargetNode().getName(), node);
@@ -154,20 +155,24 @@ public class MatchFilter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static Stream<EObject> findTransitiveNodes(final Stream<EObject> found, final EObject src, final EReference edge) {
+	private static Stream<EObject> findTransitiveNodes(final Stream<EObject> found, final Set<EObject> visitedNodes, final EObject src, final EReference edge) {
+		if(visitedNodes.contains(src))
+			return found;
+		
+		visitedNodes.add(src);
 		if(edge.getUpperBound() != 1) {
 			EList<EObject> otherNodes = (EList<EObject>)src.eGet(edge);
 			if(otherNodes == null || otherNodes.isEmpty())
 				return found;
 			
-			return otherNodes.parallelStream().flatMap(otherNode -> findTransitiveNodes(Stream.concat(found, otherNodes.parallelStream()), otherNode, edge));
+			return otherNodes.parallelStream().flatMap(otherNode -> findTransitiveNodes(Stream.concat(found, otherNodes.parallelStream()), visitedNodes, otherNode, edge));
 		}else {
 			EObject otherNode = (EObject)src.eGet(edge);
 			if(otherNode == null)
 				return found;
 			
 			Stream.of(otherNode);
-			return findTransitiveNodes(Stream.concat(found, Stream.of(otherNode)), otherNode, edge);
+			return findTransitiveNodes(Stream.concat(found, Stream.of(otherNode)), visitedNodes, otherNode, edge);
 		}
 	}
 
