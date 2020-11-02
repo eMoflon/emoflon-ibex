@@ -540,15 +540,15 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		for(IBeXAttributeConstraint constraint : ibexPattern.getAttributeConstraint()) {
 			copyAndMoveAttributeConstraint(transitivePattern, constraint, node2Pattern);
 		}
-		// Remove sub-patterns containing only a single node and no additional edges or attribute constraints
-		Set<IBeXContextPattern> removals = transitivePattern.getSubPatterns().stream()
-				.filter(pattern -> pattern.getSignatureNodes().size() == 1 && 
-					pattern.getLocalEdges().isEmpty() && 
-					pattern.getLocalNodes().isEmpty() &&
-					(pattern.getAttributeConstraint() == null || pattern.getAttributeConstraint().isEmpty()))
-				.collect(Collectors.toSet());
+//		// Remove sub-patterns containing only a single node and no additional edges or attribute constraints
+//		Set<IBeXContextPattern> removals = transitivePattern.getSubPatterns().stream()
+//				.filter(pattern -> pattern.getSignatureNodes().size() == 1 && 
+//					pattern.getLocalEdges().isEmpty() && 
+//					pattern.getLocalNodes().isEmpty() &&
+//					(pattern.getAttributeConstraint() == null || pattern.getAttributeConstraint().isEmpty()))
+//				.collect(Collectors.toSet());
 		
-		transitivePattern.getSubPatterns().removeAll(removals);
+//		transitivePattern.getSubPatterns().removeAll(removals);
 		
 		return transitivePattern;
 	}

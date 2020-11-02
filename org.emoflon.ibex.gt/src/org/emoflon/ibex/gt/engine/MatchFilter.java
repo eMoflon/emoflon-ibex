@@ -1,24 +1,31 @@
 package org.emoflon.ibex.gt.engine;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextTransitive;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXTransitiveEdge;
 
 /**
  * Utility methods to filter match streams.
@@ -37,6 +44,7 @@ public class MatchFilter {
 	 *            the matches
 	 * @return a stream containing matches
 	 */
+	@SuppressWarnings("unchecked")
 	public static Stream<IMatch> getFilteredMatchStream(final IBeXContext pattern, final Map<String, Object> parameters,
 			final Map<String, Collection<IMatch>> matches) {
 		if (pattern instanceof IBeXContextPattern) {
@@ -55,6 +63,32 @@ public class MatchFilter {
 				matchStream = Stream.concat(matchStream, matchesForAlterative);
 			}
 			return matchStream.distinct();
+		} else if (pattern instanceof IBeXContextTransitive) {
+			IBeXContextTransitive transitivePattern = (IBeXContextTransitive)pattern;
+			Map<IBeXNode, IBeXContextPattern> node2Pattern = new HashMap<>();
+			for(IBeXContextPattern subPattern : transitivePattern.getSubPatterns()) {
+				for(IBeXNode node : subPattern.getSignatureNodes()) {
+					node2Pattern.put(node, subPattern);
+				}
+			}
+			for(IBeXTransitiveEdge edge : transitivePattern.getTransitiveEdges()) {
+				matches.get(node2Pattern.get(edge.getSourceNode())).parallelStream().forEach(submatch -> {
+					Set<Object> visitedNodes = Collections.synchronizedSet(new HashSet<>());
+					EObject node = (EObject)submatch.get(edge.getSourceNode().getName());
+					while(node!=null && !visitedNodes.contains(node)) {
+						
+					}
+					if(edge.getType().getUpperBound() == 1) {
+						EList<EObject> otherNodes = (EList<EObject>)node.eGet(edge.getType());
+						otherNodes.parallelStream().forEach(otherNode -> {
+							
+						});
+					}else {
+						EObject otherNode = (EObject)node.eGet(edge.getType());
+					}
+					
+				});
+			}
 		}
 		throw new IllegalArgumentException("Invalid pattern " + pattern);
 	}
@@ -203,6 +237,6 @@ public class MatchFilter {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static boolean compareTo(final Object a, final Object b, final Predicate<Integer> condition) {
 		return a instanceof Comparable && b instanceof Comparable //
-				&& condition.test(((Comparable) a).compareTo(b));
+				&& condition.test(((Comparable<Object>) a).compareTo(b));
 	}
 }
